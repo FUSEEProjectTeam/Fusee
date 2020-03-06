@@ -53,8 +53,14 @@ namespace Fusee.Engine.Common
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int PosInHierarchyTex;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public byte VisibleChildIndices;
 
         /// <summary>
@@ -70,6 +76,11 @@ namespace Fusee.Engine.Common
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="vf"></param>
+        /// <returns></returns>
         public bool Intersects(float4x4 vf)
         {
             var planes = new float4[6];
@@ -87,7 +98,6 @@ namespace Fusee.Engine.Common
                 if (side < 0) return false;
             }
             return true;
-            //return PlaneIntersects(planes);
         }
 
         private float Classify(float4 plane)
@@ -109,36 +119,6 @@ namespace Fusee.Engine.Common
             else if (d < 0.0)
                 return (float)(d + r);
             return (float)(d - r);
-        }
-
-
-        //see: http://old.cescg.org/CESCG-2002/DSykoraJJelinek/
-        private bool PlaneIntersects(double4[] planes)
-        {
-            var res = true;
-            foreach (var plane in planes)
-            {
-                var normPlane = plane.Normalize();
-                normPlane *= -1;
-
-                var pVert = GetPVert(normPlane.xyz);
-                var nVert = GetNVert(normPlane.xyz);
-
-                var m = (normPlane.x * nVert.x) + (normPlane.y * nVert.y) + (normPlane.z * nVert.z);
-                var n = (normPlane.x * pVert.x) + (normPlane.y * pVert.y) + (normPlane.z * pVert.z);
-                if (m > -normPlane.w)
-                {
-                    res = false;
-                    return res;
-                } //outside
-
-                if (n > -normPlane.w)
-                {
-                    res = true;
-                } //intersects
-            }
-
-            return res; //inside            
         }
 
         private double3 GetPVert(double3 planeNormal)

@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using Fusee.Base.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
-{   
+{
     /// <summary>
     /// Creates a text mesh for the GUI.
     /// </summary>
-    public class GUIText: Mesh
+    public class GUIText : Mesh
     {
         private readonly FontMap _fontMap;
         private readonly string _text;
@@ -27,7 +27,7 @@ namespace Fusee.Engine.GUI
 
             CreateTextMesh();
         }
-         
+
         private void CreateTextMesh()
         {
             if (_fontMap == null)
@@ -38,7 +38,7 @@ namespace Fusee.Engine.GUI
             var uvs = new List<float2>();
             var tris = new List<ushort>();
             var normals = new List<float3>();
-            
+
             // build complete structure
 
             // var charInfo = Font.CharInfo;
@@ -56,11 +56,11 @@ namespace Fusee.Engine.GUI
             {
                 GlyphOnMap glyphOnMap = _fontMap.GetGlyphOnMap(letter);
                 GlyphInfo glyphInfo = _fontMap.Font.GetGlyphInfo(letter);
-                
+
                 var x = advanceX + glyphOnMap.BitmapL;
                 var y = advanceY - glyphOnMap.BitmapT;
                 var w = glyphOnMap.BitmapW;
-                var h = glyphOnMap.BitmapH ;
+                var h = glyphOnMap.BitmapH;
 
                 if (-y > textMeshHeight)
                     textMeshHeight = -y;
@@ -118,7 +118,7 @@ namespace Fusee.Engine.GUI
 
             for (var i = 0; i < Vertices.Length; i++)
             {
-                var translateVert = new float3(Vertices[i].x - translateToZero - meshWidth/2, Vertices[i].y - textMeshHeight/2, Vertices[i].z);
+                var translateVert = new float3(Vertices[i].x - translateToZero - meshWidth / 2, Vertices[i].y - textMeshHeight / 2, Vertices[i].z);
                 var scaledVert = translateVert / meshWidth;
                 Vertices[i] = scaledVert;
             }

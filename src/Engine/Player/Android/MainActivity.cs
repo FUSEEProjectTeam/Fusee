@@ -56,18 +56,18 @@ namespace Fusee.Engine.Player.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(SceneContainer),
+                        ReturnedType = typeof(FusFile),
                         Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                            return Serializer.DeserializeSceneContainer((Stream)storage);
+                            return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                         },
                         DecoderAsync = async (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                            return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage));
+                            return await Task.Factory.StartNew(() => new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage)));
                         },
                         Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                     });

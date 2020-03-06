@@ -13,6 +13,7 @@ namespace Fusee.Engine.Common
         /// Perspective projection
         /// </summary>
         PERSPECTIVE,
+
         /// <summary>
         /// Orthographic projection
         /// </summary>
@@ -38,27 +39,27 @@ namespace Fusee.Engine.Common
         public int Height { get; private set; }
 
         /// <summary>
-        /// Vertical field of view.        
-        /// </summary>       
+        /// Vertical field of view.
+        /// </summary>
         public float Fov;
 
         /// <summary>
-        /// Distance to near clipping plane.        
+        /// Distance to near clipping plane.
         /// </summary>       
         public float ZNear;
 
         /// <summary>
-        /// Distance to far clipping plane.        
-        /// </summary>        
+        /// Distance to far clipping plane.
+        /// </summary>
         public float ZFar;
 
         /// <summary>
-        /// The projection method.        
+        /// The projection method.
         /// </summary>
         public ProjectionMethod ProjectionMethod { get; }
 
         /// <summary>
-        /// Creates a new instance of the projection component class.        
+        /// Creates a new instance of the projection component class.
         /// </summary>
         public Projection(ProjectionMethod projectionMethod, float zNear, float zFar, float fov)
         {
@@ -71,7 +72,7 @@ namespace Fusee.Engine.Common
         }
 
         /// <summary>
-        /// Is called when the window is resized.        
+        /// Is called when the window is resized.
         /// </summary>
         public void Resize(int width, int height)
         {
@@ -79,6 +80,5 @@ namespace Fusee.Engine.Common
             Height = height;
 
         }
-
     }
 }

@@ -1,7 +1,5 @@
 ﻿using Fusee.Math.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Common
 {
@@ -10,7 +8,10 @@ namespace Fusee.Engine.Common
     /// </summary>
     public class Mesh : SceneComponent, IDisposable
     {
+#pragma warning disable CA1819 // Properties should not return arrays
+
         #region RenderContext Asset Management
+
         // Event of mesh Data changes
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
@@ -21,12 +22,25 @@ namespace Fusee.Engine.Common
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
         public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
+
         #endregion
 
-        private float3[] _vertices;
+        #region Private mesh data member
+
+        private float4[] _boneWeights;
+        private float4[] _boneIndices;
+        private float4[] _tangents;
 
         private float3[] _biTangents;
-        private float4[] _tangents;
+        private float3[] _vertices;
+        private float3[] _normals;
+
+        private float2[] _uvs;
+
+        private ushort[] _triangles;
+        private uint[] _colors;
+
+        #endregion
 
         /// <summary>
         /// Gets and sets the vertices.
@@ -36,24 +50,22 @@ namespace Fusee.Engine.Common
         /// </value>
         public float3[] Vertices
         {
-            get { return _vertices; }
+            get => _vertices;
             set
             {
                 _vertices = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Vertices));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Vertices));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether vertices are set.
         /// </summary>
         /// <value>
         ///   <c>true</c> if vertices are set; otherwise, <c>false</c>.
         /// </value>
-        public bool VerticesSet { get { return (_vertices != null) && _vertices.Length > 0; } }
+        public bool VerticesSet => _vertices?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether tangents are set.
@@ -61,17 +73,17 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if tangents are set; otherwise, <c>false</c>.
         /// </value>
-        public bool TangentsSet { get { return (_tangents != null) && _tangents.Length > 0; } }
+        public bool TangentsSet => _tangents?.Length > 0;
 
         /// <summary>
-        /// Gets a value indicating whether bitangents are set.
+        /// Gets a value indicating whether bi tangents are set.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if bitangents are set; otherwise, <c>false</c>.
+        ///   <c>true</c> if bi tangents are set; otherwise, <c>false</c>.
         /// </value>
-        public bool BiTangentsSet { get { return (_biTangents != null) && _biTangents.Length > 0; } }
+        public bool BiTangentsSet => _biTangents?.Length > 0;
 
-        private uint[] _colors;
+
         /// <summary>
         /// Gets and sets the color of a single vertex.
         /// </summary>
@@ -80,15 +92,12 @@ namespace Fusee.Engine.Common
         /// </value>
         public uint[] Colors
         {
-            get { return _colors; }
+            get => _colors;
             set
             {
                 _colors = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
             }
         }
         /// <summary>
@@ -97,9 +106,9 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
-        public bool ColorsSet { get { return (_colors != null) && _colors.Length > 0; } }
+        public bool ColorsSet => _colors?.Length > 0;
 
-        private float3[] _normals;
+
         /// <summary>
         /// Gets and sets the normals.
         /// </summary>
@@ -108,15 +117,12 @@ namespace Fusee.Engine.Common
         /// </value>
         public float3[] Normals
         {
-            get { return _normals; }
+            get => _normals;
             set
             {
                 _normals = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Normals));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Normals));
             }
         }
         /// <summary>
@@ -125,9 +131,8 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if normals are set; otherwise, <c>false</c>.
         /// </value>
-        public bool NormalsSet { get { return (_normals != null) && _normals.Length > 0; } }
+        public bool NormalsSet => _normals?.Length > 0;
 
-        private float2[] _uvs;
         /// <summary>
         /// Gets and sets the UV-coordinates.
         /// </summary>
@@ -136,26 +141,23 @@ namespace Fusee.Engine.Common
         /// </value>
         public float2[] UVs
         {
-            get { return _uvs; }
+            get => _uvs;
             set
             {
                 _uvs = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Uvs));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Uvs));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether UVs are set.
         /// </summary>
         /// <value>
         ///   <c>true</c> if UVs are set; otherwise, <c>false</c>.
         /// </value>
-        public bool UVsSet { get { return (_uvs != null) && _uvs.Length > 0; } }
+        public bool UVsSet => _uvs?.Length > 0;
 
-        private float4[] _boneWeights;
         /// <summary>
         /// Gets and sets the bone weights.
         /// </summary>
@@ -164,15 +166,12 @@ namespace Fusee.Engine.Common
         /// </value>
         public float4[] BoneWeights
         {
-            get { return _boneWeights; }
+            get => _boneWeights;
             set
             {
                 _boneWeights = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneWeights));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneWeights));
             }
         }
         /// <summary>
@@ -181,9 +180,8 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if bone weights are set; otherwise, <c>false</c>.
         /// </value>
-        public bool BoneWeightsSet { get { return (_boneWeights != null) && _boneWeights.Length > 0; } }
+        public bool BoneWeightsSet => _boneWeights?.Length > 0;
 
-        private float4[] _boneIndices;
         /// <summary>
         /// Gets and sets the bone indices.
         /// </summary>
@@ -192,15 +190,12 @@ namespace Fusee.Engine.Common
         /// </value>
         public float4[] BoneIndices
         {
-            get { return _boneIndices; }
+            get => _boneIndices;
             set
             {
                 _boneIndices = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneIndices));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneIndices));
             }
         }
         /// <summary>
@@ -209,9 +204,8 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if bone indices are set; otherwise, <c>false</c>.
         /// </value>
-        public bool BoneIndicesSet { get { return (_boneIndices != null) && _boneIndices.Length > 0; } }
+        public bool BoneIndicesSet => _boneIndices?.Length > 0;
 
-        private ushort[] _triangles;
         /// <summary>
         /// Gets and sets the triangles.
         /// </summary>
@@ -220,15 +214,12 @@ namespace Fusee.Engine.Common
         /// </value>
         public ushort[] Triangles
         {
-            get { return _triangles; }
+            get => _triangles;
             set
             {
                 _triangles = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
             }
 
 
@@ -240,7 +231,7 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if triangles are set; otherwise, <c>false</c>.
         /// </value>
-        public bool TrianglesSet { get { return (_triangles != null) && _triangles.Length > 0; } }
+        public bool TrianglesSet => _triangles?.Length > 0;
 
         /// <summary>
         /// The bounding box of this geometry chunk.
@@ -253,32 +244,26 @@ namespace Fusee.Engine.Common
         /// </summary>
         public float4[] Tangents
         {
-            get { return _tangents; }
+            get => _tangents;
             set
             {
                 _tangents = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Tangents));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Tangents));
             }
         }
 
         /// <summary>
-        /// The bitangent of each triangle for bump mapping.
+        /// The bi tangent of each triangle for bump mapping.
         /// </summary>
         public float3[] BiTangents
         {
-            get { return _biTangents; }
+            get => _biTangents;
             set
             {
                 _biTangents = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BiTangents));
-                }
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BiTangents));
             }
         }
 
@@ -287,41 +272,56 @@ namespace Fusee.Engine.Common
         /// </summary>
         public bool Active = true;
 
-        public int MeshType = 0;
-
         /// <summary>
-        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// The type of mesh which is represented by this instance (e. g. triangle mesh, point, line, etc...)
         /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
+        public int MeshType;
 
-        // Flag: Has Dispose already been called?
-        bool disposed = false;
+
+        #region IDisposable Support
+
+        private bool disposedValue; // To detect redundant calls
 
         /// <summary>
-        /// Protected implementation of Dispose pattern.
+        /// Fire dispose mesh event
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed)
-                return;
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
+                }
 
-            if (disposing)
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
+                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
+                // TODO: set large fields to null.
 
-            disposed = true;
+                disposedValue = true;
+            }
         }
+
+        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
+        // ~Mesh()
+        // {
+        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+        //   Dispose(false);
+        // }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// Fire dispose mesh event
         /// </summary>
-        ~Mesh()
+        public void Dispose()
         {
-            Dispose(false);
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+            // TODO: uncomment the following line if the finalizer is overridden above.
+            // GC.SuppressFinalize(this);
         }
+
+        #endregion
+
+#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

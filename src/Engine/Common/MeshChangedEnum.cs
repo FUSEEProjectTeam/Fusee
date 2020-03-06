@@ -9,39 +9,48 @@
         /// The <see cref="Mesh"/> has been disposed.
         /// </summary>
         Disposed = 0,
+
         /// <summary>
         /// The field <see cref="Mesh.Vertices"/> changed.
         /// </summary>
         Vertices,
+
         /// <summary>
         /// The field <see cref="Mesh.Triangles"/> changed.
         /// </summary>
         Triangles,
+
         /// <summary>
         /// The field <see cref="Mesh.Colors"/> changed.
         /// </summary>
         Colors,
+
         /// <summary>
         /// The field <see cref="Mesh.Normals"/> changed.
         /// </summary>
         Normals,
+
         /// <summary>
         /// The field <see cref="Mesh.UVs"/> changed.
         /// </summary>
         Uvs,
+
         /// <summary>
         /// The field <see cref="Mesh.BoneWeights"/> changed.
         /// </summary>
         BoneWeights,
+
         /// <summary>
         /// The field <see cref="Mesh.BoneIndices"/> changed.
         /// </summary>
         BoneIndices,
+
         /// <summary>
         /// The field <see cref="Mesh.Tangents"/> changed.
         /// </summary>
         Tangents,
-        ///    /// <summary>
+
+        /// <summary>
         /// The field <see cref="Mesh.BiTangents"/> changed.
         /// </summary>
         BiTangents

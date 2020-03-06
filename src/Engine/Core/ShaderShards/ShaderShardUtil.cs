@@ -1,5 +1,5 @@
-﻿using Fusee.Serialization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -140,7 +140,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="mc">The material.</param>
         /// <param name="wc">The weights.</param>
         /// <returns></returns>
-        public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffectProps CollectEffectProps(Mesh mesh, Material mc, Weight wc = null)
         {
             return new ShaderEffectProps()
             {
@@ -151,7 +151,7 @@ namespace Fusee.Engine.Core.ShaderShards
             };
         }
 
-        private static MaterialProps AnalzyeMaterialParams(MaterialComponent mc)
+        private static MaterialProps AnalzyeMaterialParams(Material mc)
         {
             return new MaterialProps
             {
@@ -165,16 +165,16 @@ namespace Fusee.Engine.Core.ShaderShards
             };
         }
 
-        private static MaterialType AnalyzeMaterialType(MaterialComponent mc)
+        private static MaterialType AnalyzeMaterialType(Material mc)
         {
-            if (mc.GetType() == typeof(MaterialPBRComponent))
+            if (mc.GetType() == typeof(MaterialPBR))
                 return MaterialType.MaterialPbr;
 
             return MaterialType.Standard;
         }
 
         //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefor we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....
-        private static MeshProps AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
+        private static MeshProps AnalyzeMesh(Mesh mesh, Weight wc = null)
         {
             return new MeshProps
             {

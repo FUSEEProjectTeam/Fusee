@@ -8,7 +8,6 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -162,7 +161,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -207,7 +206,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -339,13 +338,13 @@ namespace Fusee.Engine.Core
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            Material temp = new Material
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new MatChannel
                 {
                     Color = diffuseColor
                 },
-                Specular = new SpecularChannelContainer
+                Specular = new SpecularChannel
                 {
                     Color = specularColor,
                     Shininess = shininess,
@@ -365,13 +364,13 @@ namespace Fusee.Engine.Core
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            Material temp = new Material
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new MatChannel
                 {
                     Color = diffuseColor
                 },
-                Specular = new SpecularChannelContainer
+                Specular = new SpecularChannel
                 {
                     Color = specularColor,
                     Shininess = shininess,
@@ -393,15 +392,15 @@ namespace Fusee.Engine.Core
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            Material temp = new Material
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new MatChannel
                 {
                     Color = diffuseColor,
                     Texture = texName,
                     Mix = diffuseMix
                 },
-                Specular = new SpecularChannelContainer
+                Specular = new SpecularChannel
                 {
                     Color = specularColor,
                     Shininess = shininess,
@@ -423,15 +422,15 @@ namespace Fusee.Engine.Core
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            Material temp = new Material
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new MatChannel
                 {
                     Color = diffuseColor,
                     Texture = texName,
                     Mix = diffuseMix
                 },
-                Specular = new SpecularChannelContainer
+                Specular = new SpecularChannel
                 {
                     Color = specularColor,
                     Shininess = shininess,
@@ -449,7 +448,7 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffect MakeShaderEffectFromMatComp(Material mc, Weight wc = null)
         {
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
             var vs = CreateVertexShader(wc, effectProps);
@@ -487,7 +486,7 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(Material mc, Weight wc = null)
         {
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
             string vs = CreateVertexShader(wc, effectProps);
@@ -525,7 +524,7 @@ namespace Fusee.Engine.Core
 
         #region Create Shaders from Shards
 
-        private static string CreateVertexShader(WeightComponent wc, ShaderEffectProps effectProps)
+        private static string CreateVertexShader(Weight wc, ShaderEffectProps effectProps)
         {
             var vertexShader = new List<string>
             {
@@ -579,7 +578,7 @@ namespace Fusee.Engine.Core
             return string.Join("\n", protoPixelShader);
         }
 
-        private static string CreateDeferredLightingPixelShader(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
+        private static string CreateDeferredLightingPixelShader(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var frag = new StringBuilder();
             frag.Append(HeaderShard.Version300Es);
@@ -619,7 +618,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(Material mc)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -653,7 +652,7 @@ namespace Fusee.Engine.Core
                     Value = mc.Specular.Color
                 });
 
-                if (mc.GetType() == typeof(MaterialComponent))
+                if (mc.GetType() == typeof(Material))
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
@@ -679,9 +678,9 @@ namespace Fusee.Engine.Core
                         });
                     }
                 }
-                else if (mc.GetType() == typeof(MaterialPBRComponent))
+                else if (mc.GetType() == typeof(MaterialPBR))
                 {
-                    var mcPbr = (MaterialPBRComponent)mc;
+                    var mcPbr = (MaterialPBR)mc;
 
                     var delta = 0.0000001f;
                     var diffuseFractionDelta = 0.99999f; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
@@ -876,13 +875,13 @@ namespace Fusee.Engine.Core
 
         private static ShaderEffect CreateDefaultEffect()
         {
-            var defaultMat = new MaterialComponent
+            var defaultMat = new Material
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new MatChannel
                 {
                     Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
                 },
-                Specular = new SpecularChannelContainer
+                Specular = new SpecularChannel
                 {
                     Color = new float4(1, 1, 1, 1),
                     Intensity = 0.5f,

@@ -28,7 +28,7 @@ namespace Fusee.Engine.Player.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _scene;
+        private Scene _scene;
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
@@ -41,7 +41,7 @@ namespace Fusee.Engine.Player.Core
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
-        private SceneContainer _gui;
+        private Scene _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initCanvasWidth;
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Player.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
+            _scene = await AssetStorage.GetAsync<Scene>(ModelFile);
             
             _gui = await CreateGui();
             // Create the interaction handler
@@ -253,7 +253,7 @@ namespace Fusee.Engine.Player.Core
             
         }
 
-        private async Task<SceneContainer> CreateGui()
+        private async Task<Scene> CreateGui()
         {
             var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
             var psTex = await AssetStorage.GetAsync<string>("texture.frag");
@@ -267,7 +267,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode (
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -296,7 +296,7 @@ namespace Fusee.Engine.Player.Core
             var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 textToDisplay,
                 "SceneDescriptionText",
                 vsTex,
@@ -307,7 +307,7 @@ namespace Fusee.Engine.Player.Core
                 ColorUint.Tofloat4(ColorUint.Greenery), 200f);
 
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -318,9 +318,9 @@ namespace Fusee.Engine.Player.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);           
             
-            return new SceneContainer
+            return new Scene
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -330,12 +330,12 @@ namespace Fusee.Engine.Player.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

@@ -7,7 +7,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
-using Fusee.Serialization;
 
 namespace Fusee.Base.Core
 {

@@ -10,6 +10,7 @@ using Fusee.Xene;
 using System.Text.Json;
 using System.Windows;
 using Fusee.Engine.Core;
+using Fusee.Engine.Common;
 
 namespace Fusee.Tools.FusViewer.ViewModel
 {    
@@ -38,7 +39,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             {
                 _caller.PathToFile = openFileDialog.FileName;
                 using var stream = File.OpenRead(openFileDialog.FileName);
-                _caller.CurrentContainer = ProtoBuf.Serializer.Deserialize<SceneContainer>(stream);
+                _caller.CurrentContainer = new Fusee.Engine.Core.ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<FusFile>(stream));
             }
         }
 
@@ -114,7 +115,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             }
         }
 
-        public SceneContainer CurrentContainer
+        public Scene CurrentContainer
         {
             get => _scene;
             set
@@ -129,7 +130,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         public List<TreeItem> SceneAsTreeView => new List<TreeItem> { _sceneAsTreeItem };
 
         private string _pathToFile;
-        private SceneContainer _scene;
+        private Scene _scene;
         private TreeItem _sceneAsTreeItem;
 
         public MainWindowViewModel()
@@ -150,7 +151,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         public ICommand ViewInPlayer => new ViewInPlayerCmd(this);
     }
 
-    public class SceneToTreeConv : SceneVisitor
+    public class SceneToTreeConv : Visitor<SceneNode, SceneComponent>
     {
         private TreeItem _convertedScene;
         private Stack<TreeItem> _predecessors;
@@ -166,13 +167,13 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="sc">The SceneContainer to convert.</param>
         /// <returns></returns>
-        public TreeItem Convert(SceneContainer sc)
+        public TreeItem Convert(Scene sc)
         {
             _predecessors = new Stack<TreeItem>();
             _convertedScene = new TreeItem
             {
                 Title = $"Scene created {(sc.Header.CreationDate == String.Empty ? "unknown" : sc.Header.CreationDate)} by {sc.Header.CreatedBy}" +
-                        $", generated via {sc.Header.Generator}, {sc.Header.Version}"
+                        $", generated via {sc.Header.Generator}"
             };
 
             Traverse(sc.Children);
@@ -186,7 +187,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="snc"></param>
         [VisitMethod]
-        public void ConvSceneNodeContainer(SceneNodeContainer snc)
+        public void ConvSceneNodeContainer(SceneNode snc)
         {
             if (_predecessors.Count != 0)
             {
@@ -214,7 +215,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         ///Converts the transform component.
         ///</summary>
         [VisitMethod]
-        public void ConvTransform(TransformComponent transform)
+        public void ConvTransform(Transform transform)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new ObservableCollection<TreeComponentItem>();
@@ -231,7 +232,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialComponent matComp)
+        public void ConvMaterial(Material matComp)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -245,7 +246,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialPBRComponent matComp)
+        public void ConvMaterial(MaterialPBR matComp)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -258,12 +259,12 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvCamComp(CameraComponent camComp)
+        public void ConvCamComp(Camera camComp)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
                 Name = "Camera Component",
-                Desc = $"{camComp.Name}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
+                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 
@@ -298,7 +299,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="lightComponent"></param>
         [VisitMethod]
-        public void ConvLight(LightComponent lightComponent)
+        public void ConvLight(Light lightComponent)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -312,7 +313,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="bone"></param>
         [VisitMethod]
-        public void ConvBone(BoneComponent bone)
+        public void ConvBone(Bone bone)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -326,7 +327,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="weight"></param>
         [VisitMethod]
-        public void ConVWeight(WeightComponent weight)
+        public void ConVWeight(Weight weight)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -339,7 +340,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
     }
 
 
-    public class SceneToJSONConv : SceneVisitor
+    public class SceneToJSONConv : Visitor<SceneNode, SceneComponent>
     {
         private JSONItem _convertedScene;
         private Stack<JSONItem> _predecessors;
@@ -355,13 +356,13 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="sc">The SceneContainer to convert.</param>
         /// <returns></returns>
-        public JSONItem Convert(SceneContainer sc)
+        public JSONItem Convert(Scene sc)
         {
             _predecessors = new Stack<JSONItem>();
             _convertedScene = new JSONItem
             {
                 Title = $"Scene created {(sc.Header.CreationDate == String.Empty ? "unknown" : sc.Header.CreationDate)} by {sc.Header.CreatedBy}" +
-                        $", generated via {sc.Header.Generator}, {sc.Header.Version}"
+                        $", generated via {sc.Header.Generator}"
             };
 
             Traverse(sc.Children);
@@ -375,7 +376,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="snc"></param>
         [VisitMethod]
-        public void ConvSceneNodeContainer(SceneNodeContainer snc)
+        public void ConvSceneNodeContainer(SceneNode snc)
         {
             if (_predecessors.Count != 0)
             {
@@ -403,7 +404,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         ///Converts the transform component.
         ///</summary>
         [VisitMethod]
-        public void ConvTransform(TransformComponent transform)
+        public void ConvTransform(Transform transform)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<JSONComponentItem>();
@@ -420,7 +421,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialComponent matComp)
+        public void ConvMaterial(Material matComp)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -434,7 +435,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialPBRComponent matComp)
+        public void ConvMaterial(MaterialPBR matComp)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -447,12 +448,12 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvCameraComp(CameraComponent camComp)
+        public void ConvCameraComp(Camera camComp)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Camera Component",
-                Desc = $"{camComp.Name}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
+                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 
@@ -487,7 +488,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="lightComponent"></param>
         [VisitMethod]
-        public void ConvLight(LightComponent lightComponent)
+        public void ConvLight(Light lightComponent)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -501,7 +502,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="bone"></param>
         [VisitMethod]
-        public void ConvBone(BoneComponent bone)
+        public void ConvBone(Bone bone)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -515,7 +516,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="weight"></param>
         [VisitMethod]
-        public void ConVWeight(WeightComponent weight)
+        public void ConVWeight(Weight weight)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {

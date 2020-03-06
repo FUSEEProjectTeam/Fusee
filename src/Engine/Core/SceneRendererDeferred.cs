@@ -2,7 +2,6 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -95,7 +94,7 @@ namespace Fusee.Engine.Core
         private readonly WritableTexture _blurRenderTex;
         private readonly WritableTexture _lightedSceneTex; //Do post-pro effects like FXAA on this texture.
 
-        private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light       
+        private readonly Dictionary<Tuple<SceneNode, Light>, ShadowParams> _shadowparams; //One per Light       
 
         private RenderPasses _currentPass;
         private bool _canUseGeometryShaders;
@@ -106,7 +105,7 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
         /// <param name="texRes">The g-buffer texture resolution.</param>
         /// <param name="shadowMapRes">The shadow map resolution.</param>       
-        public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
+        public SceneRendererDeferred(Scene sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
         {
             TexRes = texRes;
             ShadowMapRes = shadowMapRes;
@@ -121,7 +120,7 @@ namespace Fusee.Engine.Core
             _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.NEAREST);
             _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.LINEAR);
 
-            _shadowparams = new Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams>();
+            _shadowparams = new Dictionary<Tuple<SceneNode, Light>, ShadowParams>();
 
             _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
 
@@ -139,15 +138,15 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="shaderComponent">The ShaderEffectComponent</param>
         [VisitMethod]
-        public new void RenderShaderEffect(ShaderEffectComponent shaderComponent)
+        public new void RenderShaderEffect(ShaderEffect shaderComponent)
         {
             if (HasNumberOfLightsChanged)
                 HasNumberOfLightsChanged = false;
 
             if (_currentPass != RenderPasses.SHADOW)
             {
-                _rc.SetShaderEffect(shaderComponent.Effect);
-                _state.Effect = shaderComponent.Effect;
+                _rc.SetShaderEffect(shaderComponent);
+                _state.Effect = shaderComponent;
             }
         }
 
@@ -173,7 +172,7 @@ namespace Fusee.Engine.Core
 
         #region Shadow mapping
 
-        private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNodeContainer, LightComponent> key)
+        private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNode, Light> key)
         {
             float4x4[] lightSpaceMatrices;
             var shadowParamClipPlanes = new float2[NumberOfCascades];
@@ -353,7 +352,7 @@ namespace Fusee.Engine.Core
                 RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight), renderTex);
         }
 
-        private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam, WritableTexture renderTex = null)
+        private void PerCamRender(Tuple<SceneNode, CameraResult> cam, WritableTexture renderTex = null)
         {
             var tex = cam.Item2.Camera.RenderTexture;
 
@@ -460,7 +459,7 @@ namespace Fusee.Engine.Core
                 if (lightVisRes.Item2.Light.IsCastingShadows)
                 {
                     isCastingShadows = true;
-                    var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+                    var shadowParams = _shadowparams[new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light)];
 
                     //Create and/or choose correct shader effect
                     switch (lightVisRes.Item2.Light.Type)
@@ -556,7 +555,7 @@ namespace Fusee.Engine.Core
             {
                 if (!lightVisRes.Item2.Light.IsCastingShadows || !lightVisRes.Item2.Light.Active || (lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
 
-                var key = new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light);
+                var key = new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light);
                 var shadowParams = CreateShadowParams(lightVisRes.Item2, key);
 
                 switch (lightVisRes.Item2.Light.Type)
@@ -650,7 +649,7 @@ namespace Fusee.Engine.Core
             _rc.Render(_quad);
         }
 
-        private void UpdateLightAndShadowParams(Tuple<SceneNodeContainer, LightResult> lightVisRes, ShaderEffect effect, bool isCastingShadows)
+        private void UpdateLightAndShadowParams(Tuple<SceneNode, LightResult> lightVisRes, ShaderEffect effect, bool isCastingShadows)
         {
             var lightRes = lightVisRes.Item2;
             var light = lightRes.Light;
@@ -691,7 +690,7 @@ namespace Fusee.Engine.Core
 
             if (isCastingShadows) //we don't use light.IsCastingShadows because we could need to skip the shadow calculation because of hardware capabilities.
             {
-                var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+                var shadowParams = _shadowparams[new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light)];
 
                 switch (lightVisRes.Item2.Light.Type)
                 {

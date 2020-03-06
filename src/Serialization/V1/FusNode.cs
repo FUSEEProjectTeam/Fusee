@@ -1,6 +1,8 @@
-﻿using ProtoBuf;
+﻿using Fusee.Xene;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Serialization.V1
 {
@@ -8,7 +10,7 @@ namespace Fusee.Serialization.V1
     /// Nodes are the building blocks for scene graphs within .fus files.
     /// </summary>
     [ProtoContract]
-    public class FusNode
+    public class FusNode : INode
     {
         #region Payload
         /// <summary>
@@ -32,6 +34,16 @@ namespace Fusee.Serialization.V1
 
         #region Scene assembly helpers
         internal FusScene Scene;
+
+        /// <summary>
+        /// Returns all children of this node
+        /// </summary>
+        public IEnumerable<INode> EnumChildren => Children;
+
+        /// <summary>
+        /// Returns all components of this node
+        /// </summary>
+        public IEnumerable<IComponent> EnumComponents => Components.Select(idx => Scene.ComponentList[idx]).ToList();
 
         /// <summary>
         /// Adds a component to this node's list of components. Internally the component is 

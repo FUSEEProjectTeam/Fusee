@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards.Fragment;
+using Animation = Fusee.Xirkit.Animation;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
+    /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and s) in order
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
-    public class SceneRendererForward : SceneVisitor
+    public class SceneRendererForward : Visitor<SceneNode, SceneComponent>
     {
         /// <summary>
         ///Is set to true if a light was added or removed from the scene.
@@ -27,7 +26,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
+        public List<Tuple<SceneNode, LightResult>> LightViseratorResults
         {
             get
             {
@@ -48,16 +47,16 @@ namespace Fusee.Engine.Core
 
         #region Traversal information
 
-        private CanvasTransformComponent _ctc;
+        private CanvasTransform _ctc;
         private MinMaxRect _parentRect;
         private int _numberOfLights;
 
         internal PrePassVisitor PrePassVisitor { get; private set; }
 
         /// <summary>
-        /// Caches SceneNodeContainers and their model matrices. Used when visiting a <see cref="BoneComponent"/>.
+        /// Caches SceneNodes and their model matrices. Used when visiting a <see cref="Bone"/>.
         /// </summary>
-        protected Dictionary<SceneNodeContainer, float4x4> _boneMap;
+        protected Dictionary<SceneNode, float4x4> _boneMap;
 
         /// <summary>
         /// Manages animations.
@@ -65,9 +64,9 @@ namespace Fusee.Engine.Core
         protected Animation _animation;
 
         /// <summary>
-        /// The SceneContainer, containing the scene that gets rendered.
+        /// The Scene, containing the scene that gets rendered.
         /// </summary>
-        protected SceneContainer _sc;
+        protected Scene _sc;
 
         /// <summary>
         /// The RenderContext, used to render the scene.
@@ -82,20 +81,20 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        protected List<Tuple<SceneNodeContainer, LightResult>> _lightResults = new List<Tuple<SceneNodeContainer, LightResult>>();
+        protected List<Tuple<SceneNode, LightResult>> _lightResults = new List<Tuple<SceneNode, LightResult>>();
 
         #endregion
 
         #region Initialization Construction Startup      
 
 
-        private LightComponent _legacyLight;
+        private Light _legacyLight;
 
         private void SetDefaultLight()
         {
             if (_legacyLight == null)
             {
-                _legacyLight = new LightComponent()
+                _legacyLight = new Light()
                 {
                     Active = true,
                     Strength = 1.0f,
@@ -108,7 +107,7 @@ namespace Fusee.Engine.Core
                 };
             }
             // if there is no light in scene then add one (legacyMode)
-            _lightResults.Add(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, new LightResult(_legacyLight)
+            _lightResults.Add(new Tuple<SceneNode, LightResult>(CurrentNode, new LightResult(_legacyLight)
             {
                 Rotation = new float4x4
                 (
@@ -125,8 +124,8 @@ namespace Fusee.Engine.Core
         /// Creates a new instance of type SceneRendererForward.
         /// This scene renderer is used for forward rendering.
         /// </summary>
-        /// <param name="sc">The <see cref="SceneContainer"/> containing the scene that is rendered.</param>
-        public SceneRendererForward(SceneContainer sc)
+        /// <param name="sc">The <see cref="Scene"/> containing the scene that is rendered.</param>
+        public SceneRendererForward(Scene sc)
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
@@ -138,18 +137,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initializes animations, given as <see cref="AnimationComponent"/>.
+        /// Initializes animations, given as <see cref="Animation"/>.
         /// </summary>
-        /// <param name="sc">The SceneContainer, containing the AnimationComponents.</param>
-        public void InitAnimations(SceneContainer sc)
+        /// <param name="sc">The Scene, containing the Animations.</param>
+        public void InitAnimations(Scene sc)
         {
             _animation = new Animation();
 
-            foreach (AnimationComponent ac in sc.Children.FindComponents<AnimationComponent>(c => true))
+            foreach (var a in sc.Children.FindComponents(t => t.GetType() == typeof(Common.Animation)))
             {
+                var ac = (Common.Animation)a;
                 if (ac.AnimationTracks != null)
                 {
-                    foreach (AnimationTrackContainer animTrackContainer in ac.AnimationTracks)
+                    foreach (AnimationTrack animTrackContainer in ac.AnimationTracks)
                     {
                         // Type t = animTrackContainer.TypeId;
                         switch (animTrackContainer.TypeId)
@@ -158,7 +158,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Int:
                                 {
                                     Channel<int> channel = new Channel<int>(Lerp.IntLerp);
-                                    foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyInt key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
                                     }
@@ -170,7 +170,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Float:
                                 {
                                     Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
-                                    foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
                                     }
@@ -183,7 +183,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Float2:
                                 {
                                     Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
-                                    foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat2 key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
                                     }
@@ -211,7 +211,7 @@ namespace Fusee.Engine.Core
                                                 (int)animTrackContainer.LerpType);
                                     }
                                     Channel<float3> channel = new Channel<float3>(lerpFunc);
-                                    foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat3 key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
                                     }
@@ -223,7 +223,7 @@ namespace Fusee.Engine.Core
                             case TypeId.Float4:
                                 {
                                     Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
-                                    foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat4 key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
                                     }
@@ -262,7 +262,7 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
-                _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
+                _boneMap = new Dictionary<SceneNode, float4x4>();
                 _rc.SetShaderEffect(ShaderCodeBuilder.Default);
             }
         }
@@ -301,7 +301,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
+        private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
         {
             var tex = cam.Item2.Camera.RenderTexture;
 
@@ -330,7 +330,7 @@ namespace Fusee.Engine.Core
 
 
         /// <summary>
-        /// Viserates the LightComponent and caches them in a dedicated field.
+        /// Viserates the Light and caches them in a dedicated field.
         /// </summary>
         protected void AccumulateLight()
         {
@@ -347,9 +347,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="bone">The bone.</param>
         [VisitMethod]
-        public void RenderBone(BoneComponent bone)
+        public void RenderBone(Bone bone)
         {
-            SceneNodeContainer boneContainer = CurrentNode;
+            SceneNode boneContainer = CurrentNode;
 
             var trans = boneContainer.GetGlobalTranslation();
             var rot = boneContainer.GetGlobalRotation();
@@ -368,7 +368,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="weight"></param>
         [VisitMethod]
-        public void RenderWeight(WeightComponent weight)
+        public void RenderWeight(Weight weight)
         {
             float4x4[] boneArray = new float4x4[weight.Joints.Count()];
             for (int i = 0; i < weight.Joints.Count(); i++)
@@ -384,9 +384,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Sets the state of the model matrices and UiRects.
         /// </summary>
-        /// <param name="ctc">The CanvasTransformComponent.</param>
+        /// <param name="ctc">The CanvasTransform.</param>
         [VisitMethod]
-        public void RenderCanvasTransform(CanvasTransformComponent ctc)
+        public void RenderCanvasTransform(CanvasTransform ctc)
         {
             _ctc = ctc;
 
@@ -459,11 +459,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a RectTransformComponent is visited the model matrix and MinMaxRect get updated in the <see cref="RendererState"/>.
+        /// If a RectTransform is visited the model matrix and MinMaxRect get updated in the <see cref="RendererState"/>.
         /// </summary>
-        /// <param name="rtc">The XFormComponent.</param>
+        /// <param name="rtc">The XForm.</param>
         [VisitMethod]
-        public void RenderRectTransform(RectTransformComponent rtc)
+        public void RenderRectTransform(RectTransform rtc)
         {
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -496,11 +496,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a XFormComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// If a XForm is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
         /// </summary>
-        /// <param name="xfc">The XFormComponent.</param>
+        /// <param name="xfc">The XForm.</param>
         [VisitMethod]
-        public void RenderXForm(XFormComponent xfc)
+        public void RenderXForm(XForm xfc)
         {
             float4x4 scale;
 
@@ -520,11 +520,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a XFormTextComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// If a XFormText is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
         /// </summary>
-        /// <param name="xfc">The XFormTextComponent.</param>
+        /// <param name="xfc">The XFormText.</param>
         [VisitMethod]
-        public void RenderXFormText(XFormTextComponent xfc)
+        public void RenderXFormText(XFormText xfc)
         {
             var scaleX = 1 / _state.UiRect.Size.x * xfc.TextScaleFactor;
             var scaleY = 1 / _state.UiRect.Size.y * xfc.TextScaleFactor;
@@ -535,46 +535,46 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
+        /// If a Transform is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
         /// It additionally updates the view matrix of the RenderContext.
         /// </summary> 
-        /// <param name="transform">The TransformComponent.</param>
+        /// <param name="transform">The Transform.</param>
         [VisitMethod]
-        public void RenderTransform(TransformComponent transform)
+        public void RenderTransform(Transform transform)
         {
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
         }
 
         /// <summary>
-        /// If a PtOctantComponent is visited the level of this octant is set in the shader.
+        /// If a PtOctant is visited the level of this octant is set in the shader.
         /// </summary>
         /// <param name="ptOctant"></param>
         [VisitMethod]
-        public void RenderPtOctantComponent(PtOctantComponent ptOctant)
+        public void RenderPtOctant(Octant ptOctant)
         {
             _state.Effect.SetEffectParam("OctantLevel", ptOctant.Level);
         }
 
 
         /// <summary>
-        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
+        /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
         /// </summary>
-        /// <param name="shaderComponent">The ShaderEffectComponent</param>
+        /// <param name="shader">The ShaderEffect</param>
         [VisitMethod]
-        public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
+        public void RenderShaderEffect(ShaderEffect shader)
         {
             if (HasNumberOfLightsChanged)
             {
                 //change #define MAX_LIGHTS... or rebuild shader effect?
                 HasNumberOfLightsChanged = false;
             }
-            _state.Effect = shaderComponent.Effect;
+            _state.Effect = shader;
             _rc.SetShaderEffect(_state.Effect);
         }
 
         /// <summary>
-        /// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
+        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set, 
         /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
@@ -583,9 +583,9 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
-            WeightComponent wc = CurrentNode.GetWeights();
+            Weight wc = CurrentNode.GetWeights();
             if (wc != null)
-                AddWeightComponentToMesh(mesh, wc);
+                AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh);
@@ -594,7 +594,7 @@ namespace Fusee.Engine.Core
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
         }
 
-        protected void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
+        protected void AddWeightToMesh(Mesh mesh, Weight wc)
         {
             float4[] boneWeights = new float4[wc.WeightMap.Count];
             float4[] boneIndices = new float4[wc.WeightMap.Count];

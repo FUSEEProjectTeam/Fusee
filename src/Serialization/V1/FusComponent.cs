@@ -1,4 +1,5 @@
 ﻿using System;
+using Fusee.Xene;
 using ProtoBuf;
 
 namespace Fusee.Serialization.V1
@@ -15,8 +16,9 @@ namespace Fusee.Serialization.V1
     [ProtoInclude(104, typeof(FusWeight))]
     [ProtoInclude(105, typeof(FusAnimation))]
     [ProtoInclude(106, typeof(FusBone))]
+    [ProtoInclude(107, typeof(FusCamera))]
 
-    public class FusComponent
+    public class FusComponent : IComponent
     {
         /// <summary>
         /// The name of this component.

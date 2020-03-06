@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -110,7 +110,8 @@ namespace Fusee.Engine.Core
     /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
-    public class ShaderEffect : IDisposable
+    /// TODO (mr): Move to Fusee.Engine.Common
+    public class ShaderEffect : SceneComponent, IDisposable
     {
         /// <summary>
         /// The ShaderEffect'S uniform parameters and their values.

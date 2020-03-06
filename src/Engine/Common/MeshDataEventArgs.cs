@@ -7,24 +7,15 @@ namespace Fusee.Engine.Common
     /// </summary>
     public class MeshDataEventArgs : EventArgs
     {
-        private readonly Mesh _mesh;
-        private readonly MeshChangedEnum _meshChangedEnum;
-
         /// <summary>
         /// The <see cref="Mesh"/> that triggered the event.
         /// </summary>
-        public Mesh Mesh
-        {
-            get { return _mesh; }
-        }
+        public Mesh Mesh { get; }
 
         /// <summary>
         /// Description enum providing details about what property of the Mesh changed.
         /// </summary>
-        public MeshChangedEnum ChangedEnum
-        {
-            get { return _meshChangedEnum; }
-        }
+        public MeshChangedEnum ChangedEnum { get; }
 
         /// <summary>
         /// Constructor takes a Mesh and a description which property of the mesh changed.
@@ -33,8 +24,8 @@ namespace Fusee.Engine.Common
         /// <param name="meshChangedEnum">The <see cref="MeshChangedEnum"/> describing which property of the Mesh changed.</param>
         public MeshDataEventArgs(Mesh mesh, MeshChangedEnum meshChangedEnum)
         {
-            _mesh = mesh;
-            _meshChangedEnum = meshChangedEnum;
+            Mesh = mesh;
+            ChangedEnum = meshChangedEnum;
         }
     }
 }

@@ -2,7 +2,6 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
 {
@@ -189,26 +188,26 @@ namespace Fusee.Engine.GUI
     /// <summary>
     /// Building block to create suitable hierarchies for creating a UI canvas.
     /// </summary>
-    public class CanvasNodeContainer : SceneNodeContainer
+    public class CanvasNode : SceneNode
     {
         /// <summary>
-        /// Creates a SceneNodeContainer with the proper components and children for rendering a canvas.
+        /// Creates a SceneNode with the proper components and children for rendering a canvas.
         /// </summary>
         /// <param name="name">The name of the canvas.</param>
         /// <param name="canvasRenderMode">Choose in which mode you want to render this canvas.</param>
         /// <param name="size">The size of the canvas.</param>
         /// By default Scale in SCREEN mode is set to 0.1.
-        public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size)
+        public CanvasNode(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size)
         {
             Name = name;
-            Components = new List<SceneComponentContainer>
+            Components = new List<SceneComponent>
             {
-                new CanvasTransformComponent(canvasRenderMode)
+                new CanvasTransform(canvasRenderMode)
                 {
                     Name = name + "_CanvasTransform",
                     Size = size
                 },
-                new XFormComponent
+                new XForm
                 {
                     Name =  name + "_Canvas_XForm"
                 }
@@ -220,13 +219,13 @@ namespace Fusee.Engine.GUI
     /// <summary>
     /// Building block to create suitable hierarchies for using textures in the UI.
     /// </summary>
-    public class TextureNodeContainer : SceneNodeContainer
+    public class TextureNode : SceneNode
     {
         /// <summary>
-        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
+        /// Creates a SceneNode with the proper components and children for rendering a nine sliced texture.
         /// By default the border thickness is calculated relative to a unit plane. For a thicker border set the border thickness to the desired value, 2 means a twice as thick border.
         /// </summary>
-        /// <param name="name">Name of the SceneNodeContainer.</param>
+        /// <param name="name">Name of the SceneNode.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
@@ -240,27 +239,25 @@ namespace Fusee.Engine.GUI
         /// <param name="borderThicknessRight">Border thickness for the right border.</param>
         /// <param name="borderThicknessTop">Border thickness for the top border.</param>
         /// <returns></returns>
-        public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
+        public TextureNode(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
         {
             var borderThickness = new float4(borderThicknessLeft, borderThicknessRight, borderThicknessTop,
                 borderThicknessBottom);
             Name = name;
-            Components = new List<SceneComponentContainer>
+            Components = new List<SceneComponent>
             {
-                new RectTransformComponent
+                new RectTransform
                 {
                     Name = name + "_RectTransform",
                     Anchors = anchors,
                     Offsets = offsets
                 },
-                new XFormComponent
+                new XForm
                 {
                     Name = name + "_XForm",
                 },
-                new ShaderEffectComponent
-                {
-                    Effect = new ShaderEffect(new[]
+               new ShaderEffect(new[]
                         {
                             new EffectPassDeclaration
                             {
@@ -296,41 +293,38 @@ namespace Fusee.Engine.GUI
                             new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
-                        })
-                },
+                        }),
                 new NineSlicePlane()
             };
         }
 
         /// <summary>
-        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
+        /// Creates a SceneNode with the proper components and children for rendering a nine sliced texture.
         /// </summary>
-        /// <param name="name">Name of the SceneNodeContainer.</param>
+        /// <param name="name">Name of the SceneNode.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <returns></returns>
-        public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
+        public TextureNode(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets)
         {
             Name = name;
-            Components = new List<SceneComponentContainer>
+            Components = new List<SceneComponent>
             {
-                new RectTransformComponent
+                new RectTransform
                 {
                     Name = name + "_RectTransform",
                     Anchors = anchors,
                     Offsets = offsets
                 },
-                new XFormComponent
+                new XForm
                 {
                     Name = name + "_XForm",
                 },
-                new ShaderEffectComponent
-                {
-                    Effect = new ShaderEffect(new[]
+               new ShaderEffect(new[]
                         {
                             new EffectPassDeclaration
                             {
@@ -357,23 +351,22 @@ namespace Fusee.Engine.GUI
                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                             new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                        })
-                },
+                        }),
                 new Plane()
             };
         }
     }
 
     /// <summary>
-    /// Creates a SceneNodeContainer with the proper components and children for rendering text in the UI.
+    /// Creates a SceneNode with the proper components and children for rendering text in the UI.
     /// </summary>
-    public class TextNodeContainer : SceneNodeContainer
+    public class TextNode : SceneNode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="TextNodeContainer"/> class.
+        /// Initializes a new instance of the <see cref="TextNode"/> class.
         /// </summary>
         /// <param name="text">The text you want to display.</param>
-        /// <param name="name">The name of the SceneNodeContainer.</param>
+        /// <param name="name">The name of the SceneNode.</param>
         /// <param name="vs">The vertex shader you want to use..</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
@@ -381,19 +374,19 @@ namespace Fusee.Engine.GUI
         /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="color">The color.</param>
         /// <param name="textScaleFactor">By default a text has the with of 1 fusee unit. Set this to adapt the text size.</param>
-        public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
+        public TextNode(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
             FontMap fontMap, float4 color, float textScaleFactor = 1)
         {
             Name = name;
-            Components = new List<SceneComponentContainer>
+            Components = new List<SceneComponent>
             {
-                new RectTransformComponent
+                new RectTransform
                 {
                     Name = name + "_RectTransform",
                     Anchors = anchors,
                     Offsets = offsets
                 },
-                new XFormComponent
+                new XForm
                 {
                     Name = name + "_XForm",
                 }
@@ -401,14 +394,12 @@ namespace Fusee.Engine.GUI
 
             Children = new ChildList()
             {
-                new SceneNodeContainer()
+                new SceneNode()
                 {
-                    Components = new List<SceneComponentContainer>()
+                    Components = new List<SceneComponent>()
                     {
-                        new XFormTextComponent(textScaleFactor),
-                        new ShaderEffectComponent
-                        {
-                            Effect = new ShaderEffect(new[]
+                        new XFormText(textScaleFactor),
+                       new ShaderEffect(new[]
                                 {
                                     new EffectPassDeclaration
                                     {
@@ -436,8 +427,7 @@ namespace Fusee.Engine.GUI
                                     new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
                                     new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                                     new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                                })
-                        },
+                                }),
                         new GUIText(fontMap, text)
                         {
                             Name = name + "textMesh"

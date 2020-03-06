@@ -1,6 +1,5 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -364,7 +363,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one. For deferred rendering, this equals the "main" method.
         /// </summary>
-        public static string ApplyLightDeferred(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
+        public static string ApplyLightDeferred(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var methodBody = new List<string>
             {
@@ -584,7 +583,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }, methodBody);
         }
 
-        private static string GetShadow(LightComponent lc, bool isCascaded, int numberOfCascades = 0)
+        private static string GetShadow(Light lc, bool isCascaded, int numberOfCascades = 0)
         {
             var frag = new StringBuilder();
             if (isCascaded)
