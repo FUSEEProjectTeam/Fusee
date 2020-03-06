@@ -23,7 +23,7 @@ namespace Fusee.Examples.Bump.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _scene;
+        private Scene _scene;
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
@@ -49,7 +49,7 @@ namespace Fusee.Examples.Bump.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            _scene = new ConvertSceneGraphV1().Convert(AssetStorage.Get<FusFile>(ModelFile));
 
             //TODO: export the correct material - with bump channel - from blender exporter
             //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here

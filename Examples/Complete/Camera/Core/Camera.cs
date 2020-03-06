@@ -12,29 +12,30 @@ using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
 using System.Threading.Tasks;
 
+
 namespace Fusee.Examples.Camera.Core
 {
     [FuseeApplication(Name = "FUSEE Camera Example", Description = " ")]
-    public class Camera : RenderCanvas
+    public class CameraExample : RenderCanvas
     {
         // angle variables
         private readonly float _rotAngle = M.PiOver4;
         private float3 _rotAxis;
         private float3 _rotPivot;
 
-        private SceneContainer _rocketScene;
+        private Scene _rocketScene;
         private SceneRendererForward _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
-        private SceneContainer _gui;
+        private Scene _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
-        private TransformComponent _mainCamTransform;
-        private TransformComponent _guiCamTransform;
-        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
-        private readonly CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
-        private readonly CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private Transform _mainCamTransform;
+        private Transform _guiCamTransform;
+        private readonly Fusee.Engine.Core.Camera _mainCam = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Core.Camera _guiCam = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Core.Camera _sndCam = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
 
 
@@ -57,7 +58,7 @@ namespace Fusee.Examples.Camera.Core
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             // RC.ClearColor = new float4(1, 1, 1, 1);
 
-            _mainCamTransform = _guiCamTransform = new TransformComponent()
+            _mainCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 2, -10),
@@ -68,10 +69,10 @@ namespace Fusee.Examples.Camera.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            var cam = new SceneNodeContainer()
+            var cam = new SceneNode()
             {
                 Name = "MainCam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
                     _mainCamTransform,
                     _mainCam,
@@ -79,11 +80,11 @@ namespace Fusee.Examples.Camera.Core
                 },
                 Children = new ChildList()
                 {
-                    new SceneNodeContainer()
+                    new SceneNode()
                     {
-                        Components = new List<SceneComponentContainer>()
+                        Components = new List<SceneComponent>()
                         {
-                            new TransformComponent()
+                            new Transform()
                             {
                                 Scale = new float3(3.03f, 3.03f, 2f),
                                 Translation = new float3(0,0,-1.4f)
@@ -94,12 +95,12 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            var cam1 = new SceneNodeContainer()
+            var cam1 = new SceneNode()
             {
                 Name = "SecondCam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
-                    new TransformComponent()
+                    new Transform()
                     {
                         Rotation = new float3(0, 0, 0),//float3.Zero,
                         Translation = new float3(0, 2, -20),
@@ -110,7 +111,7 @@ namespace Fusee.Examples.Camera.Core
             };
 
             // Load the rocket model            
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            _rocketScene = new ConvertSceneGraphV1().Convert(AssetStorage.Get<FusFile>("FUSEERocket.fus"));
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
@@ -120,7 +121,7 @@ namespace Fusee.Examples.Camera.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
-            _rotPivot = _rocketScene.Children[1].GetComponent<TransformComponent>().Translation;
+            _rotPivot = _rocketScene.Children[1].GetComponent<Transform>().Translation;
 
             return true;
         }
@@ -129,7 +130,7 @@ namespace Fusee.Examples.Camera.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            _mainCamTransform.RotateAround(_rotPivot, _rotAxis, _rotAngle * DeltaTime * 5);
+            _mainCamTransform.RotateAround(_rotPivot, /*, (mr)*/ _rotAxis * _rotAngle * DeltaTime * 5);
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -143,7 +144,7 @@ namespace Fusee.Examples.Camera.Core
             Present();
         }
 
-        private SceneContainer CreateGui()
+        private Scene CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -160,7 +161,7 @@ namespace Fusee.Examples.Camera.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -177,7 +178,7 @@ namespace Fusee.Examples.Camera.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
@@ -187,7 +188,7 @@ namespace Fusee.Examples.Camera.Core
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -204,19 +205,19 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            var cam = new SceneNodeContainer()
+            var cam = new SceneNode()
             {
                 Name = "GUICam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
                     _guiCamTransform,
                     _guiCam
                 }
             };
 
-            return new SceneContainer
+            return new Scene
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     cam,
                     //Add canvas.
@@ -227,12 +228,12 @@ namespace Fusee.Examples.Camera.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

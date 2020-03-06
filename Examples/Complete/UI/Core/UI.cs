@@ -23,7 +23,7 @@ namespace Fusee.Examples.UI.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _scene;
+        private Scene _scene;
         private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
@@ -50,7 +50,7 @@ namespace Fusee.Examples.UI.Core
         private float fov = M.PiOver4;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
-        private SceneContainer CreateNineSliceScene()
+        private Scene CreateNineSliceScene()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -66,7 +66,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor = canvasScaleFactor;
             }
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "Hallo !",
                 "ButtonText",
                 vsTex,
@@ -80,7 +80,7 @@ namespace Fusee.Examples.UI.Core
                 _fontMap,
                 ColorUint.Tofloat4(ColorUint.Greenery), textSize);
 
-            var catTextureNode = new TextureNodeContainer(
+            var catTextureNode = new TextureNode(
                 "Cat",
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
@@ -106,7 +106,7 @@ namespace Fusee.Examples.UI.Core
             { Children = new ChildList() { text } };
             catTextureNode.Components.Add(_btnCat);
 
-            var bltTextureNode = new TextureNodeContainer(
+            var bltTextureNode = new TextureNode(
                 "Blt",
                 vsTex,
                 psTex,
@@ -122,7 +122,7 @@ namespace Fusee.Examples.UI.Core
                 //Max: distance to this elements Max anchor.
                 UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
 
-            var quagganTextureNode1 = new TextureNodeContainer(
+            var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
@@ -137,7 +137,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var nineSliceTextureNode = new TextureNodeContainer(
+            var nineSliceTextureNode = new TextureNode(
                 "testImage",
                 vsNineSlice,
                 psNineSlice,
@@ -154,7 +154,7 @@ namespace Fusee.Examples.UI.Core
             )
             { Children = new ChildList() { text, quagganTextureNode1 } };
 
-            var quagganTextureNode = new TextureNodeContainer(
+            var quagganTextureNode = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -168,7 +168,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode2 = new TextureNodeContainer(
+            var quagganTextureNode2 = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -182,7 +182,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode3 = new TextureNodeContainer(
+            var quagganTextureNode3 = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -196,7 +196,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -218,21 +218,18 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = new ShaderEffectComponent
-            {
-                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            var canvasMat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
                 {
-                    Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
-                })
-            };
+                    Diffuse = new MatChannel { Color = new float4(1, 0, 0, 1) },
+                });
             
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
-            return new SceneContainer
+            return new Scene
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -255,23 +252,25 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
             {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
+                Diffuse = new MatChannel { Color = new float4(1, 0.4f, 0.1f, 1) },
             });
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
-                .Effect = color;
+            var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
+            n.RemoveComponent<ShaderEffect>();
+            n.AddComponent(color);
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
             {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
+                Diffuse = new MatChannel { Color = new float4(1, 0, 0, 1) },
             });
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
-                .Effect = color;
+            var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
+            n.RemoveComponent<ShaderEffect>();
+            n.AddComponent(color);
         }
 
         public void OnBtnCatDown(CodeComponent sender)

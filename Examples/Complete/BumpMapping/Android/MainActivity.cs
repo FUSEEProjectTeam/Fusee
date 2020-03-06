@@ -56,12 +56,12 @@ namespace Fusee.Examples.Bump.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(SceneContainer),
+                        ReturnedType = typeof(FusFile),
                         Decoder = delegate (string id, object storage)
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return Serializer.DeserializeSceneContainer((Stream)storage);
+                                return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },

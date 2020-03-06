@@ -34,18 +34,18 @@ namespace Fusee.Examples.Camera.Desktop
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(SceneContainer),
+                    ReturnedType = typeof(FusFile),
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        return Serializer.DeserializeSceneContainer((Stream)storage);
+                        return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.Camera();
+            var app = new Core.CameraExample();
             
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

@@ -34,8 +34,8 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private bool _twoTouchRepeated;
 
-        private SceneNodeContainer _parentNode;
-        private SceneContainer _scene;
+        private SceneNode _parentNode;
+        private Scene _scene;
         private SceneRendererForward _renderer;
 
         private Dictionary<int, Geometry> _activeGeometrys;
@@ -48,7 +48,7 @@ namespace Fusee.Examples.GeometryEditing.Core
         private ScenePicker _scenePicker;
         private PickResult _currentPick;
 
-        private SceneNodeContainer _selectedNode;
+        private SceneNode _selectedNode;
         private bool _isTranslating;
         private bool _isScaling;
 
@@ -56,13 +56,13 @@ namespace Fusee.Examples.GeometryEditing.Core
         public override async Task<bool> Init()
         {
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            _parentNode = new SceneNodeContainer
+            _parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -71,7 +71,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             _parentNode.Components.Add(parentTrans);
 
 
-            _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };           
+            _scene = new Scene { Children = new List<SceneNode> { _parentNode } };           
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -109,16 +109,16 @@ namespace Fusee.Examples.GeometryEditing.Core
             Present();
         }
 
-        private void SelectGeometry(SceneNodeContainer selectedNode)
+        private void SelectGeometry(SceneNode selectedNode)
         {
             if (selectedNode != _selectedNode && selectedNode != null)
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetMaterial().Diffuse.Color = _defaultColor;
+                    _selectedNode.GetComponent<Material>().Diffuse.Color = _defaultColor;
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetMaterial().Diffuse.Color = _selectedColor;
+                _selectedNode.GetComponent<Material>().Diffuse.Color = _selectedColor;
             }
         }
 
@@ -380,7 +380,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             newGeo.Triangulate();
             var geometryMesh = new JometriMesh(newGeo);
 
-            var sceneNodeContainer = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeContainer = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshComponent = new Mesh
             {
@@ -388,16 +388,16 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Triangles = geometryMesh.Triangles,
                 Normals = geometryMesh.Normals,
             };
-            var translationComponent = new TransformComponent
+            var translationComponent = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var materialComponent = new MaterialComponent
+            var materialComponent = new Material
             {
-                Diffuse = new MatChannelContainer(),
-                Specular = new SpecularChannelContainer(),
+                Diffuse = new MatChannel(),
+                Specular = new SpecularChannel(),
             };
             materialComponent.Diffuse.Color = _defaultColor;
             sceneNodeContainer.Components.Add(translationComponent);

@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Serialization.V1;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ namespace Fusee.Examples.Picking.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _scene;
+        private Scene _scene;
         private SceneRendererForward _sceneRenderer;
         private ScenePicker _scenePicker;
 
@@ -33,9 +34,9 @@ namespace Fusee.Examples.Picking.Core
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
-        private SceneContainer _gui;
+        private Scene _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly Engine.Common.CanvasRenderMode _canvasRenderMode = Engine.Common.CanvasRenderMode.SCREEN;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -143,13 +144,13 @@ namespace Fusee.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-                        var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        var ef = _currentPick.Node.GetComponent<ShaderEffect>();
                         ef.SetEffectParam("DiffuseColor", _oldColor);
                     }
 
                     if (newPick != null)
                     {
-                        var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        var ef = newPick.Node.GetComponent<ShaderEffect>();
                         _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed
                         ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
@@ -189,7 +190,7 @@ namespace Fusee.Examples.Picking.Core
             throw new NotImplementedException();
         }
 
-        private SceneContainer CreateGui()
+        private Scene CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -203,7 +204,7 @@ namespace Fusee.Examples.Picking.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -220,7 +221,7 @@ namespace Fusee.Examples.Picking.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Picking Example",
                 "ButtonText",
                 vsTex,
@@ -230,7 +231,7 @@ namespace Fusee.Examples.Picking.Core
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -242,9 +243,9 @@ namespace Fusee.Examples.Picking.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
 
-            return new SceneContainer
+            return new Scene
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -254,12 +255,12 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)
@@ -267,109 +268,118 @@ namespace Fusee.Examples.Picking.Core
             OpenLink("http://fusee3d.org");
         }
 
-        private SceneContainer CreateScene()
+        // TODO: rewrite
+
+        private Scene CreateScene()
+        { var scene = new FusFile
         {
-            return new ConvertSceneGraph().Convert(new SceneContainer
+            Header = new FusHeader
             {
-                Header = new SceneHeader
-                {
-                    CreationDate = "April 2017",
-                    CreatedBy = "mch@hs-furtwangen.de",
-                    Generator = "Handcoded with pride",
-                    Version = 42,
-                },
-                Children = new List<SceneNodeContainer>
-                {
-                    new SceneNodeContainer
-                    {
-                        Name = "Base",
-                        Components = new List<SceneComponentContainer>
-                        {
-                            new TransformComponent { Scale = float3.One },
-                           new MaterialComponent
-                           {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
-                                Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                            },
-                            CreateCuboid(new float3(100, 20, 100))
-                        },
-                        Children = new ChildList
-                        {
-                            new SceneNodeContainer
-                            {
-                                Name = "Arm01",
-                                Components = new List<SceneComponentContainer>
-                                {
-                                    new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   new MaterialComponent
-                                    {
-                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
-                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                    },
-                                    CreateCuboid(new float3(20, 100, 20))
-                                },
-                                Children = new ChildList
-                                {
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Arm02Rot",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new TransformComponent {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
-                                        },
-                                        Children = new ChildList
-                                        {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Arm02",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    new MaterialComponent
-                                                    {
-                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
-                                                        Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                    },
-                                                    CreateCuboid(new float3(20, 100, 20))
-                                                },
-                                                Children = new ChildList
-                                                {
-                                                    new SceneNodeContainer
-                                                    {
-                                                        Name = "Arm03Rot",
-                                                        Components = new List<SceneComponentContainer>
-                                                        {
-                                                            new TransformComponent {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
-                                                        },
-                                                        Children = new ChildList
-                                                        {
-                                                            new SceneNodeContainer
-                                                            {
-                                                                Name = "Arm03",
-                                                                Components = new List<SceneComponentContainer>
-                                                                {
-                                                                    new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    new MaterialComponent
-                                                                    {
-                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
-                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                                    },
-                                                                    CreateCuboid(new float3(20, 100, 20))
-                                                                }
-                                                            },
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                        }
-                                    }
-                                }
-                            },
-                        }
-                    },
-                }
-            });
-        }
+                CreationDate = "April 2017",
+                CreatedBy = "mch@hs-furtwangen.de",
+                Generator = "Handcoded with pride"
+            }
+        };
+
+            //var scene = new FusScene();
+            //scene.AddNode()
+
+            return new ConvertSceneGraphV1().Convert(scene);
+
+
+            //Children = new List<SceneNodeContainer>
+            //    {
+            //        new SceneNodeContainer
+            //        {
+            //            Name = "Base",
+            //            Components = new List<SceneComponentContainer>
+            //            {
+            //                new TransformComponent { Scale = float3.One },
+            //               new MaterialComponent
+            //               {
+            //                    Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
+            //                    Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+            //                },
+            //                CreateCuboid(new float3(100, 20, 100))
+            //            },
+            //            Children = new ChildList
+            //            {
+            //                new SceneNodeContainer
+            //                {
+            //                    Name = "Arm01",
+            //                    Components = new List<SceneComponentContainer>
+            //                    {
+            //                        new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
+            //                       new MaterialComponent
+            //                        {
+            //                            Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
+            //                            Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+            //                        },
+            //                        CreateCuboid(new float3(20, 100, 20))
+            //                    },
+            //                    Children = new ChildList
+            //                    {
+            //                        new SceneNodeContainer
+            //                        {
+            //                            Name = "Arm02Rot",
+            //                            Components = new List<SceneComponentContainer>
+            //                            {
+            //                                new TransformComponent {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
+            //                            },
+            //                            Children = new ChildList
+            //                            {
+            //                                new SceneNodeContainer
+            //                                {
+            //                                    Name = "Arm02",
+            //                                    Components = new List<SceneComponentContainer>
+            //                                    {
+            //                                        new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
+            //                                        new MaterialComponent
+            //                                        {
+            //                                            Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
+            //                                            Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+            //                                        },
+            //                                        CreateCuboid(new float3(20, 100, 20))
+            //                                    },
+            //                                    Children = new ChildList
+            //                                    {
+            //                                        new SceneNodeContainer
+            //                                        {
+            //                                            Name = "Arm03Rot",
+            //                                            Components = new List<SceneComponentContainer>
+            //                                            {
+            //                                                new TransformComponent {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
+            //                                            },
+            //                                            Children = new ChildList
+            //                                            {
+            //                                                new SceneNodeContainer
+            //                                                {
+            //                                                    Name = "Arm03",
+            //                                                    Components = new List<SceneComponentContainer>
+            //                                                    {
+            //                                                        new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
+            //                                                        new MaterialComponent
+            //                                                        {
+            //                                                            Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
+            //                                                            Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+            //                                                        },
+            //                                                        CreateCuboid(new float3(20, 100, 20))
+            //                                                    }
+            //                                                },
+            //                                            }
+            //                                        }
+            //                                    }
+            //                                },
+            //                            }
+            //                        }
+            //                    }
+            //                },
+            //            }
+            //        },
+            //    }
+            
+            }
+        
 
         public static Mesh CreateCuboid(float3 size)
         {

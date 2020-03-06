@@ -194,7 +194,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
 
-                        return new Fusee.Engine.Core.ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        return new Fusee.Engine.Core.ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

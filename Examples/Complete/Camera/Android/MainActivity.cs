@@ -55,12 +55,12 @@ namespace Fusee.Examples.Camera.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(SceneContainer),
+                        ReturnedType = typeof(FusFile),
                         Decoder = delegate (string id, object storage)
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                                return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },
@@ -71,7 +71,7 @@ namespace Fusee.Examples.Camera.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Camera();
+                var app = new Core.CameraExample();
 
 		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
 		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
