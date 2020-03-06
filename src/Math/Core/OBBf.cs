@@ -1,5 +1,8 @@
 ﻿using ProtoBuf;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Fusee.Math.Core
 {
@@ -46,33 +49,27 @@ namespace Fusee.Math.Core
         public float3 EulerRotation => float4x4.RotMatToEuler(Rotation);
 
         /// <summary>
-        /// Create a new axis aligned bounding box
-        /// </summary>
-        /// <param name="min_">the minimum x y and z values</param>
-        /// <param name="max_">the maximum x y and z values</param>
-        /// <param name="rotation_">the rotation of this box</param>
-        /// <param name="translation_">the translation of this box</param>
-        /// <param name="size_">the size of this box</param>
-        public OBBf(float3 min_, float3 max_, float4x4 rotation_, float3 translation_, float3 size_)
-        {
-            Min = min_;
-            Max = max_;
-            Size = size_;
-            Rotation = rotation_;
-            Translation = translation_;
-        }
-
-        /// <summary>
-        /// Generates a new oriented bounding box for a given set of vertices or points.
+        ///     Generates a new  oriented bounding box from a given set of vertices or points
         /// </summary>
         /// <param name="vertices">The vertices, e.g. from a mesh.</param>
         public OBBf(float3[] vertices)
         {
+            var verticesList = vertices.ToList();
+            if (verticesList.Any(pt => pt.IsInfinity) || verticesList.Any(pt => pt.IsNaN))
+            {
+                Max = float3.PositiveInfinity;
+                Min = float3.NegativeInfinity;
+                Rotation = float4x4.Identity;
+                Translation = float3.Zero;
+                Size = float3.Zero;
+                return;
+            }
+
             Translation = M.CalculateCentroid(vertices);
             var covarianceMatrix = M.CreateCovarianceMatrix(Translation, vertices);
             var eigen = M.EigenFromCovarianceMat(covarianceMatrix);
 
-            Rotation = eigen.Vectors;
+            Rotation = eigen.RotationMatrix;
 
             var changeBasis = Rotation.Invert();
 
@@ -100,11 +97,10 @@ namespace Fusee.Math.Core
                    Max.z < pt.z ? pt.z : Max.z);
             }
 
-            // Get size of box before translating back
-            Size = Max - Min;
-
             Max = (Rotation * Max) + Translation;
             Min = (Rotation * Min) + Translation;
+
+            Size = Max - Min;
         }
     }
 }
