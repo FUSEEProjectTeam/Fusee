@@ -73,7 +73,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Returns the barycentric tiangel coordinates.
+        /// Returns the barycentric triangle coordinates.
         /// </summary>
         public float3 TriangleBarycentric
         {
@@ -307,12 +307,12 @@ namespace Fusee.Engine.Core
                 frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
                 frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
                 frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
-                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
+                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr
 
                 for (int i = 0; i < frustumCorners.Length; i++)
                 {
                     var corner = frustumCorners[i];
-                    corner /= corner.w; //world space frustum corners               
+                    corner /= corner.w; //world space frustum corners
                     frustumCorners[i] = corner;
                 }
 

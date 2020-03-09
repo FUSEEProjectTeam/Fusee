@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
@@ -23,6 +22,12 @@ namespace Fusee.Engine.Core
         ///Is set to true if a light was added or removed from the scene.
         /// /// </summary>
         protected bool HasNumberOfLightsChanged;
+
+        /// <summary>
+        /// Enables or disables Frustum Culling.
+        /// If we render with one or more cameras this value will be overwritten by <see cref="CameraComponent.FrustumCullingOn"/>.
+        /// </summary>
+        public bool DoFrumstumCulling = true;
 
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
@@ -288,9 +293,12 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam);
-                        //Reset Viewport in case we have another scene, rendered without a camera 
+                        //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                        //Standard value: frustum culling is on.
+                        DoFrumstumCulling = true;
                     }
                 }
             }
@@ -327,7 +335,6 @@ namespace Fusee.Engine.Core
 
             Traverse(_sc.Children);
         }
-
 
         /// <summary>
         /// Viserates the LightComponent and caches them in a dedicated field.
@@ -665,6 +672,17 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
+
+            if (DoFrumstumCulling)
+            {
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
+                        return;
+                }
+            }
 
             WeightComponent wc = CurrentNode.GetWeights();
             if (wc != null)

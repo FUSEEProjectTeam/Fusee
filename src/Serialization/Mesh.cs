@@ -5,16 +5,16 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     /// <summary>
-    /// Provides the ability to create or interact directly with the point data.
+    /// Allows creating or modifying geometry. 
+    /// A mesh contains vertex data in the form of positions, normals, texture coordinates and face data as an array of triangles.
     /// </summary>
-
     [ProtoContract]
     public class Mesh : SceneComponentContainer, IDisposable
     {
         #region Fields
 
         #region RenderContext Asset Management
-        // Event of mesh Data changes
+
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
         /// </summary>
@@ -53,7 +53,7 @@ namespace Fusee.Serialization
         /// <value>
         ///   <c>true</c> if vertices are set; otherwise, <c>false</c>.
         /// </value>
-        public bool VerticesSet { get { return (_vertices!= null) && _vertices.Length > 0; } }
+        public bool VerticesSet { get { return (_vertices != null) && _vertices.Length > 0; } }
 
         /// <summary>
         /// Gets a value indicating whether tangents are set.
@@ -85,21 +85,18 @@ namespace Fusee.Serialization
             set
             {
                 _colors = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether a color is set.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if a colore is set; otherwise, <c>false</c>.
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet { get { return (_colors != null) && _colors.Length > 0; } }
-        
+
         private float3[] _normals;
         /// <summary>
         /// Gets and sets the normals.
@@ -114,13 +111,10 @@ namespace Fusee.Serialization
             set
             {
                 _normals = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Normals));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Normals));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether normals are set.
         /// </summary>
@@ -128,7 +122,7 @@ namespace Fusee.Serialization
         ///   <c>true</c> if normals are set; otherwise, <c>false</c>.
         /// </value>
         public bool NormalsSet { get { return (_normals != null) && _normals.Length > 0; } }
-        
+
         private float2[] _uvs;
         /// <summary>
         /// Gets and sets the UV-coordinates.
@@ -143,13 +137,10 @@ namespace Fusee.Serialization
             set
             {
                 _uvs = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Uvs));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Uvs));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether UVs are set.
         /// </summary>
@@ -160,10 +151,10 @@ namespace Fusee.Serialization
 
         private float4[] _boneWeights;
         /// <summary>
-        /// Gets and sets the boneweights.
+        /// Gets and sets the bone weights.
         /// </summary>
         /// <value>
-        /// The boneweights.
+        /// The bone weights.
         /// </value>
         [ProtoMember(5)]
         public float4[] BoneWeights
@@ -172,27 +163,23 @@ namespace Fusee.Serialization
             set
             {
                 _boneWeights = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneWeights));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneWeights));
             }
         }
         /// <summary>
-        /// Gets a value indicating whether boneweights are set.
+        /// Gets a value indicating whether bone weights are set.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if boneweights are set; otherwise, <c>false</c>.
+        /// <c>true</c> if bone weights are set; otherwise, <c>false</c>.
         /// </value>
         public bool BoneWeightsSet { get { return (_boneWeights != null) && _boneWeights.Length > 0; } }
 
         private float4[] _boneIndices;
         /// <summary>
-        /// Gets and sets the boneindices.
+        /// Gets and sets the bone indices.
         /// </summary>
         /// <value>
-        /// The boneindices.
+        /// The bone indices.
         /// </value>
         [ProtoMember(6)]
         public float4[] BoneIndices
@@ -201,18 +188,14 @@ namespace Fusee.Serialization
             set
             {
                 _boneIndices = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneIndices));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BoneIndices));
             }
         }
         /// <summary>
-        /// Gets a value indicating whether boneindices are set.
+        /// Gets a value indicating whether bone indices are set.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if boneindices are set; otherwise, <c>false</c>.
+        ///   <c>true</c> if bone indices are set; otherwise, <c>false</c>.
         /// </value>
         public bool BoneIndicesSet { get { return (_boneIndices != null) && _boneIndices.Length > 0; } }
 
@@ -230,16 +213,10 @@ namespace Fusee.Serialization
             set
             {
                 _triangles = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
             }
-
-
         }
-        
+
         /// <summary>
         /// Gets a value indicating whether triangles are set.
         /// </summary>
@@ -249,7 +226,8 @@ namespace Fusee.Serialization
         public bool TrianglesSet { get { return (_triangles != null) && _triangles.Length > 0; } }
 
         /// <summary>
-        /// The bounding box of this geometry chunk.
+        /// The (model space) bounding box of this geometry.
+        /// Note: needs to be calculated in order to enable frustum culling for this mesh. 
         /// </summary>
         [ProtoMember(8)]
         public AABBf BoundingBox;
@@ -265,11 +243,7 @@ namespace Fusee.Serialization
             set
             {
                 _tangents = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Tangents));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Tangents));
             }
         }
 
@@ -283,26 +257,20 @@ namespace Fusee.Serialization
             set
             {
                 _biTangents = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BiTangents));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.BiTangents));
             }
         }
 
         /// <summary>
-        /// If set to true the mesh will be renderd and pickable.
+        /// If set to true the mesh will be rendered and pickable.
         /// </summary>
         public bool Active = true;
-
 
         /// <summary>
         /// The mesh type.
         /// </summary>
         [ProtoMember(11)]
         public int MeshType = 0;
-     
 
         #endregion
 
@@ -327,7 +295,7 @@ namespace Fusee.Serialization
             if (disposed)
                 return;
 
-           if (disposing)            
+            if (disposing)
                 MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
 
             disposed = true;

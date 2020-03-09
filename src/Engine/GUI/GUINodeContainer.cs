@@ -359,7 +359,7 @@ namespace Fusee.Engine.GUI
                             new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                         })
                 },
-                new Plane()
+                new Core.Plane()
             };
         }
     }
