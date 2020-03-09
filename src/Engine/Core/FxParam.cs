@@ -1,8 +1,9 @@
 ﻿using Fusee.Engine.Common;
+using System;
 
 namespace Fusee.Engine.Core
 {
-    internal sealed class EffectParam
+    internal sealed class FxParam
     {
         public ShaderParamInfo Info;
 

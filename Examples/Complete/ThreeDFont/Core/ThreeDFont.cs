@@ -138,7 +138,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             _renderer = new SceneRendererForward(sc);
 
             var shaderFx = new ShaderEffect(new[] {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     PS = AssetStorage.Get<string>("FragShader.frag"),
                     VS = AssetStorage.Get<string>("VertShader.vert"),
@@ -148,9 +148,9 @@ namespace Fusee.Examples.ThreeDFont.Core
                     }
                 }
             },
-            new List<EffectParameterDeclaration>
+            new List<IFxParamDeclaration>
             {
-                new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
+                new FxParamDeclaration<float4x4> { Name = "xform", Value = float4x4.Identity}
             });
 
             RC.SetShaderEffect(shaderFx);

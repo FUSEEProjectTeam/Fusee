@@ -992,7 +992,7 @@ namespace Fusee.Engine.Core
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
-                compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
+                compiledEffect.ParamsPerPass.Add(new Dictionary<string, FxParam>());
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
             foreach (var param in activeUniforms)
@@ -1003,7 +1003,7 @@ namespace Fusee.Engine.Core
                     continue;
                 }
 
-                var effectParam = new EffectParam()
+                var effectParam = new FxParam()
                 {
                     Info = param.Value
                 };
@@ -1057,7 +1057,7 @@ namespace Fusee.Engine.Core
 
             //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
             //Because of this we do not need to take about which passes this effect belongs to.
-            if (compiledEffect.Parameters.TryGetValue(name, out EffectParam effectParam))
+            if (compiledEffect.Parameters.TryGetValue(name, out FxParam effectParam))
             {
                 effectParam.Value = paramValue;
                 effectParam.HasValueChanged = true;
@@ -1097,7 +1097,7 @@ namespace Fusee.Engine.Core
         /// Sets the shaderParam, works with every type.
         /// </summary>
         /// <param name="param"></param>
-        private void SetShaderParamT(EffectParam param)
+        private void SetShaderParamT(FxParam param)
         {
             if (param.HasValueChanged)
             {
@@ -1433,7 +1433,7 @@ namespace Fusee.Engine.Core
                         if (GlobalFXParams.TryGetValue(paramItem.Key, out object globalFXValue))
                         {
                             if (!currentValue.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
-                                _currentShaderEffect.SetEffectParam(paramItem.Key, globalFXValue);
+                                _currentShaderEffect.SetFxParam(paramItem.Key, globalFXValue);
                         }
 
                         var param = compiledShaderEffect.ParamsPerPass[i][paramItem.Key];

@@ -262,7 +262,7 @@ namespace Fusee.Engine.GUI
                 {
                     Effect = new ShaderEffect(new[]
                         {
-                            new EffectPassDeclaration
+                            new FxPassDeclaration
                             {
                                 VS = vs,
                                 PS = ps,
@@ -276,26 +276,26 @@ namespace Fusee.Engine.GUI
                                 }
                             }
                         },
-                        new[]
+                        new IFxParamDeclaration[]
                         {
-                            new EffectParameterDeclaration
+                            new FxParamDeclaration<Texture>
                             {
                                 Name = "DiffuseTexture",
                                 Value = tex
                             },
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                            new EffectParameterDeclaration {Name = "Tile", Value = tiles},
-                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                            new EffectParameterDeclaration
+                            new FxParamDeclaration<float4> {Name = "DiffuseColor", Value = float4.One},
+                            new FxParamDeclaration<float2> {Name = "Tile", Value = tiles},
+                            new FxParamDeclaration<float> {Name = "DiffuseMix", Value = 1f},
+                            new FxParamDeclaration<float4>
                             {
                                 Name = "borders",
                                 Value = borders
                             },
-                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
-                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
+                            new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
+                            new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = "FUSEE_M", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity}
                         })
                 },
                 new NineSlicePlane()
@@ -332,7 +332,7 @@ namespace Fusee.Engine.GUI
                 {
                     Effect = new ShaderEffect(new[]
                         {
-                            new EffectPassDeclaration
+                            new FxPassDeclaration
                             {
                                 VS = vs,
                                 PS = ps,
@@ -346,17 +346,17 @@ namespace Fusee.Engine.GUI
                                 }
                             }
                         },
-                        new[]
+                        new IFxParamDeclaration[]
                         {
-                            new EffectParameterDeclaration
+                            new FxParamDeclaration<Texture>
                             {
                                 Name = "DiffuseTexture",
                                 Value = tex
                             },
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4> {Name = "DiffuseColor", Value = float4.One},
+                            new FxParamDeclaration<float> {Name = "DiffuseMix", Value = 1f},
+                            new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
                         })
                 },
                 new Plane()
@@ -410,7 +410,7 @@ namespace Fusee.Engine.GUI
                         {
                             Effect = new ShaderEffect(new[]
                                 {
-                                    new EffectPassDeclaration
+                                    new FxPassDeclaration
                                     {
                                         VS = vs,
                                         PS = ps,
@@ -424,18 +424,20 @@ namespace Fusee.Engine.GUI
                                         }
                                     }
                                 },
-                                new[]
+                                new IFxParamDeclaration[]
                                 {
-                                    new EffectParameterDeclaration
+                                    new FxParamDeclaration<Texture>
                                     {
                                         Name = "DiffuseTexture",
                                         Value = new Texture(fontMap.Image)
                                     },
-                                    new EffectParameterDeclaration
-                                        {Name = "DiffuseColor", Value = color},
-                                    new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
-                                    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                    new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4>
+                                    {
+                                        Name = "DiffuseColor", Value = color
+                                    },
+                                    new FxParamDeclaration<float> {Name = "DiffuseMix", Value = 0.0f},
+                                    new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
                                 })
                         },
                         new GUIText(fontMap, text)

@@ -144,14 +144,14 @@ namespace Fusee.Examples.Picking.Core
                     if (_currentPick != null)
                     {
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        ef.SetEffectParam("DiffuseColor", _oldColor);
+                        ef.SetFxParam("DiffuseColor", _oldColor);
                     }
 
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed
-                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
+                        _oldColor = ef.GetFxParam<float4>("DiffuseColor"); // cast needed
+                        ef.SetFxParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
@@ -254,12 +254,12 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

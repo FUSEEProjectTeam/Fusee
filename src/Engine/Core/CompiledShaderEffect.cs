@@ -15,14 +15,14 @@ namespace Fusee.Engine.Core
         internal ShaderProgram[] ShaderPrograms;
 
         /// <summary>
-        /// All parameters (as references), saved per pass. See <see cref="EffectParam"/> on the parameter infos that are saved.
+        /// All parameters (as references), saved per pass. See <see cref="FxParam"/> on the parameter infos that are saved.
         /// </summary>
-        internal List<Dictionary<string, EffectParam>> ParamsPerPass = new List<Dictionary<string, EffectParam>>();
+        internal List<Dictionary<string, FxParam>> ParamsPerPass = new List<Dictionary<string, FxParam>>();
 
         /// <summary>
-        /// The shader parameters of all passes. See <see cref="EffectParam"/> on the parameter infos that are saved.
+        /// The shader parameters of all passes. See <see cref="FxParam"/> on the parameter infos that are saved.
         /// </summary>
-        internal Dictionary<string, EffectParam> Parameters = new Dictionary<string, EffectParam>();
+        internal Dictionary<string, FxParam> Parameters = new Dictionary<string, FxParam>();
 
     }
 }

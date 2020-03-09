@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
             //TODO: #define constants to uniforms
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
                     PS = AssetStorage.Get<string>("FXAA.frag"),
@@ -47,10 +47,10 @@ namespace Fusee.Engine.Core
                     }
                 }
             },
-            new[]
+            new IFxParamDeclaration[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
+                new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
+                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
             });
 
         }
@@ -78,7 +78,7 @@ namespace Fusee.Engine.Core
 
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
                     PS = ps,
@@ -89,16 +89,16 @@ namespace Fusee.Engine.Core
                     }
                 }
             },
-            new[]
+            new IFxParamDeclaration[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
 
-                new EffectParameterDeclaration {Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
-                new EffectParameterDeclaration {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
-                new EffectParameterDeclaration {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
-                new EffectParameterDeclaration {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
+                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
+                new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
+                new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
+                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
             });
 
         }
@@ -135,7 +135,7 @@ namespace Fusee.Engine.Core
 
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
                     PS = frag,
@@ -146,9 +146,9 @@ namespace Fusee.Engine.Core
                     }
                 }
             },
-            new[]
+            new IFxParamDeclaration[]
             {
-                new EffectParameterDeclaration { Name = "InputTex", Value = ssaoRenderTex},
+                new FxParamDeclaration<WritableTexture> { Name = "InputTex", Value = ssaoRenderTex},
 
             });
 
@@ -170,16 +170,16 @@ namespace Fusee.Engine.Core
             {
                 if (lc.Type != LightType.Point)
                 {
-                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
-                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
+                    effectParams.Add(new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
+                    effectParams.Add(new FxParamDeclaration<WritableTexture> { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
                 }
                 else
-                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
+                    effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
             }
 
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
                     PS = CreateDeferredLightingPixelShader(lc),
@@ -211,13 +211,13 @@ namespace Fusee.Engine.Core
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
-            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
-            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
-            effectParams.Add(new EffectParameterDeclaration { Name = "ClipPlanes[0]", Value = clipPlanes });
+            effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
+            effectParams.Add(new FxParamDeclaration<WritableTexture[]> { Name = "ShadowMaps[0]", Value = shadowMaps });
+            effectParams.Add(new FxParamDeclaration<float2[]> { Name = "ClipPlanes[0]", Value = clipPlanes });
 
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
                     PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
@@ -241,18 +241,18 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
         {
-            var effectParamDecls = new List<EffectParameterDeclaration>
+            var effectParamDecls = new List<IFxParamDeclaration>
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
-                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One },
-                new EffectParameterDeclaration { Name = "LightPos", Value = float3.One },
-                new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
+                new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
+                new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
+                new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
             };
 
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
                     GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
@@ -277,7 +277,7 @@ namespace Fusee.Engine.Core
         {
             return new ShaderEffect(new[]
             {
-                new EffectPassDeclaration
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("ShadowMap.vert"),
                     PS = AssetStorage.Get<string>("ShadowMap.frag"),
@@ -290,39 +290,39 @@ namespace Fusee.Engine.Core
                     }
                 }
             },
-            new[]
+            new IFxParamDeclaration[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
             });
         }
 
-        private static List<EffectParameterDeclaration> DeferredLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
+        private static List<IFxParamDeclaration> DeferredLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
         {
-            return new List<EffectParameterDeclaration>()
+            return new List<IFxParamDeclaration>()
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},                
-                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
-                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
-                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
-                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
-                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
-                new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.SsaoOn, Value = 1},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
+                new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f)},                
+                new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero},
+                new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f},
+                new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f},
+                new FxParamDeclaration<float> { Name = "light.outerConeAngle", Value = 0.0f},
+                new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f},
+                new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero},
+                new FxParamDeclaration<int> { Name = "light.lightType", Value = 1},
+                new FxParamDeclaration<int> { Name = "light.isActive", Value = 1},
+                new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0},
+                new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f},
+                new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
+                new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
+                new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},
             };
         }
 
@@ -461,7 +461,7 @@ namespace Fusee.Engine.Core
 
             var ret = new ShaderEffect(new[]
                 {
-                    new EffectPassDeclaration
+                    new FxPassDeclaration
                     {
                         VS = vs,
                         PS = ps,
@@ -499,7 +499,7 @@ namespace Fusee.Engine.Core
 
             var ret = new ShaderEffectProtoPixel(new[]
                 {
-                    new EffectPassDeclarationProto
+                    new FxPassDeclarationProto
                     {
                         VS = vs, 
                         //VS = VsBones, 
@@ -620,25 +620,25 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        private static IEnumerable<IFxParamDeclaration> AssembleEffectParamers(MaterialComponent mc)
         {
-            var effectParameters = new List<EffectParameterDeclaration>();
+            var effectParameters = new List<IFxParamDeclaration>();
 
             if (mc.HasDiffuse)
             {
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float4>
                 {
                     Name = UniformNameDeclarations.DiffuseColor,
                     Value = mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
                 {
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.DiffuseMix,
                         Value = mc.Diffuse.Mix
                     });
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<Texture>
                     {
                         Name = UniformNameDeclarations.DiffuseTexture,
                         Value = LoadTexture(mc.Diffuse.Texture)
@@ -648,7 +648,7 @@ namespace Fusee.Engine.Core
 
             if (mc.HasSpecular)
             {
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float4>
                 {
                     Name = UniformNameDeclarations.SpecularColor,
                     Value = mc.Specular.Color
@@ -656,24 +656,24 @@ namespace Fusee.Engine.Core
 
                 if (mc.GetType() == typeof(MaterialComponent))
                 {
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.SpecularShininessName,
                         Value = mc.Specular.Shininess
                     });
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.SpecularStrength,
                         Value = mc.Specular.Intensity
                     });
                     if (mc.Specular.Texture != null)
                     {
-                        effectParameters.Add(new EffectParameterDeclaration
+                        effectParameters.Add(new FxParamDeclaration<float>
                         {
                             Name = UniformNameDeclarations.SpecularMixName,
                             Value = mc.Specular.Mix
                         });
-                        effectParameters.Add(new EffectParameterDeclaration
+                        effectParameters.Add(new FxParamDeclaration<Texture>
                         {
                             Name = UniformNameDeclarations.SpecularTextureName,
                             Value = LoadTexture(mc.Specular.Texture)
@@ -691,17 +691,17 @@ namespace Fusee.Engine.Core
                     var fresnel = mcPbr.FresnelReflectance + delta;
                     var df = mcPbr.DiffuseFraction == 0 ? diffuseFractionDelta : mcPbr.DiffuseFraction + delta;
 
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.RoughnessValue,
                         Value = roughness
                     });
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.FresnelReflectance,
                         Value = fresnel
                     });
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.DiffuseFraction,
                         Value = df
@@ -712,19 +712,19 @@ namespace Fusee.Engine.Core
 
             if (mc.HasEmissive)
             {
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float4>
                 {
                     Name = UniformNameDeclarations.EmissiveColorName,
                     Value = mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.EmissiveMixName,
                         Value = mc.Emissive.Mix
                     });
-                    effectParameters.Add(new EffectParameterDeclaration
+                    effectParameters.Add(new FxParamDeclaration<Texture>
                     {
                         Name = UniformNameDeclarations.EmissiveTextureName,
                         Value = LoadTexture(mc.Emissive.Texture)
@@ -734,12 +734,12 @@ namespace Fusee.Engine.Core
 
             if (mc.HasBump)
             {
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = UniformNameDeclarations.BumpIntensityName,
                     Value = mc.Bump.Intensity
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<Texture>
                 {
                     Name = UniformNameDeclarations.BumpTextureName,
                     Value = LoadTexture(mc.Bump.Texture)
@@ -753,57 +753,57 @@ namespace Fusee.Engine.Core
                     LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
                 }
 
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float3>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].PositionViewSpace,
                     Value = new float3(0, 0, -1.0f)
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float4>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].Intensities,
                     Value = float4.Zero
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].MaxDistance,
                     Value = 0.0f
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].Strength,
                     Value = 0.0f
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].OuterAngle,
                     Value = 0.0f
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].InnerAngle,
                     Value = 0.0f
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float3>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].Direction,
                     Value = float3.Zero
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].LightType,
                     Value = 1
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].IsActive,
                     Value = 1
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].IsCastingShadows,
                     Value = 0
                 });
-                effectParameters.Add(new EffectParameterDeclaration
+                effectParameters.Add(new FxParamDeclaration<float>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].Bias,
                     Value = 0f
@@ -812,48 +812,48 @@ namespace Fusee.Engine.Core
 
             // FUSEE_ PARAMS
             // TODO: Just add the necessary ones!
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.Model,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.ModelView,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.ModelViewProjection,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.ITModelView,
                 Value = float4x4.Identity
             });
 
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.IModelView,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.ITView,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.View,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4>
             {
                 Name = UniformNameDeclarations.Projection,
                 Value = float4x4.Identity
             });
-            effectParameters.Add(new EffectParameterDeclaration
+            effectParameters.Add(new FxParamDeclaration<float4x4[]>
             {
                 Name = UniformNameDeclarations.BonesArray,
                 Value = new[] { float4x4.Identity }
