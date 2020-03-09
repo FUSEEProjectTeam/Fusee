@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -23,25 +23,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
-
-        private const float ZNear = 0.1f;
-
-        //For shadow calculation the distance to the far clipping plane should be as small as possible to ensure the best shadow map resolution when using parallel lights.
-        //Can be a custom value when cascaded shadow maps are implemented.
-        private const float ZFar = 3000;
-
-        private readonly float _fovy = M.PiOver4;
+        private SceneRendererDeferred _sceneRenderer;       
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-
-        private float3 _cameraPos;
-        private bool _keys;
-
-        private const float twoPi = M.Pi * 2.0f;
+        
+        private bool _keys;       
 
         private TransformComponent _sunTransform;
 
@@ -51,17 +40,25 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private LightComponent _sun;
 
+        private TransformComponent _camTransform;
+        private CameraComponent _campComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
+       
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            _cameraPos = new float3(0, 20, -10);
+            _camTransform = new TransformComponent()
+            {
+                Scale = float3.One,
+                Translation = float3.Zero                
+            };
+
             _gui = CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
+            _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
@@ -69,16 +66,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");
 
-            //Add resize delegate
-            var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
-            perspectiveProjComp.ZFar = ZFar;
-            perspectiveProjComp.ZNear = ZNear;
-            perspectiveProjComp.Fov = _fovy;
-
             //Add lights to the scene
-            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
+            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
             var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
-            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000008f };
+            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
             var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
 
             _sunTransform = new TransformComponent() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
@@ -170,6 +161,18 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 Children = aLotOfLights
             });
 
+            _rocketScene.Children.Add(
+                new SceneNodeContainer()
+                {
+                    Name = "Cam",
+                    Components = new List<SceneComponentContainer>()
+                    {
+                        _camTransform,
+                        _campComp
+                    }
+                }               
+            );
+
             // Wrap a SceneRenderer around the scene.
             _sceneRenderer = new SceneRendererDeferred(_rocketScene);
 
@@ -179,21 +182,21 @@ namespace Fusee.Examples.SimpleDeferred.Core
             return true;
         }
 
-        private bool rotate = false;
-
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             //if (!rotate)
             //{
-            //    _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(20), 0, 0));
+            //    _sunTransform.RotateAround(new float3(0, 0, 0), float3.UnitX, M.DegreesToRadians(20));
             //    rotate = true;
             //}
 
-            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f), 0, 0));
+            //_sunTransform.RotateAround(new float3(0, 0, 0), float3.UnitX, M.DegreesToRadians(0.5f) * Time.DeltaTime * 50);
 
             var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
             if (deg < 0)
@@ -215,7 +218,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
             }
 
-            RC.ClearColor = _backgroundColor;
+            _campComp.BackgroundColor = _backgroundColor;
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -256,61 +259,20 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            CalcAndSetViewMat();
-            _sih.View = RC.View;
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
-            // Constantly check for interactive objects.
+            _sceneRenderer.Render(RC);            
+            //_guiRenderer.Render(RC);
+
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
-            _sceneRenderer.Render(RC);
-            _guiRenderer.Render(RC);
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)            
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private void CalcAndSetViewMat()
-        {
-            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-                _angleHorz %= twoPi;
-            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-                _angleVert %= twoPi;
-
-            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 1000;
-            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 1000;
-
-            RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
-        }
-
-        private float4x4 FPSView(float3 eye, float pitch, float yaw)
-        {
-            // I assume the values are already converted to radians.
-            float cosPitch = M.Cos(pitch);
-            float sinPitch = M.Sin(pitch);
-            float cosYaw = M.Cos(yaw);
-            float sinYaw = M.Sin(yaw);
-
-            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
-            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
-            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
-
-            // Create a 4x4 view matrix from the right, up, forward and eye position vectors
-            float4x4 viewMatrix = new float4x4(
-                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
-                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
-                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
-                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
-            );
-
-            viewMatrix = float4x4.Transpose(viewMatrix);
-            return viewMatrix;
-        }
+        }        
 
         private SceneContainer CreateGui()
         {
@@ -344,7 +306,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 18);
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNodeContainer(
                 "FUSEE Deferred Example",
@@ -354,7 +316,24 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
+
+
+            var guiCamComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
+            {
+                ClearColor = false
+            };
+
+            var cam = new SceneNodeContainer()
+            {
+                Name = "GUICam",
+                Components = new List<SceneComponentContainer>()
+                {                    
+                    guiCamComp
+                }
+            };
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
@@ -372,13 +351,12 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     text
                 }
             };
-
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
                 {
+                    cam,
                     //Add canvas.
                     canvas
                 }

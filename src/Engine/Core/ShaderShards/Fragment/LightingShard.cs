@@ -13,34 +13,32 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class LightingShard
     {
         ///The maximal number of lights we can render when using the forward pipeline.
-        public const int NumberOfLightsForward = 8;
-         
+        public const int NumberOfLightsForward = 8;        
+
         /// <summary>
         /// Struct, that describes a Light object in the shader code./>
         /// </summary>
         /// <returns></returns>
-        public static string LightStructDeclaration()
+        public static string LightStructDeclaration = @"
+        struct Light 
         {
-            var lightStruct = @"
-            struct Light 
-            {
-                vec3 position;
-                vec3 positionWorldSpace;
-                vec4 intensities;
-                vec3 direction;
-                vec3 directionWorldSpace;
-                float maxDistance;
-                float strength;
-                float outerConeAngle;
-                float innerConeAngle;
-                int lightType;
-                int isActive;
-                int isCastingShadows;
-                float bias;
-            };           
-            ";
-            return lightStruct;
-        }
+            vec3 position;            
+            vec4 intensities;
+            vec3 direction;            
+            float maxDistance;
+            float strength;
+            float outerConeAngle;
+            float innerConeAngle;
+            int lightType;
+            int isActive;
+            int isCastingShadows;
+            float bias;
+        };";
+
+        /// <summary>
+        /// Caches "allLight[i]." names (used as uniform parameters).
+        /// </summary>
+        internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="ShaderEffectProps"/> and the LightingCalculationMethod.
@@ -69,7 +67,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(PbrSpecularComponent());
-                    
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
@@ -107,10 +105,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return GLSL.CreateMethod(GLSL.Type.Float, "diffuseLighting",
                 new[]
                 {
-                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L")                    
+                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L")
                 }, methodBody);
         }
-        
+
         /// <summary>
         /// Method for calculation the specular lighting component.
         /// </summary>       
@@ -121,18 +119,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float specularTerm = 0.0;",
                 "if(dot(N, L) > 0.0)",
                 "{",
-                "   // half vector",   
+                "   // half vector",
                     "vec3 reflectDir = reflect(-L, N);",
                 $"  specularTerm = pow(max(0.0, dot(V, reflectDir)), shininess);",
                 "}",
-                "return specularTerm;"                
+                "return specularTerm;"
             };
 
             return GLSL.CreateMethod(GLSL.Type.Float, "specularLighting",
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities"), GLSL.CreateVar(GLSL.Type.Float, "shininess")
+                    GLSL.CreateVar(GLSL.Type.Float, "shininess")
                 }, methodBody);
 
         }
@@ -186,14 +184,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "     ",
                 "}",
                 "",
-                $"return intensities * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0-k));"
+                $"return (k + specular * (1.0-k));"
             };
 
-            return GLSL.CreateMethod(GLSL.Type.Vec4, "specularLighting",
+            return GLSL.CreateMethod(GLSL.Type.Float, "specularLighting",
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities"), GLSL.CreateVar(GLSL.Type.Float, "k")
+                    GLSL.CreateVar(GLSL.Type.Float, "k")
                 }, methodBody);
         }
 
@@ -233,7 +231,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationConeComponent",
                 new[] { GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"), GLSL.CreateVar(GLSL.Type.Vec3, "fragToLightDir"), GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle") }, methodBody));
         }
-        
+
         /// <summary>
         /// Wraps all the lighting methods into a single one.
         /// </summary>
@@ -283,20 +281,20 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColor}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");                
+                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
             }
 
             if (effectProps.MatProbs.HasSpecular)
             {
                 if (effectProps.MatType == MaterialType.Standard)
                 {
-                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, intensities, {UniformNameDeclarations.SpecularShininessName});");
+                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininessName});");
                     applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *intensities.rgb) *specularTerm, 1.0);");
                 }
-                else if(effectProps.MatType == MaterialType.MaterialPbr)
+                else if (effectProps.MatType == MaterialType.MaterialPbr)
                 {
                     applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
-                    applyLightParams.Add("float specular = specularLighting(N, L, V, intensities, k);");
+                    applyLightParams.Add("float specular = specularLighting(N, L, V, k);");
                     applyLightParams.Add($"Ispe = intensities * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0 - k));");
                 }
             }
@@ -316,7 +314,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             };
 
             var spotLight = new List<string>
-            { 
+            {
                 $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance) * attenuationConeComponent(direction, L, innerConeAngle, outerConeAngle);",
 
                 "lighting = (Idif * att) + (Ispe * att);",
@@ -368,8 +366,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string ApplyLightDeferred(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
-            var methodBody = new List<string>();
-            methodBody.Add($"vec3 normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            var methodBody = new List<string>
+            {
+                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
+            };
 
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
             //---------------------------------------
@@ -379,14 +379,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "if(normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)",
             "{"
             });
-            methodBody.Add($"    {FragPropertiesShard.OutColorName} = BackgroundColor;");
+            methodBody.Add($"    {FragPropertiesShard.OutColorName} = {UniformNameDeclarations.BackgroundColor};");
             methodBody.Add(@"    return;");
             methodBody.Add("}");
 
-            methodBody.Add($"vec4 fragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, {VaryingNameDeclarations.TextureCoordinates});");
-            methodBody.Add($"vec4 diffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
-            methodBody.Add($"vec3 occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
-            methodBody.Add($"vec3 specularVars = texture({RenderTargetTextureTypes.G_SPECULAR.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION]}, {VaryingNameDeclarations.TextureCoordinates});");
+            methodBody.Add($"vec4 diffuseColor = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec3 occlusion = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec3 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
 
             //Lighting calculation
             //-------------------------            
@@ -396,11 +396,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "// then calculate lighting as usual",
             "vec3 lighting = vec3(0,0,0);",
             "",
-            "if(PassNo == 0)",
+            $"if({UniformNameDeclarations.RenderPassNo} == 0)",
             "{",
             "   vec3 ambient = ambientLighting(0.2, diffuseColor).xyz;",
                 "",
-            "   if(SsaoOn == 1)",
+            $"   if({UniformNameDeclarations.SsaoOn} == 1)",
             "      ambient *= occlusion;",
 
             "   lighting += ambient;",
@@ -459,7 +459,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "float shininess = specularVars.r * 256.0;",
             "float specularStrength = specularVars.g;",
             "",
-            "float specularTerm = specularLighting(normal, lightDir, viewDir, diffuseColor, shininess);",
+            "float specularTerm = specularLighting(normal, lightDir, viewDir, shininess);",
             "",
             "vec3 specular = specularStrength * specularTerm * lightColor;",
             "lighting += (1.0 - shadow) * (specular * attenuation * light.strength);"
@@ -620,8 +620,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (light.isCastingShadows == 1)
                 {
                 ");
-                 frag.AppendLine($"vec4 posInLightSpace1 = (LightSpaceMatrices[thisFragmentsFirstCascade] * {UniformNameDeclarations.IView}) * fragPos;");
-                 frag.Append(@"
+                frag.AppendLine($"vec4 posInLightSpace1 = (LightSpaceMatrices[thisFragmentsFirstCascade] * {UniformNameDeclarations.IView}) * fragPos;");
+                frag.Append(@"
                     float shadow1 = ShadowCalculation(ShadowMaps[thisFragmentsFirstCascade], posInLightSpace1, normal, lightDir,  light.bias, 1.0);                   
 
                     //blend cascades to avoid hard cuts between them
@@ -655,7 +655,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (light.isCastingShadows == 1)
                     {
                     ");
-                    frag.AppendLine($"  vec4 posInLightSpace = (LightSpaceMatrix * {UniformNameDeclarations.IView}) * fragPos;");
+                    frag.AppendLine($"  vec4 posInLightSpace = ({UniformNameDeclarations.LightSpaceMatrix} * {UniformNameDeclarations.IView}) * fragPos;");
                     frag.Append(@"
                         shadow = ShadowCalculation(ShadowMap, posInLightSpace, normal, lightDir, light.bias, 1.0);                    
                     }                
@@ -668,8 +668,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (light.isCastingShadows == 1)
                     {
                     ");
-                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, light.positionWorldSpace, light.maxDistance, normal, lightDir, light.bias, 2.0);");
-                    frag.AppendLine("}");                    
+                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, ({UniformNameDeclarations.IView} * vec4(light.position,1.0)).xyz, light.maxDistance, normal, lightDir, light.bias, 2.0);");
+                    frag.AppendLine("}");
                 }
             }
 
@@ -730,6 +730,36 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                       
                 ");
             return frag.ToString();
+        }
+    }
+
+    internal struct LightParamStrings
+    {
+        public string PositionViewSpace;        
+        public string Intensities;
+        public string MaxDistance;
+        public string Strength;
+        public string OuterAngle;
+        public string InnerAngle;
+        public string Direction;        
+        public string LightType;
+        public string IsActive;
+        public string IsCastingShadows;
+        public string Bias;
+
+        public LightParamStrings(int arrayPos)
+        {
+            PositionViewSpace = $"allLights[{arrayPos}].position";
+            Intensities = $"allLights[{arrayPos}].intensities";
+            MaxDistance = $"allLights[{arrayPos}].maxDistance";
+            Strength = $"allLights[{arrayPos}].strength";
+            OuterAngle = $"allLights[{arrayPos}].outerConeAngle";
+            InnerAngle = $"allLights[{arrayPos}].innerConeAngle";
+            Direction = $"allLights[{arrayPos}].direction";
+            LightType = $"allLights[{arrayPos}].lightType";
+            IsActive = $"allLights[{arrayPos}].isActive";
+            IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
+            Bias = $"allLights[{arrayPos}].bias";
         }
     }
 }

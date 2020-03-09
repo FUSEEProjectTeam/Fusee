@@ -46,7 +46,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private List<UIInput> _uiInput;
 
-        private ScenePicker _scenePicker;
+        private ScenePicker _scenePicker;        
 
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
@@ -128,15 +128,11 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initHeight = Height;
 
             //_scene = BuildScene();
-            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
-            var monkey = _scene.Children[1].GetComponent<Mesh>();
+            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");            
 
-            if (rnd == null)
-                rnd = new Random();
-
+            var monkey = _scene.Children[0].GetComponent<Mesh>();
+            rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
-
-            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
 
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
@@ -194,6 +190,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             #region Controls
 
             // Mouse and keyboard movement
@@ -233,36 +231,40 @@ namespace Fusee.Examples.AdvancedUI.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current View transformation
+            // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 0, -5, 0, 0, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
-            _scenePicker.View = RC.View;
+            var view = mtxCam * mtxRot;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
+
+            RC.View = view;
+            RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             #endregion Controls
 
-            //Annotations will be unpdated according to circle positions.
+            //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
+            RC.View = view;
+            RC.Projection = perspective;
             var canvas = _gui.Children[0];
 
             foreach (var child in canvas.Children)
             {
                 if (!child.Name.Contains("MarkModelContainer")) continue;
 
-                //1.    Calculate the circles canvas position.
+                //1. Calculate the circles canvas position.
                 for (var k = 0; k < child.Children.Count; k++)
                 {
                     var container = child.Children[k];
@@ -271,11 +273,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                     var uiInput = _uiInput[k];
 
                     //the monkey's matrices
-                    var monkey = _scene.Children[1];
+                    var monkey = _scene.Children[0];
                     var model = monkey.GetGlobalTransformation();
-                    var projection = _scene.Children[0].GetParentProjection();
+                    var projection = perspective;
 
-                    var mvpMonkey = projection * RC.View * model;
+                    var mvpMonkey = projection * view * model;
 
                     var clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position); //divides by 2
                     var canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
@@ -288,11 +290,14 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                    
+                    var newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
                         uiInput.IsVisible = true;
+
+                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
 
                         circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
                     }
@@ -370,24 +375,10 @@ namespace Fusee.Examples.AdvancedUI.Core
                     _uiInput[k] = uiInput;
                 }
             }
-
-            ////TODO: set screen space UI projection to orthographic in SceneRenderer
-            //if (_canvasRenderMode == CanvasRenderMode.SCREEN)
-            //{
-            //    // Render the scene loaded in Init()
-            //    _sceneRenderer.Render(RC);
-
-            //    projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            //    RC.Projection = projection;
-            //    //_sih.Projection = projection;
-
-            //    _guiRenderer.Render(RC);
-            //}
-            //else
-            //{
-            //}
-
+            
             _sceneRenderer.Render(RC);
+            
+            RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             _guiRenderer.Render(RC);
 
             Present();
@@ -400,16 +391,15 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
+
         }
 
         private SceneContainer CreateGui()
         {
-            var canvasScaleFactor = _initWidth / _canvasWidth;
-            float textSize = 2;
+            var canvasScaleFactor = _initWidth / _canvasWidth;           
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= canvasScaleFactor;
                 borderScaleFactor = canvasScaleFactor;
             }
 
@@ -452,18 +442,15 @@ namespace Fusee.Examples.AdvancedUI.Core
                 var item = _uiInput[i];
                 if (item.AnnotationKind != UIHelper.AnnotationKind.CONFIRMED)
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, textSize, borderScaleFactor,
+                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                     "#" + i + " " + item.SegmentationClass + ", " + item.Probability.ToString(CultureInfo.GetCultureInfo("en-gb")));
                 }
                 else
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, textSize, borderScaleFactor,
+                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
-            }
-
-            var canvasProjComp = new ProjectionComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            }           
 
             return new SceneContainer
             {

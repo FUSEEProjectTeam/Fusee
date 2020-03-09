@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -722,7 +723,29 @@ namespace Fusee.Math.Core
         /// </returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current double4.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            return String.Format(provider, "({1}{0} {2}{0} {3}{0} {4})", separator, x, y, z, w);
         }
 
         #endregion public override string ToString()
@@ -840,6 +863,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, double4> Parse { get; set; }
+        public static Converter<string, double4> ParseConverter { get; set; } = (x => double4.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a double4.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static double4 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 4)
+                throw new FormatException("String parse for double4 did not result in exactly 4 items.");
+
+            double[] doubles = new double[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    doubles[i] = double.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new double4(doubles[0], doubles[1], doubles[2], doubles[3]);
+        }
     }
 }

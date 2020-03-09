@@ -1,6 +1,8 @@
 ﻿using Xunit;
 using System.Collections.Generic;
 using Fusee.Math.Core;
+using System.Globalization;
+using System;
 
 namespace Fusee.Test.Math.Core
 {
@@ -108,8 +110,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Column0_IsColumn()
         {
-            var expected = new float3(1, 0, 0);
-            var matrix = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            var expected = new float3(3, 3, 3);
+            var matrix = float3x3.Identity;
+
+            matrix.Column0 = expected;
 
             var actual = matrix.Column0;
 
@@ -119,8 +123,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Column1_IsColumn()
         {
-            var expected = new float3(0, 1, 0);
-            var matrix = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            var expected = new float3(3, 3, 3);
+            var matrix = float3x3.Identity;
+
+            matrix.Column1 = expected;
 
             var actual = matrix.Column1;
 
@@ -130,8 +136,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Column2_IsColumn()
         {
-            var expected = new float3(0, 0, 1);
-            var matrix = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            var expected = new float3(3, 3, 3);
+            var matrix = float3x3.Identity;
+
+            matrix.Column2 = expected;
 
             var actual = matrix.Column2;
 
@@ -157,7 +165,7 @@ namespace Fusee.Test.Math.Core
         {
             var mat = new float3x3(1, 1, 1, 2, 2, 2, 3, 3, 3);
 
-            var actual = mat.AsArray;
+            var actual = mat.ToArray();
 
             Assert.Equal(new float[] { 1, 1, 1, 2, 2, 2, 3, 3, 3 }, actual);
         }
@@ -177,9 +185,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetSubtraction))]
-        public void Substract_Static(float3x3 left, float3x3 right, float3x3 expected)
+        public void Subtract_Static(float3x3 left, float3x3 right, float3x3 expected)
         {
-            var actual = float3x3.Substract(left, right);
+            var actual = float3x3.Subtract(left, right);
 
             Assert.Equal(expected, actual);
         }
@@ -358,16 +366,6 @@ namespace Fusee.Test.Math.Core
 
         #region Overrides
 
-        [Fact]
-        public void ToString_IsString()
-        {
-            var mat = new float3x3(1, 2, 3, 3, 1, 2, 2, 3, 1);
-
-            var actual = mat.ToString();
-
-            Assert.Equal("(1, 2, 3)\n(3, 1, 2)\n(2, 3, 1)", actual);
-        }
-
         //TODO: GetHashCode
         //TODO: Equals(obj)
 
@@ -432,5 +430,83 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
+
+        #region ToString/Parse
+
+        [Fact]
+        public void ToString_NoCulture()
+        {
+            Assert.NotNull(new float3x3().ToString());
+        }
+
+        [Fact]
+        public void ToString_InvariantCulture()
+        {
+            string s = "(1.5, 0, 0)\n(0, 1.5, 0)\n(0, 0, 1)";
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ToString_CultureDE()
+        {
+            string s = "(1,5; 0; 0)\n(0; 1,5; 0)\n(0; 0; 1)";
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_InvariantCulture()
+        {
+            string s = "(1.5, 0, 0)\n(0, 1.5, 0)\n(0, 0, 1)";
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(f, float3x3.Parse(s, CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_CultureDE()
+        {
+            string s = "(1,5; 0; 0)\n(0; 1,5; 0)\n(0; 0; 1)";
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(f, float3x3.Parse(s, new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_ToString_NoCulture()
+        {
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(f, float3x3.Parse(f.ToString()));
+        }
+
+        [Fact]
+        public void Parse_ToString_InvariantCulture()
+        {
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(f, float3x3.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_ToString_CultureDE()
+        {
+            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+
+            Assert.Equal(f, float3x3.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_Exception()
+        {
+            string s = "Fusee";
+
+            Assert.Throws<FormatException>(() => float3x3.Parse(s));
+        }
+
+        #endregion ToString/Parse
     }
 }

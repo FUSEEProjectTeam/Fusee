@@ -11,6 +11,10 @@ namespace Fusee.Engine.Core
         // For omni directional shadow mapping there will be six LightSpaceMatrices
         // to allow the creation of the cube map in one pass.
         public float4x4[] LightSpaceMatrices;
+
+        //The world space frustum planes of the light frustum.
+        public List<Frustum> Frustums;
+
         public IWritableTexture[] ShadowMaps;
         public float2[] ClipPlanesForLightMat;
     }
@@ -18,10 +22,10 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Saves a axis aligned bounding box in light space and the clipping planes of the associated sub-frustum.
     /// </summary>
-    internal struct Cascade 
+    internal struct Cascade
     {
         public AABBf Aabb;
-        public float2 ClippingPlanes;        
+        public float2 ClippingPlanes;
     }
 
     /// <summary>
@@ -48,13 +52,13 @@ namespace Fusee.Engine.Core
         public static IEnumerable<Cascade> ParallelSplitCascades(int numberOfCascades, float4x4 lightView, float lambda, float zNear, float zFar, int width, int height, float fov, float4x4 view)
         {
             var frustumCorners = CascadeCornersWorldSpace(numberOfCascades, lambda, zNear, zFar, width, height, fov, view).ToList();
-            foreach (Tuple<float4[], float2> tuple in frustumCorners)
+            foreach (Tuple<float3[], float2> tuple in frustumCorners)
             {
                 var aabb = FrustumAABBLightSpace(lightView, tuple.Item1);
                 yield return new Cascade { Aabb = aabb, ClippingPlanes = tuple.Item2 };
             }
         }
-        
+
         /// <summary>
         /// Returns the clipping planes for each sub-frustum.
         /// </summary>
@@ -111,7 +115,7 @@ namespace Fusee.Engine.Core
         /// <param name="lightView">The view matrix of the light.</param>
         /// <param name="frustumCorners">The world space frustum corners of a cascade.</param>
         /// <returns></returns>
-        private static AABBf FrustumAABBLightSpace(float4x4 lightView, float4[] frustumCorners)
+        private static AABBf FrustumAABBLightSpace(float4x4 lightView, float3[] frustumCorners)
         {
             for (int i = 0; i < frustumCorners.Length; i++)
             {
@@ -120,47 +124,13 @@ namespace Fusee.Engine.Core
                 frustumCorners[i] = corner;
             }
 
-            var lightSpaceFrustumAABB = new AABBf(frustumCorners[0].xyz, frustumCorners[0].xyz);
+            var lightSpaceFrustumAABB = new AABBf(frustumCorners[0], frustumCorners[0]);
             foreach (var p in frustumCorners)
             {
-                lightSpaceFrustumAABB |= p.xyz;
+                lightSpaceFrustumAABB |= p;
             }
 
             return lightSpaceFrustumAABB;
-        }
-
-        /// <summary>
-        /// Calculates the world space frustum corners from a projection (here: sub-frustum) and a view matrix.
-        /// </summary>
-        /// <param name="projectionMatrix">The projection matrix.</param>
-        /// <param name="viewMatrix">The view matrix.</param>
-        /// <returns></returns>
-        private static float4[] GetWorldSpaceFrustumCorners(float4x4 projectionMatrix, float4x4 viewMatrix)
-        {
-            //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
-            //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
-            //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
-            var invViewProjection = float4x4.Invert(projectionMatrix * viewMatrix);
-
-            var frustumCorners = new float4[8];
-
-            frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
-            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
-            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
-            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr  
-            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
-            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
-            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
-            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
-
-            for (int i = 0; i < frustumCorners.Length; i++)
-            {
-                var corner = frustumCorners[i];
-                corner /= corner.w; //world space frustum corners               
-                frustumCorners[i] = corner;
-            }
-
-            return frustumCorners;
         }
 
         /// <summary>
@@ -176,7 +146,7 @@ namespace Fusee.Engine.Core
         private static IEnumerable<Tuple<float4x4, float2>> CascadesProjectionMatrices(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov)
         {
             var clipPlanes = GetClippingPlanesOfSplitFrustums(zNear, zFar, numberOfCascades, lambda).ToList();
-            
+
             for (int i = 0; i < clipPlanes.Count - 1; i++)
             {
                 var cascadeNear = clipPlanes[i];
@@ -185,14 +155,14 @@ namespace Fusee.Engine.Core
                 //Subtract buffer value from cascades near plane to avoid artifacts from blending cascades.
                 if (i > 0)
                 {
-                    float bufferPercent = 100 - System.Math.Max(85.0f - (5.0f * (i-1)), 50.0f); //The same function (max) must be used in the shader while blending the cascades.
+                    float bufferPercent = 100 - System.Math.Max(85.0f - (5.0f * (i - 1)), 50.0f); //The same function (max) must be used in the shader while blending the cascades.
                     var zPrecedingCascade = clipPlanes[i] - clipPlanes[i - 1];
                     var bufferLength = zPrecedingCascade / 100 * bufferPercent;
                     cascadeNear -= bufferLength;
                 }
 
-                var thisCascadesClipPlanes = new float2(cascadeNear, cascadeFar);                
-                var aspect = width / height;
+                var thisCascadesClipPlanes = new float2(cascadeNear, cascadeFar);
+                var aspect = (float)width / height;
                 yield return new Tuple<float4x4, float2>(float4x4.CreatePerspectiveFieldOfView(fov * 2, aspect, cascadeNear, cascadeFar), thisCascadesClipPlanes);
             }
         }
@@ -208,13 +178,13 @@ namespace Fusee.Engine.Core
         /// <param name="height">The window height in px.</param>
         /// <param name="fov">The field of view of the camera.</param>    
         /// <param name="view">The view matrix.</param> 
-        private static IEnumerable<Tuple<float4[], float2>> CascadeCornersWorldSpace(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov, float4x4 view)
+        private static IEnumerable<Tuple<float3[], float2>> CascadeCornersWorldSpace(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov, float4x4 view)
         {
             var allSplitProjectionMatrices = CascadesProjectionMatrices(numberOfCascades, lambda, zNear, zFar, width, height, fov);
 
             foreach (Tuple<float4x4, float2> tuple in allSplitProjectionMatrices)
-                yield return new Tuple<float4[], float2>(GetWorldSpaceFrustumCorners(tuple.Item1, view),tuple.Item2);
-        }       
+                yield return new Tuple<float3[], float2>(Frustum.CalculateFrustumCorners(tuple.Item1 * view).ToArray(), tuple.Item2);
+        }
 
         #endregion
 

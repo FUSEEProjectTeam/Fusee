@@ -164,10 +164,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
-
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            sc.Children[0].Components.Insert(0, projComp);
+            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };            
 
             _renderer = new SceneRendererForward(sc);
 
@@ -183,6 +180,8 @@ namespace Fusee.Examples.MeshingAround.Core
             // Clear the back buffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
@@ -197,7 +196,7 @@ namespace Fusee.Examples.MeshingAround.Core
 
             _renderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Fusee.Math.Core
@@ -590,54 +591,17 @@ namespace Fusee.Math.Core
         /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
         public static EigenF Diagonalizer(float4x4 A)
         {
-            const int maxsteps = 24; // certainly wont need that many.
+            var row0 = new double4(A.Row0.x, A.Row0.y, A.Row0.z, A.Row0.w);
+            var row1 = new double4(A.Row1.x, A.Row1.y, A.Row1.z, A.Row1.w);
+            var row2 = new double4(A.Row2.x, A.Row2.y, A.Row2.z, A.Row2.w);
+            var row3 = new double4(A.Row3.x, A.Row3.y, A.Row3.z, A.Row3.w);
 
-            var q = new Quaternion(0, 0, 0, 1);
-            var D = float4x4.Identity;
-            var Q = float4x4.Identity;
-            for (var i = 0; i < maxsteps; i++)
-            {
-                // Q = float4x4.CreateRotation(q); // v*Q == q*v*conj(q)
-                Q = q.ToRotMat(); // v*Q == q*v*conj(q)
-                D = Q.Transpose() * A * Q;  // A = Q^T*D*Q
-                var offDiagonal = new float3(D.M23, D.M13, D.M12); // elements not on the diagonal
-                var om = new float3(System.Math.Abs(offDiagonal.x), System.Math.Abs(offDiagonal.y), System.Math.Abs(offDiagonal.z)); // mag of each offdiag elem
-                var k = (om.x > om.y && om.x > om.z) ? 0 : (om.y > om.z) ? 1 : 2; // index of largest element of offdiag
-                var k1 = (k + 1) % 3;
-                var k2 = (k + 2) % 3;
-
-                if (offDiagonal[k].Equals(0.0f)) break;  // diagonal already
-
-                var theta = (D[k2, k2] - D[k1, k1]) / (2.0f * offDiagonal[k]);
-                var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
-                theta *= sgn; // make it positive
-                var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
-                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c
-
-                if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
-
-                var jr = new Quaternion(0, 0, 0, 0) // jacobi rotation for this iteration.
-                {
-                    [k] = (float)(sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
-                };
-
-                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)
-                jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
-                jr.w = (float)System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
-                if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
-                q *= jr;
-                q.Normalize();
-            }
+            var res = Diagonalizer(new double4x4(row0, row1, row2, row3));
 
             return new EigenF
             {
-                Values = new[]
-                {
-                    D.M11,
-                    D.M22,
-                    D.M33
-                },
-                Vectors = Q
+                Values = res.Values.Select(val => (float)val).ToArray(),
+                Vectors = res.Vectors.Select(vec => new float3((float)vec.x, (float)vec.y, (float)vec.z)).ToArray()
             };
         }
 
@@ -659,7 +623,7 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public static EigenD Diagonalizer(double4x4 A)
         {
-            const int maxsteps = 24; // certainly wont need that many.
+            const int maxsteps = 512; // certainly wont need that many.
 
             var q = new QuaternionD(0, 0, 0, 1);
             var D = double4x4.Identity;
@@ -698,6 +662,8 @@ namespace Fusee.Math.Core
                 q.Normalize();
             }
 
+            var vectorMat = Q;
+
             return new EigenD
             {
                 Values = new[]
@@ -706,7 +672,7 @@ namespace Fusee.Math.Core
                     D.M22,
                     D.M33
                 },
-                Vectors = Q
+                Vectors = new double3[] { vectorMat.Row0.xyz, vectorMat.Row1.xyz, vectorMat.Row2.xyz }
             };
         }
 
@@ -902,5 +868,28 @@ namespace Fusee.Math.Core
         #endregion Equals
 
         #endregion Public Members
+
+        #region Internal Members
+
+        static internal char GetNumericListSeparator(IFormatProvider provider)
+        {
+            char numericSeparator = ',';
+
+            // Get the NumberFormatInfo out of the provider, if possible
+            // If the IFormatProvider doesn't not contain a NumberFormatInfo, then
+            // this method returns the current culture's NumberFormatInfo.
+            NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
+
+            // Is the decimal separator is the same as the list separator?
+            // If so, we use the ";".
+            if ((numberFormat.NumberDecimalSeparator.Length > 0) && (numericSeparator == numberFormat.NumberDecimalSeparator[0]))
+            {
+                numericSeparator = ';';
+            }
+
+            return numericSeparator;
+        }
+
+        #endregion Internal Members
     }
 }

@@ -70,10 +70,8 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
             _parentNode.Components.Add(parentTrans);
 
-            _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            _scene.Children[0].Components.Insert(0, projComp);
+            _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };           
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -100,6 +98,8 @@ namespace Fusee.Examples.GeometryEditing.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             HandleCameraAndPicking();
             InteractionHandler();
@@ -354,12 +354,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Mouse.RightButton)
             {
                 _pickPos = Mouse.Position;
-                Diagnostics.Log(_pickPos);
+                Diagnostics.Debug(_pickPos);
                 var pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-
-                _scenePicker.View = viewMatrix;
-                _scenePicker.Projection = _projection;
-                var newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                
+                var newPick = _scenePicker.Pick(RC,pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -373,7 +371,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             RC.View = viewMatrix;
             //var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
-            RC.Projection = /*mtxOffset **/ _projection;
+            RC.Projection = /*mtxOffset **/ RC.Projection;
         }
 
         private void AddGeometryToSceneNode(Geometry geometry, float3 position)

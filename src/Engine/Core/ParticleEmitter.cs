@@ -70,6 +70,9 @@ namespace Fusee.Engine.Core
                 vTransparency = fuNormal.y;
             }";
 
+        /// <summary>
+        /// The pixel shader.
+        /// </summary>
         public string PsSimpleTexture = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES

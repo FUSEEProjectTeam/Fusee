@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     A render canvas object references the physical output screen space real estate (e.g. the rendering window).
-    ///     A typical Game application will inherit from this class and overrite methods to implement your user code to
+    ///     A typical Game application will inherit from this class and overwrite methods to implement your user code to
     ///     to be performed on events like initialization, resize, and display refresh.
     ///     In the future, it will be likely that this class' functionality will be divided at two different places with
     ///     one containing the more view oriented aspects and the other containing the more application oriented aspects.
@@ -139,6 +139,9 @@ namespace Fusee.Engine.Core
             return -1;
         }
 
+        /// <summary>
+        /// Whether or not the app is initialized.
+        /// </summary>
         protected bool _appInitialized;
 
         /// <summary>
@@ -157,6 +160,7 @@ namespace Fusee.Engine.Core
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
+            RC.SetRenderStateSet(RenderStateSet.Default);
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;
@@ -177,24 +181,19 @@ namespace Fusee.Engine.Core
                 // rendering
                 RenderAFrame();
 
+                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
+                RC.ResetToDefaultRenderContextState();
+
                 // post-rendering
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate {
-                RC.Viewport(0, 0, Width, Height);
+            CanvasImplementor.Resize += delegate
+            {
+                RC.DefaultState.CanvasWidth = Width;
+                RC.DefaultState.CanvasHeight = Height;
                 Resize(new ResizeEventArgs(Width, Height));
             };
-        }
-
-        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize += action;
-        }
-
-        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize -= action;
         }
 
         /// <summary>

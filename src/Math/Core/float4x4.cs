@@ -1,5 +1,6 @@
 using ProtoBuf;
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -182,11 +183,23 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Returns the trace of this matrix
+        /// </summary>
+        public float Trace
+        {
+            get
+            {
+                return Row0.x + Row1.y + Row2.z + Row3.w;
+            }
+        }
+
+        /// <summary>
         /// The first column of this matrix
         /// </summary>
         public float4 Column0
         {
             get { return new float4(Row0.x, Row1.x, Row2.x, Row3.x); }
+            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
         }
 
         /// <summary>
@@ -195,6 +208,7 @@ namespace Fusee.Math.Core
         public float4 Column1
         {
             get { return new float4(Row0.y, Row1.y, Row2.y, Row3.y); }
+            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
         }
 
         /// <summary>
@@ -203,6 +217,7 @@ namespace Fusee.Math.Core
         public float4 Column2
         {
             get { return new float4(Row0.z, Row1.z, Row2.z, Row3.z); }
+            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
         }
 
         /// <summary>
@@ -211,6 +226,7 @@ namespace Fusee.Math.Core
         public float4 Column3
         {
             get { return new float4(Row0.w, Row1.w, Row2.w, Row3.w); }
+            set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
         }
 
         /// <summary>
@@ -441,6 +457,14 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
+        /// <summary>
+        /// Converts this instance into its inverse.
+        /// </summary>
+        public float4x4 InvertAffine()
+        {
+            return InvertAffine(this);
+        }
+
         #endregion public Invert()
 
         #region public Transpose()
@@ -619,7 +643,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="xy">counter-clockwise angles in radiants.</param>
+        /// <param name="xy">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYX(float2 xy)
         {
@@ -629,8 +653,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="x">counter-clockwise angles in radiants.</param>
-        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <param name="x">counter-clockwise angles in radians.</param>
+        /// <param name="y">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYX(float x, float y)
         {
@@ -640,7 +664,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and z-axis.
         /// </summary>
-        /// <param name="yz">counter-clockwise angles in radiants.</param>
+        /// <param name="yz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYZ(float2 yz)
         {
@@ -650,8 +674,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="y">counter-clockwise angles in radiants.</param>
-        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <param name="y">counter-clockwise angles in radians.</param>
+        /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYZ(float y, float z)
         {
@@ -661,7 +685,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="xz">counter-clockwise angles in radiants.</param>
+        /// <param name="xz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationXZ(float2 xz)
         {
@@ -671,8 +695,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="x">counter-clockwise angles in radiants.</param>
-        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <param name="x">counter-clockwise angles in radians.</param>
+        /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationXZ(float x, float z)
         {
@@ -682,7 +706,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="xyz">counter-clockwise angles in radiants.</param>
+        /// <param name="xyz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYXZ(float3 xyz)
         {
@@ -692,9 +716,9 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="x">counter-clockwise angles in radiants.</param>
-        /// <param name="y">counter-clockwise angles in radiants.</param>
-        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <param name="x">counter-clockwise angles in radians.</param>
+        /// <param name="y">counter-clockwise angles in radians.</param>
+        /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYXZ(float x, float y, float z)
         {
@@ -990,7 +1014,7 @@ namespace Fusee.Math.Core
             result = CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
             return result;
-        }
+        }        
 
         #endregion CreatePerspectiveFieldOfView
 
@@ -1021,8 +1045,7 @@ namespace Fusee.Math.Core
         /// <item>zNear is larger than zFar</item>
         /// </list>
         /// </exception>
-        public static float4x4 CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear,
-                                                      float zFar)
+        public static float4x4 CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result;
 
@@ -1067,8 +1090,7 @@ namespace Fusee.Math.Core
         /// <item>zNear is larger than zFar</item>
         /// </list>
         /// </exception>
-        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear,
-                                                          float zFar)
+        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result;
 
@@ -1221,7 +1243,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
-        public static float4x4 Add(float4x4 left, float4x4 right)
+        public static float4x4 Add(in float4x4 left, in float4x4 right)
         {
             return new float4x4(left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M14 + right.M14,
                                 left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M24 + right.M24,
@@ -1230,12 +1252,12 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Substracts the right instance from the left instance.
+        /// Subtracts the right instance from the left instance.
         /// </summary>
-        /// <param name="left">The left operand of the substraction.</param>
-        /// <param name="right">The right operand of the substraction.</param>
-        /// <returns>A new instance that is the result of the substraction.</returns>
-        public static float4x4 Substract(float4x4 left, float4x4 right)
+        /// <param name="left">The left operand of the subtraction.</param>
+        /// <param name="right">The right operand of the subtraction.</param>
+        /// <returns>A new instance that is the result of the subtraction.</returns>
+        public static float4x4 Subtract(in float4x4 left, in float4x4 right)
         {
             return new float4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
                                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
@@ -1253,7 +1275,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication</returns>
-        public static float4x4 Mult(float4x4 left, float4x4 right)
+        public static float4x4 Mult(in float4x4 left, in float4x4 right)
         {
             if (left == Identity) return right;
             if (right == Identity) return left;
@@ -1313,15 +1335,40 @@ namespace Fusee.Math.Core
         #region Invert Functions
 
         /// <summary>
+        /// Checks if this matrix is invertible.
+        /// </summary>
+        /// <param name="mat">The matrix.</param>       
+        public static bool IsInvertable(float4x4 mat)
+        {
+            return mat.Determinant != 0f;
+        }
+
+        /// <summary>
+        /// Checks if this matrix is invertible.
+        /// </summary>
+        /// <param name="mat">The matrix.</param>
+        /// <param name="det">The determinant of the matrix.</param>       
+        public static bool IsInvertable(float4x4 mat, out float det)
+        {
+            det = mat.Determinant;
+            return det != 0f;
+        }
+
+        /// <summary>
         /// Calculate the inverse of the given matrix.
+        /// If you are unsure whether the matrix is invertible, check it with IsInvertable() first.
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
-        /// <returns>The inverse of the given matrix if it has one, or the input if it is singular.</returns>
+        /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 Invert(float4x4 mat)
         {
             if (mat == Identity || mat == Zero) return mat;
-            // InvertAffine is broken (probably since column order notation
-            // if (mat.IsAffine) return InvertAffine(mat);
+
+            if (!IsInvertable(mat, out float det))
+                throw new ArgumentException("Matrix isn't invertible.");
+
+            if (mat.IsAffine)
+                return InvertAffine(mat);
 
             mat = mat.Transpose();
 
@@ -1388,20 +1435,11 @@ namespace Fusee.Math.Core
             var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
             m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
 
-            // calculate determinant
-            var det = mat.M11 * m11 + mat.M12 * m12 + mat.M13 * m13 + mat.M14 * m14;
-
-            if (det > M.EpsilonFloat || det < -M.EpsilonFloat)
-            {
-                det = 1 / det;
-
-                mat = new float4x4(det * m11, det * m12, det * m13, det * m14,
-                                   det * m21, det * m22, det * m23, det * m24,
-                                   det * m31, det * m32, det * m33, det * m34,
-                                   det * m41, det * m42, det * m43, det * m44);
-            }
-            else
-                mat = mat.Transpose();
+            var invDet = 1 / det;
+            mat = new float4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
+                                invDet * m21, invDet * m22, invDet * m23, invDet * m24,
+                                invDet * m31, invDet * m32, invDet * m33, invDet * m34,
+                                invDet * m41, invDet * m42, invDet * m43, invDet * m44);
 
             return mat;
         }
@@ -1413,33 +1451,38 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 InvertAffine(float4x4 mat)
         {
-            // Row order notation
-            //var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
-            //var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
-            //var val3 = -(mat.M31*mat.M41 + mat.M32*mat.M42 + mat.M33*mat.M43);
+            //1. Save translation and scale
+            var translVec = mat.Translation();
+            var invScaleX = 1 / mat.Column0.xyz.Length;
+            var invScaleY = 1 / mat.Column1.xyz.Length;
+            var invScaleZ = 1 / mat.Column2.xyz.Length;
 
-            //return
-            //    new float4x4(new float4(mat.M11, mat.M21, mat.M31, 0),
-            //                 new float4(mat.M12, mat.M22, mat.M32, 0),
-            //                 new float4(mat.M13, mat.M23, mat.M33, 0),
-            //                 new float4(val1, val2, val3, 1));
+            //2. Get rotation only 
 
-            throw new Exception("InvertAffine is broken (probably since column order notation)");
+            //2.1 Eliminate translation
+            mat.Column3 = float4.UnitW;
 
-            // TODO: fix this!
-            //  Column order notation ???
+            //2.2 Eliminate scale
+            mat.Column0 /= mat.Column0.Length;
+            mat.Column1 /= mat.Column1.Length;
+            mat.Column2 /= mat.Column2.Length;
 
-            /*
-                var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
-                var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
-                var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);
+            //3. Invert rotation part
+            mat = mat.Transpose();
 
-                return
-                    new float4x4(new float4(mat.M11, mat.M21, mat.M31, val1),
-                                 new float4(mat.M12, mat.M22, mat.M32, val2),
-                                 new float4(mat.M13, mat.M23, mat.M33, val3),
-                                 new float4(0,       0,       0,       1));
-            */
+            //4. Invert scale
+            mat.Column0 *= invScaleX;
+            mat.Column1 *= invScaleY;
+            mat.Column2 *= invScaleZ;
+
+            //5. Invert translation
+            var invTranslation = mat * (-1 * translVec);
+
+            mat.M14 = invTranslation.x;
+            mat.M24 = invTranslation.y;
+            mat.M34 = invTranslation.z;
+
+            return mat;
         }
 
         #endregion Invert Functions
@@ -1458,7 +1501,7 @@ namespace Fusee.Math.Core
 
         #endregion Transpose
 
-        #region Transform
+        #region Transform        
 
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
@@ -1692,14 +1735,14 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Matrix substraction
+        /// Matrix subtraction
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
         /// <returns>A new float2x2 which holds the result of the multiplication</returns>
         public static float4x4 operator -(float4x4 left, float4x4 right)
         {
-            return Substract(left, right);
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -1736,7 +1779,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float4"/> instance.</param>
@@ -1747,7 +1790,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float4"/> instance.</param>
@@ -1758,7 +1801,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given threedimensional vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// Transforms a given three dimensional vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1774,7 +1817,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given threedimensional vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// Transforms a given three dimensional vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1806,12 +1849,32 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current Matrix44.
+        /// Returns a System.String that represents the current float4x4.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current float4x4.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -1853,16 +1916,12 @@ namespace Fusee.Math.Core
         #region IEquatable<float4x4> Members
 
         /// <summary>
-        /// Indicates whether the current matrix represents an affine transformation.
-        /// </summary>
-        /// <returns>true if the current matrix represents an affine transformation; otherwise, false.</returns>
+        /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
+        /// </summary>       
         public bool IsAffine
         {
             get
             {
-                // Row order notation
-                // return (Column3 == float4.UnitW);
-
                 // Column order notation
                 return (Row3 == float4.UnitW);
             }
@@ -1888,6 +1947,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, float4x4> Parse { get; set; }
+        public static Converter<string, float4x4> ParseConverter { get; set; } = (x => float4x4.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a float4x4.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static float4x4 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 16)
+                throw new FormatException("String parse for float4x4 did not result in exactly 16 items.");
+
+            float[] floats = new float[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    floats[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new float4x4(floats[0], floats[1], floats[2], floats[3], floats[4], floats[5], floats[6], floats[7], floats[8], floats[9], floats[10], floats[11], floats[12], floats[13], floats[14], floats[15]);
+        }
     }
 }

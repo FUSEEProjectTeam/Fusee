@@ -359,7 +359,7 @@ namespace Fusee.Engine.GUI
                             new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                         })
                 },
-                new Plane()
+                new Core.Plane()
             };
         }
     }
@@ -380,10 +380,24 @@ namespace Fusee.Engine.GUI
         /// <param name="offsets">The offsets.</param>
         /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="color">The color.</param>
-        /// <param name="textScaleFactor">By default a text has the with of 1 fusee unit. Set this to adapt the text size.</param>
+        /// <param name="horizontalAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s x-axis.</param>
+        /// <param name="verticalTextAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s y-axis.</param>
         public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
-            FontMap fontMap, float4 color, float textScaleFactor = 1)
+            FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.LEFT, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.TOP)
         {
+            var textMesh = new GUIText(fontMap, text, horizontalAlignment)
+            {
+                Name = name + "textMesh"
+            };
+
+            var xFormText = new XFormTextComponent
+            {
+                Width = textMesh.Width,
+                Height = textMesh.Height,
+                HorizontalAlignment = textMesh.HorizontalAlignment,
+                VerticalAlignment = verticalTextAlignment
+            };
+
             Name = name;
             Components = new List<SceneComponentContainer>
             {
@@ -405,7 +419,7 @@ namespace Fusee.Engine.GUI
                 {
                     Components = new List<SceneComponentContainer>()
                     {
-                        new XFormTextComponent(textScaleFactor),
+                        xFormText,
                         new ShaderEffectComponent
                         {
                             Effect = new ShaderEffect(new[]
@@ -438,11 +452,8 @@ namespace Fusee.Engine.GUI
                                     new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                                 })
                         },
-                        new GUIText(fontMap, text)
-                        {
-                            Name = name + "textMesh"
-                        }
-                    }
+                        textMesh,
+                     }
                 }
             };
 

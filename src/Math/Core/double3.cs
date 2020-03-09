@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -210,6 +211,16 @@ namespace Fusee.Math.Core
             return new double[] { x, y, z };
         }
 
+        /// <summary>
+        /// Returns a bool which determines wether this float3 isNaN
+        /// </summary>
+        public bool IsNaN => double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(z);
+
+        /// <summary>
+        /// Returns a bool which determines whether this double3 contains a infinity value
+        /// </summary>
+        public bool IsInfinity => double.IsInfinity(x) || double.IsInfinity(y) || double.IsInfinity(z);
+
         #endregion Instance
 
         #region Static
@@ -247,6 +258,20 @@ namespace Fusee.Math.Core
         // public static readonly int SizeInBytes = Marshal.SizeOf(new double3());
 
         #endregion Fields
+
+        #region Infinity
+
+        /// <summary>
+        /// Returns a double3 which contains positive infinity values
+        /// </summary>
+        public static double3 PositiveInfinity => One * double.PositiveInfinity;
+
+        /// <summary>
+        /// Returns a double3 which contains negative infinity values
+        /// </summary>
+        public static double3 NegativeInfinity => One * double.NegativeInfinity;       
+
+        #endregion
 
         #region Add
 
@@ -829,7 +854,29 @@ namespace Fusee.Math.Core
         /// </returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2})", x, y, z);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current double3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            return String.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
         }
 
         #endregion public override string ToString()
@@ -928,6 +975,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, double3> Parse { get; set; }
+        public static Converter<string, double3> ParseConverter { get; set; } = (x => double3.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a double3.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static double3 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 3)
+                throw new FormatException("String parse for double3 did not result in exactly 3 items.");
+
+            double[] doubles = new double[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    doubles[i] = double.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new double3(doubles[0], doubles[1], doubles[2]);
+        }
     }
 }

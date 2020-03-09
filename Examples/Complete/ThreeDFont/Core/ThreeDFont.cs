@@ -133,10 +133,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
-
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            sc.Children[0].Components.Insert(0, projComp);
+            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };           
 
             _renderer = new SceneRendererForward(sc);
 
@@ -169,6 +166,8 @@ namespace Fusee.Examples.ThreeDFont.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
