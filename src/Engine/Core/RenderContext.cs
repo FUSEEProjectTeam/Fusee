@@ -53,9 +53,15 @@ namespace Fusee.Engine.Core
         public RenderContextDefaultState DefaultState { get; private set; }
 
         /// <summary>
+        /// The world space frustum planes, derived from the current view-projection matrix.
+        /// </summary>
+        public Frustum RenderFrustum { get; private set; }
+
+
+        /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         /// </summary>
-        internal readonly Dictionary<string, object> GlobalFXParams = new Dictionary<string, object>();
+        internal readonly Dictionary<string, object> GlobalFXParams;
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
@@ -223,6 +229,10 @@ namespace Fusee.Engine.Core
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TView, TransView);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
+
+                var invZMat = float4x4.Identity;
+                invZMat.M33 = -1;
+                RenderFrustum.CalculateFrustumPlanes(_projection  * View);
             }
         }
 
@@ -307,6 +317,10 @@ namespace Fusee.Engine.Core
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
+
+                var invZMat = float4x4.Identity;
+                invZMat.M33 = -1;
+                RenderFrustum.CalculateFrustumPlanes(_projection *  View);
             }
         }
 
@@ -758,7 +772,7 @@ namespace Fusee.Engine.Core
                 _bones = value;
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.BonesArray, _bones);
             }
-        }        
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
@@ -768,10 +782,13 @@ namespace Fusee.Engine.Core
         {
             _rci = rci;
             DefaultState = new RenderContextDefaultState();
+            GlobalFXParams = new Dictionary<string, object>();
+
+            RenderFrustum = new Frustum();
 
             View = DefaultState.View;
             Model = float4x4.Identity;
-            Projection = DefaultState.Projection;
+            Projection = DefaultState.Projection;            
 
             // mesh management
             _meshManager = new MeshManager(_rci);
@@ -820,7 +837,6 @@ namespace Fusee.Engine.Core
             ViewportHeight = height;
             ViewportXStart = x;
             ViewportYStart = y;
-
         }
 
         #region Image Data related methods
@@ -1204,6 +1220,8 @@ namespace Fusee.Engine.Core
 
         #region Render related methods
 
+        
+
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
@@ -1469,7 +1487,7 @@ namespace Fusee.Engine.Core
         {
             Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
-            Projection = DefaultState.Projection;
+            Projection = DefaultState.Projection;            
         }
     }
 }
