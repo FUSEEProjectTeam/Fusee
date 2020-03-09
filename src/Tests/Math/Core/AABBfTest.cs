@@ -29,7 +29,6 @@ namespace Fusee.Test.Math.Core
         public void Size_Is1()
         {
             var aabbf = new AABBf(new float3(0, 0, 0), new float3(1, 1, 1));
-
             var actual = aabbf.Size;
 
             Assert.Equal(new float3(1, 1, 1), actual);

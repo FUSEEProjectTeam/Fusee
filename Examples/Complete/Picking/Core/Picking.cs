@@ -218,7 +218,7 @@ namespace Fusee.Examples.Picking.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 18);
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNodeContainer(
                 "FUSEE Picking Example",
@@ -228,7 +228,9 @@ namespace Fusee.Examples.Picking.Core
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",

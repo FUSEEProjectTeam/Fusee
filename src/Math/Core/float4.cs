@@ -715,7 +715,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
-        /// <returns>True, if left does not equa lright; false otherwise.</returns>
+        /// <returns>True, if left does not equal right; false otherwise.</returns>
         public static bool operator !=(float4 left, float4 right)
         {
             return !left.Equals(right);

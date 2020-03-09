@@ -49,6 +49,8 @@ namespace Fusee.Examples.UI.Core
         private float zFar = 1000;
         private float fov = M.PiOver4;
 
+        private GUIText _fpsText;
+
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
@@ -58,16 +60,37 @@ namespace Fusee.Examples.UI.Core
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
-            float textSize = 2;
+            
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= canvasScaleFactor;
                 borderScaleFactor = canvasScaleFactor;
             }
 
+            var fps = new TextNodeContainer(
+                "FPS: 0.00",
+                "FPSText",
+                vsTex,
+                psTex,
+                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT),
+                new MinMaxRect
+                {
+                    Min = new float2(-2, 0),
+                    Max = new float2(0, 1)
+                },
+                 _fontMap,
+                ColorUint.Tofloat4(ColorUint.White),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER
+            );
+
+            _fpsText = fps.GetComponentsInChildren<GUIText>().FirstOrDefault();
+
             var text = new TextNodeContainer(
-                "Hallo !",
+                "The five\n" +
+                "boxing wizards\n" +
+                "jump\n" +
+                "quickly.",
                 "ButtonText",
                 vsTex,
                 psTex,
@@ -78,7 +101,9 @@ namespace Fusee.Examples.UI.Core
                     Max = new float2(-1f, -0.5f)
                 },
                 _fontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery), textSize);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
             var catTextureNode = new TextureNodeContainer(
                 "Cat",
@@ -152,7 +177,7 @@ namespace Fusee.Examples.UI.Core
                 2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
             )
-            { Children = new ChildList() { text, quagganTextureNode1 } };
+            { Children = new ChildList() { quagganTextureNode1, text } };
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
@@ -214,7 +239,8 @@ namespace Fusee.Examples.UI.Core
                     quagganTextureNode,
                     nineSliceTextureNode,
                     quagganTextureNode2,
-                    quagganTextureNode3
+                    quagganTextureNode3,
+                    fps
                 }
             };
 
@@ -225,7 +251,7 @@ namespace Fusee.Examples.UI.Core
                     Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
                 })
             };
-            
+
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -235,7 +261,22 @@ namespace Fusee.Examples.UI.Core
                 Children = new List<SceneNodeContainer>
                 {
                     //Add canvas.
-                    canvas
+
+                    new SceneNodeContainer()
+                    {
+                        Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent()
+                            {
+                                Translation = new float3(0,0,0)
+                            } 
+                        },
+                        Children = new ChildList()
+                        {
+                            canvas
+                        }
+                    },
+                    
                 }
             };
         }
@@ -327,7 +368,7 @@ namespace Fusee.Examples.UI.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             _fontMap1 = new FontMap(fontLato, 8);
-            _fontMap = new FontMap(fontLato, 72);
+            _fontMap = new FontMap(fontLato, 24);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -375,6 +416,8 @@ namespace Fusee.Examples.UI.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
+
+            _fpsText.Text = "FPS: " + Time.FramePerSecond.ToString("0.00");
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
