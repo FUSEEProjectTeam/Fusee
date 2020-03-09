@@ -995,33 +995,33 @@ namespace Fusee.Engine.Core
                 compiledEffect.ParamsPerPass.Add(new Dictionary<string, FxParam>());
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
-            foreach (var param in activeUniforms)
+            foreach (var activeUniform in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(param.Key, out object initialValue))
+                if (!ef.ParamDecl.TryGetValue(activeUniform.Key, out IFxParamDeclaration dcl))
                 {
-                    Diagnostics.Error(initialValue, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                    Diagnostics.Error(dcl.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
                     continue;
                 }
 
                 var effectParam = new FxParam()
                 {
-                    Info = param.Value
+                    Info = activeUniform.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(activeUniform.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
-                    effectParam.Value = initialValue;
+                    effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
-                compiledEffect.Parameters.Add(param.Key, effectParam);
+                compiledEffect.Parameters.Add(activeUniform.Key, effectParam);
 
                 //For each pass (== ShaderProgram) add the same(!) EffectParam to the ParamsPerPass Dictionary
                 for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
                 {
                     var shaderProgram = compiledEffect.ShaderPrograms[i];
-                    if (shaderProgram.ParamsByName.ContainsKey(param.Key))
-                        compiledEffect.ParamsPerPass[i].Add(param.Key, effectParam);
+                    if (shaderProgram.ParamsByName.ContainsKey(activeUniform.Key))
+                        compiledEffect.ParamsPerPass[i].Add(activeUniform.Key, effectParam);
                 }
             }
         }
@@ -1423,17 +1423,20 @@ namespace Fusee.Engine.Core
 
                     foreach (var paramItem in compiledShaderEffect.ShaderPrograms[i].ParamsByName)
                     {
-                        if (!_currentShaderEffect.ParamDecl.TryGetValue(paramItem.Key, out object currentValue))
+                        if (!_currentShaderEffect.ParamDecl.TryGetValue(paramItem.Key, out IFxParamDeclaration dcl))
                         {
-                            Diagnostics.Error(currentValue, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                            Diagnostics.Error(dcl.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
                             continue;
                         }
 
                         // OVERWRITE Values in the ShaderEffect with the newest ones from the GlobalFXParams collection.
                         if (GlobalFXParams.TryGetValue(paramItem.Key, out object globalFXValue))
                         {
-                            if (!currentValue.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
+                            var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
+                            if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
+                            {
                                 _currentShaderEffect.SetFxParam(paramItem.Key, globalFXValue);
+                            }
                         }
 
                         var param = compiledShaderEffect.ParamsPerPass[i][paramItem.Key];

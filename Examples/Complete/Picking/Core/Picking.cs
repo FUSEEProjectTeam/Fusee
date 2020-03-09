@@ -150,7 +150,7 @@ namespace Fusee.Examples.Picking.Core
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4)ef.GetFxParam("DiffuseColor");
+                        _oldColor = ef.GetFxParam<float4>("DiffuseColor");
                         ef.SetFxParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;

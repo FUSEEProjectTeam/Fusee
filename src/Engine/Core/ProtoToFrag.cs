@@ -32,8 +32,8 @@ namespace Fusee.Engine.Core
         {
             if (shaderComponent.Effect.GetType() != typeof(ShaderEffectProtoPixel)) return;
 
-            var effect = (ShaderEffectProtoPixel)shaderComponent.Effect;           
-            effect.CreateFragmentShader(_renderForward);           
+            var effect = (ShaderEffectProtoPixel)shaderComponent.Effect;
+            effect.CreateFragmentShader(_renderForward);
 
         }
     }
