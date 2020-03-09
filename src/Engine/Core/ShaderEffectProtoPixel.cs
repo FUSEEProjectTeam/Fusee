@@ -36,13 +36,14 @@ namespace Fusee.Engine.Core
             PixelShaderSrc = new string[nPasses];
             GeometryShaderSrc = new string[nPasses];
 
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+            ParamDecl = new Dictionary<string, object>();
 
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
                 {
-                    ParamDecl.Add(param.Name, param);
+                    var val = param.GetType().GetField("Value").GetValue(param);
+                    ParamDecl.Add(param.Name, val);
                 }
             }
 

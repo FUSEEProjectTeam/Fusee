@@ -315,7 +315,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
         {
-            var color = effect.GetFxParam<float4>(UniformNameDeclarations.DiffuseColor);
+            var color = (float4)effect.GetFxParam(UniformNameDeclarations.DiffuseColor);
             color.w = alpha;
             effect.SetFxParam(UniformNameDeclarations.DiffuseColor, color);
         }

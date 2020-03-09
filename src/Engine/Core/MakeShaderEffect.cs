@@ -788,17 +788,17 @@ namespace Fusee.Engine.Core
                     Name = LightingShard.LightPararamStringsAllLights[i].Direction,
                     Value = float3.Zero
                 });
-                effectParameters.Add(new FxParamDeclaration<float>
+                effectParameters.Add(new FxParamDeclaration<int>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].LightType,
                     Value = 1
                 });
-                effectParameters.Add(new FxParamDeclaration<float>
+                effectParameters.Add(new FxParamDeclaration<int>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].IsActive,
                     Value = 1
                 });
-                effectParameters.Add(new FxParamDeclaration<float>
+                effectParameters.Add(new FxParamDeclaration<int>
                 {
                     Name = LightingShard.LightPararamStringsAllLights[i].IsCastingShadows,
                     Value = 0

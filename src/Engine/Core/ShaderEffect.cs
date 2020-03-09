@@ -1,12 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 using Fusee.Base.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-   
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    sealed class FxParamAttribute : Attribute
+    {
+        ShaderCategory _usedInShader;
+
+        public FxParamAttribute()
+        {
+            // Default - used in all categories
+            _usedInShader = 0;
+            foreach (var cat in Enum.GetValues(typeof(ShaderCategory)).Cast<ShaderCategory>())
+                _usedInShader |= cat;
+        }
+        public FxParamAttribute(ShaderCategory usedInShards)
+        {
+            _usedInShader = usedInShards;
+        }
+    }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    sealed class FxShardAttribute : System.Attribute
+    {
+        ShaderCategory _shaderCategory;
+
+        public FxShardAttribute(ShaderCategory category)
+        {
+            _shaderCategory = category;
+        }
+    }
+
     [Flags]
     public enum ShaderCategory : ushort
     {
@@ -148,7 +178,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The ShaderEffect'S uniform parameters and their values.
         /// </summary>
-        public Dictionary<string, IFxParamDeclaration> ParamDecl { get; protected set; }
+        public Dictionary<string, object> ParamDecl { get; protected set; }
 
         /// <summary>
         /// List of <see cref="RenderStateSet"/>
@@ -186,7 +216,47 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default (nullary) constructor to create a shader effect.
         /// </summary>
-        protected ShaderEffect() { }
+        protected ShaderEffect()
+        {
+            List<FxPassDeclaration> effectPassDecl = new List<FxPassDeclaration>();
+            List<IFxParamDeclaration> effectParameters = new List<IFxParamDeclaration>();
+            Type t = GetType();
+            foreach (var prop in t.GetProperties())
+            {
+                var attribs = prop.GetCustomAttributes();
+                foreach (var attrib in attribs)
+                {
+                    switch (attrib)
+                    {
+                        case FxParamAttribute paramAttrib:
+                            effectParameters.Add(BuildFxParamDecl(prop));
+                            break;
+                        case FxShardAttribute shardAttribute:
+                            if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
+                                HandleShard(shardAttribute, (string)prop.GetValue(this));
+                            else
+                                throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                            break;
+                    }
+                }
+            }
+            foreach (var field in t.GetFields())
+            {
+                var attribs = field.GetCustomAttributes();
+                foreach (var attrib in attribs)
+                {
+                    switch (attrib)
+                    {
+                        case FxShardAttribute shardAttribute:
+                            if (field.IsStatic && field.FieldType == typeof(string))
+                                HandleShard(shardAttribute, (string)field.GetValue(this));
+                            else
+                                throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                            break;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// The constructor to create a shader effect.
@@ -213,7 +283,7 @@ namespace Fusee.Engine.Core
             PixelShaderSrc = new string[nPasses];
             GeometryShaderSrc = new string[nPasses];
 
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+            ParamDecl = new Dictionary<string, object>();
 
             for (int i = 0; i < effectPasses.Length; i++)
             {
@@ -227,7 +297,8 @@ namespace Fusee.Engine.Core
             {
                 foreach (var param in effectParameters)
                 {
-                    ParamDecl.Add(param.Name, param);
+                    var val = param.GetType().GetField("Value").GetValue(param);
+                    ParamDecl.Add(param.Name, val);
                 }
             }
 
@@ -250,6 +321,23 @@ namespace Fusee.Engine.Core
             ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
         }
 
+        private void HandleShard(FxShardAttribute attrib, string shardCode)
+        {
+            throw new NotImplementedException();
+        }
+
+        private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop)
+        {
+            // Perform `new FxParamDeclaration<ParamType>{Name = paramName};`
+            // Since we do not know ParamType at compile time we need to use reflection.
+            Type concreteParamDecl = typeof(FxParamDeclaration<>).MakeGenericType(new Type[] { prop.GetType() });
+            object ob = concreteParamDecl.GetConstructor(Type.EmptyTypes).Invoke(null);
+            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
+            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, prop.Name);
+            concreteParamDecl.GetProperty("Value").SetValue(ob, prop.GetValue(this));
+            return (IFxParamDeclaration)ob;
+        }
+
         /// <summary>
         /// Set effect parameter
         /// </summary>
@@ -264,8 +352,7 @@ namespace Fusee.Engine.Core
                     if (ParamDecl[name] != null)
                         if (ParamDecl[name].Equals(value)) return;
 
-                    var paramDcl = (FxParamDeclaration<T>)ParamDecl[name];
-                    paramDcl.Value = value;
+                    ParamDecl[name] = value;
                    
                     EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED;
                     EffectEventArgs.ChangedEffectVarName = name;
@@ -287,13 +374,13 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
         /// <returns></returns>
-        public T GetFxParam<T>(string name)
+        public object GetFxParam(string name)
         {
-            if (ParamDecl.TryGetValue(name, out var dcl))
+            if (ParamDecl.TryGetValue(name, out var val))
             {
-                return ((FxParamDeclaration<T>)dcl).Value;
+                return val;
             }
-            return default;
+            return null;
         }
 
         /// <summary>
@@ -303,12 +390,12 @@ namespace Fusee.Engine.Core
         /// <param name="name">Name of the uniform variable</param>
         /// /// <param name="obj">The value. Return null if no parameter was found.</param>
         /// <returns></returns>
-        public void GetFxParam<T>(string name, out T obj)
+        public void GetFxParam(string name, out object obj)
         {
             obj = default;
-            if (ParamDecl.TryGetValue(name, out var dcl))
+            if (ParamDecl.TryGetValue(name, out var val))
             {
-                obj = ((FxParamDeclaration<T>)dcl).Value;
+                obj = val;
             }
         }        
     }
