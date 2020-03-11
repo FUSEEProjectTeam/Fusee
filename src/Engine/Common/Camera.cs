@@ -21,7 +21,7 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// Delegate that allows a user to give a custom projection calculation to a <see cref="Camera"/>.
     /// </summary>
-    /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int, bool)"/></param>
+    /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int)"/></param>
     /// <param name="projection">The given method needs to calculate the projection matrix.</param>    
     public delegate void CustomCameraUpdate(out float4 viewport, out float4x4 projection);
 
@@ -41,6 +41,12 @@ namespace Fusee.Engine.Common
         /// If set to false, the depth bit won't be cleared before this camera is rendered.
         /// </summary>
         public bool ClearDepth = true;
+
+        /// <summary>
+        /// Determines whether frustum culling is enabled for this camera or not.
+        /// Note that only <see cref="Mesh"/>s with a initialized (non zero-sized) bounding box (<see cref="Mesh.BoundingBox"/>) can be culled.
+        /// </summary>
+        public bool FrustumCullingOn = true;
 
         /// <summary>
         /// If there is more than one CameraComponent in one scene, the rendered output of the camera with a higher layer will be drawn above the output of a camera with a lower layer.        
@@ -110,15 +116,15 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="canvasWidthPx">The width of the render canvas.</param>
         /// <param name="canvasHeightPx">The height of the render canvas.</param>
-        /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int, bool)"/></param>
+        /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int)"/></param>
         /// <returns></returns>
         public float4x4 GetProjectionMat(int canvasWidthPx, int canvasHeightPx, out float4 viewport)
         {
             if (CustomCameraUpdate != null)
             {
-                CustomCameraUpdate(out viewport, out float4x4 proj);                
-                return proj;                
-            }          
+                CustomCameraUpdate(out viewport, out float4x4 proj);
+                return proj;
+            }
 
             var startX = (int)(canvasWidthPx * (Viewport.x / 100));
             var startY = (int)(canvasHeightPx * (Viewport.y / 100));
@@ -133,13 +139,12 @@ namespace Fusee.Engine.Common
                 default:
                 case ProjectionMethod.PERSPECTIVE:
                     return float4x4.CreatePerspectiveFieldOfView(Fov, (float)width / height, ClippingPlanes.x, ClippingPlanes.y);
-                    
+
                 case ProjectionMethod.ORTHOGRAPHIC:
                     return float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y);
-                    
             }
-        }       
+        }
 
     }
-    
+
 }

@@ -309,7 +309,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             //fuseeLogo.Add(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 18);
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
                 "FUSEE Deferred Example",
@@ -319,7 +319,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
 
             var guiCamComp = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)

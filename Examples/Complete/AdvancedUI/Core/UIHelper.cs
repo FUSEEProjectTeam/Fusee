@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -38,7 +38,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static string PsNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
-        internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 12);
+        internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 24);
 
         internal static float alphaInv = 0.5f;
         internal static float alphaVis = 1f;
@@ -91,13 +91,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float textSize, float borderScaleFactor, string text)
+        internal static void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
-            //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
-            var textLength = text.Length;
-            var maxLenght = 19;
-            var textSizeModifier = ((100.0f / maxLenght * textLength) / 100.0f);
-
             var container = new SceneNode
             {
                 Name = "Container"
@@ -107,32 +102,32 @@ namespace Fusee.Examples.AdvancedUI.Core
             {
                 case AnnotationKind.TO_CHECK:
                     container.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconToCheck, _frameToCheck));
                     container.Children.Add(CreateLine(MatColor.YELLOW));
                     break;
 
                 case AnnotationKind.DISCARDED:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconDiscarded, _frameDiscarded));
                     container.Children.Add(CreateLine(MatColor.GRAY));
                     break;
 
                 case AnnotationKind.RECOGNIZED_ML:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed));
                     container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
 
                 case AnnotationKind.CONFIRMED:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed));
                     container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
             }
             parentUiElement.Children.Add(container);
         }
 
-        private static SceneNode CreateAnnotation(float2 pos, float textSize, float borderScaleFactor, string text, Texture iconTex, Texture frameTex, float textSizeAdaptor = 1)
+        private static SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
             var icon = new TextureNode(
                 "icon",
@@ -159,7 +154,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                 },
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
                 RalewayFontMap,
-                ColorUint.Tofloat4(ColorUint.Black), textSize * textSizeAdaptor);
+                ColorUint.Tofloat4(ColorUint.Black),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
             var annotation = new TextureNode(
                 "Annotation",

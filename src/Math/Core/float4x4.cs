@@ -643,7 +643,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="xy">counter-clockwise angles in radiants.</param>
+        /// <param name="xy">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYX(float2 xy)
         {
@@ -653,8 +653,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="x">counter-clockwise angles in radiants.</param>
-        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <param name="x">counter-clockwise angles in radians.</param>
+        /// <param name="y">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYX(float x, float y)
         {
@@ -664,7 +664,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and z-axis.
         /// </summary>
-        /// <param name="yz">counter-clockwise angles in radiants.</param>
+        /// <param name="yz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYZ(float2 yz)
         {
@@ -674,8 +674,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="y">counter-clockwise angles in radiants.</param>
-        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <param name="y">counter-clockwise angles in radians.</param>
+        /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYZ(float y, float z)
         {
@@ -685,7 +685,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="xz">counter-clockwise angles in radiants.</param>
+        /// <param name="xz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationXZ(float2 xz)
         {
@@ -695,8 +695,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="x">counter-clockwise angles in radiants.</param>
-        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <param name="x">counter-clockwise angles in radians.</param>
+        /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationXZ(float x, float z)
         {
@@ -706,7 +706,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="xyz">counter-clockwise angles in radiants.</param>
+        /// <param name="xyz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYXZ(float3 xyz)
         {
@@ -716,9 +716,9 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Builds a rotation matrix for a rotation around the y and x-axis.
         /// </summary>
-        /// <param name="x">counter-clockwise angles in radiants.</param>
-        /// <param name="y">counter-clockwise angles in radiants.</param>
-        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <param name="x">counter-clockwise angles in radians.</param>
+        /// <param name="y">counter-clockwise angles in radians.</param>
+        /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
         public static float4x4 CreateRotationYXZ(float x, float y, float z)
         {
@@ -1014,7 +1014,7 @@ namespace Fusee.Math.Core
             result = CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
             return result;
-        }
+        }        
 
         #endregion CreatePerspectiveFieldOfView
 
@@ -1045,8 +1045,7 @@ namespace Fusee.Math.Core
         /// <item>zNear is larger than zFar</item>
         /// </list>
         /// </exception>
-        public static float4x4 CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear,
-                                                      float zFar)
+        public static float4x4 CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result;
 
@@ -1091,8 +1090,7 @@ namespace Fusee.Math.Core
         /// <item>zNear is larger than zFar</item>
         /// </list>
         /// </exception>
-        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear,
-                                                          float zFar)
+        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result;
 
@@ -1461,10 +1459,10 @@ namespace Fusee.Math.Core
 
             //2. Get rotation only 
 
-                //2.1 Eliminate translation
+            //2.1 Eliminate translation
             mat.Column3 = float4.UnitW;
 
-                //2.2 Eliminate scale
+            //2.2 Eliminate scale
             mat.Column0 /= mat.Column0.Length;
             mat.Column1 /= mat.Column1.Length;
             mat.Column2 /= mat.Column2.Length;
@@ -1475,7 +1473,7 @@ namespace Fusee.Math.Core
             //4. Invert scale
             mat.Column0 *= invScaleX;
             mat.Column1 *= invScaleY;
-            mat.Column2 *= invScaleZ;            
+            mat.Column2 *= invScaleZ;
 
             //5. Invert translation
             var invTranslation = mat * (-1 * translVec);

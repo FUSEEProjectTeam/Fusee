@@ -491,6 +491,32 @@ namespace Fusee.Engine.Common
         }
 
         /// <summary>
+        /// Use this if the TransformComponent is part of a camera and you want to achieve a first person behavior.
+        /// </summary>
+        /// <param name="tc">This TransformComponent</param>
+        /// <param name="angleHorz">The horizontal rotation angle in rad. Should probably come from Mouse input.</param>
+        /// <param name="angleVert">The vertical rotation angle in rad. Should probably come from Mouse input.</param>
+        /// <param name="inputWSAxis">The value we want to translate the camera when pressing the W or S key.</param>
+        /// <param name="inputADAxis">The value we want to translate the camera when pressing the A or D key.</param>
+        /// <param name="speed">Changes the speed of the camera movement.</param>
+        public static void FpsView(this Transform tc, float angleHorz, float angleVert, float inputWSAxis, float inputADAxis, float speed)
+        {
+            if ((angleHorz >= M.TwoPi && angleHorz > 0f) || angleHorz <= -M.TwoPi)
+                angleHorz %= M.TwoPi;
+            if ((angleVert >= M.TwoPi && angleVert > 0f) || angleVert <= -M.TwoPi)
+                angleVert %= M.TwoPi;
+
+            var camForward = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitX;
+
+            tc.Translation += camForward * inputWSAxis * speed;
+            tc.Translation += camRight * inputADAxis * speed;
+
+            tc.Rotation.y = angleHorz;
+            tc.Rotation.x = angleVert;
+        }
+
+        /// <summary>
         /// Reference space for rotation.
         /// </summary>
         public enum Space

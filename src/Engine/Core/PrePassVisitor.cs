@@ -328,11 +328,96 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderXFormText(XFormText xfc)
         {
-            var scaleX = 1 / _state.UiRect.Size.x * xfc.TextScaleFactor;
-            var scaleY = 1 / _state.UiRect.Size.y * xfc.TextScaleFactor;
+            var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
+            var scaleFactor = zNear / 100;
+            var invScaleFactor = 1 / scaleFactor;
+
+            float translationY;
+            float translationX;
+
+            float scaleX;
+            float scaleY;
+
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                //Undo parent scale
+                scaleX = 1 / _state.UiRect.Size.x;
+                scaleY = 1 / _state.UiRect.Size.y;
+
+                //Calculate translation according to alignment
+                switch (xfc.HorizontalAlignment)
+                {
+                    case HorizontalTextAlignment.LEFT:
+                        translationX = -_state.UiRect.Size.x / 2;
+                        break;
+                    case HorizontalTextAlignment.CENTER:
+                        translationX = -xfc.Width / 2;
+                        break;
+                    case HorizontalTextAlignment.RIGHT:
+                        translationX = _state.UiRect.Size.x / 2 - xfc.Width;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+
+                switch (xfc.VerticalAlignment)
+                {
+                    case VerticalTextAlignment.TOP:
+                        translationY = _state.UiRect.Size.y / 2;
+                        break;
+                    case VerticalTextAlignment.CENTER:
+                        translationY = xfc.Height / 2;
+                        break;
+                    case VerticalTextAlignment.BOTTOM:
+                        translationY = xfc.Height - (_state.UiRect.Size.y / 2);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+            }
+            else
+            {
+                //Undo parent scale, scale by distance
+                scaleX = 1 / _state.UiRect.Size.x * scaleFactor;
+                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;
+
+                //Calculate translation according to alignment by scaling the rectangle size
+                switch (xfc.HorizontalAlignment)
+                {
+                    case HorizontalTextAlignment.LEFT:
+                        translationX = -_state.UiRect.Size.x * invScaleFactor / 2;
+                        break;
+                    case HorizontalTextAlignment.CENTER:
+                        translationX = -xfc.Width / 2;
+                        break;
+                    case HorizontalTextAlignment.RIGHT:
+                        translationX = _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+
+                switch (xfc.VerticalAlignment)
+                {
+                    case VerticalTextAlignment.TOP:
+                        translationY = _state.UiRect.Size.y * invScaleFactor / 2;
+                        break;
+                    case VerticalTextAlignment.CENTER:
+                        translationY = xfc.Height / 2;
+                        break;
+                    case VerticalTextAlignment.BOTTOM:
+                        translationY = xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+            }
+
+            var translation = float4x4.CreateTranslation(translationX, translationY, 0);
             var scale = float4x4.CreateScale(scaleX, scaleY, 1);
 
             _state.Model *= scale;
+            _state.Model *= translation;
             _rc.Model = _state.Model;
         }
 

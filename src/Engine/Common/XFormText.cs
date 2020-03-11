@@ -1,22 +1,76 @@
-﻿namespace Fusee.Engine.Common
+﻿using Fusee.Math.Core;
+
+
+namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Placeholder for later implemented UI Elements such as buttons, images, slider etc.
+    /// Defines the alignment in x direction.
     /// </summary>
+    public enum HorizontalTextAlignment
+    {
+        /// <summary>
+        /// The text will be aligned to the left border of the enclosing <see cref="MinMaxRect"/>.
+        /// </summary>
+        LEFT,
+
+        /// <summary>
+        /// The text will be aligned to the middle of the horizontal axis of the enclosing <see cref="MinMaxRect"/>.
+        /// </summary>
+        CENTER,
+
+        /// <summary>
+        /// The text will be aligned to the right border of the enclosing <see cref="MinMaxRect"/>.
+        /// </summary>
+        RIGHT
+
+    }
+
+    /// <summary>
+    /// Defines the alignment in y direction.
+    /// </summary>
+    public enum VerticalTextAlignment
+    {
+        /// <summary>
+        /// The text will be aligned to the top border of the enclosing <see cref="MinMaxRect"/>.
+        /// </summary>
+        TOP,
+
+        /// <summary>
+        /// The text will be aligned to the middle of vertical axis of the enclosing <see cref="MinMaxRect"/>.
+        /// </summary>
+        CENTER,
+
+        /// <summary>
+        /// The text will be aligned to the bottom border of the enclosing <see cref="MinMaxRect"/>.
+        /// </summary>
+        BOTTOM,
+
+    }
+
+    /// <summary>
+    /// Enables the scene renderer to treat GUI text differently.
+    /// </summary>
+  
     public class XFormText : SceneComponent
     {
         /// <summary>
-        /// The UI text size.
+        /// The width of the text.
         /// </summary>
-        public float TextScaleFactor;
+        public float Width;
 
         /// <summary>
-        /// Implements the text component in the UI.
+        /// The height of the text.
         /// </summary>
-        /// <param name="textScaleFactor">The text size.</param>
-        public XFormText(float textScaleFactor = 1f)
-        {
-            TextScaleFactor = textScaleFactor;
-        }
+        public float Height;
+
+        /// <summary>
+        /// The <see cref="HorizontalTextAlignment"/>.
+        /// </summary>
+        public HorizontalTextAlignment HorizontalAlignment;
+
+        /// <summary>
+        /// The <see cref="VerticalTextAlignment"/>.
+        /// </summary>
+        public VerticalTextAlignment VerticalAlignment;
     }
 }

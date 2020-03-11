@@ -24,6 +24,12 @@ namespace Fusee.Engine.Core
         protected bool HasNumberOfLightsChanged;
 
         /// <summary>
+        /// Enables or disables Frustum Culling.
+        /// If we render with one or more cameras this value will be overwritten by <see cref="CameraComponent.FrustumCullingOn"/>.
+        /// </summary>
+        public bool DoFrumstumCulling = true;
+
+        /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNode, LightResult>> LightViseratorResults
@@ -288,9 +294,12 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam);
-                        //Reset Viewport in case we have another scene, rendered without a camera 
+                        //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                        //Standard value: frustum culling is on.
+                        DoFrumstumCulling = true;
                     }
                 }
             }
@@ -327,7 +336,6 @@ namespace Fusee.Engine.Core
 
             Traverse(_sc.Children);
         }
-
 
         /// <summary>
         /// Viserates the Light and caches them in a dedicated field.
@@ -407,14 +415,12 @@ namespace Fusee.Engine.Core
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var invProj = float4x4.Invert(_rc.Projection);
-
                 var frustumCorners = new float4[4];
 
-                frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
-                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
-                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
+                frustumCorners[0] = _rc.InvProjection * new float4(-1, -1, -1, 1); //nbl
+                frustumCorners[1] = _rc.InvProjection * new float4(1, -1, -1, 1); //nbr 
+                frustumCorners[2] = _rc.InvProjection * new float4(-1, 1, -1, 1); //ntl  
+                frustumCorners[3] = _rc.InvProjection * new float4(1, 1, -1, 1); //ntr                
 
                 for (int i = 0; i < frustumCorners.Length; i++)
                 {
@@ -526,11 +532,96 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderXFormText(XFormText xfc)
         {
-            var scaleX = 1 / _state.UiRect.Size.x * xfc.TextScaleFactor;
-            var scaleY = 1 / _state.UiRect.Size.y * xfc.TextScaleFactor;
+            var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
+            var scaleFactor = zNear / 100;
+            var invScaleFactor = 1 / scaleFactor;
+
+            float translationY; 
+            float translationX;
+
+            float scaleX;
+            float scaleY;
+            
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                //Undo parent scale
+                scaleX = 1 / _state.UiRect.Size.x;
+                scaleY = 1 / _state.UiRect.Size.y;                
+
+                //Calculate translation according to alignment
+                switch (xfc.HorizontalAlignment)
+                {
+                    case HorizontalTextAlignment.LEFT:
+                        translationX = -_state.UiRect.Size.x / 2;
+                        break;
+                    case HorizontalTextAlignment.CENTER:
+                        translationX = -xfc.Width / 2;
+                        break;
+                    case HorizontalTextAlignment.RIGHT:
+                        translationX = _state.UiRect.Size.x  / 2 - xfc.Width;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+
+                switch (xfc.VerticalAlignment)
+                {
+                    case VerticalTextAlignment.TOP:
+                        translationY = _state.UiRect.Size.y / 2;
+                        break;
+                    case VerticalTextAlignment.CENTER:
+                        translationY = xfc.Height / 2;
+                        break;
+                    case VerticalTextAlignment.BOTTOM:
+                        translationY = xfc.Height - (_state.UiRect.Size.y / 2);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+            }
+            else
+            {
+                //Undo parent scale, scale by distance
+                scaleX = 1 / _state.UiRect.Size.x * scaleFactor;
+                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;                
+
+                //Calculate translation according to alignment by scaling the rectangle size
+                switch (xfc.HorizontalAlignment)
+                {
+                    case HorizontalTextAlignment.LEFT:
+                        translationX = -_state.UiRect.Size.x * invScaleFactor / 2;
+                        break;
+                    case HorizontalTextAlignment.CENTER:
+                        translationX = -xfc.Width / 2;
+                        break;
+                    case HorizontalTextAlignment.RIGHT:
+                        translationX = _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+
+                switch (xfc.VerticalAlignment)
+                {
+                    case VerticalTextAlignment.TOP:
+                        translationY = _state.UiRect.Size.y * invScaleFactor / 2;
+                        break;
+                    case VerticalTextAlignment.CENTER:
+                        translationY = xfc.Height / 2;
+                        break;
+                    case VerticalTextAlignment.BOTTOM:
+                        translationY = xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+            }
+
+            var translation = float4x4.CreateTranslation(translationX, translationY, 0);
             var scale = float4x4.CreateScale(scaleX, scaleY, 1);
 
             _state.Model *= scale;
+            _state.Model *= translation;
             _rc.Model = _state.Model;
         }
 
@@ -582,6 +673,17 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
+
+            if (DoFrumstumCulling)
+            {
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
+                        return;
+                }
+            }
 
             Weight wc = CurrentNode.GetWeights();
             if (wc != null)
@@ -714,17 +816,17 @@ namespace Fusee.Engine.Core
             var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);            
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
             _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
             _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
             _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
             _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
             _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);            
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
             _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
             _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
-        }       
+        }
     }
 }
