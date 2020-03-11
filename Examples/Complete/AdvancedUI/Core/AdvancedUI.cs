@@ -122,7 +122,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initHeight = Height;
 
             //_scene = BuildScene();
-            _scene = new ConvertSceneGraphV1().Convert(AssetStorage.Get<FusFile>("Monkey.fus"));
+            _scene = AssetStorage.Get<Scene>("Monkey.fus");
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             rnd = new Random();

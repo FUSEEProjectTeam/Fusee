@@ -75,7 +75,7 @@ namespace Fusee.Engine.Player.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<Scene>(ModelFile);
+            _scene = await AssetStorage.GetAsync<Scene>(ModelFile).ConfigureAwait(false);
             
             _gui = await CreateGui();
             // Create the interaction handler

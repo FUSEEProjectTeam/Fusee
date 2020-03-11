@@ -49,7 +49,7 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<FusFile>("FUSEERocket.fus");
+            _rocketScene = AssetStorage.Get<Scene>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);            

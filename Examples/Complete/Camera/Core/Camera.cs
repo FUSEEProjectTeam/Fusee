@@ -111,7 +111,7 @@ namespace Fusee.Examples.Camera.Core
             };
 
             // Load the rocket model            
-            _rocketScene = new ConvertSceneGraphV1().Convert(AssetStorage.Get<FusFile>("FUSEERocket.fus"));
+            _rocketScene = AssetStorage.Get<Scene>("FUSEERocket.fus");
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);

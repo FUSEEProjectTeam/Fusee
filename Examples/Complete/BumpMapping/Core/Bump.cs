@@ -49,7 +49,7 @@ namespace Fusee.Examples.Bump.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = new ConvertSceneGraphV1().Convert(AssetStorage.Get<FusFile>(ModelFile));
+            _scene = AssetStorage.Get<Scene>(ModelFile);
 
             //TODO: export the correct material - with bump channel - from blender exporter
             //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here

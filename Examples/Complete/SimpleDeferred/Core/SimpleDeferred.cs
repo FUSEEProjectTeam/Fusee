@@ -63,7 +63,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Load the rocket model
             //_rocketScene = AssetStorage.Get<Scene>("sponza.fus");
-            _rocketScene = new ConvertSceneGraphV1().Convert(AssetStorage.Get<FusFile>("sponza_wo_textures.fus"));
+            _rocketScene = AssetStorage.Get<Scene>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<Scene>("shadowTest.fus");
 
             //Add lights to the scene

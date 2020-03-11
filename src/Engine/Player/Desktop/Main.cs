@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
 using Path = System.IO.Path;
@@ -139,7 +140,7 @@ namespace Fusee.Engine.Player.Desktop
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(FusFile),
+                    ReturnedType = typeof(Scene),
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
@@ -150,7 +151,7 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        return await Task.Factory.StartNew(() => new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage)));
+                        return await Task.Factory.StartNew(() => new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage))).ConfigureAwait(false);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });

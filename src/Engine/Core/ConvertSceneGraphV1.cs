@@ -8,6 +8,7 @@ using Fusee.Serialization.V1;
 using Fusee.Serialization;
 using Fusee.Math.Core;
 using System.Linq;
+using Fusee.Base.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -40,12 +41,27 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public Scene Convert(FusFile sc)
         {
+            if(sc == null)
+            {
+                Diagnostics.Error("Could not read content of scene, file is null!");
+                return new Scene();
+            }
+
+            // try to cast, if this fails the content is empty or null
+            if (!(sc.Contents is FusScene))
+            {
+                Diagnostics.Error($"Could not read content of scene from {sc.Header.CreationDate} created by {sc.Header.CreatedBy} with {sc.Header.Generator}");
+                return new Scene();
+            }
+
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new Scene();
 
             _matMap = new Dictionary<Material, ShaderEffect>();
             _pbrComponent = new Dictionary<MaterialPBR, ShaderEffect>();
             _boneContainers = new Stack<SceneNode>();
+
+          
 
             var payload = (FusScene)sc.Contents;
 
