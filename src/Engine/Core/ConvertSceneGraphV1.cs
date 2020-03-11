@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public Scene Convert(FusFile sc)
         {
-            if(sc == null)
+            if (sc == null)
             {
                 Diagnostics.Error("Could not read content of scene, file is null!");
                 return new Scene();
@@ -61,7 +61,7 @@ namespace Fusee.Engine.Core
             _pbrComponent = new Dictionary<MaterialPBR, ShaderEffect>();
             _boneContainers = new Stack<SceneNode>();
 
-          
+
 
             var payload = (FusScene)sc.Contents;
 
@@ -280,35 +280,48 @@ namespace Fusee.Engine.Core
 
         private ShaderEffect LookupMaterial(FusMaterial m)
         {
-            var mc = new Material {
-                Name = m.Name,
-                Bump = new BumpChannel
+            var mc = new Material
+            {
+                Name = m.Name ?? ""
+            };
+            if (m.HasBump)
+            {
+                mc.Bump = new BumpChannel
                 {
-                    Intensity = m.Bump.Intensity,
-                    Texture = m.Bump.Texture
-                },
-                Diffuse = new MatChannel
+                    Intensity = m.HasBump ? m.Bump.Intensity : 0,
+                    Texture = m.Emissive.Texture ?? ""
+                };
+            }
+            if (m.HasDiffuse)
+            {
+                mc.Diffuse = new MatChannel
                 {
                     Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture,
+                    Texture = m.Diffuse.Texture ?? "",
                     Mix = m.Diffuse.Mix
-                },
-                Emissive = new MatChannel
+                };
+            }
+            if (m.HasEmissive)
+            {
+                mc.Emissive = new MatChannel
                 {
                     Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture,
+                    Texture = m.Emissive.Texture ?? "",
                     Mix = m.Emissive.Mix
-                },                
-                Specular = new SpecularChannel
+                };
+            }
+            if (m.HasSpecular)
+            {
+                mc.Specular = new SpecularChannel
                 {
                     Color = m.Specular.Color,
                     Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture,
+                    Texture = m.Specular.Texture ?? "",
                     Intensity = m.Specular.Intensity,
                     Shininess = m.Specular.Shininess
-                }
-            };            
-            
+                };
+            }
+
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
             _matMap.Add(mc, mat);
@@ -319,36 +332,49 @@ namespace Fusee.Engine.Core
         {
             var mc = new MaterialPBR
             {
-                Name = m.Name,
-                Bump = new BumpChannel
+                Name = m.Name ?? ""
+            };
+            if (m.HasBump)
+            {
+                mc.Bump = new BumpChannel
                 {
-                    Intensity = m.Bump.Intensity,
-                    Texture = m.Bump.Texture
-                },
-                Diffuse = new MatChannel
+                    Intensity = m.HasBump ? m.Bump.Intensity : 0,
+                    Texture = m.Emissive.Texture ?? ""
+                };
+            }
+            if (m.HasDiffuse)
+            {
+                mc.Diffuse = new MatChannel
                 {
                     Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture,
+                    Texture = m.Diffuse.Texture ?? "",
                     Mix = m.Diffuse.Mix
-                },
-                Emissive = new MatChannel
+                };
+            }
+            if (m.HasEmissive)
+            {
+                mc.Emissive = new MatChannel
                 {
                     Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture,
+                    Texture = m.Emissive.Texture ?? "",
                     Mix = m.Emissive.Mix
-                },
-                Specular = new SpecularChannel
+                };
+            }
+            if (m.HasSpecular)
+            {
+                mc.Specular = new SpecularChannel
                 {
                     Color = m.Specular.Color,
                     Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture,
+                    Texture = m.Specular.Texture ?? "",
                     Intensity = m.Specular.Intensity,
                     Shininess = m.Specular.Shininess
-                },
-                DiffuseFraction = m.DiffuseFraction,
-                FresnelReflectance = m.FresnelReflectance,
-                RoughnessValue = m.RoughnessValue
-            };
+                };
+            }
+
+            mc.DiffuseFraction = m.DiffuseFraction;
+            mc.FresnelReflectance = m.FresnelReflectance;
+            mc.RoughnessValue = m.RoughnessValue;
 
             if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());

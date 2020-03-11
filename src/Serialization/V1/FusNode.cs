@@ -77,6 +77,9 @@ namespace Fusee.Serialization.V1
             if (node.Components == null)
                 node.Components = new List<int>();
 
+            if (Children == null)
+                Children = new List<FusNode>();
+
             Children.Add(node);
         }
         #endregion
