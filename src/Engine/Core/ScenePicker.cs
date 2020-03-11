@@ -267,7 +267,7 @@ namespace Fusee.Engine.Core
             PickPosClip = pickPos;
             View = _rc.View;
             Projection = _rc.Projection;
-            return Viserate();            
+            return Viserate();
         }
 
 
