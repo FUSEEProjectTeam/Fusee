@@ -239,7 +239,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
         public ScenePicker(Scene scene)
-            : base(scene.Children.GetEnumerator())
+            : base(scene.Children)
         {
             View = float4x4.Identity;
             Projection = float4x4.Identity;
@@ -463,7 +463,6 @@ namespace Fusee.Engine.Core
                 // Point-in-Triangle-Test
                 if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
                 {
-
                     YieldItem(new PickResult
                     {
                         Mesh = mesh,

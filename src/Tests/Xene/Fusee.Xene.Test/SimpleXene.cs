@@ -39,6 +39,34 @@ namespace Fusee.Xene.Test
         }
 
         [Fact]
+        public void SingleNodeEnumerableForEachTwoTimes()
+        {
+            // to test the enumeration without the usage of reset()
+            // (enumerable should yield a new enumerator every time it's called)
+            TestNode node = new TestNode();
+
+            var singleNodeEnumerable = Xene.VisitorHelpers.SingleRootEnumerable(node);
+
+            int i = 0;
+            foreach (var curNode in singleNodeEnumerable)
+            {
+                Assert.Equal(node, curNode);
+                i++;
+            }
+
+            Assert.Equal(1, i);
+
+            i = 0;
+            foreach (var curNode in singleNodeEnumerable)
+            {
+                Assert.Equal(node, curNode);
+                i++;
+            }
+
+            Assert.Equal(1, i);
+        }
+
+        [Fact]
         public void FindNodesSingleRoot()
         {
             TestNode tree = CreateSimpleTestTree();

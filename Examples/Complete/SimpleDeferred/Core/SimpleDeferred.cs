@@ -41,7 +41,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Light _sun;
 
         private Transform _camTransform;
-        private Fusee.Engine.Core.Camera _campComp = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
+        private Camera _campComp = new Camera(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
 
         // Init is called on startup.
         public override async Task<bool> Init()
@@ -322,7 +322,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
 
-            var guiCamComp = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
+            var guiCamComp = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
             {
                 ClearColor = false
             };

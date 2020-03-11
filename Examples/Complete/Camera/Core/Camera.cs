@@ -33,9 +33,9 @@ namespace Fusee.Examples.Camera.Core
 
         private Transform _mainCamTransform;
         private Transform _guiCamTransform;
-        private readonly Fusee.Engine.Core.Camera _mainCam = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
-        private readonly Fusee.Engine.Core.Camera _guiCam = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
-        private readonly Fusee.Engine.Core.Camera _sndCam = new Fusee.Engine.Core.Camera(Fusee.Engine.Core.ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Common.Camera _mainCam = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Common.Camera _guiCam = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Common.Camera _sndCam = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
 
 

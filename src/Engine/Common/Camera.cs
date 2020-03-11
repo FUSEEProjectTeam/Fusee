@@ -1,7 +1,6 @@
-﻿using Fusee.Engine.Common;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Used to define the Projection method of a <see cref="Camera"/>. Defines how the projection matrix is calculated.

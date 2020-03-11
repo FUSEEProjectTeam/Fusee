@@ -60,24 +60,6 @@ namespace Fusee.Engine.Common
             return roots.FindNodesWhereComponent<SceneNode, SceneComponent>(match);
         }
 
-
-        /// <summary>
-        /// Calculates the appropriate projection matrix for the given projection method.
-        /// </summary>
-        /// <param name="p">The projection component.</param>        
-        public static float4x4 Matrix(this Projection p)
-        {
-            switch (p.ProjectionMethod)
-            {
-                case ProjectionMethod.PERSPECTIVE:
-                default:
-                    var aspect = p.Width / (float)p.Height;
-                    return float4x4.CreatePerspectiveFieldOfView(p.Fov, aspect, p.ZNear, p.ZFar);
-                case ProjectionMethod.ORTHOGRAPHIC:
-                    return float4x4.CreateOrthographic(p.Width, p.Height, p.ZNear, p.ZFar);
-            }
-        }
-
         /// <summary>
         /// Calculates a transformation matrix from this transform component.
         /// </summary>

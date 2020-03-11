@@ -152,7 +152,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCamComp(FusCamera cc)
         {
-            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.ORTHOGRAPHIC ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE,
+            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.ORTHOGRAPHIC ? Common.ProjectionMethod.ORTHOGRAPHIC : Common.ProjectionMethod.PERSPECTIVE,
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
                 Active = cc.Active,

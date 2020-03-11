@@ -17,7 +17,7 @@ namespace Fusee.Xene
             where TNode : class, INode
             where TComponent : class, IComponent
         {
-            internal IEnumerator<TNode> _rootList;
+            internal IEnumerable<TNode> _rootList;
 
             public IEnumerator<TResult> GetEnumerator()
             {
@@ -40,7 +40,7 @@ namespace Fusee.Xene
             where TNode : class, INode
             where TComponent : class, IComponent
         {
-            return new ViseratorEnumerable<TViserator, TResult, TNode, TComponent> { _rootList = VisitorHelpers.SingleRootEnumerator(root) };
+            return new ViseratorEnumerable<TViserator, TResult, TNode, TComponent> { _rootList = VisitorHelpers.SingleRootEnumerable(root) };
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Fusee.Xene
             where TNode : class, INode
             where TComponent : class, IComponent
         {
-            return new ViseratorEnumerable<TViserator, TResult, TNode, TComponent> { _rootList = rootList.GetEnumerator() };
+            return new ViseratorEnumerable<TViserator, TResult, TNode, TComponent> { _rootList = rootList };
         }
     }
 
@@ -72,7 +72,7 @@ namespace Fusee.Xene
         where TNode : class, INode
         where TComponent : class, IComponent
     {
-        private IEnumerator<TNode> _rootList;
+        private IEnumerable<TNode> _rootList;
         private readonly Queue<TItem> _itemQueue = new Queue<TItem>(1);
 
         // unfortunate Two-step instantiation forced by C#'s poor generic constraint system which doesn't allow to constraint a parameter-taking constructor
@@ -89,10 +89,10 @@ namespace Fusee.Xene
         /// Initializes this instance with the specified tree.
         /// </summary>
         /// <param name="rootList">The tree to traverse.</param>
-        protected internal virtual void Init(IEnumerator<TNode> rootList)
+        protected internal virtual void Init(IEnumerable<TNode> rootList)
         {
             _rootList = rootList;
-            EnumInit(_rootList);
+            EnumInit(_rootList.GetEnumerator());
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Fusee.Xene
         /// </summary>
         public void Reset()
         {
-            EnumInit(_rootList);
+            EnumInit(_rootList.GetEnumerator());
         }
 
         /// <summary>
@@ -213,7 +213,7 @@ namespace Fusee.Xene
         /// Initializes this viserator using the specified root list.
         /// </summary>
         /// <param name="rootList">The tree to traverse.</param>
-        protected internal override void Init(IEnumerator<TNode> rootList)
+        protected internal override void Init(IEnumerable<TNode> rootList)
         {
             State = new TState();
             base.Init(rootList);
@@ -223,7 +223,7 @@ namespace Fusee.Xene
         /// Initializes a new instance of the <see cref="Viserator{TItem, TState,TNode,TComponent}"/> class.
         /// </summary>
         /// <param name="rootList">The root list.</param>
-        public Viserator(IEnumerator<TNode> rootList)
+        public Viserator(IEnumerable<TNode> rootList)
         {
             Init(rootList);
         }

@@ -250,6 +250,7 @@ namespace Fusee.Serialization.Test
             var sceneShould = SceneShould();
 
             // TODO: Here we need a sophisticated test method :/
+            // Visitor returns flat hierarchy, Assert.Enumerable()
             // Assert.Equal(sceneShould, sceneIs);
         }
 
@@ -335,7 +336,7 @@ namespace Fusee.Serialization.Test
                            VisibleChildIndices = 1,
                            WasLoaded = true
                        },
-                       new Camera(Engine.Core.ProjectionMethod.ORTHOGRAPHIC, 0, 500, 2000),
+                       new Camera(Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 0, 500, 2000),
                        ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new MaterialPBR
                        {
                            FresnelReflectance = 100,
