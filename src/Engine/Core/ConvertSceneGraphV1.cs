@@ -152,8 +152,18 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCamComp(FusCamera cc)
         {
-            // convert camera
-            _currentNode.Components.Add(new Camera(ProjectionMethod.PERSPECTIVE, 0.1f, 1000f, M.PiOver2));
+            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.ORTHOGRAPHIC ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE,
+                cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
+            {
+                Active = cc.Active,
+                BackgroundColor = cc.BackgroundColor,
+                ClearColor = cc.ClearColor,
+                ClearDepth = cc.ClearDepth,
+                Layer = cc.Layer,
+                Name = cc.Name
+            };
+
+            _currentNode.Components.Add(cam);
         }
 
         /// <summary>
@@ -227,7 +237,9 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            _currentNode.Components.Add(new Bone());
+            _currentNode.Components.Add(new Bone { 
+                Name = bone.Name
+            });
 
             // Collect all bones, later, when a WeightComponent is found, we can set all Joints
             _boneContainers.Push(_currentNode);

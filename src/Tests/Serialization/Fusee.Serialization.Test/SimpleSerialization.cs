@@ -181,7 +181,7 @@ namespace Fusee.Serialization.Test
                     new float2(0, 1),
                     new float2(0, 0)
                 },
-                //BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
+                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
             };
         }
     }

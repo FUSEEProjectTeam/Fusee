@@ -237,11 +237,12 @@ namespace Fusee.Xene
             _nodeEnumeratorStack.Clear();
 
             InitState();
-            
+
+            // ===============================================================================================
             // no need to Reset() IEnumerators on start. In Fact, compiler-generated enumerators using yield
             // will throw a NotSupportedException."
             // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:            
-            nodes.Reset(); // TODO (mr) -> This is needed for the picking.cs? => CMl??
+            nodes.Reset(); // TODO (MR) -> This is needed for the picking.cs? => CMl??
             
             _curNodeEnumerator = nodes;
         }
