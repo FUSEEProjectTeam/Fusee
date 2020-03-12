@@ -223,7 +223,7 @@ namespace Fusee.Engine.Core.ShaderShards
         public static readonly string ScreenParams = "ScreenParams";
 
         /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixel shaders.
+        /// The var name for the uniform AmbientStrength variable within the pixel shaders.
         /// </summary>
         public static readonly string AmbientStrengthName = "AmbientStrength";
 

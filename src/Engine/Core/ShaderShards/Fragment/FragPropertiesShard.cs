@@ -115,10 +115,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.FresnelReflectance));
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseFraction));
                 }
-                else if(effectProps.MatType == MaterialType.Standard)
-                { 
+                else if (effectProps.MatType == MaterialType.Standard)
+                {
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularStrength));                    
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularStrength));
                 }
             }
 
@@ -186,11 +186,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (lc.IsCastingShadows)
                 {
                     if (lc.Type != LightType.Point)
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.ShadowMap));                        
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.ShadowMap));
                     else
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));                    
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));
                 }
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));                
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));
             }
             else
             {
@@ -212,6 +212,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <returns></returns>
         public static string FixedNumberLightArray = $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
-               
+
     }
 }

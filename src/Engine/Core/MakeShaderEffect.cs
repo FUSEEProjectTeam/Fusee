@@ -4,6 +4,7 @@ using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderEffects;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
@@ -20,7 +21,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
         /// </summary>
-        public static ShaderEffect Default { get; } = CreateDefaultEffect();
+        public static ShaderEffectDefault Default { get; } = new ShaderEffectDefault();
 
         #region Deferred
 

@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="ShaderEffectProps"/> and the LightingCalculationMethod.
         /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>        
+        /// <param name="effectProps">The ShaderEffectProps.</param>
         public static string AssembleLightingMethods(ShaderEffectProps effectProps)
         {
             var lighting = new List<string>

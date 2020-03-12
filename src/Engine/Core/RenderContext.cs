@@ -1,5 +1,6 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderEffects;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using System;
@@ -1015,7 +1016,7 @@ namespace Fusee.Engine.Core
             {
                 if (!ef.ParamDecl.TryGetValue(activeUniform.Key, out IFxParamDeclaration dcl))
                 {
-                    Diagnostics.Error(dcl.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                    Diagnostics.Error(activeUniform.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
                     continue;
                 }
 
@@ -1443,7 +1444,7 @@ namespace Fusee.Engine.Core
                     {
                         if (!_currentShaderEffect.ParamDecl.TryGetValue(paramItem.Key, out IFxParamDeclaration dcl))
                         {
-                            Diagnostics.Error(dcl.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                            Diagnostics.Error(paramItem.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
                             continue;
                         }
 

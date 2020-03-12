@@ -2,10 +2,8 @@
 using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
-using Fusee.Math.Core;
-using System.Linq;
-using System;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.ShaderEffects;
 
 namespace Fusee.Engine.Core
 {

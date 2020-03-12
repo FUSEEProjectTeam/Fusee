@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Engine.Core.ShaderEffects;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -26,10 +27,10 @@ namespace Fusee.Engine.Core
 
             switch (args.Changed)
             {
-                case ShaderEffectChangedEnum.DISPOSE:
+                case ChangedEnum.DISPOSE:
                     Remove(senderSF);
                     break;
-                case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
+                case ChangedEnum.UNIFORM_VAR_UPDATED:
                     _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;               
                 default:

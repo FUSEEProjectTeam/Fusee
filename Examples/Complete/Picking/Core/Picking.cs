@@ -175,7 +175,7 @@ namespace Fusee.Examples.Picking.Core
             }
             _guiRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 

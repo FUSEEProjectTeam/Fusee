@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -67,7 +68,34 @@ namespace Fusee.Engine.Core.ShaderShards
             return string.Join("\n", tmpList);
         }
 
-        internal static string DecodeType(Type type)
+        public static string DecodeType(System.Type type)
+        {
+            if (type == typeof(float3x3))
+                return "mat3";
+            else if (type == typeof(float4x4))
+                return "mat4";
+            else if (type == typeof(float2))
+                return "vec2";
+            else if (type == typeof(float3))
+                return "vec3";
+            else if (type == typeof(float4))
+                return "vec4";
+            else if (type == typeof(bool))
+                return "bool";
+            else if (type == typeof(float))
+                return "float";
+            else if (type == typeof(int))
+                return "int";
+            else if (type == typeof(Texture) ||
+                type == typeof(WritableTexture))
+                return "sampler2D";
+            else if (type == typeof(WritableCubeMap))
+                return "samplerCube";
+            else
+                throw new ArgumentException($"Cannot parse type {type.Name} ");            
+        }
+
+        public static string DecodeType(Type type)
         {
             switch (type)
             {

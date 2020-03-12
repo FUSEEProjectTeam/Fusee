@@ -83,11 +83,10 @@ namespace Fusee.Engine.Core
         /// </summary>  
         public override int GetHashCode()
         {
-            return this.Id.GetHashCode();
+            return Id.GetHashCode();
         }
 
     }
-
 
     internal struct CameraResult
     {

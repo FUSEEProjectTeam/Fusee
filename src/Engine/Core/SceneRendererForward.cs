@@ -267,8 +267,7 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
-                _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
-                _rc.SetShaderEffect(MakeShaderEffect.Default);
+                InitState();
             }
         }
         #endregion
@@ -535,17 +534,17 @@ namespace Fusee.Engine.Core
             var scaleFactor = zNear / 100;
             var invScaleFactor = 1 / scaleFactor;
 
-            float translationY; 
+            float translationY;
             float translationX;
 
             float scaleX;
             float scaleY;
-            
+
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 //Undo parent scale
                 scaleX = 1 / _state.UiRect.Size.x;
-                scaleY = 1 / _state.UiRect.Size.y;                
+                scaleY = 1 / _state.UiRect.Size.y;
 
                 //Calculate translation according to alignment
                 switch (xfc.HorizontalAlignment)
@@ -557,7 +556,7 @@ namespace Fusee.Engine.Core
                         translationX = -xfc.Width / 2;
                         break;
                     case HorizontalTextAlignment.RIGHT:
-                        translationX = _state.UiRect.Size.x  / 2 - xfc.Width;
+                        translationX = _state.UiRect.Size.x / 2 - xfc.Width;
                         break;
                     default:
                         throw new ArgumentException("Invalid Horizontal Alignment");
@@ -582,7 +581,7 @@ namespace Fusee.Engine.Core
             {
                 //Undo parent scale, scale by distance
                 scaleX = 1 / _state.UiRect.Size.x * scaleFactor;
-                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;                
+                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;
 
                 //Calculate translation according to alignment by scaling the rectangle size
                 switch (xfc.HorizontalAlignment)

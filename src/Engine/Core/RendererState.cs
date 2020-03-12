@@ -1,4 +1,5 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Core.ShaderEffects;
+using Fusee.Math.Core;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core

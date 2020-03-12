@@ -1,4 +1,5 @@
-﻿using Fusee.Serialization;
+﻿using Fusee.Engine.Core.ShaderEffects;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {

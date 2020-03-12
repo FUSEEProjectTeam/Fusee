@@ -51,6 +51,11 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
+            var test = new ShaderEffectDefault();
+            test.DiffuseColor = new float4(1, 0, 0, 1);
+
+            _rocketScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = test;
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);            
             _guiRenderer = new SceneRendererForward(_gui);
