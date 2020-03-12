@@ -6,6 +6,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
+using Fusee.Xirkit;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -147,6 +148,100 @@ namespace Fusee.Engine.Core
                     _convertedScene.Children = new List<SceneNode> { _currentNode };
             }
         }
+
+        ///<summary>
+        /// Converts the animation component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvAnimation(FusAnimation a)
+        {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
+            // TODO: Test animation and refactor animation method from scene renderer to this converter 
+        }
+
+
+        ///<summary>
+        /// Converts the XForm component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvXForm(FusXForm xf)
+        {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
+            _currentNode.Components.Add(new XForm
+            {
+                Name = xf.Name
+            });
+        }
+
+        ///<summary>
+        /// Converts the XFormText component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvXFormText(FusXFormText xft)
+        {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
+            _currentNode.AddComponent(new XFormText
+            {
+                Height = xft.Height,
+                Width = xft.Width,
+                Name = xft.Name,
+                HorizontalAlignment =
+                xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.CENTER
+                ? Common.HorizontalTextAlignment.CENTER
+                : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.LEFT
+                ? Common.HorizontalTextAlignment.LEFT
+                : Common.HorizontalTextAlignment.RIGHT,
+                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.CENTER
+                ? Common.VerticalTextAlignment.CENTER
+                : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.BOTTOM
+                ? Common.VerticalTextAlignment.BOTTOM
+                : Common.VerticalTextAlignment.TOP
+            });
+        }
+
+        ///<summary>
+        /// Converts the CanvasTransform component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvCanvasTransform(FusCanvasTransform ct)
+        {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
+            _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.SCREEN
+                ? Common.CanvasRenderMode.SCREEN
+                : Common.CanvasRenderMode.WORLD)
+            {
+                Name = ct.Name,
+                Scale = ct.Scale,
+                ScreenSpaceSize = ct.ScreenSpaceSize,
+                Size = ct.Size
+            });
+        }
+
+        ///<summary>
+        /// Converts the RectTransform component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvRectTransform(FusRectTransform rt)
+        {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
+            _currentNode.AddComponent(new RectTransform
+            {
+                Name = rt.Name,
+                Anchors = rt.Anchors,
+                Offsets = rt.Offsets
+            });
+        }
+
 
         ///<summary>
         ///Converts the transform component.
@@ -469,7 +564,7 @@ namespace Fusee.Engine.Core
         private readonly FusFile _convertedScene;
         private readonly Stack<FusNode> _predecessors;
         private FusNode _currentNode;
-     
+
         private readonly Stack<FusComponent> _boneContainers;
 
         /// <summary>
@@ -484,7 +579,7 @@ namespace Fusee.Engine.Core
         {
             _predecessors = new Stack<FusNode>();
             _convertedScene = new FusFile();
-        
+
             _boneContainers = new Stack<FusComponent>();
         }
 
@@ -533,6 +628,85 @@ namespace Fusee.Engine.Core
         }
 
         ///<summary>
+        /// Converts the animation component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvAnimation(Common.Animation a)
+        {        
+            // TODO: Test animation and refactor animation method from scene renderer to this converter 
+        }
+
+
+        ///<summary>
+        /// Converts the XForm component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvXForm(XForm xf)
+        {          
+            _currentNode.AddComponent(new FusXForm
+            {
+                Name = xf.Name
+            });
+        }
+
+        ///<summary>
+        /// Converts the XFormText component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvXFormText(XFormText xft)
+        {
+            _currentNode.AddComponent(new FusXFormText
+            {
+                Height = xft.Height,
+                Width = xft.Width,
+                Name = xft.Name,
+                HorizontalAlignment =
+                xft.HorizontalAlignment == Common.HorizontalTextAlignment.CENTER
+                ? Serialization.V1.HorizontalTextAlignment.CENTER
+                : xft.HorizontalAlignment == Common.HorizontalTextAlignment.LEFT
+                ? Serialization.V1.HorizontalTextAlignment.LEFT
+                : Serialization.V1.HorizontalTextAlignment.RIGHT,
+                VerticalAlignment = xft.VerticalAlignment == Common.VerticalTextAlignment.CENTER
+                ? Serialization.V1.VerticalTextAlignment.CENTER
+                : xft.VerticalAlignment == Common.VerticalTextAlignment.BOTTOM
+                ? Serialization.V1.VerticalTextAlignment.BOTTOM
+                : Serialization.V1.VerticalTextAlignment.TOP
+            });
+        }
+
+        ///<summary>
+        /// Converts the CanvasTransform component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvCanvasTransform(CanvasTransform ct)
+        {
+            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Common.CanvasRenderMode.SCREEN
+                ? Serialization.V1.CanvasRenderMode.SCREEN
+                : Serialization.V1.CanvasRenderMode.WORLD)
+            {
+                Name = ct.Name,
+                Scale = ct.Scale,
+                ScreenSpaceSize = ct.ScreenSpaceSize,
+                Size = ct.Size
+            });
+        }
+
+        ///<summary>
+        /// Converts the RectTransform component.
+        ///</summary>
+        [VisitMethod]
+        public void ConvRectTransform(RectTransform rt)
+        {
+            _currentNode.AddComponent(new FusRectTransform
+            {
+                Name = rt.Name,
+                Anchors = rt.Anchors,
+                Offsets = rt.Offsets
+            });
+        }
+
+
+        ///<summary>
         ///Converts the transform component.
         ///</summary>
         [VisitMethod]
@@ -558,7 +732,7 @@ namespace Fusee.Engine.Core
 
             var mat = new FusMaterial();
 
-            if(fx.ParamDecl.ContainsKey(UniformNameDeclarations.DiffuseColor))
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.DiffuseColor))
                 mat.Diffuse = new MatChannelContainer();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
@@ -572,7 +746,7 @@ namespace Fusee.Engine.Core
 
             foreach (var decl in fx.ParamDecl)
             {
-                switch(decl.Key)
+                switch (decl.Key)
                 {
                     case UniformNameDeclarations.DiffuseColor:
                         mat.Diffuse.Color = (float4)decl.Value;
@@ -617,14 +791,14 @@ namespace Fusee.Engine.Core
                         break;
                     case UniformNameDeclarations.BumpIntensity:
                         mat.Bump.Intensity = (float)decl.Value;
-                        break;                
+                        break;
                 }
             }
 
             _currentNode.AddComponent(mat);
         }
 
-     
+
 
         /// <summary>
         /// Converts the shader.
@@ -657,7 +831,7 @@ namespace Fusee.Engine.Core
             // convert mesh
             var mesh = new FusMesh
             {
-                MeshType = m.MeshType,              
+                MeshType = m.MeshType,
                 BiTangents = m.BiTangents,
                 BoneIndices = m.BoneIndices,
                 BoundingBox = m.BoundingBox,
@@ -671,7 +845,7 @@ namespace Fusee.Engine.Core
                 Vertices = m.Vertices
             };
 
-          
+
             _currentNode.AddComponent(mesh);
         }
 

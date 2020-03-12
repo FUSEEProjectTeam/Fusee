@@ -57,6 +57,55 @@ namespace Fusee.Serialization.Test
                 Name = "Base"
             });
 
+            ((FusScene)scene.Contents).Children[0].AddComponent(new FusCanvasTransform(V1.CanvasRenderMode.SCREEN)
+            {
+                Name = "CanvasTransform",
+                Scale = float2.One * 2,
+                ScreenSpaceSize = new MinMaxRect
+                {
+                    Max = float2.One * 22,
+                    Min = float2.One * -1
+
+                },
+                Size = new MinMaxRect
+                {
+                    Min = float2.One * 22,
+                    Max = float2.One * -1
+
+                }
+            });
+            
+            
+            ((FusScene)scene.Contents).Children[0].AddComponent(new FusXFormText
+            {
+                Name = "XFormText",
+                Height = 10,
+                HorizontalAlignment = V1.HorizontalTextAlignment.CENTER,
+                VerticalAlignment = V1.VerticalTextAlignment.TOP,
+                Width = 200
+            });
+
+            ((FusScene)scene.Contents).Children[0].AddComponent(new FusXForm
+            {
+                Name = "XForm"
+            });
+
+            ((FusScene)scene.Contents).Children[0].AddComponent(new FusRectTransform
+            {
+                Anchors = new MinMaxRect
+                {
+                    Max = float2.Zero,
+                    Min = float2.One
+                },
+                Name = "Rect",
+                Offsets = new MinMaxRect
+                {
+                    Max = float2.Zero,
+                    Min = float2.One
+                }
+            });
+
+
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusTransform
             {
                 Scale = new float3(100, 20, 100)
@@ -247,7 +296,6 @@ namespace Fusee.Serialization.Test
 
             #endregion
 
-
             var groundTruth = SceneShouldGT();
             var gtFlattened = new List<Xene.IComponent>();
             FlattenScene(gtFlattened, groundTruth.Children[0]);
@@ -373,6 +421,39 @@ namespace Fusee.Serialization.Test
                         }
                     }
                 }
+
+                if(gtComp is RectTransform rt)
+                {
+                    Assert.Equal(rt.Name, ((FusRectTransform)fusFileComp).Name);
+                    Assert.Equal(rt.Offsets.Min, ((FusRectTransform)fusFileComp).Offsets.Min);
+                    Assert.Equal(rt.Offsets.Max, ((FusRectTransform)fusFileComp).Offsets.Max);
+                    Assert.Equal(rt.Anchors.Min, ((FusRectTransform)fusFileComp).Anchors.Min);
+                    Assert.Equal(rt.Anchors.Max, ((FusRectTransform)fusFileComp).Anchors.Max);
+                }
+
+                if(gtComp is XForm xf)
+                {
+                    Assert.Equal(xf.Name, ((FusXForm)fusFileComp).Name);
+                }
+
+                if(gtComp is XFormText xft)
+                {
+                    Assert.Equal(xft.Name, ((FusXFormText)fusFileComp).Name);
+                    Assert.Equal(xft.Height, ((FusXFormText)fusFileComp).Height);
+                    Assert.Equal(xft.Width, ((FusXFormText)fusFileComp).Width);
+                    Assert.Equal(xft.HorizontalAlignment.ToString(), ((FusXFormText)fusFileComp).HorizontalAlignment.ToString());
+                    Assert.Equal(xft.VerticalAlignment.ToString(), ((FusXFormText)fusFileComp).VerticalAlignment.ToString());
+                }
+
+                if (gtComp is CanvasTransform ct)
+                {
+                    Assert.Equal(ct.Name, ((FusCanvasTransform)fusFileComp).Name);
+                    Assert.Equal(ct.Scale, ((FusCanvasTransform)fusFileComp).Scale);
+                    Assert.Equal(ct.ScreenSpaceSize, ((FusCanvasTransform)fusFileComp).ScreenSpaceSize);
+                    Assert.Equal(ct.Size, ((FusCanvasTransform)fusFileComp).Size);
+                    Assert.Equal(ct.CanvasRenderMode.ToString(), ((FusCanvasTransform)fusFileComp).CanvasRenderMode.ToString());
+
+                }
             }
 
             // now we are sure our created fus file is correct, so we can deserialize it and test those methods
@@ -497,16 +578,46 @@ namespace Fusee.Serialization.Test
                         }
                     }
                 }
+
+                if (gtComp is RectTransform rt)
+                {
+                    Assert.Equal(rt.Name, ((RectTransform)sceneFileComp).Name);
+                    Assert.Equal(rt.Offsets.Min, ((RectTransform)sceneFileComp).Offsets.Min);
+                    Assert.Equal(rt.Offsets.Max, ((RectTransform)sceneFileComp).Offsets.Max);
+                    Assert.Equal(rt.Anchors.Min, ((RectTransform)sceneFileComp).Anchors.Min);
+                    Assert.Equal(rt.Anchors.Max, ((RectTransform)sceneFileComp).Anchors.Max);
+                }
+
+                if (gtComp is XForm xf)
+                {
+                    Assert.Equal(xf.Name, ((XForm)sceneFileComp).Name);
+                }
+
+                if (gtComp is XFormText xft)
+                {
+                    Assert.Equal(xft.Name, ((XFormText)sceneFileComp).Name);
+                    Assert.Equal(xft.Height, ((XFormText)sceneFileComp).Height);
+                    Assert.Equal(xft.Width, ((XFormText)sceneFileComp).Width);
+                    Assert.Equal(xft.HorizontalAlignment.ToString(), ((XFormText)sceneFileComp).HorizontalAlignment.ToString());
+                    Assert.Equal(xft.VerticalAlignment.ToString(), ((XFormText)sceneFileComp).VerticalAlignment.ToString());
+                }
+
+                if (gtComp is CanvasTransform ct)
+                {
+                    Assert.Equal(ct.Name, ((CanvasTransform)sceneFileComp).Name);
+                    Assert.Equal(ct.Scale, ((CanvasTransform)sceneFileComp).Scale);
+                    Assert.Equal(ct.ScreenSpaceSize, ((CanvasTransform)sceneFileComp).ScreenSpaceSize);
+                    Assert.Equal(ct.Size, ((CanvasTransform)sceneFileComp).Size);
+                    Assert.Equal(ct.CanvasRenderMode.ToString(), ((CanvasTransform)sceneFileComp).CanvasRenderMode.ToString());
+                }
             }
         }
-
-
+        
         private static void FlattenScene(List<Xene.IComponent> components, Xene.INode scene)
         {
             components.AddRange(scene.EnumComponents.ToList());
 
             if (scene.EnumChildren == null) return;
-
 
             foreach (var c in scene.EnumChildren)
             {
@@ -533,6 +644,49 @@ namespace Fusee.Serialization.Test
                     Name = "Base",
                     Components = new List<SceneComponent>
                     {
+                       new CanvasTransform(Engine.Common.CanvasRenderMode.SCREEN)
+                       {                           
+                           Name = "CanvasTransform",
+                           Scale = float2.One * 2,
+                           ScreenSpaceSize = new MinMaxRect
+                           {
+                               Max = float2.One * 22,
+                               Min = float2.One * -1
+
+                           },
+                           Size = new MinMaxRect
+                           {
+                               Min = float2.One * 22,
+                               Max = float2.One * -1
+
+                           }
+                       },
+                       new XFormText
+                        {
+                            Name = "XFormText",
+                            Height = 10,
+                            HorizontalAlignment = Engine.Common.HorizontalTextAlignment.CENTER,
+                            VerticalAlignment = Engine.Common.VerticalTextAlignment.TOP,
+                            Width = 200
+                        },
+                       new XForm
+                        {
+                            Name = "XForm"
+                        },
+                       new RectTransform
+                       {
+                           Anchors =  new MinMaxRect
+                           {
+                               Max = float2.Zero,
+                               Min = float2.One
+                           },
+                           Name = "Rect",
+                           Offsets = new MinMaxRect
+                           {
+                                Max = float2.Zero,
+                               Min = float2.One
+                           }
+                       },
                        new Transform { Scale = new float3(100, 20, 100) },
                        new Bone
                        {
