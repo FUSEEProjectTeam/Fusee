@@ -4,8 +4,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
-using Fusee.Serialization.V1;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
