@@ -141,8 +141,8 @@ namespace Fusee.Examples.Camera.Core
             _angleVertMain = _mainCamTransform.Rotation.x;
 
             // Load the rocket model            
-            //_rocketScene = AssetStorage.Get<Scene>("rnd.fus");
-            _rocketScene = Rocket.Build();
+            _rocketScene = AssetStorage.Get<Scene>("rnd.fus");
+            //_rocketScene = Rocket.Build();
 
           
             _cubeOneTransform = _rocketScene.Children[0].GetComponent<Transform>();
