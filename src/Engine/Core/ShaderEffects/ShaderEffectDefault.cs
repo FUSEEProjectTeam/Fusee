@@ -32,6 +32,42 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         #region Uniform Declarations
 
+        #region Matrices
+
+        //Matrices that are used by the shaders, keep in mind that they will be set by the SceneRenderer
+
+        [FxParam(ShaderCategory.Vertex)]
+        public float4x4 FUSEE_MV
+        {
+            set { SetFxParam(nameof(FUSEE_MV), value); }
+            get { return GetFxParam<float4x4>(nameof(FUSEE_MV)); }
+        }
+
+        [FxParam(ShaderCategory.Vertex)]
+        public float4x4 FUSEE_MVP
+        {
+            set { SetFxParam(nameof(FUSEE_MVP), value); }
+            get { return GetFxParam<float4x4>(nameof(FUSEE_MVP)); }
+        }
+
+        [FxParam(ShaderCategory.Vertex)]
+        public float4x4 FUSEE_ITMV
+        {
+            set { SetFxParam(nameof(FUSEE_ITMV), value); }
+            get { return GetFxParam<float4x4>(nameof(FUSEE_ITMV)); }
+        }
+
+        [FxParam(ShaderCategory.Vertex)]
+        public float4x4 FUSEE_IMV
+        {
+            set { SetFxParam(nameof(FUSEE_IMV), value); }
+            get { return GetFxParam<float4x4>(nameof(FUSEE_IMV)); }
+        }
+
+        #endregion
+
+        #region Color / Lighting
+
         //This region contains all user-defined uniform parameters
         //They will be added to the shader defined by "ShaderCategory" in the form of "uniform <type> <name>"
 
@@ -74,6 +110,7 @@ namespace Fusee.Engine.Core.ShaderEffects
             set { SetFxParam(nameof(SpecularShininess), value); }
             get { return GetFxParam<float>(nameof(SpecularShininess)); }
         }
+        #endregion
 
         #endregion
 
@@ -103,14 +140,7 @@ namespace Fusee.Engine.Core.ShaderEffects
         #region Vertex
 
         //This region contains shards that belong to the vertex shader.
-
-        /// <summary>
-        /// The shader shard containing the matrix uniform parameters which should NOT be settable via property because they get updated internally.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Property)]
-        public static string FuseeVertUniforms = ShaderShards.Vertex.VertPropertiesShard.FuseeUniforms(_effectProps);
-
+       
         /// <summary>
         /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
         /// </summary>
@@ -127,12 +157,7 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         #endregion
 
-        #region Fragment
-
-        //This region contains shards that belong to the pixel shader.
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
-        public static string FuseeMat = ShaderShards.Fragment.FragPropertiesShard.FuseeMatrixUniforms();
+        #region Fragment        
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]

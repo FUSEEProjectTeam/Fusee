@@ -90,10 +90,6 @@ namespace Fusee.Engine.Core.ShaderEffects
             foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.LightingShard.NumberOfLightsForward))
                 ParamDecl.Add(dcl.Name, dcl);
 
-            //TODO: ParamDecls for FUSEE_Matrices -  they should not be set by ShaderEffect.FUSEE_MVP = new float4x4() because they are managed under the hood in most cases.
-            foreach (var dcl in CreateMatParamDecls())
-                ParamDecl.Add(dcl.Name, dcl);
-
             Type t = GetType();
 
             FxParamAttribute paramAttribute;
@@ -122,7 +118,6 @@ namespace Fusee.Engine.Core.ShaderEffects
                             shardAttribute = shardAttrib;
                             break;
                     }
-
                 }
                 if (paramAttribute != null)
                 {
@@ -356,59 +351,7 @@ namespace Fusee.Engine.Core.ShaderEffects
                     Value = 0f
                 };
             }
-        }
-
-        protected static IEnumerable<IFxParamDeclaration> CreateMatParamDecls()
-        {
-            // FUSEE_ PARAMS
-            // TODO: Just add the necessary ones!
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.Model,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ModelView,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ModelViewProjection,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ITModelView,
-                Value = float4x4.Identity
-            };
-
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.IModelView,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ITView,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.View,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.Projection,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4[]>
-            {
-                Name = UniformNameDeclarations.BonesArray,
-                Value = new[] { float4x4.Identity }
-            };
-        }
+        }        
 
         private void HandleShard(FxShaderAttribute shaderAttrib, FxShardAttribute shardAttrib, string shardCode)
         {

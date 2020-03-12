@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderEffects;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -51,8 +52,11 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
-            var test = new ShaderEffectDefault();
-            test.DiffuseColor = new float4(1, 0, 0, 1);
+            var test = new ShaderEffectDefault
+            {
+                DiffuseColor = new float4(1, 0, 0, 1)
+            };
+            test.SpecularIntensity = 0f;
 
             _rocketScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = test;
 
