@@ -329,6 +329,30 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(weight);
         }
+
+        /// <summary>
+        /// Converts the octant.
+        /// </summary>
+        /// <param name="c"></param>
+        [VisitMethod]
+        public void ConvOctant(FusOctant cc)
+        {
+            _currentNode.AddComponent(new Octant
+            {
+                Center = cc.Center,
+                Guid = cc.Guid,
+                IsLeaf = cc.IsLeaf,
+                Level = cc.Level,
+                Name = cc.Name,
+                NumberOfPointsInNode = cc.NumberOfPointsInNode,
+                PosInHierarchyTex = cc.PosInHierarchyTex,
+                PosInParent = cc.PosInParent,
+                Size = cc.Size,
+                VisibleChildIndices = cc.VisibleChildIndices,
+                WasLoaded = cc.WasLoaded
+            });
+        }
+
         #endregion
 
         #region Make ShaderEffect
@@ -497,6 +521,8 @@ namespace Fusee.Engine.Core
 
                 _currentNode = _predecessors.Peek();
 
+                _convertedScene.Contents = new FusScene();
+
                 ((FusScene)_convertedScene.Contents).AddNode(_currentNode);
 
                 //if (_convertedScene.Children != null)
@@ -532,7 +558,19 @@ namespace Fusee.Engine.Core
 
             var mat = new FusMaterial();
 
-            foreach(var decl in fx.ParamDecl)
+            if(fx.ParamDecl.ContainsKey(UniformNameDeclarations.DiffuseColor))
+                mat.Diffuse = new MatChannelContainer();
+
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
+                mat.Specular = new SpecularChannelContainer();
+
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.BumpTexture))
+                mat.Bump = new BumpChannelContainer();
+
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
+                mat.Emissive = new MatChannelContainer();
+
+            foreach (var decl in fx.ParamDecl)
             {
                 switch(decl.Key)
                 {
@@ -656,6 +694,50 @@ namespace Fusee.Engine.Core
                 OuterConeAngle = l.OuterConeAngle,
                 Strength = l.Strength,
                 Type = l.Type
+            });
+        }
+
+        /// <summary>
+        /// Converts the camera.
+        /// </summary>
+        /// <param name="c"></param>
+        [VisitMethod]
+        public void ConvCamera(Camera cc)
+        {
+            _currentNode.AddComponent(new FusCamera
+            {
+                Active = cc.Active,
+                BackgroundColor = cc.BackgroundColor,
+                ClearColor = cc.ClearColor,
+                ClearDepth = cc.ClearDepth,
+                Layer = cc.Layer,
+                Name = cc.Name,
+                ClippingPlanes = cc.ClippingPlanes,
+                Fov = cc.Fov,
+                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.ORTHOGRAPHIC ? Serialization.V1.ProjectionMethod.ORTHOGRAPHIC : Serialization.V1.ProjectionMethod.PERSPECTIVE
+            });
+        }
+
+        /// <summary>
+        /// Converts the octant.
+        /// </summary>
+        /// <param name="c"></param>
+        [VisitMethod]
+        public void ConvOctant(Octant cc)
+        {
+            _currentNode.AddComponent(new FusOctant
+            {
+                Center = cc.Center,
+                Guid = cc.Guid,
+                IsLeaf = cc.IsLeaf,
+                Level = cc.Level,
+                Name = cc.Name,
+                NumberOfPointsInNode = cc.NumberOfPointsInNode,
+                PosInHierarchyTex = cc.PosInHierarchyTex,
+                PosInParent = cc.PosInParent,
+                Size = cc.Size,
+                VisibleChildIndices = cc.VisibleChildIndices,
+                WasLoaded = cc.WasLoaded
             });
         }
 
