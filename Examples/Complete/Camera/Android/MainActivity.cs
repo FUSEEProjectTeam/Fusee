@@ -65,7 +65,7 @@ namespace Fusee.Examples.Camera.Android
                         {
                             if (Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase))
                             {
-                                return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },

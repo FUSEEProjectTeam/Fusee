@@ -62,7 +62,7 @@ namespace Fusee.Examples.Bone.Android
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },

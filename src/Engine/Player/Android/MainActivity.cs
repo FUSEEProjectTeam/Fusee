@@ -62,13 +62,13 @@ namespace Fusee.Engine.Player.Android
                         {
                             if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                            return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                            return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                         },
                         DecoderAsync = async (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                            return await Task.Factory.StartNew(() => new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage)));
+                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage)));
                         },
                         Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                     });

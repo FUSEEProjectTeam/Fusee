@@ -239,7 +239,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensityName}, {UniformNameDeclarations.BumpIntensityName}, 1.0);",
+                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensity}, {UniformNameDeclarations.BumpIntensity}, 1.0);",
                 $"N = (N.x * vec3({VaryingNameDeclarations.Tangent})) + (N.y * {VaryingNameDeclarations.Bitangent}) + (N.z * {VaryingNameDeclarations.Normal});",
                 "N = normalize(N);"
             };
@@ -287,8 +287,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 if (effectProps.MatType == MaterialType.Standard)
                 {
-                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininessName});");
-                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *intensities.rgb) *specularTerm, 1.0);");
+                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
+                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularIntensity} *intensities.rgb) *specularTerm, 1.0);");
                 }
                 else if (effectProps.MatType == MaterialType.MaterialPbr)
                 {

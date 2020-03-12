@@ -117,8 +117,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 }
                 else if(effectProps.MatType == MaterialType.Standard)
                 { 
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularStrength));                    
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininess));
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensity));                    
                 }
             }
 
@@ -126,13 +126,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColor));
 
             if (effectProps.MatProbs.HasEmissive)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColor));
 
             //Textures
             if (effectProps.MatProbs.HasBump)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensityName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensity));
             }
 
             if (effectProps.MatProbs.HasDiffuseTexture)
@@ -143,8 +143,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             if (effectProps.MatProbs.HasEmissiveTexture)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTextureName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMixName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMix));
             }
 
             return string.Join("\n", matPropUnifroms);

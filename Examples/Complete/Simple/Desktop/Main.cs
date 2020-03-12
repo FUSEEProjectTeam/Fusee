@@ -35,7 +35,7 @@ namespace Fusee.Examples.Simple.Desktop
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                        return new ConvertSceneGraphV1().Convert(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });

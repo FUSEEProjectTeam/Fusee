@@ -246,8 +246,17 @@ namespace Fusee.Serialization.Test
 
             #endregion
 
-            var sceneIs = new ConvertSceneGraphV1().Convert(scene);
-            var sceneShould = SceneShould();
+
+            var sceneShould = FusSceneConverter.ConvertTo(SceneShould());
+            var sceneIs = FusSceneConverter.ConvertFrom(sceneShould);
+
+            var sceneShouldByHand = scene;
+            var sceneIsFromHand = FusSceneConverter.ConvertFrom(sceneShouldByHand);
+
+            var groundTruth = SceneShould();
+            
+            // at this point SceneShould(), groundTruth and sceneIs should all be the same - ergo serialization works in both ways!
+
 
             // TODO: Here we need a sophisticated test method :/
             // Visitor returns flat hierarchy, Assert.Enumerable()

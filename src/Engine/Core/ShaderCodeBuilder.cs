@@ -656,24 +656,24 @@ namespace Fusee.Engine.Core
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.SpecularShininessName,
+                        Name = UniformNameDeclarations.SpecularShininess,
                         Value = mc.Specular.Shininess
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.SpecularStrength,
+                        Name = UniformNameDeclarations.SpecularIntensity,
                         Value = mc.Specular.Intensity
                     });
                     if (mc.Specular.Texture != null)
                     {
                         effectParameters.Add(new EffectParameterDeclaration
                         {
-                            Name = UniformNameDeclarations.SpecularMixName,
+                            Name = UniformNameDeclarations.SpecularMix,
                             Value = mc.Specular.Mix
                         });
                         effectParameters.Add(new EffectParameterDeclaration
                         {
-                            Name = UniformNameDeclarations.SpecularTextureName,
+                            Name = UniformNameDeclarations.SpecularTexture,
                             Value = LoadTexture(mc.Specular.Texture)
                         });
                     }
@@ -712,19 +712,19 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.EmissiveColorName,
+                    Name = UniformNameDeclarations.EmissiveColor,
                     Value = mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.EmissiveMixName,
+                        Name = UniformNameDeclarations.EmissiveMix,
                         Value = mc.Emissive.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.EmissiveTextureName,
+                        Name = UniformNameDeclarations.EmissiveTexture,
                         Value = LoadTexture(mc.Emissive.Texture)
                     });
                 }
@@ -734,12 +734,12 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.BumpIntensityName,
+                    Name = UniformNameDeclarations.BumpIntensity,
                     Value = mc.Bump.Intensity
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.BumpTextureName,
+                    Name = UniformNameDeclarations.BumpTexture,
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
