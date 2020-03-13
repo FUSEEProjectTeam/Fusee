@@ -956,69 +956,68 @@ namespace Fusee.Engine.Core
             //Minimal list of uniforms of the shader source code over all ShaderEffect passes
             var activeUniforms = new Dictionary<string, ShaderParamInfo>();
 
-            try // to compile all the shaders
+            try
             {
-                compiledEffect.GpuHandle = _rci.CreateShaderProgram(ef.VertexShaderSrc, ef.FragmentShaderSrc, ef.GeometryShaderSrc);
-                compiledEffect.ShaderParamInfos = _rci.GetShaderParamList(compiledEffect.GpuHandle).ToDictionary(info => info.Name, info => info);
+                _shaderEffectManager.RegisterShaderEffect(ef);
 
-                foreach (var param in compiledEffect.ShaderParamInfos)
+                var paramInfos = _rci.GetShaderParamList(compiledEffect.GpuHandle).ToDictionary(info => info.Name, info => info);
+
+                foreach (var param in paramInfos)
                 {
                     if (!activeUniforms.ContainsKey(param.Key))
                         activeUniforms.Add(param.Key, param.Value);
                 }
+
+                //create shader program on the gpu
+                compiledEffect.GpuHandle = _rci.CreateShaderProgram(ef.VertexShaderSrc, ef.FragmentShaderSrc, ef.GeometryShaderSrc);
+
+                _allCompiledShaderEffects.Add(ef, compiledEffect);
+                CreateAllFxParamsForCompiledEffect(ef, compiledEffect, paramInfos);
+                _currentShaderEffect = ef;
+
             }
             catch (Exception ex)
             {
-                Diagnostics.Error("Error while compiling shader", ex, new string[] { ef.VertexShaderSrc, ef.GeometryShaderSrc, ef.FragmentShaderSrc});
+                Diagnostics.Error("Error while compiling shader", ex, new string[] { ef.VertexShaderSrc, ef.GeometryShaderSrc, ef.FragmentShaderSrc });
                 throw new Exception("Error while compiling shader", ex);
             }
-
-            _allCompiledShaderEffects.Add(ef, compiledEffect);
-
-            // register built shader effect
-            _shaderEffectManager.RegisterShaderEffect(ef);
-
-            CreateAllShaderEffectVariables(ef, activeUniforms);
-
-            // register this shader effect as current shader
-            _currentShaderEffect = ef;
         }
 
         /// <summary>
-        /// Gets the <see cref="CompiledShaderEffect"/> from the RC's dictionary and creates all effect parameters. 
+        /// Builds all <see cref="FxParam"/>s for the compiled effect. 
         /// </summary>
-        /// <param name="ef">The ShaderEffect the parameters are created for.</param>
-        /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
-        private void CreateAllShaderEffectVariables(ShaderEffect ef, Dictionary<string, ShaderParamInfo> activeUniforms)
+        /// <param name="effect">The ShaderEffect the compiled effect was build for. Needed to check whether the ShaderEffect contains all properties the compiled shader program has.</param>
+        /// <param name="compiledEffect">The compiled effect that contains the additional ("under the hood") information of the ShaderEffect.</param>
+        /// <param name="paramInfos">The parameter infos, directly from the gpu.</param>
+        private void CreateAllFxParamsForCompiledEffect(ShaderEffect effect, CompiledShaderEffect compiledEffect, Dictionary<string, ShaderParamInfo> paramInfos)
         {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect))
+            if (!_allCompiledShaderEffects.ContainsKey(effect))
                 throw new ArgumentException("ShaderEffect isn't build yet - no compiled effect found!");
 
             if (compiledEffect.ActiveUniforms.Count != 0)
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
-            foreach (var activeUniform in activeUniforms)
+            foreach (var param in paramInfos)
             {
-                if (!ef.Uniforms.TryGetValue(activeUniform.Key, out var prop))
+                if (!effect.Uniforms.TryGetValue(param.Key, out var prop))
                 {
-                    Diagnostics.Error(activeUniform.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                    Diagnostics.Error(param.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Property in the ShaderEffect!"));
                     continue;
                 }
 
                 var effectParam = new FxParam()
                 {
-                    Info = activeUniform.Value
+                    Info = param.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(activeUniform.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
-                    effectParam.Value = prop.GetValue(ef);
+                    effectParam.Value = prop.GetValue(effect);
 
-                compiledEffect.ActiveUniforms.Add(activeUniform.Key, effectParam);
-
+                compiledEffect.ActiveUniforms.Add(param.Key, effectParam);
             }
         }
 
@@ -1051,8 +1050,6 @@ namespace Fusee.Engine.Core
         {
             if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
 
-            //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
-            //Because of this we do not need to take about which passes this effect belongs to.
             if (compiledEffect.ActiveUniforms.TryGetValue(name, out FxParam effectParam))
             {
                 effectParam.Value = paramValue;
@@ -1087,9 +1084,10 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Sets the shaderParam, works with every type.
+        /// Sets the value for the given shader parameter, works with every type.
+        /// Note that this will change the parameter value in the currently bound shader.
         /// </summary>
-        /// <param name="param"></param>
+        /// <param name="param">The shader parameter.</param>
         private void SetShaderParamT(FxParam param)
         {
             if (param.HasValueChanged)
@@ -1196,8 +1194,6 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Render related methods
-
-
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -1414,7 +1410,7 @@ namespace Fusee.Engine.Core
                 SetShaderProgram(compiledShaderEffect.GpuHandle);
                 SetRenderStateSet(_currentShaderEffect.State);
 
-                foreach (var paramItem in compiledShaderEffect.ShaderParamInfos)
+                foreach (var paramItem in compiledShaderEffect.ActiveUniforms)
                 {
                     if (!_currentShaderEffect.Uniforms.TryGetValue(paramItem.Key, out var prop))
                     {
@@ -1430,9 +1426,9 @@ namespace Fusee.Engine.Core
                             _currentShaderEffect.SetFxParam(paramItem.Key, globalFXValue);
                     }
 
-                    var param = compiledShaderEffect.ActiveUniforms[paramItem.Key];
-                    SetShaderParamT(param);
-                    param.HasValueChanged = false;
+                    var effectParam = paramItem.Value;
+                    SetShaderParamT(effectParam);
+                    effectParam.HasValueChanged = false;
                 }
 
                 // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
@@ -1450,7 +1446,6 @@ namespace Fusee.Engine.Core
             {
                 throw new Exception("Error while rendering", ex);
             }
-
         }
 
         #endregion

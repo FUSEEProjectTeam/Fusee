@@ -152,7 +152,7 @@ namespace Fusee.Engine.Core.ShaderEffects
             }
             
             VertexShaderSrc = JoinShards(_vertexShaderSrc);
-            FragmentShaderSrc = JoinShards(_fragmentShaderSrc);           
+            FragmentShaderSrc = JoinShards(_fragmentShaderSrc);
             GeometryShaderSrc = JoinShards(_geometryShaderSrc);
         }
 
