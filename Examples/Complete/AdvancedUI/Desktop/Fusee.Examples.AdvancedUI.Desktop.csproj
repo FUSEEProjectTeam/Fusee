@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.AdvancedUI.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.AdvancedUI.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
