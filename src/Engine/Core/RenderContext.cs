@@ -1067,7 +1067,6 @@ namespace Fusee.Engine.Core
         {
             if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) return;
             _rci.RemoveShader(sFxParam.GpuHandle);
-
         }
 
         /// <summary>

@@ -1,23 +1,56 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Fusee.Engine.Common
 {
-    public class Light
+    
+    public class Light : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public int ArrayIdx;
 
         /// <summary>
         /// Represents the light status.
         /// </summary>
-        public bool Active;
+        public bool Active
+        {
+            get => _active;
+            set
+            {
+                if (value != _active)
+                {
+                    _active = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private bool _active;
+
 
         /// <summary>
         /// Represents the color.
         /// </summary>       
-        public float4 Color;
+        public float4 Color
+        {
+            get => _color;
+            set
+            {
+                if (value != _color)
+                {
+                    _color = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+        private float4 _color;
 
         /// <summary>
         /// Represents the attenuation of the light.
@@ -63,5 +96,7 @@ namespace Fusee.Engine.Common
         {
             Strength = strength;
         }
+
+        
     }
 }

@@ -1,6 +1,10 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 
 namespace Fusee.Engine.Core.ShaderEffects
 {
@@ -44,7 +48,7 @@ namespace Fusee.Engine.Core.ShaderEffects
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_MV
         {
-            internal set { SetFxParam(nameof(FUSEE_MV), value); }
+            protected set { SetFxParam(nameof(FUSEE_MV), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_MV)); }
         }
 
@@ -55,7 +59,7 @@ namespace Fusee.Engine.Core.ShaderEffects
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_MVP
         {
-            internal set { SetFxParam(nameof(FUSEE_MVP), value); }
+            protected set { SetFxParam(nameof(FUSEE_MVP), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_MVP)); }
         }
 
@@ -67,7 +71,7 @@ namespace Fusee.Engine.Core.ShaderEffects
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_ITMV
         {
-            internal set { SetFxParam(nameof(FUSEE_ITMV), value); }
+            protected set { SetFxParam(nameof(FUSEE_ITMV), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_ITMV)); }
         }
 
@@ -78,7 +82,7 @@ namespace Fusee.Engine.Core.ShaderEffects
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_IMV
         {
-            internal set { SetFxParam(nameof(FUSEE_IMV), value); }
+            protected set { SetFxParam(nameof(FUSEE_IMV), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_IMV)); }
         }
 
@@ -90,11 +94,7 @@ namespace Fusee.Engine.Core.ShaderEffects
         //They will be added to the shader defined by "ShaderCategory" in the form of "uniform <type> <name>"
         [FxParam(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Struct)]
-        public Light Light
-        {
-            get;
-            set;
-        }
+        public ObservableCollection<Light> Lights { get; protected set; }
 
         /// <summary>
         /// The diffuse color of the this shader effect.
@@ -186,24 +186,24 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxLightArray = ShaderShards.Fragment.FragPropertiesShard.FixedNumberLightArray;
+        public static string LightArray = ShaderShards.Fragment.FragPropertiesShard.FixedNumberLightArray;
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxInOut = ShaderShards.Fragment.FragPropertiesShard.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal        
+        public static string FragIn = ShaderShards.Fragment.FragPropertiesShard.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal        
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxColorOut = ShaderShards.Fragment.FragPropertiesShard.ColorOut();
+        public static string FragOut = ShaderShards.Fragment.FragPropertiesShard.ColorOut();
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Main)]
-        public static string PxMain = ShaderShards.Fragment.FragMainShard.ForwardLighting(_effectProps);
+        public static string FragMain = ShaderShards.Fragment.FragMainShard.ForwardLighting(_effectProps);
 
         //Note that "AssembleLightingMethods" contains more than the main method BUT in the correct order. Therefor we do not more than one shard here.
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Method)]
-        public static string PxLightingMethods = ShaderShards.Fragment.LightingShard.AssembleLightingMethods(_effectProps);
+        public static string FragLightingMethods = ShaderShards.Fragment.LightingShard.AssembleLightingMethods(_effectProps);
 
         #endregion
 
@@ -212,7 +212,46 @@ namespace Fusee.Engine.Core.ShaderEffects
         /// </summary>
         public StandardEffect() : base()
         {
+            Lights = new ObservableCollection<Light>();
+            Lights.CollectionChanged += Lights_CollectionChanged;
             
         }
-    }
+
+        private void Lights_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (INotifyPropertyChanged item in e.NewItems)
+                    {
+                        ((Light)item).ArrayIdx = e.NewStartingIndex;
+                        item.PropertyChanged += Lights_PropertyChanged;
+                    }
+                    break;
+                
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (INotifyPropertyChanged item in e.OldItems)
+                    {
+                        ((Light)item).ArrayIdx = -1;
+                        item.PropertyChanged -= Lights_PropertyChanged;
+                    }
+                    break;
+                //case NotifyCollectionChangedAction.Replace:
+                //    break;
+                //case NotifyCollectionChangedAction.Reset:
+                //    break;
+                //case NotifyCollectionChangedAction.Move:
+                //    break;
+                default:
+                    break;
+            }
+        }
+
+        private void Lights_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            var property = sender.GetType().GetProperty(e.PropertyName);
+            var val = property.GetValue(sender);
+            SetFxParam(nameof(Lights), e.PropertyName, ((Light)sender).ArrayIdx, val);
+        }
+    }    
 }

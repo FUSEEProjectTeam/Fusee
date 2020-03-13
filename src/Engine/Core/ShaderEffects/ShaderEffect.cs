@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Fusee.Base.Core;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core.ShaderEffects
@@ -103,6 +105,7 @@ namespace Fusee.Engine.Core.ShaderEffects
                     if (shardAttribute.ShardCategory == ShardCategory.Struct)
                     {
                         //Build struct shard (only once)
+                        Uniforms.Add(prop.Name, prop);
                         if (!_builtStructs.Contains(prop.ReflectedType))
                             BuildStruct(paramAttribute, prop.ReflectedType);
                         continue;
@@ -150,11 +153,49 @@ namespace Fusee.Engine.Core.ShaderEffects
                         throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
                 }
             }
-            
+        }
+
+        public void JoinShards()
+        {
             VertexShaderSrc = JoinShards(_vertexShaderSrc);
             FragmentShaderSrc = JoinShards(_fragmentShaderSrc);
             GeometryShaderSrc = JoinShards(_geometryShaderSrc);
         }
+
+
+        /// <summary>
+        ///Called by the SceneVisitor in the pre-pass to create the correct fragment shader, whether we render forward or deferred.
+        /// </summary>
+        public void CreateFragmentShader(bool doRenderForward)
+        {
+            if (doRenderForward)
+            {
+                var pxBody = new List<string>()
+                {
+                    LightingShard.LightStructDeclaration,
+                    FragPropertiesShard.FixedNumberLightArray,
+                    FragPropertiesShard.ColorOut(),
+                    LightingShard.AssembleLightingMethods(EffectProps),
+                    FragMainShard.ForwardLighting(EffectProps)
+                };
+
+            }
+            else
+            {
+
+                var pxBody = new List<string>()
+                {
+                    FragPropertiesShard.GBufferOut(),
+                    FragMainShard.RenderToGBuffer(EffectProps)
+                };
+
+
+                State.AlphaBlendEnable = false;
+                State.ZEnable = true;
+            }
+        }
+
+
 
         /// <summary>
         /// Set effect parameter
@@ -172,6 +213,55 @@ namespace Fusee.Engine.Core.ShaderEffects
                 ShaderEffectChanged?.Invoke(this, EffectEventArgs);
 
                 prop.SetValue(this, value);
+            }
+            else
+                Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
+        }
+
+        /// <summary>
+        /// Set effect parameter in a collection of structs.
+        /// </summary>
+        /// <param name="uniformName">Name of the uniform variable (property or field of the struct).</param>
+        /// <param name="value">Value of the uniform variable.</param>
+        /// <param name="index">Array index.</param>
+        /// <param name="structPropName">The name of the Shader Effect property of type struct array.</param>
+        internal void SetFxParam<T>(string structPropName, string uniformName, int index, T value)
+        {
+            if (Uniforms.TryGetValue(structPropName, out PropertyInfo prop))
+            {
+                var list = (IList)prop.GetValue(this);
+                var obj = list[index];
+
+                var uniformProp = obj.GetType().GetProperty(uniformName);
+                if (uniformProp != null)
+                {
+                    EffectEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
+                    EffectEventArgs.ChangedEffectVarName = structPropName + $"[{index}]." + uniformName;
+                    EffectEventArgs.ChangedEffectVarValue = value;
+
+                    ShaderEffectChanged?.Invoke(this, EffectEventArgs);
+
+                    uniformProp.SetValue(this, value);
+                }
+                else
+                {
+                    var uniformField = obj.GetType().GetField(uniformName);
+                    if (uniformField != null)
+                    {
+                        EffectEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
+                        EffectEventArgs.ChangedEffectVarName = structPropName + $"[{index}]." + uniformName;
+                        EffectEventArgs.ChangedEffectVarValue = value;
+
+                        ShaderEffectChanged?.Invoke(this, EffectEventArgs);
+
+                        uniformField.SetValue(this, value);
+                    }
+                    else
+                    {
+                        Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
+                    }
+                }
+
             }
             else
                 Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
@@ -292,6 +382,7 @@ namespace Fusee.Engine.Core.ShaderEffects
 
             return res;
         }
+
 
         /// <summary>
         /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.

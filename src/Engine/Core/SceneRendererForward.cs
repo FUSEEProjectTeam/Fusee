@@ -788,8 +788,8 @@ namespace Fusee.Engine.Core
         {
             for (var i = 0; i < _lightResults.Count; i++)
             {
-                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))                
-                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));                
+                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
+                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
 
                 UpdateShaderParamForLight(i, _lightResults[i].Item2);
             }
