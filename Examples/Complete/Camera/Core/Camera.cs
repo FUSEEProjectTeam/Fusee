@@ -85,6 +85,7 @@ namespace Fusee.Examples.Camera.Core
                 Name = "Frustum",
                 Components = new List<SceneComponent>()
                 {
+                    new Transform(),
                    ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0),
                     _frustum
                 }
@@ -144,7 +145,7 @@ namespace Fusee.Examples.Camera.Core
             _rocketScene = AssetStorage.Get<Scene>("rnd.fus");
             //_rocketScene = Rocket.Build();
 
-          
+
             _cubeOneTransform = _rocketScene.Children[0].GetComponent<Transform>();
             //_cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
 

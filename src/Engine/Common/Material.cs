@@ -13,7 +13,7 @@ namespace Fusee.Engine.Common
     {
         /// <summary>
         /// The color of the light component.
-        /// </summary>       
+        /// </summary>
         public float4 Color;
 
         /// <summary>
@@ -23,7 +23,7 @@ namespace Fusee.Engine.Common
 
         /// <summary>
         /// The percentage how to mix Color and Texture.
-        /// </summary>        
+        /// </summary>
         public float Mix;
 
         #region equals
@@ -124,7 +124,7 @@ namespace Fusee.Engine.Common
         /// </summary>        
         public float Intensity;
 
-        #region equals
+        #region Equals
 
         /// <summary>
         /// Compares two instances for equality.
@@ -195,11 +195,11 @@ namespace Fusee.Engine.Common
             unchecked
             {
                 int hash = 17;
-                hash = hash * 29 + Color.GetHashCode();
-                hash = hash * 29 + Mix.GetHashCode();
-                hash = Texture == null ? hash * 29 + 0 : hash * 29 + Texture.GetHashCode();
-                hash = hash * 29 + Shininess.GetHashCode();
-                hash = hash * 29 + Intensity.GetHashCode();
+                hash = (hash * 29) + Color.GetHashCode();
+                hash = (hash * 29) + Mix.GetHashCode();
+                hash = Texture == null ? (hash * 29) + 0 : (hash * 29) + Texture.GetHashCode();
+                hash = (hash * 29) + Shininess.GetHashCode();
+                hash = (hash * 29) + Intensity.GetHashCode();
                 return hash;
             }
         }
@@ -295,7 +295,7 @@ namespace Fusee.Engine.Common
             {
                 int hash = 17;
                 hash = Texture == null ? hash * 29 + 0 : hash * 29 + Texture.GetHashCode();
-                hash = hash * 29 + Intensity.GetHashCode();
+                hash = (hash * 29) + Intensity.GetHashCode();
                 return hash;
             }
         }
@@ -388,10 +388,7 @@ namespace Fusee.Engine.Common
             // Check for null on left side.
             if (lhs is null)
             {
-                if (lhs is null)
-                    return true;
-
-                return false;
+                return lhs is null;
             }
             // Equals handles case of null on right side.
             return lhs.Equals(rhs);
