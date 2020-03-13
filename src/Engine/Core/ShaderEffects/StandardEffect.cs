@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.ShaderShards;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core.ShaderEffects
@@ -7,7 +8,7 @@ namespace Fusee.Engine.Core.ShaderEffects
     /// The default <see cref="ShaderEffect"/>, that is used if no other ShaderEffect is found.
     /// Provides properties to change the Diffuse Color, Specular Color, Specular Intensity and Specular Shininess.
     /// </summary>
-    public class ShaderEffectDefault : ShaderEffect
+    public class StandardEffect : ShaderEffect
     {
         /// <summary>
         /// A <see cref="ShaderEffectProps"/> helps to use pre-defined shard strings. 
@@ -34,33 +35,50 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         #region Matrices
 
-        //Matrices that are used by the shaders, keep in mind that they will be set by the SceneRenderer
+        //Matrices that are used by the shaders, keep in mind that they will be set by the SceneRenderer.
 
+        /// <summary>
+        /// The model view matrix.
+        /// Global parameter, gets updated by the SceneRenderer.
+        /// </summary>
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_MV
         {
-            set { SetFxParam(nameof(FUSEE_MV), value); }
+            internal set { SetFxParam(nameof(FUSEE_MV), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_MV)); }
         }
 
+        /// <summary>
+        /// The model view projection matrix.
+        /// Global parameter, gets updated by the SceneRenderer.
+        /// </summary>
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_MVP
         {
-            set { SetFxParam(nameof(FUSEE_MVP), value); }
+            internal set { SetFxParam(nameof(FUSEE_MVP), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_MVP)); }
         }
 
+        /// <summary>
+        /// The inverse transposed model view matrix. 
+        /// Usually needed to transform normal vectors, in this case to the view space, in order to prepare them for use in the lighting calculation.
+        /// Global parameter, gets updated by the SceneRenderer.
+        /// </summary>
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_ITMV
         {
-            set { SetFxParam(nameof(FUSEE_ITMV), value); }
+            internal set { SetFxParam(nameof(FUSEE_ITMV), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_ITMV)); }
         }
 
+        /// <summary>
+        /// The inverse transposed model view matrix.
+        /// Global parameter, gets updated by the SceneRenderer.
+        /// </summary>
         [FxParam(ShaderCategory.Vertex)]
         public float4x4 FUSEE_IMV
         {
-            set { SetFxParam(nameof(FUSEE_IMV), value); }
+            internal set { SetFxParam(nameof(FUSEE_IMV), value); }
             get { return GetFxParam<float4x4>(nameof(FUSEE_IMV)); }
         }
 
@@ -70,6 +88,13 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         //This region contains all user-defined uniform parameters
         //They will be added to the shader defined by "ShaderCategory" in the form of "uniform <type> <name>"
+        [FxParam(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Struct)]
+        public Light Light
+        {
+            get;
+            set;
+        }
 
         /// <summary>
         /// The diffuse color of the this shader effect.
@@ -161,10 +186,6 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string LightStruct = ShaderShards.Fragment.LightingShard.LightStructDeclaration;
-
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
         public static string PxLightArray = ShaderShards.Fragment.FragPropertiesShard.FixedNumberLightArray;
 
         [FxShader(ShaderCategory.Fragment)]
@@ -189,12 +210,9 @@ namespace Fusee.Engine.Core.ShaderEffects
         /// <summary>
         /// Create a new instance of type ShaderEffectDefault
         /// </summary>
-        public ShaderEffectDefault() : base()
+        public StandardEffect() : base()
         {
-            DiffuseColor = new float4(0.5f, 0.5f, 0.5f, 1.0f);
-            SpecularColor = new float4(1, 1, 1, 1);
-            SpecularIntensity = 0.5f;
-            SpecularShininess = 22;
+            
         }
     }
 }

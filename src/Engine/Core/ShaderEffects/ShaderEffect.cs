@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Fusee.Base.Core;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core.ShaderEffects
@@ -14,32 +12,29 @@ namespace Fusee.Engine.Core.ShaderEffects
     /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
-    public class ShaderEffect : IDisposable
+    public abstract class ShaderEffect : IDisposable
     {
-        /// <summary>
-        /// The ShaderEffect'S uniform parameters and their values.
-        /// </summary>
-        public Dictionary<string, IFxParamDeclaration> ParamDecl { get; protected set; }
+        public readonly Dictionary<string, PropertyInfo> Uniforms;
 
         /// <summary>
         /// List of <see cref="RenderStateSet"/>
         /// </summary>
-        public RenderStateSet[] States { get; protected set; }
+        public RenderStateSet State { get; protected set; }
 
         /// <summary>
         /// Vertex shaders of all passes
         /// </summary>
-        public string[] VertexShaderSrc { get; protected set; }
+        public string VertexShaderSrc { get; protected set; }
 
         /// <summary>
         /// Pixel- or fragment shader of all passes
         /// </summary>
-        public string[] PixelShaderSrc { get; protected set; }
+        public string FragmentShaderSrc { get; protected set; }
 
         /// <summary>
         /// Geometry of all passes
         /// </summary>
-        public string[] GeometryShaderSrc { get; protected set; }
+        public string GeometryShaderSrc { get; protected set; }
 
         // Event ShaderEffect changes
         /// <summary>
@@ -54,11 +49,11 @@ namespace Fusee.Engine.Core.ShaderEffects
 
         internal ShaderEffectEventArgs EffectEventArgs;
 
-        //TODO: clear if pass is ready
-        private List<KeyValuePair<ShardCategory, string>> vertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        private List<KeyValuePair<ShardCategory, string>> geometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        private List<KeyValuePair<ShardCategory, string>> fragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        private readonly List<KeyValuePair<ShardCategory, string>> _vertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        private readonly List<KeyValuePair<ShardCategory, string>> _geometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        private readonly List<KeyValuePair<ShardCategory, string>> _fragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
 
+        private readonly HashSet<Type> _builtStructs;
 
         /// <summary>
         /// The default (nullary) constructor to create a shader effect.
@@ -66,29 +61,12 @@ namespace Fusee.Engine.Core.ShaderEffects
         /// </summary>
         protected ShaderEffect()
         {
+            Uniforms = new Dictionary<string, PropertyInfo>();
+            _builtStructs = new HashSet<Type>();
+
             EffectEventArgs = new ShaderEffectEventArgs(this, ChangedEnum.UNCHANGED);
 
-            List<FxPassDeclaration> effectPassDecl = new List<FxPassDeclaration>();
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
-
-            //TODO: implement passes and States 
-            States = new RenderStateSet[1];
-            States[0] = new RenderStateSet
-            {
-                ZEnable = true,
-                AlphaBlendEnable = true,
-                SourceBlend = Blend.SourceAlpha,
-                DestinationBlend = Blend.InverseSourceAlpha,
-                BlendOperation = BlendOperation.Add,
-            };
-
-            VertexShaderSrc = new string[1];
-            PixelShaderSrc = new string[1];
-            GeometryShaderSrc = new string[1];
-
-            //TODO: Difference forward/deferred. Lights as properties? Would be difficult because each Light property must be one property in the ShaderEffect.
-            foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.LightingShard.NumberOfLightsForward))
-                ParamDecl.Add(dcl.Name, dcl);
+            State = RenderStateSet.Default;
 
             Type t = GetType();
 
@@ -119,17 +97,27 @@ namespace Fusee.Engine.Core.ShaderEffects
                             break;
                     }
                 }
+
                 if (paramAttribute != null)
                 {
-                    var paramDcl = BuildFxParamDecl(prop);
-                    ParamDecl.Add(paramDcl.Name, paramDcl);
-                    HandleUniform(paramAttribute, paramDcl.Name, paramDcl.ParamType);
-                    continue;
+                    if (shardAttribute.ShardCategory == ShardCategory.Struct)
+                    {
+                        //Build struct shard (only once)
+                        if (!_builtStructs.Contains(prop.ReflectedType))
+                            BuildStruct(paramAttribute, prop.ReflectedType);
+                        continue;
+                    }
+                    else
+                    {
+                        Uniforms.Add(prop.Name, prop);
+                        BuildUniform(paramAttribute, prop.Name, prop.ReflectedType);
+                        continue;
+                    }
                 }
                 else if (shaderAttribute != null && shaderAttribute != null)
                 {
                     if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
-                        HandleShard(shaderAttribute, shardAttribute, (string)prop.GetValue(this));
+                        BuildShard(shaderAttribute, shardAttribute, (string)prop.GetValue(this));
                     else
                         throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
                 }
@@ -157,96 +145,36 @@ namespace Fusee.Engine.Core.ShaderEffects
                 if (shaderAttribute != null && shardAttribute != null)
                 {
                     if (field.IsStatic && field.FieldType == typeof(string))
-                        HandleShard(shaderAttribute, shardAttribute, (string)field.GetValue(this));
+                        BuildShard(shaderAttribute, shardAttribute, (string)field.GetValue(this));
                     else
                         throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
                 }
             }
-
-            if (vertexShaderSrc.Count > 0)
-                VertexShaderSrc[0] = JoinShards(vertexShaderSrc);
-            if (fragmentShaderSrc.Count > 0)
-                PixelShaderSrc[0] = JoinShards(fragmentShaderSrc);
-            if (geometryShaderSrc.Count > 0)
-                GeometryShaderSrc[0] = JoinShards(geometryShaderSrc);
+            
+            VertexShaderSrc = JoinShards(_vertexShaderSrc);
+            FragmentShaderSrc = JoinShards(_fragmentShaderSrc);           
+            GeometryShaderSrc = JoinShards(_geometryShaderSrc);
         }
 
-        /// <summary>
-        /// The constructor to create a shader effect.
-        /// </summary>
-        /// <param name="effectPasses">The ordered array of <see cref="FxPassDeclaration"/> items. The first item
-        /// in the array is the first pass applied to rendered geometry, and so on.</param>
-        /// <param name="effectParameters">A list of (uniform) parameters possibly occurring in one of the shaders in the various passes.
-        /// Each array entry consists of the parameter's name and its initial value. The concrete type of the object also indicates the
-        /// parameter's type.
-        /// </param>
-        /// <remarks>Make sure to list any parameter in any of the different passes' shaders you want to change later on in the effectParameters
-        /// list. Shaders must not contain parameters with names listed in the effectParameters but declared with different types than those of 
-        /// the respective default values given here.</remarks>
-        public ShaderEffect(FxPassDeclaration[] effectPasses, IEnumerable<IFxParamDeclaration> effectParameters)
-        {
-            if (effectPasses == null || effectPasses.Length == 0)
-                throw new ArgumentNullException(nameof(effectPasses), "must not be null and must contain at least one pass");
-
-            var nPasses = effectPasses.Length;
-
-            States = new RenderStateSet[nPasses];
-
-            VertexShaderSrc = new string[nPasses];
-            PixelShaderSrc = new string[nPasses];
-            GeometryShaderSrc = new string[nPasses];
-
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
-
-            for (int i = 0; i < effectPasses.Length; i++)
-            {
-                States[i] = effectPasses[i].StateSet;
-                VertexShaderSrc[i] = effectPasses[i].VS;
-                PixelShaderSrc[i] = effectPasses[i].PS;
-                GeometryShaderSrc[i] = effectPasses[i].GS;
-            }
-
-            if (effectParameters != null)
-            {
-                foreach (var param in effectParameters)
-                {
-                    //var val = param.GetType().GetField("Value").GetValue(param);
-                    ParamDecl.Add(param.Name, param);
-                }
-            }
-
-            EffectEventArgs = new ShaderEffectEventArgs(this, ChangedEnum.UNCHANGED);
-        }
-        
         /// <summary>
         /// Set effect parameter
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
         /// <param name="value">Value of the uniform variable</param>
-        public void SetFxParam<T>(string name, T value)
+        internal void SetFxParam<T>(string name, T value)
         {
-            if (ParamDecl != null)
+            if (Uniforms.TryGetValue(name, out PropertyInfo prop))
             {
-                if (ParamDecl.ContainsKey(name))
-                {
-                    if (ParamDecl[name] != null)
-                        if (ParamDecl[name].Equals(value)) return;
+                EffectEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
+                EffectEventArgs.ChangedEffectVarName = name;
+                EffectEventArgs.ChangedEffectVarValue = value;
 
-                    //Implemented using reflections and not "(FxParamDeclaration<T>)ParamDecl[name]" because 
-                    //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.                    
-                    ParamDecl[name].GetType().GetField("Value").SetValue(ParamDecl[name], value);
+                ShaderEffectChanged?.Invoke(this, EffectEventArgs);
 
-                    EffectEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
-                    EffectEventArgs.ChangedEffectVarName = name;
-                    EffectEventArgs.ChangedEffectVarValue = value;
-
-                    ShaderEffectChanged?.Invoke(this, EffectEventArgs);
-                }
-                else
-                {
-                    Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
-                }
+                prop.SetValue(this, value);
             }
+            else
+                Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
         }
 
         /// <summary>
@@ -254,197 +182,88 @@ namespace Fusee.Engine.Core.ShaderEffects
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
         /// <returns></returns>
-        public T GetFxParam<T>(string name)
+        internal T GetFxParam<T>(string name)
         {
-            if (ParamDecl.TryGetValue(name, out var dcl))
-            {
-                return ((FxParamDeclaration<T>)dcl).Value;
-            }
+            if (Uniforms.TryGetValue(name, out var prop))
+                return (T)prop.GetValue(this);
+
             return default;
         }
 
-        /// <summary>
-        /// Returns the value of a given shader effect variable
-        /// </summary>
-        /// <param name="name">Name of the uniform variable</param>
-        /// /// <param name="obj">The value. Return null if no parameter was found.</param>
-        /// <returns></returns>
-        public void GetFxParam<T>(string name, out T obj)
+        private void AddToShaderSrcCodeList(ShaderCategory shaderCategory, KeyValuePair<ShardCategory, string> kvp)
         {
-            obj = default;
-            if (ParamDecl.TryGetValue(name, out var dcl))
-                obj = ((FxParamDeclaration<T>)dcl).Value;
-        }
-
-        protected static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
-        {
-            for (int i = 0; i < numberOfLights; i++)
-            {
-                if (!ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights.ContainsKey(i))
-                {
-                    ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights.Add(i, new ShaderShards.Fragment.LightParamStrings(i));
-                }
-
-                yield return new FxParamDeclaration<float3>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].PositionViewSpace,
-                    Value = new float3(0, 0, -1.0f)
-                };
-
-                yield return new FxParamDeclaration<float4>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Intensities,
-                    Value = float4.Zero
-                };
-
-                yield return new FxParamDeclaration<float>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].MaxDistance,
-                    Value = 0.0f
-                };
-
-                yield return new FxParamDeclaration<float>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Strength,
-                    Value = 0.0f
-                };
-
-                yield return new FxParamDeclaration<float>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].OuterAngle,
-                    Value = 0.0f
-                };
-
-                yield return new FxParamDeclaration<float>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].InnerAngle,
-                    Value = 0.0f
-                };
-
-                yield return new FxParamDeclaration<float3>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Direction,
-                    Value = float3.Zero
-                };
-
-                yield return new FxParamDeclaration<int>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].LightType,
-                    Value = 1
-                };
-
-                yield return new FxParamDeclaration<int>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].IsActive,
-                    Value = 1
-                };
-
-                yield return new FxParamDeclaration<int>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].IsCastingShadows,
-                    Value = 0
-                };
-
-                yield return new FxParamDeclaration<float>()
-                {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Bias,
-                    Value = 0f
-                };
-            }
-        }        
-
-        private void HandleShard(FxShaderAttribute shaderAttrib, FxShardAttribute shardAttrib, string shardCode)
-        {
-            switch (shaderAttrib.ShaderCategory)
+            switch (shaderCategory)
             {
                 case ShaderCategory.Vertex:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _vertexShaderSrc.Add(kvp);
+                    _vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Fragment:
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _fragmentShaderSrc.Add(kvp);
+                    _fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry:
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _geometryShaderSrc.Add(kvp);
+                    _geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _vertexShaderSrc.Add(kvp);
+                    _vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _fragmentShaderSrc.Add(kvp);
+                    _fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Geometry:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _vertexShaderSrc.Add(kvp);
+                    _vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _geometryShaderSrc.Add(kvp);
+                    _geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry_Pixel:
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _geometryShaderSrc.Add(kvp);
+                    _geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _fragmentShaderSrc.Add(kvp);
+                    _fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Geometry_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _vertexShaderSrc.Add(kvp);
+                    _vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _geometryShaderSrc.Add(kvp);
+                    _geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    _fragmentShaderSrc.Add(kvp);
+                    _fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 default:
                     break;
             }
         }
 
-        private void HandleUniform(FxParamAttribute attrib, string uniformName, Type type)
+        private void BuildShard(FxShaderAttribute shaderAttrib, FxShardAttribute shardAttrib, string shardCode)
+        {
+            AddToShaderSrcCodeList(shaderAttrib.ShaderCategory, new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+        }
+
+        private void BuildUniform(FxParamAttribute attrib, string uniformName, Type type)
         {
             var uniform = "uniform ";
-            switch (attrib.ShaderCategory)
-            {
-                case ShaderCategory.Vertex:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
-                case ShaderCategory.Fragment:
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
-                case ShaderCategory.Geometry:
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
-                case ShaderCategory.Vertex_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
-                case ShaderCategory.Geometry_Pixel:
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
-                case ShaderCategory.Vertex_Geometry:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
-                case ShaderCategory.Vertex_Geometry_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    break;
+            AddToShaderSrcCodeList(attrib.ShaderCategory, new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+        }
 
-                default:
-                    break;
-            }
+        private void BuildStruct(FxParamAttribute paramAttrib, Type type)
+        {
+            var srcCodeList = new List<string>
+            {
+                $"struct {type.Name}",
+                "{"
+            };
+
+            foreach (var prop in type.GetProperties())
+                srcCodeList.Add(GLSL.DecodeType(prop.ReflectedType) + " " + prop.Name);
+            foreach (var field in type.GetFields())
+                srcCodeList.Add(GLSL.DecodeType(field.ReflectedType) + " " + field.Name);
+
+            srcCodeList.Add("}");
+
+            AddToShaderSrcCodeList(paramAttrib.ShaderCategory, new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, string.Join("\n", srcCodeList)));
         }
 
         private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop)

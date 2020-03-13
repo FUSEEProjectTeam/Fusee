@@ -52,7 +52,7 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
-            var test = new ShaderEffectDefault
+            var test = new StandardEffect
             {
                 DiffuseColor = new float4(1, 0, 0, 1)
             };

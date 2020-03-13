@@ -21,7 +21,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
         /// </summary>
-        public static ShaderEffectDefault Default { get; } = new ShaderEffectDefault();
+        public static StandardEffect Default { get; } = new StandardEffect() 
+        {
+            DiffuseColor = new float4(0.5f, 0.5f, 0.5f, 1.0f),
+            SpecularColor = new float4(1, 1, 1, 1),
+            SpecularIntensity = 0.5f,
+            SpecularShininess = 22
+        };
 
         #region Deferred
 

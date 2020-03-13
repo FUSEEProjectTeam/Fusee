@@ -33,7 +33,7 @@ namespace Fusee.Engine.Core.ShaderEffects
             States = new RenderStateSet[nPasses];
 
             VertexShaderSrc = new string[nPasses];
-            PixelShaderSrc = new string[nPasses];
+            FragmentShaderSrc = new string[nPasses];
             GeometryShaderSrc = new string[nPasses];
 
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.ShaderEffects
                         FragMainShard.ForwardLighting(EffectProps)
                     };
 
-                    PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
+                    FragmentShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
                 }
             }
             else
@@ -89,7 +89,7 @@ namespace Fusee.Engine.Core.ShaderEffects
                         FragPropertiesShard.GBufferOut(),
                         FragMainShard.RenderToGBuffer(EffectProps)
                     };
-                    PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
+                    FragmentShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
 
                     States[i].AlphaBlendEnable = false;
                     States[i].ZEnable = true;
