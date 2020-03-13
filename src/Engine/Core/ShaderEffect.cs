@@ -203,22 +203,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
-        /// </summary>
-        ~ShaderEffect()
-        {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Is called when GC of this shader effect kicks in
-        /// </summary>
-        public void Dispose()
-        {
-            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
-        }
-
-        /// <summary>
         /// Set effect parameter
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
@@ -288,6 +272,40 @@ namespace Fusee.Engine.Core
         /// Needed for <see cref="DynamicObject"/>
         /// </summary>
         public int Count => ParamDecl.Count;
+
+
+        #region IDisposable Support
+
+        private bool disposedValue = false; // To detect redundant calls
+
+        /// <summary>
+        /// Invoke deletion of shaders on GPU
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        /// <summary>
+        /// Invoke deletion of shaders on GPU
+        /// </summary>
+        /// <param name="disposing"></param>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);           
+        }
+
+        #endregion
     }
 
     /// <summary>

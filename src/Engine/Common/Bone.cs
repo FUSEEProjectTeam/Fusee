@@ -10,11 +10,5 @@ namespace Fusee.Engine.Common
     /// </summary>
     public class Bone : SceneComponent
     {
-        /*
-        /// <summary>
-        /// The name of this component.
-        /// </summary>
-        public string Name;
-        */
     }
 }

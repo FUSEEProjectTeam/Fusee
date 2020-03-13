@@ -226,13 +226,13 @@ namespace Fusee.Engine.Common
             if (snThisThis == null || snThisThis.Components == null || type == null)
                 return null;
 
-            foreach (var cont in snThisThis.Components)
+            foreach (var comp in snThisThis.Components)
             {
                 var inxC = 0;
-                if (cont.GetType().IsAssignableFrom(type))
+                if (type.IsAssignableFrom(comp.GetType()))
                 {
                     if (inxC == inx)
-                        return cont;
+                        return comp;
                 }
             }
             return null;

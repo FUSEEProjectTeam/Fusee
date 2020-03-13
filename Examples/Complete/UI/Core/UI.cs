@@ -2,9 +2,9 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -298,8 +298,7 @@ namespace Fusee.Examples.UI.Core
                 Diffuse = new MatChannel { Color = new float4(1, 0.4f, 0.1f, 1) },
             });
             var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
-            n.RemoveComponent<ShaderEffect>();
-            n.AddComponent(color);
+            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.DiffuseColor, new float4(1, 0.4f, 0.1f, 1));
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
@@ -310,8 +309,7 @@ namespace Fusee.Examples.UI.Core
                 Diffuse = new MatChannel { Color = new float4(1, 0, 0, 1) },
             });
             var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
-            n.RemoveComponent<ShaderEffect>();
-            n.AddComponent(color);
+            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.DiffuseColor, new float4(1, 0, 0, 1));
         }
 
         public void OnBtnCatDown(CodeComponent sender)

@@ -15,11 +15,13 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(1)]
         public float3 Translation;
+
         /// <summary>
         /// The rotation (orientation) of the node.
         /// </summary>
         [ProtoMember(2)]
         public float3 Rotation;
+
         /// <summary>
         /// The scale (size) of the node.
         /// </summary>

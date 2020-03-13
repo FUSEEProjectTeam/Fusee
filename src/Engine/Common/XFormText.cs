@@ -22,7 +22,6 @@ namespace Fusee.Engine.Common
         /// The text will be aligned to the right border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
         RIGHT
-
     }
 
     /// <summary>
@@ -49,8 +48,7 @@ namespace Fusee.Engine.Common
 
     /// <summary>
     /// Enables the scene renderer to treat GUI text differently.
-    /// </summary>
-  
+    /// </summary>  
     public class XFormText : SceneComponent
     {
         /// <summary>

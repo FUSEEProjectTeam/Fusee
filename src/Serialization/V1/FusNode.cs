@@ -33,7 +33,7 @@ namespace Fusee.Serialization.V1
         #endregion
 
         #region Scene assembly helpers
-        internal FusScene Scene;
+        public FusScene Scene;
 
         /// <summary>
         /// Returns all children of this node
@@ -43,7 +43,7 @@ namespace Fusee.Serialization.V1
         /// <summary>
         /// Returns all components of this node
         /// </summary>
-        public IEnumerable<IComponent> EnumComponents => Components.Select(idx => Scene.ComponentList[idx]).ToList();
+        public IEnumerable<IComponent> EnumComponents => Components.Select(idx => Scene?.ComponentList[idx]);
 
         /// <summary>
         /// Adds a component to this node's list of components. Internally the component is 

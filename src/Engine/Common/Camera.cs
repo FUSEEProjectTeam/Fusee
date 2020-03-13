@@ -21,15 +21,14 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// Delegate that allows a user to give a custom projection calculation to a <see cref="Camera"/>.
     /// </summary>
-    /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int)"/></param>
+    /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="IRenderContextImp.Viewport(int, int, int, int)"/></param>
     /// <param name="projection">The given method needs to calculate the projection matrix.</param>    
     public delegate void CustomCameraUpdate(out float4 viewport, out float4x4 projection);
 
     /// <summary>
-    /// Use this in a <see cref="SceneNodeContainer"/> to create a Camera Node.
+    /// Use this in a <see cref="SceneNode"/> to create a Camera Node.
     /// A the Projection and View matrices, generated from a CameraComponent will overwrite calls you made directly on the RenderContext.
     /// </summary>
-    /// TODO (mr): Move to Fusee.Engine.Common
     public class Camera : SceneComponent
     {
         /// <summary>
@@ -116,7 +115,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="canvasWidthPx">The width of the render canvas.</param>
         /// <param name="canvasHeightPx">The height of the render canvas.</param>
-        /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int)"/></param>
+        /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="IRenderContextImp.Viewport(int, int, int, int)"/></param>
         /// <returns></returns>
         public float4x4 GetProjectionMat(int canvasWidthPx, int canvasHeightPx, out float4 viewport)
         {

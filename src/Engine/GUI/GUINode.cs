@@ -412,7 +412,7 @@ namespace Fusee.Engine.GUI
                 {
                     Components = new List<SceneComponent>()
                     {
-                       new XFormText(),
+                       xFormText,
                        new ShaderEffect(new[]
                                 {
                                     new EffectPassDeclaration
@@ -441,7 +441,7 @@ namespace Fusee.Engine.GUI
                                     new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
                                     new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                                     new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                                }),                        
+                                }),
                         textMesh
                      }
                 }
