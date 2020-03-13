@@ -272,42 +272,38 @@ namespace Fusee.Serialization
         [ProtoMember(11)]
         public int MeshType = 0;
 
-        #endregion
+        #region IDisposable Support
+
+        private bool disposedValue = false; // To detect redundant calls
 
         /// <summary>
-        /// Implementation of the <see cref="IDisposable"/> interface.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        // Flag: Has Dispose already been called?
-        bool disposed = false;
-
-        /// <summary>
-        /// Protected implementation of Dispose pattern.
+        /// Invoke mesh deletion on GPU 
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed)
-                return;
-
-            if (disposing)
-                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
-
-            disposed = true;
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
+                }
+                disposedValue = true;
+            }
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose()"/> in order to fire MeshChanged event.
-        /// </summary>
-        ~Mesh()
+        /// Invoke mesh deletion on GPU 
+        /// </summary>       
+        public void Dispose()
         {
-            Dispose(false);
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
         }
+        #endregion
+
+
+
     }
 }
 
