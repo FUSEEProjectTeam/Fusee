@@ -272,6 +272,8 @@ namespace Fusee.Serialization
         [ProtoMember(11)]
         public int MeshType = 0;
 
+        #endregion
+
         #region IDisposable Support
 
         private bool disposedValue = false; // To detect redundant calls
