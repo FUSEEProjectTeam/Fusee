@@ -1,4 +1,6 @@
 ﻿using ProtoBuf;
+using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -11,20 +13,20 @@ namespace Fusee.Math.Core
     public struct AABBf
     {
         /// <summary>
-        ///     The minimum values of the axis aligned bounding box in x, y and z direction
+        /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(1)] public float3 min;
 
         /// <summary>
-        ///     The maximum values of the axis aligned bounding box in x, y and z direction
+        /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(2)] public float3 max;
 
         /// <summary>
-        ///     Create a new axis aligned bounding box
+        /// Create a new axis aligned bounding box.
         /// </summary>
-        /// <param name="min_">the minimum x y and z values</param>
-        /// <param name="max_">the maximum x y and z values</param>
+        /// <param name="min_">the minimum x y and z values.</param>
+        /// <param name="max_">the maximum x y and z values.</param>
         public AABBf(float3 min_, float3 max_)
         {
             min = min_;
@@ -32,12 +34,24 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a tranformation on the bounding box. After the tranformation another
-        ///     axis alignes bounding box results. This is done by transforming all eight
-        ///     vertices of the box and re-aligning to the axes afterwards.
+        /// Create a new axis aligned bounding box.
         /// </summary>
-        /// <param name="m">The transformation matrix</param>
-        /// <param name="box">the box to transform</param>
+        /// <param name="vertices">The list of vertices the bounding box is created for.</param>
+        public AABBf(IList<float3> vertices)
+        {
+            min = vertices[0];
+            max = vertices[0];
+            foreach (float3 p in vertices)
+                this |= p;
+        }
+
+        /// <summary>
+        /// Applies a transformation on the bounding box. After the transformation another
+        /// axis aligned bounding box results. This is done by transforming all eight
+        /// vertices of the box and re-aligning to the axes afterwards.
+        /// </summary>
+        /// <param name="m">The transformation matrix.</param>
+        /// <param name="box">the box to transform.</param>
         /// <returns>A new axis aligned bounding box.</returns>
         public static AABBf operator *(float4x4 m, AABBf box)
         {
@@ -74,10 +88,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around two existing bounding boxes.
+        /// Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <param name="b">The other bounding box to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBf Union(AABBf a, AABBf b)
         {
@@ -92,7 +106,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// Calculates the bounding box around an existing bounding box and a single point.
         /// </summary>
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
@@ -110,15 +124,15 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around two existing bounding boxes.
+        /// Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <param name="b">The other bounding box, to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBf operator |(AABBf a, AABBf b) => Union(a, b);
 
         /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// Calculates the bounding box around an existing bounding box and a single point.
         /// </summary>
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
@@ -159,7 +173,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if point lies in this AABB
+        /// Check if point lies in this AABB
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -171,85 +185,40 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Checks if a viewing frustrum lies within this AABB.
-        ///     If feeded with a projection matrix, the result of the clipping planes is in view space
-        ///     If feeded with a projection view matrix, the clipping planes are given in model space
+        /// Checks if a viewing frustum lies within or intersects this AABB.      
         /// </summary>
-        /// <param name="viewingFrustrum">Projection matrix</param>
-        /// <returns>false if fully outside, true if inside or intersects</returns>
-        public bool Intersects(float4x4 viewingFrustrum)
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(Frustum frustum)
         {
-            // shorter variable
-            var vF = viewingFrustrum;
+            if (!frustum.Near.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(this))
+                return false;
 
-            // split the viewing frustrum in 6 planes
-            // plane equation = ax + by + cz + d = 0;
-            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3
-            var planes = new float4[6];
-            // left
-            planes[0] = new float4(vF.M41 + vF.M11,
-                                    vF.M42 + vF.M12,
-                                    vF.M43 + vF.M13,
-                                    vF.M44 + vF.M14);
-            // right
-            planes[1] = new float4(vF.M41 - vF.M11,
-                                    vF.M42 - vF.M12,
-                                    vF.M43 - vF.M13,
-                                    vF.M44 - vF.M14);
-
-            // bottom
-            planes[2] = new float4(vF.M41 + vF.M21,
-                                    vF.M42 + vF.M22,
-                                    vF.M43 + vF.M23,
-                                    vF.M44 + vF.M24);
-
-            // top
-            planes[3] = new float4(vF.M41 - vF.M21,
-                                    vF.M42 - vF.M22,
-                                    vF.M43 - vF.M23,
-                                    vF.M44 - vF.M24);
-
-            // near
-            planes[4] = new float4(vF.M41 + vF.M31,
-                                     vF.M42 + vF.M32,
-                                     vF.M43 + vF.M33,
-                                     vF.M44 + vF.M34);
-
-            // far
-            planes[5] = new float4(vF.M41 - vF.M31,
-                                    vF.M42 - vF.M32,
-                                    vF.M43 - vF.M33,
-                                    vF.M44 - vF.M34);
-
-            foreach (var plane in planes)
-            {
-                var side = Classify(this, plane);
-                if (side < 0) return false;
-            }
             return true;
         }
 
-        private float Classify(AABBf aabb, float4 plane)
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this AABB.      
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneF plane)
         {
-            // maximum extent in direction of plane normal (plane.xyz)
-            var r = System.Math.Abs(aabb.Size.x * plane.x)
-                + System.Math.Abs(aabb.Size.y * plane.y)
-                + System.Math.Abs(aabb.Size.z * plane.z);
-
-            // signed distance between box center and plane
-            //float d = plane.Test(mCenter);
-            var d = float3.Dot(plane.xyz, aabb.Center) + plane.w;
-
-            // return signed distance
-            if (System.Math.Abs(d) < r)
-                return 0.0f;
-            else if (d < 0.0f)
-                return d + r;
-            return d - r;
+            return plane.InsideOrIntersecting(this);
         }
 
         /// <summary>
-        ///     Check if two AABBs intersect each other
+        /// Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -260,7 +229,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if a point lies within a AABB
+        /// Check if a point lies within a AABB
         /// </summary>
         /// <param name="aabb"></param>
         /// <param name="point"></param>
@@ -268,6 +237,53 @@ namespace Fusee.Math.Core
         public static bool Intersects(AABBf aabb, float3 point)
         {
             return aabb.Intersects(point);
+        }
+
+        /// <summary>
+        /// Operator override for equality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator ==(AABBf left, AABBf right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Operator override for inequality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>
+        public static bool operator !=(AABBf left, AABBf right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// Indicates whether this plane is equal to another object.
+        /// </summary>
+        /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBf"/>.</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+
+            var other = (AABBf)obj;
+            return max.Equals(other.max) && min.Equals(other.min);
+        }
+
+        /// <summary>
+        /// Generates a hash code for this plane.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + max.GetHashCode();
+                hash = hash * 23 + min.GetHashCode();
+                return hash;
+            }
         }
     }
 }

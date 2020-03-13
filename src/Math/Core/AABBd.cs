@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math.Core
 {
     /// <summary>
-    ///     Represents an axis aligned bounding box.
+    /// Represents an axis aligned bounding box.
     /// </summary>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
@@ -33,9 +33,9 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a transformation on the bounding box. After the transformation another
-        ///     axis alignes bounding box results. This is done by transforming all eight
-        ///     vertices of the box and re-aligning to the axes afterwards.
+        /// Applies a transformation on the bounding box. After the transformation another
+        /// axis aligned bounding box results. This is done by transforming all eight
+        /// vertices of the box and re-aligning to the axes afterwards.
         /// </summary>
         /// <param name="m">The transformation matrix</param>
         /// <param name="box">the box to transform</param>
@@ -75,9 +75,9 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a tranformation function on the bounding box. After the tranformation another
-        ///     axis alignes bounding box results. This is done by transforming all eight
-        ///     vertices of the box with the given transformation function and re-aligning to the axes afterwards.
+        /// Applies a transformation function on the bounding box. After the transformation another
+        /// axis aligned bounding box results. This is done by transforming all eight
+        /// vertices of the box with the given transformation function and re-aligning to the axes afterwards.
         /// </summary>
         /// <param name="func">The transformation function</param>
         /// <param name="box">the box to transform</param>
@@ -120,7 +120,7 @@ namespace Fusee.Math.Core
         ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <param name="b">The other bounding box to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBd Union(AABBd a, AABBd b)
         {
@@ -156,7 +156,7 @@ namespace Fusee.Math.Core
         ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <param name="b">The other bounding box to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBd operator |(AABBd a, AABBd b) => Union(a, b);
 
@@ -215,83 +215,29 @@ namespace Fusee.Math.Core
             (point.y >= min.y && point.y <= max.y) &&
             (point.z >= min.z && point.z <= max.z);
         }
-
         /// <summary>
-        ///     Checks if a viewing frustrum lies within this AABB.
-        ///     If feeded with a projection matrix, the result of the clipping planes is in view space
-        ///     If feeded with a projection view matrix, the clipping planes are given in model space
+        /// Checks if a viewing frustum lies within or intersects this AABB.      
         /// </summary>
-        /// <param name="viewingFrustrum">Projection matrix</param>
-        /// <returns>false if fully outside, true if inside or intersects</returns>
-        public bool Intersects(double4x4 viewingFrustrum)
+        /// <param name="frustumPlanes">The frustum planes to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(PlaneD[] frustumPlanes)
         {
-            // shorter variable
-            var vF = viewingFrustrum;
-
-            // split the viewing frustrum in 6 planes
-            // plane equation = ax + by + cz + d = 0;
-            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3
-            var planes = new double4[6];
-            // left
-            planes[0] = new double4(vF.M41 + vF.M11,
-                                    vF.M42 + vF.M12,
-                                    vF.M43 + vF.M13,
-                                    vF.M44 + vF.M14);
-            // right
-            planes[1] = new double4(vF.M41 - vF.M11,
-                                    vF.M42 - vF.M12,
-                                    vF.M43 - vF.M13,
-                                    vF.M44 - vF.M14);
-
-            // bottom
-            planes[2] = new double4(vF.M41 + vF.M21,
-                                    vF.M42 + vF.M22,
-                                    vF.M43 + vF.M23,
-                                    vF.M44 + vF.M24);
-
-            // top
-            planes[3] = new double4(vF.M41 - vF.M21,
-                                    vF.M42 - vF.M22,
-                                    vF.M43 - vF.M23,
-                                    vF.M44 - vF.M24);
-
-            // near
-            planes[4] = new double4(vF.M41 + vF.M31,
-                                     vF.M42 + vF.M32,
-                                     vF.M43 + vF.M33,
-                                     vF.M44 + vF.M34);
-
-            // far
-            planes[5] = new double4(vF.M41 - vF.M31,
-                                    vF.M42 - vF.M32,
-                                    vF.M43 - vF.M33,
-                                    vF.M44 - vF.M34);
-
-            foreach (var plane in planes)
+            foreach (var plane in frustumPlanes)
             {
-                var side = Classify(this, plane);
-                if (side < 0) return false;
+                if (!plane.InsideOrIntersecting(this))
+                    return false;
             }
             return true;
         }
 
-        private double Classify(AABBd aabb, double4 plane)
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this AABB.      
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneD plane)
         {
-            // maximum extent in direction of plane normal (plane.xyz)
-            var r = System.Math.Abs(aabb.Size.x * plane.x)
-                + System.Math.Abs(aabb.Size.y * plane.y)
-                + System.Math.Abs(aabb.Size.z * plane.z);
-
-            // signed distance between box center and plane
-            //float d = plane.Test(mCenter);
-            var d = double3.Dot(plane.xyz, aabb.Center) + plane.w;
-
-            // return signed distance
-            if (System.Math.Abs(d) < r)
-                return 0.0f;
-            else if (d < 0.0)
-                return d + r;
-            return d - r;
+            return plane.InsideOrIntersecting(this);
         }
 
         /// <summary>
@@ -314,6 +260,53 @@ namespace Fusee.Math.Core
         public static bool Intersects(AABBd aabb, double3 point)
         {
             return aabb.Intersects(point);
+        }
+
+        /// <summary>
+        /// Operator override for equality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator ==(AABBd left, AABBd right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Operator override for inequality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator !=(AABBd left, AABBd right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// Indicates whether this plane is equal to another object.
+        /// </summary>
+        /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBd"/>.</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(AABBd)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+
+            var other = (AABBd)obj;
+            return max.Equals(other.max) && min.Equals(other.min);
+        }
+
+        /// <summary>
+        /// Generates a hash code for this plane.
+        /// </summary>        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + max.GetHashCode();
+                hash = hash * 23 + min.GetHashCode();                
+                return hash;
+            }
         }
     }
 }

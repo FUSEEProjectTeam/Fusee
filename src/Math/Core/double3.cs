@@ -211,6 +211,16 @@ namespace Fusee.Math.Core
             return new double[] { x, y, z };
         }
 
+        /// <summary>
+        /// Returns a bool which determines wether this float3 isNaN
+        /// </summary>
+        public bool IsNaN => double.IsNaN(x) || double.IsNaN(y) || double.IsNaN(z);
+
+        /// <summary>
+        /// Returns a bool which determines whether this double3 contains a infinity value
+        /// </summary>
+        public bool IsInfinity => double.IsInfinity(x) || double.IsInfinity(y) || double.IsInfinity(z);
+
         #endregion Instance
 
         #region Static
@@ -248,6 +258,20 @@ namespace Fusee.Math.Core
         // public static readonly int SizeInBytes = Marshal.SizeOf(new double3());
 
         #endregion Fields
+
+        #region Infinity
+
+        /// <summary>
+        /// Returns a double3 which contains positive infinity values
+        /// </summary>
+        public static double3 PositiveInfinity => One * double.PositiveInfinity;
+
+        /// <summary>
+        /// Returns a double3 which contains negative infinity values
+        /// </summary>
+        public static double3 NegativeInfinity => One * double.NegativeInfinity;       
+
+        #endregion
 
         #region Add
 

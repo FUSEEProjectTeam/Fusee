@@ -165,7 +165,7 @@ namespace Fusee.Test.Math.Core
         {
             var mat = new float3x3(1, 1, 1, 2, 2, 2, 3, 3, 3);
 
-            var actual = mat.AsArray;
+            var actual = mat.ToArray();
 
             Assert.Equal(new float[] { 1, 1, 1, 2, 2, 2, 3, 3, 3 }, actual);
         }

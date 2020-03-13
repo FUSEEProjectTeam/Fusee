@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
@@ -38,7 +38,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static string PsNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
-        internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 12);
+        internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 24);
 
         internal static float alphaInv = 0.5f;
         internal static float alphaVis = 1f;
@@ -106,11 +106,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static async void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float textSize, float borderScaleFactor, string text)
         {
-            //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
-            var textLength = text.Length;
-            var maxLenght = 19;
-            var textSizeModifier = ((100.0f / maxLenght * textLength) / 100.0f);
-
             var container = new SceneNodeContainer
             {
                 Name = "Container"
@@ -145,7 +140,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             parentUiElement.Children.Add(container);
         }
 
-        private static SceneNodeContainer CreateAnnotation(float2 pos, float textSize, float borderScaleFactor, string text, Texture iconTex, Texture frameTex, float textSizeAdaptor = 1)
+        private static SceneNodeContainer CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
             var icon = new TextureNodeContainer(
                 "icon",
@@ -172,7 +167,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                 },
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
                 RalewayFontMap,
-                ColorUint.Tofloat4(ColorUint.Black), textSize * textSizeAdaptor);
+                ColorUint.Tofloat4(ColorUint.Black),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
             var annotation = new TextureNodeContainer(
                 "Annotation",

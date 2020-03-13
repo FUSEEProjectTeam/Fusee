@@ -299,7 +299,7 @@ namespace Fusee.Engine.Player.Core
             }
 
             var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 18);
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNodeContainer(
                 textToDisplay,
@@ -309,7 +309,9 @@ namespace Fusee.Engine.Player.Core
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 200f);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
 
             var canvas = new CanvasNodeContainer(
