@@ -60,7 +60,7 @@ namespace Fusee.Engine.Player.Core
             _initCanvasHeight = Height / 100f;
 
             _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;            
+            _canvasWidth = _initCanvasWidth;
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;

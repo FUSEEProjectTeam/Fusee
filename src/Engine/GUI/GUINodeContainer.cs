@@ -412,7 +412,7 @@ namespace Fusee.Engine.GUI
                 {
                     Components = new List<SceneComponent>()
                     {
-                       new XFormText(),
+                       xFormText,
                        new ShaderEffect(new[]
                                 {
                                     new EffectPassDeclaration

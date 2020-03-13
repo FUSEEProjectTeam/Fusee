@@ -507,7 +507,7 @@ namespace Fusee.Xene
         private void DoVisitComponents(TNode node)
         {
             // Are there any components at all?
-            if (node.EnumComponents == null)
+            if (node?.EnumComponents == null)
                 return;
             // Visit each component
             foreach (TComponent component in node.EnumComponents)

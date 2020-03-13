@@ -80,6 +80,7 @@ namespace Fusee.Engine.Core
 
     internal class FusFileToSceneConvertV1 : Visitor<FusNode, FusComponent>
     {
+        FusScene _fusScene;
         private readonly Scene _convertedScene;
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
@@ -108,7 +109,8 @@ namespace Fusee.Engine.Core
 
         internal Scene Convert(FusScene sc)
         {
-            Traverse(sc.Children);
+            _fusScene = sc;
+            Traverse(sc.Children);          
             return _convertedScene;
         }
 
@@ -122,6 +124,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvFusNode(FusNode snc)
         {
+            snc.Scene = _fusScene;
+
             if (_predecessors.Count != 0)
             {
                 var parent = _predecessors.Peek();
@@ -136,8 +140,6 @@ namespace Fusee.Engine.Core
             }
             else //Add first node to SceneContainer
             {
-                // TODO: implement and test!
-
                 _predecessors.Push(new SceneNode { Name = CurrentNode.Name });
 
                 _currentNode = _predecessors.Peek();
@@ -268,6 +270,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMaterial(FusMaterial matComp)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(effect);
         }
@@ -279,6 +284,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMaterial(FusMaterialPBR matComp)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(effect);
         }
@@ -289,6 +297,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCamComp(FusCamera cc)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.ORTHOGRAPHIC ? Common.ProjectionMethod.ORTHOGRAPHIC : Common.ProjectionMethod.PERSPECTIVE,
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
@@ -310,6 +321,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMesh(FusMesh m)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             // convert mesh
             var mesh = new Mesh
             {
@@ -349,6 +363,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvLight(FusLight l)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             _currentNode.Components.Add(new Light
             {
                 Name = l.Name,
@@ -390,6 +407,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConVWeight(FusWeight w)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             var weight = new Weight
             {
                 WeightMap = w.WeightMap.Select(wm =>
@@ -432,6 +452,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvOctant(FusOctant cc)
         {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
             _currentNode.AddComponent(new Octant
             {
                 Center = cc.Center,
@@ -579,7 +602,7 @@ namespace Fusee.Engine.Core
         {
             _predecessors = new Stack<FusNode>();
             _convertedScene = new FusFile();
-
+            _convertedScene.Contents = new FusScene();
             _boneContainers = new Stack<FusComponent>();
         }
 
@@ -610,20 +633,9 @@ namespace Fusee.Engine.Core
             }
             else //Add first node to SceneContainer
             {
-                // TODO: implement and test!
-
-                _predecessors.Push(new FusNode { Name = CurrentNode.Name });
-
-                _currentNode = _predecessors.Peek();
-
-                _convertedScene.Contents = new FusScene();
-
+                _currentNode = new FusNode { Name = CurrentNode.Name };
                 ((FusScene)_convertedScene.Contents).AddNode(_currentNode);
-
-                //if (_convertedScene.Children != null)
-                //    _convertedScene.Children.Add(_currentNode);
-                //else
-                //    _convertedScene.Children = new List<SceneNode> { _currentNode };
+                _predecessors.Push(_currentNode);
             }
         }
 
