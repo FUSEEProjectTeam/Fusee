@@ -104,7 +104,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static async void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float textSize, float borderScaleFactor, string text)
+        internal static async void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
             var container = new SceneNodeContainer
             {
@@ -115,30 +115,31 @@ namespace Fusee.Examples.AdvancedUI.Core
             {
                 case AnnotationKind.TO_CHECK:
                     container.Children.Add(await CreateCircle(circleDim, MatColor.YELLOW));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconToCheck, _frameToCheck));
                     container.Children.Add(await CreateLine(MatColor.YELLOW));
                     break;
 
                 case AnnotationKind.DISCARDED:
                     container.Children.Add(await CreateCircle(circleDim, MatColor.GRAY));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconDiscarded, _frameDiscarded));
                     container.Children.Add(await CreateLine(MatColor.GRAY));
                     break;
 
                 case AnnotationKind.RECOGNIZED_ML:
                     container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed));
                     container.Children.Add(await CreateLine(MatColor.GREEN));
                     break;
 
                 case AnnotationKind.CONFIRMED:
                     container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textSizeModifier));
+                    container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed));
                     container.Children.Add(await CreateLine(MatColor.GREEN));
                     break;
             }
             parentUiElement.Children.Add(container);
         }
+
 
         private static SceneNodeContainer CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {

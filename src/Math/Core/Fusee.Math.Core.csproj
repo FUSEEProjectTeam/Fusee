@@ -1,21 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Fusee.Math.Core</RootNamespace>
-    <PackageId>Fusee.Math.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>Core Math implementation for the Fusee Project</Description>
-    <LangVersion>8</LangVersion>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>Fusee.Math.Core</RootNamespace>
+        <PackageId>Fusee.Math.Core</PackageId>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <Description>Core Math implementation for the Fusee Project</Description>
+        <LangVersion>8</LangVersion>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+        <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <PackageReference Include="protobuf-net" Version="3.0.0-alpha.133" />
+        <PackageReference Include="System.Private.ServiceModel" Version="4.7.0" />
+        <PackageReference Include="System.Memory" Version="4.5.3" />
+    </ItemGroup>
 
-  <ItemGroup>
-      <Reference Include="protobuf-net.Core" Version="3.0.0-alpha.125">
-          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
-      </Reference>
-  </ItemGroup>
 </Project>

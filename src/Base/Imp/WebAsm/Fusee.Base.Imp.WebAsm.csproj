@@ -33,9 +33,9 @@
       <HintPath>$(FuseeEngineRoot)\ext\SharpFontManaged\$(Configuration)\SharpFontManaged.dll</HintPath>
     </Reference>
     
-    <PackageReference Include="Mono.WebAssembly.Runtime" Version="0.2.0" />
-    <PackageReference Include="WebAssembly.Bindings" Version="0.2.0" />
-    <PackageReference Include="WebAssembly.Net.Http" Version="0.2.0" />
-    <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.0" />
+    <PackageReference Include="Mono.WebAssembly.Runtime" Version="0.2.2" />
+    <PackageReference Include="WebAssembly.Bindings" Version="0.2.2" />
+    <PackageReference Include="WebAssembly.Net.Http" Version="0.2.2" />
+    <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.2" />
   </ItemGroup>
 </Project>
