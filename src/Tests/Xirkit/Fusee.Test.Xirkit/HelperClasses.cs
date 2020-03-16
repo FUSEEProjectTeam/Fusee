@@ -17,17 +17,5 @@ namespace Fusee.Test.Xirkit
                 this.y = y;
             }
         }
-
-        public struct TestStruct
-        {
-            public int x;
-            public int y;
-
-            public TestStruct(int x, int y)
-            {
-                this.x = x;
-                this.y = y;
-            }
-        }
     }
 }
