@@ -59,6 +59,8 @@ namespace Fusee.Xirkit
         /// <param name="o">The object to be hoste</param>
         public Node(object o)
         {
+            if (!o.GetType().IsByRef)
+                throw new ArgumentException("Not a reference type.", nameof(o));
             _o = o;
             _cp = o as ICalculationPerformer;
             _outPinList = new List<IOutPin>();
