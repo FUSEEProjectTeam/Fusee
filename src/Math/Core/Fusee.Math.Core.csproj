@@ -15,7 +15,6 @@
     
     <ItemGroup>
         <PackageReference Include="protobuf-net" Version="3.0.0-alpha.133" />
-        <PackageReference Include="System.Private.ServiceModel" Version="4.7.0" />
         <PackageReference Include="System.Memory" Version="4.5.3" />
     </ItemGroup>
 

@@ -36,7 +36,6 @@
         </Reference>
         <PackageReference Include="protobuf-net" Version="3.0.0-alpha.133" />
         <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
-        <PackageReference Include="System.Private.ServiceModel" Version="4.7.0" />
 
         <PackageReference Include="WebAssembly.Bindings" Version="0.2.2" />
         <PackageReference Include="WebAssembly.Net.Http" Version="0.2.2" />

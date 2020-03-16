@@ -22,6 +22,5 @@
             <PrivateAssets>analyzers</PrivateAssets>
         </ProjectReference>
         <PackageReference Include="protobuf-net" Version="3.0.0-alpha.133" />
-        <PackageReference Include="System.Private.ServiceModel" Version="4.7.0" />
     </ItemGroup>
 </Project>
