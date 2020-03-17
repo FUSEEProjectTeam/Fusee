@@ -1025,9 +1025,9 @@ namespace Fusee.Engine.Core
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
-            foreach (var activeUniform in activeUniforms)
+            foreach (var param in paramInfos)
             {
-                if (!ef.ParamDecl.TryGetValue(activeUniform.Key, out IFxParamDeclaration dcl))
+                if (!effect.Uniforms.TryGetValue(param.Key, out var prop))
                 {
                     Diagnostics.Error(activeUniform.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
@@ -1035,14 +1035,14 @@ namespace Fusee.Engine.Core
 
                 var effectParam = new FxParam()
                 {
-                    Info = activeUniform.Value
+                    Info = param.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(activeUniform.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
-                    effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
+                    effectParam.Value = prop.GetValue(effect);
 
                 compiledEffect.ActiveUniforms.Add(activeUniform.Key, effectParam);
             }
@@ -1113,9 +1113,10 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Sets the shaderParam, works with every type.
+        /// Sets the value for the given shader parameter, works with every type.
+        /// Note that this will change the parameter value in the currently bound shader.
         /// </summary>
-        /// <param name="param"></param>
+        /// <param name="param">The shader parameter.</param>
         private void SetShaderParamT(FxParam param)
         {
             if (param.HasValueChanged)
