@@ -1025,9 +1025,9 @@ namespace Fusee.Engine.Core
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
-            foreach (var param in paramInfos)
+            foreach (var activeUniform in activeUniforms)
             {
-                if (!effect.Uniforms.TryGetValue(param.Key, out var prop))
+                if (!ef.ParamDecl.TryGetValue(activeUniform.Key, out IFxParamDeclaration dcl))
                 {
                     Diagnostics.Error(activeUniform.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
@@ -1035,14 +1035,14 @@ namespace Fusee.Engine.Core
 
                 var effectParam = new FxParam()
                 {
-                    Info = param.Value
+                    Info = activeUniform.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(activeUniform.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
-                    effectParam.Value = prop.GetValue(effect);
+                    effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
                 compiledEffect.ActiveUniforms.Add(activeUniform.Key, effectParam);
             }
