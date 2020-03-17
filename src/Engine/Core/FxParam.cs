@@ -3,7 +3,7 @@ using System;
 
 namespace Fusee.Engine.Core
 {
-    internal sealed class FxParam
+    public sealed class FxParam
     {
         public ShaderParamInfo Info;
 

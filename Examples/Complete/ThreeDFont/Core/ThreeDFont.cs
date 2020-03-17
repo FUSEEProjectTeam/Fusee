@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -133,19 +134,18 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };           
+            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
             _renderer = new SceneRendererForward(sc);
 
-            var shaderFx = new ShaderEffect(new[] {
-                new FxPassDeclaration
+            var shaderFx = new ShaderEffect(
+            new FxPassDeclaration
+            {
+                PS = AssetStorage.Get<string>("FragShader.frag"),
+                VS = AssetStorage.Get<string>("VertShader.vert"),
+                StateSet = new RenderStateSet
                 {
-                    PS = AssetStorage.Get<string>("FragShader.frag"),
-                    VS = AssetStorage.Get<string>("VertShader.vert"),
-                    StateSet = new RenderStateSet
-                    {
-                        ZEnable = true
-                    }
+                    ZEnable = true
                 }
             },
             new List<IFxParamDeclaration>
@@ -153,7 +153,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 new FxParamDeclaration<float4x4> { Name = "xform", Value = float4x4.Identity}
             });
 
-            RC.SetShaderEffect(shaderFx);
+            RC.SetEffect(shaderFx);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.ShaderEffects;
+using Fusee.Engine.Core.Effects;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -261,21 +261,19 @@ namespace Fusee.Engine.GUI
                 },
                 new ShaderEffectComponent
                 {
-                    Effect = new ShaderEffect(new[]
+                    Effect = new ShaderEffect(
+                        new FxPassDeclaration
                         {
-                            new FxPassDeclaration
+                            VS = vs,
+                            PS = ps,
+                            StateSet = new RenderStateSet
                             {
-                                VS = vs,
-                                PS = ps,
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    SourceBlend = Blend.SourceAlpha,
-                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                    BlendOperation = BlendOperation.Add,
-                                    ZEnable = false
-                                }
-                            }
+                                AlphaBlendEnable = true,
+                                SourceBlend = Blend.SourceAlpha,
+                                DestinationBlend = Blend.InverseSourceAlpha,
+                                BlendOperation = BlendOperation.Add,
+                                ZEnable = false
+                            }                            
                         },
                         new IFxParamDeclaration[]
                         {
@@ -331,21 +329,19 @@ namespace Fusee.Engine.GUI
                 },
                 new ShaderEffectComponent
                 {
-                    Effect = new ShaderEffect(new[]
+                    Effect = new ShaderEffect(
+                        new FxPassDeclaration
                         {
-                            new FxPassDeclaration
+                            VS = vs,
+                            PS = ps,
+                            StateSet = new RenderStateSet
                             {
-                                VS = vs,
-                                PS = ps,
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    SourceBlend = Blend.SourceAlpha,
-                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                    BlendOperation = BlendOperation.Add,
-                                    ZEnable = false
-                                }
-                            }
+                                AlphaBlendEnable = true,
+                                SourceBlend = Blend.SourceAlpha,
+                                DestinationBlend = Blend.InverseSourceAlpha,
+                                BlendOperation = BlendOperation.Add,
+                                ZEnable = false
+                            }                            
                         },
                         new IFxParamDeclaration[]
                         {
@@ -423,21 +419,19 @@ namespace Fusee.Engine.GUI
                         xFormText,
                         new ShaderEffectComponent
                         {
-                            Effect = new ShaderEffect(new[]
+                            Effect = new ShaderEffect(
+                                new FxPassDeclaration
                                 {
-                                    new FxPassDeclaration
+                                    VS = vs,
+                                    PS = ps,
+                                    StateSet = new RenderStateSet
                                     {
-                                        VS = vs,
-                                        PS = ps,
-                                        StateSet = new RenderStateSet
-                                        {
-                                            AlphaBlendEnable = true,
-                                            SourceBlend = Blend.SourceAlpha,
-                                            DestinationBlend = Blend.InverseSourceAlpha,
-                                            BlendOperation = BlendOperation.Add,
-                                            ZEnable = false
-                                        }
-                                    }
+                                        AlphaBlendEnable = true,
+                                        SourceBlend = Blend.SourceAlpha,
+                                        DestinationBlend = Blend.InverseSourceAlpha,
+                                        BlendOperation = BlendOperation.Add,
+                                        ZEnable = false
+                                    }                                    
                                 },
                                 new IFxParamDeclaration[]
                                 {

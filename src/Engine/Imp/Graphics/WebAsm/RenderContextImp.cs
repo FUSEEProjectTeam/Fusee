@@ -438,8 +438,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </exception>
         public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
-            if (gs != null)
-                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+            if (!string.IsNullOrEmpty(gs))
+                Diagnostics.Warn("Geometry Shaders are unsupported");
 
             bool statusCode;
             string info;

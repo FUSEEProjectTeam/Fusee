@@ -3,7 +3,7 @@ using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.Core.ShaderEffects;
+using Fusee.Engine.Core.Effects;
 
 namespace Fusee.Engine.Core
 {

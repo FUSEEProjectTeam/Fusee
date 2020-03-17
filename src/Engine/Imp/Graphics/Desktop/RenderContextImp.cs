@@ -447,7 +447,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // Compile geometry shader
             int geometryObject = -1;
-            if (gs != null)
+            if (!string.IsNullOrEmpty(gs))
             {
                 geometryObject = GL.CreateShader(ShaderType.GeometryShader);
 

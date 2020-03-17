@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Core.ShaderEffects;
+﻿using Fusee.Engine.Core.Effects;
 using Fusee.Math.Core;
 using Fusee.Xene;
 
@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// State of the <see cref="ShaderEffect"/>.
         /// </summary>
-        protected CollapsingStateStack<ShaderEffect> _effect = new CollapsingStateStack<ShaderEffect>();
+        protected CollapsingStateStack<Effect> _effect = new CollapsingStateStack<Effect>();
 
         /// <summary>
         /// State of the <see cref="RenderStateSet"/>.
@@ -73,7 +73,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets and sets the shader effect.
         /// </summary>
-        public ShaderEffect Effect
+        public Effect Effect
         {
             set { _effect.Tos = value; }
             get { return _effect.Tos; }

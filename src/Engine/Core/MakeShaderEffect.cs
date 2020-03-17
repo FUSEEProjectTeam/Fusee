@@ -4,7 +4,7 @@ using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderEffects;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
@@ -21,7 +21,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
         /// </summary>
-        public static ShaderEffectDefault Default { get; } = new ShaderEffectDefault();
+        public static ShaderEffect Default { get; } = CreateDefaultEffect();
 
         #region Deferred
 
@@ -35,18 +35,18 @@ namespace Fusee.Engine.Core
         public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
         {
             //TODO: #define constants to uniforms
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("Deferred.vert"),
+                PS = AssetStorage.Get<string>("FXAA.frag"),
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = AssetStorage.Get<string>("FXAA.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    }
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
                 }
+
             },
             new IFxParamDeclaration[]
             {
@@ -77,18 +77,18 @@ namespace Fusee.Engine.Core
                 ps = string.Join("\n", lines);
             }
 
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("Deferred.vert"),
+                PS = ps,
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = ps,
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    }
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
                 }
+
             },
             new IFxParamDeclaration[]
             {
@@ -134,18 +134,17 @@ namespace Fusee.Engine.Core
                 frag = string.Join("\n", lines);
             }
 
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("Deferred.vert"),
+                PS = frag,
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = frag,
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    }
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
                 }
+
             },
             new IFxParamDeclaration[]
             {
@@ -178,21 +177,19 @@ namespace Fusee.Engine.Core
                     effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
             }
 
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("Deferred.vert"),
+                PS = CreateDeferredLightingPixelShader(lc),
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = CreateDeferredLightingPixelShader(lc),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                        BlendOperation = BlendOperation.Add,
-                        SourceBlend = Blend.One,
-                        DestinationBlend = Blend.One,
-                        ZFunc = Compare.LessEqual,
-                    }
+                    AlphaBlendEnable = true,
+                    ZEnable = true,
+                    BlendOperation = BlendOperation.Add,
+                    SourceBlend = Blend.One,
+                    DestinationBlend = Blend.One,
+                    ZFunc = Compare.LessEqual,
                 }
             },
             effectParams.ToArray());
@@ -216,22 +213,21 @@ namespace Fusee.Engine.Core
             effectParams.Add(new FxParamDeclaration<WritableTexture[]> { Name = "ShadowMaps[0]", Value = shadowMaps });
             effectParams.Add(new FxParamDeclaration<float2[]> { Name = "ClipPlanes[0]", Value = clipPlanes });
 
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("Deferred.vert"),
+                PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                        BlendOperation = BlendOperation.Add,
-                        SourceBlend = Blend.One,
-                        DestinationBlend = Blend.One,
-                        ZFunc = Compare.LessEqual,
-                    }
+                    AlphaBlendEnable = true,
+                    ZEnable = true,
+                    BlendOperation = BlendOperation.Add,
+                    SourceBlend = Blend.One,
+                    DestinationBlend = Blend.One,
+                    ZFunc = Compare.LessEqual,
                 }
+
             },
             effectParams.ToArray());
         }
@@ -251,21 +247,20 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
             };
 
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
+                GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
+                PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
-                    GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
-                    PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                        CullMode = Cull.Clockwise,
-                        ZFunc = Compare.LessEqual,
-                    }
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
+                    CullMode = Cull.Clockwise,
+                    ZFunc = Compare.LessEqual,
                 }
+
             },
             effectParamDecls.ToArray());
         }
@@ -276,25 +271,23 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect ShadowMapEffect()
         {
-            return new ShaderEffect(new[]
+            return new ShaderEffect(
+            new FxPassDeclaration
             {
-                new FxPassDeclaration
+                VS = AssetStorage.Get<string>("ShadowMap.vert"),
+                PS = AssetStorage.Get<string>("ShadowMap.frag"),
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("ShadowMap.vert"),
-                    PS = AssetStorage.Get<string>("ShadowMap.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                        CullMode = Cull.Clockwise,
-                        ZFunc = Compare.LessEqual,
-                    }
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
+                    CullMode = Cull.Clockwise,
+                    ZFunc = Compare.LessEqual,
                 }
             },
             new IFxParamDeclaration[]
             {
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
             });
         }
 
@@ -310,7 +303,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f)},                
+                new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f)},
                 new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero},
                 new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f},
                 new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f},
@@ -460,21 +453,20 @@ namespace Fusee.Engine.Core
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
-            var ret = new ShaderEffect(new[]
+            var ret = new ShaderEffect(
+                new FxPassDeclaration
                 {
-                    new FxPassDeclaration
+                    VS = vs,
+                    PS = ps,
+                    StateSet = new RenderStateSet
                     {
-                        VS = vs,
-                        PS = ps,
-                        StateSet = new RenderStateSet
-                        {
-                            ZEnable = true,
-                            AlphaBlendEnable = true,
-                            SourceBlend = Blend.SourceAlpha,
-                            DestinationBlend = Blend.InverseSourceAlpha,
-                            BlendOperation = BlendOperation.Add,
-                        }
+                        ZEnable = true,
+                        AlphaBlendEnable = true,
+                        SourceBlend = Blend.SourceAlpha,
+                        DestinationBlend = Blend.InverseSourceAlpha,
+                        BlendOperation = BlendOperation.Add,
                     }
+
                 },
                 effectParameters
             );
@@ -498,22 +490,21 @@ namespace Fusee.Engine.Core
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
-            var ret = new ShaderEffectProtoPixel(new[]
+            var ret = new ShaderEffectProtoPixel(
+                new FxPassDeclarationProto
                 {
-                    new FxPassDeclarationProto
+                    VS = vs,
+                    //VS = VsBones, 
+                    ProtoPS = ps,
+                    StateSet = new RenderStateSet
                     {
-                        VS = vs, 
-                        //VS = VsBones, 
-                        ProtoPS = ps,
-                        StateSet = new RenderStateSet
-                        {
-                            ZEnable = true,
-                            AlphaBlendEnable = true,
-                            SourceBlend = Blend.SourceAlpha,
-                            DestinationBlend = Blend.InverseSourceAlpha,
-                            BlendOperation = BlendOperation.Add,
-                        }
+                        ZEnable = true,
+                        AlphaBlendEnable = true,
+                        SourceBlend = Blend.SourceAlpha,
+                        DestinationBlend = Blend.InverseSourceAlpha,
+                        BlendOperation = BlendOperation.Add,
                     }
+
                 },
                 effectParameters
             )
@@ -893,7 +884,7 @@ namespace Fusee.Engine.Core
             };
 
             return FromMatComp(defaultMat);
-        }       
+        }
 
     }
 }

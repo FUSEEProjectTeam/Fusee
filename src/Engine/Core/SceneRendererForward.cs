@@ -659,7 +659,23 @@ namespace Fusee.Engine.Core
                 HasNumberOfLightsChanged = false;
             }
             _state.Effect = shaderComponent.Effect;
-            _rc.SetShaderEffect(_state.Effect);
+            _rc.SetEffect(_state.Effect);
+        }
+
+        /// <summary>
+        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="shaderComponent">The ShaderEffectComponent</param>
+        [VisitMethod]
+        public void RenderSurfaceEffect(SurfaceEffectComponent shaderComponent)
+        {
+            if (HasNumberOfLightsChanged)
+            {
+                //change #define MAX_LIGHTS... or rebuild shader effect?
+                HasNumberOfLightsChanged = false;
+            }
+            _state.Effect = shaderComponent.Effect;
+            _rc.SetEffect(_state.Effect);
         }
 
         /// <summary>
@@ -778,7 +794,7 @@ namespace Fusee.Engine.Core
             _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
-            _rc.SetShaderEffect(_state.Effect);
+            _rc.SetEffect(_state.Effect);
 
         }
 

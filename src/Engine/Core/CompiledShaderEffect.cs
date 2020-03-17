@@ -1,23 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// All compiled information of one <see cref="ShaderEffect"/>.
-    /// A <see cref="CompiledShaderEffect"/> can have more than one Pass where each pass contains another shader program.
-    /// Those are saved as a <see cref="ShaderProgram"/>s.
+    /// All compiled information of one <see cref="Effect"/>.
+    /// A <see cref="CompiledEffect"/> can have more than one Pass where each pass contains another shader program.   
     /// </summary>
-    internal class CompiledShaderEffect
+    internal class CompiledEffect
     {
         /// <summary>
-        /// The compiled shader programs for every pass.
+        /// The handle that identifies the shader program on the gpu.
         /// </summary>
-        internal ShaderProgram[] ShaderPrograms;
-
-        /// <summary>
-        /// All parameters (as references), saved per pass. See <see cref="FxParam"/> on the parameter infos that are saved.
-        /// </summary>
-        internal List<Dictionary<string, FxParam>> ParamsPerPass = new List<Dictionary<string, FxParam>>();
+        internal IShaderHandle GpuHandle;
 
         /// <summary>
         /// The shader parameters of all passes. See <see cref="FxParam"/> on the parameter infos that are saved.
