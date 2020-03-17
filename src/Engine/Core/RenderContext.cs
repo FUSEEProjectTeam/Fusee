@@ -971,9 +971,9 @@ namespace Fusee.Engine.Core
                 else
                 {
                     var surfEffect = (SurfaceEffect)ef;
-                    vert = SurfaceEffect.JoinShards(surfEffect.vertexShaderSrc);
-                    geom = SurfaceEffect.JoinShards(surfEffect.geometryShaderSrc);
-                    frag = SurfaceEffect.JoinShards(surfEffect.fragmentShaderSrc);
+                    vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
+                    geom = SurfaceEffect.JoinShards(surfEffect.GeometryShaderSrc);
+                    frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc);
                 }
                 var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
                 var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);

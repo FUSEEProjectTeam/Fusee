@@ -1,17 +1,28 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using System;
+using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using static Fusee.Engine.Core.Input;
+using static Fusee.Engine.Core.Time;
+using System;
+using Fusee.Engine.Core.ShaderShards.Fragment;
+using Fusee.Jometri;
 
 namespace Fusee.Examples.Bump.Core
 {
     [FuseeApplication(Name = "FUSEE Bump Mapping Example", Description = "Quick bump example")]
     public class Bump : RenderCanvas
     {
-        public string ModelFile = "FUSEERocket.fus";
+        public string ModelFile = "sphere.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
@@ -27,7 +38,6 @@ namespace Fusee.Examples.Bump.Core
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
-        private float4x4 _projection;
         private bool _twoTouchRepeated;
 
         private bool _keys;
@@ -49,22 +59,33 @@ namespace Fusee.Examples.Bump.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
 
-            //TODO: export the correct material - with bump channel - from blender exporter
-            //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here
+            var matCompForBumpFrag = new MaterialComponent()
+            {
+                Bump = new BumpChannelContainer()
+                {
+                    Intensity = 0.3f,
+                    Texture = "kissen.png"
+                },
+                Diffuse = new MatChannelContainer()
+                {
+                    Color = new float4(0.5f, 0.5f, 0.5f, 1),
+                },
+                Specular = new SpecularChannelContainer()
+                {
+                    Color = float4.One,
+                    Shininess = 22,
+                    Intensity = 0.5f
+                }
+            };
 
-            //_scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            //{
-            //    Intensity = 0.5f,
-            //    Texture = "bump.png"
-            //};
+            var bumpEffect = MakeShaderEffect.FromMatComp(matCompForBumpFrag);
 
-            //_scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            //{
-            //    Intensity = 1.0f,
-            //    Texture = "bump.png"
-            //};
+            var mesh = _scene.Children[0].GetComponent<Mesh>();
+            mesh.Tangents = mesh.CalculateTangents();
+            mesh.BiTangents = mesh.CalculateBiTangents();
+            _scene.Children[0].GetComponent<ShaderEffectComponent>().Effect = bumpEffect;
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();

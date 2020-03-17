@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The effect props are the basis on which we can decide what kind of shards this effect supports.
         /// </summary>
-        public ShaderEffectProps EffectProps { get; set; }
+        public EffectProps EffectProps { get; set; }
 
         private readonly FxPassDeclarationProto _effectPass;
 

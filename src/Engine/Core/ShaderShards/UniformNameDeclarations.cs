@@ -38,12 +38,12 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The tangent attribute name.
         /// </summary>
-        public static readonly string TangentAttribName = "fuTangent";
+        public static readonly string Tangent = "fuTangent";
 
         /// <summary>
         /// The bitangent attribute name.
         /// </summary>
-        public static readonly string BitangentAttribName = "fuBitangent";
+        public static readonly string Bitangent = "fuBitangent";
 
         /// <summary>
         /// The bone weight attribute name.
@@ -230,7 +230,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public static readonly string DiffuseColor = "DiffuseColor";
+        public static readonly string Albedo = "Albedo";
 
         /// <summary>
         /// The var name for the uniform SpecularColor variable within the pixel shaders.
@@ -305,7 +305,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public static readonly string BumpIntensityName = "BumpIntensityName";
+        public static readonly string BumpIntensity = "BumpIntensityName";
 
         /// <summary>
         /// List of all possible render texture names.

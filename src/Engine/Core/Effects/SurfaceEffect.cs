@@ -1,8 +1,6 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,29 +12,33 @@ namespace Fusee.Engine.Core.Effects
     /// A surface effect contains information to build a shader program 
     /// </summary>
     public class SurfaceEffect : Effect
-    {
-       
-        public readonly List<KeyValuePair<ShardCategory, string>> vertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        public readonly List<KeyValuePair<ShardCategory, string>> geometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        public readonly List<KeyValuePair<ShardCategory, string>> fragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+    {       
+        public readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        public readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        public readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
 
-        public SurfaceEffect()
+        /// <summary>
+        /// Creates a new Instance of type SurfaceEffect.
+        /// </summary>
+        /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
+        public SurfaceEffect(RenderStateSet renderStateSet = null)
         {
             EffectEventArgs = new EffectEventArgs(this, ChangedEnum.UNCHANGED);
 
             List<FxPassDeclaration> effectPassDecl = new List<FxPassDeclaration>();
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
 
-            //TODO: implement passes and States 
-            RendererStates = new RenderStateSet();
-            RendererStates = new RenderStateSet
+            if (renderStateSet == null)
             {
-                ZEnable = true,
-                AlphaBlendEnable = true,
-                SourceBlend = Blend.SourceAlpha,
-                DestinationBlend = Blend.InverseSourceAlpha,
-                BlendOperation = BlendOperation.Add,
-            };           
+                RendererStates = new RenderStateSet
+                {
+                    ZEnable = true,
+                    AlphaBlendEnable = true,
+                    SourceBlend = Blend.SourceAlpha,
+                    DestinationBlend = Blend.InverseSourceAlpha,
+                    BlendOperation = BlendOperation.Add,
+                };
+            }        
 
             //TODO: Difference forward/deferred. Lights as properties? Would be difficult because each Light property must be one property in the ShaderEffect.
             foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.LightingShard.NumberOfLightsForward))
@@ -126,42 +128,42 @@ namespace Fusee.Engine.Core.Effects
             switch (shaderAttrib.ShaderCategory)
             {
                 case ShaderCategory.Vertex:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Fragment:
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry:
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Geometry:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry_Pixel:
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Geometry_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 default:
                     break;
@@ -174,40 +176,40 @@ namespace Fusee.Engine.Core.Effects
             switch (attrib.ShaderCategory)
             {
                 case ShaderCategory.Vertex:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Fragment:
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry:
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Geometry_Pixel:
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Geometry:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
                 case ShaderCategory.Vertex_Geometry_Pixel:
-                    vertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    vertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    fragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    fragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    geometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
-                    geometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
 
                 default:
@@ -233,7 +235,7 @@ namespace Fusee.Engine.Core.Effects
             return (IFxParamDeclaration)ob;
         }
 
-        public static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList)
+        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList)
         {
             string res = string.Empty;
             foreach (var kvp in shardList)

@@ -518,7 +518,7 @@ namespace Fusee.Engine.Core
 
         #region Create Shaders from Shards
 
-        private static string CreateVertexShader(WeightComponent wc, ShaderEffectProps effectProps)
+        private static string CreateVertexShader(WeightComponent wc, EffectProps effectProps)
         {
             var vertexShader = new List<string>
             {
@@ -534,7 +534,7 @@ namespace Fusee.Engine.Core
             return string.Join("\n", vertexShader);
         }
 
-        private static string CreatePixelShader(ShaderEffectProps effectProps)
+        private static string CreatePixelShader(EffectProps effectProps)
         {
             var pixelShader = new List<string>
             {
@@ -557,7 +557,7 @@ namespace Fusee.Engine.Core
             return string.Join("\n", pixelShader);
         }
 
-        private static string CreateProtoPixelShader(ShaderEffectProps effectProps)
+        private static string CreateProtoPixelShader(EffectProps effectProps)
         {
             var protoPixelShader = new List<string>
             {
@@ -620,7 +620,7 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new FxParamDeclaration<float4>
                 {
-                    Name = UniformNameDeclarations.DiffuseColor,
+                    Name = UniformNameDeclarations.Albedo,
                     Value = mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
@@ -728,7 +728,7 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new FxParamDeclaration<float>
                 {
-                    Name = UniformNameDeclarations.BumpIntensityName,
+                    Name = UniformNameDeclarations.BumpIntensity,
                     Value = mc.Bump.Intensity
                 });
                 effectParameters.Add(new FxParamDeclaration<Texture>

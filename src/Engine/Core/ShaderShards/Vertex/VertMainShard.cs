@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Base.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
@@ -12,14 +13,26 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// The naming of the out parameters is the same as in the <see cref="VertPropertiesShard"/>.
         /// </summary>
-        /// <param name="effectProps">The <see cref="ShaderEffectProps"/> is the basis to decide, which calculations need to be made. E.g. do we have a weight map? If so, adjust the gl_Position.</param>
+        /// <param name="effectProps">The <see cref="EffectProps"/> is the basis to decide, which calculations need to be made. E.g. do we have a weight map? If so, adjust the gl_Position.</param>
         /// <returns></returns>
-        public static string VertexMain(ShaderEffectProps effectProps)
+        public static string VertexMain(EffectProps effectProps)
         {
             var vertMainBody = new List<string>
             {
                 "gl_PointSize = 10.0;"
             };
+
+            if (effectProps.MatProbs.HasSpecular)
+            {
+                vertMainBody.Add($"vec3 vCamPos = {UniformNameDeclarations.IModelView}[3].xyz;");
+
+                vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
+                    ? $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - vec3(newVertex));"
+                    : $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - {UniformNameDeclarations.Vertex});");
+            }
+
+            if (effectProps.MeshProbs.HasUVs)
+                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = fuUV;");
 
             if (effectProps.MeshProbs.HasNormals && effectProps.MeshProbs.HasWeightMap)
             {
@@ -46,28 +59,24 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 // At this point the normal is in World space - transform back to model space                
                 vertMainBody.Add($"{VaryingNameDeclarations.Normal} = mat3({UniformNameDeclarations.ITModelView}) * newNormal.xyz;");
             }
-
-            if (effectProps.MatProbs.HasSpecular)
-            {
-                vertMainBody.Add($"vec3 vCamPos = {UniformNameDeclarations.IModelView}[3].xyz;");
-
-                vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
-                    ? $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - vec3(newVertex));"
-                    : $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - {UniformNameDeclarations.Vertex});");
-            }
-
-            if (effectProps.MeshProbs.HasUVs)
-                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = fuUV;");
-
-            if (effectProps.MeshProbs.HasNormals && !effectProps.MeshProbs.HasWeightMap)
-                vertMainBody.Add($"{VaryingNameDeclarations.Normal} = normalize(mat3({UniformNameDeclarations.ITModelView}) * {UniformNameDeclarations.Normal});");
+            else if (effectProps.MeshProbs.HasNormals && !effectProps.MeshProbs.HasWeightMap)
+                vertMainBody.Add($"{VaryingNameDeclarations.Normal} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({ UniformNameDeclarations.Normal}, 0.0)));");
 
             vertMainBody.Add($"{VaryingNameDeclarations.Position} = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}, 1.0));");
 
-            if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
+            if (effectProps.MatProbs.HasBump)
             {
-                vertMainBody.Add($"{VaryingNameDeclarations.Tangent} = {UniformNameDeclarations.TangentAttribName};");
-                vertMainBody.Add($"{VaryingNameDeclarations.Bitangent} = {UniformNameDeclarations.BitangentAttribName};");
+                if (!effectProps.MeshProbs.HasTangents || !effectProps.MeshProbs.HasBiTangents)
+                    Diagnostics.Error(effectProps, new ArgumentException("The effect props state the material has a bump map but is missing tangents and/or bitangents!"));
+
+                vertMainBody.Add($" vec3 T = normalize(vec3({UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
+                vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}, 0.0)));");
+                //vertMainBody.Add($"vec3 N = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({ UniformNameDeclarations.Normal}, 0.0)));");
+
+                vertMainBody.Add($"{VaryingNameDeclarations.Tangent} = vec4(T, {UniformNameDeclarations.Bitangent});");
+                vertMainBody.Add($"{VaryingNameDeclarations.Bitangent} = B;");
+
+                vertMainBody.Add($"TBN = mat3(T,B,{VaryingNameDeclarations.Normal});");
             }
 
             vertMainBody.Add(effectProps.MeshProbs.HasWeightMap

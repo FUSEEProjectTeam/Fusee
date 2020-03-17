@@ -41,10 +41,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
-        /// Collects all lighting methods, dependent on what is defined in the given <see cref="ShaderEffectProps"/> and the LightingCalculationMethod.
+        /// Collects all lighting methods, dependent on what is defined in the given <see cref="EffectProps"/> and the LightingCalculationMethod.
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
-        public static string AssembleLightingMethods(ShaderEffectProps effectProps)
+        public static string AssembleLightingMethods(EffectProps effectProps)
         {
             var lighting = new List<string>
             {
@@ -235,20 +235,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one.
         /// </summary>
-        public static string ApplyLightForward(ShaderEffectProps effectProps)
+        public static string ApplyLightForward(EffectProps effectProps)
         {
-            var bumpNormals = new List<string>
+            var normals = new List<string>();
+            if (effectProps.MatProbs.HasBump)
             {
-                "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensityName}, {UniformNameDeclarations.BumpIntensityName}, 1.0);",
-                $"N = (N.x * vec3({VaryingNameDeclarations.Tangent})) + (N.y * {VaryingNameDeclarations.Bitangent}) + (N.z * {VaryingNameDeclarations.Normal});",
-                "N = normalize(N);"
-            };
-
-            var normals = new List<string>
+                normals.Add($"vec3 N = texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+                normals.Add($"N = N * 2.0 - 1.0;");
+                normals.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
+                normals.Add("N = normalize(N * TBN);");
+            }
+            else
             {
-                $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
-            };
+                normals = new List<string>
+                {
+                    $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
+                };
+            }
 
             var fragToLightDirAndLightInit = new List<string>
             {
@@ -270,7 +273,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             };
 
             var applyLightParams = new List<string>();
-            applyLightParams.AddRange(effectProps.MatProbs.HasBump ? bumpNormals : normals);
+            applyLightParams.AddRange(normals);
             applyLightParams.AddRange(fragToLightDirAndLightInit);
 
             if (effectProps.MatProbs.HasDiffuse)
@@ -278,10 +281,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 //TODO: Test alpha blending between diffuse and texture
                 if (effectProps.MatProbs.HasDiffuseTexture)
                     applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColor}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
+                        $"vec4 blendedCol = mix({UniformNameDeclarations.Albedo}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
+                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.Albedo}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
             }
 
             if (effectProps.MatProbs.HasSpecular)

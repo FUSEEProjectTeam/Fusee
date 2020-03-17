@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Base.Core;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -12,7 +14,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         /// <param name="effectProps">>The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string InAndOutParams(ShaderEffectProps effectProps)
+        public static string InAndOutParams(EffectProps effectProps)
         {
             var vertProps = new List<string>
             {
@@ -22,13 +24,19 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
 
-            if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
+            if (effectProps.MatProbs.HasBump)
             {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.TangentAttribName));
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.BitangentAttribName));
+                if (!effectProps.MeshProbs.HasTangents || !effectProps.MeshProbs.HasBiTangents)
+                    Diagnostics.Error(effectProps, new ArgumentException("The effect props state the material has a bump map but is missing tangents and/or bitangents!"));
+
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Tangent));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Bitangent));
 
                 vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Tangent));
                 vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
+
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Mat3, "TBN"));
+
             }
 
             if (effectProps.MatProbs.HasSpecular)
@@ -66,7 +74,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string FuseeMatUniforms(ShaderEffectProps effectProps)
+        public static string FuseeMatUniforms(EffectProps effectProps)
         {
             var uniforms = new List<string>
             {

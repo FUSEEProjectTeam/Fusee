@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string InParams(ShaderEffectProps effectProps)
+        public static string InParams(EffectProps effectProps)
         {
             var pxIn = new List<string>
             {
@@ -69,6 +69,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Tangent));
                 pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
+            }
+
+            if (effectProps.MatProbs.HasBump)
+            {
+                pxIn.Add(GLSL.CreateIn(GLSL.Type.Mat3, "TBN"));
             }
 
             if (effectProps.MeshProbs.HasUVs)
@@ -101,7 +106,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string MaterialPropsUniforms(ShaderEffectProps effectProps)
+        public static string MaterialPropsUniforms(EffectProps effectProps)
         {
             var matPropUnifroms = new List<string>();
 
@@ -123,7 +128,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
 
             if (effectProps.MatProbs.HasDiffuse)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColor));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.Albedo));
 
             if (effectProps.MatProbs.HasEmissive)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
@@ -132,7 +137,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             if (effectProps.MatProbs.HasBump)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensityName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensity));
             }
 
             if (effectProps.MatProbs.HasDiffuseTexture)

@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -144,14 +145,14 @@ namespace Fusee.Examples.Picking.Core
                     if (_currentPick != null)
                     {
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        ef.SetFxParam("DiffuseColor", _oldColor);
+                        ef.SetFxParam(UniformNameDeclarations.Albedo, _oldColor);
                     }
 
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = ef.GetFxParam<float4>("DiffuseColor");
-                        ef.SetFxParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
+                        _oldColor = ef.GetFxParam<float4>(UniformNameDeclarations.Albedo);
+                        ef.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
@@ -256,12 +257,12 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

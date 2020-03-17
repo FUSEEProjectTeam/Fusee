@@ -2,6 +2,7 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -273,28 +274,28 @@ namespace Fusee.Engine.GUI
                                 DestinationBlend = Blend.InverseSourceAlpha,
                                 BlendOperation = BlendOperation.Add,
                                 ZEnable = false
-                            }                            
+                            }
                         },
                         new IFxParamDeclaration[]
                         {
                             new FxParamDeclaration<Texture>
                             {
-                                Name = "DiffuseTexture",
+                                Name = UniformNameDeclarations.DiffuseTexture,
                                 Value = tex
                             },
-                            new FxParamDeclaration<float4> {Name = "DiffuseColor", Value = float4.One},
+                            new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
                             new FxParamDeclaration<float2> {Name = "Tile", Value = tiles},
-                            new FxParamDeclaration<float> {Name = "DiffuseMix", Value = 1f},
+                            new FxParamDeclaration<float> {Name = UniformNameDeclarations.DiffuseMix, Value = 1f},
                             new FxParamDeclaration<float4>
                             {
                                 Name = "borders",
                                 Value = borders
                             },
                             new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
-                            new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = "FUSEE_M", Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity}
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.View, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity}
                         })
                 },
                 new NineSlicePlane()
@@ -341,22 +342,22 @@ namespace Fusee.Engine.GUI
                                 DestinationBlend = Blend.InverseSourceAlpha,
                                 BlendOperation = BlendOperation.Add,
                                 ZEnable = false
-                            }                            
+                            }
                         },
                         new IFxParamDeclaration[]
                         {
                             new FxParamDeclaration<Texture>
                             {
-                                Name = "DiffuseTexture",
+                                Name = UniformNameDeclarations.DiffuseTexture,
                                 Value = tex
                             },
-                            new FxParamDeclaration<float4> {Name = "DiffuseColor", Value = float4.One},
-                            new FxParamDeclaration<float> {Name = "DiffuseMix", Value = 1f},
-                            new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
+                            new FxParamDeclaration<float> {Name = UniformNameDeclarations.DiffuseMix, Value = 1f},
+                            new FxParamDeclaration<float4x4> {Name =UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
                         })
                 },
-                new Core.Plane()
+                new Plane()
             };
         }
     }
@@ -431,7 +432,7 @@ namespace Fusee.Engine.GUI
                                         DestinationBlend = Blend.InverseSourceAlpha,
                                         BlendOperation = BlendOperation.Add,
                                         ZEnable = false
-                                    }                                    
+                                    }
                                 },
                                 new IFxParamDeclaration[]
                                 {
@@ -442,11 +443,11 @@ namespace Fusee.Engine.GUI
                                     },
                                     new FxParamDeclaration<float4>
                                     {
-                                        Name = "DiffuseColor", Value = color
+                                        Name = UniformNameDeclarations.Albedo, Value = color
                                     },
-                                    new FxParamDeclaration<float> {Name = "DiffuseMix", Value = 0.0f},
-                                    new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                    new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                                    new FxParamDeclaration<float> {Name = UniformNameDeclarations.DiffuseMix, Value = 0.0f},
+                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
                                 })
                         },
                         textMesh,

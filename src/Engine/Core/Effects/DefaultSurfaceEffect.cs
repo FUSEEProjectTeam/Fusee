@@ -10,12 +10,12 @@ namespace Fusee.Engine.Core.Effects
     public class DefaultSurfaceEffect : SurfaceEffect
     {
         /// <summary>
-        /// A <see cref="ShaderEffectProps"/> helps to use pre-defined shard strings. 
+        /// A <see cref="EffectProps"/> helps to use pre-defined shard strings. 
         /// The namespace ShaderShards provides helper methods, 
         /// that create static strings containing the appropriate shader code for the material described by the ShaderEffectProps.
         /// Note that this is not mandatory, one can write their own shader shards directly in the ShaderEffect.
         /// </summary>
-        private static ShaderEffectProps _effectProps = new ShaderEffectProps()
+        private static EffectProps _effectProps = new EffectProps()
         {
             MatProbs = new MaterialProps()
             {
@@ -39,10 +39,10 @@ namespace Fusee.Engine.Core.Effects
         /// The diffuse color of the this shader effect.
         /// </summary>
         [FxParam(ShaderCategory.Fragment)]
-        public float4 DiffuseColor
+        public float4 Albedo
         {
-            set { SetFxParam(nameof(DiffuseColor), value); }
-            get { return GetFxParam<float4>(nameof(DiffuseColor)); }
+            set { SetFxParam(nameof(Albedo), value); }
+            get { return GetFxParam<float4>(nameof(Albedo)); }
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public DefaultSurfaceEffect() : base()
         {
-            DiffuseColor = new float4(0.5f, 0.5f, 0.5f, 1.0f);
+            Albedo = new float4(0.5f, 0.5f, 0.5f, 1.0f);
             SpecularColor = new float4(1, 1, 1, 1);
             SpecularIntensity = 0.5f;
             SpecularShininess = 22;

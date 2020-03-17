@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core.ShaderShards
     /// <summary>
     /// This struct describes a collection of properties, which are the basis to build the needed shader.
     /// </summary>
-    public struct ShaderEffectProps
+    public struct EffectProps
     {
         /// <summary>
         /// Collection of bools, describing the mesh properties.
@@ -134,15 +134,15 @@ namespace Fusee.Engine.Core.ShaderShards
         }
 
         /// <summary>
-        /// Creates a new <see cref="ShaderEffectProps"/> from a MaterialComponent, a WeightComponent and a mesh.
+        /// Creates a new <see cref="EffectProps"/> from a MaterialComponent, a WeightComponent and a mesh.
         /// </summary>
         /// <param name="mesh">The mesh.</param>
         /// <param name="mc">The material.</param>
         /// <param name="wc">The weights.</param>
         /// <returns></returns>
-        public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
+        public static EffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
         {
-            return new ShaderEffectProps()
+            return new EffectProps()
             {
                 MatType = AnalyzeMaterialType(mc),
                 MatProbs = AnalzyeMaterialParams(mc),

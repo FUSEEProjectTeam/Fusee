@@ -12,15 +12,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Lighting Main method for forward rendering.
         /// </summary>
-        /// <param name="effectProps">The <see cref="ShaderEffectProps"/> which function as a basis to build the correct lighting method.</param>
+        /// <param name="effectProps">The <see cref="EffectProps"/> which function as a basis to build the correct lighting method.</param>
         /// <returns></returns>
-        public static string ForwardLighting(ShaderEffectProps effectProps)
+        public static string ForwardLighting(EffectProps effectProps)
         {
-            string fragColorAlpha = effectProps.MatProbs.HasDiffuse ? $"{UniformNameDeclarations.DiffuseColor}.w" : "1.0";
+            string fragColorAlpha = effectProps.MatProbs.HasDiffuse ? $"{UniformNameDeclarations.Albedo}.w" : "1.0";
 
             var fragMainBody = new List<string>
             {
-                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.DiffuseColor});", //ambient component
+                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.Albedo});", //ambient component
                 $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType);",
                 "}",
 
-                 effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.DiffuseColor}.w);",
+                 effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.Albedo}.w);",
             };
 
             return ShaderShardUtil.MainMethod(fragMainBody);
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string RenderToGBuffer(ShaderEffectProps effectProps)
+        public static string RenderToGBuffer(EffectProps effectProps)
         {
             var fragMainBody = new List<string>();
 
@@ -65,9 +65,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
                         if (effectProps.MatProbs.HasDiffuseTexture)
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColor}.xyz, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
                         else
-                            fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColor}.xyz, 1.0);");
+                            fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.Albedo}.xyz, 1.0);");
                         break;
                     case (int)RenderTargetTextureTypes.G_NORMAL:
                         fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
