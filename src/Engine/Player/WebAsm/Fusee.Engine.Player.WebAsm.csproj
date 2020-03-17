@@ -18,8 +18,7 @@
         <Content Include="canvaskit.wasm" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="canvaskit.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="index.html" CopyToOutputDirectory="PreserveNewest" />
-    </ItemGroup>
-
+    </ItemGroup>  
     <ItemGroup>
         <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj">
             <PrivateAssets>analyzers</PrivateAssets>
