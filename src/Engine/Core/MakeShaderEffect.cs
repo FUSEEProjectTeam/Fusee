@@ -524,7 +524,7 @@ namespace Fusee.Engine.Core
             {
                 HeaderShard.Version300Es,
                 HeaderShard.DefineBones(effectProps, wc),
-                VertPropertiesShard.FuseeUniforms(effectProps),
+                VertPropertiesShard.FuseeMatUniforms(effectProps),
                 VertPropertiesShard.InAndOutParams(effectProps),
             };
 

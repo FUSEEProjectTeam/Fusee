@@ -109,15 +109,19 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         Property = 2,
 
+        /// <summary>
+        /// The shader shard belongs is a struct of the source shader.
+        /// </summary>
+        Struct = 3,
 
         /// <summary>
         /// The shader shard is a method of the source shader.
         /// </summary>
-        Method = 3,
+        Method = 4,
 
         /// <summary>
         /// The shader shard is, or is part of, the main method of the source shader.
         /// </summary>
-        Main = 4
+        Main = 5
     }
 }

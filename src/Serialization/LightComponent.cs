@@ -1,7 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using ProtoBuf;
-using System;
 
 namespace Fusee.Serialization
 {
@@ -58,15 +57,6 @@ namespace Fusee.Serialization
         public float InnerConeAngle;
 
         /// <summary>
-        /// Creates a new instance of type LightComponent.
-        /// </summary>
-        /// <param name="strength">Represents the strength of the light (non-physically representation of the brightness).</param>
-        public LightComponent(float strength = 1)
-        {
-            Strength = strength;
-        }
-
-        /// <summary>
         /// Defines if a shadow map is created for this light.
         /// </summary>
         public bool IsCastingShadows;
@@ -75,5 +65,14 @@ namespace Fusee.Serialization
         /// Bias for calculating shadows.
         /// </summary>
         public float Bias;
+
+        /// <summary>
+        /// Creates a new instance of type LightComponent.
+        /// </summary>
+        /// <param name="strength">Represents the strength of the light (non-physically representation of the brightness).</param>
+        public LightComponent(float strength = 1)
+        {
+            Strength = strength;
+        }
     }
 }

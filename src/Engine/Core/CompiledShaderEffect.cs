@@ -5,8 +5,7 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// All compiled information of one <see cref="Effect"/>.
-    /// A <see cref="CompiledEffect"/> can have more than one Pass where each pass contains another shader program.   
+    /// Compiled information of one <see cref="ShaderEffect"/>.
     /// </summary>
     internal class CompiledEffect
     {
@@ -18,7 +17,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The shader parameters of all passes. See <see cref="FxParam"/> on the parameter infos that are saved.
         /// </summary>
-        internal Dictionary<string, FxParam> Parameters = new Dictionary<string, FxParam>();
+        internal Dictionary<string, FxParam> ActiveUniforms = new Dictionary<string, FxParam>();
 
     }
 }

@@ -66,7 +66,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string FuseeUniforms(ShaderEffectProps effectProps)
+        public static string FuseeMatUniforms(ShaderEffectProps effectProps)
         {
             var uniforms = new List<string>
             {

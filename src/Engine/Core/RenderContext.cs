@@ -1021,7 +1021,7 @@ namespace Fusee.Engine.Core
             if (!_allCompiledEffects.TryGetValue(ef, out var compiledEffect))
                 throw new ArgumentException("Effect isn't build yet - no compiled effect found!");
 
-            if (compiledEffect.Parameters.Count != 0)
+            if (compiledEffect.ActiveUniforms.Count != 0)
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
@@ -1044,7 +1044,7 @@ namespace Fusee.Engine.Core
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
-                compiledEffect.Parameters.Add(activeUniform.Key, effectParam);
+                compiledEffect.ActiveUniforms.Add(activeUniform.Key, effectParam);
             }
         }
 
@@ -1079,7 +1079,7 @@ namespace Fusee.Engine.Core
 
             //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
             //Because of this we do not need to take about which passes this effect belongs to.
-            if (compiledEffect.Parameters.TryGetValue(name, out FxParam effectParam))
+            if (compiledEffect.ActiveUniforms.TryGetValue(name, out FxParam effectParam))
             {
                 effectParam.Value = paramValue;
                 effectParam.HasValueChanged = true;
@@ -1440,7 +1440,7 @@ namespace Fusee.Engine.Core
                 SetShaderProgram(compiledEffect.GpuHandle);
                 SetRenderStateSet(_currentEffect.RendererStates);
 
-                foreach (var fxParam in compiledEffect.Parameters)
+                foreach (var fxParam in compiledEffect.ActiveUniforms)
                 {
                     if (!_currentEffect.ParamDecl.TryGetValue(fxParam.Key, out IFxParamDeclaration dcl))
                     {
@@ -1458,7 +1458,7 @@ namespace Fusee.Engine.Core
                         }
                     }
 
-                    var param = compiledEffect.Parameters[fxParam.Key];
+                    var param = compiledEffect.ActiveUniforms[fxParam.Key];
                     SetShaderParamT(param);
                     param.HasValueChanged = false;
                 }

@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string FuseeVertUniforms = ShaderShards.Vertex.VertPropertiesShard.FuseeUniforms(_effectProps);
+        public static string FuseeVertUniforms = ShaderShards.Vertex.VertPropertiesShard.FuseeMatUniforms(_effectProps);
 
         /// <summary>
         /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
