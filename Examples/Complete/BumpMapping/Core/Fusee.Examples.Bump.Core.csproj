@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\sphere.fus" />
+    <None Remove="Assets\brickwall.jpg" />
   </ItemGroup>
 
   <ItemGroup>

@@ -260,7 +260,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpTexture variable within the pixel shaders.
         /// </summary>
-        public static readonly string BumpTextureName = "BumpTexture";
+        public static readonly string BumpTexture = "BumpTexture";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.

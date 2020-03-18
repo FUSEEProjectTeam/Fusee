@@ -2180,8 +2180,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            GL.Begin(PrimitiveType.Lines);
+            
+            GL.Begin(PrimitiveType.Lines);            
+            GL.Color4(color.x, color.y, color.z, color.w);
             GL.Vertex3(start.x, start.y, start.z);
+            GL.Color4(color.x, color.y, color.z, color.w);
             GL.Vertex3(end.x, end.y, end.z);
             GL.End();
         }

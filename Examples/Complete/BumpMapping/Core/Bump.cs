@@ -9,12 +9,8 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using static Fusee.Engine.Core.Input;
-using static Fusee.Engine.Core.Time;
 using System;
-using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Jometri;
 
 namespace Fusee.Examples.Bump.Core
@@ -25,8 +21,7 @@ namespace Fusee.Examples.Bump.Core
         public string ModelFile = "sphere.fus";
 
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
-                             _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+        private static float _angleHorz , _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
 
         private static float2 _offset;
         private static float2 _offsetInit;
@@ -43,11 +38,14 @@ namespace Fusee.Examples.Bump.Core
         private bool _keys;
         private float _maxPinchSpeed;
 
+        private Mesh _mesh;
+        private TransformComponent _meshTransform;
+
         // Init is called on startup.
         public override async Task<bool> Init()
         {
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
-            _zoom = 400;
+            _zoom = 2;
 
             _angleRoll = 0;
             _angleRollInit = 0;
@@ -59,33 +57,51 @@ namespace Fusee.Examples.Bump.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
+            //_scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
+            _meshTransform = new TransformComponent();
+
+            _scene = new SceneContainer()
+            {
+                Children = new List<SceneNodeContainer>()
+                {
+                    new SceneNodeContainer()
+                    {
+                        Components = new List<SceneComponentContainer>()
+                        {
+                            _meshTransform,
+                            new Plane()
+                        }
+                    }
+                }
+            };
 
             var matCompForBumpFrag = new MaterialComponent()
             {
                 Bump = new BumpChannelContainer()
                 {
-                    Intensity = 0.3f,
-                    Texture = "kissen.png"
+                    Intensity = 1f,
+                    Texture = "brickwall_normal.jpg"
                 },
                 Diffuse = new MatChannelContainer()
                 {
                     Color = new float4(0.5f, 0.5f, 0.5f, 1),
+                    Mix = 1,
+                    Texture = "brickwall.jpg"
                 },
                 Specular = new SpecularChannelContainer()
                 {
                     Color = float4.One,
-                    Shininess = 22,
+                    Shininess = 100,
                     Intensity = 0.5f
                 }
             };
 
             var bumpEffect = MakeShaderEffect.FromMatComp(matCompForBumpFrag);
 
-            var mesh = _scene.Children[0].GetComponent<Mesh>();
-            mesh.Tangents = mesh.CalculateTangents();
-            mesh.BiTangents = mesh.CalculateBiTangents();
-            _scene.Children[0].GetComponent<ShaderEffectComponent>().Effect = bumpEffect;
+            _mesh = _scene.Children[0].GetComponent<Plane>();
+            _mesh.Tangents = _mesh.CalculateTangents();
+            _mesh.BiTangents = _mesh.CalculateBiTangents();
+            _scene.Children[0].Components.Insert(1, new ShaderEffectComponent() { Effect = bumpEffect });
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -123,7 +139,6 @@ namespace Fusee.Examples.Bump.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -156,7 +171,7 @@ namespace Fusee.Examples.Bump.Core
             else
             {
                 _twoTouchRepeated = false;
-                _zoomVel = Input.Mouse.WheelVel * -0.5f;
+                _zoomVel = Input.Mouse.WheelVel * -0.01f;
                 _angleRoll *= curDamp * 0.8f;
                 _offset *= curDamp * 0.8f;
             }
@@ -192,10 +207,10 @@ namespace Fusee.Examples.Bump.Core
 
             _zoom += _zoomVel;
             // Limit zoom
-            if (_zoom < 80)
-                _zoom = 80;
-            if (_zoom > 2000)
-                _zoom = 2000;
+            if (_zoom < 1)
+                _zoom = 1;
+            if (_zoom > 100)
+                _zoom = 100;
 
             _angleHorz += _angleVelHorz;
             // Wrap-around to keep _angleHorz between -PI and + PI
@@ -209,11 +224,26 @@ namespace Fusee.Examples.Bump.Core
             _angleRoll = M.MinAngle(_angleRoll);
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
+            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);            
+            var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
+
+            //for (int i = 0; i < _mesh.Vertices.Length; i++)
+            //{
+            //    var nStart = _mesh.Vertices[i];
+            //    var nEnd = _mesh.Vertices[i] + (_mesh.Normals[i] * 0.1f);
+            //    RC.DebugLine(nStart, nEnd, new float4(0, 0, 1, 1));
+
+            //    var tStart = _mesh.Vertices[i];
+            //    var tEnd = _mesh.Vertices[i] + (_mesh.Tangents[i].xyz * 0.1f);
+            //    RC.DebugLine(tStart, tEnd, new float4(0, 0, 1, 1));
+
+            //    var bStart = _mesh.Vertices[i];
+            //    var bEnd = _mesh.Vertices[i] + (_mesh.BiTangents[i].xyz * 0.1f);
+            //    RC.DebugLine(bStart, bEnd, new float4(0, 0, 1, 1));
+            //}
 
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();

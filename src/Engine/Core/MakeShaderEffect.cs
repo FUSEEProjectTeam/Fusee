@@ -733,7 +733,7 @@ namespace Fusee.Engine.Core
                 });
                 effectParameters.Add(new FxParamDeclaration<Texture>
                 {
-                    Name = UniformNameDeclarations.BumpTextureName,
+                    Name = UniformNameDeclarations.BumpTexture,
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }

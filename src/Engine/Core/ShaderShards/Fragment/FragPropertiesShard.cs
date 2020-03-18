@@ -136,7 +136,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             //Textures
             if (effectProps.MatProbs.HasBump)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTexture));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensity));
             }
 

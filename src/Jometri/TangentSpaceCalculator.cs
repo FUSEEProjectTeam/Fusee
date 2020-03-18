@@ -57,7 +57,7 @@ namespace Fusee.Jometri
                 //Orthogonalization
                 var normal = normals[triangles[i]];
                 var dot = normal.x * tangent.x + normal.y * tangent.y + normal.z * tangent.z;
-                tangent = tangent - normal * dot;
+                tangent -= normal * dot;
 
                 //Set w component to 0 for correct normalization of the per vertex tangent. Then set w to 1 for correct handedness.
                 //Handedness: a advantage of tangent space normal maps is, that you can use just one "side" of the uv map IF you have a symmetric model.
@@ -67,15 +67,15 @@ namespace Fusee.Jometri
                 var tangent4 = new float4(tangent.x, tangent.y, tangent.z, 0);
 
                 tangents[triangles[i]] += tangent4;
-                tangents[triangles[i]].Normalize();
+                tangents[triangles[i]] = tangents[triangles[i]].Normalize();
                 tangents[triangles[i]].w = 1;
 
                 tangents[triangles[i + 1]] += tangent4;
-                tangents[triangles[i + 1]].Normalize();
+                tangents[triangles[i + 1]] = tangents[triangles[i + 1]].Normalize();
                 tangents[triangles[i + 1]].w = 1;
 
                 tangents[triangles[i + 2]] += tangent4;
-                tangents[triangles[i + 2]].Normalize();
+                tangents[triangles[i + 2]] = tangents[triangles[i + 2]].Normalize();
                 tangents[triangles[i + 2]].w = 1;
             }
             return tangents;
@@ -104,7 +104,10 @@ namespace Fusee.Jometri
             var bitangents = new float3[m.Tangents.Length];
 
             for (var i = 0; i < m.Tangents.Length; i++)
+            {
                 bitangents[i] = float3.Cross(m.Normals[i], m.Tangents[i].xyz);
+                bitangents[i] = bitangents[i].Normalize();
+            }
             
             return bitangents;
         }

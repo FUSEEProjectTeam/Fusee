@@ -21,7 +21,6 @@ namespace Fusee.Engine.Core.ShaderShards
         /// Sets the version to 300es.
         /// </summary>
         public static string Version300Es = "#version 300 es\n";
-        
 
         /// <summary>
         /// Sets preprocessor that defines the bone count.

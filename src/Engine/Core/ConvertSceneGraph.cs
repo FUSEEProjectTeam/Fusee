@@ -134,7 +134,7 @@ namespace Fusee.Engine.Core
 
             var currentNodeEffect = _currentNode.GetComponent<ShaderEffectComponent>();
 
-            if (currentNodeEffect?.Effect.GetFxParam<Texture>(UniformNameDeclarations.BumpTextureName) != null)
+            if (currentNodeEffect?.Effect.GetFxParam<Texture>(UniformNameDeclarations.BumpTexture) != null)
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
