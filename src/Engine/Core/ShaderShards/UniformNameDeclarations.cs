@@ -225,7 +225,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform AmbientStrength variable within the pixel shaders.
         /// </summary>
-        public static readonly string AmbientStrengthName = "AmbientStrength";
+        public static readonly string AmbientStrength = "AmbientStrength";
 
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform EmissiveColor variable within the pixel shaders.
         /// </summary>
-        public static readonly string EmissiveColorName = "EmissiveColor";
+        public static readonly string EmissiveColor = "EmissiveColor";
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
@@ -248,19 +248,29 @@ namespace Fusee.Engine.Core.ShaderShards
         public static readonly string DiffuseTexture = "DiffuseTexture";
 
         /// <summary>
+        /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
+        /// </summary>
+        public static readonly string DiffuseTextureTiles = "DiffuseTextureTiles";
+
+        /// <summary>
         /// The var name for the uniform SpecularTexture variable within the pixel shaders.
         /// </summary>
-        public static readonly string SpecularTextureName = "SpecularTexture";
+        public static readonly string SpecularTexture = "SpecularTexture";
 
         /// <summary>
         /// The var name for the uniform EmissiveTexture variable within the pixel shaders.
         /// </summary>
-        public static readonly string EmissiveTextureName = "EmissiveTexture";
+        public static readonly string EmissiveTexture = "EmissiveTexture";
 
         /// <summary>
         /// The var name for the uniform BumpTexture variable within the pixel shaders.
         /// </summary>
         public static readonly string BumpTexture = "BumpTexture";
+
+        /// <summary>
+        /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
+        /// </summary>
+        public static readonly string BumpTextureTiles = "BumpTextureTiles";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
@@ -270,17 +280,17 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.
         /// </summary>
-        public static readonly string SpecularMixName = "SpecularMix";
+        public static readonly string SpecularMix = "SpecularMix";
 
         /// <summary>
         /// The var name for the uniform EmissiveMix variable within the pixel shaders.
         /// </summary>
-        public static readonly string EmissiveMixName = "EmissiveMix";
+        public static readonly string EmissiveMix = "EmissiveMix";
 
         /// <summary>
         /// The var name for the uniform SpecularShininess variable within the pixel shaders.
         /// </summary>
-        public static readonly string SpecularShininessName = "SpecularShininess";
+        public static readonly string SpecularShininess = "SpecularShininess";
 
         /// <summary>
         /// The var name for the uniform SpecularIntensity variable within the pixel shaders.
@@ -305,7 +315,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public static readonly string BumpIntensity = "BumpIntensityName";
+        public static readonly string BumpIntensity = "BumpIntensity";
 
         /// <summary>
         /// List of all possible render texture names.

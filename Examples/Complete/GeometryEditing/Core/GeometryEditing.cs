@@ -396,7 +396,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
             var materialComponent = new MaterialComponent
             {
-                Diffuse = new MatChannelContainer(),
+                Diffuse = new DiffuseChannelContainer(),
                 Specular = new SpecularChannelContainer(),
             };
             materialComponent.Diffuse.Color = _defaultColor;

@@ -1,10 +1,5 @@
-﻿using Fusee.Base.Common;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.Core.Effects;
-using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -18,8 +13,6 @@ namespace Fusee.Examples.Bump.Core
     [FuseeApplication(Name = "FUSEE Bump Mapping Example", Description = "Quick bump example")]
     public class Bump : RenderCanvas
     {
-        public string ModelFile = "sphere.fus";
-
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
 
@@ -56,8 +49,6 @@ namespace Fusee.Examples.Bump.Core
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the standard model
-            //_scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
             _meshTransform = new TransformComponent();
 
             _scene = new SceneContainer()
@@ -69,7 +60,7 @@ namespace Fusee.Examples.Bump.Core
                         Components = new List<SceneComponentContainer>()
                         {
                             _meshTransform,
-                            new Sphere(32,32)
+                            new Icosphere(3)
                         }
                     }
                 }
@@ -80,25 +71,27 @@ namespace Fusee.Examples.Bump.Core
                 Bump = new BumpChannelContainer()
                 {
                     Intensity = 1f,
-                    Texture = "brickwall_normal.jpg"
+                    Texture = "brickwall_normal.jpg",
+                    Tiles = new float2(5, 5)
                 },
-                Diffuse = new MatChannelContainer()
+                Diffuse = new DiffuseChannelContainer()
                 {
                     Color = new float4(0.5f, 0.5f, 0.5f, 1),
                     Mix = 1,
-                    Texture = "brickwall.jpg"
+                    Texture = "brickwall.jpg",
+                    Tiles = new float2(5, 5)
                 },
                 Specular = new SpecularChannelContainer()
                 {
                     Color = float4.One,
-                    Shininess = 50,
-                    Intensity = 0.2f
+                    Shininess = 22f,
+                    Intensity = 0.5f
                 }
             };
 
-            var bumpEffect = MakeShaderEffect.FromMatComp(matCompForBumpFrag);
+            var bumpEffect = MakeShaderEffect.ProtoFromMatComp(matCompForBumpFrag);
 
-            _mesh = _scene.Children[0].GetComponent<Sphere>();
+            _mesh = _scene.Children[0].GetComponent<Icosphere>();
             _mesh.Tangents = _mesh.CalculateTangents();
             _mesh.BiTangents = _mesh.CalculateBiTangents();
             _scene.Children[0].Components.Insert(1, new ShaderEffectComponent() { Effect = bumpEffect });

@@ -15,12 +15,12 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Sets the precision to highp float.
         /// </summary>
-        public static string EsPrecisionHighpFloat = "precision highp float; \n";       
+        public static string EsPrecisionHighpFloat = "";       
 
         /// <summary>
         /// Sets the version to 300es.
         /// </summary>
-        public static string Version300Es = "#version 300 es\n";
+        public static string Version300Es = "#version 440 core\n";
 
         /// <summary>
         /// Sets preprocessor that defines the bone count.

@@ -12,7 +12,7 @@ namespace Fusee.Serialization
     // taken from http://www.codeproject.com/Articles/642677/Protobuf-net-the-unofficial-manual
     // Here is where I start disliking Protobuf...Note-to-self: Write own serialization
     [ProtoInclude(100, typeof(SpecularChannelContainer))]
-    public class MatChannelContainer : IEquatable<MatChannelContainer>
+    public class DiffuseChannelContainer : IEquatable<DiffuseChannelContainer>
     {
         /// <summary>
         /// The color of the light component.
@@ -32,6 +32,11 @@ namespace Fusee.Serialization
         [ProtoMember(3)]
         public float Mix;
 
+        /// <summary>
+        /// The diffuse texture tiling.
+        /// </summary>        
+        public float2 Tiles = float2.One;
+
         #region equals
 
         /// <summary>
@@ -42,7 +47,7 @@ namespace Fusee.Serialization
         /// <returns>
         /// True, if left does equal right; false otherwise.
         /// </returns>
-        public static bool operator ==(MatChannelContainer lhs, MatChannelContainer rhs)
+        public static bool operator ==(DiffuseChannelContainer lhs, DiffuseChannelContainer rhs)
         {
             // Check for null on left side.
             if (lhs is null)
@@ -65,7 +70,7 @@ namespace Fusee.Serialization
         /// <returns>
         /// True, if left does not equal right; false otherwise.
         /// </returns>
-        public static bool operator !=(MatChannelContainer lhs, MatChannelContainer rhs)
+        public static bool operator !=(DiffuseChannelContainer lhs, DiffuseChannelContainer rhs)
         {
             return !(lhs == rhs);
         }
@@ -77,7 +82,7 @@ namespace Fusee.Serialization
         /// <returns>
         /// true if the current MatChannelContainer is equal to the other; otherwise, false.
         /// </returns>
-        public bool Equals(MatChannelContainer other)
+        public bool Equals(DiffuseChannelContainer other)
         {
             if (other == null)
                 return false;
@@ -97,7 +102,7 @@ namespace Fusee.Serialization
             if ((obj is null) || !GetType().Equals(obj.GetType()))
                 return false;
             else
-                return Equals((MatChannelContainer)obj);
+                return Equals((DiffuseChannelContainer)obj);
         }
 
         /// <summary>
@@ -122,7 +127,7 @@ namespace Fusee.Serialization
     /// The specular channel definition. 
     /// </summary>
     [ProtoContract]
-    public class SpecularChannelContainer : MatChannelContainer, IEquatable<SpecularChannelContainer>
+    public class SpecularChannelContainer : DiffuseChannelContainer, IEquatable<SpecularChannelContainer>
     {
         /// <summary>
         /// The material's shininess.
@@ -240,6 +245,11 @@ namespace Fusee.Serialization
         [ProtoMember(2)]
         public float Intensity;
 
+        /// <summary>
+        /// The bump texture tiling.
+        /// </summary>        
+        public float2 Tiles = float2.One;
+
         #region equals
 
         /// <summary>
@@ -346,7 +356,7 @@ namespace Fusee.Serialization
         /// The diffuse channel.
         /// </summary>
         [ProtoMember(1)]
-        public MatChannelContainer Diffuse;
+        public DiffuseChannelContainer Diffuse;
         #endregion
 
         #region Specular
@@ -378,7 +388,7 @@ namespace Fusee.Serialization
         /// The emissive channel.
         /// </summary>
         [ProtoMember(3)]
-        public MatChannelContainer Emissive;
+        public DiffuseChannelContainer Emissive;
         #endregion
 
         #region Bump
@@ -493,7 +503,7 @@ namespace Fusee.Serialization
             if ((obj == null) || !GetType().Equals(obj.GetType()))
                 return false;
             else
-                return Equals((MatChannelContainer)obj);
+                return Equals((DiffuseChannelContainer)obj);
         }
 
         #endregion  

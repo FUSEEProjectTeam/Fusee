@@ -336,7 +336,7 @@ namespace Fusee.Engine.Core
         {
             MaterialComponent temp = new MaterialComponent
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new DiffuseChannelContainer
                 {
                     Color = diffuseColor
                 },
@@ -362,7 +362,7 @@ namespace Fusee.Engine.Core
         {
             MaterialComponent temp = new MaterialComponent
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new DiffuseChannelContainer
                 {
                     Color = diffuseColor
                 },
@@ -390,7 +390,7 @@ namespace Fusee.Engine.Core
         {
             MaterialComponent temp = new MaterialComponent
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new DiffuseChannelContainer
                 {
                     Color = diffuseColor,
                     Texture = texName,
@@ -420,7 +420,7 @@ namespace Fusee.Engine.Core
         {
             MaterialComponent temp = new MaterialComponent
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new DiffuseChannelContainer
                 {
                     Color = diffuseColor,
                     Texture = texName,
@@ -635,6 +635,11 @@ namespace Fusee.Engine.Core
                         Name = UniformNameDeclarations.DiffuseTexture,
                         Value = LoadTexture(mc.Diffuse.Texture)
                     });
+                    effectParameters.Add(new FxParamDeclaration<float2>
+                    {
+                        Name = UniformNameDeclarations.DiffuseTextureTiles,
+                        Value = mc.Diffuse.Tiles
+                    });
                 }
             }
 
@@ -650,7 +655,7 @@ namespace Fusee.Engine.Core
                 {
                     effectParameters.Add(new FxParamDeclaration<float>
                     {
-                        Name = UniformNameDeclarations.SpecularShininessName,
+                        Name = UniformNameDeclarations.SpecularShininess,
                         Value = mc.Specular.Shininess
                     });
                     effectParameters.Add(new FxParamDeclaration<float>
@@ -662,12 +667,12 @@ namespace Fusee.Engine.Core
                     {
                         effectParameters.Add(new FxParamDeclaration<float>
                         {
-                            Name = UniformNameDeclarations.SpecularMixName,
+                            Name = UniformNameDeclarations.SpecularMix,
                             Value = mc.Specular.Mix
                         });
                         effectParameters.Add(new FxParamDeclaration<Texture>
                         {
-                            Name = UniformNameDeclarations.SpecularTextureName,
+                            Name = UniformNameDeclarations.SpecularTexture,
                             Value = LoadTexture(mc.Specular.Texture)
                         });
                     }
@@ -706,19 +711,19 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new FxParamDeclaration<float4>
                 {
-                    Name = UniformNameDeclarations.EmissiveColorName,
+                    Name = UniformNameDeclarations.EmissiveColor,
                     Value = mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
                     effectParameters.Add(new FxParamDeclaration<float>
                     {
-                        Name = UniformNameDeclarations.EmissiveMixName,
+                        Name = UniformNameDeclarations.EmissiveMix,
                         Value = mc.Emissive.Mix
                     });
                     effectParameters.Add(new FxParamDeclaration<Texture>
                     {
-                        Name = UniformNameDeclarations.EmissiveTextureName,
+                        Name = UniformNameDeclarations.EmissiveTexture,
                         Value = LoadTexture(mc.Emissive.Texture)
                     });
                 }
@@ -735,6 +740,11 @@ namespace Fusee.Engine.Core
                 {
                     Name = UniformNameDeclarations.BumpTexture,
                     Value = LoadTexture(mc.Bump.Texture)
+                });
+                effectParameters.Add(new FxParamDeclaration<float2>
+                {
+                    Name = UniformNameDeclarations.BumpTextureTiles,
+                    Value = mc.Bump.Tiles
                 });
             }
 
@@ -863,15 +873,16 @@ namespace Fusee.Engine.Core
             image = AssetStorage.Get<ImageData>("DefaultTexture.png");
             if (image != null)
                 return new Texture(image);
+            else
+                throw new ArgumentException("Couldn't load requested texture!");
 
-            return new Texture(new ImageData());
         }
 
         private static ShaderEffect CreateDefaultEffect()
         {
             var defaultMat = new MaterialComponent
             {
-                Diffuse = new MatChannelContainer
+                Diffuse = new DiffuseChannelContainer
                 {
                     Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
                 },

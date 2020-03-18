@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 
@@ -65,12 +65,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
                         if (effectProps.MatProbs.HasDiffuseTexture)
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
                         else
                             fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.Albedo}.xyz, 1.0);");
                         break;
                     case (int)RenderTargetTextureTypes.G_NORMAL:
-                        fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
+                        {
+                            if(!effectProps.MatProbs.HasBump)
+                                fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
+                            else
+                            {
+                                fragMainBody.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
+                                fragMainBody.Add($"N = N * 2.0 - 1.0;");
+                                fragMainBody.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
+                                fragMainBody.Add($"{texName} = vec4(normalize(TBN * N), 1.0);");
+                            }
+                        }
+                        
                         break;
                     case (int)RenderTargetTextureTypes.G_DEPTH:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
@@ -83,7 +94,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                             }
                             else if (effectProps.MatType == MaterialType.Standard)
                             {
-                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininessName}/256.0, 1.0, 1.0);");
+                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);");
                             }
                             break;
                         }

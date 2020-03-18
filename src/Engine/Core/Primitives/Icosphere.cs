@@ -146,7 +146,7 @@ namespace Fusee.Engine.Core
             }
 
             _sphereVertices = new List<float3>();
-            _middlePointIndexCache = new Dictionary<Int64, int>();
+            _middlePointIndexCache = new Dictionary<long, int>();
             var sphere = CreateIcosphere(subdivLevel);
 
             Vertices = sphere.Vertices;

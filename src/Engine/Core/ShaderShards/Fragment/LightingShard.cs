@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var normals = new List<string>();
             if (effectProps.MatProbs.HasBump)
             {
-                normals.Add($"vec3 N = texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+                normals.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
                 normals.Add($"N = N * 2.0 - 1.0;");
                 normals.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
                 normals.Add("N = normalize(TBN * N);");
@@ -281,7 +281,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 //TODO: Test alpha blending between diffuse and texture
                 if (effectProps.MatProbs.HasDiffuseTexture)
                     applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.Albedo}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
+                        $"vec4 blendedCol = mix({UniformNameDeclarations.Albedo}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}*{UniformNameDeclarations.DiffuseTextureTiles}), {UniformNameDeclarations.DiffuseMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
                 else
                     applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.Albedo}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
@@ -291,7 +291,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 if (effectProps.MatType == MaterialType.Standard)
                 {
-                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininessName});");
+                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
                     applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *intensities.rgb) *specularTerm, 1.0);");
                 }
                 else if (effectProps.MatType == MaterialType.MaterialPbr)
@@ -459,8 +459,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.AddRange(
             new List<string>() {
             "vec3 viewDir = normalize(-fragPos.xyz);",
-            "float shininess = specularVars.r * 256.0;",
-            "float specularStrength = specularVars.g;",
+            "float shininess = specularVars.g * 256.0;",
+            "float specularStrength = specularVars.r;",
             "",
             "float specularTerm = specularLighting(normal, lightDir, viewDir, shininess);",
             "",

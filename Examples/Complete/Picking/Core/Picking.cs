@@ -291,7 +291,7 @@ namespace Fusee.Examples.Picking.Core
                             new TransformComponent { Scale = float3.One },
                            new MaterialComponent
                            {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
+                                Diffuse = new DiffuseChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
                                 Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                             },
                             CreateCuboid(new float3(100, 20, 100))
@@ -306,7 +306,7 @@ namespace Fusee.Examples.Picking.Core
                                     new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
                                    new MaterialComponent
                                     {
-                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
+                                        Diffuse = new DiffuseChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
                                         Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                     },
                                     CreateCuboid(new float3(20, 100, 20))
@@ -330,7 +330,7 @@ namespace Fusee.Examples.Picking.Core
                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
                                                     new MaterialComponent
                                                     {
-                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
+                                                        Diffuse = new DiffuseChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
                                                         Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                                     },
                                                     CreateCuboid(new float3(20, 100, 20))
@@ -354,7 +354,7 @@ namespace Fusee.Examples.Picking.Core
                                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
                                                                     new MaterialComponent
                                                                     {
-                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
+                                                                        Diffuse = new DiffuseChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
                                                                         Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                                                     },
                                                                     CreateCuboid(new float3(20, 100, 20))

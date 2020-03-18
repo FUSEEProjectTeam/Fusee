@@ -248,7 +248,7 @@ namespace Fusee.Examples.UI.Core
             {
                 Effect = MakeShaderEffect.FromMatComp(new MaterialComponent
                 {
-                    Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
+                    Diffuse = new DiffuseChannelContainer { Color = new float4(1, 0, 0, 1) },
                 })
             };
 
@@ -298,7 +298,7 @@ namespace Fusee.Examples.UI.Core
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
             var color = MakeShaderEffect.FromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
+                Diffuse = new DiffuseChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -309,7 +309,7 @@ namespace Fusee.Examples.UI.Core
             Debug.WriteLine("Canvas: Exit Btn!");
             var color = MakeShaderEffect.FromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
+                Diffuse = new DiffuseChannelContainer { Color = new float4(1, 0, 0, 1) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;

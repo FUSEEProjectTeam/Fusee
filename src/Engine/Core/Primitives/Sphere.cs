@@ -1,4 +1,4 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -58,8 +58,8 @@ namespace Fusee.Engine.Core
 
             #region UVs
             var uvs = new float2[vertices.Length];
-            uvs[0] = float2.UnitY;
-            uvs[uvs.Length - 1] = float2.Zero;
+            uvs[0] = new float2(0.5f, 1f);
+            uvs[uvs.Length - 1] = new float2(0.5f, 0f);
             for (var lat = 0; lat < rings; lat++)
                 for (var lon = 0; lon <= segments; lon++)
                     uvs[lon + lat * (segments + 1) + 1] = new float2((float)lon / segments, 1f - (float)(lat + 1) / (rings + 1));

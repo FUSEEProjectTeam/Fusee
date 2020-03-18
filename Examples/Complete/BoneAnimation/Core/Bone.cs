@@ -82,7 +82,7 @@ namespace Fusee.Examples.Bone.Core
                                     new WeightComponent(),
                                     new MaterialComponent
                                     {
-                                        Diffuse = new MatChannelContainer
+                                        Diffuse = new DiffuseChannelContainer
                                         {
                                             Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
                                         }
