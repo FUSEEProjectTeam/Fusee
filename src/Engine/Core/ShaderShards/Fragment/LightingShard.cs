@@ -243,7 +243,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 normals.Add($"vec3 N = texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
                 normals.Add($"N = N * 2.0 - 1.0;");
                 normals.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
-                normals.Add("N = normalize(N * TBN);");
+                normals.Add("N = normalize(TBN * N);");
             }
             else
             {

@@ -21,7 +21,7 @@ namespace Fusee.Examples.Bump.Core
         public string ModelFile = "sphere.fus";
 
         // angle variables
-        private static float _angleHorz , _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
 
         private static float2 _offset;
         private static float2 _offsetInit;
@@ -69,7 +69,7 @@ namespace Fusee.Examples.Bump.Core
                         Components = new List<SceneComponentContainer>()
                         {
                             _meshTransform,
-                            new Plane()
+                            new Sphere(32,32)
                         }
                     }
                 }
@@ -91,14 +91,14 @@ namespace Fusee.Examples.Bump.Core
                 Specular = new SpecularChannelContainer()
                 {
                     Color = float4.One,
-                    Shininess = 100,
-                    Intensity = 0.5f
+                    Shininess = 50,
+                    Intensity = 0.2f
                 }
             };
 
             var bumpEffect = MakeShaderEffect.FromMatComp(matCompForBumpFrag);
 
-            _mesh = _scene.Children[0].GetComponent<Plane>();
+            _mesh = _scene.Children[0].GetComponent<Sphere>();
             _mesh.Tangents = _mesh.CalculateTangents();
             _mesh.BiTangents = _mesh.CalculateBiTangents();
             _scene.Children[0].Components.Insert(1, new ShaderEffectComponent() { Effect = bumpEffect });
@@ -224,7 +224,7 @@ namespace Fusee.Examples.Bump.Core
             _angleRoll = M.MinAngle(_angleRoll);
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);            
+            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);

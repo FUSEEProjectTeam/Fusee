@@ -71,9 +71,8 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
                 vertMainBody.Add($" vec3 T = normalize(vec3({UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
                 vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}, 0.0)));");
-                //vertMainBody.Add($"vec3 N = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({ UniformNameDeclarations.Normal}, 0.0)));");
-
-                vertMainBody.Add($"{VaryingNameDeclarations.Tangent} = vec4(T, {UniformNameDeclarations.Bitangent});");
+                
+                vertMainBody.Add($"{VaryingNameDeclarations.Tangent} = vec4(T, {UniformNameDeclarations.Tangent}.w);");
                 vertMainBody.Add($"{VaryingNameDeclarations.Bitangent} = B;");
 
                 vertMainBody.Add($"TBN = mat3(T,B,{VaryingNameDeclarations.Normal});");
