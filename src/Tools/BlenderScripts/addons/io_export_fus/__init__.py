@@ -14,9 +14,9 @@ In order to make this Add-On work, you have to do the following:
 #Register as Add-on
 bl_info = {
     "name": ".fus format",
-    "author": "Christoph Mueller, Moritz Roetner, Jonas Conrad, Patrick Foerster",
-    "version": (0, 7, 0),
-    "blender": (2, 80, 0),
+    "author": "Christoph Mueller, Moritz Roetner",
+    "version": (0, 8, 0),
+    "blender": (2, 8, 2),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",
     "warning":"",

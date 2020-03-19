@@ -23,9 +23,10 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="FusSceneWriter.py" />
+    <Compile Include="proto\FusSerialization_pb2.py" />
     <Compile Include="proto\protobuf_net\bcl_pb2.py" />
     <Compile Include="proto\protobuf_net\protogen_pb2.py" />
-    <Compile Include="proto\Scene_pb2.py" />
     <Compile Include="SerializeData.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
