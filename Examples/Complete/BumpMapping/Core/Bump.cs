@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Fusee.Jometri;
+using Fusee.Engine.Core.Effects;
+using Fusee.Base.Core;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Examples.Bump.Core
 {
@@ -60,7 +63,7 @@ namespace Fusee.Examples.Bump.Core
                         Components = new List<SceneComponentContainer>()
                         {
                             _meshTransform,
-                            new Icosphere(3)
+                            new Plane()
                         }
                     }
                 }
@@ -72,26 +75,30 @@ namespace Fusee.Examples.Bump.Core
                 {
                     Intensity = 1f,
                     Texture = "brickwall_normal.jpg",
-                    Tiles = new float2(5, 5)
+                    Tiles = new float2(2, 2)
                 },
                 Diffuse = new DiffuseChannelContainer()
                 {
-                    Color = new float4(0.5f, 0.5f, 0.5f, 1),
-                    Mix = 1,
+                    Color = new float4(1f, 0f, 0f, 1f),
+                    Mix = 1f,
                     Texture = "brickwall.jpg",
-                    Tiles = new float2(5, 5)
+                    Tiles = new float2(2, 2)
                 },
                 Specular = new SpecularChannelContainer()
                 {
                     Color = float4.One,
-                    Shininess = 22f,
-                    Intensity = 0.5f
+                    Shininess = 500f,
+                    Intensity = 1f
                 }
             };
 
             var bumpEffect = MakeShaderEffect.ProtoFromMatComp(matCompForBumpFrag);
+            bumpEffect.RendererStates.AlphaBlendEnable = true;
+            bumpEffect.RendererStates.SourceBlend = Blend.SourceAlpha;
+            bumpEffect.RendererStates.DestinationBlend = Blend.InverseSourceAlpha;
+            bumpEffect.RendererStates.BlendOperation = BlendOperation.Add;
 
-            _mesh = _scene.Children[0].GetComponent<Icosphere>();
+            _mesh = _scene.Children[0].GetComponent<Plane>();
             _mesh.Tangents = _mesh.CalculateTangents();
             _mesh.BiTangents = _mesh.CalculateBiTangents();
             _scene.Children[0].Components.Insert(1, new ShaderEffectComponent() { Effect = bumpEffect });

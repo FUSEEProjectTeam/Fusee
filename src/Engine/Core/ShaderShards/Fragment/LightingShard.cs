@@ -276,15 +276,25 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             applyLightParams.AddRange(normals);
             applyLightParams.AddRange(fragToLightDirAndLightInit);
 
+            applyLightParams.Add("vec4 ambient = vec4(0.1 * lightColor.xyz, 1.0);");
+            applyLightParams.Add("vec4 objCol = vec4(0.0, 0.0, 0.0, 1.0);");
+
             if (effectProps.MatProbs.HasDiffuse)
             {
-                //TODO: Test alpha blending between diffuse and texture
                 if (effectProps.MatProbs.HasDiffuseTexture)
-                    applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.Albedo}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}*{UniformNameDeclarations.DiffuseTextureTiles}), {UniformNameDeclarations.DiffuseMix});" +
-                        $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
+                {
+                    applyLightParams.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
+                    //applyLightParams.Add($"texCol = vec4(pow(texCol.r, 1.0/2.2), pow(texCol.g, 1.0/2.2), pow(texCol.b, 1.0/2.2), texCol.a);");
+                    applyLightParams.Add($"vec3 mix = mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
+                    applyLightParams.Add("float luma = 0.2126 * texCol.r + 0.7152 * texCol.g + 0.0722 * texCol.b;");
+                    applyLightParams.Add($"objCol = vec4(mix * luma, texCol.a);");
+                    applyLightParams.Add($"Idif = vec4(diffuseLighting(N, L) * lightColor.xyz, 1.0);");
+                }
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.Albedo}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
+                {
+                    applyLightParams.Add($"objCol = {UniformNameDeclarations.Albedo};");
+                    applyLightParams.Add($"Idif = vec4(diffuseLighting(N, L) * lightColor.xyz, 1.0);");
+                }
             }
 
             if (effectProps.MatProbs.HasSpecular)
@@ -292,27 +302,27 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (effectProps.MatType == MaterialType.Standard)
                 {
                     applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
-                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *intensities.rgb) *specularTerm, 1.0);");
+                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *lightColor.rgb) *specularTerm, 1.0);");
                 }
                 else if (effectProps.MatType == MaterialType.MaterialPbr)
                 {
                     applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
                     applyLightParams.Add("float specular = specularLighting(N, L, V, k);");
-                    applyLightParams.Add($"Ispe = intensities * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0 - k));");
+                    applyLightParams.Add($"Ispe = lightColor * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0 - k));");
                 }
             }
 
             var pointLight = new List<string>
             {
                 $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance);",
-                "lighting = (Idif * att) + (Ispe * att);",
+                "lighting = ((Idif * att) + (Ispe * att) + ambient) * objCol;",
                 "lighting *= strength;"
             };
 
             //No attenuation!
             var parallelLight = new List<string>
             {
-               "lighting = Idif + Ispe;",
+               "lighting = (Idif + Ispe + ambient)* objCol;",
                 "lighting *= strength;"
             };
 
@@ -320,22 +330,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance) * attenuationConeComponent(direction, L, innerConeAngle, outerConeAngle);",
 
-                "lighting = (Idif * att) + (Ispe * att);",
+                "lighting = ((Idif * att) + (Ispe * att) + ambient) * objCol;",
                 "lighting *= strength;"
             };
-
-            // - Disable GammaCorrection for better colors
-            /*var gammaCorrection = new List<string>() 
-            {
-                "vec3 gamma = vec3(1.0/2.2);",
-                "result = pow(result, gamma);"
-            };*/
 
             var methodBody = new List<string>();
             methodBody.AddRange(applyLightParams);
             methodBody.Add("vec4 lighting = vec4(0);");
             methodBody.Add("");
-            //methodBody.AddRange(attenuation);
             methodBody.Add("if(lightType == 0) // PointLight");
             methodBody.Add("{");
             methodBody.AddRange(pointLight);
@@ -357,7 +359,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return GLSL.CreateMethod(GLSL.Type.Vec4, "ApplyLight",
                 new[]
                 {
-                    GLSL.CreateVar(GLSL.Type.Vec3, "position"), GLSL.CreateVar(GLSL.Type.Vec4, "intensities"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "position"), GLSL.CreateVar(GLSL.Type.Vec4, "lightColor"),
                     GLSL.CreateVar(GLSL.Type.Vec3, "direction"), GLSL.CreateVar(GLSL.Type.Float, "maxDistance"),
                     GLSL.CreateVar(GLSL.Type.Float, "strength"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle"),
                     GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Int, "lightType"),

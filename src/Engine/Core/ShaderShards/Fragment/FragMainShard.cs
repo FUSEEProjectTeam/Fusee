@@ -16,11 +16,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <returns></returns>
         public static string ForwardLighting(EffectProps effectProps)
         {
-            string fragColorAlpha = effectProps.MatProbs.HasDiffuse ? $"{UniformNameDeclarations.Albedo}.w" : "1.0";
-
             var fragMainBody = new List<string>
             {
-                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.Albedo});", //ambient component
+                $"vec4 result = vec4(0.0, 0.0, 0.0, 0.0);",
                 $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
