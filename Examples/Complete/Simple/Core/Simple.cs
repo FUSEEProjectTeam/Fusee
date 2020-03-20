@@ -146,6 +146,7 @@ namespace Fusee.Examples.Simple.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
 
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
@@ -169,7 +170,8 @@ namespace Fusee.Examples.Simple.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -180,7 +182,7 @@ namespace Fusee.Examples.Simple.Core
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
@@ -217,12 +219,16 @@ namespace Fusee.Examples.Simple.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

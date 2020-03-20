@@ -22,15 +22,6 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 "gl_PointSize = 10.0;"
             };
 
-            if (effectProps.MatProbs.HasSpecular)
-            {
-                vertMainBody.Add($"vec3 vCamPos = {UniformNameDeclarations.IModelView}[3].xyz;");
-
-                vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
-                    ? $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - vec3(newVertex));"
-                    : $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - {UniformNameDeclarations.Vertex});");
-            }
-
             if (effectProps.MeshProbs.HasUVs)
                 vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = fuUV;");
 
@@ -63,6 +54,15 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"{VaryingNameDeclarations.Normal} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({ UniformNameDeclarations.Normal}, 0.0)));");
 
             vertMainBody.Add($"{VaryingNameDeclarations.Position} = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}, 1.0));");
+
+            if (effectProps.MatProbs.HasSpecular)
+            {
+                vertMainBody.Add($"vec3 vCamPos = {UniformNameDeclarations.IModelView}[3].xyz;");
+
+                vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
+                    ? $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - vec3(newVertex));"
+                    : $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - {UniformNameDeclarations.Vertex});");
+            }
 
             if (effectProps.MatProbs.HasBump)
             {

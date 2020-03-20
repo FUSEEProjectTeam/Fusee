@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Caches SceneNodeContainers and their model matrices. Used when visiting a <see cref="BoneComponent"/>.
         /// </summary>
-        protected Dictionary<SceneNodeContainer, float4x4> _boneMap;
+        protected Dictionary<SceneNodeContainer, float4x4> _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
 
         /// <summary>
         /// Manages animations.

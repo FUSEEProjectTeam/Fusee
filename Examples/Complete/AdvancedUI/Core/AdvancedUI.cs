@@ -419,7 +419,8 @@ namespace Fusee.Examples.AdvancedUI.Core
                 UIHelper.PsTex,
                 guiFuseeLogo,
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One);
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var markModelContainer = new SceneNodeContainer
@@ -465,12 +466,16 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

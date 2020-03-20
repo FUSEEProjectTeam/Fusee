@@ -7,9 +7,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using Fusee.Jometri;
-using Fusee.Engine.Core.Effects;
-using Fusee.Base.Core;
-using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Examples.Bump.Core
 {

@@ -286,7 +286,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     applyLightParams.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
                     //applyLightParams.Add($"texCol = vec4(pow(texCol.r, 1.0/2.2), pow(texCol.g, 1.0/2.2), pow(texCol.b, 1.0/2.2), texCol.a);");
                     applyLightParams.Add($"vec3 mix = mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
-                    applyLightParams.Add("float luma = 0.2126 * texCol.r + 0.7152 * texCol.g + 0.0722 * texCol.b;");
+                    applyLightParams.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
                     applyLightParams.Add($"objCol = vec4(mix * luma, texCol.a);");
                     applyLightParams.Add($"Idif = vec4(diffuseLighting(N, L) * lightColor.xyz, 1.0);");
                 }

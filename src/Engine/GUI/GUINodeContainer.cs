@@ -311,9 +311,10 @@ namespace Fusee.Engine.GUI
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
+        /// <param name="diffuseTexTiles">The tiling of the diffuse texture.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets)
+            MinMaxRect offsets, float2 diffuseTexTiles)
         {
             Name = name;
             Components = new List<SceneComponentContainer>
@@ -353,6 +354,7 @@ namespace Fusee.Engine.GUI
                             },
                             new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
                             new FxParamDeclaration<float> {Name = UniformNameDeclarations.DiffuseMix, Value = 1f},
+                            new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = diffuseTexTiles},
                             new FxParamDeclaration<float4x4> {Name =UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
                             new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
                         })
@@ -448,6 +450,8 @@ namespace Fusee.Engine.GUI
                                     new FxParamDeclaration<float> {Name = UniformNameDeclarations.DiffuseMix, Value = 0.0f},
                                     new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
                                     new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
+                                    new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One}
                                 })
                         },
                         textMesh,

@@ -194,6 +194,10 @@ namespace Fusee.Examples.Picking.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
+
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -214,7 +218,8 @@ namespace Fusee.Examples.Picking.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -225,9 +230,9 @@ namespace Fusee.Examples.Picking.Core
                 "FUSEE Picking Example",
                 "ButtonText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery),
                 HorizontalTextAlignment.CENTER,
@@ -238,12 +243,17 @@ namespace Fusee.Examples.Picking.Core
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
                 }
-            );
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
+            };
 
             return new SceneContainer
             {
@@ -257,12 +267,16 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

@@ -22,9 +22,8 @@ void main()
     vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec4 objCol = vec4(0.0, 0.0, 0.0, 1.0);
     vec4 texCol = texture(DiffuseTexture, vUV * DiffuseTextureTiles);
-    vec3 mixCol = mix(Albedo.xyz, texCol.xyz, DiffuseMix);
-    float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);
-    objCol = vec4(mixCol * luma, texCol.a);
+    vec3 mixCol = mix(Albedo.xyz, texCol.xyz, DiffuseMix);    
+    objCol = vec4(mixCol, texCol.a);
     vec4 Idif = vec4(max(dot(N, L), 0.0) * lightColor, 1.0);
 
 	outColor = Idif * objCol;
