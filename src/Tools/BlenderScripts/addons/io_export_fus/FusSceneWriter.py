@@ -1,8 +1,20 @@
 import sys
+import os
 import time
 import getpass
 
-from proto import FusSerialization_pb2 as FusSer
+try:
+    # Standard Python import
+    from proto import FusSerialization_pb2 as FusSer
+except Exception:
+        try:
+            # The hard (blender) way
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            dir_path = os.path.join(dir_path, 'proto\\')
+            sys.path.append(dir_path)        
+            import FusSerialization_pb2 as FusSer
+        except Exception:
+            print('Cannot find "FusSerialization_pb2.py" in' + dir_path)
 
 class FusSceneWriter:
     """Convenience Class to assemble FUSEE scene files from instances of FusNode and FusComponent (and derivatives)."""
@@ -91,10 +103,10 @@ class FusSceneWriter:
     def AddMaterial(self, material, name=None):
         """Adds a Material component to the current child node. If any of 'RoughnessValue', 'FresnelReflectance' or 'DiffuseFraction' keys is present, a MaterialPBR component will be added.
 
-        :param material: A dictionaray containing optional 'Diffuse', 'Specular', 'Emissive', 'Bump' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
+        :param material: A dictionary containing optional 'Diffuse', 'Specular', 'Emissive', 'Bump' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
 
         :Example:
-        fuseWriter.AddMaterial(
+        fusWriter.AddMaterial(
             {
                 'Diffuse':  { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
                 'Specular': { 'Color' : (1, 1, 1, 1), 'Texture': 'SpecMap.png', 'Mix': 1.0, 'Shininess': 2.5, 'Intensity': 0.9 },
@@ -186,32 +198,58 @@ class FusSceneWriter:
 
 #### MESH COMPONENT  ####
 
-    def AddMesh(self, mesh, name=None):
-    """
-    """
-#       public float3[] Vertices;
-#       public uint[] Colors;
-#       public float3[] Normals;
-#       public float2[] UVs;
-#       public float4[] BoneWeights;
-#       public float4[] BoneIndices;
-#       public ushort[] Triangles;
-#       public float4[] Tangents;
-#       public float3[] BiTangents;
-#       public AABBf BoundingBox;
-    self.BeginMesh()
-        vertices = mesh.get('Vertices', None)
-        colors = mesh.get('Colors', None)
-        normals = mesh.get('Normals', None)
-        uvs = mesh.get('UVs', None)
-        boneweights = mesh.get('BoneWeights', None)
-        boneindices = mesh.get('BoneIndices', None)
-        triangles = mesh.get('Triangles', None)
-        tangents = mesh.get('Tangents', None)
-        bitangents = mesh.get('BiTangents', None)
-        boundingbox = mesh.get('BoundingBox', None)
-    self.EndMesh()
+# public float3[] Vertices;
+# public uint[] Colors;
+# public float3[] Normals;
+# public float2[] UVs;
+# public float4[] BoneWeights;
+# public float4[] BoneIndices;
+# public ushort[] Triangles;
+# public float4[] Tangents;
+# public float3[] BiTangents;
+# public AABBf BoundingBox;
+
+#   def AddMesh(self, mesh, name=None):
+#       """
+#       """
+#       self.BeginMesh()
+#       vertices = mesh.get('Vertices', None)
+#       colors = mesh.get('Colors', None)
+#       normals = mesh.get('Normals', None)
+#       uvs = mesh.get('UVs', None)
+#       boneweights = mesh.get('BoneWeights', None)
+#       boneindices = mesh.get('BoneIndices', None)
+#       triangles = mesh.get('Triangles', None)
+#       tangents = mesh.get('Tangents', None)
+#       bitangents = mesh.get('BiTangents', None)
+#       boundingbox = mesh.get('BoundingBox', None)
+#       self.EndMesh()
     
+    def AddVertex(self, vertex, normal=None, uv=None, tangent=None, bitangent=None):
+        v = self.__curMesh.Vertices.add()
+        v.x = vertex[0]
+        v.y = vertex[1]
+        v.z = vertex[2]
+        if normal != None:
+            n = self.__curMesh.Normals.add()
+            n.x = normal[0]
+            n.y = normal[1]
+            n.z = normal[2]
+        if uv != None:
+            u = self.__curMesh.UVs.add()
+            u.x = uv[0]
+            u.y = uv[1]
+        if tangent != None:
+            t = self.__curMesh.Tangents.add()
+            t.x = tangent[0]
+            t.y = tangent[1]
+            t.z = tangent[2]
+            t.w = tangent[3]
+        if bitangent != None:
+            bt = self.__curMesh.BiTangents.add()
+            bt.x = bitangent[0]
+            bt.y = bitangent[1]
+            bt.z = bitangent[2]
 
     def __checkMeshOpen(self):
         if self.__curMesh == None:
@@ -229,5 +267,80 @@ class FusSceneWriter:
         self.__curMesh = None
         self.__curComponent = None
         
-       
+#### CAMERA COMPONENT ####
+
+# bool ClearColor = true;
+# bool ClearDepth = true;
+# int Layer;
+# float4 BackgroundColor;
+# ProjectionMethod ProjectionMethod;
+# float Fov;
+# float2 ClippingPlanes;
+# float4 Viewport = new float4(0, 0, 100, 100);
+# bool Active = true;
     
+    def AddCamera(self, projectionmethod, fov, clippingplanes, viewport=(0, 0, 100, 100), clearcolor=True, cleardepth=True, layer=0, backgroundcolor=(1, 1, 1, 1), active=True, name=None):
+        """Adds a Camera component to the current child node.
+
+        Args:
+            projectionmethod (int): - 0: Orthographic, 1: Perspective
+            fov (float): The vertical (y) field of view in radians.
+            clippingplanes (float2): Distance to the near and far clipping planes.
+            viewport (float4): The viewport in percent [0, 100]. x: start; y: end; z: width; w: height.
+            clearcolor (bool): If set to false, the color bit won't be cleared before this camera is rendered.
+            cleardepth (bool): If set to false, the depth bit won't be cleared before this camera is rendered.
+            layer (int): If there is more than one CameraComponent in one scene, the rendered output of the camera with a higher layer will be drawn above the output of a camera with a lower layer.
+            backgroundcolor (float4): The background color for this camera's viewport.
+            active (bool): A camera is active by default. Set this to false to deactivate it. 
+        """
+        cam = self.AddComponent(name).FusCamera
+        cam.ProjectionMethod = projectionmethod
+        cam.Fov = fov
+        cam.ClippingPlanes.x = clippingplanes[0]
+        cam.ClippingPlanes.y = clippingplanes[1]
+        cam.Viewport.x = viewport[0]
+        cam.Viewport.y = viewport[1]
+        cam.Viewport.z = viewport[2]
+        cam.Viewport.w = viewport[3]
+        cam.ClearColor = clearcolor
+        cam.ClearDepth = cleardepth
+        cam.Layer = layer
+        cam.BackgroundColor.x = backgroundcolor[0]
+        cam.BackgroundColor.y = backgroundcolor[1]
+        cam.BackgroundColor.z = backgroundcolor[2]
+        cam.BackgroundColor.w = backgroundcolor[3]
+        cam.Active = active
+
+#### LIGHT COMPONENT ####
+
+# public bool Active;
+# public float4 Color;
+# public float MaxDistance;
+# public float Strength;
+# public LightType Type;
+# public float OuterConeAngle;
+# public float InnerConeAngle;
+
+    def AddLight(self, active, color, maxdistance, strength, type, outerconeangle, innerconeangle, name=None):
+        """Adds a Light component to the current child node.
+ 
+        :param active: bool - Represents the light status.
+        :param color: float4 - Represents the color.
+        :param maxdistance: float - Represents the attenuation of the light.
+        :param strength: float [0..1] - Represents the strength of the light (non-physically representation of the brightness).
+        :param type: int - 0: Point; 1: Parallel; 2: Spot; 3: Legacy
+        :param outerconeangle: float - Represents the outer spot angle of the light.
+        :param innerconeangle: float - Represents the spot inner angle of the light.
+        """
+        light = self.AddComponent(name).FusLight
+        light.Active = active
+        light.Color.x = color[0]
+        light.Color.y = color[1]
+        light.Color.z = color[2]
+        light.Color.w = color[3]
+        light.MaxDistance = maxdistance
+        light.Strength = strength
+        light.Type = type
+        light.OuterConeAngle = outerconeangle
+        light.InnerConeAngle = innerconeangle
+ 

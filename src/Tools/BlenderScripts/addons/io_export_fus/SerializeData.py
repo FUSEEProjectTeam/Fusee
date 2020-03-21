@@ -78,7 +78,7 @@ def SerializeData(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDis
     return serializedData
 
 
-# recursivly get each node and its components and serialize them
+# recursively get each node and its components and serialize them
 def add_vertex(vi, face, i, mesh, uv_layer):
     vert = mesh.Vertices.add()
     vert.x = face.loops[vi].vert.co.x

@@ -1,22 +1,12 @@
 '''
-This Add-On currently supports the export of a .fus-file, containing the Mesh-Component,
-the Transform-Component, Light Component (not yet supported by Fusee) and the Material-Component (Diffuse, Emissive and Specular only).
-In order to make this Add-On work, you have to do the following:
-1. Make sure, that Python 3 is installed (goto https://www.python.org/downloads/windows/, choose the correct installer, download and run it)
-2. Install the google protobuf module (with pip installed (included in the newest python installers), simply go to the cmd and type 'pip install protobuf')
-4. Put the folder of the Add-On in the Blender Add-On Folder (usually something like 'C:\Program Files\Blender Foundation\Blender\2.xx\scripts\addons')
-5. Activate the Add-On in Blender (File -> User Preferences -> Add-ons -> Testing -> Import-Export:.fus format. Click 'Save User Settings' to keep it activated)
-6. You have to structure the scene in such a way, that all objects that should be exported as one .fus-file, are (in)directly children of one root object
-   (The best way to achieve this, is to simply parent all objects to another object)
-7. Select the root object and click export (if you want to have your file saved, before exporting, simply activate 'Save File') 
-8. Voilà
+Exports the current blender scene to the FUSEE file format (.fus)
 '''
 #Register as Add-on
 bl_info = {
     "name": ".fus format",
-    "author": "Christoph Mueller, Moritz Roetner",
+    "author": "The FUSEE Project Team",
     "version": (0, 8, 0),
-    "blender": (2, 8, 2),
+    "blender": (2, 80, 0),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",
     "warning":"",
@@ -40,7 +30,8 @@ for path in paths:
             if sPath[-2].find('Python')!=-1:
                 pypath = os.path.join(path,'Lib','site-packages')
                 sys.path.append(pypath)
-from .SerializeData import SerializeData, GetParents
+# from .SerializeData import SerializeData, GetParents
+from .FusSceneWriter import FusSceneWriter
 
 import bpy
 from bpy.props import (
@@ -57,11 +48,18 @@ from bpy_extras.io_utils import (
 # Project repository at https://github.com/Microsoft/ptvsd
 # Install latest version from pypi at https://pypi.org/project/ptvsd/
 #
-# Attach to PTSV Python Remote debuggee using "tcp://localhost:5678" (NO Secret!)
+# From Visual Studio 2019 or Visuals Studio Code: Attach to PTSV Python Remote debuggee using "tcp://localhost:5678" (NO Secret!)
 try:
     import ptvsd
 except Exception:
     print('PTSV Debugging disabled: import ptvsd failed')
+
+try:
+    # accoording to https://code.visualstudio.com/docs/python/debugging#_troubleshooting 
+    ptvsd.debug_this_thread()
+except Exception:
+    print('PTSV Debugging disabled: ptvsd.debug_this_thread() failed')
+
 try:
 #    ptvsd.enable_attach(secret=None) With ptvsd version 4 and upwards secret is no longer a named parameter
     ptvsd.enable_attach()
@@ -79,53 +77,12 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
 
     filename_ext = ".fus"
     filter_glob : StringProperty(default="*.fus", options={'HIDDEN'})
-    isOnlySelected : BoolProperty(
-            name="Only selected Objects",
-            description="Export only selected objects",
-            default=False,
-            )
-    isWeb : BoolProperty(
+    createWebApp : BoolProperty(
         name="Create FUSEE Web-Application",
         description="Export HTML-Viewer around the scene and run in Web Browser after export",
         default=False,
     )
-    isSaveFile : BoolProperty(
-        name="Save File",
-        description="Save this file before exporting it",
-        default=True,
-    )
-    isExportTex : BoolProperty(
-        name="Export Textures",
-        description="Export the textures used in this scene as well",
-        default=True,
-    )
-    isLamps : BoolProperty(
-        name="Export Lamps",
-        description="Export lamps in the scene (not supported yet)",
-        default=False,
-    )
-
-    #Smoothing is not working correctly
-    isSmooth : BoolProperty(
-        name="Smooth Normals",
-        description="Smooth display of normals (not working correctly)",
-        default=False,
-    )
-    smoothingDist : FloatProperty(
-        name="Smoothing Distance",
-        description="Maximum distance between two points",
-        min=0.0,
-        max=100.0,
-        default=0.0,
-    )
-    smoothingAngle : FloatProperty(
-        name="Smoothing Angle",
-        description="Maximum angle between two normals",
-        min=0.0,
-        max=90.0,
-        default=0.0,
-    )
-
+ 
     #Operator Properties
     filepath : StringProperty(subtype='FILE_PATH')
 
@@ -137,140 +94,33 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
 
     def draw(self, context):
         layout = self.layout
-        layout.prop(self, 'isOnlySelected')
-        '''layout.prop(self, 'isSmooth')
-        layout.prop(self, 'smoothingDist')
-        layout.prop(self, 'smoothingAngle')
-        layout.prop(self, 'isLamps')'''
-        layout.prop(self, 'isSaveFile')
-        layout.prop(self, 'isExportTex')
-        layout.prop(self, 'isWeb')
+        # layout.prop(self, 'isWeb')
         
-        
-
-
     def execute(self, context):
         #check if all paths are set
         if not self.filepath:
-            raise Exception("filepath not set")
-        else:
-            #save current state
-            if self.isSaveFile:
-                if bpy.data.is_saved:
-                    # save the file
-                    bpy.ops.wm.save_mainfile()
-                else:
-                    # get the temporary path of blender, to write a temporary version of the scene
-                    temp_Path = bpy.context.preferences.filepaths.temporary_directory
-                    # concatenate to get the full path
-                    temp_Path = os.path.join(temp_Path, 'blender_fus_export_temp.blend')
-                    print('File not saved before, saving a temporary tempfile in:\n' + temp_Path)
-            if self.isOnlySelected:
-                obj = bpy.context.selected_objects
-            else:
-                obj = set()
-                for objects in bpy.data.objects:
-                    parent = GetParents(objects)
-                    obj.add(parent)
-                    try:
-                        obj.remove(None)
-                    except:
-                        pass
-           
-            geoObj = False
-            falseObj=[]
-            #sort out unwanted objects
-            #only mesh and lamp objects(if lamps==True) must be serialized
-            for o in obj:
-                if o.type == 'MESH':
-                    geoObj = True
-                elif o.type == 'ARMATURE':
-                    geoObj = True
-                elif o.type == 'CAMERA':
-                    falseObj.append(o)
-                elif o.type == 'LAMP' and self.isLamps==False:
-                    falseObj.append(o)
-                elif o.type == 'LAMP' and self.isLamps==True:
-                    pass
-                else:
-                    falseObj.append(o) 
-            for fObj in falseObj:
-                obj.remove(fObj)
-                    
-            
-            bpy.ops.wm.console_toggle()
-            if geoObj:
-                #set blender to object mode (prevents problems)
-                bpy.ops.object.mode_set(mode="OBJECT")
+            raise Exception("file path not set")
+        
+        roots = set()
+        for obj in bpy.data.objects:
+            parent = GetParents(obj)
+            roots.add(parent)
+            try:
+                roots.remove(None)
+            except:
+                pass
+        
+        #set blender to object mode (prevents problems)
+        bpy.ops.object.mode_set(mode="OBJECT")
 
-                #WEB Viewer
-                if self.isWeb:
-                    #kill Server if it's already running, to prevent problems when exporting more than once per session
-                    process = subprocess.run(['taskkill', '/im', 'fusee.exe', '/f'])
-                    print('Server Killed: ' + str(process.returncode))
-                    try:
-                        serializedData = SerializeData(objects=obj, isWeb=True,
-                                                       isOnlySelected=self.isOnlySelected,
-                                                       smoothing=self.isSmooth, lamps=self.isLamps,
-                                                       smoothingDist=self.smoothingDist,
-                                                       smoothingAngle=self.smoothingAngle)
-                        print('writing to file: ' + self.filepath + '----')
-                        with open(self.filepath,'wb') as file:
-                            file.write(serializedData.obj)
-                        #format the texturepaths to be used by fusee.exe
-                        dirpath = os.path.dirname(self.filepath)
-                        if self.isExportTex:
-                            textures = serializedData.tex
-                            if len(textures)>0:
-                                texturePaths = ''
-                                for texture in textures:
-                                    src = texture
-                                    print(src)
-                                    dst = os.path.join(os.path.dirname(self.filepath),os.path.basename(texture))
-                                    copyfile(src,dst)
-                                    texturePaths = texturePaths+'"'+dst+'",'
-                                print(self.filepath)
-                                runFuseeExe = (self.convtool_path + ' web "' + self.filepath + '" -o "' + dirpath + '" -l ' + texturePaths)
-                            else:
-                                runFuseeExe = (self.convtool_path + ' web "' + self.filepath + '" -o "' + dirpath + '"')
-                        
-                        print(runFuseeExe)
-                        #send the command to the commandline and run it
-                        p=subprocess.Popen(runFuseeExe)
-                    except Exception as inst:
-                        print('---- ERROR1: ' + str(inst))
+        visitor = BlenderVisitor()
+        visitor.TraverseList(roots)
+        visitor.PrintFus()
+        visitor.WriteFus(self.filepath)
+    
+        print('DONE')
+        return {'FINISHED'}
 
-                #Normal export   
-                else:
-                    try:
-                        serializedData = SerializeData(objects=obj, isWeb=False,
-                                                       isOnlySelected=self.isOnlySelected,
-                                                       smoothing=self.isSmooth, lamps=self.isLamps,
-                                                       smoothingDist=self.smoothingDist,
-                                                       smoothingAngle=self.smoothingAngle)
-                        #write .fus file
-                        print('writing to file: ' + self.filepath + '----')
-                        with open(self.filepath,'wb') as file:
-                            file.write(serializedData.obj)
-                        #copy textures to the same directory as the .fus-file
-                        if self.isExportTex:
-                            print('writing texture files----')
-                            textures = serializedData.tex
-                            for texture in textures:
-                                src = texture
-                                print(src)
-                                dst = os.path.join(os.path.dirname(self.filepath),os.path.basename(texture))
-                                copyfile(src,dst)
-                    except Exception as inst:
-                        print('---- ERROR2: ' + str(inst))
-
-                print('DONE')
-                return {'FINISHED'}
-            else:
-                print('---- ERROR: you need to export at least one "MESH" object')
-                return {'FINISHED'}
-            
-            
 
 def menu_func_export(self, context):
     self.layout.operator(ExportFUS.bl_idname, text="FUS (.fus)")
@@ -293,3 +143,132 @@ def unregister():
 
 if __name__ == "__main__":
         register()
+
+
+#### UTILITY METHODS ####
+
+def GetParents(obj):
+    """Recursively search for the highest parent object"""
+    if obj.parent == None:
+        return obj
+    elif obj.parent != None:
+        GetParents(obj.parent)   
+
+##### BLENDER VISITOR ####
+
+class BlenderVisitor:
+    """Traverses the Blender Scene Graph. During traversal, collects relevant data from Blender objects and invokes appropriate actions on
+       a FusSceneWriter to store the data for later serialization into the .fus file format."""
+    def __init__(self):
+        super().__init__()
+        self.__fusWriter = FusSceneWriter()
+        self.__level = 0
+        self.__visitors = {
+            'MESH':     self.VisitMesh,
+            'LIGHT':    self.VisitLight,
+            'CAMERA':   self.VisitCamera,
+            'ARMATURE': self.VisitArmature,
+        }
+
+    def TraverseList(self, oblist):
+        """Traverses the given list of Blender objects. Most likely, this is the entry point for the traversal. Will also be called recursively from TraverseOb."""
+        for ob in oblist:
+            self.TraverseOb(ob)
+
+    def TraverseOb(self, ob):
+        """Traverse the given blender object. Call the appropriate visitor based on the object's Blender type and recursively traverse the list of children"""
+        visitor = self.__visitors.get(ob.type, self.VisitUnknown)
+        visitor(ob)
+        if len(ob.children) > 0:
+            self.__fusWriter.Push()
+            self.TraverseList(ob.children)
+            self.__fusWriter.Pop()
+
+    def PrintFus(self):
+        """Print the current FUSEE file contents for debugging purposes"""
+        self.__fusWriter.Print()
+
+    def WriteFus(self, filepath):
+        """Serialize the current FUSEE contents to the given file path"""
+        self.__fusWriter.Serialize(filepath)
+
+    def __HandleTransform(self, obj):
+        """Convert the given blender obj's transformation into a FUSEE Transform component"""
+        # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scene graph
+        if obj.parent is None:
+            obj_mtx_clean = obj.matrix_world.copy()
+        else:
+            obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
+
+        location, rotation, scale = obj_mtx_clean.decompose()
+        rot_eul = rotation.to_euler('YXZ')
+
+        self.__fusWriter.AddTransform(
+            (location.x, location.z, location.y),
+            (-rot_eul.x, -rot_eul.z, -rot_eul.y),
+            (scale.x, scale.z, scale.y)
+        )
+
+    def VisitMesh(self, mesh):
+        self.__fusWriter.AddChild(mesh.name)
+        self.__HandleTransform(mesh)
+        print('Mesh: ' + mesh.name)       
+
+    def VisitLight(self, light):
+        self.__fusWriter.AddChild(light.name)
+        self.__HandleTransform(light)
+
+        # lightData = bpy.data.lights[light.data.name]
+        lightData = light.data
+
+        lightType = 0
+        outerconeangle = 1.6
+        innerconeangle = 1
+        if lightData.type == 'SPOT':
+            lightType = 2 # FusScene.LightType.Value('Spot')
+            outerconeangle = lightData.spot_size
+            innerconeangle = outerconeangle * (1.0 - lightData.spot_blend)
+        elif lightData.type == 'SUN':
+            lightType = 1 # FusScene.LightType.Value('Parallel')
+        else:
+            lightType = 0 # FusScene.LightType.Value('Point')
+
+        self.__fusWriter.AddLight(
+            True, 
+            (lightData.color.r, lightData.color.g, lightData.color.b, 1),
+            lightData.distance,
+            lightData.energy / 1000.0,
+            lightType,
+            outerconeangle,
+            innerconeangle
+        )
+
+    def VisitCamera(self, camera):
+        self.__fusWriter.AddChild(camera.name)
+        self.__HandleTransform(camera)
+
+        # cameraData = bpy.data.cameras[camera.data.name]
+        cameraData = camera.data
+
+        camType = 0 # Perspective
+        if cameraData.type == 'PERSP':
+            camType = 0
+        elif cameraData.type == "ORTHO":
+            camType = 1
+            print('WARNING: Orthographic projection type on Camera object "' + camera.name + '" is not handled correctly (yet) by FUSEE')
+        else:
+            print('WARNING: Unknown projection type "' + cameraData.type + '" on Camera object "' + camera.name + '"')
+        self.__fusWriter.AddCamera(
+            camType, 
+            cameraData.angle_y, 
+            (cameraData.clip_start, cameraData.clip_end),
+        )
+
+    def VisitArmature(self, armature):
+        self.__fusWriter.AddChild(armature.name)
+        print('Armature: ' + armature.name)       
+
+    def VisitUnknown(self, ob):
+        print('WARNING: Type: ' + ob.type + ' of object ' + ob.name + ' not handled ')       
+
+

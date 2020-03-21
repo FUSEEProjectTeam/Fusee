@@ -6,6 +6,8 @@ sys.path.insert(0, '../../../Tools/BlenderScripts/addons/io_export_fus')
 import FusSceneWriter
 
 writer = FusSceneWriter.FusSceneWriter()
+writer.AddChild('Camera')
+writer.AddCamera(1, 1.3, (0.1, 500))
 writer.AddChild('Root')
 writer.AddTransform( (1, 2, 3), [4, 5, 6], [7, 8, 9] )
 writer.Push()
@@ -19,7 +21,12 @@ writer.AddMaterial(
         'FresnelReflectance': 0.43,
         'DiffuseFraction': 0.44
     })
-
+writer.BeginMesh("Da Mesh")
+writer.AddVertex((2, 4, 6))
+writer.AddVertex((2, 4, 6), normal=(0, 1, 0))
+writer.EndMesh()
+writer.AddChild('Light Node')
+writer.AddLight(True, (0.75, 0.75, 0.75, 1), 20, 1, 0, 1, 0.8)
 writer.Pop()
 writer.AddChild("Second Root")
 writer.AddMaterial(

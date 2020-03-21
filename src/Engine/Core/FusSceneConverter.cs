@@ -300,7 +300,7 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.ORTHOGRAPHIC ? Common.ProjectionMethod.ORTHOGRAPHIC : Common.ProjectionMethod.PERSPECTIVE,
+            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.Orthographic ? Common.ProjectionMethod.Orthographic : Common.ProjectionMethod.Perspective,
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
                 Active = cc.Active,
@@ -829,7 +829,7 @@ namespace Fusee.Engine.Core
                 ClippingPlanes = cc.ClippingPlanes,
                 Fov = cc.Fov,
                 Viewport = cc.Viewport,
-                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.ORTHOGRAPHIC ? Serialization.V1.ProjectionMethod.ORTHOGRAPHIC : Serialization.V1.ProjectionMethod.PERSPECTIVE
+                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 
@@ -900,7 +900,7 @@ namespace Fusee.Engine.Core
                 Name = cc.Name,
                 ClippingPlanes = cc.ClippingPlanes,
                 Fov = cc.Fov,
-                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.ORTHOGRAPHIC ? Serialization.V1.ProjectionMethod.ORTHOGRAPHIC : Serialization.V1.ProjectionMethod.PERSPECTIVE
+                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 

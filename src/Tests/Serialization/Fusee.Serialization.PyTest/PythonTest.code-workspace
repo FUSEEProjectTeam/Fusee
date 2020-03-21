@@ -4,7 +4,7 @@
 			"path": "."
 		},
 		{
-			"path": "C:\\Users\\cmueller\\Documents\\_DEV\\Fusee\\src\\Tools\\BlenderScripts\\addons\\io_export_fus"
+			"path": "..\\..\\..\\..\\src\\Tools\\BlenderScripts\\addons\\io_export_fus"
 		}
 	],
 	"settings": {}
