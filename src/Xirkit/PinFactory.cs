@@ -331,7 +331,7 @@ namespace Fusee.Xirkit
             AddConverter<float2, float2>(v => v);
             AddConverter<float2, float3>(v => new float3(v.x, v.y, 0));
             AddConverter<float2, float4>(v => new float4(v.x, v.y, 0, 1));
-            AddConverter<float2, double4x4>(v => new double4x4(v.x, v.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<float2, float4x4>(v => new float4x4(v.x, v.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float3
             AddConverter<float3, int>(v => (int)v.x);
@@ -346,7 +346,7 @@ namespace Fusee.Xirkit
             AddConverter<float3, float2>(v => new float2(v.x, v.y));
             AddConverter<float3, float3>(v => v);
             AddConverter<float3, float4>(v => new float4(v.x, v.y, (float)v.z, 1));
-            AddConverter<float3, double4x4>(v => new double4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<float3, float4x4>(v => new float4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float4
             AddConverter<float4, int>(v => (int)v.x);
