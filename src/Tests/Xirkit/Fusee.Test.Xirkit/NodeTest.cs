@@ -12,8 +12,8 @@ namespace Fusee.Test.Xirkit
         [Fact]
         public void TestInAndOutPins_AndRemove()
         {
-            TestClass obj1 = new TestClass(0, 0);
-            TestClass obj2 = new TestClass(1, 1);
+            SimpleClass obj1 = new SimpleClass(0, 0);
+            SimpleClass obj2 = new SimpleClass(1, 1);
 
             Node node1 = new Node(obj1);
             Node node2 = new Node(obj2);
@@ -33,8 +33,8 @@ namespace Fusee.Test.Xirkit
         [Fact]
         public void TestPropagate()
         {
-            TestClass obj1 = new TestClass(0, 0);
-            TestClass obj2 = new TestClass(1, 1);
+            SimpleClass obj1 = new SimpleClass(0, 0);
+            SimpleClass obj2 = new SimpleClass(1, 1);
 
             Node node1 = new Node(obj1);
             Node node2 = new Node(obj2);
@@ -44,6 +44,16 @@ namespace Fusee.Test.Xirkit
             node1.Propagate();
 
             Assert.True(obj2.y == obj1.x, "Node2.y is " + obj2.y + " but should be " + obj1.x + ".");
+        }
+
+        [Fact]
+        public void TestReferenceError()
+        {
+            int x = 1;
+
+            Action action = delegate () { Node node = new Node(x); };
+
+            Assert.Throws<ArgumentException>(action);
         }
     }
 }

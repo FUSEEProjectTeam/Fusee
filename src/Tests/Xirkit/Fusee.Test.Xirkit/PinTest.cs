@@ -1,5 +1,6 @@
 ﻿using System;
 using Xunit;
+using System.Collections.Generic;
 using Fusee.Xirkit;
 using static Fusee.Test.Xirkit.HelperClasses;
 
@@ -10,7 +11,7 @@ namespace Fusee.Test.Xirkit
         [Fact]
         public void TestMemberAndN()
         {
-            TestClass obj = new TestClass(1, 1);
+            SimpleClass obj = new SimpleClass(1, 1);
             Node node = new Node(obj);
             Pin pin = new Pin(node, "x");
 
@@ -19,11 +20,27 @@ namespace Fusee.Test.Xirkit
         }
 
         [Fact]
-        public void InPin_TestSetValue()
+        public void InPin_TestSetValue_GetType()
         {
-            TestClass obj = new TestClass(1, 1);
-            Node node = new Node(obj);
+            SimpleClass obj1 = new SimpleClass(1, 1);
+            SimpleClass obj2 = new SimpleClass(0, 0);
+            Node node1 = new Node(obj1);
+            Node node2 = new Node(obj2);
 
+            node1.Attach("x", node2, "x");
+
+            IEnumerator<IInPin> pins = node2.InPins.GetEnumerator();
+            pins.MoveNext();
+
+            InPin<int> pin = (InPin<int>)pins.Current;
+
+            Assert.Equal(typeof(int), pin.GetPinType());
+
+            pin.SetValue(1);
+
+            Assert.True(obj2.x == 1, "obj2.x is " + obj2.x + " but should be 1 after changing it with SetValue.");
         }
+
+        //TODO: Test OutPin Attach, Detach, GetValue, Propagate
     }
 }
