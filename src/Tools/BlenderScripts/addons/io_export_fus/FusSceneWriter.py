@@ -226,6 +226,7 @@ class FusSceneWriter:
 #       self.EndMesh()
     
     def AddVertex(self, vertex, normal=None, uv=None, tangent=None, bitangent=None):
+        self.__checkMeshOpen()
         v = self.__curMesh.Vertices.add()
         v.x = vertex[0]
         v.y = vertex[1]
@@ -250,6 +251,16 @@ class FusSceneWriter:
             bt.x = bitangent[0]
             bt.y = bitangent[1]
             bt.z = bitangent[2]
+        self.__curMesh.Triangles.append(len(self.__curMesh.Vertices)-1)
+
+    def AddBoundingBox(self, bboxMin, bboxMax):
+        self.__checkMeshOpen()
+        self.__curMesh.BoundingBox.min.x = bboxMin[0]
+        self.__curMesh.BoundingBox.min.y = bboxMin[1]
+        self.__curMesh.BoundingBox.min.z = bboxMin[2]
+        self.__curMesh.BoundingBox.max.x = bboxMax[0]
+        self.__curMesh.BoundingBox.max.y = bboxMax[1]
+        self.__curMesh.BoundingBox.max.z = bboxMax[2]
 
     def __checkMeshOpen(self):
         if self.__curMesh == None:

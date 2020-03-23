@@ -42,6 +42,9 @@ from bpy.props import (
 from bpy_extras.io_utils import (
         ExportHelper,
         )
+import bmesh
+from mathutils import *
+from math import *
 
 # Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
 # Now moved to https://docs.microsoft.com/en-us/visualstudio/python/debugging-cross-platform-remote
@@ -110,8 +113,10 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
             except:
                 pass
         
-        #set blender to object mode (prevents problems)
-        bpy.ops.object.mode_set(mode="OBJECT")
+        #set blender to object mode and deselect everything (prevents problems)
+        if bpy.context.mode != 'OBJECT' and bpy.ops.object.mode_set.poll():
+            bpy.ops.object.mode_set(mode="OBJECT")
+        bpy.ops.object.select_all(action='DESELECT')
 
         visitor = BlenderVisitor()
         visitor.TraverseList(roots)
@@ -147,12 +152,23 @@ if __name__ == "__main__":
 
 #### UTILITY METHODS ####
 
+def GetPaths(filepath):
+    # relative filepath -> absolute filepath
+    basename = os.path.basename(filepath)
+    if os.path.dirname(filepath) == '//':
+        filepath = os.path.join(os.path.dirname(bpy.data.filepath), basename)        
+    else:
+        filepath = filepath.replace("//", "")
+        filepath = os.path.join(os.path.dirname(bpy.data.filepath), filepath)        
+    fullpath = filepath
+    return fullpath, basename
+
 def GetParents(obj):
     """Recursively search for the highest parent object"""
     if obj.parent == None:
         return obj
     elif obj.parent != None:
-        GetParents(obj.parent)   
+        GetParents(obj.parent)
 
 ##### BLENDER VISITOR ####
 
@@ -161,8 +177,15 @@ class BlenderVisitor:
        a FusSceneWriter to store the data for later serialization into the .fus file format."""
     def __init__(self):
         super().__init__()
+
+        # Mesh Processing flags
+        self.__doApplyScale = True
+        self.__doRecalcOutside = True
+        self.__doApplyModifiers = True
+
         self.__fusWriter = FusSceneWriter()
         self.__level = 0
+        self.__textures = []
         self.__visitors = {
             'MESH':     self.VisitMesh,
             'LIGHT':    self.VisitLight,
@@ -191,8 +214,12 @@ class BlenderVisitor:
     def WriteFus(self, filepath):
         """Serialize the current FUSEE contents to the given file path"""
         self.__fusWriter.Serialize(filepath)
+        for texture in self.__textures:
+            src = texture
+            dst = os.path.join(os.path.dirname(self.filepath),os.path.basename(texture))
+            copyfile(src,dst)
 
-    def __HandleTransform(self, obj):
+    def __AddTransform(self, obj):
         """Convert the given blender obj's transformation into a FUSEE Transform component"""
         # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scene graph
         if obj.parent is None:
@@ -206,18 +233,301 @@ class BlenderVisitor:
         self.__fusWriter.AddTransform(
             (location.x, location.z, location.y),
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
-            (scale.x, scale.z, scale.y)
+            (1, 1, 1) if self.__doApplyScale else (scale.x, scale.z, scale.y)
         )
+
+    def __GetProcessedBMesh(self, obj):
+        """Create a modifier-applied, normal-flipped, scale-normalized, triangulated BMesh from the Blender mesh object passed. Call result.free() and del result after use on the returned bmesh."""
+
+        # Create a (deep (linked=False)) copy of obj.
+        # Makes use of the new 2.8 override context (taken from https://blender.stackexchange.com/questions/135597/how-to-duplicate-an-object-in-2-8-via-the-python-api-without-using-bpy-ops-obje )
+        bpy.ops.object.duplicate(
+            {
+                "object" : obj,
+                "selected_objects" : [obj]
+            },
+            linked=False
+        )
+        # In case obj has an armature parent, bpy.context.active as well as bpy.context.object point to obj's parent AND NOT AS DOCUMENTED to the newly duplicated object.
+        # As debugging shows, the first (and only) object contained in bpy.context.selected_objects points to the duplication.
+        obj_copy = bpy.context.selected_objects[0]
+
+        # Select the copy (and nothing else)
+        if bpy.context.mode != 'OBJECT' and bpy.ops.object.mode_set.poll():
+            bpy.ops.object.mode_set(mode = 'OBJECT')
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = obj_copy
+        obj_copy.select_set(True)
+
+        # Apply Scale
+        if self.__doApplyScale:
+            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+    
+        # Flip normals on the copied object's copied mesh (Important: This happens BEFORE any modifiers are applied)
+        if self.__doRecalcOutside:
+            bpy.ops.object.mode_set(mode = 'EDIT')
+            bpy.ops.mesh.select_all(action='SELECT')
+            bpy.ops.mesh.normals_make_consistent(inside=False)
+            bpy.ops.object.mode_set(mode = 'OBJECT')
+
+        # Apply all the modifiers (without altering the scene)
+        # Taken from https://docs.blender.org/api/blender2.8/bpy.types.Depsgraph.html, "Evaluated ID example"
+        if self.__doApplyModifiers:
+            ev_depsgraph = bpy.context.evaluated_depsgraph_get()
+            obj_eval = obj_copy.evaluated_get(ev_depsgraph)
+            mesh_eval = obj_eval.data
+        else:
+           mesh_eval = obj_copy.data
+
+        # Triangulate
+        bm = bmesh.new()
+        bm.from_mesh(mesh_eval)
+        # Normal recalculation already performed BEFORE modifiers were applied. Otherwise face recalculation yields normals facing inside
+        # bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        bmesh.ops.triangulate(bm, faces=bm.faces)
+
+        # Just for Debugging: link the triangulated mesh:
+        # obj_triangulated = bpy.data.objects.new("ObjectTriangulated", mesh_triangulated)
+        # bpy.context.collection.objects.link(obj_triangulated)
+        
+        # Delete duplicated object
+        bpy.ops.object.mode_set(mode = 'OBJECT')
+        bpy.ops.object.select_all(action='DESELECT')
+        bpy.context.view_layer.objects.active = obj_copy
+        obj_copy.select_set(True)
+        bpy.ops.object.delete()         
+
+        return bm  # Don't forget to release the returned bmesh
+
+        # mesh_triangulated = bpy.data.meshes.new("MeshTriangulated")
+        # bm.to_mesh(mesh_triangulated)
+        # bm.free()
+        # del bm
+
+        # return mesh_triangulated
+
+
+    def __AddBoundingBox(self, meshobj):
+        """Retrieves the bounding box from the given mesh object and adds it to the currently written FUSEE mesh"""
+        bbox = meshobj.bound_box
+        bboxList = []
+        for bboxVal in bbox:
+            bboxList.append(list(bboxVal))
+
+        # find min and max values of the bounding box and write them to the mesh
+        bboxMin = min(bboxList)
+        bboxMax = max(bboxList)
+
+        self.__fusWriter.AddBoundingBox(
+            (bboxMin[0], bboxMin[2], bboxMin[1]),
+            (bboxMax[0], bboxMax[2], bboxMax[1])
+        )
+
+    def __AddMaterial(self, obj):
+        # MATERIAL COMPONENT
+        # check, if a material is set, otherwise use default material
+        # also check if the material uses nodes -> cycles rendering, otherwise use default material
+        if len(obj.material_slots) <= 0 or not obj.material_slots[0].material.use_nodes:
+            print('WARNING: Object "' + obj.name + '" has no material or material doesn\'t use nodes. Adding Default material.')
+            self.__AddDefaultMaterial()
+            return
+
+        # Use first material in the material_slots
+        material = obj.material_slots[0]
+
+        nodes = obj.material_slots[0].material.node_tree.nodes
+        hasDiffuse = False
+        hasSpecular = False
+        hasEmissive = False
+        hasMix = False
+        hasBump = False
+        hasPBR = False
+
+        diffColor = None
+        diffTexture = None
+        diffMix = 1 
+
+        specColor = None
+        specTexture = None
+        specMix = 1 
+        specShininess = 0.2
+        specIntensity = 0.2
+
+        emissColor = None
+        emissTexture = None
+        emissMix = 1 
+
+        bumpTexture = None
+        bumpIntensity = 1
+
+        pbrRoughnessValue = 0.2
+        pbrFresnelReflectance = 0.2
+        pbrDiffuseFraction = 0.2
+
+        # Iterate over nodes of the material node tree
+        for node in nodes:                    
+            #### DIFFUSE
+            if node.type == 'BSDF_DIFFUSE' and hasDiffuse == False:
+                hasDiffuse = True
+
+                diffColor = node.inputs['Color'].default_value,        # Color
+                # check, if material has got textures. If so, get texture filepath
+                links = node.inputs['Color'].links
+                if len(links) > 0:
+                    if links[0].from_node.type == 'TEX_IMAGE':
+                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
+                        difftexture = basename
+                        self.__textures.append(fullpath)
+
+            #### SPECULAR
+            elif node.type == 'BSDF_GLOSSY' and hasSpecular == False:
+                hasSpecular = True
+
+                specColor = node.inputs['Color'].default_value
+                # get material roughness and set the specularity = 1-roughness
+                roughness = node.inputs['Roughness'].default_value
+                specShininess = (1 - roughness) * 200       # multipy with factor 200 for tight specular light
+                if not hasMix:
+                    specIntensity = 1.0 - (roughness + 0.2)     # reduce intensity quite a bit
+                # Check, if material has got textures. If so, get texture filepath
+                links = node.inputs['Color'].links
+                if len(links) > 0:
+                    if links[0].from_node.type == 'TEX_IMAGE':
+                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
+                        specTexture = basename
+                        self.__textures.append(fullpath)
+
+            #### EMISSIVE
+            elif node.type == 'EMISSION' and hasEmissive == False:
+                print('----found emissive node')
+                hasEmissive = True
+                # get material color
+                emissColor = node.inputs['Color'].default_value
+                # check, if material has got textures. If so, get texture filepath
+                links = node.inputs['Color'].links
+                if len(links) > 0:
+                    if links[0].from_node.type == 'TEX_IMAGE':
+                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
+                        emissTexture = basename
+                        self.__textures.append(fullpath)
+
+            #### SPECULAR INTENSITY, found in a MIX node
+            elif node.type == 'MIX_SHADER' and isWeb == False and hasMix == False:
+                hasMix = True
+                # mix factor between glossy and diffuse
+                factor = node.inputs['Fac'].default_value
+                # determine, on which socket the glossy shader is connected to the Mix Shader
+                if node.inputs[1].links[0].from_node.type == 'BSDF_GLOSSY':
+                    specIntensity = 1 - factor
+                elif node.inputs[1].links[0].from_node.type == 'BSDF_DIFFUSE':
+                    specIntensity = factor
+                else:
+                    specIntensity = 1
+
+            #### BUMP
+            elif node.type == 'NORMAL_MAP':
+                hasBump = True
+                bumpIntensity =  node.inputs['Strength'].default_value                         
+                links = node.inputs['Color'].links
+                if len(links) > 0:
+                    if links[0].from_node.type == 'TEX_IMAGE':
+                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
+                        bumpTexture = basename
+                        self.__textures.append(fullpath)
+
+            #### OR GET IT ALL FROM PRINCIPLED
+            elif node.type == 'BSDF_PRINCIPLED':
+                # Read all relevant information into easy-to-access variables
+                baseColor = node.inputs['Base Color'].default_value
+                subsurface = node.inputs['Subsurface'].default_value
+                subsurfaceColor = node.inputs['Subsurface Color'].default_value
+                metallic = node.inputs['Metallic'].default_value
+                specular = node.inputs['Specular'].default_value
+                specularTint = node.inputs['Specular Tint'].default_value
+                roughness = node.inputs['Roughness'].default_value
+                antistropic = node.inputs['Anisotropic'].default_value
+                antistriopicRot = node.inputs['Anisotropic Rotation'].default_value
+                IOR = node.inputs['IOR'].default_value
+                
+                hasDiffuse = True
+                diffMix = 1
+                diffColor = baseColor
+                # check, if material has got textures. If so, get texture filepath
+                links = node.inputs['Base Color'].links
+                if len(links) > 0:
+                    if links[0].from_node.type == 'TEX_IMAGE':
+                        fullpath, basename = GetPaths(
+                            node.inputs['Base Color'].links[0].from_node.image.filepath)
+                        diffTexture = basename
+                        self.__textures.append(fullpath)
+
+                hasSpecular = True
+                specMix = 1
+                # get material color
+                specColor = subsurfaceColor
+                specShininess = (1 - roughness) * 200 # multiply with factor 100 for tight specular light
+                specIntensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit
+
+                # TODO: Bump and Emissive from BSDF_PRINCIPLED
+
+                hasPBR = True
+                pbrRoughnessValue = roughness
+                pbrFresnelReflectance = specular
+                pbrDiffuseFraction = metallic
+
+        if hasDiffuse:
+            self.__fusWriter.BeginMaterial()
+            self.__fusWriter.AddDiffuse(diffColor, diffTexture, diffMix)
+            if hasSpecular:
+                self.__fusWriter.AddSpecular(specColor, specTexture, specMix, specShininess, specIntensity)
+            if hasEmissive:
+                self.__fusWriter.AddEmissive(emissColor, emissTexture, emissMix)
+            if hasBump:
+                self.__fusWriter.AddBump(bumpTexture, bumpIntensity)
+            if hasPBR:
+                self.__fusWriter.AddPBRMaterialSettings(pbrRoughnessValue, pbrFresnelReflectance, pbrDiffuseFraction)
+            self.__fusWriter.EndMaterial()
+        else:
+            self.__AddDefaultMaterial()
+
+    def __AddDefaultMaterial(self):
+        self.__fusWriter.AddMaterial(
+            {
+                'Diffuse':  { 'Color' : (0.7, 0.7, 0.7, 1), 'Mix': 1 },
+                'Specular': { 'Color' : (1, 1, 1, 1), 'Shininess': 0.3, 'Intensity': 0.2 },
+            })
 
     def VisitMesh(self, mesh):
         self.__fusWriter.AddChild(mesh.name)
-        self.__HandleTransform(mesh)
-        print('Mesh: ' + mesh.name)       
+        self.__AddTransform(mesh)
+        self.__AddMaterial(mesh)
+        bm = self.__GetProcessedBMesh(mesh)
+
+        uvActive = mesh.data.uv_layers.active
+        uv_layer = None
+        if uvActive is not None:
+            uv_layer = bm.loops.layers.uv.active
+
+        self.__fusWriter.BeginMesh()
+        for f in bm.faces:
+            # print("Triangle with material ", f.material_index)
+            for fl in f.loops:
+                vertex = fl.vert.co
+                normal = fl.vert.normal if f.smooth else f.normal
+                uv = fl[uv_layer].uv if uv_layer is not None else mathutils.Vector((0, 0))
+                self.__fusWriter.AddVertex(
+                    (vertex[0], vertex[2], vertex[1]), 
+                    (normal[0], normal[2], normal[1]),
+                    uv)
+
+        self.__AddBoundingBox(mesh)                
+        self.__fusWriter.EndMesh()
+
+        bm.free()
+        del bm
 
     def VisitLight(self, light):
-        self.__fusWriter.AddChild(light.name)
-        self.__HandleTransform(light)
-
+        ### Collect light data ###
         # lightData = bpy.data.lights[light.data.name]
         lightData = light.data
 
@@ -233,20 +543,22 @@ class BlenderVisitor:
         else:
             lightType = 0 # FusScene.LightType.Value('Point')
 
-        self.__fusWriter.AddLight(
-            True, 
-            (lightData.color.r, lightData.color.g, lightData.color.b, 1),
-            lightData.distance,
-            lightData.energy / 1000.0,
-            lightType,
-            outerconeangle,
-            innerconeangle
-        )
+        print('Warning: Light "' + light.name + '"found but NOT exported"')
+        ### Write light node ###
+#        self.__fusWriter.AddChild(light.name)
+#        self.__AddTransform(light)
+#        self.__fusWriter.AddLight(
+#            True, 
+#            (lightData.color.r, lightData.color.g, lightData.color.b, 1),
+#            lightData.distance,
+#            lightData.energy / 1000.0,
+#            lightType,
+#            outerconeangle,
+#            innerconeangle
+#        )
 
     def VisitCamera(self, camera):
-        self.__fusWriter.AddChild(camera.name)
-        self.__HandleTransform(camera)
-
+        ### Collect camera data ###
         # cameraData = bpy.data.cameras[camera.data.name]
         cameraData = camera.data
 
@@ -258,11 +570,16 @@ class BlenderVisitor:
             print('WARNING: Orthographic projection type on Camera object "' + camera.name + '" is not handled correctly (yet) by FUSEE')
         else:
             print('WARNING: Unknown projection type "' + cameraData.type + '" on Camera object "' + camera.name + '"')
-        self.__fusWriter.AddCamera(
-            camType, 
-            cameraData.angle_y, 
-            (cameraData.clip_start, cameraData.clip_end),
-        )
+        
+        print('Warning: Camera "' + camera.name + '"found but NOT exported"')
+        ### Write camera node ###
+#        self.__fusWriter.AddChild(camera.name)
+#        self.__AddTransform(camera)
+#        self.__fusWriter.AddCamera(
+#            camType, 
+#            cameraData.angle_y, 
+#            (cameraData.clip_start, cameraData.clip_end),
+#        )
 
     def VisitArmature(self, armature):
         self.__fusWriter.AddChild(armature.name)
