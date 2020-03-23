@@ -344,19 +344,9 @@ class BlenderVisitor:
             (bboxMax[0], bboxMax[2], bboxMax[1])
         )
 
-    def __AddMaterial(self, obj):
+    def __AddMaterial(self, materialslot):
         # MATERIAL COMPONENT
-        # check, if a material is set, otherwise use default material
-        # also check if the material uses nodes -> cycles rendering, otherwise use default material
-        if len(obj.material_slots) <= 0 or not obj.material_slots[0].material.use_nodes:
-            print('WARNING: Object "' + obj.name + '" has no material or material doesn\'t use nodes. Adding Default material.')
-            self.__AddDefaultMaterial()
-            return
-
-        # Use first material in the material_slots
-        material = obj.material_slots[0]
-
-        nodes = obj.material_slots[0].material.node_tree.nodes
+        nodes = materialslot.node_tree.nodes
         hasDiffuse = False
         hasSpecular = False
         hasEmissive = False
@@ -521,7 +511,22 @@ class BlenderVisitor:
     def VisitMesh(self, mesh):
         self.__fusWriter.AddChild(mesh.name)
         self.__AddTransform(mesh)
-        self.__AddMaterial(mesh)
+
+        materialCount = max(1, len(mesh.material_slots))
+
+        vertsPerMat = []
+
+        if materialCount == 1:
+            if len(mesh.material_slots) < 1:
+                print('WARNING: Object "' + mesh.name + '" has no material or material doesn\'t use nodes. Adding Default material.')
+                self.__AddDefaultMaterial()
+            else:
+                self.__AddMaterial(mesh.material_slots[0].material)                
+
+        # Sort vertices into material bins
+        for i in range(materialCount):
+            vertsPerMat.append([])            
+
         bm = self.__GetProcessedBMesh(mesh)
 
         uvActive = mesh.data.uv_layers.active
@@ -529,23 +534,41 @@ class BlenderVisitor:
         if uvActive is not None:
             uv_layer = bm.loops.layers.uv.active
 
-        self.__fusWriter.BeginMesh()
         for f in bm.faces:
             # print("Triangle with material ", f.material_index)
             for fl in f.loops:
                 vertex = fl.vert.co
                 normal = fl.vert.normal if f.smooth else f.normal
                 uv = fl[uv_layer].uv if uv_layer is not None else mathutils.Vector((0, 0))
-                self.__fusWriter.AddVertex(
+                vertsPerMat[f.material_index].append((
                     (vertex[0], vertex[2], vertex[1]), 
                     (normal[0], normal[2], normal[1]),
-                    uv)
-
-        self.__AddBoundingBox(mesh)                
-        self.__fusWriter.EndMesh()
-
+                    (uv[0], uv[1])))
+        
         bm.free()
         del bm
+
+        for i in range(materialCount):
+            if materialCount > 1:
+                self.__fusWriter.Push()
+                self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[i].material.name)
+                self.__AddMaterial(mesh.material_slots[i].material)
+
+            self.__fusWriter.BeginMesh()
+            
+            for vert in vertsPerMat[i]:
+                self.__fusWriter.AddVertex(
+                    vert[0],    # Vertex 
+                    vert[1],    # Normal
+                    vert[2]     # UV
+                )
+
+            self.__AddBoundingBox(mesh)    # TODO: Don't use entire Bounding box - calculate bb for each material set instead.             
+            self.__fusWriter.EndMesh()
+            if materialCount > 1:
+                self.__fusWriter.Pop()
+
+
 
     def VisitLight(self, light):
         ### Collect light data ###
