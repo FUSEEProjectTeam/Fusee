@@ -29,6 +29,7 @@ class FusSceneWriter:
         self.__scene = self.__fusFile.Contents.FusScene
         self.__childListStack = [self.__scene.Children]
         self.__nodeStack = [None]
+        self.__vertCache = {}
         # Components
         self.__curComponent = None
         self.__curMaterial = None
@@ -227,31 +228,42 @@ class FusSceneWriter:
     
     def AddVertex(self, vertex, normal=None, uv=None, tangent=None, bitangent=None):
         self.__checkMeshOpen()
-        v = self.__curMesh.Vertices.add()
-        v.x = vertex[0]
-        v.y = vertex[1]
-        v.z = vertex[2]
-        if normal != None:
-            n = self.__curMesh.Normals.add()
-            n.x = normal[0]
-            n.y = normal[1]
-            n.z = normal[2]
-        if uv != None:
-            u = self.__curMesh.UVs.add()
-            u.x = uv[0]
-            u.y = uv[1]
-        if tangent != None:
-            t = self.__curMesh.Tangents.add()
-            t.x = tangent[0]
-            t.y = tangent[1]
-            t.z = tangent[2]
-            t.w = tangent[3]
-        if bitangent != None:
-            bt = self.__curMesh.BiTangents.add()
-            bt.x = bitangent[0]
-            bt.y = bitangent[1]
-            bt.z = bitangent[2]
-        self.__curMesh.Triangles.append(len(self.__curMesh.Vertices)-1)
+        key = hash((
+            (vertex[0], vertex[1], vertex[2]),
+            (normal[0], normal[1], normal[2]) if normal != None else (1, 1, 1), 
+            (uv[0], uv[1]) if uv != None else (1, 1),
+            (tangent[0], tangent[1], tangent[2]) if tangent != None else (1, 1, 1),
+            (bitangent[0], bitangent[1], bitangent[2]) if bitangent != None else (1, 1, 1)     
+            ))
+        inx = self.__vertCache.get(key, -1)
+        if inx < 0:
+            inx = len(self.__curMesh.Vertices)
+            self.__vertCache[key] = inx
+            v = self.__curMesh.Vertices.add()
+            v.x = vertex[0]
+            v.y = vertex[1]
+            v.z = vertex[2]
+            if normal != None:
+                n = self.__curMesh.Normals.add()
+                n.x = normal[0]
+                n.y = normal[1]
+                n.z = normal[2]
+            if uv != None:
+                u = self.__curMesh.UVs.add()
+                u.x = uv[0]
+                u.y = uv[1]
+            if tangent != None:
+                t = self.__curMesh.Tangents.add()
+                t.x = tangent[0]
+                t.y = tangent[1]
+                t.z = tangent[2]
+                t.w = tangent[3]
+            if bitangent != None:
+                bt = self.__curMesh.BiTangents.add()
+                bt.x = bitangent[0]
+                bt.y = bitangent[1]
+                bt.z = bitangent[2]
+        self.__curMesh.Triangles.append(inx)
 
     def AddBoundingBox(self, bboxMin, bboxMax):
         self.__checkMeshOpen()
@@ -270,6 +282,7 @@ class FusSceneWriter:
         if self.__curComponent == None:
             self.__curComponent = self.AddComponent(name)
             self.__curMesh = self.__curComponent.FusMesh
+            self.__vertCache = {}
         else:
             raise RuntimeError('Cannot begin a mesh component with another component not ended. Call EndXYZ() to close the currently open component.')
 
@@ -277,7 +290,8 @@ class FusSceneWriter:
         self.__checkMeshOpen()
         self.__curMesh = None
         self.__curComponent = None
-        
+
+
 #### CAMERA COMPONENT ####
 
 # bool ClearColor = true;

@@ -80,14 +80,27 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
 
     filename_ext = ".fus"
     filter_glob : StringProperty(default="*.fus", options={'HIDDEN'})
-    createWebApp : BoolProperty(
-        name="Create FUSEE Web-Application",
-        description="Export HTML-Viewer around the scene and run in Web Browser after export",
-        default=False,
-    )
  
     #Operator Properties
     filepath : StringProperty(subtype='FILE_PATH')
+
+    doApplyScale: BoolProperty(
+        name="Apply Scale",
+        description="Apply object scale tranformations on meshes and reset scale settings to 1.0",
+        default=True,
+    )
+
+    doRecalcOutside: BoolProperty(
+        name="Recalculate Outside",
+        description="Try to find out outside of each mesh and make normals face outwards",
+        default=True,
+    )
+
+    doApplyModifiers : BoolProperty(
+        name="Create FUSEE Web-Application",
+        description="Apply modifiers to mesh objects",
+        default=True,
+    )
 
     #get FuseeRoot environment variable
     tool_Path = 'fusee.exe'
@@ -98,6 +111,9 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     def draw(self, context):
         layout = self.layout
         # layout.prop(self, 'isWeb')
+        layout.prop(self,'doApplyScale')
+        layout.prop(self,'doRecalcOutside')
+        layout.prop(self,'doApplyModifiers')
         
     def execute(self, context):
         #check if all paths are set
@@ -119,6 +135,11 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
         bpy.ops.object.select_all(action='DESELECT')
 
         visitor = BlenderVisitor()
+
+        visitor.DoApplyModifiers = self.doApplyModifiers
+        visitor.DoApplyScale = self.doApplyScale
+        visitor.DoRecalcOutside = self.doRecalcOutside
+ 
         visitor.TraverseList(roots)
         visitor.PrintFus()
         visitor.WriteFus(self.filepath)
@@ -179,9 +200,9 @@ class BlenderVisitor:
         super().__init__()
 
         # Mesh Processing flags
-        self.__doApplyScale = True
-        self.__doRecalcOutside = True
-        self.__doApplyModifiers = True
+        self.DoApplyScale = True
+        self.DoRecalcOutside = True
+        self.DoApplyModifiers = True
 
         self.__fusWriter = FusSceneWriter()
         self.__level = 0
@@ -233,7 +254,7 @@ class BlenderVisitor:
         self.__fusWriter.AddTransform(
             (location.x, location.z, location.y),
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
-            (1, 1, 1) if self.__doApplyScale else (scale.x, scale.z, scale.y)
+            (1, 1, 1) if self.DoApplyScale else (scale.x, scale.z, scale.y)
         )
 
     def __GetProcessedBMesh(self, obj):
@@ -260,11 +281,11 @@ class BlenderVisitor:
         obj_copy.select_set(True)
 
         # Apply Scale
-        if self.__doApplyScale:
+        if self.DoApplyScale:
             bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     
         # Flip normals on the copied object's copied mesh (Important: This happens BEFORE any modifiers are applied)
-        if self.__doRecalcOutside:
+        if self.DoRecalcOutside:
             bpy.ops.object.mode_set(mode = 'EDIT')
             bpy.ops.mesh.select_all(action='SELECT')
             bpy.ops.mesh.normals_make_consistent(inside=False)
@@ -272,7 +293,7 @@ class BlenderVisitor:
 
         # Apply all the modifiers (without altering the scene)
         # Taken from https://docs.blender.org/api/blender2.8/bpy.types.Depsgraph.html, "Evaluated ID example"
-        if self.__doApplyModifiers:
+        if self.DoApplyModifiers:
             ev_depsgraph = bpy.context.evaluated_depsgraph_get()
             obj_eval = obj_copy.evaluated_get(ev_depsgraph)
             mesh_eval = obj_eval.data
@@ -370,7 +391,7 @@ class BlenderVisitor:
             if node.type == 'BSDF_DIFFUSE' and hasDiffuse == False:
                 hasDiffuse = True
 
-                diffColor = node.inputs['Color'].default_value,        # Color
+                diffColor = node.inputs['Color'].default_value        # Color
                 # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Color'].links
                 if len(links) > 0:
@@ -412,7 +433,7 @@ class BlenderVisitor:
                         self.__textures.append(fullpath)
 
             #### SPECULAR INTENSITY, found in a MIX node
-            elif node.type == 'MIX_SHADER' and isWeb == False and hasMix == False:
+            elif node.type == 'MIX_SHADER' and hasMix == False:
                 hasMix = True
                 # mix factor between glossy and diffuse
                 factor = node.inputs['Fac'].default_value
