@@ -16,11 +16,6 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class RenderContext
     {
-        public void DebugLine(float3 start, float3 end, float4 color)
-        {
-            _rci.DebugLine(start, end, color);
-        }
-
         /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>
