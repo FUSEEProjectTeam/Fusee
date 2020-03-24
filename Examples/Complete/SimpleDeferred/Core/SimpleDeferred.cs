@@ -368,14 +368,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }

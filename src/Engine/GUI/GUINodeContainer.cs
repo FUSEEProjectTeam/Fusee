@@ -260,7 +260,7 @@ namespace Fusee.Engine.GUI
                 {
                     Name = name + "_XForm",
                 },
-                new ShaderEffectComponent
+                new EffectComponent
                 {
                     Effect = new ShaderEffect(
                         new FxPassDeclaration
@@ -329,7 +329,7 @@ namespace Fusee.Engine.GUI
                 {
                     Name = name + "_XForm",
                 },
-                new ShaderEffectComponent
+                new EffectComponent
                 {
                     Effect = new ShaderEffect(
                         new FxPassDeclaration
@@ -420,7 +420,7 @@ namespace Fusee.Engine.GUI
                     Components = new List<SceneComponentContainer>()
                     {
                         xFormText,
-                        new ShaderEffectComponent
+                        new EffectComponent
                         {
                             Effect = new ShaderEffect(
                                 new FxPassDeclaration

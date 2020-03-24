@@ -137,7 +137,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 case Common.TextureWrapMode.CLAMP_TO_BORDER:
                     {
-#warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge is set instead.
+                        Diagnostics.Warn("TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge is set instead.");
                         return OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge;
                     }
             }

@@ -58,11 +58,11 @@ namespace Fusee.Examples.Simple.Core
                 Albedo = new float4(1, 0, 0, 1)
             };
 
-            _rocketScene.Children[0].RemoveComponent<ShaderEffectComponent>();
-            _rocketScene.Children[0].Components.Insert(1, new SurfaceEffectComponent() { Effect = test });
+            _rocketScene.Children[0].RemoveComponent<EffectComponent>();
+            _rocketScene.Children[0].Components.Insert(1, new EffectComponent() { Effect = test });
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);            
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             return true;
@@ -123,11 +123,11 @@ namespace Fusee.Examples.Simple.Core
 
             // Render the scene loaded in Init()
             RC.View = view;
-            RC.Projection = perspective;            
+            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-           
+
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -135,7 +135,7 @@ namespace Fusee.Examples.Simple.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            
+
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -205,7 +205,7 @@ namespace Fusee.Examples.Simple.Core
                     fuseeLogo,
                     text
                 }
-            };            
+            };
 
             return new SceneContainer
             {
@@ -219,14 +219,14 @@ namespace Fusee.Examples.Simple.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }

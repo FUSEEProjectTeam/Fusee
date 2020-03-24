@@ -234,7 +234,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "circle" + "_XForm",
                     },
-                    new ShaderEffectComponent()
+                    new EffectComponent()
                     {
                         Effect = MakeShaderEffect.FromDiffuseSpecular(col, new float4(1,1,1,1), 20, 0)
                     },
@@ -286,7 +286,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    new ShaderEffectComponent()
+                    new EffectComponent()
                     {
                         Effect = MakeShaderEffect.FromDiffuseSpecular(col, new float4(1, 1, 1,1), 20, 0)
                     }

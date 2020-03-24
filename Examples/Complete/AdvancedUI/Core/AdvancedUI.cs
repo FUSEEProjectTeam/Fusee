@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
@@ -77,7 +78,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            new ShaderEffectComponent()
+                            new EffectComponent()
                             {
                                 Effect = MakeShaderEffect.FromDiffuseSpecularTexture(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
                             },
@@ -95,7 +96,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            new ShaderEffectComponent()
+                            new EffectComponent()
                             {
                                 Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(0, 0, 1,1), new float4(1,1,1,1), 20)
                             },
@@ -298,15 +299,15 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         uiInput.IsVisible = true;
 
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
-
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
+                        var shaderEffect = (ShaderEffect)circle.GetComponent<EffectComponent>().Effect;
+                        shaderEffect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
                     }
                     else
-                    {
+                    { 
                         uiInput.IsVisible = false;
-
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
+                        var shaderEffect = (ShaderEffect)circle.GetComponent<EffectComponent>().Effect;
+                        shaderEffect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
+                        
                     }
 
                     //1.2   Calculate annotation positions without intersections.
@@ -466,14 +467,14 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }

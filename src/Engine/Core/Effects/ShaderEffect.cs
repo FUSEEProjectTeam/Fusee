@@ -63,65 +63,7 @@ namespace Fusee.Engine.Core.Effects
             }
 
             EffectEventArgs = new EffectEventArgs(this, ChangedEnum.UNCHANGED);
-        }
-
-        /// <summary>
-        /// Set effect parameter
-        /// </summary>
-        /// <param name="name">Name of the uniform variable</param>
-        /// <param name="value">Value of the uniform variable</param>
-        public void SetFxParam<T>(string name, T value)
-        {
-            if (ParamDecl != null)
-            {
-                if (ParamDecl.ContainsKey(name))
-                {
-                    if (ParamDecl[name] != null)
-                        if (ParamDecl[name].Equals(value)) return;
-
-                    //Implemented using reflections and not "(FxParamDeclaration<T>)ParamDecl[name]" because 
-                    //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.                    
-                    ParamDecl[name].GetType().GetField("Value").SetValue(ParamDecl[name], value);
-
-                    EffectEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
-                    EffectEventArgs.ChangedEffectVarName = name;
-                    EffectEventArgs.ChangedEffectVarValue = value;
-
-                    EffectChanged?.Invoke(this, EffectEventArgs);
-                }
-                else
-                {
-                    Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
-                }
-            }
-        }
-
-        /// <summary>
-        /// Returns the value of a given shader effect variable
-        /// </summary>
-        /// <param name="name">Name of the uniform variable</param>
-        /// <returns></returns>
-        public T GetFxParam<T>(string name)
-        {
-            if (ParamDecl.TryGetValue(name, out var dcl))
-            {
-                return ((FxParamDeclaration<T>)dcl).Value;
-            }
-            return default;
-        }
-
-        /// <summary>
-        /// Returns the value of a given shader effect variable
-        /// </summary>
-        /// <param name="name">Name of the uniform variable</param>
-        /// /// <param name="obj">The value. Return null if no parameter was found.</param>
-        /// <returns></returns>
-        public void GetFxParam<T>(string name, out T obj)
-        {
-            obj = default;
-            if (ParamDecl.TryGetValue(name, out var dcl))
-                obj = ((FxParamDeclaration<T>)dcl).Value;
-        }
+        }       
 
         /// <summary>
         /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.

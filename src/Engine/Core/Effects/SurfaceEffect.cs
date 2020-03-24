@@ -40,12 +40,12 @@ namespace Fusee.Engine.Core.Effects
                 };
             }        
 
-            //TODO: Difference forward/deferred. Lights as properties? Would be difficult because each Light property must be one property in the ShaderEffect.
+            //TODO: Difference forward/deferred. Lights as properties? Would be difficult because each Light property must be one property in the SurfaceEffect.
             foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.LightingShard.NumberOfLightsForward))
                 ParamDecl.Add(dcl.Name, dcl);
 
             //TODO: ParamDecls for FUSEE_Matrices -  they should not be set by ShaderEffect.FUSEE_MVP = new float4x4() because they are managed under the hood in most cases.
-            foreach (var dcl in CreateMatParamDecls())
+            foreach (var dcl in CreateMatParamDecls()) 
                 ParamDecl.Add(dcl.Name, dcl);
 
             Type t = GetType();

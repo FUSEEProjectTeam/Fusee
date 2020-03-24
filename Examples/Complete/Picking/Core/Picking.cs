@@ -144,13 +144,13 @@ namespace Fusee.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-                        var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        var ef = _currentPick.Node.GetComponent<EffectComponent>().Effect;
                         ef.SetFxParam(UniformNameDeclarations.Albedo, _oldColor);
                     }
 
                     if (newPick != null)
                     {
-                        var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        var ef = newPick.Node.GetComponent<EffectComponent>().Effect;
                         _oldColor = ef.GetFxParam<float4>(UniformNameDeclarations.Albedo);
                         ef.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
@@ -267,14 +267,14 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }

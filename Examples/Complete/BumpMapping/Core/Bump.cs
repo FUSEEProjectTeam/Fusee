@@ -98,7 +98,7 @@ namespace Fusee.Examples.Bump.Core
             _mesh = _scene.Children[0].GetComponent<Plane>();
             _mesh.Tangents = _mesh.CalculateTangents();
             _mesh.BiTangents = _mesh.CalculateBiTangents();
-            _scene.Children[0].Components.Insert(1, new ShaderEffectComponent() { Effect = bumpEffect });
+            _scene.Children[0].Components.Insert(1, new EffectComponent() { Effect = bumpEffect });
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();

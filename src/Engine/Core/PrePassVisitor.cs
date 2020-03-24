@@ -42,7 +42,7 @@ namespace Fusee.Engine.Core
             WorldSpacePos = float3.Zero;
             Rotation = float4x4.Identity;
             Id = Suid.GenerateSuid();
-        }       
+        }
 
         /// <summary>
         /// Override for the Equals method.
@@ -92,12 +92,12 @@ namespace Fusee.Engine.Core
     {
         public CameraComponent Camera { get; private set; }
 
-        public float4x4 View { get; private set; }        
+        public float4x4 View { get; private set; }
 
         public CameraResult(CameraComponent cam, float4x4 view)
         {
             Camera = cam;
-            View = view;            
+            View = view;
         }
     }
 
@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core
     }
 
     internal class PrePassVisitor : SceneVisitor
-    {        
+    {
         public List<Tuple<SceneNodeContainer, LightResult>> LightPrepassResuls;
         public List<Tuple<SceneNodeContainer, CameraResult>> CameraPrepassResults;
 
@@ -137,13 +137,15 @@ namespace Fusee.Engine.Core
         private RendererState _state;
 
         private CanvasTransformComponent _ctc;
-        private MinMaxRect _parentRect;       
-        protected RenderContext _rc;
-        private bool isCtcInitialized = false;
+        private MinMaxRect _parentRect;
+        private RenderContext _rc;
+        private bool _isCtcInitialized = false;
+        private readonly bool _renderForward;
 
-        public PrePassVisitor()
-        {            
+        public PrePassVisitor(bool renderForward)
+        {
             _state = new RendererState();
+            _renderForward = renderForward;
             LightPrepassResuls = new List<Tuple<SceneNodeContainer, LightResult>>();
             CameraPrepassResults = new List<Tuple<SceneNodeContainer, CameraResult>>();
         }
@@ -245,13 +247,13 @@ namespace Fusee.Engine.Core
                     Max = ctc.ScreenSpaceSize.Max
                 };
 
-                if (!isCtcInitialized)
+                if (!_isCtcInitialized)
                 {
                     ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x,
                         ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
 
                     _ctc = ctc;
-                    isCtcInitialized = true;
+                    _isCtcInitialized = true;
 
                 }
                 _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
@@ -430,7 +432,7 @@ namespace Fusee.Engine.Core
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)
-        {            
+        {
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
         }
@@ -439,12 +441,12 @@ namespace Fusee.Engine.Core
         public void OnLight(LightComponent lightComponent)
         {
             var lightResult = new LightResult(lightComponent)
-            {                
+            {
                 Rotation = _state.Model.RotationComponent(),
                 WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
-            };        
+            };
 
-            LightPrepassResuls.Add(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, lightResult));            
+            LightPrepassResuls.Add(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, lightResult));
         }
 
         [VisitMethod]
@@ -472,13 +474,23 @@ namespace Fusee.Engine.Core
                 view.M13 /= scale.z;
                 view.M23 /= scale.z;
                 view.M33 /= scale.z;
-            }          
+            }
 
-            view = view.Invert();            
+            view = view.Invert();
 
-            var cameraResult = new CameraResult(camComp, view);            
+            var cameraResult = new CameraResult(camComp, view);
             CameraPrepassResults.Add(new Tuple<SceneNodeContainer, CameraResult>(CurrentNode, cameraResult));
-        }        
+        }
+
+        /// <summary>
+        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="shaderComponent">The ShaderEffectComponent</param>
+        [VisitMethod]
+        public void BuildFragmentShaderFor(EffectComponent shaderComponent)
+        {
+            _rc.CreateEffect(_renderForward, shaderComponent.Effect);
+        }
     }
-   
+
 }

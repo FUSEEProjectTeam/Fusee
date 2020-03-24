@@ -99,7 +99,7 @@ namespace Fusee.Engine.Core
         public void ConvMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
+            _currentNode.Components.Add(new EffectComponent { Effect = effect });
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core
         public void ConvMaterial(MaterialPBRComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
+            _currentNode.Components.Add(new EffectComponent { Effect = effect });
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponentContainer>();
 
-            var currentNodeEffect = _currentNode.GetComponent<ShaderEffectComponent>();
+            var currentNodeEffect = _currentNode.GetComponent<EffectComponent>();
 
             if (currentNodeEffect?.Effect.GetFxParam<Texture>(UniformNameDeclarations.BumpTexture) != null)
             {

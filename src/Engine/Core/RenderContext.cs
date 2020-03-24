@@ -956,6 +956,24 @@ namespace Fusee.Engine.Core
                 return;
             }
 
+            throw new KeyNotFoundException("Trying to set unknown effect!");
+        }
+
+        internal void CreateEffect(bool renderForward, Effect ef)
+        {
+            if (_rci == null)
+                throw new NullReferenceException("No render context Implementation found!");
+
+            if (ef == null)
+                return;
+
+            // Is this shader effect already built?
+            if (_effectManager.GetEffect(ef) != null)
+            {
+                _currentEffect = ef;
+                return;
+            }
+
             var compiledEffect = new CompiledEffect();
             var activeUniforms = new Dictionary<string, ShaderParamInfo>();
 
@@ -966,9 +984,17 @@ namespace Fusee.Engine.Core
             try // to compile all the shaders
             {
                 var efType = ef.GetType();
-                if (efType == typeof(ShaderEffect) || efType == typeof(ShaderEffectProtoPixel))
+                if (efType == typeof(ShaderEffect))
                 {
                     var shaderEffect = (ShaderEffect)ef;
+                    vert = shaderEffect.VertexShaderSrc;
+                    geom = shaderEffect.GeometryShaderSrc;
+                    frag = shaderEffect.PixelShaderSrc;
+                }
+                else if (efType == typeof(ShaderEffectProtoPixel))
+                {
+                    var shaderEffect = (ShaderEffectProtoPixel)ef;
+                    shaderEffect.CreateFragmentShader(renderForward);
                     vert = shaderEffect.VertexShaderSrc;
                     geom = shaderEffect.GeometryShaderSrc;
                     frag = shaderEffect.PixelShaderSrc;
@@ -1010,10 +1036,7 @@ namespace Fusee.Engine.Core
             // register built shader effect
             _effectManager.RegisterEffect(ef);
 
-            CreateAllEffectVariables(ef, activeUniforms);
-
-            // register this shader effect as current shader
-            _currentEffect = ef;
+            CreateAllEffectVariables(ef, activeUniforms);            
         }
 
         /// <summary>

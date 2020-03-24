@@ -84,7 +84,7 @@ namespace Fusee.Examples.Camera.Core
                 Name = "Frustum",
                 Components = new List<SceneComponentContainer>()
                 {
-                    new ShaderEffectComponent(){Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.One, 0) },
+                    new EffectComponent(){Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.One, 0) },
                     _frustum
                 }
             };
@@ -96,7 +96,7 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    new ShaderEffectComponent(){Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.One, 10) },
+                    new EffectComponent(){Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.One, 10) },
                     new Cube(),
 
                 },
@@ -323,14 +323,14 @@ namespace Fusee.Examples.Camera.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
         }

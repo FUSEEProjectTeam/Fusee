@@ -134,10 +134,7 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-            PrePassVisitor = new PrePassVisitor();
-            var buildFrag = new ProtoToFrag(_sc, true);
-            buildFrag.BuildFragmentShaders();
-
+            PrePassVisitor = new PrePassVisitor(true);
             _state = new RendererState();
             InitAnimations(_sc);
         }
@@ -651,23 +648,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="shaderComponent">The ShaderEffectComponent</param>
         [VisitMethod]
-        public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
-        {
-            if (HasNumberOfLightsChanged)
-            {
-                //change #define MAX_LIGHTS... or rebuild shader effect?
-                HasNumberOfLightsChanged = false;
-            }
-            _state.Effect = shaderComponent.Effect;
-            _rc.SetEffect(_state.Effect);
-        }
-
-        /// <summary>
-        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="shaderComponent">The ShaderEffectComponent</param>
-        [VisitMethod]
-        public void RenderSurfaceEffect(SurfaceEffectComponent shaderComponent)
+        public void RenderShaderEffect(EffectComponent shaderComponent)
         {
             if (HasNumberOfLightsChanged)
             {
@@ -775,6 +756,7 @@ namespace Fusee.Engine.Core
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = MakeShaderEffect.Default;
+            _rc.CreateEffect(true, _state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
         }
 
