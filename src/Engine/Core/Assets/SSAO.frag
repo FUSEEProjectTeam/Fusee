@@ -1,4 +1,4 @@
-﻿#version 300 es
+﻿#version 440 core
 #define KERNEL_LENGTH 64
 
 precision highp float;

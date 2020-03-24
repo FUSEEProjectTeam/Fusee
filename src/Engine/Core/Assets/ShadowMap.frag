@@ -1,4 +1,4 @@
-﻿#version 300 es
+﻿#version 440 core
 #extension GL_ARB_explicit_uniform_location : enable
 precision highp float; 
 layout (location = 0) out vec4 G_DEPTH;

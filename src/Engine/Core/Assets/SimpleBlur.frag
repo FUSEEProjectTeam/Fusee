@@ -1,4 +1,4 @@
-#version 300 es
+#version 440 core
 precision highp float; 
 #define KERNEL_SIZE_HALF 2
 

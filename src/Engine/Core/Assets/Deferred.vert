@@ -1,4 +1,4 @@
-﻿#version 300 es
+﻿#version 440 core
 
 in vec3 fuVertex;
 out vec2 vUV;
