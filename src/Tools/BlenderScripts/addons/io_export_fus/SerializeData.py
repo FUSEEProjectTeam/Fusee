@@ -1069,7 +1069,7 @@ def prepare_mesh_elaborate(obj, export_props):
     # Apply Scale
     if export_props["doApplyScale"]:
         bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-<
+
     # Flip normals on the copied object's copied mesh (Important: This happens BEFORE any modifiers are applied)
     if export_props["doRecalcOutside"]:
         bpy.ops.object.mode_set(mode = 'EDIT')
