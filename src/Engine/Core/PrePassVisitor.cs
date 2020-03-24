@@ -140,19 +140,19 @@ namespace Fusee.Engine.Core
         private MinMaxRect _parentRect;
         private RenderContext _rc;
         private bool _isCtcInitialized = false;
-        private readonly bool _renderForward;
+        private bool _renderForward;
 
-        public PrePassVisitor(bool renderForward)
+        public PrePassVisitor()
         {
-            _state = new RendererState();
-            _renderForward = renderForward;
+            _state = new RendererState();            
             LightPrepassResuls = new List<Tuple<SceneNodeContainer, LightResult>>();
             CameraPrepassResults = new List<Tuple<SceneNodeContainer, CameraResult>>();
         }
 
-        public void PrePassTraverse(SceneContainer sc, RenderContext rc)
+        public void PrePassTraverse(SceneContainer sc, RenderContext rc, bool renderForward)
         {
             _rc = rc;
+            _renderForward = renderForward;
             LightPrepassResuls.Clear();
             CameraPrepassResults.Clear();
             Traverse(sc.Children);

@@ -134,7 +134,7 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-            PrePassVisitor = new PrePassVisitor(true);
+            PrePassVisitor = new PrePassVisitor();
             _state = new RendererState();
             InitAnimations(_sc);
         }
@@ -278,7 +278,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc, _rc, true);
 
             AccumulateLight();
 
