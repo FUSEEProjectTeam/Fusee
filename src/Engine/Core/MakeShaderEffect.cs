@@ -168,6 +168,8 @@ namespace Fusee.Engine.Core
 
             if (lc.IsCastingShadows)
             {
+                effectParams.Add(new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0 });
+                effectParams.Add(new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f });
                 if (lc.Type != LightType.Point)
                 {
                     effectParams.Add(new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
@@ -208,6 +210,12 @@ namespace Fusee.Engine.Core
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
+
+            if (lc.IsCastingShadows)
+            {
+                effectParams.Add(new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0 });
+                effectParams.Add(new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f });
+            }
 
             effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
             effectParams.Add(new FxParamDeclaration<WritableTexture[]> { Name = "ShadowMaps[0]", Value = shadowMaps });
@@ -311,9 +319,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f},
                 new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero},
                 new FxParamDeclaration<int> { Name = "light.lightType", Value = 1},
-                new FxParamDeclaration<int> { Name = "light.isActive", Value = 1},
-                new FxParamDeclaration<int> { Name = "light.isCastingShadows", Value = 0},
-                new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f},
+                new FxParamDeclaration<int> { Name = "light.isActive", Value = 1},                
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},

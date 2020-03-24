@@ -800,8 +800,12 @@ namespace Fusee.Engine.Core
             effect.SetFxParam("light.direction", dirViewSpace);
             effect.SetFxParam("light.lightType", (int)light.Type);
             effect.SetFxParam("light.isActive", light.Active ? 1 : 0);
-            effect.SetFxParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
-            effect.SetFxParam("light.bias", light.Bias);
+
+            if (light.IsCastingShadows)
+            {
+                effect.SetFxParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
+                effect.SetFxParam("light.bias", light.Bias);
+            }
 
             if (isCastingShadows) //we don't use light.IsCastingShadows because we could need to skip the shadow calculation because of hardware capabilities.
             {
