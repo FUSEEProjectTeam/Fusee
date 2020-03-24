@@ -486,7 +486,7 @@ namespace Fusee.Engine.Core
                 mc.Bump = new BumpChannel
                 {
                     Intensity = m.HasBump ? m.Bump.Intensity : 0,
-                    Texture = m.Emissive.Texture ?? ""
+                    Texture = m.Bump.Texture ?? null
                 };
             }
             if (m.HasDiffuse)
@@ -494,7 +494,7 @@ namespace Fusee.Engine.Core
                 mc.Diffuse = new MatChannel
                 {
                     Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture ?? "",
+                    Texture = m.Diffuse.Texture ?? null,
                     Mix = m.Diffuse.Mix
                 };
             }
@@ -503,7 +503,7 @@ namespace Fusee.Engine.Core
                 mc.Emissive = new MatChannel
                 {
                     Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture ?? "",
+                    Texture = m.Emissive.Texture ?? null,
                     Mix = m.Emissive.Mix
                 };
             }
@@ -513,7 +513,7 @@ namespace Fusee.Engine.Core
                 {
                     Color = m.Specular.Color,
                     Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture ?? "",
+                    Texture = m.Specular.Texture ?? null,
                     Intensity = m.Specular.Intensity,
                     Shininess = m.Specular.Shininess
                 };
@@ -529,14 +529,14 @@ namespace Fusee.Engine.Core
         {
             var mc = new MaterialPBR
             {
-                Name = m.Name ?? ""
+                Name = m.Name ?? null
             };
             if (m.HasBump)
             {
                 mc.Bump = new BumpChannel
                 {
                     Intensity = m.HasBump ? m.Bump.Intensity : 0,
-                    Texture = m.Emissive.Texture ?? ""
+                    Texture = m.Bump.Texture ?? null
                 };
             }
             if (m.HasDiffuse)
@@ -544,7 +544,7 @@ namespace Fusee.Engine.Core
                 mc.Diffuse = new MatChannel
                 {
                     Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture ?? "",
+                    Texture = m.Diffuse.Texture ?? null,
                     Mix = m.Diffuse.Mix
                 };
             }
@@ -553,7 +553,7 @@ namespace Fusee.Engine.Core
                 mc.Emissive = new MatChannel
                 {
                     Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture ?? "",
+                    Texture = m.Emissive.Texture ?? null,
                     Mix = m.Emissive.Mix
                 };
             }
@@ -563,7 +563,7 @@ namespace Fusee.Engine.Core
                 {
                     Color = m.Specular.Color,
                     Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture ?? "",
+                    Texture = m.Specular.Texture ?? null,
                     Intensity = m.Specular.Intensity,
                     Shininess = m.Specular.Shininess
                 };
