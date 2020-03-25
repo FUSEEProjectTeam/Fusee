@@ -679,17 +679,32 @@ namespace Fusee.Engine.Core
                     case LightType.Legacy:
                     case LightType.Parallel:
                         {
-
-                            for (int i = 0; i < NumberOfCascades; i++)
+                            if (NumberOfCascades == 1)
                             {
-                                _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[i]);
+                                _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);
                                 _rc.SetEffect(_shadowEffect);
-                                _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
+                                _rc.SetRenderTarget((IWritableTexture)shadowParams.ShadowMap);
 
-                                _lightFrustum = shadowParams.Frustums[i];
+                                _lightFrustum = shadowParams.Frustums[0];
 
                                 Traverse(_sc.Children);
                             }
+                            else if (NumberOfCascades > 1)
+                            {
+                                for (int i = 0; i < NumberOfCascades; i++)
+                                {
+                                    _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[i]);
+                                    _rc.SetEffect(_shadowEffect);
+                                    _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
+
+                                    _lightFrustum = shadowParams.Frustums[i];
+
+                                    Traverse(_sc.Children);
+                                }
+                            }
+                            else
+                                throw new ArgumentException($"Number of cascades must be greater or equal 1 but is  {NumberOfCascades}.");
+
 
                             break;
                         }
