@@ -852,7 +852,7 @@ namespace Fusee.Engine.Core
         /// <param name="height">Height in pixels.</param>
         internal void UpdateTextureRegion(Texture dstTexture, Texture srcTexture, int startX, int startY, int width, int height)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(dstTexture);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(dstTexture);
             _rci.UpdateTextureRegion(textureHandle, srcTexture, startX, startY, width, height);
         }
 
@@ -881,7 +881,7 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         private void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
         }
 
@@ -890,9 +890,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
+        private void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
         }
 
@@ -906,7 +906,7 @@ namespace Fusee.Engine.Core
             var texHandles = new List<ITextureHandle>();
             foreach (var tex in textures)
             {
-                ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
+                ITextureHandle textureHandle = _textureManager.GetTextureHandle(tex);
                 texHandles.Add(textureHandle);
             }
             var handlesAsArray = texHandles.ToArray();
@@ -918,10 +918,21 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        private void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
+        private void SetShaderParamTexture(IShaderParam param, WritableCubeMap texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE_CUBE_MAP);
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
+        private void SetShaderParamTexture(IShaderParam param, WritableArrayTexture texture)
+        {
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.ARRAY_TEXTURE);
         }
 
         #endregion
@@ -1019,8 +1030,8 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                Diagnostics.Error("Error while compiling shader for pass ", ex, new string[] { vert, geom, frag });
-                throw new Exception("Error while compiling shader for pass ", ex);
+                Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
+                throw new Exception("Error while compiling shader ", ex);
             }
 
             _allCompiledEffects.Add(ef, compiledEffect);
@@ -1191,9 +1202,13 @@ namespace Fusee.Engine.Core
                     _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
                 }
 
+                else if (param.Value is IWritableArrayTexture)
+                {
+                    SetShaderParamTexture(param.Info.Handle, ((WritableArrayTexture)param.Value));
+                }
                 else if (param.Value is IWritableCubeMap)
                 {
-                    SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
+                    SetShaderParamTexture(param.Info.Handle, ((WritableCubeMap)param.Value));
                 }
                 else if (param.Value is IWritableTexture[])
                 {
@@ -1201,7 +1216,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (param.Value is IWritableTexture)
                 {
-                    SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
+                    SetShaderParamTexture(param.Info.Handle, ((WritableTexture)param.Value));
                 }
                 else if (param.Value is ITexture)
                 {
@@ -1212,26 +1227,31 @@ namespace Fusee.Engine.Core
             {
                 if (param.Value is ITextureBase)
                 {
-                    if (param.Value is IWritableCubeMap)
+                    if (param.Value is IWritableArrayTexture)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)param.Value);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableArrayTexture)param.Value);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.ARRAY_TEXTURE);
+                    }
+                    else if (param.Value is IWritableCubeMap)
+                    {
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableCubeMap)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE_CUBE_MAP);
                     }
                     else if (param.Value is IWritableTexture)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)param.Value);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
                     }
                     else if (param.Value is ITexture)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture((Texture)param.Value);
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
                     }
                     else if (param.Value is IWritableTexture[])
                     {
                         foreach (var tex in (WritableTexture[])param.Value)
                         {
-                            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
+                            ITextureHandle textureHandle = _textureManager.GetTextureHandle(tex);
                             _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
                         }
                     }
@@ -1406,7 +1426,7 @@ namespace Fusee.Engine.Core
                 {
                     var tex = renderTarget.RenderTextures[i];
                     if (renderTarget.RenderTextures[i] == null) continue;
-                    texHandles[i] = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);
+                    texHandles[i] = _textureManager.GetTextureHandle((WritableTexture)tex);
                 }
             }
 
@@ -1417,9 +1437,20 @@ namespace Fusee.Engine.Core
         ///  Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
+        /// <param name="layer">The layer of the array texture that is set as render target.</param>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer)
+        {
+            var texHandle = _textureManager.GetTextureHandle((WritableArrayTexture)tex);
+            _rci.SetRenderTarget(tex, layer, texHandle);
+        }
+
+        /// <summary>
+        ///  Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(IWritableTexture tex)
         {
-            var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);
+            var texHandle = _textureManager.GetTextureHandle((WritableTexture)tex);
             _rci.SetRenderTarget(tex, texHandle);
         }
 
@@ -1429,7 +1460,7 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(IWritableCubeMap tex)
         {
-            var texHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)tex);
+            var texHandle = _textureManager.GetTextureHandle((WritableCubeMap)tex);
             _rci.SetRenderTarget(tex, texHandle);
         }
 

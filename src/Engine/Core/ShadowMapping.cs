@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
         //The world space frustum planes of the light frustum.
         public List<Frustum> Frustums;
 
-        public IWritableTexture[] ShadowMaps;
+        public IWritableTexture ShadowMap;
         public float2[] ClipPlanesForLightMat;
     }
 

@@ -20,6 +20,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Int,
             Sampler2D,
             SamplerCube,
+            ArrayTexture,
             Void
         }
 
@@ -91,8 +92,10 @@ namespace Fusee.Engine.Core.ShaderShards
                 return "sampler2D";
             else if (type == typeof(WritableCubeMap))
                 return "samplerCube";
+            else if (type == typeof(WritableArrayTexture))
+                return "sampler2DArray";
             else
-                throw new ArgumentException($"Cannot parse type {type.Name} ");            
+                throw new ArgumentException($"Cannot parse type {type.Name} ");
         }
 
         public static string DecodeType(Type type)
@@ -121,6 +124,8 @@ namespace Fusee.Engine.Core.ShaderShards
                     return "samplerCube";
                 case Type.Void:
                     return "void";
+                case Type.ArrayTexture:
+                    return "sampler2DArray";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

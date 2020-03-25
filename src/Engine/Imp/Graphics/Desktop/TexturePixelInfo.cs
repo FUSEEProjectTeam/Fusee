@@ -9,5 +9,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public PixelInternalFormat InternalFormat;
         public PixelFormat Format;
         public PixelType PxType;
+        public SizedInternalFormat SizedInternalFormat;
     }
 }

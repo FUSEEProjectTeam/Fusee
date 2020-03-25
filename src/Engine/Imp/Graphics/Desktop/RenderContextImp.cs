@@ -174,6 +174,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
+            SizedInternalFormat internalSizedFormat;
 
             switch (tex.PixelFormat.ColorFormat)
             {
@@ -181,12 +182,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.Bgra;
                     pxType = PixelType.UnsignedByte;
+                    internalSizedFormat = SizedInternalFormat.Rgba8;
 
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Bgr;
                     pxType = PixelType.UnsignedByte;
+                    internalSizedFormat = SizedInternalFormat.Rgba8;
 
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
@@ -194,36 +197,42 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     pxType = PixelType.UnsignedByte;
+                    internalSizedFormat = SizedInternalFormat.R8ui;
 
                     break;
                 case ColorFormat.Depth24:
                     internalFormat = PixelInternalFormat.DepthComponent24;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
+                    internalSizedFormat = SizedInternalFormat.R8;
 
                     break;
                 case ColorFormat.Depth16:
                     internalFormat = PixelInternalFormat.DepthComponent16;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
+                    internalSizedFormat = SizedInternalFormat.R8;
 
                     break;
                 case ColorFormat.uiRgb8:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
                     pxType = PixelType.UnsignedByte;
+                    internalSizedFormat = SizedInternalFormat.Rgba8ui;
 
                     break;
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
+                    internalSizedFormat = SizedInternalFormat.Rgba32f;
 
                     break;
                 case ColorFormat.fRGB16:
                     internalFormat = PixelInternalFormat.Rgb16f;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
+                    internalSizedFormat = SizedInternalFormat.Rgba16f;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -233,15 +242,48 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType
-
+                PxType = pxType,
+                SizedInternalFormat = internalSizedFormat
             };
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableArrayTexture img)
+        {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2DArray, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
+            if (img.DoGenerateMipMaps)
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+           
+            GL.TexImage3D(TextureTarget.Texture2DArray, 0, pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
         }
 
         /// <summary>
         /// Creates a new CubeMap and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="img">A given IWritableCubeMap object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableCubeMap img)
         {
@@ -273,7 +315,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="img">A given ITexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
@@ -306,7 +348,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <param name="img">A given IWritableTexture object, containing all necessary information for the upload to the graphics card.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
@@ -612,6 +654,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case ActiveUniformType.SamplerCubeShadow:
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
+                    case ActiveUniformType.Sampler2DArray:
+                        paramInfo.Type = typeof(IWritableArrayTexture);
+                        break;
                     default:
                         throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
                 }
@@ -768,7 +813,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case TextureType.TEXTURE_CUBE_MAP:
                     GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
                     break;
+                case TextureType.ARRAY_TEXTURE:
+                    GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
+                    break;
                 default:
+                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
                     break;
             }
         }
@@ -1937,6 +1986,50 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+        }
+
+
+        /// <summary>
+        /// Renders into the given layer of the array texture.
+        /// </summary>
+        /// <param name="tex">The array texture.</param>
+        /// <param name="layer">The layer to render to.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == -1)
+            {
+                var fBuffer = GL.GenFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
+
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+                }
+                else
+                {
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.DrawBuffer(DrawBufferMode.None);
+                    GL.ReadBuffer(ReadBufferMode.None);
+                }
+            }
+            else
+            {
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+                GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+            }
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");

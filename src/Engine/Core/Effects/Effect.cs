@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core.Effects
                 }
                 else
                 {
-                    Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
+                    Diagnostics.Warn($"Trying to set unknown parameter {name}! Ignoring change....");
                 }
             }
         }

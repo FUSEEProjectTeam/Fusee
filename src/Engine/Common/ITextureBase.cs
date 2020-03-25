@@ -27,7 +27,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Exactly 6 distinct sets of 2D images, all of the same size. They act as 6 faces of a cube.
         /// </summary>
-        TEXTURE_CUBE_MAP
+        TEXTURE_CUBE_MAP,
+
+        /// <summary>
+        /// A texture with a number of layers. Each layer can be written to and read from seperatly.
+        /// </summary>
+        ARRAY_TEXTURE
     }
 
     /// <summary>

@@ -202,12 +202,12 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
-        /// <param name="shadowMaps">The cascaded shadow maps.</param>
+        /// <param name="shadowMap">The cascaded shadow maps.</param>
         /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -218,7 +218,7 @@ namespace Fusee.Engine.Core
             }
 
             effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
-            effectParams.Add(new FxParamDeclaration<WritableTexture[]> { Name = "ShadowMaps[0]", Value = shadowMaps });
+            effectParams.Add(new FxParamDeclaration<WritableArrayTexture> { Name = "ShadowMap", Value = shadowMap });
             effectParams.Add(new FxParamDeclaration<float2[]> { Name = "ClipPlanes[0]", Value = clipPlanes });
 
             return new ShaderEffect(
@@ -598,10 +598,13 @@ namespace Fusee.Engine.Core
 
             //Shadow calculation methods
             //-------------------------------------- 
-            if (lc.Type != LightType.Point)
-                frag.Append(LightingShard.ShadowCalculation());
-            else
+            if(isCascaded)
+                frag.Append(LightingShard.ShadowCalculationCascaded());
+            else if (lc.Type == LightType.Point)
                 frag.Append(LightingShard.ShadowCalculationCubeMap());
+           
+            else
+                frag.Append(LightingShard.ShadowCalculation());
 
             //Lighting methods
             //------------------------------------------

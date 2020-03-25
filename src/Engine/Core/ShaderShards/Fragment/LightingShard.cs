@@ -534,6 +534,54 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
+        /// Creates the method for calculating whether a fragment is in shadow or not, by using a shadow map (sampler2D).
+        /// </summary>
+        /// <returns></returns>
+        public static string ShadowCalculationCascaded()
+        {
+            var methodBody = new List<string>()
+            {
+                "float shadow = 0.0;",
+                "int pcfLoop = int(pcfKernelHalfSize);",
+                "float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;",
+                "pcfKernelSize *= pcfKernelSize;",
+
+                "// perform perspective divide",
+                "vec4 projCoords = fragPosLightSpace / fragPosLightSpace.w;",
+                "projCoords = projCoords * 0.5 + 0.5;",
+                "//float closestDepth = texture(shadowMap, vec3(projCoords.xy, layer)).r;",
+                "float currentDepth = projCoords.z;",
+
+                "float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias / 100.0);",
+
+                "vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));",
+
+                "for (int x = -pcfLoop; x <= pcfLoop; ++x)",
+                "{",
+                    "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
+                    "{",
+                        "float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;",
+                        "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
+                    "}",
+                "}",
+                "shadow /= pcfKernelSize;",
+
+                "return shadow;"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculation", new[]
+            {
+                GLSL.CreateVar(GLSL.Type.ArrayTexture, "shadowMap"),
+                GLSL.CreateVar(GLSL.Type.Int, "layer"),
+                GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "normal"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"),
+                GLSL.CreateVar(GLSL.Type.Float, "bias"),
+                GLSL.CreateVar(GLSL.Type.Float, "pcfKernelHalfSize")
+            }, methodBody);
+        }
+
+        /// <summary>
         /// Creates the method for calculating whether a fragment is in shadow or not, by using a shadow map (sampler2DCube).
         /// The cube map is used when calculating the shadows for a point light.
         /// </summary>
@@ -627,7 +675,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 ");
                 frag.AppendLine($"vec4 posInLightSpace1 = (LightSpaceMatrices[thisFragmentsFirstCascade] * {UniformNameDeclarations.IView}) * fragPos;");
                 frag.Append(@"
-                    float shadow1 = ShadowCalculation(ShadowMaps[thisFragmentsFirstCascade], posInLightSpace1, normal, lightDir,  light.bias, 1.0);                   
+                    float shadow1 = ShadowCalculation(ShadowMap, thisFragmentsFirstCascade, posInLightSpace1, normal, lightDir,  light.bias, 1.0);                   
 
                     //blend cascades to avoid hard cuts between them
                     if(thisFragmentsSecondCascade != -1)
@@ -636,7 +684,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     ");
                 frag.AppendLine($"vec4 posInLightSpace2 = (LightSpaceMatrices[thisFragmentsSecondCascade] * {UniformNameDeclarations.IView}) * fragPos;");
                 frag.Append(@"
-                        float shadow2 = ShadowCalculation(ShadowMaps[thisFragmentsSecondCascade], posInLightSpace2, normal, lightDir, light.bias, 1.0);    
+                        float shadow2 = ShadowCalculation(ShadowMap, thisFragmentsSecondCascade, posInLightSpace2, normal, lightDir, light.bias, 1.0);    
                         float z = ClipPlanes[thisFragmentsFirstCascade].y - ClipPlanes[thisFragmentsFirstCascade].x;
                         float percent = (100.0/z * (fragDepth - ClipPlanes[thisFragmentsFirstCascade].x));
                         float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
