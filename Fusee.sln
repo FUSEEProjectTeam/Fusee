@@ -406,7 +406,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Xene.Test", "src\Test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xirkit", "Xirkit", "{19EA8709-E494-4B70-8D9C-A1EBD899989E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Xirkit.Nicetries", "src\Tests\Xirkit\Fusee.Xirkit.Nicetries\Fusee.Xirkit.Nicetries.csproj", "{6A7D5D6A-3DF9-4036-B01B-499BD0E32FFB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Xirkit.Nicetries", "src\Tests\Xirkit\Fusee.Xirkit.Nicetries\Fusee.Xirkit.Nicetries.csproj", "{6A7D5D6A-3DF9-4036-B01B-499BD0E32FFB}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

@@ -180,7 +180,7 @@ namespace Fusee.Serialization.Test
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusCamera
             {
                 Fov = 2000,
-                ProjectionMethod = V1.ProjectionMethod.ORTHOGRAPHIC,
+                ProjectionMethod = V1.ProjectionMethod.Orthographic,
                 ClippingPlanes = new float2(0, 500)
             });
 
@@ -328,8 +328,8 @@ namespace Fusee.Serialization.Test
                 {
                     Assert.Equal(camera.Name, ((FusCamera)fusFileComp).Name);
                     Assert.Equal(camera.Layer, ((FusCamera)fusFileComp).Layer);
-                    Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == V1.ProjectionMethod.ORTHOGRAPHIC ?
-                        Engine.Common.ProjectionMethod.ORTHOGRAPHIC : Engine.Common.ProjectionMethod.PERSPECTIVE));
+                    Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == V1.ProjectionMethod.Orthographic ?
+                        Engine.Common.ProjectionMethod.Orthographic : Engine.Common.ProjectionMethod.Perspective));
                     Assert.Equal(camera.Viewport, ((FusCamera)fusFileComp).Viewport);
                     Assert.Equal(camera.Fov, ((FusCamera)fusFileComp).Fov);
                     Assert.Equal(camera.BackgroundColor, ((FusCamera)fusFileComp).BackgroundColor);
@@ -750,7 +750,7 @@ namespace Fusee.Serialization.Test
                            VisibleChildIndices = 1,
                            WasLoaded = true
                        },
-                       new Camera(Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 0, 500, 2000),
+                       new Camera(Engine.Common.ProjectionMethod.Orthographic, 0, 500, 2000),
                        ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new MaterialPBR
                        {
                            FresnelReflectance = 100,
