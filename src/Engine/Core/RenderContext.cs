@@ -952,7 +952,7 @@ namespace Fusee.Engine.Core
             if (_rci == null)
                 throw new NullReferenceException("No render context Implementation found!");
 
-            if (ef == null)            
+            if (ef == null)
                 throw new NullReferenceException("No Effect found!");
 
             // Is this shader effect already built?
@@ -975,7 +975,7 @@ namespace Fusee.Engine.Core
 
             // Is this shader effect already built?
             if (_effectManager.GetEffect(ef) != null)
-                return;            
+                return;
 
             var compiledEffect = new CompiledEffect();
             var activeUniforms = new Dictionary<string, ShaderParamInfo>();
@@ -1039,7 +1039,7 @@ namespace Fusee.Engine.Core
             // register built shader effect
             _effectManager.RegisterEffect(ef);
 
-            CreateAllEffectVariables(ef, activeUniforms);            
+            CreateAllEffectVariables(ef, activeUniforms);
         }
 
         /// <summary>
