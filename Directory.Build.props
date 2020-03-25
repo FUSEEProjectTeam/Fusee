@@ -22,7 +22,6 @@
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
     <TieredCompilation>false</TieredCompilation>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Release' ">true</PublishReadyToRun>
 
     <!--
     Suppress warnings

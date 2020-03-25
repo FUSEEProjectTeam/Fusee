@@ -273,9 +273,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int Count => ParamDecl.Count;
 
-
         #region IDisposable Support
-
         private bool disposedValue = false; // To detect redundant calls
 
         /// <summary>
@@ -294,15 +292,15 @@ namespace Fusee.Engine.Core
                 disposedValue = true;
             }
         }
-
+    
         /// <summary>
         /// Invoke deletion of shaders on GPU
         /// </summary>
-        /// <param name="disposing"></param>
+        // This code added to correctly implement the disposable pattern.
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);           
+            Dispose(true);
         }
 
         #endregion
