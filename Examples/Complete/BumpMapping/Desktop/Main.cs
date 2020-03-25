@@ -8,9 +8,9 @@ using System.IO;
 using System.Reflection;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.Bump.Desktop
+namespace Fusee.Examples.NormalMap.Desktop
 {
-    public class Bump
+    public class NormalMap
     {
         public static void Main()
         {
@@ -43,7 +43,7 @@ namespace Fusee.Examples.Bump.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.Bump();
+            var app = new Core.NormalMap();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

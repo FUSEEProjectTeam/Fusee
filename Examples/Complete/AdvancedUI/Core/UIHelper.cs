@@ -307,9 +307,9 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
         {
-            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.DiffuseColor);
+            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.AlbedoColor);
             color.w = alpha;
-            effect.SetEffectParam(UniformNameDeclarations.DiffuseColor, color);
+            effect.SetEffectParam(UniformNameDeclarations.AlbedoColor, color);
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)

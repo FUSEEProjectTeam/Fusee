@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization.V1;
 using System;
@@ -74,8 +75,8 @@ namespace Fusee.Serialization.Test
 
                 }
             });
-            
-            
+
+
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusXFormText
             {
                 Name = "XFormText",
@@ -144,7 +145,7 @@ namespace Fusee.Serialization.Test
 
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusMaterial
             {
-                Diffuse = new V1.MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
+                Albedo = new V1.MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
                 Specular = new V1.SpecularChannelContainer { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
             });
 
@@ -210,7 +211,7 @@ namespace Fusee.Serialization.Test
 
             ((FusScene)scene.Contents).Children[0].Children[0].AddComponent(new FusMaterial
             {
-                Diffuse = new V1.MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
+                Albedo = new V1.MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
                 Specular = new V1.SpecularChannelContainer { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
             });
 
@@ -251,7 +252,7 @@ namespace Fusee.Serialization.Test
 
             ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterial
             {
-                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
+                Albedo = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
                 Specular = new SpecularChannelContainer { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
             });
 
@@ -288,7 +289,7 @@ namespace Fusee.Serialization.Test
 
             ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterial
             {
-                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
+                Albedo = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
                 Specular = new SpecularChannelContainer { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
             });
 
@@ -351,26 +352,26 @@ namespace Fusee.Serialization.Test
                     Assert.Equal(light.Type.ToString(), ((FusLight)fusFileComp).Type.ToString());
                 }
 
-                if (gtComp is Material material)
+                if (gtComp is ShaderEffect fx)
                 {
-                    Assert.Equal(material.Name, ((FusMaterial)fusFileComp).Name);
-                    Assert.Equal(material.Bump.Intensity, ((FusMaterial)fusFileComp).Bump.Intensity);
-                    Assert.Equal(material.Bump.Texture, ((FusMaterial)fusFileComp).Bump.Texture);
-                    
-                    Assert.Equal(material.Diffuse.Color, ((FusMaterial)fusFileComp).Diffuse.Color);
-                    Assert.Equal(material.Diffuse.Mix, ((FusMaterial)fusFileComp).Diffuse.Mix);
-                    Assert.Equal(material.Diffuse.Texture, ((FusMaterial)fusFileComp).Diffuse.Texture);
+                    Assert.Equal(fx.Name, ((FusMaterial)fusFileComp).Name);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.NormalMapIntensity), ((FusMaterial)fusFileComp).NormalMap.Intensity);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.NormalMap), ((FusMaterial)fusFileComp).NormalMap.Texture);
 
-                    Assert.Equal(material.Specular.Color, ((FusMaterial)fusFileComp).Specular.Color);
-                    Assert.Equal(material.Specular.Mix, ((FusMaterial)fusFileComp).Specular.Mix);
-                    Assert.Equal(material.Specular.Texture, ((FusMaterial)fusFileComp).Specular.Texture);
-                    Assert.Equal(material.Specular.Shininess, ((FusMaterial)fusFileComp).Specular.Shininess);
-                    Assert.Equal(material.Specular.Intensity, ((FusMaterial)fusFileComp).Specular.Intensity);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoColor), ((FusMaterial)fusFileComp).Albedo.Color);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoMix), ((FusMaterial)fusFileComp).Albedo.Mix);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoTexture), ((FusMaterial)fusFileComp).Albedo.Texture);
 
 
-                    Assert.Equal(material.Emissive.Color, ((FusMaterial)fusFileComp).Emissive.Color);
-                    Assert.Equal(material.Emissive.Mix, ((FusMaterial)fusFileComp).Emissive.Mix);
-                    Assert.Equal(material.Emissive.Texture, ((FusMaterial)fusFileComp).Emissive.Texture);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularColor), ((FusMaterial)fusFileComp).Specular.Color);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularMix), ((FusMaterial)fusFileComp).Specular.Mix);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularTexture), ((FusMaterial)fusFileComp).Specular.Texture);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularShininess), ((FusMaterial)fusFileComp).Specular.Shininess);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularIntensity), ((FusMaterial)fusFileComp).Specular.Intensity);
+
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveColor), ((FusMaterial)fusFileComp).Emissive.Color);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveMix), ((FusMaterial)fusFileComp).Emissive.Mix);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveTexture), ((FusMaterial)fusFileComp).Emissive.Texture);
                 }
 
                 if (gtComp is Mesh mesh)
@@ -413,7 +414,7 @@ namespace Fusee.Serialization.Test
 
                     for (var k = 0; k < weight.WeightMap.Count; k++)
                     {
-                        for(var l = 0; l < weight.WeightMap[k].VertexWeights.Count; l++)
+                        for (var l = 0; l < weight.WeightMap[k].VertexWeights.Count; l++)
                         {
                             Assert.Equal(weight.WeightMap[k].VertexWeights[l].JointIndex, ((FusWeight)fusFileComp).WeightMap[k].VertexWeights[l].JointIndex);
                             Assert.Equal(weight.WeightMap[k].VertexWeights[l].Weight, ((FusWeight)fusFileComp).WeightMap[k].VertexWeights[l].Weight);
@@ -422,7 +423,7 @@ namespace Fusee.Serialization.Test
                     }
                 }
 
-                if(gtComp is RectTransform rt)
+                if (gtComp is RectTransform rt)
                 {
                     Assert.Equal(rt.Name, ((FusRectTransform)fusFileComp).Name);
                     Assert.Equal(rt.Offsets.Min, ((FusRectTransform)fusFileComp).Offsets.Min);
@@ -431,12 +432,12 @@ namespace Fusee.Serialization.Test
                     Assert.Equal(rt.Anchors.Max, ((FusRectTransform)fusFileComp).Anchors.Max);
                 }
 
-                if(gtComp is XForm xf)
+                if (gtComp is XForm xf)
                 {
                     Assert.Equal(xf.Name, ((FusXForm)fusFileComp).Name);
                 }
 
-                if(gtComp is XFormText xft)
+                if (gtComp is XFormText xft)
                 {
                     Assert.Equal(xft.Name, ((FusXFormText)fusFileComp).Name);
                     Assert.Equal(xft.Height, ((FusXFormText)fusFileComp).Height);
@@ -508,26 +509,27 @@ namespace Fusee.Serialization.Test
                     Assert.Equal(light.Type.ToString(), ((Light)sceneFileComp).Type.ToString());
                 }
 
-                if (gtComp is Material material)
+                if (gtComp is ShaderEffect fx)
                 {
-                    Assert.Equal(material.Name, ((Material)sceneFileComp).Name);
-                    Assert.Equal(material.Bump.Intensity, ((Material)sceneFileComp).Bump.Intensity);
-                    Assert.Equal(material.Bump.Texture, ((Material)sceneFileComp).Bump.Texture);
+                    Assert.Equal(fx.Name, ((ShaderEffect)sceneFileComp).Name);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.NormalMapIntensity), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.NormalMapIntensity));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.NormalMap), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.NormalMap));
 
-                    Assert.Equal(material.Diffuse.Color, ((Material)sceneFileComp).Diffuse.Color);
-                    Assert.Equal(material.Diffuse.Mix, ((Material)sceneFileComp).Diffuse.Mix);
-                    Assert.Equal(material.Diffuse.Texture, ((Material)sceneFileComp).Diffuse.Texture);
-
-                    Assert.Equal(material.Specular.Color, ((Material)sceneFileComp).Specular.Color);
-                    Assert.Equal(material.Specular.Mix, ((Material)sceneFileComp).Specular.Mix);
-                    Assert.Equal(material.Specular.Texture, ((Material)sceneFileComp).Specular.Texture);
-                    Assert.Equal(material.Specular.Shininess, ((Material)sceneFileComp).Specular.Shininess);
-                    Assert.Equal(material.Specular.Intensity, ((Material)sceneFileComp).Specular.Intensity);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoColor), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.AlbedoColor));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoMix), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.AlbedoMix));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoTexture), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.AlbedoTexture));
 
 
-                    Assert.Equal(material.Emissive.Color, ((Material)sceneFileComp).Emissive.Color);
-                    Assert.Equal(material.Emissive.Mix, ((Material)sceneFileComp).Emissive.Mix);
-                    Assert.Equal(material.Emissive.Texture, ((Material)sceneFileComp).Emissive.Texture);
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularColor), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.SpecularColor));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularMix), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.SpecularMix));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularTexture), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.SpecularTexture));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularShininess), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.SpecularShininess));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularIntensity), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.SpecularIntensity));
+
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveColor), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.EmissiveColor));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveMix), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.EmissiveMix));
+                    Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveTexture), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.EmissiveTexture));
+
                 }
 
                 if (gtComp is Mesh mesh)
@@ -612,7 +614,7 @@ namespace Fusee.Serialization.Test
                 }
             }
         }
-        
+
         private static void FlattenScene(List<Xene.IComponent> components, Xene.INode scene)
         {
             components.AddRange(scene.EnumComponents.ToList());
@@ -645,7 +647,7 @@ namespace Fusee.Serialization.Test
                     Components = new List<SceneComponent>
                     {
                        new CanvasTransform(Engine.Common.CanvasRenderMode.SCREEN)
-                       {                           
+                       {
                            Name = "CanvasTransform",
                            Scale = float2.One * 2,
                            ScreenSpaceSize = new MinMaxRect
@@ -717,11 +719,12 @@ namespace Fusee.Serialization.Test
                                }
                            }
                        },
-                       ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new Material
-                       {
-                            Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Red) },
-                            Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                       }),
+                       ShaderCodeBuilder.MakeShaderEffectProto(
+                           albedoColor: ColorUint.Tofloat4(ColorUint.Red),
+                           specularColor: ColorUint.Tofloat4(ColorUint.White),
+                           shininess: 4.0f,
+                           specularIntensity: 1.0f),
+
                        new Light
                        {
                            Name = "MyLight",
@@ -751,11 +754,14 @@ namespace Fusee.Serialization.Test
                            WasLoaded = true
                        },
                        new Camera(Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 0, 500, 2000),
-                       ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new MaterialPBR
+                       ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new Engine.Core.ShaderShards.ShaderEffectProps
                        {
-                           FresnelReflectance = 100,
-                           DiffuseFraction = 200,
-                           RoughnessValue = 1
+                           MatValues =
+                           {
+                                FresnelReflectance = 100,
+                                DiffuseFraction = 200,
+                                RoughnessValue = 1
+                           }
                        }),
                        new Cube()
                     },
@@ -767,11 +773,11 @@ namespace Fusee.Serialization.Test
                             Components = new List<SceneComponent>
                             {
                                 new Transform {Translation=new float3(0, 60, 0),  Scale = new float3(20, 100, 20) },
-                                 ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new Material
-                                {
-                                    Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Green) },
-                                    Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                }),
+                                ShaderCodeBuilder.MakeShaderEffectProto(
+                                    albedoColor: ColorUint.Tofloat4(ColorUint.Green),
+                                    specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                    specularIntensity: 1.0f,
+                                    shininess: 4.0f),
                                 new Cube()
                             },
                             Children = new ChildList
@@ -795,11 +801,11 @@ namespace Fusee.Serialization.Test
                                             Components = new List<SceneComponent>
                                             {
                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
-                                                ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new Material
-                                                {
-                                                    Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
-                                                    Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                }),
+                                                ShaderCodeBuilder.MakeShaderEffectProto(
+                                                    albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
+                                                    specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                    specularIntensity: 1.0f,
+                                                    shininess: 4.0f),
                                                 new Cube()
                                             },
                                             Children = new ChildList
@@ -819,11 +825,11 @@ namespace Fusee.Serialization.Test
                                                             Components = new List<SceneComponent>
                                                             {
                                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
-                                                                ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(new Material
-                                                                {
-                                                                    Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Blue) },
-                                                                    Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                                }),
+                                                                ShaderCodeBuilder.MakeShaderEffectProto(
+                                                                                    albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
+                                                                                    specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                                                    specularIntensity: 1.0f,
+                                                                                    shininess: 4.0f),
                                                                 new Cube()
                                                             }
                                                         },

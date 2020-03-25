@@ -139,7 +139,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Bone.Android
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BumpMapping", "BumpMapping", "{F3B54D27-75AC-40B3-8E6E-F960D13D94BC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Bump.Core", "Examples\Complete\BumpMapping\Core\Fusee.Examples.Bump.Core.csproj", "{B5764987-B4B2-4C22-84EA-7C8F0FF4343D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.NormalMap.Core", "Examples\Complete\BumpMapping\Core\Fusee.Examples.NormalMap.Core.csproj", "{B5764987-B4B2-4C22-84EA-7C8F0FF4343D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D} = {7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}
 		{1228EB3F-8BCC-453F-8A2E-D9246495A118} = {1228EB3F-8BCC-453F-8A2E-D9246495A118}
@@ -151,13 +151,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Bump.Core", 
 		{10DA02FC-109F-4D71-864A-9F5B1E9A0D70} = {10DA02FC-109F-4D71-864A-9F5B1E9A0D70}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Bump.Desktop", "Examples\Complete\BumpMapping\Desktop\Fusee.Examples.Bump.Desktop.csproj", "{6385E6DB-0AD5-4DCF-BDE7-279B093AFA1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.NormalMap.Desktop", "Examples\Complete\BumpMapping\Desktop\Fusee.Examples.NormalMap.Desktop.csproj", "{6385E6DB-0AD5-4DCF-BDE7-279B093AFA1D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C} = {4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}
 		{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6} = {F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Bump.Android", "Examples\Complete\BumpMapping\Android\Fusee.Examples.Bump.Android.csproj", "{A3612BAA-F7FD-4B99-A367-7B589F9263EA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.NormalMap.Android", "Examples\Complete\BumpMapping\Android\Fusee.Examples.NormalMap.Android.csproj", "{A3612BAA-F7FD-4B99-A367-7B589F9263EA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0} = {19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}
 		{B3CE4F39-FCC4-4388-8130-9D0B9D65D034} = {B3CE4F39-FCC4-4388-8130-9D0B9D65D034}
@@ -408,6 +408,7 @@ Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 4
+		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

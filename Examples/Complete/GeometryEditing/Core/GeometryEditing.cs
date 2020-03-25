@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -115,10 +116,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<Material>().Diffuse.Color = _defaultColor;
+                    _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<Material>().Diffuse.Color = _selectedColor;
+                _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _selectedColor);
             }
         }
 
@@ -394,14 +395,10 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var materialComponent = new Material
-            {
-                Diffuse = new MatChannel(),
-                Specular = new SpecularChannel(),
-            };
-            materialComponent.Diffuse.Color = _defaultColor;
+            var shaderEffect = ShaderCodeBuilder.Default;           
+            shaderEffect.SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(materialComponent);
+            sceneNodeContainer.Components.Add(shaderEffect);
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);

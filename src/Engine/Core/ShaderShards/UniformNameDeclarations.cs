@@ -230,7 +230,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public const string DiffuseColor = "DiffuseColor";
+        public const string AlbedoColor = "AlbedoColor";
 
         /// <summary>
         /// The var name for the uniform SpecularColor variable within the pixel shaders.
@@ -245,7 +245,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public const string DiffuseTexture = "DiffuseTexture";
+        public const string AlbedoTexture = "AlbedoTexture";
 
         /// <summary>
         /// The var name for the uniform SpecularTexture variable within the pixel shaders.
@@ -260,12 +260,12 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpTexture variable within the pixel shaders.
         /// </summary>
-        public const string BumpTexture = "BumpTexture";
+        public const string NormalMap = "NormalMap";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
         /// </summary>
-        public const string DiffuseMix = "DiffuseMix";
+        public const string AlbedoMix = "DiffuseMix";
 
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.
@@ -305,7 +305,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public const string BumpIntensity = "BumpIntensityName";
+        public const string NormalMapIntensity = "NormalMapIntensityName";
 
         /// <summary>
         /// List of all possible render texture names.

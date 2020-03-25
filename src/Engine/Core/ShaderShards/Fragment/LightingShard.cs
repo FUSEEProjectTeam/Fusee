@@ -56,13 +56,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             switch (effectProps.MatType)
             {
                 case MaterialType.Standard:
-                    if (effectProps.MatProbs.HasDiffuse)
+                    if (effectProps.MatProbs.HasAlbedo)
                         lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(SpecularComponent());
                     break;
                 case MaterialType.MaterialPbr:
-                    if (effectProps.MatProbs.HasDiffuse)
+                    if (effectProps.MatProbs.HasAlbedo)
                         lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(PbrSpecularComponent());
@@ -239,7 +239,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensity}, {UniformNameDeclarations.BumpIntensity}, 1.0);",
+                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.NormalMapIntensity}, {UniformNameDeclarations.NormalMapIntensity}, 1.0);",
                 $"N = (N.x * vec3({VaryingNameDeclarations.Tangent})) + (N.y * {VaryingNameDeclarations.Bitangent}) + (N.z * {VaryingNameDeclarations.Normal});",
                 "N = normalize(N);"
             };
@@ -269,18 +269,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             };
 
             var applyLightParams = new List<string>();
-            applyLightParams.AddRange(effectProps.MatProbs.HasBump ? bumpNormals : normals);
+            applyLightParams.AddRange(effectProps.MatProbs.HasNormalMap ? bumpNormals : normals);
             applyLightParams.AddRange(fragToLightDirAndLightInit);
 
-            if (effectProps.MatProbs.HasDiffuse)
+            if (effectProps.MatProbs.HasAlbedo)
             {
                 //TODO: Test alpha blending between diffuse and texture
-                if (effectProps.MatProbs.HasDiffuseTexture)
+                if (effectProps.MatProbs.HasAlbedoTexture)
                     applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColor}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
+                        $"vec4 blendedCol = mix({UniformNameDeclarations.AlbedoColor}, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.AlbedoMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
+                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.AlbedoColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
             }
 
             if (effectProps.MatProbs.HasSpecular)

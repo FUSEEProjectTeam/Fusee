@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -131,7 +132,7 @@ namespace Fusee.Examples.Picking.Core
             // Check
             if (_pick)
             {
-                
+
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
                 RC.View = mtxCam * mtxRot;
@@ -143,16 +144,16 @@ namespace Fusee.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-                      
+
                         var ef = _currentPick.Node.GetComponent<ShaderEffect>();
-                        ef.SetEffectParam("DiffuseColor", _oldColor);
+                        ef.SetEffectParam(UniformNameDeclarations.AlbedoColor, _oldColor);
                     }
 
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffect>();
-                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed
-                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
+                        _oldColor = (float4)ef.GetEffectParam(UniformNameDeclarations.AlbedoColor); // cast needed
+                        ef.SetEffectParam(UniformNameDeclarations.AlbedoColor, ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
@@ -203,7 +204,7 @@ namespace Fusee.Examples.Picking.Core
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -252,12 +253,12 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)
@@ -283,11 +284,12 @@ namespace Fusee.Examples.Picking.Core
                         Components = new List<SceneComponent>
                         {
                             new Transform { Scale = float3.One },
-                            ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-                            {
-                                Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Red) },
-                                Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                            }),
+                            ShaderCodeBuilder.MakeShaderEffect(
+                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Red),
+                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                        shininess: 4.0f,
+                                                        specularIntensity: 1.0f
+                                                        ),
                             CreateCuboid(new float3(100, 20, 100))
                         },
                         Children = new ChildList
@@ -298,11 +300,12 @@ namespace Fusee.Examples.Picking.Core
                                 Components = new List<SceneComponent>
                                 {
                                     new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-                                    {
-                                        Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Green) },
-                                        Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                    }),
+                                     ShaderCodeBuilder.MakeShaderEffect(
+                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Green),
+                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                        shininess: 4.0f,
+                                                        specularIntensity: 1.0f
+                                                        ),
                                     CreateCuboid(new float3(20, 100, 20))
                                 },
                                 Children = new ChildList
@@ -322,11 +325,12 @@ namespace Fusee.Examples.Picking.Core
                                                 Components = new List<SceneComponent>
                                                 {
                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-                                                    {
-                                                        Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
-                                                        Specular = new SpecularChannel {Color =ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                    }),
+                                                    ShaderCodeBuilder.MakeShaderEffect(
+                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
+                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                        shininess: 4.0f,
+                                                        specularIntensity: 1.0f
+                                                        ),
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
                                                 Children = new ChildList
@@ -346,11 +350,12 @@ namespace Fusee.Examples.Picking.Core
                                                                 Components = new List<SceneComponent>
                                                                 {
                                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-                                                                    {
-                                                                        Diffuse = new MatChannel { Color = ColorUint.Tofloat4(ColorUint.Blue) },
-                                                                        Specular = new SpecularChannel {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                                    }),
+                                                                     ShaderCodeBuilder.MakeShaderEffect(
+                                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
+                                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                                        shininess: 4.0f,
+                                                                        specularIntensity: 1.0f
+                                                                        ),
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }
                                                             },

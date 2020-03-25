@@ -15,7 +15,7 @@ using System.IO;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.Bump.Android
+namespace Fusee.Examples.NormalMap.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
@@ -73,7 +73,7 @@ namespace Fusee.Examples.Bump.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Bump();
+                var app = new Core.NormalMap();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });

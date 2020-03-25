@@ -85,8 +85,8 @@ namespace Fusee.Engine.Core
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
-        private readonly Dictionary<Material, ShaderEffect> _matMap;
-        private readonly Dictionary<MaterialPBR, ShaderEffect> _pbrComponent;
+        private readonly Dictionary<FusMaterial, ShaderEffect> _matMap;
+        private readonly Dictionary<FusMaterialPBR, ShaderEffect> _pbrComponent;
         private readonly Stack<SceneNode> _boneContainers;
 
         /// <summary>
@@ -102,15 +102,15 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new Scene();
 
-            _matMap = new Dictionary<Material, ShaderEffect>();
-            _pbrComponent = new Dictionary<MaterialPBR, ShaderEffect>();
+            _matMap = new Dictionary<FusMaterial, ShaderEffect>();
+            _pbrComponent = new Dictionary<FusMaterialPBR, ShaderEffect>();
             _boneContainers = new Stack<SceneNode>();
         }
 
         internal Scene Convert(FusScene sc)
         {
             _fusScene = sc;
-            Traverse(sc.Children);          
+            Traverse(sc.Children);
             return _convertedScene;
         }
 
@@ -347,7 +347,7 @@ namespace Fusee.Engine.Core
 
             var currentNodeEffect = _currentNode.GetComponent<ShaderEffect>();
 
-            if (currentNodeEffect?.GetEffectParam(UniformNameDeclarations.BumpTexture) != null)
+            if (currentNodeEffect?.GetEffectParam(UniformNameDeclarations.NormalMap) != null)
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -477,106 +477,118 @@ namespace Fusee.Engine.Core
 
         private ShaderEffect LookupMaterial(FusMaterial m)
         {
-            var mc = new Material
+            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+
+            var vals = new MaterialValues();
+
+            if (m.HasNormalMap)
             {
-                Name = m.Name ?? ""
-            };
-            if (m.HasBump)
-            {
-                mc.Bump = new BumpChannel
-                {
-                    Intensity = m.HasBump ? m.Bump.Intensity : 0,
-                    Texture = m.Emissive.Texture ?? ""
-                };
+                vals.NormalMap = m.NormalMap.Texture ?? null;
+                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
             }
-            if (m.HasDiffuse)
+            if (m.HasAlbedo)
             {
-                mc.Diffuse = new MatChannel
-                {
-                    Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture ?? "",
-                    Mix = m.Diffuse.Mix
-                };
+                vals.AlbedoColor = m.Albedo.Color;
+                vals.AlbedoMix = m.Albedo.Mix;
+                vals.AlbedoTexture = m.Albedo.Texture ?? null;
             }
             if (m.HasEmissive)
             {
-                mc.Emissive = new MatChannel
-                {
-                    Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture ?? "",
-                    Mix = m.Emissive.Mix
-                };
+                vals.EmissiveColor = m.Albedo.Color;
+                vals.EmissiveMix = m.Albedo.Mix;
+                vals.EmissiveTexture = m.Albedo.Texture ?? null;
             }
+            
             if (m.HasSpecular)
             {
-                mc.Specular = new SpecularChannel
-                {
-                    Color = m.Specular.Color,
-                    Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture ?? "",
-                    Intensity = m.Specular.Intensity,
-                    Shininess = m.Specular.Shininess
-                };
+                vals.SpecularColor = m.Specular.Color;
+                vals.SpecularMix = m.Specular.Mix;
+                vals.SpecularTexture = m.Specular.Texture ?? null;
+                vals.SpecularIntensity = m.Specular.Intensity;
+                vals.SpecularShininess = m.Specular.Shininess;
             }
 
-            if (_matMap.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
-            _matMap.Add(mc, mat);
-            return mat;
+            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+                new ShaderEffectProps
+                {
+                    MatProbs =
+                    {
+                        HasAlbedo = m.HasAlbedo,
+                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
+                        HasSpecular = m.HasSpecular,
+                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
+                        HasEmissive = m.HasEmissive,
+                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
+                        HasNormalMap = m.HasNormalMap
+                    },
+                    MatType = MaterialType.Standard,
+                    MatValues = vals                    
+                });
+
+            sfx.Name = m.Name ?? ""; 
+
+            _matMap.Add(m, sfx);
+            return sfx;
         }
 
         private ShaderEffect LookupMaterial(FusMaterialPBR m)
         {
-            var mc = new MaterialPBR
+            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+
+            var vals = new MaterialValues();
+
+            if (m.HasNormalMap)
             {
-                Name = m.Name ?? ""
-            };
-            if (m.HasBump)
-            {
-                mc.Bump = new BumpChannel
-                {
-                    Intensity = m.HasBump ? m.Bump.Intensity : 0,
-                    Texture = m.Emissive.Texture ?? ""
-                };
+                vals.NormalMap = m.NormalMap.Texture ?? null;
+                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
             }
-            if (m.HasDiffuse)
+            if (m.HasAlbedo)
             {
-                mc.Diffuse = new MatChannel
-                {
-                    Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture ?? "",
-                    Mix = m.Diffuse.Mix
-                };
+                vals.AlbedoColor = m.Albedo.Color;
+                vals.AlbedoMix = m.Albedo.Mix;
+                vals.AlbedoTexture = m.Albedo.Texture ?? null;
             }
             if (m.HasEmissive)
             {
-                mc.Emissive = new MatChannel
-                {
-                    Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture ?? "",
-                    Mix = m.Emissive.Mix
-                };
+                vals.EmissiveColor = m.Albedo.Color;
+                vals.EmissiveMix = m.Albedo.Mix;
+                vals.EmissiveTexture = m.Albedo.Texture ?? null;
             }
+
             if (m.HasSpecular)
             {
-                mc.Specular = new SpecularChannel
-                {
-                    Color = m.Specular.Color,
-                    Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture ?? "",
-                    Intensity = m.Specular.Intensity,
-                    Shininess = m.Specular.Shininess
-                };
+                vals.SpecularColor = m.Specular.Color;
+                vals.SpecularMix = m.Specular.Mix;
+                vals.SpecularTexture = m.Specular.Texture ?? null;
+                vals.SpecularIntensity = m.Specular.Intensity;
+                vals.SpecularShininess = m.Specular.Shininess;
             }
 
-            mc.DiffuseFraction = m.DiffuseFraction;
-            mc.FresnelReflectance = m.FresnelReflectance;
-            mc.RoughnessValue = m.RoughnessValue;
+            vals.DiffuseFraction = m.DiffuseFraction;
+            vals.FresnelReflectance = m.FresnelReflectance;
+            vals.RoughnessValue = m.RoughnessValue;
+   
+            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+                new ShaderEffectProps
+                {
+                    MatProbs =
+                    {
+                        HasAlbedo = m.HasAlbedo,
+                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
+                        HasSpecular = m.HasSpecular,
+                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
+                        HasEmissive = m.HasEmissive,
+                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
+                        HasNormalMap = m.HasNormalMap
+                    },
+                    MatType = MaterialType.MaterialPbr,
+                    MatValues = vals
+                });
 
-            if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
-            _pbrComponent.Add(mc, mat);
-            return mat;
+            sfx.Name = m.Name ?? "";
+
+            _matMap.Add(m, sfx);
+            return sfx;
         }
 
         #endregion
@@ -644,7 +656,7 @@ namespace Fusee.Engine.Core
         ///</summary>
         [VisitMethod]
         public void ConvAnimation(Common.Animation a)
-        {        
+        {
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }
 
@@ -654,7 +666,7 @@ namespace Fusee.Engine.Core
         ///</summary>
         [VisitMethod]
         public void ConvXForm(XForm xf)
-        {          
+        {
             _currentNode.AddComponent(new FusXForm
             {
                 Name = xf.Name
@@ -744,14 +756,14 @@ namespace Fusee.Engine.Core
 
             var mat = new FusMaterial();
 
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.DiffuseColor))
-                mat.Diffuse = new MatChannelContainer();
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.AlbedoColor))
+                mat.Albedo = new MatChannelContainer();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
                 mat.Specular = new SpecularChannelContainer();
 
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.BumpTexture))
-                mat.Bump = new BumpChannelContainer();
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
+                mat.NormalMap = new NormapMapChannelContainer();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
                 mat.Emissive = new MatChannelContainer();
@@ -760,14 +772,14 @@ namespace Fusee.Engine.Core
             {
                 switch (decl.Key)
                 {
-                    case UniformNameDeclarations.DiffuseColor:
-                        mat.Diffuse.Color = (float4)decl.Value;
+                    case UniformNameDeclarations.AlbedoColor:
+                        mat.Albedo.Color = (float4)decl.Value;
                         break;
-                    case UniformNameDeclarations.DiffuseTexture:
-                        mat.Diffuse.Texture = (string)decl.Value;
+                    case UniformNameDeclarations.AlbedoTexture:
+                        mat.Albedo.Texture = (string)decl.Value;
                         break;
-                    case UniformNameDeclarations.DiffuseMix:
-                        mat.Diffuse.Mix = (float)decl.Value;
+                    case UniformNameDeclarations.AlbedoMix:
+                        mat.Albedo.Mix = (float)decl.Value;
                         break;
 
 
@@ -798,11 +810,11 @@ namespace Fusee.Engine.Core
                         mat.Specular.Intensity = (float)decl.Value;
                         break;
 
-                    case UniformNameDeclarations.BumpTexture:
-                        mat.Bump.Texture = (string)decl.Value;
+                    case UniformNameDeclarations.NormalMap:
+                        mat.NormalMap.Texture = (string)decl.Value;
                         break;
-                    case UniformNameDeclarations.BumpIntensity:
-                        mat.Bump.Intensity = (float)decl.Value;
+                    case UniformNameDeclarations.NormalMapIntensity:
+                        mat.NormalMap.Intensity = (float)decl.Value;
                         break;
                 }
             }

@@ -78,13 +78,7 @@ namespace Fusee.Examples.Bone.Core
                                     },
                                     new Engine.Common.Bone(),
                                     new Weight(),
-                                    new Engine.Common.Material
-                                    {
-                                        Diffuse = new MatChannel
-                                        {
-                                            Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
-                                        }
-                                    },
+                                    ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
                                     CreateCuboid(float3.One)
                                 }
                             }

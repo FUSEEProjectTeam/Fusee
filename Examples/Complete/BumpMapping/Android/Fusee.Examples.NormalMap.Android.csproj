@@ -95,9 +95,9 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Fusee.Examples.Bump.Core.csproj">
+    <ProjectReference Include="..\Core\Fusee.Examples.NormalMap.Core.csproj">
       <Project>{b5764987-b4b2-4c22-84ea-7c8f0ff4343d}</Project>
-      <Name>Fusee.Examples.Bump.Core</Name>
+      <Name>Fusee.Examples.NormalMap.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->

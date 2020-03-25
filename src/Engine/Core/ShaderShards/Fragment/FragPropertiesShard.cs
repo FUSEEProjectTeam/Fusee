@@ -122,23 +122,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 }
             }
 
-            if (effectProps.MatProbs.HasDiffuse)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColor));
+            if (effectProps.MatProbs.HasAlbedo)
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.AlbedoColor));
 
             if (effectProps.MatProbs.HasEmissive)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColor));
 
             //Textures
-            if (effectProps.MatProbs.HasBump)
+            if (effectProps.MatProbs.HasNormalMap)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensity));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.NormalMap));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.NormalMapIntensity));
             }
 
-            if (effectProps.MatProbs.HasDiffuseTexture)
+            if (effectProps.MatProbs.HasAlbedoTexture)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMix));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.AlbedoTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.AlbedoMix));
             }
 
             if (effectProps.MatProbs.HasEmissiveTexture)

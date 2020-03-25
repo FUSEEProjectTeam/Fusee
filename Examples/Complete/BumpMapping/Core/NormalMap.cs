@@ -6,10 +6,10 @@ using Fusee.Serialization;
 using System;
 using System.Threading.Tasks;
 
-namespace Fusee.Examples.Bump.Core
+namespace Fusee.Examples.NormalMap.Core
 {
-    [FuseeApplication(Name = "FUSEE Bump Mapping Example", Description = "Quick bump example")]
-    public class Bump : RenderCanvas
+    [FuseeApplication(Name = "FUSEE Normal Mapping Example", Description = "Quick normal map example")]
+    public class NormalMap : RenderCanvas
     {
         public string ModelFile = "FUSEERocket.fus";
 

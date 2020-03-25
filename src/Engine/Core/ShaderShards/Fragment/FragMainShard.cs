@@ -16,11 +16,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <returns></returns>
         public static string ForwardLighting(ShaderEffectProps effectProps)
         {
-            string fragColorAlpha = effectProps.MatProbs.HasDiffuse ? $"{UniformNameDeclarations.DiffuseColor}.w" : "1.0";
+            string fragColorAlpha = effectProps.MatProbs.HasAlbedo ? $"{UniformNameDeclarations.AlbedoColor}.w" : "1.0";
 
             var fragMainBody = new List<string>
             {
-                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.DiffuseColor});", //ambient component
+                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.AlbedoColor});", //ambient component
                 $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType);",
                 "}",
 
-                 effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.DiffuseColor}.w);",
+                 effectProps.MatProbs.HasAlbedoTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.AlbedoColor}.w);",
             };
 
             return ShaderShardUtil.MainMethod(fragMainBody);
@@ -64,10 +64,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         fragMainBody.Add($"{texName} = vec4({VaryingNameDeclarations.Position});");
                         break;
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
-                        if (effectProps.MatProbs.HasDiffuseTexture)
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColor}.xyz, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
+                        if (effectProps.MatProbs.HasAlbedoTexture)
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.AlbedoColor}.xyz, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.AlbedoMix}), 1.0);");
                         else
-                            fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColor}.xyz, 1.0);");
+                            fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.AlbedoColor}.xyz, 1.0);");
                         break;
                     case (int)RenderTargetTextureTypes.G_NORMAL:
                         fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
