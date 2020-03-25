@@ -176,12 +176,36 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        private TextureComponentCount GetTexTureComponentCount(ITextureBase tex)
+        {
+            switch (tex.PixelFormat.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    return TextureComponentCount.Rgba;
+                case ColorFormat.RGB:
+                    return TextureComponentCount.Rgb;
+                case ColorFormat.Intensity:
+                    return TextureComponentCount.Alpha;
+                case ColorFormat.uiRgb8:
+                    return TextureComponentCount.Rgb8ui;
+                case ColorFormat.fRGB32:
+                    return TextureComponentCount.Rgb32f;
+                case ColorFormat.fRGB16:
+                    return TextureComponentCount.Rgb16f;
+                case ColorFormat.Depth16:
+                    return TextureComponentCount.DepthComponent16;
+                case ColorFormat.Depth24:
+                    return TextureComponentCount.DepthComponent24;
+                default:
+                    throw new ArgumentException("Unsupported color format!");
+            }
+        }
+
         /*TODO: OpenTK 30ES does not seem to support other PixelInternalFormats other than Rgba, Rgb, Alpha, Luminance,
         even though OpenGL 30es seems to do so (https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexImage2D.xhtml).
         After some research it seems the OpenTK 30es branch suffers due to the development of OpenTK 40es....
         Furthermore it doesn't seem possible to attach a depth texture to a framebuffer (DEPTH_ATTACHMENT), therefore we need to render depth into a COLOR_ATTACHMENT and create a Depth render buffer.
         This is bound to create a overhead.*/
-
         private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
         {
             PixelInternalFormat internalFormat;
@@ -255,6 +279,39 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 InternalFormat = internalFormat,
                 PxType = pxType
             };
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableArrayTexture img)
+        {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2DArray, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
+            if (img.DoGenerateMipMaps)
+                GL.GenerateMipmap(TextureTarget.Texture2DArray);
+            
+            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
         }
 
         /// <summary>
@@ -610,9 +667,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     case ActiveUniformType.SamplerCubeShadow:
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
-
+                    case ActiveUniformType.Sampler2DArray:
+                        paramInfo.Type = typeof(IWritableArrayTexture);
+                        break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
                 }
 
                 paramList.Add(paramInfo);
@@ -758,8 +817,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 case TextureType.TEXTURE_CUBE_MAP:
                     GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
                     break;
-                default:
+                case TextureType.ARRAY_TEXTURE:
+                    GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
+                default:
+                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
         }
 
@@ -1923,6 +1985,48 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
             else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+        }
+
+        /// <summary>
+        /// Renders into the given layer of the array texture.
+        /// </summary>
+        /// <param name="tex">The array texture.</param>
+        /// <param name="layer">The layer to render to.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == -1)
+            {
+                GL.GenFramebuffers(1, out int fBuffer);
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
+
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
+                }
+                else
+                {
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.None });
+                    GL.ReadBuffer(ReadBufferMode.None);
+                }
+            }
+            else
+            {
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+                GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+            }
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");

@@ -174,7 +174,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
-            SizedInternalFormat internalSizedFormat;
 
             switch (tex.PixelFormat.ColorFormat)
             {
@@ -182,14 +181,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.Bgra;
                     pxType = PixelType.UnsignedByte;
-                    internalSizedFormat = SizedInternalFormat.Rgba8;
 
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Bgr;
                     pxType = PixelType.UnsignedByte;
-                    internalSizedFormat = SizedInternalFormat.Rgba8;
 
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
@@ -197,42 +194,36 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     pxType = PixelType.UnsignedByte;
-                    internalSizedFormat = SizedInternalFormat.R8ui;
 
                     break;
                 case ColorFormat.Depth24:
                     internalFormat = PixelInternalFormat.DepthComponent24;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
-                    internalSizedFormat = SizedInternalFormat.R8;
 
                     break;
                 case ColorFormat.Depth16:
                     internalFormat = PixelInternalFormat.DepthComponent16;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
-                    internalSizedFormat = SizedInternalFormat.R8;
 
                     break;
                 case ColorFormat.uiRgb8:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
                     pxType = PixelType.UnsignedByte;
-                    internalSizedFormat = SizedInternalFormat.Rgba8ui;
 
                     break;
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
-                    internalSizedFormat = SizedInternalFormat.Rgba32f;
 
                     break;
                 case ColorFormat.fRGB16:
                     internalFormat = PixelInternalFormat.Rgb16f;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
-                    internalSizedFormat = SizedInternalFormat.Rgba16f;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -242,8 +233,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 Format = format,
                 InternalFormat = internalFormat,
-                PxType = pxType,
-                SizedInternalFormat = internalSizedFormat
+                PxType = pxType
             };
         }
 
@@ -818,7 +808,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 default:
                     throw new ArgumentException($"Unknown texture target: {texTarget}.");
-                    break;
             }
         }
 
@@ -1994,7 +1983,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
-
         /// <summary>
         /// Renders into the given layer of the array texture.
         /// </summary>
@@ -2033,7 +2021,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }

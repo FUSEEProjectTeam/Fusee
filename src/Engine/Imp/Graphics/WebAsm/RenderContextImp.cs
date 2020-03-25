@@ -132,7 +132,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     return (int)CLAMP_TO_EDGE;
                 case TextureWrapMode.CLAMP_TO_BORDER:
                     {
-#warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. CLAMP_TO_EDGE is set instead.
+                        Diagnostics.Warn(" TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. CLAMP_TO_EDGE is set instead.");
                         return (int)CLAMP_TO_EDGE;
                     }
             }
@@ -237,6 +237,39 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableArrayTexture img)
+        {
+            WebGLTexture id = gl2.CreateTexture();
+            gl2.BindTexture(TEXTURE_2D_ARRAY, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
+            if (img.DoGenerateMipMaps)
+                gl2.GenerateMipmap(TEXTURE_2D_ARRAY);
+
+            gl2.TexImage3D(TEXTURE_2D_ARRAY, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_MAG_FILTER, magFilter);
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_WRAP_S, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
+        }
+
+        /// <summary>
         /// Creates a new CubeMap and binds it to the shader.
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
@@ -258,11 +291,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
             }
 
-            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MAG_FILTER, (int)magFilter);
-            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MIN_FILTER, (int)minFilter);
-            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_S, (int)glWrapMode);
-            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_T, (int)glWrapMode);
-            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_R, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MAG_FILTER, magFilter);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MIN_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_S, glWrapMode);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_T, glWrapMode);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_R, glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
@@ -292,11 +325,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             if (img.DoGenerateMipMaps)
                 gl.GenerateMipmap(TEXTURE_2D);
 
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)magFilter);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)minFilter);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, (int)glWrapMode);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, (int)glWrapMode);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, magFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
@@ -328,11 +361,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)magFilter);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)minFilter);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, (int)glWrapMode);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, (int)glWrapMode);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, magFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
@@ -616,9 +649,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     case SAMPLER_CUBE:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
-
+                    case SAMPLER_2D_ARRAY:
+                        paramInfo.Type = typeof(IWritableArrayTexture);
+                        break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
                 }
 
                 paramList.Add(paramInfo);
@@ -758,8 +793,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case TextureType.TEXTURE_CUBE_MAP:
                     gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
                     break;
-                default:
+                case TextureType.ARRAY_TEXTURE:
+                    gl.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexHandle);
                     break;
+                default:
+                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
         }
 
@@ -881,7 +919,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
         {
-            SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);            
+            SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);
             gl.Uniform1i(((ShaderParam)param).handle, texUnitArray[0]);
         }
 
@@ -1490,16 +1528,16 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     default:
                         gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.POINT:                        
+                    case OpenGLPrimitiveType.POINT:
                         gl.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LINES:                       
+                    case OpenGLPrimitiveType.LINES:
                         gl.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LINE_LOOP:                        
+                    case OpenGLPrimitiveType.LINE_LOOP:
                         gl.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LINE_STRIP:                        
+                    case OpenGLPrimitiveType.LINE_STRIP:
                         gl.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.PATCHES:
@@ -2017,6 +2055,48 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
                 throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
 
+
+            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
+        }
+
+        /// <summary>
+        /// Renders into the given layer of the array texture.
+        /// </summary>
+        /// <param name="tex">The array texture.</param>
+        /// <param name="layer">The layer to render to.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == null)
+            {
+                var fBuffer = gl2.CreateFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
+
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
+                }
+                else
+                {
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.DrawBuffers(new uint[] { NONE });
+                    gl2.ReadBuffer(NONE);
+                }
+            }
+            else
+            {
+                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+            }
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
 
             gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
         }
