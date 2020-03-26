@@ -61,11 +61,12 @@ namespace Fusee.Engine.Core
         /// </summary>        
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
-        /// <param name="screenParams">Width and Height of the screen.</param>        
-        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
+        /// <param name="screenParams">Width and Height of the screen.</param>
+        /// <param name="noiseTexSize">Width and height of the noise texture.</param>
+        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
         {
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
-            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
+            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
             var ps = AssetStorage.Get<string>("SSAO.frag");

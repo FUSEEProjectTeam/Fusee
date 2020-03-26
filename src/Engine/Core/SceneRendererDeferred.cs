@@ -739,7 +739,7 @@ namespace Fusee.Engine.Core
             _currentPass = RenderPasses.SSAO;
             if (_ssaoTexEffect == null)
             {
-                _ssaoTexEffect = MakeShaderEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes));
+                _ssaoTexEffect = MakeShaderEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes), 4);
                 _rc.CreateEffect(true, _ssaoTexEffect);
             }
             _rc.SetEffect(_ssaoTexEffect);
