@@ -77,14 +77,22 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_SPECULAR:
                         {
-                            if (effectProps.MatType == MaterialType.MaterialPbr)
+                            if(effectProps.MatProbs.HasSpecular)
                             {
-                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.RoughnessValue}, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.DiffuseFraction}, 1.0);");
+                                if (effectProps.MatType == MaterialType.MaterialPbr)
+                                {
+                                    fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.RoughnessValue}, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.DiffuseFraction}, 1.0);");
+                                }
+                                else if (effectProps.MatType == MaterialType.Standard)
+                                {
+                                    fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularIntensity}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);");
+                                }
                             }
-                            else if (effectProps.MatType == MaterialType.Standard)
+                            else
                             {
-                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularIntensity}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 1.0, 1.0);");
                             }
+
                             break;
                         }
                 }

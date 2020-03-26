@@ -118,7 +118,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 else if(effectProps.MatType == MaterialType.Standard)
                 { 
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininess));
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensity));                    
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensity));
                 }
             }
 

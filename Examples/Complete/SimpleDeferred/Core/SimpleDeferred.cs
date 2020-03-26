@@ -65,6 +65,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             //_rocketScene = AssetStorage.Get<Scene>("sponza.fus");
             _rocketScene = AssetStorage.Get<Scene>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<Scene>("shadowTest.fus");
+            
+
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
@@ -259,11 +261,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            // TODO (mr): Where is it?
-            //_camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
             _sceneRenderer.Render(RC);
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
