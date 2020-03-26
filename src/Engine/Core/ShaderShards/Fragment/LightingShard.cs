@@ -238,8 +238,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var bumpNormals = new List<string>
             {
-                "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.NormalMapIntensity}, {UniformNameDeclarations.NormalMapIntensity}, 1.0);",
+                "///////////////// Normal mapping, tangent space ///////////////////",
+                $"vec3 N = ((texture({UniformNameDeclarations.NormalMap}, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.NormalMapIntensity}, {UniformNameDeclarations.NormalMapIntensity}, 1.0);",
                 $"N = (N.x * vec3({VaryingNameDeclarations.Tangent})) + (N.y * {VaryingNameDeclarations.Bitangent}) + (N.z * {VaryingNameDeclarations.Normal});",
                 "N = normalize(N);"
             };

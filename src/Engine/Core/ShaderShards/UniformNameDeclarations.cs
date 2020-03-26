@@ -258,14 +258,14 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string EmissiveTexture = "EmissiveTexture";
 
         /// <summary>
-        /// The var name for the uniform BumpTexture variable within the pixel shaders.
+        /// The var name for the uniform NormalMap variable within the pixel shaders.
         /// </summary>
         public const string NormalMap = "NormalMap";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
         /// </summary>
-        public const string AlbedoMix = "DiffuseMix";
+        public const string AlbedoMix = "AlbedoMix";
 
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.

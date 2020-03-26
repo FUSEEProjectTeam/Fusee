@@ -11,9 +11,10 @@ using System.Text.Json;
 using System.Windows;
 using Fusee.Engine.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Tools.FusViewer.ViewModel
-{    
+{
     internal class OpenFusFileCmd : ICommand
     {
         public event EventHandler CanExecuteChanged;
@@ -228,30 +229,16 @@ namespace Fusee.Tools.FusViewer.ViewModel
         }
 
         /// <summary>
-        /// Converts the material.
-        /// </summary>
-        /// <param name="matComp"></param>
-        [VisitMethod]
-        public void ConvMaterial(Material matComp)
-        {
-            _currentNode.Components.Add(new TreeComponentItem
-            {
-                Name = "Material Component",
-                Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
-            });
-        }
-
-        /// <summary>
         /// Converts the physically based rendering component
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialPBR matComp)
+        public void ConvMaterial(ShaderEffect sfx)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
                 Name = "Material PBR Component",
-                Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
+                Desc = $"{sfx.Name}, Diffuse: {sfx.GetEffectParam(UniformNameDeclarations.AlbedoColor)}, Specular: {sfx.GetEffectParam(UniformNameDeclarations.AlbedoColor)}"
             });
         }
 
@@ -259,7 +246,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvCamComp(Camera camComp)
+        public void ConvCamComp(Engine.Common.Camera camComp)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -299,7 +286,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="lightComponent"></param>
         [VisitMethod]
-        public void ConvLight(Light lightComponent)
+        public void ConvLight(Engine.Common.Light lightComponent)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -421,26 +408,12 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(Material matComp)
+        public void ConvMaterial(ShaderEffect sfx)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Material Component",
-                Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
-            });
-        }
-
-        /// <summary>
-        /// Converts the physically based rendering component
-        /// </summary>
-        /// <param name="matComp"></param>
-        [VisitMethod]
-        public void ConvMaterial(MaterialPBR matComp)
-        {
-            _currentNode.Components.Add(new JSONComponentItem
-            {
-                Name = "Material PBR Component",
-                Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
+                Desc = $"{sfx.Name}, Diffuse: {sfx.GetEffectParam(UniformNameDeclarations.AlbedoColor)}, Specular: {sfx.GetEffectParam(UniformNameDeclarations.SpecularColor)}"
             });
         }
 
@@ -448,7 +421,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvCameraComp(Camera camComp)
+        public void ConvCameraComp(Engine.Common.Camera camComp)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -488,7 +461,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="lightComponent"></param>
         [VisitMethod]
-        public void ConvLight(Light lightComponent)
+        public void ConvLight(Engine.Common.Light lightComponent)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
