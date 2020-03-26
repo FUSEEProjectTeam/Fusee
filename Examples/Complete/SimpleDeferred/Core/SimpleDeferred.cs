@@ -24,14 +24,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;       
+        private SceneRendererDeferred _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        
-        private bool _keys;       
+
+        private bool _keys;
 
         private TransformComponent _sunTransform;
 
@@ -43,14 +43,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private TransformComponent _camTransform;
         private CameraComponent _campComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
-       
+
         // Init is called on startup.
         public override async Task<bool> Init()
         {
             _camTransform = new TransformComponent()
             {
                 Scale = float3.One,
-                Translation = float3.Zero                
+                Translation = float3.Zero
             };
 
             _gui = CreateGui();
@@ -63,8 +63,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");
 
             //Add lights to the scene
@@ -171,7 +171,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                         _camTransform,
                         _campComp
                     }
-                }               
+                }
             );
 
             // Wrap a SceneRenderer around the scene.
@@ -262,18 +262,18 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
-            _sceneRenderer.Render(RC);            
+            _sceneRenderer.Render(RC);
             //_guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)            
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }        
+        }
 
         private SceneContainer CreateGui()
         {
@@ -323,7 +323,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-
             var guiCamComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
             {
                 ClearColor = false
@@ -333,7 +332,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             {
                 Name = "GUICam",
                 Components = new List<SceneComponentContainer>()
-                {                    
+                {
                     guiCamComp
                 }
             };
@@ -354,7 +353,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     text
                 }
             };
-            
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

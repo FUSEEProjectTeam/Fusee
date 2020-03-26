@@ -18,24 +18,45 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>
             {
-                $"vec4 result = vec4(0.0, 0.0, 0.0, 0.0);",
-                $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
-                "{",
-                "if(allLights[i].isActive == 0) continue;",
-                "vec3 currentPosition = allLights[i].position;",
-                "vec4 currentIntensities = allLights[i].intensities;",
-                "vec3 currentConeDirection = allLights[i].direction;",
-                "float currentAttenuation = allLights[i].maxDistance;",
-                "float currentStrength = allLights[i].strength;",
-                "float currentOuterConeAngle = allLights[i].outerConeAngle;",
-                "float currentInnerConeAngle = allLights[i].innerConeAngle;",
-                "int currentLightType = allLights[i].lightType; ",
-                "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
-                "currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType);",
-                "}",
-
-                 effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.Albedo}.w);",
+                $"vec4 objCol = vec4(0);"
             };
+            if (effectProps.MatProbs.HasDiffuseTexture)
+            {
+                fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
+                //applyLightParams.Add($"texCol = vec4(pow(texCol.r, 1.0/2.2), pow(texCol.g, 1.0/2.2), pow(texCol.b, 1.0/2.2), texCol.a);");
+                fragMainBody.Add($"vec3 mix = mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
+                fragMainBody.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
+                fragMainBody.Add($"objCol = vec4(mix * luma, texCol.a);");
+               
+            }
+            else
+            {
+                fragMainBody.Add($"objCol = {UniformNameDeclarations.Albedo};");
+            }
+
+            fragMainBody.AddRange(
+            new List<string>()
+            {
+                $"float ambientCo = 0.1;",
+                $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * objCol.rgb;",
+                $"vec3 result = vec3(0.0);",
+                $"for(int i = 0; i < {LightingShard.NumberOfLightsForward}; i++)",
+                "{",
+                "   if(allLights[i].isActive == 0) continue;",
+                "   vec3 currentPosition = allLights[i].position;",
+                "   vec4 currentIntensities = allLights[i].intensities;",
+                "   vec3 currentConeDirection = allLights[i].direction;",
+                "   float currentAttenuation = allLights[i].maxDistance;",
+                "   float currentStrength = (1.0 - ambientCo) * allLights[i].strength;",
+                "   float currentOuterConeAngle = allLights[i].outerConeAngle;",
+                "   float currentInnerConeAngle = allLights[i].innerConeAngle;",
+                "   int currentLightType = allLights[i].lightType; ",
+                "   result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
+                "   currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType, objCol.rgb);",
+                "}",
+                $"oFragmentColor = vec4(result.rgb + ambient, objCol.a);"
+                 //effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.Albedo}.w);",
+            });
 
             return ShaderShardUtil.MainMethod(fragMainBody);
         }

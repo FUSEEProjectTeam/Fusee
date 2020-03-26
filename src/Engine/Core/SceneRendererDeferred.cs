@@ -806,24 +806,40 @@ namespace Fusee.Engine.Core
             }
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            effect.SetFxParam("light.position", _rc.View * lightRes.WorldSpacePos);
-            effect.SetFxParam("light.intensities", light.Color);
-            effect.SetFxParam("light.maxDistance", light.MaxDistance);
-            effect.SetFxParam("light.strength", strength);
-            effect.SetFxParam("light.outerConeAngle", M.DegreesToRadians(light.OuterConeAngle));
-            effect.SetFxParam("light.innerConeAngle", M.DegreesToRadians(light.InnerConeAngle));
-            effect.SetFxParam("light.direction", dirViewSpace);
-            effect.SetFxParam("light.lightType", (int)light.Type);
-            effect.SetFxParam("light.isActive", light.Active ? 1 : 0);
-
-            if (light.IsCastingShadows)
+            switch (lightVisRes.Item2.Light.Type)
             {
-                effect.SetFxParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
-                effect.SetFxParam("light.bias", light.Bias);
+                case LightType.Point:
+                    effect.SetFxParam("light.position", _rc.View * lightRes.WorldSpacePos);
+                    effect.SetFxParam("light.intensities", light.Color);
+                    effect.SetFxParam("light.maxDistance", light.MaxDistance);
+                    effect.SetFxParam("light.strength", strength);
+                    effect.SetFxParam("light.isActive", light.Active ? 1 : 0);
+                    break;
+                case LightType.Legacy:
+                case LightType.Parallel:
+                    effect.SetFxParam("light.intensities", light.Color);
+                    effect.SetFxParam("light.strength", strength);
+                    effect.SetFxParam("light.direction", dirViewSpace);
+                    effect.SetFxParam("light.isActive", light.Active ? 1 : 0);
+                    break;
+                case LightType.Spot:
+                    effect.SetFxParam("light.position", _rc.View * lightRes.WorldSpacePos);
+                    effect.SetFxParam("light.intensities", light.Color);
+                    effect.SetFxParam("light.maxDistance", light.MaxDistance);
+                    effect.SetFxParam("light.strength", strength);
+                    effect.SetFxParam("light.outerConeAngle", M.DegreesToRadians(light.OuterConeAngle));
+                    effect.SetFxParam("light.innerConeAngle", M.DegreesToRadians(light.InnerConeAngle));
+                    effect.SetFxParam("light.direction", dirViewSpace);
+                    effect.SetFxParam("light.isActive", light.Active ? 1 : 0);
+                    break;
+                default:
+                    break;
             }
 
             if (isCastingShadows) //we don't use light.IsCastingShadows because we could need to skip the shadow calculation because of hardware capabilities.
             {
+                effect.SetFxParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
+                effect.SetFxParam("light.bias", light.Bias);
                 var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
 
                 switch (lightVisRes.Item2.Light.Type)

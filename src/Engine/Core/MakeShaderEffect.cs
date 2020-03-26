@@ -180,6 +180,8 @@ namespace Fusee.Engine.Core
                     effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
             }
 
+            effectParams.AddRange(DeferredLightParams(lc.Type));
+
             return new ShaderEffect(
             new FxPassDeclaration
             {
@@ -221,6 +223,8 @@ namespace Fusee.Engine.Core
             effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
             effectParams.Add(new FxParamDeclaration<WritableArrayTexture> { Name = "ShadowMap", Value = shadowMap });
             effectParams.Add(new FxParamDeclaration<float2[]> { Name = "ClipPlanes[0]", Value = clipPlanes });
+
+            effectParams.AddRange(DeferredLightParams(lc.Type));
 
             return new ShaderEffect(
             new FxPassDeclaration
@@ -312,19 +316,48 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f)},
-                new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero},
-                new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f},
-                new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f},
-                new FxParamDeclaration<float> { Name = "light.outerConeAngle", Value = 0.0f},
-                new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f},
-                new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero},
-                new FxParamDeclaration<int> { Name = "light.lightType", Value = 1},
-                new FxParamDeclaration<int> { Name = "light.isActive", Value = 1},                
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},
             };
+        }
+
+        private static List<IFxParamDeclaration> DeferredLightParams(LightType type)
+        {
+            switch (type)
+            {
+                case LightType.Point:
+                    return new List<IFxParamDeclaration>()
+                    {
+                        new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
+                        new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
+                        new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f },
+                        new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
+                        new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
+                    };
+                case LightType.Legacy:
+                case LightType.Parallel:
+                    return new List<IFxParamDeclaration>()
+                    {
+                        new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
+                        new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
+                        new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
+                        new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
+                    };
+                default:
+                case LightType.Spot:
+                    return new List<IFxParamDeclaration>()
+                    {
+                        new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
+                        new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
+                        new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f },
+                        new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
+                        new FxParamDeclaration<float> { Name = "light.outerConeAngle", Value = 0.0f },
+                        new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f },
+                        new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
+                        new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
+                    };
+            }
         }
 
         #endregion
@@ -599,11 +632,11 @@ namespace Fusee.Engine.Core
 
             //Shadow calculation methods
             //-------------------------------------- 
-            if(isCascaded)
+            if (isCascaded)
                 frag.Append(LightingShard.ShadowCalculationCascaded());
             else if (lc.Type == LightType.Point)
                 frag.Append(LightingShard.ShadowCalculationCubeMap());
-           
+
             else
                 frag.Append(LightingShard.ShadowCalculation());
 
