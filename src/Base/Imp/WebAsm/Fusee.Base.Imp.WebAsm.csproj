@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.WebAsm</RootNamespace>
     <PackageId>Fusee.Base.Imp.WebAsm</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <DefineConstants>$(DefineConstants);PLATFORM_WEBASM</DefineConstants>
   </PropertyGroup>

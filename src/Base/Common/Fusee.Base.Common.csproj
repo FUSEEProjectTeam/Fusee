@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Common</RootNamespace>
     <PackageId>Fusee.Base.Common</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee Base Common</Description>
   </PropertyGroup>
 

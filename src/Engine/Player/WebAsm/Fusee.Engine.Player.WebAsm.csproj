@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Mono.WebAssembly.Sdk">
     <PropertyGroup>
-        <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
-        <PackageId>Fusee.Engine.Player.Desktop</PackageId>
-        <TargetFramework>netstandard2.0</TargetFramework>
-        <MonoWasmLinkMode>None</MonoWasmLinkMode>        
+        <RootNamespace>Fusee.Engine.Player.WebAsm</RootNamespace>
+        <PackageId>Fusee.Engine.Player.WebAsm</PackageId>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <MonoWasmLinkMode>Full</MonoWasmLinkMode>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -33,15 +33,16 @@
         <Reference Include="Uno.SkiaSharp">
             <HintPath>$(FuseeEngineRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
         </Reference>
-        <PackageReference Include="protobuf-net" Version="3.0.0-alpha.133" />
-        <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
 
+         <Reference Include="protobuf-net">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf-net\protobuf-net.dll</HintPath>
+        </Reference>
+        
         <PackageReference Include="WebAssembly.Bindings" Version="0.2.2" />
         <PackageReference Include="WebAssembly.Net.Http" Version="0.2.2" />
         <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.2" />
         <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-
-
+      
     </ItemGroup>
 
     <Target Name="FuseeWasmCopyInheritedAssets" BeforeTargets="MonoWasmCopyOutput">
@@ -49,6 +50,5 @@
             <InheritedAssets Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)\Assets\*.*" />
         </ItemGroup>
         <Copy SourceFiles="%(InheritedAssets.FullPath)" DestinationFolder="$(OutputPath)\Assets" ContinueOnError="true" />
-                <PackageReference Include="System.Collection.Immutable" Version="*" />
-</Target>
+    </Target>
 </Project>

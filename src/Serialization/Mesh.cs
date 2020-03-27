@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Fusee.Math.Core;
 using ProtoBuf;
 

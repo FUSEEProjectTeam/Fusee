@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Graphics.WebAsm</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Graphics.WebAsm</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
       <DefineConstants>$(DefineConstants);PLATFORM_WASM</DefineConstants>
   </PropertyGroup>
@@ -31,6 +31,5 @@
 
     <PackageReference Include="Mono.WebAssembly.Runtime" Version="0.2.2" />
     <PackageReference Include="WebAssembly.Bindings" Version="0.2.2" />
-    <PackageReference Include="WebAssembly.Net.Http" Version="0.2.2" />
   </ItemGroup>
 </Project>

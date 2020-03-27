@@ -1,5 +1,4 @@
-﻿using ProtoBuf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
@@ -7,20 +6,18 @@ namespace Fusee.Math.Core
 {
     /// <summary>
     ///     Represents an axis aligned bounding box.
-    /// </summary>
-    [ProtoContract]
-    [StructLayout(LayoutKind.Sequential)]
+    /// </summary>    
     public struct AABBf
     {
         /// <summary>
         /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(1)] public float3 min;
+        public float3 min;
 
         /// <summary>
         /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(2)] public float3 max;
+        public float3 max;
 
         /// <summary>
         /// Create a new axis aligned bounding box.

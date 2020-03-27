@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Xirkit</RootNamespace>
     <PackageId>Fusee.Xirkit</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee Xirkit</Description>
   </PropertyGroup>
 

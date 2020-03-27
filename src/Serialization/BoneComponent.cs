@@ -9,11 +9,5 @@ namespace Fusee.Serialization
     [ProtoContract]
     public class BoneComponent : SceneComponentContainer
     {
-        /// <summary>
-        /// The name of this component.
-        /// Needed for blender exporter
-        /// </summary>
-        [ProtoMember(1)]
-        public string Name;
     }
 }

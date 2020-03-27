@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Common</RootNamespace>
     <PackageId>Fusee.Engine.Common</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee Engine Common</Description>
   </PropertyGroup>
 
@@ -10,6 +10,10 @@
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="protobuf-net.Core" Version="3.0.0-alpha.133" />
+  </ItemGroup>
   
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
@@ -21,11 +25,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-      <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
-          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
-      </Reference>
-      <Reference Include="protobuf-net.Core" Version="3.0.0-alpha.125">
-          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
-      </Reference>
   </ItemGroup>
 </Project>

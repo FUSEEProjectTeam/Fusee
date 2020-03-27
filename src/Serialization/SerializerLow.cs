@@ -19,9 +19,9 @@ namespace Fusee.Serialization
         /// <returns></returns>
         public static SceneContainer DeserializeRawSceneContainer(Stream stream)
         {
-            var sceneContainer = ProtoBuf.Serializer.Deserialize<SceneContainer>(stream);
+            //var sceneContainer = ProtoBuf.Serializer.Deserialize<SceneContainer>(stream);
 
-            return sceneContainer;
+            return new SceneContainer();
         }
     }
 }
