@@ -69,9 +69,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             //Add lights to the scene
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
-            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
-            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
+            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0.56f, 0.1f, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
+            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0.6f, 0.8f, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0.8f, 1.0f, 0.6f, 1), Strength = 0.7f, MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
 
             _sunTransform = new TransformComponent() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
 
