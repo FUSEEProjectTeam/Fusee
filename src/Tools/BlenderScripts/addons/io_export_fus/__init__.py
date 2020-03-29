@@ -17,7 +17,7 @@ bl_info = {
 
 #import dependencies
 
-import subprocess,os,sys
+import subprocess,os,sys, time
 from shutil import copyfile
 
 #set pypath
@@ -141,8 +141,12 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
         visitor.DoRecalcOutside = self.doRecalcOutside
  
         visitor.TraverseList(roots)
-        visitor.PrintFus()
+        # visitor.PrintFus()
+        timeLast = time.perf_counter()
         visitor.WriteFus(self.filepath)
+        timeCur = time.perf_counter()
+        print(str(timeCur-timeLast) + 's to serialize entire payload')
+        timeLast = timeCur
     
         print('DONE')
         return {'FINISHED'}
@@ -327,22 +331,21 @@ class BlenderVisitor:
 
         # return mesh_triangulated
 
-
-    def __AddBoundingBox(self, meshobj):
-        """Retrieves the bounding box from the given mesh object and adds it to the currently written FUSEE mesh"""
-        bbox = meshobj.bound_box
-        bboxList = []
-        for bboxVal in bbox:
-            bboxList.append(list(bboxVal))
-
-        # find min and max values of the bounding box and write them to the mesh
-        bboxMin = min(bboxList)
-        bboxMax = max(bboxList)
-
-        self.__fusWriter.AddBoundingBox(
-            (bboxMin[0], bboxMin[2], bboxMin[1]),
-            (bboxMax[0], bboxMax[2], bboxMax[1])
-        )
+    #def __AddBoundingBox(self, meshobj):
+    #    """Retrieves the bounding box from the given mesh object and adds it to the currently written FUSEE mesh"""
+    #    bbox = meshobj.bound_box
+    #    bboxList = []
+    #    for bboxVal in bbox:
+    #        bboxList.append(list(bboxVal))
+    #
+    #    # find min and max values of the bounding box and write them to the mesh
+    #    bboxMin = min(bboxList)
+    #    bboxMax = max(bboxList)
+    #
+    #    self.__fusWriter.AddBoundingBox(
+    #        (bboxMin[0], bboxMin[2], bboxMin[1]),
+    #        (bboxMax[0], bboxMax[2], bboxMax[1])
+    #    )
 
     def __AddMaterial(self, materialslot):
         # MATERIAL COMPONENT
@@ -518,13 +521,13 @@ class BlenderVisitor:
 
         if materialCount == 1:
             if len(mesh.material_slots) < 1:
-                print('WARNING: Object "' + mesh.name + '" has no material or material doesn\'t use nodes. Adding Default material.')
+                print('WARNING: Object "' + mesh.name + '" has no material. Adding Default material.')
                 self.__AddDefaultMaterial()
             else:
                 self.__AddMaterial(mesh.material_slots[0].material)                
 
-        # Sort vertices into material bins
-        for i in range(materialCount):
+        # <Sort vertices into material bins>
+        for iMaterial in range(materialCount):
             vertsPerMat.append([])            
 
         bm = self.__GetProcessedBMesh(mesh)
@@ -534,6 +537,8 @@ class BlenderVisitor:
         if uvActive is not None:
             uv_layer = bm.loops.layers.uv.active
 
+        timeLast = time.perf_counter()
+        
         for f in bm.faces:
             # print("Triangle with material ", f.material_index)
             for fl in f.loops:
@@ -545,29 +550,66 @@ class BlenderVisitor:
                     (normal[0], normal[2], normal[1]),
                     (uv[0], uv[1])))
         
+        timeCur = time.perf_counter() 
+        print(str(timeCur-timeLast) + 's to sort vertices into material bins.')
+        timeLast = timeCur
+        
         bm.free()
         del bm
+        # </Sort vertices into material bins>
 
-        for i in range(materialCount):
+        # <For each material: Write out vertices into FUSEE objects>
+        for iMaterial in range(materialCount):
             if materialCount > 1:
                 self.__fusWriter.Push()
-                self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[i].material.name)
-                self.__AddMaterial(mesh.material_slots[i].material)
-
-            self.__fusWriter.BeginMesh()
+                self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[iMaterial].material.name)
             
-            for vert in vertsPerMat[i]:
-                self.__fusWriter.AddVertex(
+            self.__AddMaterial(mesh.material_slots[iMaterial].material)
+
+            nVertsTotal = len(vertsPerMat[iMaterial])
+            iVert = 0
+            iChunk = 0
+
+            while iVert < nVertsTotal:
+                if iChunk > 0:
+                    self.__fusWriter.Push()
+                    self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk))
+
+                vert = vertsPerMat[iMaterial][iVert]
+                self.__fusWriter.BeginMesh(
                     vert[0],    # Vertex 
                     vert[1],    # Normal
                     vert[2]     # UV
                 )
+                iVert = iVert + 1
+                iVertPerChunk = 1
+                while self.__fusWriter.MeshHasCapacity() and iVert < nVertsTotal:
+                    vert = vertsPerMat[iMaterial][iVert]
+                    self.__fusWriter.AddVertex(
+                        vert[0],    # Vertex 
+                        vert[1],    # Normal
+                        vert[2]     # UV
+                    )
+                    if iVert % 10000 == 0:
+                        timeCur = time.perf_counter() 
+                        print(str(timeCur-timeLast) + 's to add another 10000 vertices.')
+                        timeLast = timeCur
 
-            self.__AddBoundingBox(mesh)    # TODO: Don't use entire Bounding box - calculate bb for each material set instead.             
-            self.__fusWriter.EndMesh()
+                    iVert = iVert + 1
+                    iVertPerChunk = iVertPerChunk + 1
+
+                print ('Chunk ' + mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk) + ' containing ' + str(iVertPerChunk) + ' (=3*' + str(iVertPerChunk/3) + ') verts.') 
+                print ('iVert: ' + str(iVert) + ', nVertsTotal: ' + str(nVertsTotal))
+
+                self.__fusWriter.EndMesh()
+                if iChunk > 0:
+                    self.__fusWriter.Pop()
+ 
+                iChunk = iChunk + 1
+
             if materialCount > 1:
                 self.__fusWriter.Pop()
-
+        # </For each material: Write out vertices into FUSEE objects>
 
 
     def VisitLight(self, light):

@@ -20,6 +20,7 @@ class FusSceneWriter:
     """Convenience Class to assemble FUSEE scene files from instances of FusNode and FusComponent (and derivatives)."""
     def __init__(self):
         super().__init__()
+        self.__MaxVerts = (65000 // 3) * 3
         self.__fusFile = FusSer.FusFile()
         self.__fusFile.Header.FileVersion = 1
         self.__fusFile.Header.Generator = 'Python Fus Writer'
@@ -263,33 +264,46 @@ class FusSceneWriter:
                 bt.x = bitangent[0]
                 bt.y = bitangent[1]
                 bt.z = bitangent[2]
+            self.__AddVertexToBoundingBox(vertex)
         self.__curMesh.Triangles.append(inx)
 
-    def AddBoundingBox(self, bboxMin, bboxMax):
-        self.__checkMeshOpen()
-        self.__curMesh.BoundingBox.min.x = bboxMin[0]
-        self.__curMesh.BoundingBox.min.y = bboxMin[1]
-        self.__curMesh.BoundingBox.min.z = bboxMin[2]
-        self.__curMesh.BoundingBox.max.x = bboxMax[0]
-        self.__curMesh.BoundingBox.max.y = bboxMax[1]
-        self.__curMesh.BoundingBox.max.z = bboxMax[2]
+    def __AddVertexToBoundingBox(self, vertex):
+        if vertex[0] < self.__curMesh.BoundingBox.min.x: self.__curMesh.BoundingBox.min.x = vertex[0]
+        if vertex[1] < self.__curMesh.BoundingBox.min.y: self.__curMesh.BoundingBox.min.y = vertex[1]
+        if vertex[2] < self.__curMesh.BoundingBox.min.z: self.__curMesh.BoundingBox.min.z = vertex[2]
+        if vertex[0] > self.__curMesh.BoundingBox.max.x: self.__curMesh.BoundingBox.max.x = vertex[0]
+        if vertex[1] > self.__curMesh.BoundingBox.max.y: self.__curMesh.BoundingBox.max.y = vertex[1]
+        if vertex[2] > self.__curMesh.BoundingBox.max.z: self.__curMesh.BoundingBox.max.z = vertex[2]
 
     def __checkMeshOpen(self):
         if self.__curMesh == None:
             raise RuntimeError('Cannot operate on nonexisting mesh component. Call BeginMesh()/AddMesh() to add mesh.')
 
-    def BeginMesh(self, name=None):
+    def BeginMesh(self, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=None):
         if self.__curComponent == None:
             self.__curComponent = self.AddComponent(name)
             self.__curMesh = self.__curComponent.FusMesh
+            self.__curMesh.BoundingBox.min.x = vertex[0]
+            self.__curMesh.BoundingBox.min.y = vertex[1]
+            self.__curMesh.BoundingBox.min.z = vertex[2]
+            self.__curMesh.BoundingBox.max.x = vertex[0]
+            self.__curMesh.BoundingBox.max.y = vertex[1]
+            self.__curMesh.BoundingBox.max.z = vertex[2]
             self.__vertCache = {}
+            self.AddVertex(vertex, normal, uv, tangent, bitangent)
+
         else:
             raise RuntimeError('Cannot begin a mesh component with another component not ended. Call EndXYZ() to close the currently open component.')
 
+    def MeshHasCapacity(self):
+        return len(self.__curMesh.Vertices) < self.__MaxVerts or len(self.__curMesh.Triangles) % 3 != 0
+
     def EndMesh(self):
         self.__checkMeshOpen()
+        print('EndMesh(): ' + str(len(self.__curMesh.Triangles)/3) + ' Tris on ' + str(len(self.__curMesh.Vertices)) + ' Verts.')
         self.__curMesh = None
         self.__curComponent = None
+
 
 
 #### CAMERA COMPONENT ####
