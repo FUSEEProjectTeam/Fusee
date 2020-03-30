@@ -84,7 +84,7 @@ namespace Fusee.Engine.Core
         private SceneNode _currentNode;
 
         private readonly Dictionary<FusMaterial, ShaderEffect> _matMap;
-        private readonly Dictionary<FusMaterialPBR, ShaderEffect> _pbrComponent;
+        private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Stack<SceneNode> _boneContainers;
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
             _convertedScene = new SceneContainer();
 
             _matMap = new Dictionary<FusMaterial, ShaderEffect>();
-            _pbrComponent = new Dictionary<FusMaterialPBR, ShaderEffect>();
+            _meshMap = new Dictionary<FusMesh, Mesh>();
             _boneContainers = new Stack<SceneNode>();
         }
 
@@ -322,8 +322,14 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
+            if (_meshMap.TryGetValue(m, out var mesh))
+            {
+                _currentNode.Components.Add(mesh);
+                return;
+            }          
+
             // convert mesh
-            var mesh = new Mesh
+            mesh = new Mesh
             {
                 MeshType = m.MeshType,
                 Active = true,
@@ -352,6 +358,8 @@ namespace Fusee.Engine.Core
             }
 
             _currentNode.Components.Add(mesh);
+
+            _meshMap.Add(m, mesh);
         }
 
         /// <summary>
