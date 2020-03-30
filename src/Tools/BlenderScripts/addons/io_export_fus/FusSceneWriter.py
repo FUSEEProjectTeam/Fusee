@@ -211,31 +211,12 @@ class FusSceneWriter:
 # public float3[] BiTangents;
 # public AABBf BoundingBox;
 
-#   def AddMesh(self, mesh, name=None):
-#       """
-#       """
-#       self.BeginMesh()
-#       vertices = mesh.get('Vertices', None)
-#       colors = mesh.get('Colors', None)
-#       normals = mesh.get('Normals', None)
-#       uvs = mesh.get('UVs', None)
-#       boneweights = mesh.get('BoneWeights', None)
-#       boneindices = mesh.get('BoneIndices', None)
-#       triangles = mesh.get('Triangles', None)
-#       tangents = mesh.get('Tangents', None)
-#       bitangents = mesh.get('BiTangents', None)
-#       boundingbox = mesh.get('BoundingBox', None)
-#       self.EndMesh()
-    
     def AddVertex(self, vertex, normal=None, uv=None, tangent=None, bitangent=None):
         self.__checkMeshOpen()
-        key = hash((
-            (vertex[0], vertex[1], vertex[2]),
-            (normal[0], normal[1], normal[2]) if normal != None else (1, 1, 1), 
-            (uv[0], uv[1]) if uv != None else (1, 1),
-            (tangent[0], tangent[1], tangent[2]) if tangent != None else (1, 1, 1),
-            (bitangent[0], bitangent[1], bitangent[2]) if bitangent != None else (1, 1, 1)     
-            ))
+        vx, vy, vz = vertex
+        nx, ny, nz = normal if normal != None else (1, 1, 1)
+        uvx, uvy = uv if uv != None else (1, 1)
+        key = (vx, vy, vz, nx, ny, nz, uvx, uvy)
         inx = self.__vertCache.get(key, -1)
         if inx < 0:
             inx = len(self.__curMesh.Vertices)
@@ -265,6 +246,10 @@ class FusSceneWriter:
                 bt.y = bitangent[1]
                 bt.z = bitangent[2]
             self.__AddVertexToBoundingBox(vertex)
+        else:
+            if not (vertex[0] == self.__curMesh.Vertices[inx].x and vertex[1] == self.__curMesh.Vertices[inx].y and vertex[2] == self.__curMesh.Vertices[inx].z):
+                print('WARNING: New vertex: ' + str(vertex) + ' has same hash as existing: ' + str(self.__curMesh.Vertices[inx]))
+
         self.__curMesh.Triangles.append(inx)
 
     def __AddVertexToBoundingBox(self, vertex):
