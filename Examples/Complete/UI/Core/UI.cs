@@ -387,7 +387,7 @@ namespace Fusee.Examples.UI.Core
             _btnCat.OnMouseOver += OnMouseOverBtnCat;
 
             // Set the scene by creating a scene graph
-            _scene = await CreateNineSliceScene();
+            _scene = CreateNineSliceScene();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);

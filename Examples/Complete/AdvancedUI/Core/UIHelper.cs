@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using static Fusee.Examples.AdvancedUI.Core.UIHelper;
 using System.Threading.Tasks;
 using Fusee.Serialization.V1;
-using HorizontalTextAlignment = Fusee.Engine.Common.HorizontalTextAlignment;
-using VerticalTextAlignment = Fusee.Engine.Common.VerticalTextAlignment;
+using HorizontalTextAlignment = Fusee.Engine.Core.Scene.HorizontalTextAlignment;
+using VerticalTextAlignment = Fusee.Engine.Core.Scene.VerticalTextAlignment;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {

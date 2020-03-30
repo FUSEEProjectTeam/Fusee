@@ -9,6 +9,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
