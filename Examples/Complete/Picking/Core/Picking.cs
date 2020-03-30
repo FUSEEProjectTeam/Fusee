@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
@@ -22,7 +23,7 @@ namespace Fusee.Examples.Picking.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
         private ScenePicker _scenePicker;
 
@@ -33,9 +34,9 @@ namespace Fusee.Examples.Picking.Core
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
-        private Scene _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly Engine.Common.CanvasRenderMode _canvasRenderMode = Engine.Common.CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -186,7 +187,7 @@ namespace Fusee.Examples.Picking.Core
             throw new NotImplementedException();
         }
 
-        private Scene CreateGui()
+        private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -241,7 +242,7 @@ namespace Fusee.Examples.Picking.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
@@ -266,9 +267,9 @@ namespace Fusee.Examples.Picking.Core
             OpenLink("http://fusee3d.org");
         }
 
-        private Scene CreateScene()
+        private SceneContainer CreateScene()
         {
-            return new Scene
+            return new SceneContainer
             {
                 Header = new SceneHeader
                 {

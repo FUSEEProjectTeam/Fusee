@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Base class to hold a single animation key. Derived types specify the type of the value

@@ -9,6 +9,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
 using System;
@@ -57,7 +58,7 @@ namespace Fusee.Engine.Player.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(Scene),
+                        ReturnedType = typeof(SceneContainer),
                         Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;

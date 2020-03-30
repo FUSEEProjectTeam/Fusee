@@ -1,10 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-// ReSharper disable ObjectCreationAsStatement
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Text;
 
-namespace Fusee.Jometri
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Static class for tangent space calculation
@@ -115,14 +116,14 @@ namespace Fusee.Jometri
                 new ArgumentException($"Can not calculate bitangents, empty tangent list in this mesh: {m.Name}");
 
             if (m.Tangents != null && (m.Normals != null && m.Normals.Length != m.Tangents.Length))
-                new ArgumentException($"Can not calculate bitangents, quantitiy of normals: {m.Normals.Length} and quanitity of tangents: {m.Tangents.Length} differs.");
+                new ArgumentException($"Can not calculate bitangents, quantity of normals: {m.Normals.Length} and quantity of tangents: {m.Tangents.Length} differs.");
 
 
             var bitangents = new float3[m.Tangents.Length];
 
             for (var i = 0; i < m.Tangents.Length; i++)
                 bitangents[i] = float3.Cross(m.Normals[i], m.Tangents[i].xyz) * m.Tangents[i].w;
-            
+
             return bitangents;
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Defines the alignment in x direction.

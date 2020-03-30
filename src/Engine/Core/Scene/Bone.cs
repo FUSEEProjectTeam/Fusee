@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Marker component (contains no data). If contained within a node, the node 

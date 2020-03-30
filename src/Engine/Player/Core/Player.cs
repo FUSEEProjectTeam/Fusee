@@ -6,12 +6,12 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
 using Fusee.Xene;
 using System.Threading.Tasks;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Engine.Player.Core
 {
@@ -28,7 +28,7 @@ namespace Fusee.Engine.Player.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
@@ -41,7 +41,7 @@ namespace Fusee.Engine.Player.Core
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
-        private Scene _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initCanvasWidth;
@@ -75,9 +75,8 @@ namespace Fusee.Engine.Player.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            //_scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
-            _scene = Rocket.Build();
-
+            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile).ConfigureAwait(false);
+            
             _gui = await CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -258,7 +257,7 @@ namespace Fusee.Engine.Player.Core
    
         }
 
-        private async Task<Scene> CreateGui()
+        private async Task<SceneContainer> CreateGui()
         {
             var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
             var psTex = await AssetStorage.GetAsync<string>("texture.frag");
@@ -325,7 +324,7 @@ namespace Fusee.Engine.Player.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);           
             
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {

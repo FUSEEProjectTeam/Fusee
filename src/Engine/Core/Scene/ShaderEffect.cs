@@ -7,7 +7,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Scene
 {
 
     /// <summary>

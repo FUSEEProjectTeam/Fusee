@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization.V1;
@@ -330,7 +331,7 @@ namespace Fusee.Serialization.Test
                     Assert.Equal(camera.Name, ((FusCamera)fusFileComp).Name);
                     Assert.Equal(camera.Layer, ((FusCamera)fusFileComp).Layer);
                     Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == V1.ProjectionMethod.Orthographic ?
-                        Engine.Common.ProjectionMethod.ORTHOGRAPHIC : Engine.Common.ProjectionMethod.PERSPECTIVE));
+                        Engine.Core.Scene.ProjectionMethod.Orthographic : Engine.Core.Scene.ProjectionMethod.Perspective));
                     Assert.Equal(camera.Viewport, ((FusCamera)fusFileComp).Viewport);
                     Assert.Equal(camera.Fov, ((FusCamera)fusFileComp).Fov);
                     Assert.Equal(camera.BackgroundColor, ((FusCamera)fusFileComp).BackgroundColor);
@@ -628,9 +629,9 @@ namespace Fusee.Serialization.Test
             }
         }
 
-        public static Scene SceneShouldGT()
+        public static SceneContainer SceneShouldGT()
         {
-            return new Scene
+            return new SceneContainer
             {
                 Header = new SceneHeader
                 {
@@ -646,7 +647,7 @@ namespace Fusee.Serialization.Test
                     Name = "Base",
                     Components = new List<SceneComponent>
                     {
-                       new CanvasTransform(Engine.Common.CanvasRenderMode.SCREEN)
+                       new CanvasTransform(Engine.Core.Scene.CanvasRenderMode.SCREEN)
                        {
                            Name = "CanvasTransform",
                            Scale = float2.One * 2,
@@ -667,8 +668,8 @@ namespace Fusee.Serialization.Test
                         {
                             Name = "XFormText",
                             Height = 10,
-                            HorizontalAlignment = Engine.Common.HorizontalTextAlignment.CENTER,
-                            VerticalAlignment = Engine.Common.VerticalTextAlignment.TOP,
+                            HorizontalAlignment = Engine.Core.Scene.HorizontalTextAlignment.CENTER,
+                            VerticalAlignment = Engine.Core.Scene.VerticalTextAlignment.TOP,
                             Width = 200
                         },
                        new XForm
@@ -699,18 +700,18 @@ namespace Fusee.Serialization.Test
                            BindingMatrices = new List<float4x4>(),
                            Joints = new List<SceneNode>(),
                            Name = "MyWeight",
-                           WeightMap = new List<Engine.Common.VertexWeightList>
+                           WeightMap = new List<Engine.Core.Scene.VertexWeightList>
                            {
-                               new Engine.Common.VertexWeightList
+                               new Engine.Core.Scene.VertexWeightList
                                {
-                                   VertexWeights = new List<Engine.Common.VertexWeight>
+                                   VertexWeights = new List<Engine.Core.Scene.VertexWeight>
                                    {
-                                       new Engine.Common.VertexWeight
+                                       new Engine.Core.Scene.VertexWeight
                                        {
                                            Weight = 20,
                                            JointIndex = 0
                                        },
-                                        new Engine.Common.VertexWeight
+                                        new Engine.Core.Scene.VertexWeight
                                        {
                                            Weight = 30,
                                            JointIndex = 1
@@ -753,7 +754,7 @@ namespace Fusee.Serialization.Test
                            VisibleChildIndices = 1,
                            WasLoaded = true
                        },
-                       new Camera(Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 0, 500, 2000),
+                       new Camera(Engine.Core.Scene.ProjectionMethod.Orthographic, 0, 500, 2000),
                        ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new Engine.Core.ShaderShards.ShaderEffectProps
                        {
                            MatValues =

@@ -1,17 +1,17 @@
-﻿using Fusee.Serialization;
+﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
+using Fusee.Serialization;
+using Fusee.Xene;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Collections.ObjectModel;
-using System.Windows.Input;
-using System.Collections.Generic;
-using Fusee.Xene;
 using System.Text.Json;
 using System.Windows;
-using Fusee.Engine.Core;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards;
+using System.Windows.Input;
 
 namespace Fusee.Tools.FusViewer.ViewModel
 {
@@ -24,7 +24,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             return true;
         }
 
-        readonly MainWindowViewModel _caller;
+        private readonly MainWindowViewModel _caller;
 
         public OpenFusFileCmd(MainWindowViewModel caller)
         {
@@ -55,7 +55,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             return true;
         }
 
-        readonly MainWindowViewModel _caller;
+        private readonly MainWindowViewModel _caller;
 
         public SaveAsJSONCmd(MainWindowViewModel caller)
         {
@@ -87,7 +87,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             return true;
         }
 
-        readonly MainWindowViewModel _caller;
+        private readonly MainWindowViewModel _caller;
 
         public ViewInPlayerCmd(MainWindowViewModel caller)
         {
@@ -116,7 +116,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             }
         }
 
-        public Scene CurrentContainer
+        public SceneContainer CurrentContainer
         {
             get => _scene;
             set
@@ -131,7 +131,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         public List<TreeItem> SceneAsTreeView => new List<TreeItem> { _sceneAsTreeItem };
 
         private string _pathToFile;
-        private Scene _scene;
+        private SceneContainer _scene;
         private TreeItem _sceneAsTreeItem;
 
         public MainWindowViewModel()
@@ -168,12 +168,12 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="sc">The SceneContainer to convert.</param>
         /// <returns></returns>
-        public TreeItem Convert(Scene sc)
+        public TreeItem Convert(SceneContainer sc)
         {
             _predecessors = new Stack<TreeItem>();
             _convertedScene = new TreeItem
             {
-                Title = $"Scene created {(sc.Header.CreationDate == String.Empty ? "unknown" : sc.Header.CreationDate)} by {sc.Header.CreatedBy}" +
+                Title = $"Scene created {(sc.Header.CreationDate == string.Empty ? "unknown" : sc.Header.CreationDate)} by {sc.Header.CreatedBy}" +
                         $", generated via {sc.Header.Generator}"
             };
 
@@ -246,7 +246,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvCamComp(Engine.Common.Camera camComp)
+        public void ConvCamComp(Camera camComp)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -286,7 +286,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="lightComponent"></param>
         [VisitMethod]
-        public void ConvLight(Engine.Common.Light lightComponent)
+        public void ConvLight(Light lightComponent)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
@@ -343,12 +343,12 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="sc">The SceneContainer to convert.</param>
         /// <returns></returns>
-        public JSONItem Convert(Scene sc)
+        public JSONItem Convert(SceneContainer sc)
         {
             _predecessors = new Stack<JSONItem>();
             _convertedScene = new JSONItem
             {
-                Title = $"Scene created {(sc.Header.CreationDate == String.Empty ? "unknown" : sc.Header.CreationDate)} by {sc.Header.CreatedBy}" +
+                Title = $"Scene created {(sc.Header.CreationDate == string.Empty ? "unknown" : sc.Header.CreationDate)} by {sc.Header.CreatedBy}" +
                         $", generated via {sc.Header.Generator}"
             };
 
@@ -421,7 +421,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvCameraComp(Engine.Common.Camera camComp)
+        public void ConvCameraComp(Camera camComp)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -461,7 +461,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         /// </summary>
         /// <param name="lightComponent"></param>
         [VisitMethod]
-        public void ConvLight(Engine.Common.Light lightComponent)
+        public void ConvLight(Light lightComponent)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
@@ -548,6 +548,6 @@ namespace Fusee.Tools.FusViewer.ViewModel
         public string Desc { get; set; }
     }
 
-   
+
 }
 

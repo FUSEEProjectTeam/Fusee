@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Fusee.Engine.Core.Scene;
+using System;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// EventArgs to propagate changes of a <see cref="Mesh"/> object's life cycle and property changes.

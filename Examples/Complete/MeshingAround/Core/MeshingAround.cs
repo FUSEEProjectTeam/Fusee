@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -164,7 +165,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
-            var sc = new Scene { Children = new List<SceneNode> { parentNode } };            
+            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };            
 
             _renderer = new SceneRendererForward(sc);
 

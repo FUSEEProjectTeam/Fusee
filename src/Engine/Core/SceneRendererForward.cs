@@ -1,13 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using Fusee.Xirkit;
-using Fusee.Base.Common;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards.Fragment;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Animation = Fusee.Xirkit.Animation;
 
 namespace Fusee.Engine.Core
@@ -34,10 +35,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public List<Tuple<SceneNode, LightResult>> LightViseratorResults
         {
-            get
-            {
-                return _lightResults;
-            }
+            get => _lightResults;
             private set
             {
                 _lightResults = value;
@@ -72,7 +70,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The Scene, containing the scene that gets rendered.
         /// </summary>
-        protected Scene _sc;
+        protected SceneContainer _sc;
 
         /// <summary>
         /// The RenderContext, used to render the scene.
@@ -131,7 +129,7 @@ namespace Fusee.Engine.Core
         /// This scene renderer is used for forward rendering.
         /// </summary>
         /// <param name="sc">The <see cref="Scene"/> containing the scene that is rendered.</param>
-        public SceneRendererForward(Scene sc)
+        public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
@@ -146,16 +144,16 @@ namespace Fusee.Engine.Core
         /// Initializes animations, given as <see cref="Animation"/>.
         /// </summary>
         /// <param name="sc">The Scene, containing the Animations.</param>
-        public void InitAnimations(Scene sc)
+        public void InitAnimations(SceneContainer sc)
         {
             _animation = new Animation();
 
-            foreach (var a in sc.Children.FindComponents(t => t.GetType() == typeof(Common.Animation)))
+            foreach (var a in sc.Children.FindComponents(t => t.GetType() == typeof(Scene.Animation)))
             {
-                var ac = (Common.Animation)a;
+                var ac = (Scene.Animation)a;
                 if (ac.AnimationTracks != null)
                 {
-                    foreach (AnimationTrack animTrackContainer in ac.AnimationTracks)
+                    foreach (var animTrackContainer in ac.AnimationTracks)
                     {
                         // Type t = animTrackContainer.TypeId;
                         switch (animTrackContainer.TypeId)
@@ -163,7 +161,7 @@ namespace Fusee.Engine.Core
                             // if (typeof(int).IsAssignableFrom(t))
                             case TypeId.Int:
                                 {
-                                    Channel<int> channel = new Channel<int>(Lerp.IntLerp);
+                                    var channel = new Channel<int>(Lerp.IntLerp);
                                     foreach (AnimationKeyInt key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
@@ -175,7 +173,7 @@ namespace Fusee.Engine.Core
                             //else if (typeof(float).IsAssignableFrom(t))
                             case TypeId.Float:
                                 {
-                                    Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                                    var channel = new Channel<float>(Lerp.FloatLerp);
                                     foreach (AnimationKeyFloat key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
@@ -188,7 +186,7 @@ namespace Fusee.Engine.Core
                             // else if (typeof(float2).IsAssignableFrom(t))
                             case TypeId.Float2:
                                 {
-                                    Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
+                                    var channel = new Channel<float2>(Lerp.Float2Lerp);
                                     foreach (AnimationKeyFloat2 key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
@@ -216,7 +214,7 @@ namespace Fusee.Engine.Core
                                                 "Unknown lerp type: animTrackContainer.LerpType: " +
                                                 (int)animTrackContainer.LerpType);
                                     }
-                                    Channel<float3> channel = new Channel<float3>(lerpFunc);
+                                    var channel = new Channel<float3>(lerpFunc);
                                     foreach (AnimationKeyFloat3 key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
@@ -228,7 +226,7 @@ namespace Fusee.Engine.Core
                             // else if (typeof(float4).IsAssignableFrom(t))
                             case TypeId.Float4:
                                 {
-                                    Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
+                                    var channel = new Channel<float4>(Lerp.Float4Lerp);
                                     foreach (AnimationKeyFloat4 key in animTrackContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
@@ -319,7 +317,7 @@ namespace Fusee.Engine.Core
             else
                 _rc.SetRenderTarget();
 
-            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out var viewport);
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
@@ -357,15 +355,14 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderBone(Bone bone)
         {
-            SceneNode boneContainer = CurrentNode;
+            var boneContainer = CurrentNode;
 
             var trans = boneContainer.GetGlobalTranslation();
             var rot = boneContainer.GetGlobalRotation();
 
             var currentModel = float4x4.CreateTranslation(trans) * rot; //TODO: ???
 
-            float4x4 transform;
-            if (!_boneMap.TryGetValue(boneContainer, out transform))
+            if (!_boneMap.TryGetValue(boneContainer, out var transform))
                 _boneMap.Add(boneContainer, _rc.Model);
             else
                 _boneMap[boneContainer] = _rc.Model;
@@ -378,10 +375,10 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            float4x4[] boneArray = new float4x4[weight.Joints.Count()];
-            for (int i = 0; i < weight.Joints.Count(); i++)
+            var boneArray = new float4x4[weight.Joints.Count()];
+            for (var i = 0; i < weight.Joints.Count(); i++)
             {
-                float4x4 tmp = weight.BindingMatrices[i];
+                var tmp = weight.BindingMatrices[i];
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
             }
             _rc.Bones = boneArray;
@@ -422,7 +419,7 @@ namespace Fusee.Engine.Core
                 frustumCorners[2] = _rc.InvProjection * new float4(-1, 1, -1, 1); //ntl  
                 frustumCorners[3] = _rc.InvProjection * new float4(1, 1, -1, 1); //ntr                
 
-                for (int i = 0; i < frustumCorners.Length; i++)
+                for (var i = 0; i < frustumCorners.Length; i++)
                 {
                     var corner = frustumCorners[i];
                     corner /= corner.w; //world space frustum corners               
@@ -517,9 +514,13 @@ namespace Fusee.Engine.Core
                 scale = float4x4.CreateScale(scaleX, scaleY, 1);
             }
             else if (_state.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
+            {
                 scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            }
             else
+            {
                 scale = float4x4.CreateScale(1, 1, 1);
+            }
 
             _state.Model *= scale;
             _rc.Model = _state.Model;
@@ -536,17 +537,17 @@ namespace Fusee.Engine.Core
             var scaleFactor = zNear / 100;
             var invScaleFactor = 1 / scaleFactor;
 
-            float translationY; 
+            float translationY;
             float translationX;
 
             float scaleX;
             float scaleY;
-            
+
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 //Undo parent scale
                 scaleX = 1 / _state.UiRect.Size.x;
-                scaleY = 1 / _state.UiRect.Size.y;                
+                scaleY = 1 / _state.UiRect.Size.y;
 
                 //Calculate translation according to alignment
                 switch (xfc.HorizontalAlignment)
@@ -558,7 +559,7 @@ namespace Fusee.Engine.Core
                         translationX = -xfc.Width / 2;
                         break;
                     case HorizontalTextAlignment.RIGHT:
-                        translationX = _state.UiRect.Size.x  / 2 - xfc.Width;
+                        translationX = _state.UiRect.Size.x / 2 - xfc.Width;
                         break;
                     default:
                         throw new ArgumentException("Invalid Horizontal Alignment");
@@ -583,7 +584,7 @@ namespace Fusee.Engine.Core
             {
                 //Undo parent scale, scale by distance
                 scaleX = 1 / _state.UiRect.Size.x * scaleFactor;
-                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;                
+                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;
 
                 //Calculate translation according to alignment by scaling the rectangle size
                 switch (xfc.HorizontalAlignment)
@@ -685,7 +686,7 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            Weight wc = CurrentNode.GetWeights();
+            var wc = CurrentNode.GetWeights();
             if (wc != null)
                 AddWeightToMesh(mesh, wc);
 
@@ -698,13 +699,13 @@ namespace Fusee.Engine.Core
 
         protected void AddWeightToMesh(Mesh mesh, Weight wc)
         {
-            float4[] boneWeights = new float4[wc.WeightMap.Count];
-            float4[] boneIndices = new float4[wc.WeightMap.Count];
+            var boneWeights = new float4[wc.WeightMap.Count];
+            var boneIndices = new float4[wc.WeightMap.Count];
 
             // Iterate over the vertices
-            for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
+            for (var iVert = 0; iVert < wc.WeightMap.Count; iVert++)
             {
-                VertexWeightList vwl = wc.WeightMap[iVert];
+                var vwl = wc.WeightMap[iVert];
 
                 // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
                 // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
@@ -712,10 +713,13 @@ namespace Fusee.Engine.Core
                 if (vwl == null)
                     vwl = new VertexWeightList();
                 if (vwl.VertexWeights == null)
+                {
                     vwl.VertexWeights =
                         new List<VertexWeight>(new[] { new VertexWeight { JointIndex = 0, Weight = 1.0f } });
-                int nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
-                for (int iJoint = 0; iJoint < nJoints; iJoint++)
+                }
+
+                var nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
+                for (var iJoint = 0; iJoint < nJoints; iJoint++)
                 {
                     // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
                     // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;

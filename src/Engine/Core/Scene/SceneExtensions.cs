@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Static extension methods on <see cref="SceneNode"/> and <see cref="SceneComponent"/> instances (or enumerations)
@@ -376,7 +376,7 @@ namespace Fusee.Engine.Common
         /// Converts the Scene to a SceneNode with a separate Transform
         /// </summary>
         /// <param name="sc">this node.</param>
-        public static SceneNode ToSceneNode(this Scene sc)
+        public static SceneNode ToSceneNode(this SceneContainer sc)
         {
             var snThis = new SceneNode();
             snThis.AddComponent(new Transform());
@@ -393,9 +393,9 @@ namespace Fusee.Engine.Common
         /// Converts the SceneNode to a Scene
         /// </summary>
         /// <param name="snThis">this node.</param>
-        public static Scene ToScene(this SceneNode snThis)
+        public static SceneContainer ToScene(this SceneNode snThis)
         {
-            var sc = new Scene();
+            var sc = new SceneContainer();
 
             foreach (var snThisc in snThis.Children)
             {

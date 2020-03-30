@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
@@ -23,7 +24,7 @@ namespace Fusee.Examples.UI.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
@@ -52,7 +53,7 @@ namespace Fusee.Examples.UI.Core
         private GUIText _fpsText;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
-        private async Task<Scene> CreateNineSliceScene()
+        private SceneContainer CreateNineSliceScene()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -250,7 +251,7 @@ namespace Fusee.Examples.UI.Core
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {

@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
@@ -48,7 +49,7 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
         /// </summary>
         /// <param name="sc">The scene container to calculate an axis-aligned bounding box for.</param>
-        public OBBCalculator(Scene sc)
+        public OBBCalculator(SceneContainer sc)
         {
             _sncList = sc.Children;
         }
@@ -180,7 +181,7 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
         /// </summary>
         /// <param name="sc">The scene container to calculate an axis-aligned bounding box for.</param>
-        public AABBCalculator(Scene sc)
+        public AABBCalculator(SceneContainer sc)
         {
             _sncList = sc.Children;
         }

@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Fusee.Examples.Bone.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
@@ -48,7 +49,7 @@ namespace Fusee.Examples.Bone.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = new Scene
+            _scene = new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
@@ -62,7 +63,7 @@ namespace Fusee.Examples.Bone.Core
                                 Translation = new float3(0, 0, 0),
                                 Scale = float3.One
                             },
-                            new Engine.Common.Bone()
+                            new Fusee.Engine.Core.Scene.Bone()
                         },
                         Children = new ChildList()
                         {
@@ -76,7 +77,7 @@ namespace Fusee.Examples.Bone.Core
                                         Translation = new float3(0, 0.5f, 0),
                                         Scale = float3.One
                                     },
-                                    new Engine.Common.Bone(),
+                                    new Engine.Core.Scene.Bone(),
                                     new Weight(),
                                     ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
                                     CreateCuboid(float3.One)
@@ -86,7 +87,7 @@ namespace Fusee.Examples.Bone.Core
                     }
                 }
             };
-            _scene = AssetStorage.Get<Scene>("BoneAnim.fus");
+            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
             // convert scene graph is not called in this project, so we can add a bone animation
 
             // then add a weightcomponent with weight matrices etc:
@@ -199,7 +200,7 @@ namespace Fusee.Examples.Bone.Core
             //// now we can convert the scene
             //_scene = new ConvertSceneGraph().Convert(_scene);
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            var aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
@@ -207,9 +208,9 @@ namespace Fusee.Examples.Bone.Core
                 // recenter it to the bounding box. Do this check individually per dimension.
                 // This way, small deviations will keep the model's original center, while big deviations
                 // will make the model rotate around its geometric center.
-                float3 bbCenter = bbox.Value.Center;
-                float3 bbSize = bbox.Value.Size;
-                float3 center = float3.Zero;
+                var bbCenter = bbox.Value.Center;
+                var bbSize = bbox.Value.Size;
+                var center = float3.Zero;
                 if (System.Math.Abs(bbCenter.x) > bbSize.x * 0.3)
                     center.x = bbCenter.x;
                 if (System.Math.Abs(bbCenter.y) > bbSize.y * 0.3)
@@ -219,7 +220,7 @@ namespace Fusee.Examples.Bone.Core
                 _sceneCenter = float4x4.CreateTranslation(-center);
 
                 // Adjust the model size
-                float maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
+                var maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
                 if (maxScale != 0)
                     _sceneScale = float4x4.CreateScale(200.0f / maxScale);
                 else
@@ -262,7 +263,7 @@ namespace Fusee.Examples.Bone.Core
                 _zoomVel = Input.Touch.TwoPointDistanceVel * -0.01f;
                 _angleRoll = Input.Touch.TwoPointAngle - _angleRollInit;
                 _offset = Input.Touch.TwoPointMidPoint - _offsetInit;
-                float pinchSpeed = Input.Touch.TwoPointDistanceVel;
+                var pinchSpeed = Input.Touch.TwoPointDistanceVel;
                 if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
             }
             else

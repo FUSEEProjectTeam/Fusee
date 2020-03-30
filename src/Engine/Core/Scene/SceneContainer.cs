@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// The header of a scene.
@@ -26,7 +26,7 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// The root object of a scene file.
     /// </summary>
-    public class Scene
+    public class SceneContainer
     {
         /// <summary>
         /// The header containing meta information about the scene.
