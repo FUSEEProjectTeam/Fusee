@@ -14,7 +14,7 @@ namespace Fusee.Base.Imp.WebAsm
         protected JSObject canvas;
         protected int canvasWidth;
         protected int canvasHeight;
-    
+
         public virtual bool EnableFullScreen => true;
 
         public virtual void Init(JSObject canvas, float4 clearColor)
@@ -25,7 +25,15 @@ namespace Fusee.Base.Imp.WebAsm
             canvasWidth = (int)canvas.GetObjectProperty("width");
             canvasHeight = (int)canvas.GetObjectProperty("height");
 
-            gl = new WebGL2RenderingContext(canvas, new WebGLContextAttributes {  Alpha = true, Antialias = true });
+            gl = new WebGL2RenderingContext(canvas, new WebGLContextAttributes
+            {
+                Alpha = true,
+                Antialias = true,
+                PreferLowPowerToHighPerformance = false,
+                Depth = true,
+                PowerPreference = "high-performance",
+                Desynchronized = true
+            });
         }
 
         public virtual void Run()

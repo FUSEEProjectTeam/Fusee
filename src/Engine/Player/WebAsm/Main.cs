@@ -1,13 +1,13 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.WebAsm;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.WebAsm;
-using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Serialization.V1;
+using ProtoBuf;
 using SkiaSharp;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Path = Fusee.Base.Common.Path;
@@ -69,33 +69,14 @@ namespace Fusee.Engine.Player.Main
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(Scene),
+                    ReturnedType = typeof(SceneContainer),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            //var storageStream = (Stream)storage;
-                            //return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage)).ConfigureAwait(false);
+                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
                         }
-                        // always return something
-                        return new Scene
-                        {
-                            Children = new List<SceneNode>
-                            {
-                                new SceneNode
-                                {
-                                    Components = new List<SceneComponent>
-                                    {
-                                        new Transform
-                                        {
-                                            Scale = float3.One * 50
-                                        },
-                                        ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(0.5f, 0.3f, 0.8f, 1)),
-                                        new Cube()
-                                    }
-                                }
-                            }
-                        };
+                        return null;
                     },
                     Checker = (string id) =>
                     {

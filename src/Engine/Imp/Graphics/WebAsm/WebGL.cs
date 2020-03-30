@@ -46,13 +46,26 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             get => (bool)Handle.GetObjectProperty("preferLowPowerToHighPerformance");
             set => Handle.SetObjectProperty("preferLowPowerToHighPerformance", value);
-        }
+        }    
 
         public bool FailIfMajorPerformanceCaveat
         {
             get => (bool)Handle.GetObjectProperty("failIfMajorPerformanceCaveat");
             set => Handle.SetObjectProperty("failIfMajorPerformanceCaveat", value);
         }
+
+        public bool Desynchronized
+        {
+            get => (bool)Handle.GetObjectProperty("desynchronized");
+            set => Handle.SetObjectProperty("desynchronized", value);
+        }
+
+        public string PowerPreference
+        {
+            get => (string)Handle.GetObjectProperty("powerPreference");
+            set => Handle.SetObjectProperty("powerPreference", value);
+        }
+
 
     }
 

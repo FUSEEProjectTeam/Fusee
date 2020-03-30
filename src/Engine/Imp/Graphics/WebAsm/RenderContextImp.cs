@@ -1808,11 +1808,13 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     break;
                 case RenderState.BlendOperation:
                     _blendEquationRgb = BlendOperationToOgl((BlendOperation)value);
-                    gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    // TODO (mr): find error
+                    //gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.BlendOperationAlpha:
                     _blendEquationAlpha = BlendOperationToOgl((BlendOperation)value);
-                    gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    // TODO (mr): find error
+                    //gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.SourceBlend:
                     {

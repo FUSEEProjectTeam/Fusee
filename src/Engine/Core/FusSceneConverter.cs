@@ -112,7 +112,6 @@ namespace Fusee.Engine.Core
             return _convertedScene;
         }
 
-
         #region Visitors
 
         /// <summary>
@@ -121,7 +120,7 @@ namespace Fusee.Engine.Core
         /// <param name="snc"></param>
         [VisitMethod]
         public void ConvFusNode(FusNode snc)
-        {
+        {   
             snc.Scene = _fusScene;
 
             if (_predecessors.Count != 0)

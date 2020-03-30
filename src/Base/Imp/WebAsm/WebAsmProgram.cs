@@ -1,10 +1,5 @@
 ﻿using Fusee.Math.Core;
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using WebAssembly;
 
 namespace Fusee.Base.Imp.WebAsm
@@ -59,33 +54,31 @@ namespace Fusee.Base.Imp.WebAsm
 
         private static void AddResizeHandler()
         {
-            using (var window = (JSObject)Runtime.GetGlobalObject("window"))
+            using var window = (JSObject)Runtime.GetGlobalObject("window");
+            window.Invoke("addEventListener", "resize", new Action<JSObject>((o) =>
             {
-                window.Invoke("addEventListener", "resize", new Action<JSObject>((o) =>
+                using (var d = (JSObject)Runtime.GetGlobalObject("document"))
+                using (var w = (JSObject)Runtime.GetGlobalObject("window"))
                 {
-                    using (var d = (JSObject)Runtime.GetGlobalObject("document"))
-                    using (var w = (JSObject)Runtime.GetGlobalObject("window"))
-                    {
-                        var canvasObject = (JSObject)d.Invoke("getElementById", canvasName);
+                    var canvasObject = (JSObject)d.Invoke("getElementById", canvasName);
 
-                        var windowWidth = (int)w.GetObjectProperty("innerWidth");
-                        var windowHeight = (int)w.GetObjectProperty("innerHeight");
+                    var windowWidth = (int)w.GetObjectProperty("innerWidth");
+                    var windowHeight = (int)w.GetObjectProperty("innerHeight");
 
-                        var cobj = (string)canvasObject.GetObjectProperty("id");
+                    var cobj = (string)canvasObject.GetObjectProperty("id");
 
-                        canvasObject.SetObjectProperty("width", windowWidth);
-                        canvasObject.SetObjectProperty("height", windowHeight);
+                    canvasObject.SetObjectProperty("width", windowWidth);
+                    canvasObject.SetObjectProperty("height", windowHeight);
 
-                        Console.WriteLine($"{cobj}.Resize({windowWidth}, {windowHeight});");
-                        
+                    Console.WriteLine($"{cobj}.Resize({windowWidth}, {windowHeight});");
 
-                        // call fusee resize
-                        mainExecutable.Resize(windowWidth, windowHeight);
-                    }
 
-                    o.Dispose();
-                }), false);
-            }
+                    // call fusee resize
+                    mainExecutable.Resize(windowWidth, windowHeight);
+                }
+
+                o.Dispose();
+            }), false);
         }
 
         private static void RequestFullscreen(JSObject canvas)
@@ -170,52 +163,51 @@ namespace Fusee.Base.Imp.WebAsm
     {
         public static void GetBrowserWindowSize()
         {
-            using (var document = (JSObject)Runtime.GetGlobalObject("document"))
-            using (var body = (JSObject)document.GetObjectProperty("body"))
-            {
-                Console.WriteLine($"Body width [{body.GetObjectProperty("width")}]");
-            }
+            using var document = (JSObject)Runtime.GetGlobalObject("document");
+            using var body = (JSObject)document.GetObjectProperty("body");
+            Console.WriteLine($"Body width [{body.GetObjectProperty("width")}]");
 
         }
 
         public static JSObject AddCanvas(string divId, string canvasId, int width = 800, int height = 600)
         {
-            using (var document = (JSObject)Runtime.GetGlobalObject("document"))
-            using (var body = (JSObject)document.GetObjectProperty("body"))
+            using var document = (JSObject)Runtime.GetGlobalObject("document");
+            using var body = (JSObject)document.GetObjectProperty("body");
+            var canvas = (JSObject)document.Invoke("createElement", "canvas");
+            canvas.SetObjectProperty("width", width);
+            canvas.SetObjectProperty("height", height);
+            canvas.SetObjectProperty("id", canvasId);
+
+            using (var canvasDiv = (JSObject)document.Invoke("createElement", "div"))
             {
+                canvasDiv.SetObjectProperty("id", divId);
+                canvasDiv.Invoke("appendChild", canvas);
 
-                var canvas = (JSObject)document.Invoke("createElement", "canvas");
-                canvas.SetObjectProperty("width", width);
-                canvas.SetObjectProperty("height", height);
-                canvas.SetObjectProperty("id", canvasId);
-
-                using (var canvasDiv = (JSObject)document.Invoke("createElement", "div"))
-                {
-                    canvasDiv.SetObjectProperty("id", divId);
-                    canvasDiv.Invoke("appendChild", canvas);
-
-                    body.Invoke("appendChild", canvasDiv);
-                }
-
-                return canvas;
+                body.Invoke("appendChild", canvasDiv);
             }
+
+            return canvas;
         }
 
         public static void AddHeader(int headerIndex, string text)
         {
-            using (var document = (JSObject)Runtime.GetGlobalObject("document"))
-            using (var body = (JSObject)document.GetObjectProperty("body"))
-            using (var header = (JSObject)document.Invoke("createElement", $"h{headerIndex}"))
-            using (var headerText = (JSObject)document.Invoke("createTextNode", text))
-            {
-                header.Invoke("appendChild", headerText);
-                body.Invoke("appendChild", header);
-            }
+            using var document = (JSObject)Runtime.GetGlobalObject("document");
+            using var body = (JSObject)document.GetObjectProperty("body");
+            using var header = (JSObject)document.Invoke("createElement", $"h{headerIndex}");
+            using var headerText = (JSObject)document.Invoke("createTextNode", text);
+            header.Invoke("appendChild", headerText);
+            body.Invoke("appendChild", header);
         }
 
-        public static void AddHeader1(string text) => AddHeader(1, text);
+        public static void AddHeader1(string text)
+        {
+            AddHeader(1, text);
+        }
 
-        public static void AddHeader2(string text) => AddHeader(2, text);
+        public static void AddHeader2(string text)
+        {
+            AddHeader(2, text);
+        }
 
         public static void AddParagraph(string text)
         {
@@ -242,46 +234,9 @@ namespace Fusee.Base.Imp.WebAsm
 
         public static void AttachButtonOnClickEvent(string id, Action<JSObject> onClickAction)
         {
-            using (var document = (JSObject)Runtime.GetGlobalObject("document"))
-            using (var button = (JSObject)document.Invoke("getElementById", id))
-            {
-                button.SetObjectProperty("onclick", onClickAction);
-            }
-        }
-    }
-
-    public static class StampHelper
-    {
-        // https://www.meziantou.net/2018/09/24/getting-the-date-of-build-of-a-net-assembly-at-runtime
-        public static DateTime GetBuildDate(Assembly assembly)
-        {
-            var attribute = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-                .FirstOrDefault(x => x.Key == "BuildDate");
-            if (attribute != null)
-            {
-                if (DateTime.TryParseExact(
-                    attribute.Value,
-                    "yyyyMMddHHmmss",
-                    CultureInfo.InvariantCulture,
-                    DateTimeStyles.None, out var result))
-                {
-                    return result;
-                }
-            }
-
-            return default(DateTime);
-        }
-
-        public static string GetCommitHash(Assembly assembly)
-        {
-            var attribute = assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-                .FirstOrDefault(x => x.Key == "CommitHash");
-            if (attribute != null)
-            {
-                return attribute.Value;
-            }
-
-            return string.Empty;
+            using var document = (JSObject)Runtime.GetGlobalObject("document");
+            using var button = (JSObject)document.Invoke("getElementById", id);
+            button.SetObjectProperty("onclick", onClickAction);
         }
     }
 }

@@ -111,9 +111,6 @@ namespace Fusee.Engine.Player.Core
                     _sceneScale = float4x4.Identity;
             }
 
-            foreach (var comp in _scene.Children[1].Components)
-                Diagnostics.Info(comp);
-            
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -235,12 +232,12 @@ namespace Fusee.Engine.Player.Core
             // Tick any animations and Render the scene loaded in Init()
             RC.View = view;
             RC.Projection = perspective;
-            _sceneRenderer.Animate();
+            //_sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
             RC.View = view;
             RC.Projection = orthographic;
-            _guiRenderer.Render(RC);            
+            //_guiRenderer.Render(RC);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
