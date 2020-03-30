@@ -3614,8 +3614,6 @@ Global
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Android|x86.Build.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Android|x86.Deploy.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|Any CPU.Deploy.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|x64.ActiveCfg = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|x64.Deploy.0 = Debug|Any CPU
@@ -3623,7 +3621,6 @@ Global
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-Desktop|x86.Deploy.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-WebAsm|Any CPU.Deploy.0 = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
@@ -3650,8 +3647,6 @@ Global
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Android|x86.Build.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Android|x86.Deploy.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|Any CPU.Deploy.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|x64.ActiveCfg = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|x64.Deploy.0 = Release|Any CPU
@@ -3659,8 +3654,6 @@ Global
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-Desktop|x86.Deploy.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|Any CPU.Deploy.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|x64.Deploy.0 = Release|Any CPU
@@ -3668,8 +3661,6 @@ Global
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-NuGet|x86.Deploy.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
-		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-WebAsm|Any CPU.Deploy.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{05BCD767-C30E-4D72-A006-B23CF90056CA}.Release-WebAsm|x64.Deploy.0 = Release|Any CPU
@@ -3719,7 +3710,6 @@ Global
 		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{78A63AE0-11EE-430D-8D21-F7898DE1C9DA}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
@@ -3737,7 +3727,6 @@ Global
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug|x86.Build.0 = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3749,7 +3738,6 @@ Global
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
-		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
@@ -3761,7 +3749,6 @@ Global
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release|x86.ActiveCfg = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release|x86.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Android|x64.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Android|x86.ActiveCfg = Release|Any CPU
@@ -3773,13 +3760,11 @@ Global
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{FB989806-C5D3-461B-BF43-60EB9EE6C5BE}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
@@ -3827,7 +3812,6 @@ Global
 		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{5033E4B0-9EED-46DD-BCA3-14598D94AD85}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
@@ -3845,7 +3829,6 @@ Global
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug|x86.Build.0 = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3857,7 +3840,6 @@ Global
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
-		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
@@ -3869,7 +3851,6 @@ Global
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release|x86.ActiveCfg = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release|x86.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Android|x64.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Android|x86.ActiveCfg = Release|Any CPU
@@ -3881,13 +3862,11 @@ Global
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{07265D13-949B-421F-A714-9E4445B7183E}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{07265D13-949B-421F-A714-9E4445B7183E}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{07265D13-949B-421F-A714-9E4445B7183E}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
@@ -3911,8 +3890,6 @@ Global
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Android|x86.Build.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Android|x86.Deploy.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|Any CPU.Deploy.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|x64.ActiveCfg = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|x64.Deploy.0 = Debug|Any CPU
@@ -3920,7 +3897,6 @@ Global
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-Desktop|x86.Deploy.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-WebAsm|Any CPU.Deploy.0 = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
@@ -3947,8 +3923,6 @@ Global
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Android|x86.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Android|x86.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|Any CPU.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|x64.ActiveCfg = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|x64.Deploy.0 = Release|Any CPU
@@ -3956,8 +3930,6 @@ Global
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-Desktop|x86.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|Any CPU.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x64.Deploy.0 = Release|Any CPU
@@ -3965,8 +3937,6 @@ Global
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x86.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|Any CPU.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|x64.Deploy.0 = Release|Any CPU
