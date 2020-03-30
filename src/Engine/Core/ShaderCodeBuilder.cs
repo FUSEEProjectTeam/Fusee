@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Fusee.Engine.Core
 {
@@ -174,7 +174,9 @@ namespace Fusee.Engine.Core
                     effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
                 }
                 else
+                {
                     effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
+                }
             }
 
             return new ShaderEffect(new[]
@@ -292,8 +294,8 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
             });
         }
 
@@ -309,7 +311,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},                
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
                 new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
@@ -463,7 +465,7 @@ namespace Fusee.Engine.Core
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffect MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, string albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
-        {           
+        {
             return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
                 MatProbs =
@@ -514,7 +516,7 @@ namespace Fusee.Engine.Core
                     SpecularColor = specularColor,
                     SpecularShininess = shininess,
                     SpecularIntensity = specularIntensity
-                }                
+                }
             });
         }
 
@@ -523,14 +525,20 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fxProps">The ShaderEffectProps to use (including values)</param>
         /// <returns>a new ShaderEffectProtoPixel</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(ShaderEffectProps fxProps) => MakeShaderEffectFromShaderEffectPropsProto(fxProps);
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(ShaderEffectProps fxProps)
+        {
+            return MakeShaderEffectFromShaderEffectPropsProto(fxProps);
+        }
 
         /// <summary>
         /// Build a complex shader by specifying the <see cref="ShaderEffectProps"/> explicitly.
         /// </summary>
         /// <param name="fxProps">The ShaderEffectProps to use (including values)</param>
         /// <returns></returns>
-        public static ShaderEffect MakeShaderEffect(ShaderEffectProps fxProps) => MakeShaderEffectFromShaderEffectProps(fxProps);
+        public static ShaderEffect MakeShaderEffect(ShaderEffectProps fxProps)
+        {
+            return MakeShaderEffectFromShaderEffectProps(fxProps);
+        }
 
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
@@ -582,8 +590,8 @@ namespace Fusee.Engine.Core
         {
             fxProps.MeshProbs = AnalyzeMesh(null);
 
-            string vs = CreateVertexShader(wc, fxProps);
-            string ps = CreateProtoPixelShader(fxProps);
+            var vs = CreateVertexShader(wc, fxProps);
+            var ps = CreateProtoPixelShader(fxProps);
             var effectParameters = AssembleEffectParamers(fxProps);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
@@ -837,7 +845,7 @@ namespace Fusee.Engine.Core
                 });
             }
 
-            for (int i = 0; i < LightingShard.NumberOfLightsForward; i++)
+            for (var i = 0; i < LightingShard.NumberOfLightsForward; i++)
             {
                 if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
                 {
@@ -982,7 +990,7 @@ namespace Fusee.Engine.Core
                     SpecularIntensity = 0.5f
                 }
             });
-        }       
+        }
 
     }
 }

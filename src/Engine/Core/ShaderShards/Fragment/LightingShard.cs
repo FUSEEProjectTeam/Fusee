@@ -1,5 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +13,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class LightingShard
     {
         ///The maximal number of lights we can render when using the forward pipeline.
-        public const int NumberOfLightsForward = 8;        
+        public const int NumberOfLightsForward = 8;
 
         /// <summary>
         /// Struct, that describes a Light object in the shader code./>
@@ -276,9 +277,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 //TODO: Test alpha blending between diffuse and texture
                 if (effectProps.MatProbs.HasAlbedoTexture)
+                {
                     applyLightParams.Add(
                         $"vec4 blendedCol = mix({UniformNameDeclarations.AlbedoColor}, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.AlbedoMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
+                }
                 else
                     applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.AlbedoColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
             }
@@ -734,13 +737,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
     internal struct LightParamStrings
     {
-        public string PositionViewSpace;        
+        public string PositionViewSpace;
         public string Intensities;
         public string MaxDistance;
         public string Strength;
         public string OuterAngle;
         public string InnerAngle;
-        public string Direction;        
+        public string Direction;
         public string LightType;
         public string IsActive;
         public string IsCastingShadows;

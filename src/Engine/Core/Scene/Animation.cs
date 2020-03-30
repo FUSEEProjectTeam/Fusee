@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Contains animation data. Generally, a list of animation tracks

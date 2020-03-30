@@ -14,6 +14,7 @@ using Fusee.Serialization;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Examples.Camera.Android
 {
@@ -60,7 +61,7 @@ namespace Fusee.Examples.Camera.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(Scene),
+                        ReturnedType = typeof(SceneContainer),
                         Decoder = (string id, object storage) =>
                         {
                             if (Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase))

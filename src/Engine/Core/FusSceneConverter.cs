@@ -1,12 +1,10 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
-using Fusee.Xirkit;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,19 +20,19 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static Scene ConvertFrom(FusFile fus)
+        public static SceneContainer ConvertFrom(FusFile fus)
         {
             if (fus == null)
             {
                 Diagnostics.Error("Could not read content of scene, file is null!");
-                return new Scene();
+                return new SceneContainer();
             }
 
             // try to cast, if this fails the content is empty or null
             if (!(fus.Contents is FusScene))
             {
                 Diagnostics.Error($"Could not read content of scene from {fus.Header.CreationDate} created by {fus.Header.CreatedBy} with {fus.Header.Generator}");
-                return new Scene();
+                return new SceneContainer();
             }
 
             var instance = new FusFileToSceneConvertV1();
@@ -55,7 +53,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high low level graph <see cref="FusFile"/> by converting and/or splitting its components into the low level equivalents.
         /// </summary>
         /// <param name="sc">The Scene to convert.</param>
-        public static FusFile ConvertTo(Scene sc)
+        public static FusFile ConvertTo(SceneContainer sc)
         {
             if (sc == null)
             {
@@ -80,8 +78,8 @@ namespace Fusee.Engine.Core
 
     internal class FusFileToSceneConvertV1 : Visitor<FusNode, FusComponent>
     {
-        FusScene _fusScene;
-        private readonly Scene _convertedScene;
+        private FusScene _fusScene;
+        private readonly SceneContainer _convertedScene;
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
@@ -100,14 +98,14 @@ namespace Fusee.Engine.Core
         internal FusFileToSceneConvertV1()
         {
             _predecessors = new Stack<SceneNode>();
-            _convertedScene = new Scene();
+            _convertedScene = new SceneContainer();
 
             _matMap = new Dictionary<FusMaterial, ShaderEffect>();
             _pbrComponent = new Dictionary<FusMaterialPBR, ShaderEffect>();
             _boneContainers = new Stack<SceneNode>();
         }
 
-        internal Scene Convert(FusScene sc)
+        internal SceneContainer Convert(FusScene sc)
         {
             _fusScene = sc;
             Traverse(sc.Children);
@@ -195,15 +193,15 @@ namespace Fusee.Engine.Core
                 Name = xft.Name,
                 HorizontalAlignment =
                 xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.CENTER
-                ? Common.HorizontalTextAlignment.CENTER
+                ? Scene.HorizontalTextAlignment.CENTER
                 : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.LEFT
-                ? Common.HorizontalTextAlignment.LEFT
-                : Common.HorizontalTextAlignment.RIGHT,
+                ? Scene.HorizontalTextAlignment.LEFT
+                : Scene.HorizontalTextAlignment.RIGHT,
                 VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.CENTER
-                ? Common.VerticalTextAlignment.CENTER
+                ? Scene.VerticalTextAlignment.CENTER
                 : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.BOTTOM
-                ? Common.VerticalTextAlignment.BOTTOM
-                : Common.VerticalTextAlignment.TOP
+                ? Scene.VerticalTextAlignment.BOTTOM
+                : Scene.VerticalTextAlignment.TOP
             });
         }
 
@@ -217,8 +215,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.SCREEN
-                ? Common.CanvasRenderMode.SCREEN
-                : Common.CanvasRenderMode.WORLD)
+                ? Scene.CanvasRenderMode.SCREEN
+                : Scene.CanvasRenderMode.WORLD)
             {
                 Name = ct.Name,
                 Scale = ct.Scale,
@@ -300,7 +298,7 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.ORTHOGRAPHIC ? Common.ProjectionMethod.ORTHOGRAPHIC : Common.ProjectionMethod.PERSPECTIVE,
+            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.Orthographic ? Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic : Fusee.Engine.Core.Scene.ProjectionMethod.Perspective,
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
                 Active = cc.Active,
@@ -415,12 +413,12 @@ namespace Fusee.Engine.Core
                 WeightMap = w.WeightMap.Select(wm =>
                 {
 
-                    var currentWeightList = new Common.VertexWeightList
+                    var currentWeightList = new Scene.VertexWeightList
                     {
-                        VertexWeights = new List<Common.VertexWeight>()
+                        VertexWeights = new List<Scene.VertexWeight>()
                     };
 
-                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Common.VertexWeight { JointIndex = ww.JointIndex, Weight = ww.Weight }).ToList();
+                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Scene.VertexWeight { JointIndex = ww.JointIndex, Weight = ww.Weight }).ToList();
 
                     currentWeightList.VertexWeights.AddRange(currentVertexWeights);
                     return currentWeightList;
@@ -498,7 +496,7 @@ namespace Fusee.Engine.Core
                 vals.EmissiveMix = m.Albedo.Mix;
                 vals.EmissiveTexture = m.Albedo.Texture ?? null;
             }
-            
+
             if (m.HasSpecular)
             {
                 vals.SpecularColor = m.Specular.Color;
@@ -522,10 +520,10 @@ namespace Fusee.Engine.Core
                         HasNormalMap = m.HasNormalMap
                     },
                     MatType = MaterialType.Standard,
-                    MatValues = vals                    
+                    MatValues = vals
                 });
 
-            sfx.Name = m.Name ?? ""; 
+            sfx.Name = m.Name ?? "";
 
             _matMap.Add(m, sfx);
             return sfx;
@@ -567,7 +565,7 @@ namespace Fusee.Engine.Core
             vals.DiffuseFraction = m.DiffuseFraction;
             vals.FresnelReflectance = m.FresnelReflectance;
             vals.RoughnessValue = m.RoughnessValue;
-   
+
             sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
                 new ShaderEffectProps
                 {
@@ -613,12 +611,14 @@ namespace Fusee.Engine.Core
         internal SceneToFusFileConvertV1()
         {
             _predecessors = new Stack<FusNode>();
-            _convertedScene = new FusFile();
-            _convertedScene.Contents = new FusScene();
+            _convertedScene = new FusFile
+            {
+                Contents = new FusScene()
+            };
             _boneContainers = new Stack<FusComponent>();
         }
 
-        internal FusFile Convert(Scene sc)
+        internal FusFile Convert(SceneContainer sc)
         {
             Traverse(sc.Children);
             return _convertedScene;
@@ -655,7 +655,7 @@ namespace Fusee.Engine.Core
         /// Converts the animation component.
         ///</summary>
         [VisitMethod]
-        public void ConvAnimation(Common.Animation a)
+        public void ConvAnimation(Core.Scene.Animation a)
         {
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }
@@ -685,14 +685,14 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Common.HorizontalTextAlignment.CENTER
+                xft.HorizontalAlignment == Scene.HorizontalTextAlignment.CENTER
                 ? Serialization.V1.HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Common.HorizontalTextAlignment.LEFT
+                : xft.HorizontalAlignment == Scene.HorizontalTextAlignment.LEFT
                 ? Serialization.V1.HorizontalTextAlignment.LEFT
                 : Serialization.V1.HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Common.VerticalTextAlignment.CENTER
+                VerticalAlignment = xft.VerticalAlignment == Scene.VerticalTextAlignment.CENTER
                 ? Serialization.V1.VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Common.VerticalTextAlignment.BOTTOM
+                : xft.VerticalAlignment == Scene.VerticalTextAlignment.BOTTOM
                 ? Serialization.V1.VerticalTextAlignment.BOTTOM
                 : Serialization.V1.VerticalTextAlignment.TOP
             });
@@ -704,7 +704,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCanvasTransform(CanvasTransform ct)
         {
-            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Common.CanvasRenderMode.SCREEN
+            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Scene.CanvasRenderMode.SCREEN
                 ? Serialization.V1.CanvasRenderMode.SCREEN
                 : Serialization.V1.CanvasRenderMode.WORLD)
             {
@@ -841,7 +841,7 @@ namespace Fusee.Engine.Core
                 ClippingPlanes = cc.ClippingPlanes,
                 Fov = cc.Fov,
                 Viewport = cc.Viewport,
-                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.ORTHOGRAPHIC ? Serialization.V1.ProjectionMethod.ORTHOGRAPHIC : Serialization.V1.ProjectionMethod.PERSPECTIVE
+                ProjectionMethod = cc.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 
@@ -912,7 +912,7 @@ namespace Fusee.Engine.Core
                 Name = cc.Name,
                 ClippingPlanes = cc.ClippingPlanes,
                 Fov = cc.Fov,
-                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.ORTHOGRAPHIC ? Serialization.V1.ProjectionMethod.ORTHOGRAPHIC : Serialization.V1.ProjectionMethod.PERSPECTIVE
+                ProjectionMethod = cc.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 

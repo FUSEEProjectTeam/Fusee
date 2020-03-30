@@ -5,8 +5,8 @@ namespace Fusee.Serialization.V1
 {
     public enum ProjectionMethod
     {
-        ORTHOGRAPHIC,
-        PERSPECTIVE
+        Orthographic,
+        Perspective
     }
 
 

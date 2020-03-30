@@ -1,10 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Contains light information. If contained in a node, the node serves as a light object.

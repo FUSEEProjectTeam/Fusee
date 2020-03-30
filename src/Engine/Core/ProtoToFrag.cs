@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
@@ -8,11 +8,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The SceneContainer, containing the scene that gets rendered.
         /// </summary>
-        private readonly Scene _sc;
+        private readonly SceneContainer _sc;
 
         private readonly bool _renderForward;
 
-        public ProtoToFrag(Scene sc, bool renderForward)
+        public ProtoToFrag(SceneContainer sc, bool renderForward)
         {
             _sc = sc;
             _renderForward = renderForward;

@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
@@ -9,10 +10,12 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
+using Transform = Fusee.Engine.Core.Scene.Transform;
 
 namespace Fusee.Examples.GeometryEditing.Core
 {
@@ -36,7 +39,7 @@ namespace Fusee.Examples.GeometryEditing.Core
         private bool _twoTouchRepeated;
 
         private SceneNode _parentNode;
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _renderer;
 
         private Dictionary<int, Geometry> _activeGeometrys;
@@ -72,7 +75,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             _parentNode.Components.Add(parentTrans);
 
 
-            _scene = new Scene { Children = new List<SceneNode> { _parentNode } };           
+            _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };           
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);

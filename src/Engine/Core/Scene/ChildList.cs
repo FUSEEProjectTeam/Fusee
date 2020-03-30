@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// List of child nodes used in <see cref="SceneNode"/> instances. In addition to normal collection operations

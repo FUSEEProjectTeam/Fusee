@@ -1,9 +1,9 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -28,30 +28,30 @@ namespace Fusee.Examples.AdvancedUI.Core
         private const float ZNear = 1f;
         private const float ZFar = 1000;
 
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
-        private Scene _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private float _initWidth;
         private float _initHeight;
         private float2 _resizeScaleFactor;
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
         private float _canvasWidth;
         private float _canvasHeight;
 
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private List<UIInput> _uiInput;
 
-        private ScenePicker _scenePicker;        
+        private ScenePicker _scenePicker;
 
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
 
-        private Scene BuildScene()
+        private SceneContainer BuildScene()
         {
             var sphere = new Sphere(32, 24);
 
@@ -61,7 +61,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
             var line = new Line(lineControlPoints, 0.2f);
 
-            return new Scene()
+            return new SceneContainer()
             {
                 Children = new List<SceneNode>()
                 {
@@ -122,7 +122,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initHeight = Height;
 
             //_scene = BuildScene();
-            _scene = AssetStorage.Get<Scene>("Monkey.fus");
+            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             rnd = new Random();
@@ -284,7 +284,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    
+
                     var newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
@@ -369,9 +369,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                     _uiInput[k] = uiInput;
                 }
             }
-            
+
             _sceneRenderer.Render(RC);
-            
+
             RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             _guiRenderer.Render(RC);
 
@@ -388,9 +388,9 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         }
 
-        private Scene CreateGui()
+        private SceneContainer CreateGui()
         {
-            var canvasScaleFactor = _initWidth / _canvasWidth;           
+            var canvasScaleFactor = _initWidth / _canvasWidth;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
@@ -444,9 +444,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                     UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
-            }           
+            }
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {

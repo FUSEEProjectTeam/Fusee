@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -22,11 +23,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private const float RotationSpeed = 7;
 
-        private Scene _rocketScene;
+        private SceneContainer _rocketScene;
         private SceneRendererDeferred _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
-        private Scene _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
@@ -41,7 +42,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Light _sun;
 
         private Transform _camTransform;
-        private Camera _campComp = new Camera(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
+        private Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 3000, M.PiOver4);
 
         // Init is called on startup.
         public override async Task<bool> Init()
@@ -63,7 +64,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Load the rocket model
             //_rocketScene = AssetStorage.Get<Scene>("sponza.fus");
-            _rocketScene = AssetStorage.Get<Scene>("sponza_wo_textures.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<Scene>("shadowTest.fus");
             
 
@@ -276,7 +277,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             Present();
         }
 
-        private Scene CreateGui()
+        private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -325,7 +326,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 VerticalTextAlignment.CENTER);
 
 
-            var guiCamComp = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
+            var guiCamComp = new Camera(ProjectionMethod.Orthographic, 1, 3000, M.PiOver4)
             {
                 ClearColor = false
             };
@@ -356,7 +357,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 }
             };
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {

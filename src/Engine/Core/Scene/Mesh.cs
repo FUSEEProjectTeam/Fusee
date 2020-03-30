@@ -1,7 +1,8 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using System;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Provides the ability to create or interact directly with the point data.
@@ -305,7 +306,7 @@ namespace Fusee.Engine.Common
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);            
+            Dispose(true);
         }
 
         #endregion

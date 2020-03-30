@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Defines a weight map. Basically a table with a row for each vertex and a column for each bone

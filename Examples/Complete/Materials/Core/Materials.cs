@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Jometri;
@@ -10,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
-using Transform = Fusee.Engine.Common.Transform;
+using Transform = Fusee.Engine.Core.Scene.Transform;
 
 namespace Fusee.Examples.Materials.Core
 {
@@ -24,7 +25,7 @@ namespace Fusee.Examples.Materials.Core
         private float _zoom = -25f;
         private float _offsetX, _offsetY = 0;
 
-        private Scene _scene;
+        private SceneContainer _scene;
 
 
         // Init is called on startup.
@@ -45,7 +46,7 @@ namespace Fusee.Examples.Materials.Core
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
-            var guiDescriptionScene = new Scene
+            var guiDescriptionScene = new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
@@ -307,7 +308,7 @@ namespace Fusee.Examples.Materials.Core
                 }
             };
 
-            _scene = new Scene
+            _scene = new SceneContainer
             {
                 Header = new SceneHeader
                 {

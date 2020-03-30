@@ -1,7 +1,7 @@
-﻿using System;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
+using System;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Component that allows a SceneNode to save information usually associated with a "PtOctant".
@@ -53,9 +53,9 @@ namespace Fusee.Engine.Common
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
-      
+
         public int PosInHierarchyTex;
-       
+
         public byte VisibleChildIndices;
 
         /// <summary>

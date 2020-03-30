@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -42,7 +43,7 @@ namespace Fusee.Engine.Core
             WorldSpacePos = float3.Zero;
             Rotation = float4x4.Identity;
             Id = Suid.GenerateSuid();
-        }       
+        }
 
         /// <summary>
         /// Override for the Equals method.
@@ -51,7 +52,7 @@ namespace Fusee.Engine.Core
         public override bool Equals(object obj)
         {
             var lc = (LightResult)obj;
-            return this.Id.Equals(lc.Id);
+            return Id.Equals(lc.Id);
         }
 
         /// <summary>
@@ -111,8 +112,8 @@ namespace Fusee.Engine.Core
         /// </value>
         public float4x4 Model
         {
-            set { _model.Tos = value; }
-            get { return _model.Tos; }
+            set => _model.Tos = value;
+            get => _model.Tos;
         }
 
         /// <summary>
@@ -125,28 +126,28 @@ namespace Fusee.Engine.Core
     }
 
     internal class PrePassVisitor : Visitor<SceneNode, SceneComponent>
-    {        
+    {
         public List<Tuple<SceneNode, LightResult>> LightPrepassResuls;
         public List<Tuple<SceneNode, CameraResult>> CameraPrepassResults;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
-        private RendererState _state;
+        private readonly RendererState _state;
 
         private CanvasTransform _ctc;
-        private MinMaxRect _parentRect;       
+        private MinMaxRect _parentRect;
         protected RenderContext _rc;
         private bool isCtcInitialized = false;
 
         public PrePassVisitor()
-        {            
+        {
             _state = new RendererState();
             LightPrepassResuls = new List<Tuple<SceneNode, LightResult>>();
             CameraPrepassResults = new List<Tuple<SceneNode, CameraResult>>();
         }
 
-        public void PrePassTraverse(Scene sc, RenderContext rc)
+        public void PrePassTraverse(SceneContainer sc, RenderContext rc)
         {
             _rc = rc;
             LightPrepassResuls.Clear();
@@ -218,7 +219,7 @@ namespace Fusee.Engine.Core
                 frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
                 frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
 
-                for (int i = 0; i < frustumCorners.Length; i++)
+                for (var i = 0; i < frustumCorners.Length; i++)
                 {
                     var corner = frustumCorners[i];
                     corner /= corner.w; //world space frustum corners               
@@ -313,9 +314,13 @@ namespace Fusee.Engine.Core
                 scale = float4x4.CreateScale(scaleX, scaleY, 1);
             }
             else if (_state.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
+            {
                 scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            }
             else
+            {
                 scale = float4x4.CreateScale(1, 1, 1);
+            }
 
             _state.Model *= scale;
             _rc.Model = _state.Model;
@@ -428,7 +433,7 @@ namespace Fusee.Engine.Core
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(Transform transform)
-        {            
+        {
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
         }
@@ -437,10 +442,10 @@ namespace Fusee.Engine.Core
         public void OnLight(Light lightComponent)
         {
             var lightResult = new LightResult(lightComponent)
-            {                
+            {
                 Rotation = _state.Model.RotationComponent(),
                 WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
-            };        
+            };
 
             LightPrepassResuls.Add(new Tuple<SceneNode, LightResult>(CurrentNode, lightResult));
         }
@@ -470,7 +475,7 @@ namespace Fusee.Engine.Core
                 view.M13 /= scale.z;
                 view.M23 /= scale.z;
                 view.M33 /= scale.z;
-            }          
+            }
 
             view = view.Invert();
 

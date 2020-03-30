@@ -1,6 +1,7 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Used to define the Projection method of a <see cref="Camera"/>. Defines how the projection matrix is calculated.
@@ -10,12 +11,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Perspective projection method.
         /// </summary>
-        PERSPECTIVE,
+        Perspective,
 
         /// <summary>
         /// Orthographic projection method.
         /// </summary>
-        ORTHOGRAPHIC
+        Orthographic
     }
 
     /// <summary>
@@ -121,7 +122,7 @@ namespace Fusee.Engine.Common
         {
             if (CustomCameraUpdate != null)
             {
-                CustomCameraUpdate(out viewport, out float4x4 proj);
+                CustomCameraUpdate(out viewport, out var proj);
                 return proj;
             }
 
@@ -136,10 +137,10 @@ namespace Fusee.Engine.Common
             switch (ProjectionMethod)
             {
                 default:
-                case ProjectionMethod.PERSPECTIVE:
+                case ProjectionMethod.Perspective:
                     return float4x4.CreatePerspectiveFieldOfView(Fov, (float)width / height, ClippingPlanes.x, ClippingPlanes.y);
 
-                case ProjectionMethod.ORTHOGRAPHIC:
+                case ProjectionMethod.Orthographic:
                     return float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y);
             }
         }

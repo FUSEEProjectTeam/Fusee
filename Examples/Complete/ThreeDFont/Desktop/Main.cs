@@ -1,8 +1,8 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
@@ -32,7 +32,7 @@ namespace Fusee.Examples.ThreeDFont.Desktop
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(Scene),
+                    ReturnedType = typeof(SceneContainer),
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -46,7 +46,7 @@ namespace Fusee.Examples.ThreeDFont.Desktop
             var app = new Core.ThreeDFont();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            var appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
