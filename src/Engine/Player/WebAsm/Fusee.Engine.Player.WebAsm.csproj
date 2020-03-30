@@ -4,6 +4,7 @@
         <PackageId>Fusee.Engine.Player.WebAsm</PackageId>
         <TargetFramework>netstandard2.1</TargetFramework>
         <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+        <MonoWasmLinkSkip>Fusee.Engine.Player.WebAsm</MonoWasmLinkSkip>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -18,7 +19,7 @@
         <Content Include="canvaskit.wasm" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="canvaskit.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="index.html" CopyToOutputDirectory="PreserveNewest" />
-    </ItemGroup>  
+    </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj">
             <PrivateAssets>analyzers</PrivateAssets>
@@ -34,15 +35,14 @@
             <HintPath>$(FuseeEngineRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
         </Reference>
 
-         <Reference Include="protobuf-net">
-            <HintPath>$(FuseeEngineRoot)\ext\protobuf-net\protobuf-net.dll</HintPath>
+        <Reference Include="protobuf-net">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
         </Reference>
-        
+
         <PackageReference Include="WebAssembly.Bindings" Version="0.2.2" />
         <PackageReference Include="WebAssembly.Net.Http" Version="0.2.2" />
         <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.2" />
         <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-      
     </ItemGroup>
 
     <Target Name="FuseeWasmCopyInheritedAssets" BeforeTargets="MonoWasmCopyOutput">

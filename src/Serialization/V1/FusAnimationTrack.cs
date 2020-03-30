@@ -154,13 +154,13 @@ namespace Fusee.Serialization.V1
         /// The scene component to be controlled by this animation track.
         /// </summary>
         [ProtoMember(1)]
-        public FusComponent SceneComponent;
+        public FusComponent? SceneComponent;
 
         /// <summary>
         /// The name to the property/field to control. May be a dot-separated path to a sub-item (e.g. "Transform.Position.x").
         /// </summary>
         [ProtoMember(2)] 
-        public string Property;
+        public string? Property;
 
         /// <summary>
         /// The type of the key-values stored in this animation track.

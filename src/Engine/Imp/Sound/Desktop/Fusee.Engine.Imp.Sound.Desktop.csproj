@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Sound.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Sound.Desktop</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

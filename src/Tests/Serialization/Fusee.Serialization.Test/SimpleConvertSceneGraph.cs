@@ -181,7 +181,7 @@ namespace Fusee.Serialization.Test
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusCamera
             {
                 Fov = 2000,
-                ProjectionMethod = V1.ProjectionMethod.ORTHOGRAPHIC,
+                ProjectionMethod = V1.ProjectionMethod.Orthographic,
                 ClippingPlanes = new float2(0, 500)
             });
 
@@ -329,7 +329,7 @@ namespace Fusee.Serialization.Test
                 {
                     Assert.Equal(camera.Name, ((FusCamera)fusFileComp).Name);
                     Assert.Equal(camera.Layer, ((FusCamera)fusFileComp).Layer);
-                    Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == V1.ProjectionMethod.ORTHOGRAPHIC ?
+                    Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == V1.ProjectionMethod.Orthographic ?
                         Engine.Common.ProjectionMethod.ORTHOGRAPHIC : Engine.Common.ProjectionMethod.PERSPECTIVE));
                     Assert.Equal(camera.Viewport, ((FusCamera)fusFileComp).Viewport);
                     Assert.Equal(camera.Fov, ((FusCamera)fusFileComp).Fov);

@@ -76,7 +76,7 @@ namespace Fusee.Engine.Player.Core
 
             // Load the standard model
             //_scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
-            _scene = await Rocket.Build();
+            _scene = Rocket.Build();
 
             _gui = await CreateGui();
             // Create the interaction handler

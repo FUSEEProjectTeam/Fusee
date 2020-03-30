@@ -3,10 +3,20 @@ using ProtoBuf;
 
 namespace Fusee.Serialization.V1
 {
+    /// <summary>
+    /// Projection method for the camera
+    /// </summary>
     public enum ProjectionMethod
     {
-        ORTHOGRAPHIC,
-        PERSPECTIVE
+        /// <summary>
+        /// Ortographic projection
+        /// </summary>
+        Orthographic,
+
+        /// <summary>
+        /// Perspective projection
+        /// </summary>
+        Perspective
     }
 
 

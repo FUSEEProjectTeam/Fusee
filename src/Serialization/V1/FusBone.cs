@@ -15,7 +15,7 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(1)]
 #pragma warning disable CS0108 // Member hides inherited member; missing new keyword
-        public string Name;
+        public string? Name;
 #pragma warning restore CS0108 // Member hides inherited member; missing new keyword
     }
 }

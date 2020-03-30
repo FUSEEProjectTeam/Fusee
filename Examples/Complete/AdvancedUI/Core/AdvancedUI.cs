@@ -51,7 +51,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
 
-        private async Task<SceneContainer> BuildScene()
+        private async Task<Scene> BuildScene()
         {
             var sphere = new Sphere(32, 24);
 

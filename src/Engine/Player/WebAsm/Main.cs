@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.WebAsm;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.WebAsm;
 using Fusee.Math.Core;
@@ -68,7 +69,7 @@ namespace Fusee.Engine.Player.Main
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(SceneContainer),
+                    ReturnedType = typeof(Scene),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -77,30 +78,24 @@ namespace Fusee.Engine.Player.Main
                             //return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage)).ConfigureAwait(false);
                         }
                         // always return something
-                        return new ConvertSceneGraph().Convert(new SceneContainer
+                        return new Scene
                         {
-                            Children = new List<SceneNodeContainer>
+                            Children = new List<SceneNode>
                             {
-                                new SceneNodeContainer
+                                new SceneNode
                                 {
-                                    Components = new List<SceneComponentContainer>
+                                    Components = new List<SceneComponent>
                                     {
-                                        new TransformComponent
+                                        new Transform
                                         {
                                             Scale = float3.One * 50
                                         },
-                                        new MaterialComponent() // TODO: MaterialComponent is broken, shader is missing, figure out why!
-                                        {
-                                            Diffuse = new MatChannelContainer
-                                            {
-                                                Color = new float4(0.5f, 0.3f, 0.8f, 1)
-                                            }
-                                        },
+                                        ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(0.5f, 0.3f, 0.8f, 1)),
                                         new Cube()
                                     }
                                 }
                             }
-                        });
+                        };
                     },
                     Checker = (string id) =>
                     {

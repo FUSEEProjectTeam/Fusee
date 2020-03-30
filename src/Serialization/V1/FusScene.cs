@@ -16,13 +16,13 @@ namespace Fusee.Serialization.V1
         /// Indices into this list are used as references at other places in the .fus file.
         /// </summary>
         [ProtoMember(1)]
-        public List<FusComponent> ComponentList;
+        public List<FusComponent>? ComponentList;
 
         /// <summary>
         /// List of root nodes of the scene graph making up this scene.
         /// </summary>
         [ProtoMember(2)]
-        public List<FusNode> Children;
+        public List<FusNode>? Children;
 
         /// <summary>
         /// Adds a node as a a child node to 

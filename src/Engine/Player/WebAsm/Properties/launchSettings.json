@@ -2,7 +2,7 @@
   "profiles": {
     "WebLaunch": {
       "commandName": "Executable",
-      "executablePath": "python.exe",
+      "executablePath": "python",
       "commandLineArgs": "server.py",
       "workingDirectory": "$(OutputPath)",
       "launchBrowser": true,

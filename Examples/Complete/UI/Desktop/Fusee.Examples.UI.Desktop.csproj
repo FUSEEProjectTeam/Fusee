@@ -1,24 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Fusee.Examples.UI.Desktop</RootNamespace>
-    <PackageId>Fusee.Examples.UI.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputType>WinExe</OutputType>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>Fusee.Examples.UI.Desktop</RootNamespace>
+        <PackageId>Fusee.Examples.UI.Desktop</PackageId>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+        <OutputType>WinExe</OutputType>
+        <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+        <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\UI\Desktop\</OutputPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Examples\UI\Desktop\</OutputPath>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-    <ProjectReference Include="..\Core\Fusee.Examples.UI.Core.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <Reference Include="protobuf-net">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+        </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+        <ProjectReference Include="..\Core\Fusee.Examples.UI.Core.csproj" />
+    </ItemGroup>
 </Project>

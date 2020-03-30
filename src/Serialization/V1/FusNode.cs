@@ -17,33 +17,43 @@ namespace Fusee.Serialization.V1
         /// The name of the node. Often used to identify individual parts of a scene.
         /// </summary>
         [ProtoMember(1)]
-        public string Name;
+        public string? Name;
 
         /// <summary>
         /// Indices into the <see cref="FusScene"/>'s list of components that make up this node.
         /// </summary>
         [ProtoMember(2)]
-        public List<int> Components;
+        public List<int>? Components;
 
         /// <summary>
         /// This node's children. Possibly empty.
         /// </summary>
         [ProtoMember(3)]
-        public List<FusNode> Children;
+        public List<FusNode>? Children;
         #endregion
 
         #region Scene assembly helpers
-        public FusScene Scene;
+
+        /// <summary>
+        /// A reference on the currently used scene (used to find components and their' indices)
+        /// </summary>
+        public FusScene? Scene;
 
         /// <summary>
         /// Returns all children of this node
         /// </summary>
-        public IEnumerable<INode> EnumChildren => Children;
+        public IEnumerable<INode>? EnumChildren => Children;
 
         /// <summary>
         /// Returns all components of this node
         /// </summary>
-        public IEnumerable<IComponent> EnumComponents => Components.Select(idx => Scene?.ComponentList[idx]);
+        public IEnumerable<IComponent?>? EnumComponents => Components.Select(idx =>
+        {
+            if (Scene?.ComponentList != null)
+                return Scene?.ComponentList[idx];
+            return null;
+        });
+        
 
         /// <summary>
         /// Adds a component to this node's list of components. Internally the component is 
@@ -54,6 +64,9 @@ namespace Fusee.Serialization.V1
         {
             if (Scene == null)
                 throw new InvalidOperationException($"Cannot add component {component} to node {this} (not yet attached to a scene)");
+            if (Components == null)
+                Components = new List<int>();
+            
             Components.Add(Scene.GetComponentIndex(component));
         }
 

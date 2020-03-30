@@ -8,6 +8,9 @@ using Fusee.Math.Core;
 using System.Collections.Generic;
 using static Fusee.Examples.AdvancedUI.Core.UIHelper;
 using System.Threading.Tasks;
+using Fusee.Serialization.V1;
+using HorizontalTextAlignment = Fusee.Engine.Common.HorizontalTextAlignment;
+using VerticalTextAlignment = Fusee.Engine.Common.VerticalTextAlignment;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -72,10 +75,10 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private static async void CreateAsyncs()
         {
-            GreenEffect = await ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
-            YellowEffect = await ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
-            GrayEffect = await ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
-            OccludedDummyEffect = await ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+            GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
+            YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
+            GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
+            OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
         }
 
         private static float _circleThickness = 0.04f;
@@ -105,7 +108,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static async void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
+        internal static async void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
             var container = new SceneNode
             {
@@ -197,7 +200,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             return annotation;
         }
 
-        private static async Task<SceneNodeContainer> CreateCircle(float2 circleDim, MatColor color)
+        private static async Task<SceneNode> CreateCircle(float2 circleDim, MatColor color)
         {
             float4 col;
 
@@ -252,7 +255,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
         }
 
-        private static async Task<SceneNodeContainer> CreateLine(MatColor color)
+        private static async Task<SceneNode> CreateLine(MatColor color)
         {
             float4 col;
 

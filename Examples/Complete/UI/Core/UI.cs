@@ -52,7 +52,7 @@ namespace Fusee.Examples.UI.Core
         private GUIText _fpsText;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
-        private async Task<SceneContainer> CreateNineSliceScene()
+        private async Task<Scene> CreateNineSliceScene()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");

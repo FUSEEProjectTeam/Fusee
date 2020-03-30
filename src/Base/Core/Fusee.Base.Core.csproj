@@ -12,25 +12,18 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="protobuf-net.Core" Version="3.0.0-alpha.133" />
+        <Reference Include="protobuf-net.Core">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
+        </Reference>
     </ItemGroup>
-
+    
     <ItemGroup>
         <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
             <PrivateAssets>analyzers</PrivateAssets>
         </ProjectReference>
         <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
             <PrivateAssets>analyzers</PrivateAssets>
         </ProjectReference>
     </ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
+    
 </Project>

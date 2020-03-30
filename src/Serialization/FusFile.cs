@@ -66,6 +66,6 @@ namespace Fusee.Serialization
         /// <a href="https://docs.microsoft.com/en-us/dotnet/csharp/pattern-matching">pattern matching in switch expression</a>.
         /// </summary>
         [ProtoMember(2)]
-        public FusContents Contents;
+        public FusContents? Contents;
     }
 }
