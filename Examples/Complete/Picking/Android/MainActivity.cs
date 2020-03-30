@@ -7,6 +7,7 @@ using Android.Widget;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
@@ -56,12 +57,12 @@ namespace Fusee.Examples.Picking.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(SceneContainer),
+                        ReturnedType = typeof(Scene),
                         Decoder = delegate (string id, object storage)
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return Serializer.DeserializeSceneContainer((Stream)storage);
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },

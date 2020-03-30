@@ -1,5 +1,5 @@
-﻿using Fusee.Math.Core;
-using Fusee.Serialization;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core

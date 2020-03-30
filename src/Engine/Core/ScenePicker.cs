@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The scene code container.
         /// </summary>
-        public SceneNodeContainer Node;
+        public SceneNode Node;
 
         /// <summary>
         /// The mesh.
@@ -167,9 +167,9 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Implements the scene picker.
     /// </summary>
-    public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState>
+    public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState, SceneNode, SceneComponent>
     {
-        private CanvasTransformComponent _ctc;
+        private CanvasTransform _ctc;
         private RenderContext _rc;
 
         private bool isCtcInitialized = false;
@@ -239,8 +239,8 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new ScenePicker.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
-        public ScenePicker(SceneContainer scene)
-            : base(scene.Children.GetEnumerator())
+        public ScenePicker(Scene scene)
+            : base(scene.Children)
         {
             View = float4x4.Identity;
             Projection = float4x4.Identity;
@@ -268,7 +268,7 @@ namespace Fusee.Engine.Core
             PickPosClip = pickPos;
             View = _rc.View;
             Projection = _rc.Projection;
-            return Viserate();            
+            return Viserate();
         }
 
 
@@ -279,7 +279,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="ctc">The CanvasTransformComponent.</param>
         [VisitMethod]
-        public void RenderCanvasTransform(CanvasTransformComponent ctc)
+        public void RenderCanvasTransform(CanvasTransform ctc)
         {
             _ctc = ctc;
 
@@ -356,7 +356,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rtc">The XFormComponent.</param>
         [VisitMethod]
-        public void RenderRectTransform(RectTransformComponent rtc)
+        public void RenderRectTransform(RectTransform rtc)
         {
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -393,7 +393,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="xfc">The XFormComponent.</param>
         [VisitMethod]
-        public void RenderXForm(XFormComponent xfc)
+        public void RenderXForm(XForm xfc)
         {
             float4x4 scale;
 
@@ -417,7 +417,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="xfc">The XFormTextComponent.</param>
         [VisitMethod]
-        public void RenderXFormText(XFormTextComponent xfc)
+        public void RenderXFormText(XFormText xfc)
         {
             var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
             var scaleFactor = zNear / 100;
@@ -518,7 +518,7 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
-        public void RenderTransform(TransformComponent transform)
+        public void RenderTransform(Transform transform)
         {
             State.Model *= transform.Matrix();
             _rc.Model = State.Model;
@@ -549,7 +549,6 @@ namespace Fusee.Engine.Core
                 // Point-in-Triangle-Test
                 if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
                 {
-
                     YieldItem(new PickResult
                     {
                         Mesh = mesh,

@@ -55,14 +55,14 @@ namespace Fusee.Examples.ThreeDFont.Core
             geomGnu.Triangulate();
             _textMeshGnu = new JometriMesh(geomGnu);
 
-            ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            var parentNode = new SceneNodeContainer
+            ////////////////// Fill SceneNode ////////////////////////////////
+            var parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = new float3(0.01f, 0.01f, 0.01f),
@@ -72,7 +72,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Components.Add(parentTrans);
 
             //Vladimir
-            var sceneNodeCVlad = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCVlad = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCVlad = new Mesh
             {
@@ -81,7 +81,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 Normals = _textMeshVlad.Normals,
             };
 
-            var tranCVlad = new TransformComponent
+            var tranCVlad = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -92,7 +92,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             sceneNodeCVlad.Components.Add(meshCVlad);
 
             //Lato
-            var sceneNodeCLato = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCLato = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCLato = new Mesh
             {
@@ -100,7 +100,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 Triangles = _textMeshLato.Triangles,
                 Normals = _textMeshLato.Normals,
             };
-            var tranCLato = new TransformComponent
+            var tranCLato = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -111,7 +111,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             sceneNodeCLato.Components.Add(meshCLato);
 
             //GNU
-            var sceneNodeCGnu = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCGnu = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCGnu = new Mesh
             {
@@ -119,7 +119,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 Triangles = _textMeshGnu.Triangles,
                 Normals = _textMeshGnu.Normals,
             };
-            var tranCGnu = new TransformComponent
+            var tranCGnu = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -133,7 +133,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };           
+            var sc = new Scene { Children = new List<SceneNode> { parentNode } };           
 
             _renderer = new SceneRendererForward(sc);
 

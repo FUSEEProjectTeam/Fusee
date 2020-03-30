@@ -89,14 +89,14 @@ namespace Fusee.Examples.MeshingAround.Core
             geomTri.Triangulate();
             var triangle = new JometriMesh(geomTri);
 
-            ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            var parentNode = new SceneNodeContainer
+            ////////////////// Fill SceneNode ////////////////////////////////
+            var parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -105,7 +105,7 @@ namespace Fusee.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCOne = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCOne = new Mesh
             {
@@ -114,7 +114,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 Normals = meshOne.Normals,
             };
 
-            var tranC = new TransformComponent
+            var tranC = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -124,7 +124,7 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCOne.Components.Add(tranC);
             sceneNodeCOne.Components.Add(meshCOne);
             ///////////////////////////////////////////////////////////
-            var sceneNodeCCube = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCCube = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCCube = new Mesh
             {
@@ -132,7 +132,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 Triangles = cube.Triangles,
                 Normals = cube.Normals,
             };
-            var tranCube = new TransformComponent
+            var tranCube = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -142,7 +142,7 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCCube.Components.Add(tranCube);
             sceneNodeCCube.Components.Add(meshCCube);
             //////////////////////////////////////////////////////////////////
-            var sceneNodeCTri = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCTri = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCTri = new Mesh
             {
@@ -150,7 +150,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 Triangles = triangle.Triangles,
                 Normals = triangle.Normals,
             };
-            var tranTri = new TransformComponent
+            var tranTri = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -164,7 +164,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };            
+            var sc = new Scene { Children = new List<SceneNode> { parentNode } };            
 
             _renderer = new SceneRendererForward(sc);
 

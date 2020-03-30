@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 
 namespace Fusee.Engine.GUI
@@ -11,24 +11,24 @@ namespace Fusee.Engine.GUI
     /// Needed for adding interactions/events to objects in the scene graph.
     /// Traverses the scene via a ScenePicker and invokes the necessary events.
     /// </summary>
-    public class SceneInteractionHandler : SceneVisitor
+    public class SceneInteractionHandler : Visitor<SceneNode, SceneComponent>
     {
         //private static List<CodeComponent> _observables;
         private readonly ScenePicker _scenePicker;       
 
-        private SceneNodeContainer _pickRes;
-        private SceneNodeContainer _pickResCache;
+        private SceneNode _pickRes;
+        private SceneNode _pickResCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
         /// </summary>
         /// <param name="scene">The scene the interaction handler belongs to.</param>
-        public SceneInteractionHandler(SceneContainer scene)
+        public SceneInteractionHandler(Scene scene)
         {
-            _scenePicker = new ScenePicker(scene);
+            _scenePicker = new ScenePicker(scene); 
         }
 
-        private static SceneNodeContainer FindLeafNodeInPickRes(SceneNodeContainer firstPickRes, IList<SceneNodeContainer> pickResults)
+        private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
         {
             if (pickResults.Count == 1)
                 return pickResults[0];

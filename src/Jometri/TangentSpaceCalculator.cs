@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 // ReSharper disable ObjectCreationAsStatement
 
 namespace Fusee.Jometri

@@ -28,7 +28,7 @@ namespace Fusee.Engine.Player.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _scene;
+        private Scene _scene;
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
@@ -41,7 +41,7 @@ namespace Fusee.Engine.Player.Core
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
-        private SceneContainer _gui;
+        private Scene _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initCanvasWidth;
@@ -60,7 +60,7 @@ namespace Fusee.Engine.Player.Core
             _initCanvasHeight = Height / 100f;
 
             _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;            
+            _canvasWidth = _initCanvasWidth;
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -258,7 +258,7 @@ namespace Fusee.Engine.Player.Core
    
         }
 
-        private async Task<SceneContainer> CreateGui()
+        private async Task<Scene> CreateGui()
         {
             var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
             var psTex = await AssetStorage.GetAsync<string>("texture.frag");
@@ -272,7 +272,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode (
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -301,7 +301,7 @@ namespace Fusee.Engine.Player.Core
             var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 textToDisplay,
                 "SceneDescriptionText",
                 vsTex,
@@ -314,7 +314,7 @@ namespace Fusee.Engine.Player.Core
                 VerticalTextAlignment.CENTER);
 
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -325,9 +325,9 @@ namespace Fusee.Engine.Player.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);           
             
-            return new SceneContainer
+            return new Scene
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas

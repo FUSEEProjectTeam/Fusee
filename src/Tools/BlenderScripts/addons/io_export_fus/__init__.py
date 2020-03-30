@@ -1,6 +1,6 @@
 '''
 This Add-On currently supports the export of a .fus-file, containing the Mesh-Component,
-the Transform-Component, Light Component (not yet supported by Fusee) and the Material-Component (Diffuse, Emissive and Specular only).
+the Transform-Component, Light Component (not yet supported by Fusee) and the Material-Component (Albedo, Emissive and Specular only).
 In order to make this Add-On work, you have to do the following:
 1. Make sure, that Python 3 is installed (goto https://www.python.org/downloads/windows/, choose the correct installer, download and run it)
 2. Install the google protobuf module (with pip installed (included in the newest python installers), simply go to the cmd and type 'pip install protobuf')

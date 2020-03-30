@@ -7,6 +7,7 @@ using Android.Widget;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
@@ -14,7 +15,7 @@ using System.IO;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.Bump.Android
+namespace Fusee.Examples.NormalMap.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
@@ -56,12 +57,12 @@ namespace Fusee.Examples.Bump.Android
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
-                        ReturnedType = typeof(SceneContainer),
+                        ReturnedType = typeof(Scene),
                         Decoder = delegate (string id, object storage)
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return Serializer.DeserializeSceneContainer((Stream)storage);
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },
@@ -72,7 +73,7 @@ namespace Fusee.Examples.Bump.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Bump();
+                var app = new Core.NormalMap();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });

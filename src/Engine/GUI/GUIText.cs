@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
 {

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -110,7 +110,8 @@ namespace Fusee.Engine.Core
     /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
-    public class ShaderEffect : IDisposable
+    /// TODO (mr): Move to Fusee.Engine.Common
+    public class ShaderEffect : SceneComponent, IDisposable
     {
         /// <summary>
         /// The ShaderEffect'S uniform parameters and their values.
@@ -202,22 +203,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
-        /// </summary>
-        ~ShaderEffect()
-        {
-            Dispose();
-        }
-
-        /// <summary>
-        /// Is called when GC of this shader effect kicks in
-        /// </summary>
-        public void Dispose()
-        {
-            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
-        }
-
-        /// <summary>
         /// Set effect parameter
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
@@ -287,6 +272,38 @@ namespace Fusee.Engine.Core
         /// Needed for <see cref="DynamicObject"/>
         /// </summary>
         public int Count => ParamDecl.Count;
+
+        #region IDisposable Support
+        private bool disposedValue = false; // To detect redundant calls
+
+        /// <summary>
+        /// Invoke deletion of shaders on GPU
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
+                }
+
+                disposedValue = true;
+            }
+        }
+    
+        /// <summary>
+        /// Invoke deletion of shaders on GPU
+        /// </summary>
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+
+        #endregion
     }
 
     /// <summary>

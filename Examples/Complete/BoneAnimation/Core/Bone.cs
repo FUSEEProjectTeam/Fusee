@@ -2,8 +2,6 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
-using Fusee.Serialization;
-using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -23,7 +21,7 @@ namespace Fusee.Examples.Bone.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _scene;
+        private Scene _scene;
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
@@ -50,43 +48,37 @@ namespace Fusee.Examples.Bone.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = new SceneContainer
+            _scene = new Scene
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
-                    new SceneNodeContainer
+                    new SceneNode
                     {
-                        Components = new List<SceneComponentContainer>
+                        Components = new List<SceneComponent>
                         {
-                            new TransformComponent
+                            new Transform
                             {
                                 Rotation = float3.Zero,
                                 Translation = new float3(0, 0, 0),
                                 Scale = float3.One
                             },
-                            new BoneComponent()
+                            new Engine.Common.Bone()
                         },
                         Children = new ChildList()
                         {
-                            new SceneNodeContainer
+                            new SceneNode
                             {
-                                Components = new List<SceneComponentContainer>
+                                Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Rotation = float3.Zero,
                                         Translation = new float3(0, 0.5f, 0),
                                         Scale = float3.One
                                     },
-                                    new BoneComponent(),
-                                    new WeightComponent(),
-                                    new MaterialComponent
-                                    {
-                                        Diffuse = new MatChannelContainer
-                                        {
-                                            Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
-                                        }
-                                    },
+                                    new Engine.Common.Bone(),
+                                    new Weight(),
+                                    ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
                                     CreateCuboid(float3.One)
                                 }
                             }
@@ -94,7 +86,7 @@ namespace Fusee.Examples.Bone.Core
                     }
                 }
             };
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+            _scene = AssetStorage.Get<Scene>("BoneAnim.fus");
             // convert scene graph is not called in this project, so we can add a bone animation
 
             // then add a weightcomponent with weight matrices etc:
@@ -109,7 +101,7 @@ namespace Fusee.Examples.Bone.Core
             //    bindingMatrices.Add(float4x4.Identity);
             //}
             var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
-            var wm = _scene.Children[1].Children[2].GetComponent<WeightComponent>();
+            var wm = _scene.Children[1].Children[2].GetComponent<Weight>();
             var WeightMap = new List<VertexWeightList>();
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
@@ -133,7 +125,7 @@ namespace Fusee.Examples.Bone.Core
             wm.WeightMap = WeightMap;
             var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
-            //_scene.Children.Insert(0, new SceneNodeContainer()
+            //_scene.Children.Insert(0, new SceneNode()
             //{
             //    Name = "BoneContainer1",
             //    Components = new List<SceneComponentContainer>()
@@ -147,7 +139,7 @@ namespace Fusee.Examples.Bone.Core
             //    },
             //    Children = new ChildList
             //    {
-            //        new SceneNodeContainer()
+            //        new SceneNode()
             //        {
             //            Components = new List<SceneComponentContainer>
             //            {
@@ -161,7 +153,7 @@ namespace Fusee.Examples.Bone.Core
             //            }
             //        },
 
-            //        new SceneNodeContainer()
+            //        new SceneNode()
             //        {
             //            Name = "BoneContainer2",
             //            Components = new List<SceneComponentContainer>
@@ -176,7 +168,7 @@ namespace Fusee.Examples.Bone.Core
 
             //            Children = new ChildList
             //            {
-            //                new SceneNodeContainer
+            //                new SceneNode
             //                {
             //                Components = new List<SceneComponentContainer>()
             //                {
@@ -336,7 +328,7 @@ namespace Fusee.Examples.Bone.Core
             RC.Projection = mtxOffset * RC.Projection;
 
             // move one bone
-            var translation = _scene.Children[1].Children[1].GetComponent<TransformComponent>();
+            var translation = _scene.Children[1].Children[1].GetComponent<Transform>();
             translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 

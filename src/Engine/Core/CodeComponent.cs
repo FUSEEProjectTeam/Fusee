@@ -1,11 +1,12 @@
-﻿using Fusee.Serialization;
+﻿
+using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Use this component to add Code to Objects in the scene graph. Will not serialize/deserialize
     /// </summary>
-    public class CodeComponent: SceneComponentContainer
+    public class CodeComponent: SceneComponent
     {
         /// <summary>
         /// Tells if the mouse is over the SceneNodeContainer this code component belongs to.

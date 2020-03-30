@@ -4,6 +4,9 @@
     <PackageId>Fusee.Serialization</PackageId>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee Serialization</Description>
+    <TargetFramework>netstandard2.0</TargetFramework>
+      <MonoWasmLinkSkip>protobuf-net</MonoWasmLinkSkip>
+
   </PropertyGroup>
 
   <PropertyGroup>
@@ -39,4 +42,13 @@
       SerializationCompileClean
     </CleanDependsOn>
   </PropertyGroup>
+      <Reference Include="protobuf-net.Core">
+          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
+      </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="..\Xene\Fusee.Xene.csproj" />
+  </ItemGroup>
 </Project>
