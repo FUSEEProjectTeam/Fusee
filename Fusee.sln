@@ -137,7 +137,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Bone.Android
 		{B3CE4F39-FCC4-4388-8130-9D0B9D65D034} = {B3CE4F39-FCC4-4388-8130-9D0B9D65D034}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BumpMapping", "BumpMapping", "{F3B54D27-75AC-40B3-8E6E-F960D13D94BC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NormalMap", "NormalMap", "{F3B54D27-75AC-40B3-8E6E-F960D13D94BC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.NormalMap.Core", "Examples\Complete\BumpMapping\Core\Fusee.Examples.NormalMap.Core.csproj", "{B5764987-B4B2-4C22-84EA-7C8F0FF4343D}"
 	ProjectSection(ProjectDependencies) = postProject
