@@ -31,6 +31,8 @@ class FusSceneWriter:
         self.__childListStack = [self.__scene.Children]
         self.__nodeStack = [None]
         self.__vertCache = {}
+        self.__materialCache = {}
+        self.__meshCache = {}
         # Components
         self.__curComponent = None
         self.__curMaterial = None
@@ -51,7 +53,7 @@ class FusSceneWriter:
             if name != None:
                 comp.Name = name
             node.Components.append(inx)
-            return comp
+            return comp, inx
         else:
             raise RuntimeError('Cannot add a component to non-existing current child. Call AddChild() to add a current child.')
 
@@ -89,7 +91,8 @@ class FusSceneWriter:
 
     def AddTransform(self, translation, rotation, scale, name = None):
         """Adds a transform component to the current child node."""
-        xform = self.AddComponent(name).FusTransform
+        comp, inx = self.AddComponent(name)
+        xform = comp.FusTransform
         xform.Translation.x = translation[0]
         xform.Translation.y = translation[1]
         xform.Translation.z = translation[2]
@@ -101,6 +104,18 @@ class FusSceneWriter:
         xform.Scale.z = scale[2]
 
 #### MATERIAL COMPONENT ####
+    def TryReferenceMaterial(self, name):
+        """See if the material identified by its unique name (among all materials) is already present. If so, add a reference to this material to the current node"""
+        inxMat = self.__materialCache.get(name, -1)
+        if inxMat >= 0:
+            node = self.CurrentNode() 
+            if node != None:
+                node.Components.append(inxMat)
+                return True
+            else:
+                raise RuntimeError('Cannot add a referenced component to non-existing current child. Call AddChild() to add a current child.')
+        else:
+            return False
 
     def AddMaterial(self, material, name=None):
         """Adds a Material component to the current child node. If any of 'RoughnessValue', 'FresnelReflectance' or 'DiffuseFraction' keys is present, a MaterialPBR component will be added.
@@ -137,8 +152,9 @@ class FusSceneWriter:
 
     def BeginMaterial(self, name=None):
         if self.__curComponent == None:
-            self.__curComponent = self.AddComponent(name)
+            self.__curComponent, inx = self.AddComponent(name)
             self.__curMaterial = self.__curComponent.FusMaterial
+            self.__materialCache[name] = inx
         else:
             raise RuntimeError('Cannot begin a material component with another component not ended. Call EndXYZ() to close the currently open component.')
 
@@ -264,10 +280,34 @@ class FusSceneWriter:
         if self.__curMesh == None:
             raise RuntimeError('Cannot operate on nonexisting mesh component. Call BeginMesh()/AddMesh() to add mesh.')
 
+    def TryReferenceMesh(self, name):
+        """See if the FUSEE mesh identified by its unique name (among all meshes) is already present. If so, add a reference to this mesh to the current node"""
+        inxMesh = self.__meshCache.get(name, -1)
+        if inxMesh >= 0:
+            node = self.CurrentNode() 
+            if node != None:
+                node.Components.append(inxMesh)
+                return True
+            else:
+                raise RuntimeError('Cannot add a referenced component to non-existing current child. Call AddChild() to add a current child.')
+        else:
+            return False
+
+    def GetReferencedMeshTriVertCount(self, name):
+        """Return the number of entries in the triangles index list for the already present mesh identified by the name."""
+        inxMesh = self.__meshCache.get(name, -1)
+        if inxMesh >= 0:
+            return len(self.__scene.ComponentList[inxMesh].FusMesh.Triangles)
+        else:
+            return -1
+
+
+
     def BeginMesh(self, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=None):
         if self.__curComponent == None:
-            self.__curComponent = self.AddComponent(name)
+            self.__curComponent, inx = self.AddComponent(name)
             self.__curMesh = self.__curComponent.FusMesh
+            self.__meshCache[name] = inx
             self.__curMesh.BoundingBox.min.x = vertex[0]
             self.__curMesh.BoundingBox.min.y = vertex[1]
             self.__curMesh.BoundingBox.min.z = vertex[2]

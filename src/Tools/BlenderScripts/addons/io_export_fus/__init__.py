@@ -244,7 +244,7 @@ class BlenderVisitor:
             dst = os.path.join(os.path.dirname(self.filepath),os.path.basename(texture))
             copyfile(src,dst)
 
-    def __AddTransform(self, obj):
+    def __AddTransform(self, obj, applyscale=False):
         """Convert the given blender obj's transformation into a FUSEE Transform component"""
         # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scene graph
         if obj.parent is None:
@@ -255,11 +255,19 @@ class BlenderVisitor:
         location, rotation, scale = obj_mtx_clean.decompose()
         rot_eul = rotation.to_euler('YXZ')
 
+        if applyscale:
+            newscale = (1.0, 1.0, 1.0)
+            appliedscale = (scale.x, scale.z, scale.y)
+        else:
+            newscale = (scale.x, scale.z, scale.y)
+            appliedscale = (1.0, 1.0, 1.0)
+
         self.__fusWriter.AddTransform(
             (location.x, location.z, location.y),
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
-            (1, 1, 1) if self.DoApplyScale else (scale.x, scale.z, scale.y)
+            newscale
         )
+        return appliedscale
 
     def __GetProcessedBMesh(self, obj):
         """Create a modifier-applied, normal-flipped, scale-normalized, triangulated BMesh from the Blender mesh object passed. Call result.free() and del result after use on the returned bmesh."""
@@ -348,6 +356,10 @@ class BlenderVisitor:
     #    )
 
     def __AddMaterial(self, materialslot):
+        matName = materialslot.name
+        if self.__fusWriter.TryReferenceMaterial(matName):
+            return
+
         # MATERIAL COMPONENT
         nodes = materialslot.node_tree.nodes
         hasDiffuse = False
@@ -490,7 +502,7 @@ class BlenderVisitor:
                 pbrDiffuseFraction = metallic
 
         if hasDiffuse:
-            self.__fusWriter.BeginMaterial()
+            self.__fusWriter.BeginMaterial(matName)
             self.__fusWriter.AddDiffuse(diffColor, diffTexture, diffMix)
             if hasSpecular:
                 self.__fusWriter.AddSpecular(specColor, specTexture, specMix, specShininess, specIntensity)
@@ -505,15 +517,19 @@ class BlenderVisitor:
             self.__AddDefaultMaterial()
 
     def __AddDefaultMaterial(self):
+        matName = 'FUSEE_Default_Material'
+        if self.__fusWriter.TryReferenceMaterial(matName):
+            return
         self.__fusWriter.AddMaterial(
             {
                 'Diffuse':  { 'Color' : (0.7, 0.7, 0.7, 1), 'Mix': 1 },
                 'Specular': { 'Color' : (1, 1, 1, 1), 'Shininess': 0.3, 'Intensity': 0.2 },
-            })
+            }, matName)
 
     def VisitMesh(self, mesh):
         self.__fusWriter.AddChild(mesh.name)
-        self.__AddTransform(mesh)
+        appliedScale = self.__AddTransform(mesh, self.DoApplyScale)
+        appliedScaleStr = str(appliedScale)
 
         materialCount = max(1, len(mesh.material_slots))
 
@@ -571,37 +587,42 @@ class BlenderVisitor:
             iChunk = 0
 
             while iVert < nVertsTotal:
+                meshName = mesh.data.name + '_mat' + str(iMaterial) + '_chnk' + str(iChunk) + '_scl' + appliedScaleStr
                 if iChunk > 0:
                     self.__fusWriter.Push()
                     self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk))
 
-                vert = vertsPerMat[iMaterial][iVert]
-                self.__fusWriter.BeginMesh(
-                    vert[0],    # Vertex 
-                    vert[1],    # Normal
-                    vert[2]     # UV
-                )
-                iVert = iVert + 1
-                iVertPerChunk = 1
-                while self.__fusWriter.MeshHasCapacity() and iVert < nVertsTotal:
+                if self.__fusWriter.TryReferenceMesh(meshName):
+                    iVert = iVert + self.__fusWriter.GetReferencedMeshTriVertCount(meshName)
+                else:
                     vert = vertsPerMat[iMaterial][iVert]
-                    self.__fusWriter.AddVertex(
+                    self.__fusWriter.BeginMesh(
                         vert[0],    # Vertex 
                         vert[1],    # Normal
-                        vert[2]     # UV
+                        vert[2],    # UV
+                        name=meshName
                     )
-                    if iVert % 10000 == 0:
-                        timeCur = time.perf_counter() 
-                        print(str(timeCur-timeLast) + 's to add another 10000 vertices.')
-                        timeLast = timeCur
-
                     iVert = iVert + 1
-                    iVertPerChunk = iVertPerChunk + 1
+                    iVertPerChunk = 1
+                    while self.__fusWriter.MeshHasCapacity() and iVert < nVertsTotal:
+                        vert = vertsPerMat[iMaterial][iVert]
+                        self.__fusWriter.AddVertex(
+                            vert[0],    # Vertex 
+                            vert[1],    # Normal
+                            vert[2]     # UV
+                        )
+                        #if iVert % 10000 == 0:
+                        #    timeCur = time.perf_counter() 
+                        #    print(str(timeCur-timeLast) + 's to add another 10000 vertices.')
+                        #    timeLast = timeCur
 
-                print ('Chunk ' + mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk) + ' containing ' + str(iVertPerChunk) + ' (=3*' + str(iVertPerChunk/3) + ') verts.') 
-                print ('iVert: ' + str(iVert) + ', nVertsTotal: ' + str(nVertsTotal))
+                        iVert = iVert + 1
+                        iVertPerChunk = iVertPerChunk + 1
 
-                self.__fusWriter.EndMesh()
+                    #print ('Chunk ' + mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk) + ' containing ' + str(iVertPerChunk) + ' (=3*' + str(iVertPerChunk/3) + ') verts.') 
+                    #print ('iVert: ' + str(iVert) + ', nVertsTotal: ' + str(nVertsTotal))
+                    self.__fusWriter.EndMesh()  
+
                 if iChunk > 0:
                     self.__fusWriter.Pop()
  
@@ -632,7 +653,7 @@ class BlenderVisitor:
         print('Warning: Light "' + light.name + '"found but NOT exported"')
         ### Write light node ###
 #        self.__fusWriter.AddChild(light.name)
-#        self.__AddTransform(light)
+#        self.__AddTransform(light, false)
 #        self.__fusWriter.AddLight(
 #            True, 
 #            (lightData.color.r, lightData.color.g, lightData.color.b, 1),
@@ -660,7 +681,7 @@ class BlenderVisitor:
         print('Warning: Camera "' + camera.name + '"found but NOT exported"')
         ### Write camera node ###
 #        self.__fusWriter.AddChild(camera.name)
-#        self.__AddTransform(camera)
+#        self.__AddTransform(camera, false)
 #        self.__fusWriter.AddCamera(
 #            camType, 
 #            cameraData.angle_y, 
