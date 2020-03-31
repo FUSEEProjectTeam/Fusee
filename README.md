@@ -41,11 +41,14 @@ The robot consists of three parts: the `head`, a `neck` and the `body`.
 
 [BILD]
 
-The head rotates around the `Y-Axis` when the camera is moving and in the direction of the `XZ-Axes` depending on the movement. It should also be mentioned that the head has its center in the center of the body, which is why it rotates around the body and not around itself.
+* Head 
+    * rotates around the `Y-Axis` when the camera is moving and in the direction of the `XZ-Axes` depending on the movement. It should also be mentioned that the head has its center in the center of the body, which is why it rotates around the body and not around itself.
 
-The neck is an empty node that is there to compensate for the Y rotation of the head. Therefore, it turns in the opposite y direction to the head so that the body stays in the same place.
+* Neck 
+    * is an empty node that is there to compensate for the Y rotation of the head. Therefore, it turns in the opposite y direction to the head so that the body stays in the same place.
 
-The body rotates depending on the direction of the movement.
+* Body 
+    * rotates depending on the direction of the movement.
 
 Now to the quaternions, I decided to use them because they bypass the `"gimbal lock"`. There is also the method that they rotate around any given axis, which is easy because you only have to specify the vector. If you want to know more about `quaternions` I can recommend the YouTube channel of `3Blue1Brown` which explains them relatively well and understandably.
 
