@@ -59,7 +59,7 @@ namespace Fusee.Examples.Materials.Core
                         Children = new ChildList
                         {
                             new TextNode(
-                            "How-To:\n############################\n- Move with WASD\n- Right mouse button rotates spheres\n- Mouse wheel zooms\n- Space switches mode between forward and deferred",
+                            "How-To:\n############################\n- Move with WASD\n- Left mouse button rotates spheres\n- Mouse wheel zooms",
                             "howTo",
                             vsTex,
                             psTex,

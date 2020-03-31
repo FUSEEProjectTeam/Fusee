@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Examples.Bump.Core</RootNamespace>
     <PackageId>Fusee.Examples.Bump.Core</PackageId>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
