@@ -22,24 +22,16 @@ Since there are only two walls, a cornerstone and the robot in the `.fus`, the m
 ## Collision detection
 This works with the help of the `bounding box` and the `2D-Array`. First, the `2D-Array` is used to check the exact position of the robot. If the robot continues to move, the position is also changed in the `2D-Array`.
 
-[BILD]
-
 If it is clear where the body is, it tests in front, next, and behind it if there are walls. If there is a wall in the direction, it is tested whether there is a collision. This is done by querying whether the x position and the center of the body of the robot is smaller than the radius of it. If this is the case, he should not drive any further in the direction. It is important to have the bounding boxes of the walls, since the bounding box contains the `minimum x and z positions` from the wall and the `maximum x and z positions`.
-
-[BILD]
 
 Like the walls, the corners are only recognized this time in the slants, i.e. front- right/left of him, or back- right/left of him. Then a circle and a rectangle are used to query whether they overlap.
 The collision detection for this is like the Pythagorean theorem:
-	
-[BILD]
 
 The goal is viewed like a wall only that if you hit it, the goal condition will be met.
 
 ## Rotation
 (All rotations are done with quaternions below.)  
 The robot consists of three parts: the `head`, a `neck` and the `body`.
-
-[BILD]
 
 * Head 
     * rotates around the `Y-Axis` when the camera is moving and in the direction of the `XZ-Axes` depending on the movement. It should also be mentioned that the head has its center in the center of the body, which is why it rotates around the body and not around itself.

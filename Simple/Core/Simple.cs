@@ -302,7 +302,7 @@ namespace Fusee.Examples.Simple.Core
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-            
+
             //find the ball and create AABB
             findball();
             makebox();
@@ -527,8 +527,8 @@ namespace Fusee.Examples.Simple.Core
                 else
                 {
                     mtxCam = float4x4.LookAt(_head.Translation.x - cam.x * M.Cos(_angleVert), _head.Translation.y + cam.y, _head.Translation.z - cam.z * M.Sin(_angleVert), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                    _head.Rotation = Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(0, 1, 0), -angle - 90 * M.Pi / 180));
-                    _bodytrans.Rotation = Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(0, 1, 0), angle));
+                    _head.Rotation = new float3(_head.Rotation.x, -angle - 90 * M.Pi / 180, _head.Rotation.z);
+                    _bodytrans.Rotation = new float3(0, angle, 0);
                     movement = true;
 
                 }
@@ -600,7 +600,7 @@ namespace Fusee.Examples.Simple.Core
                 {
                     if (_head.Rotation.x < -0.00001f)
                     {
-                        if(_head.Rotation.x + 0.1f < -0.1f)
+                        if (_head.Rotation.x + 0.1f < -0.1f)
                         {
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), 0.1f)), 0);
                         }
@@ -609,10 +609,10 @@ namespace Fusee.Examples.Simple.Core
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -_head.Rotation.x)), 0);
                         }
                     }
-                    
+
                     if (_head.Rotation.x > 0.00001f)
                     {
-                        if(_head.Rotation.x - 0.1f > 0.1f)
+                        if (_head.Rotation.x - 0.1f > 0.1f)
                         {
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -0.1f)), 0);
                         }
@@ -749,7 +749,7 @@ namespace Fusee.Examples.Simple.Core
 
                 if (M.Sqrt((_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) + (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x)) < ballradius)
                 {
-                    
+
                     if (_head.Translation.x > oldX)
                     {
                         _head.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] + 1].w + M.Sqrt((((ballradius + 0.001f) * (ballradius + 0.001f)) - (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x)));
