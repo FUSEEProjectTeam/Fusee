@@ -27,7 +27,6 @@ namespace Fusee.Examples.Simple.Core
         //mouse rotation speed
         private const float RotationSpeed = 7;
 
-
         //speed from character
         private float speed = 7;
 
@@ -110,9 +109,6 @@ namespace Fusee.Examples.Simple.Core
         //camera
         private float4x4 mtxCam;
         private float camAngle = 0;
-
-        //movment in 90° angles
-        private float deg = 0;
 
         //TransformComponent and SceneContainer
         private TransformComponent _head;
@@ -516,7 +512,7 @@ namespace Fusee.Examples.Simple.Core
             {
                 //set time for stopwatch 
                 int minutes = (int)Time.TimeSinceStart / 60;
-                var seconds = Time.TimeSinceStart % 59.98f;
+                var seconds = Time.TimeSinceStart % 59.5f;
                 var miliseconds = Time.TimeSinceStart % 0.99f;
                 timertext.Text = minutes.ToString("00") + ":" + seconds.ToString("00") + miliseconds.ToString(".00", new System.Globalization.CultureInfo("en-US"));
 
@@ -531,24 +527,12 @@ namespace Fusee.Examples.Simple.Core
                 else
                 {
                     mtxCam = float4x4.LookAt(_head.Translation.x - cam.x * M.Cos(_angleVert), _head.Translation.y + cam.y, _head.Translation.z - cam.z * M.Sin(_angleVert), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                    _head.Rotation = new float3(_head.Rotation.x, -angle - 90 * M.Pi / 180, _head.Rotation.z);
-                    _bodytrans.Rotation = new float3(0, angle, 0);
+                    _head.Rotation = Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(0, 1, 0), -angle - 90 * M.Pi / 180));
+                    _bodytrans.Rotation = Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(0, 1, 0), angle));
                     movement = true;
 
                 }
                 RC.View = mtxCam;
-
-                //creates rotation in 90° angles
-                if (angle >= 45 * (M.Pi / 180) + deg)
-                {
-                    deg += 90 * M.Pi / 180;
-                }
-
-                else if (angle <= -45 * (M.Pi / 180) + deg)
-                {
-
-                    deg -= 90 * M.Pi / 180;
-                }
 
                 //get old positions for the head
                 oldX = _head.Translation.x;
@@ -558,36 +542,114 @@ namespace Fusee.Examples.Simple.Core
                 _moveX = Keyboard.ADAxis * speed * DeltaTime;
                 if (_moveX < 0)
                 {
-                    _head.Translation.x += _moveX * M.Sin(deg);
-                    _head.Translation.z -= _moveX * M.Cos(deg);
+                    _head.Translation.x += _moveX * M.Sin(angle);
+                    _head.Translation.z -= _moveX * M.Cos(angle);
 
-                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(deg), 0, M.Cos(deg)), _moveX)), 0);
+                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), _moveX)), 0);
+
                 }
 
                 else if (_moveX > 0)
                 {
-                    _head.Translation.x += _moveX * M.Sin(deg);
-                    _head.Translation.z -= _moveX * M.Cos(deg);
-                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(deg), 0, M.Cos(deg)), _moveX)), 0);
+                    _head.Translation.x += _moveX * M.Sin(angle);
+                    _head.Translation.z -= _moveX * M.Cos(angle);
+                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), _moveX)), 0);
                 }
+
+
 
                 _moveZ = Keyboard.WSAxis * speed * DeltaTime;
                 if (_moveZ < 0)
                 {
-                    _head.Translation.x += _moveZ * M.Cos(deg);
-                    _head.Translation.z += _moveZ * M.Sin(deg);
-                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(deg), 0, M.Sin(deg)), -_moveZ)), 0);
+                    _head.Translation.x += _moveZ * M.Cos(angle);
+                    _head.Translation.z += _moveZ * M.Sin(angle);
+                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), -_moveZ)), 0);
                 }
 
                 else if (_moveZ > 0)
                 {
-                    _head.Translation.x += _moveZ * M.Cos(deg);
-                    _head.Translation.z += _moveZ * M.Sin(deg);
-                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(deg), 0, M.Sin(deg)), -_moveZ)), 0);
+                    _head.Translation.x += _moveZ * M.Cos(angle);
+                    _head.Translation.z += _moveZ * M.Sin(angle);
+                    _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), -_moveZ)), 0);
+                }
+
+                if (Keyboard.GetKey(KeyCodes.A) || Keyboard.GetKey(KeyCodes.D))
+                {
+                    if (_head.Rotation.z > -30 * M.Pi / 180 && _moveX < 0)
+                    {
+                        _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), -_moveX)), 0);
+                    }
+                    if (_head.Rotation.z < 30 * M.Pi / 180 && _moveX > 0)
+                    {
+                        _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), -_moveX)), 0);
+                    }
+                }
+                else if (Keyboard.GetKey(KeyCodes.W) || Keyboard.GetKey(KeyCodes.S))
+                {
+
+                    if (_head.Rotation.x > -30 * M.Pi / 180 && _moveZ > 0)
+                    {
+                        _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -_moveZ)), 0);
+                    }
+                    if (_head.Rotation.x < 30 * M.Pi / 180 && _moveZ < 0)
+                    {
+                        _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -_moveZ)), 0);
+                    }
+                }
+                if (_head.Translation.x == oldX)
+                {
+                    if (_head.Rotation.x < -0.00001f)
+                    {
+                        if(_head.Rotation.x + 0.1f < -0.1f)
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), 0.1f)), 0);
+                        }
+                        else
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -_head.Rotation.x)), 0);
+                        }
+                    }
+                    
+                    if (_head.Rotation.x > 0.00001f)
+                    {
+                        if(_head.Rotation.x - 0.1f > 0.1f)
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -0.1f)), 0);
+                        }
+                        else
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(angle), 0, M.Cos(angle)), -_head.Rotation.x)), 0);
+                        }
+                    }
+                }
+                if (_head.Translation.z == oldY)
+                {
+                    if (_head.Rotation.z < -0.00001f)
+                    {
+                        if (_head.Rotation.z + 0.1f < -0.1f)
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), -0.1f)), 0);
+                        }
+                        else
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), _head.Rotation.z)), 0);
+                        }
+                    }
+
+                    if (_head.Rotation.z > 0.00001f)
+                    {
+                        if (_head.Rotation.z - 0.1f > 0.1f)
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), 0.1f)), 0);
+                        }
+                        else
+                        {
+                            _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(angle), 0, M.Sin(angle)), _head.Rotation.z)), 0);
+                        }
+                    }
                 }
             }
         }
-
 
 
         public void collision()
