@@ -243,19 +243,19 @@ namespace Fusee.Xirkit
             AddConverter<double, float4x4>(x => new float4x4((float)x, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From bool 
-            AddConverter<bool, int>(x => (x) ? 0 : 1);
-            AddConverter<bool, float>(x => (x) ? 0.0f : 1.0f);
-            AddConverter<bool, double>(x => (x) ? 0.0 : 1.0);
+            AddConverter<bool, int>(x => (x) ? 1 : 0);
+            AddConverter<bool, float>(x => (x) ? 1.0f : 0.0f);
+            AddConverter<bool, double>(x => (x) ? 1.0 : 0.0);
             AddConverter<bool, bool>(x => x);
             AddConverter<bool, string>(x => x.ToString());
-            AddConverter<bool, double2>(x => new double2((x) ? 0.0 : 1.0, 0));
-            AddConverter<bool, double3>(x => new double3((x) ? 0.0 : 1.0, 0, 0));
-            AddConverter<bool, double4>(x => new double4((x) ? 0.0 : 1.0, 0, 0, 1));
-            AddConverter<bool, double4x4>(x => new double4x4((x) ? 0.0 : 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            AddConverter<bool, float2>(x => new float2((x) ? 0.0f : 1.0f, 0));
-            AddConverter<bool, float3>(x => new float3((x) ? 0.0f : 1.0f, 0, 0));
-            AddConverter<bool, float4>(x => new float4((x) ? 0.0f : 1.0f, 0, 0, 1));
-            AddConverter<bool, float4x4>(x => new float4x4((x) ? 0.0f : 1.0f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<bool, double2>(x => new double2((x) ? 1.0 : 0.0, 0));
+            AddConverter<bool, double3>(x => new double3((x) ? 1.0 : 0.0, 0, 0));
+            AddConverter<bool, double4>(x => new double4((x) ? 1.0 : 0.0, 0, 0, 1));
+            AddConverter<bool, double4x4>(x => new double4x4((x) ? 1.0 : 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<bool, float2>(x => new float2((x) ? 1.0f : 0.0f, 0));
+            AddConverter<bool, float3>(x => new float3((x) ? 1.0f : 0.0f, 0, 0));
+            AddConverter<bool, float4>(x => new float4((x) ? 1.0f : 0.0f, 0, 0, 1));
+            AddConverter<bool, float4x4>(x => new float4x4((x) ? 1.0f : 0.0f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From string
             AddConverter<string, int>(x => int.Parse(x));

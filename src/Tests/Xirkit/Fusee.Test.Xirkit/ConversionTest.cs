@@ -157,7 +157,6 @@ namespace Fusee.Test.Xirkit
         [MemberData(nameof(GetConversions))]
         public void ConvertFromBool(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            isTrue = !isTrue; //Apparently needed because conversion from and to bool are exactly the other way around.
             text = isTrue.ToString();
 
             ConverterClass source = new ConverterClass();
