@@ -20,7 +20,7 @@ namespace Fusee.Test.Xirkit
         }
 
         [Fact]
-        public void InPin_TestSetValue_GetType()
+        public void InPin_TestSetValue_GetPinType()
         {
             SimpleClass obj1 = new SimpleClass(1, 1);
             SimpleClass obj2 = new SimpleClass(0, 0);
@@ -40,7 +40,5 @@ namespace Fusee.Test.Xirkit
 
             Assert.True(obj2.x == 1, "obj2.x is " + obj2.x + " but should be 1 after changing it with SetValue.");
         }
-
-        //TODO: Test OutPin Attach, Detach, GetValue, Propagate
     }
 }
