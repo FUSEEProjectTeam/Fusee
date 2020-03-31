@@ -3,6 +3,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
@@ -204,7 +205,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage));
+                        return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage))).ConfigureAwait(false);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });
