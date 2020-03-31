@@ -36,7 +36,7 @@ The collision detection for this is like the Pythagorean theorem:
 The goal is viewed like a wall only that if you hit it, the goal condition will be met.
 
 ## Rotation
-(All rotations are done with quaternions below.)
+(All rotations are done with quaternions below.)  
 The robot consists of three parts: the `head`, a `neck` and the `body`.
 
 [BILD]
