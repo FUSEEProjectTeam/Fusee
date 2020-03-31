@@ -6,15 +6,15 @@ The models are in  `.bend` in the `Art folder` and in `.fus` in `Assets folder`.
 
 ##Control
 * Camera
-** Press and hold the left mouse button and move the mouse to look around from the position of the robot.
+    * Press and hold the left mouse button and move the mouse to look around from the position of the robot.
    
-** With the right mouse button, you can also go into first person mode and back.
+    * With the right mouse button, you can also go into first person mode and back.
    
-** If you press E you can get a view of the Maze, but you cannot move in this mode
+    * If you press E you can get a view of the Maze, but you cannot move in this mode
 
 
-*Movement:
-** The movement is carried out with the WASD controls. The movement rotates depending on where you look.
+* Movement:
+    * The movement is carried out with the WASD controls. The movement rotates depending on where you look.
 
 ##Structure of the Maze
 Since there are only two walls, a cornerstone and the robot in the `.fus`, the maze is created using a `2D-Array` that was created in front of it.
