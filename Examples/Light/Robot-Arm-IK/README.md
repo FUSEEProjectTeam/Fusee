@@ -24,7 +24,7 @@ The foot needs to rotate an amount of degrees equal to angle &epsilon; to follow
 * &epsilon; = arctan2(z, x)
 * xzDist = &radic;(x<sup>2</sup> + z<sup>2</sup>)
 
-![xz-plane](/art/xz-plane.png "xz-plane")
+![xz-plane](art/xz-plane.png "xz-plane")
 
 ### Second, Rotation of the Lower and Middle Joint
 The two arms of the robot, together with the vector between the base and the pointer, form a triangle (as shown in the graphic below). Since the inner angles &alpha; and &beta;, as well as the angle &gamma; are required for the rotation of the joints, but are all unknown the first step is to calculate the distance `dist` as follows:
@@ -40,7 +40,7 @@ Since in this example the two arms a and b are equal in length, the equations ca
 * &alpha; = acos(dist<sup>2</sup> / (4 dist) )
 * &beta; = acos( (dist<sup>2</sup> - 2 a<sup>2</sup>) / (-4 a) )
 
-![xy-plane](/art/xy-plane.png "xy-plane")
+![xy-plane](art/xy-plane.png "xy-plane")
 
 ### Third, Rotation Angles
 Since the starting position (and therefore "angle 0°) of the arm is not along the x-axis, but rather the y-axis a few adjustments have to be made, which are as follows:
@@ -51,4 +51,4 @@ Since the starting position (and therefore "angle 0°) of the arm is not along t
 As seen in the graphic below, the pincer has to be rotated by an amount of degrees equal to angle &delta; to remain parallel to the ground. &delta; can be determined as follows:
 * &delta; = -90° + finalAlpha + finalBeta
 
-![pincer](/art/pincer.png "pincer")
+![pincer](art/pincer.png "pincer")
