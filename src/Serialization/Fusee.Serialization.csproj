@@ -3,7 +3,8 @@
     <RootNamespace>Fusee.Serialization</RootNamespace>
     <PackageId>Fusee.Serialization</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>Fusee Serialization</Description>
+      <MonoWasmLinkSkip>protobuf-net</MonoWasmLinkSkip>
+
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,27 +13,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
+      <Reference Include="protobuf-net.Core">
+          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
+      </Reference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="..\Xene\Fusee.Xene.csproj" />
   </ItemGroup>
-
-  <PropertyGroup>
-    <BuildDependsOn>
-      $(BuildDependsOn);
-      SerializationCompileSerializer
-    </BuildDependsOn>
-  </PropertyGroup>
-  <PropertyGroup>
-    <CleanDependsOn>
-      $(CleanDependsOn);
-      SerializationCompileClean
-    </CleanDependsOn>
-  </PropertyGroup>
 </Project>

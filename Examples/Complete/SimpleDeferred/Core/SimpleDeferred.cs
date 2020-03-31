@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -23,33 +24,33 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;       
+        private SceneRendererDeferred _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        
-        private bool _keys;       
 
-        private TransformComponent _sunTransform;
+        private bool _keys;
+
+        private Transform _sunTransform;
 
         private float4 _backgroundColorDay;
         private float4 _backgroundColorNight;
         private float4 _backgroundColor;
 
-        private LightComponent _sun;
+        private Light _sun;
 
-        private TransformComponent _camTransform;
-        private CameraComponent _campComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
-       
+        private Transform _camTransform;
+        private Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 3000, M.PiOver4);
+
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            _camTransform = new TransformComponent()
+            _camTransform = new Transform()
             {
                 Scale = float3.One,
-                Translation = float3.Zero                
+                Translation = float3.Zero
             };
 
             _gui = CreateGui();
@@ -62,35 +63,37 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            //_rocketScene = AssetStorage.Get<Scene>("sponza.fus");
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");
+            //_rocketScene = AssetStorage.Get<Scene>("shadowTest.fus");
+            
+
 
             //Add lights to the scene
-            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
-            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
-            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
+            _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
+            var redLight = new Light() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
+            var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
+            var greenLight = new Light() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
 
-            _sunTransform = new TransformComponent() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
+            _sunTransform = new Transform() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
 
             var aLotOfLights = new ChildList
             {
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "sun",
-                    Components = new List<SceneComponentContainer>()
-                {
-                    _sunTransform,
-                    _sun,
-                },
+                    Components = new List<SceneComponent>()
+                    {
+                        _sunTransform,
+                        _sun,
+                    },
                     //Children = new ChildList()
                     //{
-                    //    new SceneNodeContainer()
+                    //    new SceneNode()
                     //    {
-                    //        Components = new List<SceneComponentContainer>()
+                    //        s = new List<Scene>()
                     //        {
-                    //            new TransformComponent
+                    //            new Transform
                     //            {
                     //                Scale = float3.One/2f
                     //            },
@@ -99,78 +102,78 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     //    }
                     //}
                 },
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "blueLight",
-                    Components = new List<SceneComponentContainer>()
+                    Components = new List<SceneComponent>()
                 {
-                    new TransformComponent(){ Translation = new float3(-600, 180, 180), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
+                    new Transform(){ Translation = new float3(-600, 180, 180), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
                     blueLight,
                 }
                 },
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "redLight1",
-                    Components = new List<SceneComponentContainer>()
+                     Components = new List<SceneComponent>()
                 {
-                    new TransformComponent(){ Translation = new float3(-600, 180, 180)},
+                    new Transform(){ Translation = new float3(-600, 180, 180)},
                     redLight,
                 }
                 },
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "redLight2",
-                    Components = new List<SceneComponentContainer>()
+                     Components = new List<SceneComponent>()
                 {
-                    new TransformComponent(){ Translation = new float3(-600, 180, -140)},
+                    new Transform(){ Translation = new float3(-600, 180, -140)},
                     redLight,
                 }
                 },
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "redLight3",
-                    Components = new List<SceneComponentContainer>()
+                     Components = new List<SceneComponent>()
                 {
-                    new TransformComponent(){ Translation = new float3(500, 180, 180)},
+                    new Transform(){ Translation = new float3(500, 180, 180)},
                     redLight,
                 }
                 },
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "redLight4",
-                    Components = new List<SceneComponentContainer>()
+                     Components = new List<SceneComponent>()
                 {
-                    new TransformComponent(){ Translation = new float3(500, 180, -140)},
+                    new Transform(){ Translation = new float3(500, 180, -140)},
                     redLight,
                 }
                 },
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "greenLight",
-                    Components = new List<SceneComponentContainer>()
+                     Components = new List<SceneComponent>()
                 {
-                    new TransformComponent(){ Translation = new float3(0, 100, 150)},
+                    new Transform(){ Translation = new float3(0, 100, 150)},
                     greenLight,
                 }
                 },
             };
 
-            _rocketScene.Children.Add(new SceneNodeContainer()
+            _rocketScene.Children.Add(new SceneNode()
             {
-                Name = "LightContainer",
+                Name = "Light",
                 Children = aLotOfLights
             });
 
             _rocketScene.Children.Add(
-                new SceneNodeContainer()
+                new SceneNode()
                 {
                     Name = "Cam",
-                    Components = new List<SceneComponentContainer>()
+                    Components = new List<SceneComponent>()
                     {
                         _camTransform,
                         _campComp
                     }
-                }               
+                }
             );
 
             // Wrap a SceneRenderer around the scene.
@@ -261,18 +264,18 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
-            _sceneRenderer.Render(RC);            
-            //_guiRenderer.Render(RC);
+            _sceneRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)            
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }        
+        }
 
         private SceneContainer CreateGui()
         {
@@ -291,7 +294,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -303,12 +306,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
-            fuseeLogo.AddComponent(btnFuseeLogo);
+
+            // TODO (mr): How to add this?
+            //fuseeLogo.Add(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Deferred Example",
                 "ButtonText",
                 vsTex,
@@ -321,21 +326,21 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 VerticalTextAlignment.CENTER);
 
 
-            var guiCamComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
+            var guiCamComp = new Camera(ProjectionMethod.Orthographic, 1, 3000, M.PiOver4)
             {
                 ClearColor = false
             };
 
-            var cam = new SceneNodeContainer()
+            var cam = new SceneNode()
             {
                 Name = "GUICam",
-                Components = new List<SceneComponentContainer>()
-                {                    
+                Components = new List<SceneComponent>()
+                {
                     guiCamComp
                 }
             };
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -351,10 +356,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     text
                 }
             };
-            
+
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     cam,
                     //Add canvas.
@@ -365,12 +370,12 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

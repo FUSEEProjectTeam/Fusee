@@ -1,5 +1,6 @@
-﻿using Fusee.Serialization;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Fusee.Engine.Common;
+using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -22,6 +23,40 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The type of the material.
         /// </summary>
         public MaterialType MatType;
+
+        /// <summary>
+        /// Collection of values of one material 
+        /// </summary>
+        public MaterialValues MatValues;
+    }
+
+    /// <summary>
+    /// The values one material could carry (e.g.: AlbedoColor or SpecularIntensity)
+    /// </summary>
+    public struct MaterialValues
+    {
+#pragma warning disable CS1591 // missing XML-comment for public type
+        public float4 AlbedoColor;
+        public string AlbedoTexture;
+        public float AlbedoMix;
+
+        public float4 SpecularColor;
+        public float SpecularShininess;
+        public float SpecularIntensity;
+        public float SpecularMix;
+        public string SpecularTexture;
+
+        public float RoughnessValue;
+        public float FresnelReflectance;
+        public float DiffuseFraction;
+
+        public float4 EmissiveColor;
+        public float EmissiveMix;
+        public string EmissiveTexture;
+
+        public float NormalMapIntensity;
+        public string NormalMap;
+#pragma warning restore CS1591 // missing XML-comment for public type
     }
 
     /// <summary>
@@ -66,14 +101,14 @@ namespace Fusee.Engine.Core.ShaderShards
     public struct MaterialProps
     {
         /// <summary>
-        /// Does this material have a diffuse color?
+        /// Does this material have an albedo color?
         /// </summary>
-        public bool HasDiffuse;
+        public bool HasAlbedo;
 
         /// <summary>
-        /// Does this material have a diffuse texture?
+        /// Does this material have an albedo texture?
         /// </summary>
-        public bool HasDiffuseTexture;
+        public bool HasAlbedoTexture;
 
         /// <summary>
         /// Does this material have a specular reflection?
@@ -96,9 +131,9 @@ namespace Fusee.Engine.Core.ShaderShards
         public bool HasEmissiveTexture;
 
         /// <summary>
-        /// Does this material have a bump map?
+        /// Does this material have a normal map?
         /// </summary>
-        public bool HasBump;
+        public bool HasNormalMap;
     }
 
     /// <summary>
@@ -131,60 +166,6 @@ namespace Fusee.Engine.Core.ShaderShards
         {
             return GLSL.CreateMethod(GLSL.Type.Void, "main",
                 new[] { "" }, methodBody);
-        }
-
-        /// <summary>
-        /// Creates a new <see cref="ShaderEffectProps"/> from a MaterialComponent, a WeightComponent and a mesh.
-        /// </summary>
-        /// <param name="mesh">The mesh.</param>
-        /// <param name="mc">The material.</param>
-        /// <param name="wc">The weights.</param>
-        /// <returns></returns>
-        public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
-        {
-            return new ShaderEffectProps()
-            {
-                MatType = AnalyzeMaterialType(mc),
-                MatProbs = AnalzyeMaterialParams(mc),
-                MeshProbs = AnalyzeMesh(mesh, wc),
-
-            };
-        }
-
-        private static MaterialProps AnalzyeMaterialParams(MaterialComponent mc)
-        {
-            return new MaterialProps
-            {
-                HasDiffuse = mc.HasDiffuse,
-                HasDiffuseTexture = mc.HasDiffuse && mc.Diffuse.Texture != null,
-                HasSpecular = mc.HasSpecular,
-                HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
-                HasEmissive = mc.HasEmissive,
-                HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
-                HasBump = mc.HasBump
-            };
-        }
-
-        private static MaterialType AnalyzeMaterialType(MaterialComponent mc)
-        {
-            if (mc.GetType() == typeof(MaterialPBRComponent))
-                return MaterialType.MaterialPbr;
-
-            return MaterialType.Standard;
-        }
-
-        //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefor we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....
-        private static MeshProps AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
-        {
-            return new MeshProps
-            {
-                HasNormals = mesh == null || mesh.Normals != null && mesh.Normals.Length > 0,
-                HasUVs = mesh == null || mesh.UVs != null && mesh.UVs.Length > 0,
-                HasColors = false,
-                HasWeightMap = wc != null,
-                HasTangents = mesh == null || (mesh.Tangents != null && mesh.Tangents.Length > 1),
-                HasBiTangents = mesh == null || (mesh.BiTangents != null && mesh.BiTangents.Length > 1)
-            };
         }
     }
 }

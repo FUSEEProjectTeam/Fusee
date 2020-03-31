@@ -1,4 +1,5 @@
 ﻿using CommandLine;
+using Fusee.Engine.Common;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -13,7 +14,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
         public int Run()
         {
-            var schema = ProtoBuf.Serializer.GetProto<SceneContainer>();
+            var schema = ProtoBuf.Serializer.GetProto<FusFile>();
 
             // Check and open output file
             if (!String.IsNullOrEmpty(Output))

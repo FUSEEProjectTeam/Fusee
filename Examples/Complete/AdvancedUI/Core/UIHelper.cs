@@ -1,11 +1,13 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System.Collections.Generic;
+using static Fusee.Examples.AdvancedUI.Core.UIHelper;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -90,9 +92,9 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
+        internal static void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
-            var container = new SceneNodeContainer
+            var container = new SceneNode
             {
                 Name = "Container"
             };
@@ -126,9 +128,9 @@ namespace Fusee.Examples.AdvancedUI.Core
             parentUiElement.Children.Add(container);
         }
 
-        private static SceneNodeContainer CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
+        private static SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
-            var icon = new TextureNodeContainer(
+            var icon = new TextureNode(
                 "icon",
                 VsTex,
                 PsTex,
@@ -141,7 +143,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f))
             );
 
-            var annotationText = new TextNodeContainer(
+            var annotationText = new TextNode(
                 text,
                 "annotation text",
                 VsTex,
@@ -157,7 +159,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var annotation = new TextureNodeContainer(
+            var annotation = new TextureNode(
                 "Annotation",
                 VsNineSlice,
                 PsNineSlice,
@@ -182,7 +184,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             return annotation;
         }
 
-        private static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
+        private static SceneNode CreateCircle(float2 circleDim, MatColor color)
         {
             float4 col;
 
@@ -212,12 +214,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                     break;
             }
 
-            return new SceneNodeContainer
+            return new SceneNode
             {
                 Name = "Circle_" + nameSuffix,
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
-                    new RectTransformComponent
+                    new RectTransform
                     {
                         Name = "circle" + "_RectTransform",
                         Anchors = new MinMaxRect
@@ -227,20 +229,17 @@ namespace Fusee.Examples.AdvancedUI.Core
                         },
                         Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
                     },
-                    new XFormComponent
+                    new XForm
                     {
                         Name = "circle" + "_XForm",
                     },
-                    new ShaderEffectComponent()
-                    {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0)
-                    },
+                    ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
         }
 
-        private static SceneNodeContainer CreateLine(MatColor color)
+        private static SceneNode CreateLine(MatColor color)
         {
             float4 col;
 
@@ -264,12 +263,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                     break;
             }
 
-            return new SceneNodeContainer()
+            return new SceneNode()
             {
                 Name = "line",
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
-                    new RectTransformComponent
+                    new RectTransform
                     {
                         Name = "line" + "_RectTransform",
                         Anchors = new MinMaxRect
@@ -279,14 +278,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                         },
                         Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
                     },
-                    new XFormComponent
+                    new XForm
                     {
                         Name = "line" + "_XForm",
                     },
-                    new ShaderEffectComponent()
-                    {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
-                    }
+                    ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)                    
                 }
             };
         }
@@ -312,9 +308,9 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
         {
-            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.DiffuseColor);
+            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.AlbedoColor);
             color.w = alpha;
-            effect.SetEffectParam(UniformNameDeclarations.DiffuseColor, color);
+            effect.SetEffectParam(UniformNameDeclarations.AlbedoColor, color);
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)

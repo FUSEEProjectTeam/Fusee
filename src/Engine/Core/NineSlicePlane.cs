@@ -1,6 +1,6 @@
-﻿using System.Linq;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -69,7 +69,7 @@ namespace Fusee.Engine.Core
                 14,6,5,
                 14,7,6
 
-                
+
             };
 
             Normals = new[]

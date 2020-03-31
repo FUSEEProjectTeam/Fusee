@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Engine.Core;
+﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.GUI
 {
@@ -11,13 +11,13 @@ namespace Fusee.Engine.GUI
     /// Needed for adding interactions/events to objects in the scene graph.
     /// Traverses the scene via a ScenePicker and invokes the necessary events.
     /// </summary>
-    public class SceneInteractionHandler : SceneVisitor
+    public class SceneInteractionHandler : Visitor<SceneNode, SceneComponent>
     {
         //private static List<CodeComponent> _observables;
-        private readonly ScenePicker _scenePicker;       
+        private readonly ScenePicker _scenePicker;
 
-        private SceneNodeContainer _pickRes;
-        private SceneNodeContainer _pickResCache;
+        private SceneNode _pickRes;
+        private SceneNode _pickResCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
@@ -28,7 +28,7 @@ namespace Fusee.Engine.GUI
             _scenePicker = new ScenePicker(scene);
         }
 
-        private static SceneNodeContainer FindLeafNodeInPickRes(SceneNodeContainer firstPickRes, IList<SceneNodeContainer> pickResults)
+        private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
         {
             if (pickResults.Count == 1)
                 return pickResults[0];
@@ -59,7 +59,7 @@ namespace Fusee.Engine.GUI
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
         public void CheckForInteractiveObjects(RenderContext rc, float2 mousePos, int canvasWidth, int canvasHeight)
-        { 
+        {
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
 
             var pickResults = _scenePicker.Pick(rc, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
@@ -97,6 +97,6 @@ namespace Fusee.Engine.GUI
                 btn.IsMouseOver = true;
                 btn.InvokeEvents();
             }
-        }        
+        }
     }
 }

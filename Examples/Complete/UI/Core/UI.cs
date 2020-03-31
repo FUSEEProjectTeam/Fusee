@@ -2,9 +2,10 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -67,7 +68,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor = canvasScaleFactor;
             }
 
-            var fps = new TextNodeContainer(
+            var fps = new TextNode(
                 "FPS: 0.00",
                 "FPSText",
                 vsTex,
@@ -86,7 +87,7 @@ namespace Fusee.Examples.UI.Core
 
             _fpsText = fps.GetComponentsInChildren<GUIText>().FirstOrDefault();
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "The five\n" +
                 "boxing wizards\n" +
                 "jump\n" +
@@ -105,11 +106,11 @@ namespace Fusee.Examples.UI.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var catTextureNode = new TextureNodeContainer(
+            var catTextureNode = new TextureNode(
                 "Cat",
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -131,11 +132,11 @@ namespace Fusee.Examples.UI.Core
             { Children = new ChildList() { text } };
             catTextureNode.Components.Add(_btnCat);
 
-            var bltTextureNode = new TextureNodeContainer(
+            var bltTextureNode = new TextureNode(
                 "Blt",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 _bltDestinationTex,
                 //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -147,7 +148,7 @@ namespace Fusee.Examples.UI.Core
                 //Max: distance to this elements Max anchor.
                 UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
 
-            var quagganTextureNode1 = new TextureNodeContainer(
+            var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
@@ -162,7 +163,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var nineSliceTextureNode = new TextureNodeContainer(
+            var nineSliceTextureNode = new TextureNode(
                 "testImage",
                 vsNineSlice,
                 psNineSlice,
@@ -179,7 +180,7 @@ namespace Fusee.Examples.UI.Core
             )
             { Children = new ChildList() { quagganTextureNode1, text } };
 
-            var quagganTextureNode = new TextureNodeContainer(
+            var quagganTextureNode = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -193,7 +194,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode2 = new TextureNodeContainer(
+            var quagganTextureNode2 = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -207,7 +208,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode3 = new TextureNodeContainer(
+            var quagganTextureNode3 = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -221,7 +222,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -244,13 +245,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = new ShaderEffectComponent
-            {
-                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                {
-                    Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
-                })
-            };
+            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
 
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
@@ -258,15 +253,15 @@ namespace Fusee.Examples.UI.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
 
-                    new SceneNodeContainer()
+                    new SceneNode()
                     {
-                        Components = new List<SceneComponentContainer>()
+                        Components = new List<SceneComponent>()
                         {
-                            new TransformComponent()
+                            new Transform()
                             {
                                 Translation = new float3(0,0,0)
                             } 
@@ -296,23 +291,17 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-            {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
-            });
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
-                .Effect = color;
+            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0.4f, 0.1f, 1));         
+            var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
+            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0.4f, 0.1f, 1));
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-            {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
-            });
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
-                .Effect = color;
+            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0, 0, 1));           
+            var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
+            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0, 0, 1));
         }
 
         public void OnBtnCatDown(CodeComponent sender)

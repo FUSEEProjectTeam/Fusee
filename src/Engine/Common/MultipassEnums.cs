@@ -39,6 +39,7 @@
     /// <summary>
     /// Common texture resolutions for render textures. The value is given in px.
     /// </summary>
+    [System.Flags]
     public enum TexRes
     {
         /// <summary>

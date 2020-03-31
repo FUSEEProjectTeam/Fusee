@@ -1,4 +1,5 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
@@ -38,8 +39,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public RenderStateSet RenderUndoStates
         {
-            get { return _renderStates.Tos; }
-            set { _renderStates.Tos = value; }
+            get => _renderStates.Tos;
+            set => _renderStates.Tos = value;
         }
 
         /// <summary>
@@ -47,8 +48,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4 Model
         {
-            get { return _model.Tos; }
-            set { _model.Tos = value; }
+            get => _model.Tos;
+            set => _model.Tos = value;
         }
 
         /// <summary>
@@ -56,8 +57,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public MinMaxRect UiRect
         {
-            get { return _uiRect.Tos; }
-            set { _uiRect.Tos = value; }
+            get => _uiRect.Tos;
+            set => _uiRect.Tos = value;
         }
 
         /// <summary>
@@ -74,8 +75,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public ShaderEffect Effect
         {
-            set { _effect.Tos = value; }
-            get { return _effect.Tos; }
+            set => _effect.Tos = value;
+            get => _effect.Tos;
         }
 
         /// <summary>

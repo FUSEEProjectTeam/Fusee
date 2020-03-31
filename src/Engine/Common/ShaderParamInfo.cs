@@ -13,7 +13,7 @@ namespace Fusee.Engine.Common
         /// If Size > 1 this value represents the number of array entries.
         /// </summary>
         /// <remarks>
-        /// See also <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetActiveUniform.xml">the khronos group's documentation on glGetActiveUniform</a>.
+        /// See also <a href="https://www.khronos.org/opengles/sdk/docs/man/xhtml/glGetActiveUniform.xml">the Khronos group's documentation on glGetActiveUniform</a>.
         /// </remarks>
         public int Size;
 
