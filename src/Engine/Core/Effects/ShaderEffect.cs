@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
 
-            EffectEventArgs = new EffectEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
         }       
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public void Dispose()
         {
-            EffectChanged?.Invoke(this, new EffectEventArgs(this, ChangedEnum.DISPOSE));
+            EffectChanged?.Invoke(this, new EffectManagerEventArgs(this, ChangedEnum.DISPOSE));
         }
     }
 }

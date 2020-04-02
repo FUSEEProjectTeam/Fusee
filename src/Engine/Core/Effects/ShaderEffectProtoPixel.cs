@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core.Effects
             GeometryShaderSrc = effectPass.GS;
             //PixelShaderSrc is not set here because it gets built in a pre-pass, depending on whether we render deferred or forward.            
 
-            EffectEventArgs = new EffectEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
         }
 
         /// <summary>
@@ -51,14 +51,13 @@ namespace Fusee.Engine.Core.Effects
         {
             if (doRenderForward)
             {
-
                 var pxBody = new List<string>()
                     {
-                        LightingShard.LightStructDeclaration,
-                        FragPropertiesShard.FixedNumberLightArray,
-                        FragPropertiesShard.ColorOut(),
-                        LightingShard.AssembleLightingMethods(EffectProps),
-                        FragMainShard.ForwardLighting(EffectProps)
+                        Lighting.LightStructDeclaration,
+                        FragProperties.FixedNumberLightArray,
+                        FragProperties.ColorOut(),
+                        Lighting.AssembleLightingMethods(EffectProps),
+                        FragMain.ForwardLighting(EffectProps)
                     };
 
                 PixelShaderSrc = _effectPass.ProtoPS + string.Join("\n", pxBody);
@@ -66,11 +65,10 @@ namespace Fusee.Engine.Core.Effects
             }
             else
             {
-
                 var pxBody = new List<string>()
                     {
-                        FragPropertiesShard.GBufferOut(),
-                        FragMainShard.RenderToGBuffer(EffectProps)
+                        FragProperties.GBufferOut(),
+                        FragMain.RenderToGBuffer(EffectProps)
                     };
                 PixelShaderSrc = _effectPass.ProtoPS + string.Join("\n", pxBody);
             }

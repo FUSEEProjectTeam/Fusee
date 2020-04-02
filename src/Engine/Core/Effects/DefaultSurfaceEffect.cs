@@ -1,5 +1,5 @@
 ﻿using Fusee.Engine.Core.ShaderShards;
-using Fusee.Math.Core;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Effects
 {
@@ -17,12 +17,11 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         private static EffectProps _effectProps = new EffectProps()
         {
-            MatProbs = new MaterialProps()
+            LightingProps = new LightingProps()
             {
-                HasSpecular = true,
-                HasDiffuse = true
+                SpecularLighting = SpecularLighting.Std,
+                DoDiffuseLighting = true
             },
-            MatType = MaterialType.Standard,
             MeshProbs = new MeshProps()
             {
                 HasNormals = true,
@@ -30,50 +29,14 @@ namespace Fusee.Engine.Core.Effects
             }
         };
 
+        #region struct declaration
+
+        #endregion
+
         #region Uniform Declarations
 
         //This region contains all user-defined uniform parameters
-        //They will be added to the shader defined by "ShaderCategory" in the form of "uniform <type> <name>"
-
-        /// <summary>
-        /// The diffuse color of the this shader effect.
-        /// </summary>
-        [FxParam(ShaderCategory.Fragment)]
-        public float4 Albedo
-        {
-            set { SetFxParam(nameof(Albedo), value); }
-            get { return GetFxParam<float4>(nameof(Albedo)); }
-        }
-
-        /// <summary>
-        /// The specular color of this shader effect.
-        /// </summary>
-        [FxParam(ShaderCategory.Fragment)]
-        public float4 SpecularColor
-        {
-            set { SetFxParam(nameof(SpecularColor), value); }
-            get { return GetFxParam<float4>(nameof(SpecularColor)); }
-        }
-
-        /// <summary>
-        /// The specular intensity of the shader effect.
-        /// </summary>
-        [FxParam(ShaderCategory.Fragment)]
-        public float SpecularIntensity
-        {
-            set { SetFxParam(nameof(SpecularIntensity), value); }
-            get { return GetFxParam<float>(nameof(SpecularIntensity)); }
-        }
-
-        /// <summary>
-        /// The specular shininess of this shader effect.
-        /// </summary>
-        [FxParam(ShaderCategory.Fragment)]
-        public float SpecularShininess
-        {
-            set { SetFxParam(nameof(SpecularShininess), value); }
-            get { return GetFxParam<float>(nameof(SpecularShininess)); }
-        }
+        //They will be added to the shader defined by "ShaderCategory" in the form of "uniform <type> <name>"        
 
         #endregion
 
@@ -83,20 +46,6 @@ namespace Fusee.Engine.Core.Effects
         //Those will likely be the things defined in the header of the shaders, like the version and the precision.
         //These are marked with all the "ShaderCategory" attributes as well as the"ShardCategory.Header" attribute.
         //"ShardCategory" enables the ShaderEffect to generate the glsl source code from the shards in the appropriate order.
-
-        /// <summary>
-        /// The shader shard containing the shader version.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Header)]
-        public static string Version = HeaderShard.Version300Es;
-
-        /// <summary>
-        /// The shader shard containing the float precision.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Header)]
-        public static string Precision = HeaderShard.EsPrecisionHighpFloat;
 
         #endregion
 
@@ -109,21 +58,21 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string FuseeVertUniforms = ShaderShards.Vertex.VertPropertiesShard.FuseeMatUniforms(_effectProps);
+        public static string FuseeVertUniforms = ShaderShards.Vertex.VertProperties.FuseeMatUniforms(_effectProps);
 
         /// <summary>
         /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string VertInOut = ShaderShards.Vertex.VertPropertiesShard.InAndOutParams(_effectProps);
+        public static string VertInOut = ShaderShards.Vertex.VertProperties.InAndOutParams(_effectProps);
 
         /// <summary>
         /// The shader shard containing the main method of the vertex shader.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Main)]
-        public static string VertMain = ShaderShards.Vertex.VertMainShard.VertexMain(_effectProps);
+        public static string VertMain = ShaderShards.Vertex.VertMain.VertexMain(_effectProps);
 
         #endregion
 
@@ -132,44 +81,71 @@ namespace Fusee.Engine.Core.Effects
         //This region contains shards that belong to the pixel shader.
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string FuseeMat = ShaderShards.Fragment.FragPropertiesShard.FuseeMatrixUniforms();
+        public static string FuseeMat = ShaderShards.Fragment.FragProperties.FuseeMatrixUniforms();
+
+        
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string LightStruct = ShaderShards.Fragment.LightingShard.LightStructDeclaration;
+        public static string PxInOut = ShaderShards.Fragment.FragProperties.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal
+
+
+
+        // -------------- Needs to go into the RenderContext if this effect is to be used for forward and deferred -------
+
+       
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxLightArray = ShaderShards.Fragment.FragPropertiesShard.FixedNumberLightArray;
+        public static string LightStruct = ShaderShards.Fragment.Lighting.LightStructDeclaration;
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxInOut = ShaderShards.Fragment.FragPropertiesShard.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal        
+        public static string PxLightArray = ShaderShards.Fragment.FragProperties.FixedNumberLightArray;
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxColorOut = ShaderShards.Fragment.FragPropertiesShard.ColorOut();
+        public static string PxColorOut = ShaderShards.Fragment.FragProperties.ColorOut();
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Main)]
-        public static string PxMain = ShaderShards.Fragment.FragMainShard.ForwardLighting(_effectProps);
+        public static string PxMain = ShaderShards.Fragment.FragMain.ForwardLighting(typeof(SpecularInput), "SurfIn", SurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd).Name);
 
         //Note that "AssembleLightingMethods" contains more than the main method BUT in the correct order. Therefor we do not more than one shard here.
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Method)]
-        public static string PxLightingMethods = ShaderShards.Fragment.LightingShard.AssembleLightingMethods(_effectProps);
+        public static string PxLightingMethods;
+
+       
+
+        //----------------------------------------------------------------------------------------------------------------
 
         #endregion
 
         /// <summary>
         /// Create a new instance of type ShaderEffectDefault
         /// </summary>
-        public DefaultSurfaceEffect() : base()
+        public DefaultSurfaceEffect(LightingSetup lightingSetup, SpecularInput specularIn, RenderStateSet rendererStates = null) 
+            : base(lightingSetup, specularIn, rendererStates) 
         {
-            Albedo = new float4(0.5f, 0.5f, 0.5f, 1.0f);
-            SpecularColor = new float4(1, 1, 1, 1);
-            SpecularIntensity = 0.5f;
-            SpecularShininess = 22;
+
+            PxLightingMethods = ShaderShards.Fragment.Lighting.AssembleLightingMethods(LightingSetup);
+
+            var surfOutBody = new List<string>()
+            {
+                "OUT.albedo = IN.Albedo;",
+                "OUT.specularCol = IN.Specular;",
+                "OUT.specularStrength = IN.SpecularStrength;",
+                "OUT.shininess = IN.Shininess;",
+                $"OUT.normal = {VaryingNameDeclarations.Normal};",
+                $"OUT.position = {VaryingNameDeclarations.Position};",
+            };
+
+            SurfOutMethodBody.InsertRange(1, surfOutBody);
+
+            SurfOutMethod = ShaderShards.Fragment.FragShards.GetChangeSurfFragMethod(LightingSetup, SurfOutMethodBody, typeof(SpecularInput));
+
+            HandleFieldsAndProps();
         }
     }
 }

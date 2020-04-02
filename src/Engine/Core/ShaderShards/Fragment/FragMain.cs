@@ -1,13 +1,16 @@
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
     /// <summary>
-    /// Collection of Shader Shards, describing the Main method of a fragment shader.
+    /// Collection of shader code strings, describing the Main method of a fragment shader.
     /// </summary>
-    public static class FragMainShard
+    public static class FragMain
     {
         /// <summary>
         /// Lighting Main method for forward rendering.
@@ -16,22 +19,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <returns></returns>
         public static string ForwardLighting(EffectProps effectProps)
         {
-            var fragMainBody = new List<string>
-            {
-                $"vec4 objCol = vec4(0);"
-            };
-            if (effectProps.MatProbs.HasDiffuseTexture)
+            var fragMainBody = new List<string>();
+
+            if (effectProps.LightingProps.HasDiffuseTexture)
             {
                 fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
                 //applyLightParams.Add($"texCol = vec4(pow(texCol.r, 1.0/2.2), pow(texCol.g, 1.0/2.2), pow(texCol.b, 1.0/2.2), texCol.a);");
                 fragMainBody.Add($"vec3 mix = mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
                 fragMainBody.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
-                fragMainBody.Add($"objCol = vec4(mix * luma, texCol.a);");
-
+                fragMainBody.Add($"vec4 objCol = vec4(mix * luma, texCol.a);");
             }
             else
             {
-                fragMainBody.Add($"objCol = {UniformNameDeclarations.Albedo};");
+                fragMainBody.Add($"vec4 objCol = {UniformNameDeclarations.Albedo};");
             }
 
             fragMainBody.AddRange(
@@ -40,25 +40,59 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"float ambientCo = 0.1;",
                 $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * objCol.rgb;",
                 $"vec3 result = vec3(0.0);",
-                $"for(int i = 0; i < {LightingShard.NumberOfLightsForward}; i++)",
+                $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
                 "{",
                 "   if(allLights[i].isActive == 0) continue;",
-                "   vec3 currentPosition = allLights[i].position;",
-                "   vec4 currentIntensities = allLights[i].intensities;",
-                "   vec3 currentConeDirection = allLights[i].direction;",
-                "   float currentAttenuation = allLights[i].maxDistance;",
-                "   float currentStrength = (1.0 - ambientCo) * allLights[i].strength;",
-                "   float currentOuterConeAngle = allLights[i].outerConeAngle;",
-                "   float currentInnerConeAngle = allLights[i].innerConeAngle;",
-                "   int currentLightType = allLights[i].lightType; ",
-                "   result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
-                "   currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType, objCol.rgb);",
+                "   result += ApplyLight(allLights[i], objCol.rgb, ambientCo);",
                 "}",
                 $"oFragmentColor = vec4(result.rgb + ambient, objCol.a);"
-                 //effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.Albedo}.w);",
             });
 
-            return ShaderShardUtil.MainMethod(fragMainBody);
+            return Utility.MainMethod(fragMainBody);
+        }
+
+        //TODO: Merge methods
+        /// <summary>
+        /// Lighting Main method for forward rendering.
+        /// </summary>
+        public static string ForwardLighting(Type inType, string inStructName, string outStructType)
+        {
+            var fragMainBody = new List<string>
+            {
+                $"{outStructType} surfOut = {FragShards.ChangeSurfFrag}({inStructName});"
+            };
+
+            //----------- TODO: Needs to go to surface shader -------
+            //if (hasAlbedoTex)
+            //{
+            //    fragMainBody.Add($"vec4 texCol = texture(surfOut.{UniformNameDeclarations.Albedo}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
+            //    fragMainBody.Add($"vec3 mix = mix(surfOut.{UniformNameDeclarations.DiffuseTexture}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
+            //    fragMainBody.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
+            //    fragMainBody.Add($"vec4 objCol = vec4(mix * luma, texCol.a);");
+            //}
+            //else
+            //{
+            //    fragMainBody.Add($"vec4 objCol = surfOut.{UniformNameDeclarations.Albedo};");
+            //}
+            //-----------------------------------------------------
+
+            fragMainBody.AddRange(
+            new List<string>()
+            {
+                
+                $"float ambientCo = 0.1;",
+                $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
+                $"vec3 result = vec3(0.0);",
+                $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
+                "{",
+                    "if(allLights[i].isActive == 0) continue;",
+                    "result += ApplyLight(allLights[i], surfOut, ambientCo);",
+                "}",
+                $"oFragmentColor = vec4(result.rgb + ambient, surfOut.albedo.a);"
+
+            });
+
+            return Utility.MainMethod(fragMainBody);
         }
 
         /// <summary>
@@ -76,25 +110,24 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
                 if (texName == ssaoString) continue;
-
                 switch (i)
                 {
                     case (int)RenderTargetTextureTypes.G_POSITION:
                         fragMainBody.Add($"{texName} = vec4({VaryingNameDeclarations.Position});");
                         break;
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
-                        if (effectProps.MatProbs.HasDiffuseTexture)
+                        if (effectProps.LightingProps.HasDiffuseTexture)
                         {
                             fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
                             fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix}), texCol.a);");
                         }
                         else
-                            fragMainBody.Add($"{texName} = {UniformNameDeclarations.Albedo}");
+                            fragMainBody.Add($"{texName} = {UniformNameDeclarations.Albedo};");
 
                         break;
                     case (int)RenderTargetTextureTypes.G_NORMAL:
                         {
-                            if (!effectProps.MatProbs.HasBump)
+                            if (!effectProps.LightingProps.HasNormalMap)
                                 fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
                             else
                             {
@@ -111,11 +144,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_SPECULAR:
                         {
-                            if (effectProps.MatType == MaterialType.MaterialPbr)
+                            if (effectProps.LightingProps.SpecularLighting == SpecularLighting.Pbr)
                             {
                                 fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.RoughnessValue}, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.DiffuseFraction}, 1.0);");
                             }
-                            else if (effectProps.MatType == MaterialType.Standard)
+                            else if (effectProps.LightingProps.SpecularLighting == SpecularLighting.Std)
                             {
                                 fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);");
                             }
@@ -124,7 +157,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 }
             }
 
-            return ShaderShardUtil.MainMethod(fragMainBody);
+            return Utility.MainMethod(fragMainBody);
         }
     }
 }

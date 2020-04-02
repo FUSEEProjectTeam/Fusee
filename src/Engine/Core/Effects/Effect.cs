@@ -12,9 +12,9 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// ShaderEffect event notifies observing ShaderEffectManager about property changes and the ShaderEffects's disposal.
         /// </summary>
-        EventHandler<EffectEventArgs> EffectChanged { get; }
+        EventHandler<EffectManagerEventArgs> EffectChanged { get; }
 
-        EffectEventArgs EffectEventArgs { get; }
+        EffectManagerEventArgs EffectEventArgs { get; }
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
@@ -36,9 +36,9 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// ShaderEffect event notifies observing ShaderEffectManager about property changes and the ShaderEffects's disposal.
         /// </summary>
-        public EventHandler<EffectEventArgs> EffectChanged { get; internal set; }
+        public EventHandler<EffectManagerEventArgs> EffectChanged { get; internal set; }
 
-        public EffectEventArgs EffectEventArgs { get; internal set; }
+        public EffectManagerEventArgs EffectEventArgs { get; internal set; }
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.

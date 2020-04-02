@@ -1,7 +1,6 @@
 ﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -31,7 +30,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateOut(Type type, string varName)
         {
-            return $"out {DecodeType(type)} {varName};";
+            return $"out {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateIn(Type type, string varName)
@@ -54,8 +53,6 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <returns></returns>
         internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> method)
         {
-            method = method.Select(x => "   " + x).ToList(); // One Tab indent
-
             var tmpList = new List<string>
             {
                 $"{DecodeType(returnType)} {methodName}({string.Join(", ", methodParams)})",
@@ -69,9 +66,61 @@ namespace Fusee.Engine.Core.ShaderShards
             return string.Join("\n", tmpList);
         }
 
+        /// <summary>
+        /// Creates a GLSL method
+        /// </summary>
+        /// <param name="returnType"></param>
+        /// <param name="methodName"></param>
+        /// <param name="methodParams"></param>
+        /// <param name="method">method body goes here</param>
+        /// <returns></returns>
+        internal static string CreateMethod(string returnType, string methodName, string[] methodParams, IList<string> method)
+        {
+            var tmpList = new List<string>
+            {
+                $"{returnType} {methodName}({string.Join(", ", methodParams)})",
+                "{"
+            };
+
+            tmpList.AddRange(method);
+            tmpList.Add("}");
+            tmpList.Add("\n");
+            AddTabsToMethods(tmpList);
+
+            return string.Join("\n", tmpList);
+        }
+
+        /// <summary>
+        /// Tranlates this class or struct to GLSL. Will only convert fields and properties.
+        /// </summary>
+        /// <param name="type">The type to translate.</param>
+        /// <param name="name">The name of the class or struct.</param>
+        /// <returns></returns>
+        public static string DecodeSystemStructOrClass(System.Type type)
+        {
+            var res = new List<string>
+            {
+                $"struct {type.Name}",
+                "{"
+            };
+
+            foreach (var field in type.GetFields())
+                res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+
+            foreach (var prop in type.GetProperties())
+                res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+
+            res.Add("};");
+            AddTabsToMethods(res);
+            res.Add("\n");
+            return string.Join("\n", res);
+        }
+
         public static string DecodeType(System.Type type)
         {
-            if (type == typeof(float3x3))
+            if (type.IsEnum)
+                return "int";
+            else if (type == typeof(float3x3))
                 return "mat3";
             else if (type == typeof(float4x4))
                 return "mat4";
@@ -94,6 +143,8 @@ namespace Fusee.Engine.Core.ShaderShards
                 return "samplerCube";
             else if (type == typeof(WritableArrayTexture))
                 return "sampler2DArray";
+            if ((type.IsValueType && !type.IsPrimitive) || type.IsClass) // => user-defined struct or class
+                return type.Name;
             else
                 throw new ArgumentException($"Cannot parse type {type.Name} ");
         }
@@ -131,20 +182,25 @@ namespace Fusee.Engine.Core.ShaderShards
             }
         }
 
-        private static void AddTabsToMethods(List<string> list)
+        internal static void AddTabsToMethods(List<string> list)
         {
-            var indent = false;
+            var indentCnt = 0;
+
             for (var i = 0; i < list.Count; i++)
             {
                 var s = list[i];
-                if (list[i].Contains("}"))
-                    break;
+                
+                if (s == "}" || s == "};")
+                    indentCnt--;
 
-                if (indent)
-                    list[i] = "   " + s;
+                if (indentCnt > 0)
+                {
+                    for (int j = 0; j < indentCnt; j++)
+                        list[i] = "    " + list[i];
+                }
 
-                if (list[i].Contains("{"))
-                    indent = true;
+                if (s == "{")
+                    indentCnt++;
             }
         }
     }

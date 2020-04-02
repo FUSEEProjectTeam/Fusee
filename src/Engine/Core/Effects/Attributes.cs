@@ -3,24 +3,6 @@ using System.Linq;
 
 namespace Fusee.Engine.Core.Effects
 {
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    sealed class FxParamAttribute : Attribute
-    {
-        public ShaderCategory ShaderCategory;
-
-        public FxParamAttribute()
-        {
-            // Default - used in all categories
-            ShaderCategory = 0;
-            foreach (var cat in Enum.GetValues(typeof(ShaderCategory)).Cast<ShaderCategory>())
-                ShaderCategory |= cat;
-        }
-        public FxParamAttribute(ShaderCategory usedInShards)
-        {
-            ShaderCategory = usedInShards;
-        }
-    }
-
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     sealed class FxShaderAttribute : Attribute
     {
@@ -43,6 +25,17 @@ namespace Fusee.Engine.Core.Effects
         }
     }
 
+    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
+    sealed class UniformAttribute : Attribute
+    {
+        public readonly string ShaderParamName;
+
+        public UniformAttribute(string shaderParamName)
+        {
+            ShaderParamName = shaderParamName;
+        }
+    }
+
     /// <summary>
     /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to. 
     /// Supports vertex, pixel and geometry shaders.
@@ -61,34 +54,9 @@ namespace Fusee.Engine.Core.Effects
         Fragment = 2,
 
         /// <summary>
-        /// The parameter is used in the pixel and in the vertex shader.
-        /// </summary>
-        Vertex_Pixel = 3,
-
-
-        /// <summary>
         /// The parameter is only used in the geometry shader.
         /// </summary>
-        Geometry = 4,
-
-
-        /// <summary>
-        /// The parameter is used in the vertex and the geometry shader.
-        /// </summary>
-        Vertex_Geometry = 5,
-
-
-        /// <summary>
-        /// The parameter is used in the geometry and the pixel shader.
-        /// </summary>
-        Geometry_Pixel = 6,
-
-
-        /// <summary>
-        /// The parameter is used in the vertex, geometry and pixel shader.
-        /// </summary>
-        Vertex_Geometry_Pixel = 7
-
+        Geometry = 4
     }
 
     /// <summary>
@@ -105,23 +73,28 @@ namespace Fusee.Engine.Core.Effects
         Header = 1,
 
         /// <summary>
-        /// The shader shard belongs is a property of the source shader.
-        /// </summary>
-        Property = 2,
-
-        /// <summary>
         /// The shader shard belongs is a struct of the source shader.
         /// </summary>
-        Struct = 3,
+        Struct = 2,
+
+        /// <summary>
+        /// The shader shard belongs is a property of the source shader.
+        /// </summary>
+        Uniform = 4,
+
+        /// <summary>
+        /// The shader shard belongs is a property of the source shader.
+        /// </summary>
+        Property = 8,
 
         /// <summary>
         /// The shader shard is a method of the source shader.
         /// </summary>
-        Method = 4,
+        Method = 16,
 
         /// <summary>
         /// The shader shard is, or is part of, the main method of the source shader.
         /// </summary>
-        Main = 5
+        Main = 31
     }
 }

@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Serialization;
 using System;
@@ -8,9 +8,9 @@ using System.Text;
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
     /// <summary>
-    /// Collection of Shader Shards, describing the struct for a Light and different methods for light and shadow calculation.
+    /// Collection of shader code strings, describing the struct for a Light and different methods for light and shadow calculation.
     /// </summary>
-    public static class LightingShard
+    public static class Lighting
     {
         ///The maximal number of lights we can render when using the forward pipeline.
         public const int NumberOfLightsForward = 8;
@@ -19,21 +19,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Struct, that describes a Light object in the shader code./>
         /// </summary>
         /// <returns></returns>
-        public static string LightStructDeclaration = @"
-        struct Light 
-        {
-            vec3 position;            
-            vec4 intensities;
-            vec3 direction;            
-            float maxDistance;
-            float strength;
-            float outerConeAngle;
-            float innerConeAngle;
-            int lightType;
-            int isActive;
-            int isCastingShadows;
-            float bias;
-        };";
+        public static string LightStructDeclaration = string.Join("\n", new List<string>() {
+
+        "struct Light",
+        "{",
+        "   vec3 position;",
+        "   vec4 intensities;",
+        "   vec3 direction;",
+        "   float maxDistance;",
+        "   float strength;",
+        "   float outerConeAngle;",
+        "   float innerConeAngle;",
+        "   int lightType;",
+        "   int isActive;",
+        "   int isCastingShadows;",
+        "   float bias;",
+        "};\n",
+        });
 
         /// <summary>
         /// Caches "allLight[i]." names (used as uniform parameters).
@@ -49,58 +51,82 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var lighting = new List<string>
             {
                 AttenuationPointComponent(),
-                AttenuationConeComponent(),
-                AmbientComponent()
+                AttenuationConeComponent()
             };
 
-            //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
-            switch (effectProps.MatType)
-            {
-                case MaterialType.Standard:
-                    if (effectProps.MatProbs.HasDiffuse)
-                        lighting.Add(DiffuseComponent());
-                    if (effectProps.MatProbs.HasSpecular)
-                        lighting.Add(SpecularComponent());
-                    break;
-                case MaterialType.MaterialPbr:
-                    if (effectProps.MatProbs.HasDiffuse)
-                        lighting.Add(DiffuseComponent());
-                    if (effectProps.MatProbs.HasSpecular)
-                        lighting.Add(PbrSpecularComponent());
+            if (effectProps.LightingProps.DoDiffuseLighting)
+                lighting.Add(DiffuseComponent());
 
+            //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
+            switch (effectProps.LightingProps.SpecularLighting)
+            {
+                case SpecularLighting.Std:
+                    lighting.Add(SpecularComponent());
+                    break;
+                case SpecularLighting.Pbr:
+                    lighting.Add(PbrSpecularComponent());
+                    break;
+                case SpecularLighting.None:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
+                    throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.LightingProps.SpecularLighting}");
             }
 
-            lighting.Add(ApplyLightForward(effectProps));
+            lighting.Add(ApplyLightForward(effectProps.LightingProps));
 
             return string.Join("\n", lighting);
         }
 
         /// <summary>
-        /// Method for calculation the ambient lighting component.
-        /// </summary>       
-        public static string AmbientComponent()
+        /// Collects all lighting methods, dependent on what is defined in the given <see cref="EffectProps"/> and the LightingCalculationMethod.
+        /// </summary>
+        /// <param name="setup">The <see cref="LightingSetup"/> which is used to decide which lighting methods we need.</param>
+        public static string AssembleLightingMethods(LightingSetup setup)
         {
-            var methodBody = new List<string>
-            {
-                $"return vec4(color.xyz * ambientCoefficient, 1.0);"
-            };
+            if (setup == LightingSetup.Unlit)
+                return string.Empty;
 
-            return (GLSL.CreateMethod(GLSL.Type.Vec4, "ambientLighting",
-                new[] { GLSL.CreateVar(GLSL.Type.Float, "ambientCoefficient"), GLSL.CreateVar(GLSL.Type.Vec4, "color") }, methodBody));
+            var lighting = new List<string>();
+
+            //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
+            switch (setup)
+            {
+                case LightingSetup.SpecularStd:
+                    lighting.Add(AttenuationPointComponent());
+                    lighting.Add(AttenuationConeComponent());
+                    lighting.Add(DiffuseComponent());
+                    lighting.Add(SpecularComponent());
+                    break;
+                case LightingSetup.SpecularPbr:
+                    lighting.Add(AttenuationPointComponent());
+                    lighting.Add(AttenuationConeComponent());
+                    lighting.Add(DiffuseComponent());
+                    lighting.Add(PbrSpecularComponent());
+                    break;
+                case LightingSetup.Unlit:
+                    break;
+                case LightingSetup.DiffuseOnly:
+                    lighting.Add(AttenuationPointComponent());
+                    lighting.Add(AttenuationConeComponent());
+                    lighting.Add(DiffuseComponent());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
+            }
+
+            lighting.Add(ApplyLightForward(setup));
+
+            return string.Join("\n", lighting);
         }
 
         /// <summary>
         /// Method for calculation the diffuse lighting component.
-        /// </summary>       
+        /// </summary>
         public static string DiffuseComponent()
         {
             var methodBody = new List<string>
             {
                 "return max(dot(N, L), 0.0);"
-
             };
             return GLSL.CreateMethod(GLSL.Type.Float, "diffuseLighting",
                 new[]
@@ -119,9 +145,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float specularTerm = 0.0;",
                 "if(dot(N, L) > 0.0)",
                 "{",
-                "   // half vector",
+                    "// half vector",
                     "vec3 reflectDir = reflect(-L, N);",
-                $"  specularTerm = pow(max(0.0, dot(V, reflectDir)), shininess);",
+                    $"specularTerm = pow(max(0.0, dot(V, reflectDir)), shininess);",
                 "}",
                 "return specularTerm;"
             };
@@ -145,43 +171,38 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                $"float roughnessValue = {UniformNameDeclarations.RoughnessValue}; // 0 : smooth, 1: rough", // roughness 
-                $"float F0 = {UniformNameDeclarations.FresnelReflectance}; // fresnel reflectance at normal incidence", // fresnel => Specular from Blender                
                 "float NdotL = max(dot(N, L), 0.0);",
                 "float specular = 0.0;",
                 "float BlinnSpecular = 0.0;",
                 "",
                 "if(dot(N, L) > 0.0)",
                 "{",
-                "     // calculate intermediary values",
-                "     vec3 H = normalize(L + V);",
-                "     float NdotH = max(dot(N, H), 0.0); ",
-                "     float NdotV = max(dot(N, L), 0.0); // note: this is NdotL, which is the same value",
-                "     float VdotH = max(dot(V, H), 0.0);",
-                "     float mSquared = roughnessValue * roughnessValue;",
-                "",
-                "",
-                "",
-                "",
-                "     // -- geometric attenuation",
-                "     //[Schlick's approximation of Smith's shadow equation]",
-                "     float k= roughnessValue * sqrt(0.5 * 3.14159265);",
-                "     float one_minus_k= 1.0 - k;",
-                "     float geoAtt = ( NdotL / (NdotL * one_minus_k + k) ) * ( NdotV / (NdotV * one_minus_k + k) );",
-                "",
-                "     // -- roughness (or: microfacet distribution function)",
-                "     // Trowbridge-Reitz or GGX, GTR2",
-                "     float a2 = mSquared * mSquared;",
-                "     float d = (NdotH * a2 - NdotH) * NdotH + 1.0;",
-                "     float roughness = a2 / (3.14 * d * d);",
-                "",
-                "     // -- fresnel",
-                "     // [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]",
-                "     float fresnel = pow(1.0 - VdotH, 5.0);",
-                $"    fresnel = clamp((50.0 * {UniformNameDeclarations.SpecularColor}.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
-                "",
-                $"     specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);",
-                "     ",
+                    "// calculate intermediary values",
+                    "vec3 H = normalize(L + V);",
+                    "float NdotH = max(dot(N, H), 0.0); ",
+                    "float NdotV = max(dot(N, L), 0.0); // note: this is NdotL, which is the same value",
+                    "float VdotH = max(dot(V, H), 0.0);",
+                    "float mSquared = roughnessValue * roughnessValue;",
+                    "",
+                    "// -- geometric attenuation",
+                    "//[Schlick's approximation of Smith's shadow equation]",
+                    "float k= roughnessValue * sqrt(0.5 * 3.14159265);",
+                    "float one_minus_k= 1.0 - k;",
+                    "float geoAtt = ( NdotL / (NdotL * one_minus_k + k) ) * ( NdotV / (NdotV * one_minus_k + k) );",
+                    "",
+                    "// -- roughness (or: microfacet distribution function)",
+                    "// Trowbridge-Reitz or GGX, GTR2",
+                        "float a2 = mSquared * mSquared;",
+                    "float d = (NdotH * a2 - NdotH) * NdotH + 1.0;",
+                    "float roughness = a2 / (3.14 * d * d);",
+                    "",
+                    "// -- fresnel",
+                    "// [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]",
+                    "float fresnel = pow(1.0 - VdotH, 5.0);",
+                    $"fresnel = clamp((50.0 * specularCol.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
+                    "",
+                    $"specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);",
+                    "",
                 "}",
                 "",
                 $"return (k + specular * (1.0-k));"
@@ -191,7 +212,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Float, "k")
+                    GLSL.CreateVar(GLSL.Type.Float, "k"), GLSL.CreateVar(GLSL.Type.Vec4, "specularCol"), GLSL.CreateVar(GLSL.Type.Float, "F0"),
+                    GLSL.CreateVar(GLSL.Type.Float, "roughnessValue")
                 }, methodBody);
         }
 
@@ -232,13 +254,137 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[] { GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"), GLSL.CreateVar(GLSL.Type.Vec3, "fragToLightDir"), GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle") }, methodBody));
         }
 
+        private static List<string> ViewAndLightDir()
+        {
+            return new List<string>
+            {
+                $"vec3 V = normalize(-surfOut.position.xyz);",
+                "vec3 L = vec3(0.0, 0.0, 0.0);",
+                "if(light.lightType == 1)",
+                "{",
+                    "L = -normalize(light.direction);",
+                "}",
+                "else if(light.lightType == 3)",
+                "{",
+                    "L = normalize(vec3(0.0,0.0,-1.0));",
+                "}",
+                "else",
+                "{",
+                    $"L = normalize(light.position - surfOut.position.xyz);",
+                "}",
+                "",
+                "vec3 Idif = vec3(0);",
+                "vec3 Ispe = vec3(0);",
+
+            };
+        }
+
+        private static List<string> Attenuation()
+        {
+            var res = new List<string>();
+
+            var attPtLight = "float att = attenuationPointComponent(surfOut.position.xyz, light.position, light.maxDistance);";
+            var attSpotLight = "float att = attenuationPointComponent(surfOut.position.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);";
+            var attParallel = "float att = 1.0; //no attenuation --> parallel or legacy light";
+
+            res.Add(attParallel);
+            
+            res.Add("");
+            res.Add("if(light.lightType == 0) // PointLight");
+            res.Add("{");
+            res.Add(attPtLight);
+            res.Add("}");
+            res.Add("else if(light.lightType == 2) // SpotLight");
+            res.Add("{");
+            res.Add(attSpotLight);
+            res.Add("}");
+
+            return res;
+        }
+
         /// <summary>
         /// Wraps all the lighting methods into a single one.
         /// </summary>
-        public static string ApplyLightForward(EffectProps effectProps)
+        public static string ApplyLightForward(LightingSetup setup)
+        {
+            //----------- TODO: Needs to go to surface shader -------
+            //var normals = new List<string>();
+            //if (lightingProps.HasNormalMap)
+            //{
+            //    normals.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
+            //    normals.Add($"N = N * 2.0 - 1.0;");
+            //    normals.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
+            //    normals.Add("N = normalize(TBN * N);");
+            //}
+            //else
+            //    normals = new List<string>
+            //    {
+            //        $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
+            //    };
+            //-------------------------------------------------
+
+            var setupShards = SurfaceOut.GetLightingSetupShards(setup);
+            var methodBody = new List<string>();
+
+            switch (setup)
+            {
+                case LightingSetup.SpecularStd:
+                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                    methodBody.AddRange(ViewAndLightDir());
+                    methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+                    methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                    methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.shininess);");
+                    methodBody.Add($"Ispe = (surfOut.specularCol.rgb * surfOut.specularStrength *light.intensities.rgb) *specularTerm;");
+                    methodBody.AddRange(Attenuation());
+                    methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
+
+                    break;
+                case LightingSetup.SpecularPbr:
+                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                    methodBody.AddRange(ViewAndLightDir());
+                    methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+                    methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                    methodBody.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
+                    methodBody.Add($"float specular = specularLighting(N, L, V, k, surfOut.specularCol, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue});");
+                    methodBody.Add($"Ispe = light.intensities.rgb * surfOut.specularCol.rgb * (k + specular * (1.0 - k));");
+                    methodBody.AddRange(Attenuation());
+
+                    methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
+
+                    break;
+                case LightingSetup.DiffuseOnly:
+                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                    methodBody.AddRange(ViewAndLightDir());
+                    methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+                    methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                    methodBody.AddRange(Attenuation());
+
+                    methodBody.Add("return ((Idif * att) * surfOut.albedo.rgb) * lightStrength;");
+
+                    break;
+                case LightingSetup.Unlit:
+                    methodBody.Add("return surfOut.albedo.rgb;");
+                    break;
+                default:
+                    break;
+            }
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "ApplyLight",
+            new[]
+            {
+                "Light light",
+                $"{setupShards.Name} surfOut",
+                GLSL.CreateVar(GLSL.Type.Float, "ambientCo"),
+            }, methodBody);
+        }
+
+        /// <summary>
+        /// Wraps all the lighting methods into a single one.
+        /// </summary>
+        public static string ApplyLightForward(LightingProps lightingProps)
         {
             var normals = new List<string>();
-            if (effectProps.MatProbs.HasBump)
+            if (lightingProps.HasNormalMap)
             {
                 normals.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
                 normals.Add($"N = N * 2.0 - 1.0;");
@@ -246,24 +392,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 normals.Add("N = normalize(TBN * N);");
             }
             else
-            {
                 normals = new List<string>
                 {
                     $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
                 };
-            }
 
             var fragToLightDirAndLightInit = new List<string>
             {
                 "vec3 L = vec3(0.0, 0.0, 0.0);",
-                "if(lightType == 1){L = -normalize(direction);}",
+                "if(light.lightType == 1){L = -normalize(light.direction);}",
                 "else",
                 "{",
-                $"   L = normalize(position - {VaryingNameDeclarations.Position}.xyz);",
+                $"L = normalize(light.position - {VaryingNameDeclarations.Position}.xyz);",
                 "}",
                 $"vec3 V = normalize(-{VaryingNameDeclarations.Position}.xyz);",
-                "if(lightType == 3) {",
-                "   L = normalize(vec3(0.0,0.0,-1.0));",
+                "if(light.lightType == 3)",
+                "{",
+                "L = normalize(vec3(0.0,0.0,-1.0));",
                 "}",
                 $"vec2 o_texcoords = {VaryingNameDeclarations.TextureCoordinates};",
                 "",
@@ -276,60 +421,55 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             applyLightParams.AddRange(normals);
             applyLightParams.AddRange(fragToLightDirAndLightInit);
 
-            if (effectProps.MatProbs.HasDiffuse)
-            {
-                applyLightParams.Add($"Idif = diffuseLighting(N, L) * lightColor.xyz;");
-            }
+            applyLightParams.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
 
-            if (effectProps.MatProbs.HasSpecular)
+            if (lightingProps.DoDiffuseLighting)
+                applyLightParams.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+
+
+            if (lightingProps.SpecularLighting == SpecularLighting.Std)
             {
-                if (effectProps.MatType == MaterialType.Standard)
-                {
-                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
-                    applyLightParams.Add($"Ispe = ({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *lightColor.rgb) *specularTerm;");
-                }
-                else if (effectProps.MatType == MaterialType.MaterialPbr)
-                {
-                    applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
-                    applyLightParams.Add("float specular = specularLighting(N, L, V, k);");
-                    applyLightParams.Add($"Ispe = lightColor.rgb * {UniformNameDeclarations.SpecularColor}.rgb * (k + specular * (1.0 - k));");
-                }
+                applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
+                applyLightParams.Add($"Ispe = ({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *light.intensities.rgb) *specularTerm;");
+            }
+            else if (lightingProps.SpecularLighting == SpecularLighting.Pbr)
+            {
+                applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
+                applyLightParams.Add($"float specular = specularLighting(N, L, V, k, {UniformNameDeclarations.SpecularColor}, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue});");
+                applyLightParams.Add($"Ispe = light.intensities.rgb * {UniformNameDeclarations.SpecularColor}.rgb * (k + specular * (1.0 - k));");
             }
 
             var pointLight = new List<string>
             {
-                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance);",
-                "lighting = ((Idif * att) + (Ispe * att)) *strength * objCol;"
-
+                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, light.position, light.maxDistance);",
+                "lighting = ((Idif * att) + ((Ispe * att) * objCol)) * lightStrength;"
             };
 
             //No attenuation!
             var parallelLight = new List<string>
             {
-               "lighting = (Idif + Ispe)* strength * objCol;"
-
+                "lighting = (Idif + (Ispe  * objCol)) * lightStrength;"
             };
 
             var spotLight = new List<string>
             {
-                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance) * attenuationConeComponent(direction, L, innerConeAngle, outerConeAngle);",
-
-                "lighting = ((Idif * att) + (Ispe * att)) * strength * objCol;"
+                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);",
+                "lighting = ((Idif * att) + ((Ispe * att) * objCol)) * lightStrength;"
             };
 
             var methodBody = new List<string>();
             methodBody.AddRange(applyLightParams);
             methodBody.Add("vec3 lighting = vec3(0);");
             methodBody.Add("");
-            methodBody.Add("if(lightType == 0) // PointLight");
+            methodBody.Add("if(light.lightType == 0) // PointLight");
             methodBody.Add("{");
             methodBody.AddRange(pointLight);
             methodBody.Add("}");
-            methodBody.Add("else if(lightType == 1 || lightType == 3) // ParallelLight or LegacyLight");
+            methodBody.Add("else if(light.lightType == 1 || light.lightType == 3) // ParallelLight or LegacyLight");
             methodBody.Add("{");
             methodBody.AddRange(parallelLight);
             methodBody.Add("}");
-            methodBody.Add("else if(lightType == 2) // SpotLight");
+            methodBody.Add("else if(light.lightType == 2) // SpotLight");
             methodBody.Add("{");
             methodBody.AddRange(spotLight);
             methodBody.Add("}");
@@ -342,11 +482,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return GLSL.CreateMethod(GLSL.Type.Vec3, "ApplyLight",
                 new[]
                 {
-                    GLSL.CreateVar(GLSL.Type.Vec3, "position"), GLSL.CreateVar(GLSL.Type.Vec4, "lightColor"),
-                    GLSL.CreateVar(GLSL.Type.Vec3, "direction"), GLSL.CreateVar(GLSL.Type.Float, "maxDistance"),
-                    GLSL.CreateVar(GLSL.Type.Float, "strength"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle"),
-                    GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Int, "lightType"),
+                    "Light light",
                     GLSL.CreateVar(GLSL.Type.Vec3, "objCol"),
+                    GLSL.CreateVar(GLSL.Type.Float, "ambientCo"),
                 }, methodBody);
         }
 
@@ -368,7 +506,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "if(normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)",
             "{"
             });
-            methodBody.Add($"    {FragPropertiesShard.OutColorName} = {UniformNameDeclarations.BackgroundColor};");
+            methodBody.Add($"    {FragProperties.OutColorName} = {UniformNameDeclarations.BackgroundColor};");
             methodBody.Add(@"    return;");
             methodBody.Add("}");
 
@@ -485,9 +623,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             methodBody.Add($"float strength = (1.0 - ambientCo) * light.strength;");
             methodBody.Add($"lighting = (((specular + diffuse) * strength) + ambient) * albedo;");
-            methodBody.Add($"{FragPropertiesShard.OutColorName} = lighting;");
+            methodBody.Add($"{FragProperties.OutColorName} = lighting;");
 
-            return ShaderShardUtil.MainMethod(methodBody);
+            return Utility.MainMethod(methodBody);
         }
 
         /// <summary>

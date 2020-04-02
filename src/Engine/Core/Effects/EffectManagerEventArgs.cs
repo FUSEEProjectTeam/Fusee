@@ -2,7 +2,7 @@
 
 namespace Fusee.Engine.Core.Effects
 {
-    public class EffectEventArgs : EventArgs
+    public class EffectManagerEventArgs : EventArgs
     {
         public Effect Effect { get; }
         public ChangedEnum Changed { get; set; }
@@ -10,7 +10,7 @@ namespace Fusee.Engine.Core.Effects
         public string ChangedEffectVarName { get; set; }
         public object ChangedEffectVarValue { get; set; }
 
-        public EffectEventArgs(Effect effect, ChangedEnum changed, string changedName = null, object changedValue = null)
+        public EffectManagerEventArgs(Effect effect, ChangedEnum changed, string changedName = null, object changedValue = null)
         {
             Effect = effect;
             Changed = changed;

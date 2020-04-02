@@ -5,7 +5,7 @@ namespace Fusee.Engine.Core.ShaderShards
 {
     /// <summary>
     /// This struct describes a collection of properties, which are the basis to build the needed shader.
-    /// </summary>
+    /// </summary>    
     public struct EffectProps
     {
         /// <summary>
@@ -16,12 +16,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Collection of bools, describing the material properties.
         /// </summary>
-        public MaterialProps MatProbs;
-
-        /// <summary>
-        /// The type of the material.
-        /// </summary>
-        public MaterialType MatType;
+        public LightingProps LightingProps;
     }
 
     /// <summary>
@@ -60,15 +55,22 @@ namespace Fusee.Engine.Core.ShaderShards
         public bool HasBiTangents;
     }
 
+    public enum SpecularLighting
+    {
+        Std,
+        Pbr,
+        None
+    }
+
     /// <summary>
     /// Collection of bools, describing the material properties.
     /// </summary>
-    public struct MaterialProps
+    public struct LightingProps
     {
         /// <summary>
-        /// Does this material have a diffuse color?
+        /// Do we need to perform diffuse lighting for this material?
         /// </summary>
-        public bool HasDiffuse;
+        public bool DoDiffuseLighting;
 
         /// <summary>
         /// Does this material have a diffuse texture?
@@ -76,9 +78,9 @@ namespace Fusee.Engine.Core.ShaderShards
         public bool HasDiffuseTexture;
 
         /// <summary>
-        /// Does this material have a specular reflection?
+        /// Do we need to perform diffuse lighting for this material?
         /// </summary>
-        public bool HasSpecular;
+        public SpecularLighting SpecularLighting;
 
         /// <summary>
         /// Does this material have a specular texture?
@@ -98,29 +100,13 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Does this material have a bump map?
         /// </summary>
-        public bool HasBump;
-    }
-
-    /// <summary>
-    /// The type of the material.
-    /// </summary>
-    public enum MaterialType
-    {
-        /// <summary>
-        /// The Standard material.
-        /// </summary>
-        Standard,
-
-        /// <summary>
-        /// A material for physically based lighting.
-        /// </summary>
-        MaterialPbr
+        public bool HasNormalMap;
     }
 
     /// <summary>
     /// Provides utility methods to write and use Shader Shards.
     /// </summary>
-    public static class ShaderShardUtil
+    public static class Utility
     {
         /// <summary>
         /// Creates a main method with the given method body.
@@ -144,33 +130,35 @@ namespace Fusee.Engine.Core.ShaderShards
         {
             return new EffectProps()
             {
-                MatType = AnalyzeMaterialType(mc),
-                MatProbs = AnalzyeMaterialParams(mc),
+                LightingProps = AnalzyeMaterialParams(mc),
                 MeshProbs = AnalyzeMesh(mesh, wc),
-
             };
         }
 
-        private static MaterialProps AnalzyeMaterialParams(MaterialComponent mc)
+        private static LightingProps AnalzyeMaterialParams(MaterialComponent mc)
         {
-            return new MaterialProps
+            var lProps = new LightingProps
             {
-                HasDiffuse = mc.HasDiffuse,
+                DoDiffuseLighting = mc.HasDiffuse,
                 HasDiffuseTexture = mc.HasDiffuse && mc.Diffuse.Texture != null,
-                HasSpecular = mc.HasSpecular,
+
                 HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
                 HasEmissive = mc.HasEmissive,
                 HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
-                HasBump = mc.HasBump
+                HasNormalMap = mc.HasBump
             };
-        }
 
-        private static MaterialType AnalyzeMaterialType(MaterialComponent mc)
-        {
-            if (mc.GetType() == typeof(MaterialPBRComponent))
-                return MaterialType.MaterialPbr;
+            if (mc.HasSpecular)
+            {
+                if (mc.GetType() == typeof(MaterialPBRComponent))
+                    lProps.SpecularLighting = SpecularLighting.Pbr;
+                else
+                    lProps.SpecularLighting = SpecularLighting.Std;
+            }
+            else
+                lProps.SpecularLighting = SpecularLighting.None;
 
-            return MaterialType.Standard;
+            return lProps;
         }
 
         //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefor we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....

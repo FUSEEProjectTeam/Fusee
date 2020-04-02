@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    LightingShard.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+                    Lighting.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
                     HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
@@ -786,8 +786,8 @@ namespace Fusee.Engine.Core
         {
             for (var i = 0; i < _lightResults.Count; i++)
             {
-                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
-                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
+                    Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
 
                 UpdateShaderParamForLight(i, _lightResults[i].Item2);
             }
@@ -807,7 +807,7 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
+            var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
             _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);

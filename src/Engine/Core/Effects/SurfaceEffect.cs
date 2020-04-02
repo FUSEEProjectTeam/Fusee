@@ -11,22 +11,64 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A surface effect contains information to build a shader program 
     /// </summary>
-    public class SurfaceEffect : Effect
-    {       
-        public readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        public readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        public readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+    public abstract class SurfaceEffect : Effect
+    {
+        internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        internal readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        internal readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+
+        public LightingSetup LightingSetup;
+
+        /// <summary>
+        /// The shader shard containing the shader version.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Header)]
+        public static string Version = Header.Version300Es;
+
+        /// <summary>
+        /// The shader shard containing the float precision.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Header)]
+        public static string Precision = Header.EsPrecisionHighpFloat;
+
+        [FxShader(ShaderCategory.Fragment)]     // => Adds shader code to the fragment shader only.
+        [FxShard(ShardCategory.Struct | ShardCategory.Uniform)]         // => will crate the struct at the apropriate place in the shader.       
+        public SpecularInput SurfIn { get; set; }
+
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public static string SurfOut = string.Empty;
+
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Method)]
+        public static string SurfOutMethod = string.Empty;
+
+
+        public static List<string> SurfOutMethodBody;
 
         /// <summary>
         /// Creates a new Instance of type SurfaceEffect.
         /// </summary>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffect(RenderStateSet renderStateSet = null)
+        public SurfaceEffect(LightingSetup lightingSetup, SpecularInput surfIn, RenderStateSet renderStateSet = null)
         {
-            EffectEventArgs = new EffectEventArgs(this, ChangedEnum.UNCHANGED);
+            var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd);
+            SurfIn = surfIn;
+            LightingSetup = lightingSetup;
+            SurfOut = lightingShards.StructDecl;
 
-            List<FxPassDeclaration> effectPassDecl = new List<FxPassDeclaration>();
+            SurfOutMethodBody = new List<string>()
+            {
+                $"{lightingShards.Name} OUT = {lightingShards.DefaultInstance};",
+                "return OUT;"
+            };
+
+            EffectEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+
+            SurfIn.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfIn));
 
             if (renderStateSet == null)
             {
@@ -38,68 +80,34 @@ namespace Fusee.Engine.Core.Effects
                     DestinationBlend = Blend.InverseSourceAlpha,
                     BlendOperation = BlendOperation.Add,
                 };
-            }        
+            }
 
             //TODO: Difference forward/deferred. Lights as properties? Would be difficult because each Light property must be one property in the SurfaceEffect.
-            foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.LightingShard.NumberOfLightsForward))
+            foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
                 ParamDecl.Add(dcl.Name, dcl);
 
             //TODO: ParamDecls for FUSEE_Matrices -  they should not be set by ShaderEffect.FUSEE_MVP = new float4x4() because they are managed under the hood in most cases.
-            foreach (var dcl in CreateMatParamDecls()) 
+            foreach (var dcl in CreateMatParamDecls())
                 ParamDecl.Add(dcl.Name, dcl);
+        }
 
+        protected void HandleFieldsAndProps()
+        {
             Type t = GetType();
 
-            FxParamAttribute paramAttribute;
             FxShaderAttribute shaderAttribute;
             FxShardAttribute shardAttribute;
 
-            foreach (var prop in t.GetProperties())
+            foreach (var prop in t.GetProperties().ToList())
             {
-                var attribs = prop.GetCustomAttributes();
+                var attribs = prop.GetCustomAttributes().ToList();
 
-                paramAttribute = null;
-                shaderAttribute = null;
-                shardAttribute = null;
-
-                foreach (var attrib in attribs)
-                {
-                    switch (attrib)
-                    {
-                        case FxParamAttribute paramAttrib:
-                            paramAttribute = paramAttrib;
-                            break;
-                        case FxShaderAttribute shaderAttrib:
-                            shaderAttribute = shaderAttrib;
-                            break;
-                        case FxShardAttribute shardAttrib:
-                            shardAttribute = shardAttrib;
-                            break;
-                    }
-
-                }
-                if (paramAttribute != null)
-                {
-                    var paramDcl = BuildFxParamDecl(prop);
-                    ParamDecl.Add(paramDcl.Name, paramDcl);
-                    HandleUniform(paramAttribute, paramDcl.Name, paramDcl.ParamType);
+                if (attribs.Count == 0)
                     continue;
-                }
-                else if (shaderAttribute != null && shaderAttribute != null)
-                {
-                    if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
-                        HandleShard(shaderAttribute, shardAttribute, (string)prop.GetValue(this));
-                    else
-                        throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
-                }
-            }
-            foreach (var field in t.GetFields())
-            {
-                paramAttribute = null;
+
                 shaderAttribute = null;
                 shardAttribute = null;
 
-                var attribs = field.GetCustomAttributes();
                 foreach (var attrib in attribs)
                 {
                     switch (attrib)
@@ -113,15 +121,111 @@ namespace Fusee.Engine.Core.Effects
                     }
                 }
 
-                if (shaderAttribute != null && shardAttribute != null)
+                if (shaderAttribute == null)
+                    throw new ArgumentException("Property has no ShaderAttribute!");
+
+                if (shardAttribute == null)
+                    throw new ArgumentException("Property has no ShardAttribute!");
+
+                switch (shardAttribute.ShardCategory)
                 {
-                    if (field.IsStatic && field.FieldType == typeof(string))
-                        HandleShard(shaderAttribute, shardAttribute, (string)field.GetValue(this));
-                    else
-                        throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                    
+                       
+                    case ShardCategory.Uniform:
+                    {
+                            var paramDcl = BuildFxParamDecl(prop);
+                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            HandleUniform(shaderAttribute, paramDcl.Name, paramDcl.ParamType);
+                            continue;
+                    }
+                    case ShardCategory.Header:
+                    case ShardCategory.Main:
+                    case ShardCategory.Property:
+                    case ShardCategory.Method:
+                        if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
+                            HandleShard(shaderAttribute, shardAttribute, (string)prop.GetValue(this));
+                        else
+                            throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                        continue;
+                    case ShardCategory.Struct:
+                        HandleStruct(shaderAttribute, prop.Name, prop.PropertyType);
+                        continue;
+                    case ShardCategory.Struct | ShardCategory.Uniform:
+
+                        HandleStruct(shaderAttribute, prop.Name, prop.PropertyType);
+                        foreach (var structProp in prop.PropertyType.GetProperties())
+                        {
+                            var paramDcl = BuildFxParamDecl(structProp, prop);
+                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                        }
+                        HandleUniform(shaderAttribute, prop.Name, prop.PropertyType);
+                        continue;
+                    default:
+                        break;
                 }
             }
-        }        
+
+            var allFields = t.BaseType.GetFields().ToList();
+            allFields.AddRange(t.GetFields());
+            foreach (var field in allFields)
+            {
+                shaderAttribute = null;
+                shardAttribute = null;
+
+                var attribs = field.GetCustomAttributes().ToList();
+
+                if (attribs.Count == 0)
+                    continue;
+
+                foreach (var attrib in attribs)
+                {
+                    switch (attrib)
+                    {
+                        case FxShaderAttribute shaderAttrib:
+                            shaderAttribute = shaderAttrib;
+                            break;
+                        case FxShardAttribute shardAttrib:
+                            shardAttribute = shardAttrib;
+                            break;
+                    }
+                }
+                if (shaderAttribute == null)
+                    throw new ArgumentException("Field has no ShaderAttribute!");
+
+                if (shardAttribute == null)
+                    throw new ArgumentException("Field has no ShardAttribute!");
+
+                switch (shardAttribute.ShardCategory)
+                {
+                    case ShardCategory.Uniform:
+                        throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} must be a Property that calls SetFxParam in the setter.");
+                    case ShardCategory.Header:
+                    case ShardCategory.Main:
+                    case ShardCategory.Property:
+                    case ShardCategory.Method:
+                        if (field.IsStatic && field.FieldType == typeof(string))
+                            HandleShard(shaderAttribute, shardAttribute, (string)field.GetValue(this));
+                        else
+                            throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                        continue;
+                    case ShardCategory.Struct:
+                        HandleStruct(shaderAttribute, field.Name, field.FieldType);
+                        continue;
+                    default:
+                        break;
+                }
+
+            }
+        }
+
+        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList)
+        {
+            string res = string.Empty;
+            foreach (var kvp in shardList)
+                res += kvp.Value;
+
+            return res;
+        }
 
         private void HandleShard(FxShaderAttribute shaderAttrib, FxShardAttribute shardAttrib, string shardCode)
         {
@@ -139,25 +243,25 @@ namespace Fusee.Engine.Core.Effects
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Vertex_Pixel:
+                case (ShaderCategory.Vertex | ShaderCategory.Fragment):
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Vertex_Geometry:
+                case (ShaderCategory.Vertex | ShaderCategory.Geometry):
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Geometry_Pixel:
+                case (ShaderCategory.Fragment | ShaderCategory.Geometry):
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Vertex_Geometry_Pixel:
+                case (ShaderCategory.Vertex | ShaderCategory.Geometry | ShaderCategory.Fragment):
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
@@ -170,10 +274,10 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private void HandleUniform(FxParamAttribute attrib, string uniformName, Type type)
+        private void HandleUniform(FxShaderAttribute shaderAttrib, string uniformName, Type type)
         {
             var uniform = "uniform ";
-            switch (attrib.ShaderCategory)
+            switch (shaderAttrib.ShaderCategory)
             {
                 case ShaderCategory.Vertex:
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
@@ -187,23 +291,25 @@ namespace Fusee.Engine.Core.Effects
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Vertex_Pixel:
+                case (ShaderCategory.Vertex | ShaderCategory.Fragment):
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Geometry_Pixel:
+                case (ShaderCategory.Fragment | ShaderCategory.Geometry):
                     FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Vertex_Geometry:
+                case (ShaderCategory.Vertex | ShaderCategory.Geometry):
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     break;
-                case ShaderCategory.Vertex_Geometry_Pixel:
+                case (ShaderCategory.Vertex | ShaderCategory.Geometry | ShaderCategory.Fragment):
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
                     VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
@@ -217,7 +323,56 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop)
+        private void HandleStruct(FxShaderAttribute shaderAttrib, string structName, Type type)
+        {
+            var glslStruct = GLSL.DecodeSystemStructOrClass(type);
+            switch (shaderAttrib.ShaderCategory)
+            {
+                case ShaderCategory.Vertex:
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+                case ShaderCategory.Fragment:
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+                case ShaderCategory.Geometry:
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+                case (ShaderCategory.Vertex | ShaderCategory.Fragment):
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+                case (ShaderCategory.Fragment | ShaderCategory.Geometry):
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+                case (ShaderCategory.Vertex | ShaderCategory.Geometry):
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+                case (ShaderCategory.Vertex | ShaderCategory.Geometry | ShaderCategory.Fragment):
+                    VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    VertexShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    GeometryShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
+                    GeometryShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private IFxParamDeclaration BuildFxParamDecl(PropertyInfo prop, PropertyInfo parent = null)
         {
             // Perform `new FxParamDeclaration<ParamType>{Name = paramName};`
             // Since we do not know ParamType at compile time we need to use reflection.
@@ -229,93 +384,88 @@ namespace Fusee.Engine.Core.Effects
             //Error because property ParamType has no setter.
             //concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
 
-            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, prop.Name);
-            var val = prop.GetValue(this);
+            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, parent.Name + "." + prop.Name);
+            object val;
+            if (parent == null)
+                val = prop.GetValue(this);
+            else
+                val = prop.GetValue(parent.GetValue(this));
             concreteParamDecl.GetField("Value").SetValue(ob, val);
             return (IFxParamDeclaration)ob;
-        }
-
-        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList)
-        {
-            string res = string.Empty;
-            foreach (var kvp in shardList)
-                res += kvp.Value;
-
-            return res;
         }
 
         private static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
         {
             for (int i = 0; i < numberOfLights; i++)
             {
-                if (!ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights.ContainsKey(i))
+                if (!ShaderShards.Fragment.Lighting.LightPararamStringsAllLights.ContainsKey(i))
                 {
-                    ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights.Add(i, new ShaderShards.Fragment.LightParamStrings(i));
+                    ShaderShards.Fragment.Lighting.LightPararamStringsAllLights.Add(i, new ShaderShards.Fragment.LightParamStrings(i));
                 }
 
                 yield return new FxParamDeclaration<float3>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].PositionViewSpace,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].PositionViewSpace,
                     Value = new float3(0, 0, -1.0f)
                 };
 
                 yield return new FxParamDeclaration<float4>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Intensities,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Intensities,
                     Value = float4.Zero
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].MaxDistance,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].MaxDistance,
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Strength,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Strength,
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].OuterAngle,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].OuterAngle,
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].InnerAngle,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].InnerAngle,
                     Value = 0.0f
                 };
 
                 yield return new FxParamDeclaration<float3>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Direction,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Direction,
                     Value = float3.Zero
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].LightType,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].LightType,
                     Value = 1
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].IsActive,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].IsActive,
                     Value = 1
                 };
 
                 yield return new FxParamDeclaration<int>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].IsCastingShadows,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].IsCastingShadows,
                     Value = 0
                 };
 
                 yield return new FxParamDeclaration<float>()
                 {
-                    Name = ShaderShards.Fragment.LightingShard.LightPararamStringsAllLights[i].Bias,
+                    Name = ShaderShards.Fragment.Lighting.LightPararamStringsAllLights[i].Bias,
                     Value = 0f
                 };
             }
@@ -373,6 +523,12 @@ namespace Fusee.Engine.Core.Effects
             };
         }
 
+        protected void PropertyChangedHandler(object sender, SurfaceEffectEventArgs args, string memberName)
+        {
+            GetType().GetMethod("SetFxParam")
+            .MakeGenericMethod(args.Type)
+            .Invoke(this, new object[] { memberName + "." + args.Name, args.Value });
+        }
     }
 }
 

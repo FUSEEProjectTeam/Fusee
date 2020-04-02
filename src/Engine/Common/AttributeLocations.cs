@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine.Core.ShaderShards
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Declares buffer locations.

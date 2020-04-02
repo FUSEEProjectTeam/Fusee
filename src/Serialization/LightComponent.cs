@@ -49,7 +49,6 @@ namespace Fusee.Serialization
         [ProtoMember(6)]
         public float OuterConeAngle;
 
-
         /// <summary>
         /// Represents the spot inner angle of the light.
         /// </summary>

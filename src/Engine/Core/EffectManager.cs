@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core
             _rc.RemoveShader(ef);            
         }
 
-        private void EffectChanged(object sender, EffectEventArgs args)
+        private void EffectChanged(object sender, EffectManagerEventArgs args)
         {
             if (args == null || sender == null) return;
 

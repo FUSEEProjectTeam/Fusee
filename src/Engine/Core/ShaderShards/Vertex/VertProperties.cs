@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
     /// <summary>
-    /// Collection of Shader Shards, describing possible in, out and uniform properties of a vertex shader.
+    /// Collection of shader code strings, describing possible in, out and uniform properties of a vertex shader.
     /// </summary>
-    public static class VertPropertiesShard
+    public static class VertProperties
     {
         /// <summary>
         /// Creates the in (with prefix "fu") and out parameters of the vertex shader, depending on the given ShaderEffectProps.
@@ -24,7 +24,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
 
-            if (effectProps.MatProbs.HasBump)
+            if (effectProps.LightingProps.HasNormalMap)
             {
                 if (!effectProps.MeshProbs.HasTangents || !effectProps.MeshProbs.HasBiTangents)
                     Diagnostics.Error(effectProps, new ArgumentException("The effect props state the material has a bump map but is missing tangents and/or bitangents!"));
@@ -39,7 +39,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             }
 
-            if (effectProps.MatProbs.HasSpecular)
+            if (effectProps.LightingProps.SpecularLighting != SpecularLighting.None)
                 vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.ViewDirection));
 
             if (effectProps.MeshProbs.HasWeightMap)
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             if (effectProps.MeshProbs.HasNormals)
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITModelView));
 
-            if (effectProps.MatProbs.HasSpecular && !effectProps.MeshProbs.HasWeightMap)
+            if (effectProps.LightingProps.SpecularLighting != SpecularLighting.None && !effectProps.MeshProbs.HasWeightMap)
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
 
             if (effectProps.MeshProbs.HasWeightMap)
@@ -93,7 +93,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View));
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Projection));
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones + "[" + HeaderShard.BoneDefineVar + "]"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones + "[" + Header.BoneDefineVar + "]"));
             }
 
             return string.Join("\n", uniforms);

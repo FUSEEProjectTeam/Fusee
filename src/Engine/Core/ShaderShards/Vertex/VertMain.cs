@@ -5,13 +5,13 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
     /// <summary>
-    /// Collection of Shader Shards, describing the Main method of a vertex shader.
+    /// Collection of shader code strings, describing the Main method of a vertex shader.
     /// </summary>
-    public static class VertMainShard
+    public static class VertMain
     {
         /// <summary>
         /// Creates the main method for the vertex shader, used in forward rendering.
-        /// The naming of the out parameters is the same as in the <see cref="VertPropertiesShard"/>.
+        /// The naming of the out parameters is the same as in the <see cref="VertProperties"/>.
         /// </summary>
         /// <param name="effectProps">The <see cref="EffectProps"/> is the basis to decide, which calculations need to be made. E.g. do we have a weight map? If so, adjust the gl_Position.</param>
         /// <returns></returns>
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add(
                     $"newNormal = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.w)] * vec4({UniformNameDeclarations.Normal}, 0.0)) * {UniformNameDeclarations.BoneWeight}.w + newNormal;");
 
-                // At this point the normal is in World space - transform back to model space                
+                // At this point the normal is in World space - transform back to model space
                 vertMainBody.Add($"{VaryingNameDeclarations.Normal} = mat3({UniformNameDeclarations.ITModelView}) * newNormal.xyz;");
             }
             else if (effectProps.MeshProbs.HasNormals && !effectProps.MeshProbs.HasWeightMap)
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             vertMainBody.Add($"{VaryingNameDeclarations.Position} = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}, 1.0));");
 
-            if (effectProps.MatProbs.HasSpecular)
+            if (effectProps.LightingProps.SpecularLighting != SpecularLighting.None)
             {
                 vertMainBody.Add($"vec3 vCamPos = {UniformNameDeclarations.IModelView}[3].xyz;");
 
@@ -64,7 +64,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                     : $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - {UniformNameDeclarations.Vertex});");
             }
 
-            if (effectProps.MatProbs.HasBump)
+            if (effectProps.LightingProps.HasNormalMap)
             {
                 if (!effectProps.MeshProbs.HasTangents || !effectProps.MeshProbs.HasBiTangents)
                     Diagnostics.Error(effectProps, new ArgumentException("The effect props state the material has a bump map but is missing tangents and/or bitangents!"));
@@ -82,7 +82,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             ? $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(vec3(newVertex), 1.0);"
             : $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4({UniformNameDeclarations.Vertex}, 1.0);");
 
-            return ShaderShardUtil.MainMethod(vertMainBody);
+            return Utility.MainMethod(vertMainBody);
         }
     }
 }

@@ -486,7 +486,7 @@ namespace Fusee.Engine.Core
         /// <exception cref="Exception"></exception> 
         public static ShaderEffect FromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
-            var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
+            var effectProps = Utility.CollectEffectProps(null, mc, wc);
             var vs = CreateVertexShader(wc, effectProps);
             var ps = CreatePixelShader(effectProps);
             var effectParameters = AssembleEffectParamers(mc);
@@ -523,7 +523,7 @@ namespace Fusee.Engine.Core
         /// <exception cref="Exception"></exception> 
         public static ShaderEffectProtoPixel ProtoFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
-            var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
+            var effectProps = Utility.CollectEffectProps(null, mc, wc);
             string vs = CreateVertexShader(wc, effectProps);
             string ps = CreateProtoPixelShader(effectProps);
             var effectParameters = AssembleEffectParamers(mc);
@@ -562,14 +562,14 @@ namespace Fusee.Engine.Core
         {
             var vertexShader = new List<string>
             {
-                HeaderShard.Version300Es,
-                HeaderShard.DefineBones(effectProps, wc),
-                VertPropertiesShard.FuseeMatUniforms(effectProps),
-                VertPropertiesShard.InAndOutParams(effectProps),
+                Header.Version300Es,
+                Header.DefineBones(effectProps, wc),
+                VertProperties.FuseeMatUniforms(effectProps),
+                VertProperties.InAndOutParams(effectProps),
             };
 
             // Main            
-            vertexShader.Add(VertMainShard.VertexMain(effectProps));
+            vertexShader.Add(VertMain.VertexMain(effectProps));
 
             return string.Join("\n", vertexShader);
         }
@@ -578,21 +578,21 @@ namespace Fusee.Engine.Core
         {
             var pixelShader = new List<string>
             {
-                HeaderShard.Version300Es,
-                HeaderShard.EsPrecisionHighpFloat,
+                Header.Version300Es,
+                Header.EsPrecisionHighpFloat,
 
-                LightingShard.LightStructDeclaration,
+                Lighting.LightStructDeclaration,
 
-                FragPropertiesShard.InParams(effectProps),
-                FragPropertiesShard.FuseeMatrixUniforms(),
-                FragPropertiesShard.MaterialPropsUniforms(effectProps),
-                FragPropertiesShard.FixedNumberLightArray,
-                FragPropertiesShard.ColorOut(),
-                LightingShard.AssembleLightingMethods(effectProps)
+                FragProperties.InParams(effectProps),
+                FragProperties.FuseeMatrixUniforms(),
+                FragProperties.MaterialPropsUniforms(effectProps),
+                FragProperties.FixedNumberLightArray,
+                FragProperties.ColorOut(),
+                Lighting.AssembleLightingMethods(effectProps)
             };
 
             //Calculates the lighting for all lights by using the above method
-            pixelShader.Add(FragMainShard.ForwardLighting(effectProps));
+            pixelShader.Add(FragMain.ForwardLighting(effectProps));
 
             return string.Join("\n", pixelShader);
         }
@@ -601,12 +601,12 @@ namespace Fusee.Engine.Core
         {
             var protoPixelShader = new List<string>
             {
-                HeaderShard.Version300Es,
-                HeaderShard.EsPrecisionHighpFloat,
+                Header.Version300Es,
+                Header.EsPrecisionHighpFloat,
 
-                FragPropertiesShard.InParams(effectProps),
-                FragPropertiesShard.FuseeMatrixUniforms(),
-                FragPropertiesShard.MaterialPropsUniforms(effectProps),
+                FragProperties.InParams(effectProps),
+                FragProperties.FuseeMatrixUniforms(),
+                FragProperties.MaterialPropsUniforms(effectProps),
             };
 
             return string.Join("\n", protoPixelShader);
@@ -615,40 +615,39 @@ namespace Fusee.Engine.Core
         private static string CreateDeferredLightingPixelShader(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version300Es);
+            frag.Append(Header.Version300Es);
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append("#extension GL_ARB_gpu_shader5 : enable\n");
-            frag.Append(HeaderShard.EsPrecisionHighpFloat);
+            frag.Append(Header.EsPrecisionHighpFloat);
 
-            frag.Append(FragPropertiesShard.DeferredTextureUniforms());
-            frag.Append(FragPropertiesShard.FuseeMatrixUniforms());
+            frag.Append(FragProperties.DeferredTextureUniforms());
+            frag.Append(FragProperties.FuseeMatrixUniforms());
 
-            frag.Append(LightingShard.LightStructDeclaration);
-            frag.Append(FragPropertiesShard.DeferredLightAndShadowUniforms(lc, isCascaded, numberOfCascades));
+            frag.Append(Lighting.LightStructDeclaration);
+            frag.Append(FragProperties.DeferredLightAndShadowUniforms(lc, isCascaded, numberOfCascades));
 
             frag.Append(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
 
-            frag.Append(FragPropertiesShard.ColorOut());
+            frag.Append(FragProperties.ColorOut());
 
             //Shadow calculation methods
             //-------------------------------------- 
             if (isCascaded)
-                frag.Append(LightingShard.ShadowCalculationCascaded());
+                frag.Append(Lighting.ShadowCalculationCascaded());
             else if (lc.Type == LightType.Point)
-                frag.Append(LightingShard.ShadowCalculationCubeMap());
+                frag.Append(Lighting.ShadowCalculationCubeMap());
 
             else
-                frag.Append(LightingShard.ShadowCalculation());
+                frag.Append(Lighting.ShadowCalculation());
 
             //Lighting methods
             //------------------------------------------
-            frag.Append(LightingShard.AmbientComponent());
-            frag.Append(LightingShard.SpecularComponent());
-            frag.Append(LightingShard.DiffuseComponent());
-            frag.Append(LightingShard.AttenuationPointComponent());
-            frag.Append(LightingShard.AttenuationConeComponent());
+            frag.Append(Lighting.SpecularComponent());
+            frag.Append(Lighting.DiffuseComponent());
+            frag.Append(Lighting.AttenuationPointComponent());
+            frag.Append(Lighting.AttenuationConeComponent());
 
-            frag.Append(LightingShard.ApplyLightDeferred(lc, isCascaded, numberOfCascades, debugCascades));
+            frag.Append(Lighting.ApplyLightDeferred(lc, isCascaded, numberOfCascades, debugCascades));
 
             return frag.ToString();
         }
@@ -791,66 +790,66 @@ namespace Fusee.Engine.Core
                 });
             }
 
-            for (int i = 0; i < LightingShard.NumberOfLightsForward; i++)
+            for (int i = 0; i < Lighting.NumberOfLightsForward; i++)
             {
-                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
+                if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
                 {
-                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                    Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
                 }
 
                 effectParameters.Add(new FxParamDeclaration<float3>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].PositionViewSpace,
+                    Name = Lighting.LightPararamStringsAllLights[i].PositionViewSpace,
                     Value = new float3(0, 0, -1.0f)
                 });
                 effectParameters.Add(new FxParamDeclaration<float4>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].Intensities,
+                    Name = Lighting.LightPararamStringsAllLights[i].Intensities,
                     Value = float4.Zero
                 });
                 effectParameters.Add(new FxParamDeclaration<float>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].MaxDistance,
+                    Name = Lighting.LightPararamStringsAllLights[i].MaxDistance,
                     Value = 0.0f
                 });
                 effectParameters.Add(new FxParamDeclaration<float>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].Strength,
+                    Name = Lighting.LightPararamStringsAllLights[i].Strength,
                     Value = 0.0f
                 });
                 effectParameters.Add(new FxParamDeclaration<float>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].OuterAngle,
+                    Name = Lighting.LightPararamStringsAllLights[i].OuterAngle,
                     Value = 0.0f
                 });
                 effectParameters.Add(new FxParamDeclaration<float>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].InnerAngle,
+                    Name = Lighting.LightPararamStringsAllLights[i].InnerAngle,
                     Value = 0.0f
                 });
                 effectParameters.Add(new FxParamDeclaration<float3>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].Direction,
+                    Name = Lighting.LightPararamStringsAllLights[i].Direction,
                     Value = float3.Zero
                 });
                 effectParameters.Add(new FxParamDeclaration<int>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].LightType,
+                    Name = Lighting.LightPararamStringsAllLights[i].LightType,
                     Value = 1
                 });
                 effectParameters.Add(new FxParamDeclaration<int>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].IsActive,
+                    Name = Lighting.LightPararamStringsAllLights[i].IsActive,
                     Value = 1
                 });
                 effectParameters.Add(new FxParamDeclaration<int>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].IsCastingShadows,
+                    Name = Lighting.LightPararamStringsAllLights[i].IsCastingShadows,
                     Value = 0
                 });
                 effectParameters.Add(new FxParamDeclaration<float>
                 {
-                    Name = LightingShard.LightPararamStringsAllLights[i].Bias,
+                    Name = Lighting.LightPararamStringsAllLights[i].Bias,
                     Value = 0f
                 });
             }

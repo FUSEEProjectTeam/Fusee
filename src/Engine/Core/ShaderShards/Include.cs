@@ -10,14 +10,14 @@ namespace Fusee.Engine.Core.ShaderShards
     /// <summary>
     /// Handles includes in parsed shader files.
     /// </summary>
-    public static class Includes
+    public static class Include
     {
         /// <summary>
         /// Parses a raw shader string and replaces the includes with the correct files.
         /// </summary>
         /// <param name="rawShaderString">The raw shader string that is to be parsed.</param>
         /// <returns></returns>
-        public static string ParseIncludes(string rawShaderString)
+        public static string ParseInclude(string rawShaderString)
         {
             var fields = GetFieldValues(typeof(UniformNameDeclarations));
 
