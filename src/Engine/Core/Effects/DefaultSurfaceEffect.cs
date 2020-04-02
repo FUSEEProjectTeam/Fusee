@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Main)]
-        public static string PxMain = ShaderShards.Fragment.FragMain.ForwardLighting(typeof(SpecularInput), "SurfIn", SurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd).Name);
+        public static string PxMain = ShaderShards.Fragment.FragMain.ForwardLighting(typeof(SpecularInput), "SurfIn", ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd).Name);
 
         //Note that "AssembleLightingMethods" contains more than the main method BUT in the correct order. Therefor we do not more than one shard here.
         [FxShader(ShaderCategory.Fragment)]

@@ -57,7 +57,6 @@ namespace Fusee.Examples.Simple.Core
             test.SurfIn.Albedo = new float4(1f, 0f, 1f, 1f);
             test.SurfIn.Shininess = 22;
             test.SurfIn.SpecularStrength = 1f;
-            test.SurfIn.Specular = float4.One;
 
             _rocketScene.Children[0].RemoveComponent<EffectComponent>();
             _rocketScene.Children[0].Components.Insert(1, new EffectComponent() { Effect = test });

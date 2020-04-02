@@ -691,6 +691,11 @@ namespace Fusee.Engine.Core
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
         }
 
+        /// <summary>
+        /// Adds bone indices and bone weights from a <see cref="WeightComponent"/> to a mesh.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="wc"></param>
         protected void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
         {
             float4[] boneWeights = new float4[wc.WeightMap.Count];

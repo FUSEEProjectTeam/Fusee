@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
         public SurfaceEffect(LightingSetup lightingSetup, SpecularInput surfIn, RenderStateSet renderStateSet = null)
         {
-            var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd);
+            var lightingShards = ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd);
             SurfIn = surfIn;
             LightingSetup = lightingSetup;
             SurfOut = lightingShards.StructDecl;
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core.Effects
                 "return OUT;"
             };
 
-            EffectEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectManagerEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
 
             SurfIn.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfIn));

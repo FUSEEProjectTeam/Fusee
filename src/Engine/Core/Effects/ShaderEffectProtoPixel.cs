@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core.Effects
             GeometryShaderSrc = effectPass.GS;
             //PixelShaderSrc is not set here because it gets built in a pre-pass, depending on whether we render deferred or forward.            
 
-            EffectEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectManagerEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
         }
 
         /// <summary>

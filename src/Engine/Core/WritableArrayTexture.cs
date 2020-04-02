@@ -107,6 +107,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a new instance of type "WritableArrayTexture".
         /// </summary>
+        /// <param name="layers">The number of sub-textures in this array texture.</param>
         /// <param name="texType">Defines the type of the render texture.</param>
         /// <param name="colorFormat">The color format of the texture, <see cref="ImagePixelFormat"/></param>
         /// <param name="width">Width in px.</param>

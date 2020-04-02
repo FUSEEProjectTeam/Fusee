@@ -94,7 +94,6 @@ namespace Fusee.Engine.Core.ShaderShards
         /// Tranlates this class or struct to GLSL. Will only convert fields and properties.
         /// </summary>
         /// <param name="type">The type to translate.</param>
-        /// <param name="name">The name of the class or struct.</param>
         /// <returns></returns>
         public static string DecodeSystemStructOrClass(System.Type type)
         {

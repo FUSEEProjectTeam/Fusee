@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core.ShaderShards
         Unlit
     }
 
-    public static class SurfaceOut
+    public static class ShaderSurfaceOut
     {
         private static readonly Dictionary<LightingSetup, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetup, LightingSetupShards>();
 

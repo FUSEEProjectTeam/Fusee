@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
 
-            EffectEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectManagerEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
         }       
 
         /// <summary>

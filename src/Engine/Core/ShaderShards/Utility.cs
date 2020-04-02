@@ -55,10 +55,24 @@ namespace Fusee.Engine.Core.ShaderShards
         public bool HasBiTangents;
     }
 
+    /// <summary>
+    /// Specifies the type of the specular lighting calculation.
+    /// </summary>
     public enum SpecularLighting
     {
+        /// <summary>
+        /// Standard specular calculation with strength and shininess.
+        /// </summary>
         Std,
+
+        /// <summary>
+        /// Physically based specular calculation with fresnel and roughness value.
+        /// </summary>
         Pbr,
+
+        /// <summary>
+        /// No specular calculation.
+        /// </summary>
         None
     }
 

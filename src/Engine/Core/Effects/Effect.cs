@@ -5,32 +5,19 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Effects
 {
-    public interface IEffect
+    /// <summary>
+    /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffect"/>.
+    /// </summary>
+    public abstract class Effect
     {
-        RenderStateSet RendererStates { get; set; }
-
         /// <summary>
-        /// ShaderEffect event notifies observing ShaderEffectManager about property changes and the ShaderEffects's disposal.
+        /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.
         /// </summary>
-        EventHandler<EffectManagerEventArgs> EffectChanged { get; }
-
-        EffectManagerEventArgs EffectEventArgs { get; }
-
-        /// <summary>
-        /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
-        /// </summary>
-        Suid SessionUniqueIdentifier { get; }
-
-        void SetFxParam<T>(string name, T value);
-
-        T GetFxParam<T>(string name);
-
-    }
-
-    public abstract class Effect : IEffect
-    {
         public Dictionary<string, IFxParamDeclaration> ParamDecl { get; protected set; }
 
+        /// <summary>
+        /// The renderer states that are applied for this effect, e.g. the blend and alpha mode.
+        /// </summary>
         public RenderStateSet RendererStates { get; set; }
 
         /// <summary>
@@ -38,7 +25,10 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public EventHandler<EffectManagerEventArgs> EffectChanged { get; internal set; }
 
-        public EffectManagerEventArgs EffectEventArgs { get; internal set; }
+        /// <summary>
+        /// Event arguments that are used in the <see cref="EffectManager"/>.
+        /// </summary>
+        public EffectManagerEventArgs EffectManagerEventArgs { get; internal set; }
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
@@ -63,11 +53,11 @@ namespace Fusee.Engine.Core.Effects
                     //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.                    
                     ParamDecl[name].GetType().GetField("Value").SetValue(ParamDecl[name], value);
 
-                    EffectEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
-                    EffectEventArgs.ChangedEffectVarName = name;
-                    EffectEventArgs.ChangedEffectVarValue = value;
+                    EffectManagerEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
+                    EffectManagerEventArgs.ChangedEffectVarName = name;
+                    EffectManagerEventArgs.ChangedEffectVarValue = value;
 
-                    EffectChanged?.Invoke(this, EffectEventArgs);
+                    EffectChanged?.Invoke(this, EffectManagerEventArgs);
                 }
                 else
                 {

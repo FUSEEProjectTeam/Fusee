@@ -323,7 +323,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             //    };
             //-------------------------------------------------
 
-            var setupShards = SurfaceOut.GetLightingSetupShards(setup);
+            var setupShards = ShaderSurfaceOut.GetLightingSetupShards(setup);
             var methodBody = new List<string>();
 
             switch (setup)
