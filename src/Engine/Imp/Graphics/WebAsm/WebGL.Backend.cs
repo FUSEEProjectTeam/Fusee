@@ -91,8 +91,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     $"The context '{contextType}' is not supported in this browser");
             }
 
-            Console.WriteLine($"Invoking WebGL context {contextType}.");
-
             gl = (JSObject)canvas.Invoke("getContext", contextType, contextAttributes?.Handle);
         }
 
@@ -182,7 +180,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
 
                 dump.Append($") = {Dump(result)}");
-                Console.WriteLine(dump);
             }
 
             return result;

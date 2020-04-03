@@ -69,10 +69,6 @@ namespace Fusee.Base.Imp.WebAsm
 
                     canvasObject.SetObjectProperty("width", windowWidth);
                     canvasObject.SetObjectProperty("height", windowHeight);
-
-                    Console.WriteLine($"{cobj}.Resize({windowWidth}, {windowHeight});");
-
-
                     // call fusee resize
                     mainExecutable.Resize(windowWidth, windowHeight);
                 }
@@ -85,12 +81,15 @@ namespace Fusee.Base.Imp.WebAsm
         {
             if (canvas.GetObjectProperty("requestFullscreen") != null)
                 canvas.Invoke("requestFullscreen");
-            if (canvas.GetObjectProperty("mozRequestFullScreen") != null)
-                canvas.Invoke("mozRequestFullScreen");
             if (canvas.GetObjectProperty("webkitRequestFullscreen") != null)
                 canvas.Invoke("webkitRequestFullscreen");
             if (canvas.GetObjectProperty("msRequestFullscreen") != null)
                 canvas.Invoke("msRequestFullscreen");
+
+            // mozRequestFullScreen seems to be obsolete
+
+            //if (canvas.GetObjectProperty("mozRequestFullScreen") != null)
+            //    canvas.Invoke("mozRequestFullScreen");
         }
 
         private static void AddEnterFullScreenHandler()
@@ -165,7 +164,6 @@ namespace Fusee.Base.Imp.WebAsm
         {
             using var document = (JSObject)Runtime.GetGlobalObject("document");
             using var body = (JSObject)document.GetObjectProperty("body");
-            Console.WriteLine($"Body width [{body.GetObjectProperty("width")}]");
 
         }
 

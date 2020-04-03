@@ -237,7 +237,7 @@ namespace Fusee.Engine.Player.Core
 
             RC.View = view;
             RC.Projection = orthographic;
-            //_guiRenderer.Render(RC);            
+            _guiRenderer.Render(RC);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -333,12 +333,14 @@ namespace Fusee.Engine.Player.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-           // _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            SetCursor(CursorType.Hand);
+           _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-           // _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            SetCursor(CursorType.Standard);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

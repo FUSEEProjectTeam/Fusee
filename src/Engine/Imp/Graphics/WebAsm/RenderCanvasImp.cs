@@ -1,7 +1,5 @@
-﻿using System;
-using System.Drawing;
-using Fusee.Engine.Common;
-using Fusee.Engine.Imp.Graphics.WebAsm;
+﻿using Fusee.Engine.Common;
+using System;
 using WebAssembly;
 
 
@@ -22,7 +20,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             _canvas = canvas;
 
-            // TODO: Extract a convenient Gl Context (version 2) ourselves from the given canvas. Then retrieve width and height
             _gl = gl;
             Width = width;
             Height = height;
@@ -100,7 +97,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <remarks>Not needed in WebGL.</remarks>
         public void OpenLink(string link)
         {
-            // throw new NotImplementedException();
+            using var window = (JSObject)Runtime.GetGlobalObject("window");
+            window.Invoke("open", link);
         }
 
         /// <summary>
@@ -127,7 +125,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <remarks>Not needed in WebGL.</remarks>
         public void SetCursor(CursorType cursorType)
         {
-            // throw new NotImplementedException();
+            if (_canvas.JSHandle.Equals(-1)) return;
+
+            switch (cursorType)
+            {
+                case CursorType.Standard:
+                    _canvas.SetObjectProperty("style.cursor", "default");
+                    break;
+                case CursorType.Hand:
+                    _canvas.SetObjectProperty("style.cursor", "pointer");
+                    break;
+            }
         }
 
         /// <summary>
@@ -146,7 +154,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             Width = width;
             Height = height;
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
-            
+
         }
 
         /// <summary>

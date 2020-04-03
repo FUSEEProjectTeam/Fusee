@@ -3383,8 +3383,6 @@ Global
 		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-NuGet|x86.Deploy.0 = Release|Any CPU
 		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
-		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-WebAsm|Any CPU.Deploy.0 = Release|Any CPU
 		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}.Release-WebAsm|x64.Deploy.0 = Release|Any CPU
@@ -3486,7 +3484,6 @@ Global
 		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
 		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
@@ -3876,7 +3873,6 @@ Global
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
@@ -4062,8 +4058,6 @@ Global
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-NuGet|x86.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
-		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|Any CPU.Deploy.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA}.Release-WebAsm|x64.Deploy.0 = Release|Any CPU

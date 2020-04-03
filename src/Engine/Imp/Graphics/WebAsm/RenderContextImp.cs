@@ -1058,7 +1058,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <exception cref="ApplicationException"></exception>
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
-            Diagnostics.Debug("[SetVertices]");
             if (vertices == null || vertices.Length == 0)
             {
                 throw new ArgumentException("Vertices must not be null or empty");
@@ -1069,8 +1068,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             if (((MeshImp)mr).VertexBufferObject == null)
                 ((MeshImp)mr).VertexBufferObject = gl2.CreateBuffer();
 
-            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
-            Diagnostics.Debug("[Before gl2.BufferData]");
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);           
 
             var verticesFlat = new float[vertices.Length * 3];
             unsafe
@@ -1082,7 +1080,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
             gl2.BufferData(ARRAY_BUFFER, verticesFlat, STATIC_DRAW);
 
-            Diagnostics.Debug("[After gl2.BufferData]");
             vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
