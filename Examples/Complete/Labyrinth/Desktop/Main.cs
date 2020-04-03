@@ -7,9 +7,9 @@ using System.IO;
 using System.Reflection;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.Simple.Desktop
+namespace Fusee.Examples.Labyrinth.Desktop
 {
-    public class Simple
+    public class Labyrinth
     {
         public static void Main()
         {
@@ -42,7 +42,7 @@ namespace Fusee.Examples.Simple.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.Simple();
+            var app = new Core.Labyrinth();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

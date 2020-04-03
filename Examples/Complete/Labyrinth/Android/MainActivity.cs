@@ -14,7 +14,7 @@ using Fusee.Serialization;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.Simple.Android
+namespace Fusee.Examples.Labyrinth.Android
 {
 	[Activity (Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
@@ -71,7 +71,7 @@ namespace Fusee.Examples.Simple.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Simple();
+                var app = new Core.Labyrinth();
 
 		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
 		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
