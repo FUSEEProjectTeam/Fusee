@@ -54,14 +54,14 @@ I decided to use them because they bypass the `"gimbal lock"`. There is also the
 ## Additive
 In addition to the main program, there is also an additional file that contains the reading of a maze template. The template is a bitmap with which the program creates the associated `2D-Array`.
 
-In order to create your own Maze you have to consider the following in the template file. The walls / cornerstones are the thin rectangles and the small squares. You can fill them with black color to place them. To get an entrance or exit you have to fill the walls with red color. For the starting point you have to color one of the large squares green.
+In order to create your own Maze you have to consider the following in the template file. You can find it in the `art folder`. The `walls / cornerstones` are the thin rectangles and the small squares. You can fill them with `black color` to place them. To get an `entrance` or `exit` you have to fill the walls with `red color`. For the `starting point` you have to color one of the large squares `green`.
 
 IMPORTANT: The colors should always be maximum  
 Red = (255,0,0)  
 Green = (0,255,0)  
-Black = (0,0,0)
+Black = (0,0,0) 
 
-Once you've done all this, you can save your Maze in the assets folder under the name Maze.bmp
+Once you've done all this, you can save your Maze in the `assets folder` under the name `Maze.bmp`
 
 
 
