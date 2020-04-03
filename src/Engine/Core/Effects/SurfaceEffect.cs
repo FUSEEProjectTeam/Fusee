@@ -38,13 +38,13 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Fragment)]                     // => Adds shader code to the fragment shader only.
         [FxShard(ShardCategory.Struct | ShardCategory.Uniform)] // => will crate the struct at the appropriate place in the shader.       
-        public SpecularInput SurfIn { get; set; }
+        public ColorInput SurfaceInput { get; set; }
         //======================================================//
 
         //================== Shard OUT ==========================//
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string SurfOut = string.Empty;
+        public static string SurfaceOutput = string.Empty;
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Method)]
@@ -59,12 +59,12 @@ namespace Fusee.Engine.Core.Effects
         /// Creates a new Instance of type SurfaceEffect.
         /// </summary>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffect(LightingSetup lightingSetup, SpecularInput surfIn, RenderStateSet renderStateSet = null)
+        public SurfaceEffect(LightingSetup lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             var lightingShards = ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd);
-            SurfIn = surfIn;
+            SurfaceInput = surfaceInput;
             LightingSetup = lightingSetup;
-            SurfOut = lightingShards.StructDecl;
+            SurfaceOutput = lightingShards.StructDecl;
 
             SurfOutMethodBody = new List<string>()
             {
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Core.Effects
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
 
-            SurfIn.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfIn));
+            SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
 
             if (renderStateSet == null)
             {

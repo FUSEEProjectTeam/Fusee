@@ -1,8 +1,8 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.Effects;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,8 +29,8 @@ namespace Fusee.Engine.Core
         /// <seealso cref="Clear"/>
         public float4 ClearColor
         {
-            set { _rci.ClearColor = value; }
-            get { return _rci.ClearColor; }
+            set => _rci.ClearColor = value;
+            get => _rci.ClearColor;
         }
 
         /// <summary>
@@ -44,8 +44,8 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float ClearDepth
         {
-            set { _rci.ClearDepth = value; }
-            get { return _rci.ClearDepth; }
+            set => _rci.ClearDepth = value;
+            get => _rci.ClearDepth;
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 View
         {
-            get { return _view; }
+            get => _view;
             set
             {
                 _view = value;
@@ -247,7 +247,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Model
         {
-            get { return _model; }
+            get => _model;
             set
             {
                 _model = value;
@@ -300,7 +300,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Projection
         {
-            get { return _projection; }
+            get => _projection;
             set
             {
                 // Update matrix
@@ -766,7 +766,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4[] Bones
         {
-            get { return _bones; }
+            get => _bones;
             set
             {
                 _bones = value;
@@ -1329,7 +1329,7 @@ namespace Fusee.Engine.Core
         {
             if (LockedStates.Count == 0) return;
 
-            for (int i = 0; i < LockedStates.Count; i++)
+            for (var i = 0; i < LockedStates.Count; i++)
                 UnlockRenderState(LockedStates.ElementAt(i).Key, resetValue);
         }
 
@@ -1359,7 +1359,9 @@ namespace Fusee.Engine.Core
                         Diagnostics.Warn("PREVIOUSLY LOCKED STATE WAS OVERWRITTEN: Render state " + renderState + " was locked and will remain its old value.\n Call UnlockRenderState(renderState) to undo it.");
                     }
                     else
+                    {
                         Diagnostics.Warn("Render state " + renderState + " was locked and will remain its old value.\n Call UndoLockRenderState(renderState) to undo it.");
+                    }
 
                     return;
                 }
@@ -1422,7 +1424,7 @@ namespace Fusee.Engine.Core
             {
                 texHandles = new ITextureHandle[renderTarget.RenderTextures.Length];
 
-                for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+                for (var i = 0; i < renderTarget.RenderTextures.Length; i++)
                 {
                     var tex = renderTarget.RenderTextures[i];
                     if (renderTarget.RenderTextures[i] == null) continue;

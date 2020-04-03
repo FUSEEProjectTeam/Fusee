@@ -1,12 +1,12 @@
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Creates a simple sphere geometry straight from the code.
     /// </summary>
-    public class Sphere: Mesh
+    public class Sphere : Mesh
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Sphere" /> class.
@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
             var vertices = new float3[(segments + 1) * rings + 2];
 
             vertices[0] = float3.UnitY * radius;
-            
+
             for (var lat = 0; lat < rings; lat++)
             {
                 var a1 = pi * (lat + 1) / (rings + 1);
@@ -61,8 +61,10 @@ namespace Fusee.Engine.Core
             uvs[0] = new float2(0.5f, 1f);
             uvs[uvs.Length - 1] = new float2(0.5f, 0f);
             for (var lat = 0; lat < rings; lat++)
+            {
                 for (var lon = 0; lon <= segments; lon++)
                     uvs[lon + lat * (segments + 1) + 1] = new float2((float)lon / segments, 1f - (float)(lat + 1) / (rings + 1));
+            }
             #endregion
 
             #region Triangles
@@ -75,10 +77,10 @@ namespace Fusee.Engine.Core
             var i = 0;
             for (var lon = 0; lon < segments; lon++)
             {
-                triangles[i++] = (ushort) (lon + 2);
+                triangles[i++] = (ushort)(lon + 2);
                 triangles[i++] = 0;
-                triangles[i++] = (ushort) (lon + 1);
-                
+                triangles[i++] = (ushort)(lon + 1);
+
             }
 
             //Middle
@@ -87,27 +89,27 @@ namespace Fusee.Engine.Core
                 for (var lon = 0; lon < segments; lon++)
                 {
                     var current = (ushort)(lon + lat * (segments + 1) + 1);
-                    var next = (ushort) (current + segments + 1);
+                    var next = (ushort)(current + segments + 1);
 
-                    triangles[i++] =  current;
+                    triangles[i++] = current;
                     triangles[i++] = (ushort)(next + 1);
-                    triangles[i++] = (ushort) ( current + 1);
-                    
+                    triangles[i++] = (ushort)(current + 1);
 
-                    triangles[i++] =  current;
+
+                    triangles[i++] = current;
                     triangles[i++] = next;
-                    triangles[i++] = (ushort) (next + 1);
-                   
+                    triangles[i++] = (ushort)(next + 1);
+
                 }
             }
 
             //Bottom Cap
             for (var lon = 0; lon < segments; lon++)
             {
-                triangles[i++] = (ushort) (vertices.Length - 1);
+                triangles[i++] = (ushort)(vertices.Length - 1);
                 triangles[i++] = (ushort)(vertices.Length - (lon + 1) - 1);
-                triangles[i++] = (ushort) (vertices.Length - (lon + 2) - 1);
-                
+                triangles[i++] = (ushort)(vertices.Length - (lon + 2) - 1);
+
             }
             #endregion
 
@@ -115,7 +117,7 @@ namespace Fusee.Engine.Core
             Triangles = triangles;
             Normals = normals;
             UVs = uvs;
-            
+
         }
 
     }

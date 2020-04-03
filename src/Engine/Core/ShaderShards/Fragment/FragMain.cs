@@ -23,9 +23,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             if (effectProps.LightingProps.HasDiffuseTexture)
             {
-                fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
+                fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
                 //applyLightParams.Add($"texCol = vec4(pow(texCol.r, 1.0/2.2), pow(texCol.g, 1.0/2.2), pow(texCol.b, 1.0/2.2), texCol.a);");
-                fragMainBody.Add($"vec3 mix = mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
+                fragMainBody.Add($"vec3 mix = mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.AlbedoMix});");
                 fragMainBody.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
                 fragMainBody.Add($"vec4 objCol = vec4(mix * luma, texCol.a);");
             }
@@ -62,24 +62,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"{outStructType} surfOut = {FragShards.ChangeSurfFrag}({inStructName});"
             };
 
-            //----------- TODO: Needs to go to surface shader -------
-            //if (hasAlbedoTex)
-            //{
-            //    fragMainBody.Add($"vec4 texCol = texture(surfOut.{UniformNameDeclarations.Albedo}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
-            //    fragMainBody.Add($"vec3 mix = mix(surfOut.{UniformNameDeclarations.DiffuseTexture}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix});");
-            //    fragMainBody.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
-            //    fragMainBody.Add($"vec4 objCol = vec4(mix * luma, texCol.a);");
-            //}
-            //else
-            //{
-            //    fragMainBody.Add($"vec4 objCol = surfOut.{UniformNameDeclarations.Albedo};");
-            //}
-            //-----------------------------------------------------
-
             fragMainBody.AddRange(
             new List<string>()
             {
-                
                 $"float ambientCo = 0.1;",
                 $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
                 $"vec3 result = vec3(0.0);",
@@ -118,8 +103,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
                         if (effectProps.LightingProps.HasDiffuseTexture)
                         {
-                            fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.DiffuseMix}), texCol.a);");
+                            fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.AlbedoMix}), texCol.a);");
                         }
                         else
                             fragMainBody.Add($"{texName} = {UniformNameDeclarations.Albedo};");
@@ -131,9 +116,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                                 fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
                             else
                             {
-                                fragMainBody.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
+                                fragMainBody.Add($"vec3 N = texture({UniformNameDeclarations.NormalMap}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.NormalTextureTiles}).rgb;");
                                 fragMainBody.Add($"N = N * 2.0 - 1.0;");
-                                fragMainBody.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
+                                fragMainBody.Add($"N.xy *= {UniformNameDeclarations.NormalMapIntensity};");
                                 fragMainBody.Add($"{texName} = vec4(normalize(TBN * N), 1.0);");
                             }
                         }

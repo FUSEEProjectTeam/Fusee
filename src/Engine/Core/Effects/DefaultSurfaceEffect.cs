@@ -119,25 +119,12 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Create a new instance of type ShaderEffectDefault
         /// </summary>
-        public DefaultSurfaceEffect(LightingSetup lightingSetup, SpecularInput specularIn, RenderStateSet rendererStates = null) 
-            : base(lightingSetup, specularIn, rendererStates) 
+        public DefaultSurfaceEffect(LightingSetup lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null) 
+            : base(lightingSetup, input, rendererStates) 
         {
-
             PxLightingMethods = ShaderShards.Fragment.Lighting.AssembleLightingMethods(LightingSetup);
-
-            var surfOutBody = new List<string>()
-            {
-                "OUT.albedo = IN.Albedo;",
-                "OUT.specularStrength = IN.SpecularStrength;",
-                "OUT.shininess = IN.Shininess;",
-                $"OUT.normal = {VaryingNameDeclarations.Normal};",
-                $"OUT.position = {VaryingNameDeclarations.Position};",
-            };
-
             SurfOutMethodBody.InsertRange(1, surfOutBody);
-
             SurfOutMethod = ShaderShards.Fragment.FragShards.GetChangeSurfFragMethod(LightingSetup, SurfOutMethodBody, typeof(SpecularInput));
-
             HandleFieldsAndProps();
         }
     }

@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -226,9 +225,9 @@ namespace Fusee.Engine.Core
         internal static void CreateVertexNormals(Mesh mesh)
         {
             mesh.Normals = new float3[mesh.Vertices.Length];
-            
+
             var triVerts = new List<float3>();
-            var triIndeices =  new List<ushort>();
+            var triIndeices = new List<ushort>();
             foreach (var tri in mesh.Triangles)
             {
                 triVerts.Add(mesh.Vertices[tri]);
@@ -250,7 +249,9 @@ namespace Fusee.Engine.Core
         private static void CalcAverageNormal(IList<float3> normals, float3 triNormal, ushort triIndex)
         {
             if (normals[triIndex] == float3.Zero)
+            {
                 normals[triIndex] = triNormal;
+            }
             else
             {
                 var averageNormal = (triNormal + normals[triIndex]) / 2;

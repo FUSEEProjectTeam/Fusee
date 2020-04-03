@@ -13,6 +13,8 @@ using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Examples.Camera.Android
 {
@@ -39,39 +41,43 @@ namespace Fusee.Examples.Camera.Android
                     new AssetHandler
                     {
                         ReturnedType = typeof(Font),
-                        Decoder = delegate (string id, object storage)
+                        Decoder = (string id, object storage) =>
                         {
-                            if (Path.GetExtension(id).ToLower().Contains("ttf"))
+                            if (Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
+                            {
                                 return new Font
                                 {
                                     _fontImp = new FontImp((Stream)storage)
                                 };
+                            }
+
                             return null;
                         },
-                        Checker = delegate (string id) {
-                            return Path.GetExtension(id).ToLower().Contains("ttf");
+                        Checker = (string id) =>
+                        {
+                            return Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase);
                         }
                     });
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
                         ReturnedType = typeof(SceneContainer),
-                        Decoder = delegate (string id, object storage)
+                        Decoder = (string id, object storage) =>
                         {
-                            if (Path.GetExtension(id).ToLower().Contains("fus"))
+                            if (Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase))
                             {
-                                return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             }
                             return null;
                         },
                         Checker = delegate (string id)
                         {
-                            return Path.GetExtension(id).ToLower().Contains("fus");
+                            return Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase);
                         }
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Camera();
+                var app = new Core.CameraExample();
 
 		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
 		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });

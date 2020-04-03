@@ -1,6 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
+using Fusee.Engine.Core.Scene;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -137,7 +137,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         /// <summary>
         /// Method for calculation the specular lighting component.
-        /// </summary>       
+        /// </summary>
         public static string SpecularComponent()
         {
             var methodBody = new List<string>
@@ -288,7 +288,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var attParallel = "float att = 1.0; //no attenuation --> parallel or legacy light";
 
             res.Add(attParallel);
-            
+
             res.Add("");
             res.Add("if(light.lightType == 0) // PointLight");
             res.Add("{");
@@ -307,22 +307,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string ApplyLightForward(LightingSetup setup)
         {
-            //----------- TODO: Needs to go to surface shader -------
-            //var normals = new List<string>();
-            //if (lightingProps.HasNormalMap)
-            //{
-            //    normals.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
-            //    normals.Add($"N = N * 2.0 - 1.0;");
-            //    normals.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
-            //    normals.Add("N = normalize(TBN * N);");
-            //}
-            //else
-            //    normals = new List<string>
-            //    {
-            //        $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
-            //    };
-            //-------------------------------------------------
-
             var setupShards = ShaderSurfaceOut.GetLightingSetupShards(setup);
             var methodBody = new List<string>();
 
@@ -391,9 +375,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var normals = new List<string>();
             if (lightingProps.HasNormalMap)
             {
-                normals.Add($"vec3 N = texture({UniformNameDeclarations.BumpTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.BumpTextureTiles}).rgb;");
+                normals.Add($"vec3 N = texture({UniformNameDeclarations.NormalMap}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.NormalTextureTiles}).rgb;");
                 normals.Add($"N = N * 2.0 - 1.0;");
-                normals.Add($"N.xy *= {UniformNameDeclarations.BumpIntensity};");
+                normals.Add($"N.xy *= {UniformNameDeclarations.NormalMapIntensity};");
                 normals.Add("N = normalize(TBN * N);");
             }
             else
@@ -496,7 +480,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one. For deferred rendering, this equals the "main" method.
         /// </summary>
-        public static string ApplyLightDeferred(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
+        public static string ApplyLightDeferred(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var methodBody = new List<string>
             {
@@ -788,7 +772,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }, methodBody);
         }
 
-        private static string GetShadow(LightComponent lc, bool isCascaded, int numberOfCascades = 0)
+        private static string GetShadow(Light lc, bool isCascaded, int numberOfCascades = 0)
         {
             var frag = new StringBuilder();
             if (isCascaded)
@@ -827,7 +811,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 frag.AppendLine($"vec4 posInLightSpace1 = (LightSpaceMatrices[thisFragmentsFirstCascade] * {UniformNameDeclarations.IView}) * fragPos;");
                 frag.Append(@"
                     float shadow1 = ShadowCalculation(ShadowMap, thisFragmentsFirstCascade, posInLightSpace1, normal, lightDir,  light.bias, 1.0);                   
-
                     //blend cascades to avoid hard cuts between them
                     if(thisFragmentsSecondCascade != -1)
                     {  
@@ -839,7 +822,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         float z = ClipPlanes[thisFragmentsFirstCascade].y - ClipPlanes[thisFragmentsFirstCascade].x;
                         float percent = (100.0/z * (fragDepth - ClipPlanes[thisFragmentsFirstCascade].x));
                         float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
-
                         if(percent >= blendStartPercent)
                             shadow = mix(shadow1, shadow2, percentNormalized);
                         else
@@ -884,11 +866,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var frag = new StringBuilder();
             frag.Append(@"                     
-
             vec3 cascadeColor1 = vec3(0.0,0.0,0.0);
             vec3 cascadeColor2 = vec3(0.0,0.0,0.0);
             vec3 cascadeColor = vec3(1.0,1.0,1.0);
-
             if(thisFragmentsFirstCascade == 0)
                 cascadeColor1 = vec3(1,0.3f,0.3f);
             else if(thisFragmentsFirstCascade == 1)
@@ -901,7 +881,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 cascadeColor1 = vec3(1,0.3,1);
             else if(thisFragmentsFirstCascade == 5)
                 cascadeColor1 = vec3(1,0.3f,1);                
-
             if(thisFragmentsSecondCascade == 0)
                 cascadeColor2 = vec3(1,0.3f,0.3f);
             else if(thisFragmentsSecondCascade == 1)
@@ -914,7 +893,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 cascadeColor2 = vec3(1,0.3,1);
             else if(thisFragmentsSecondCascade == 5)
                 cascadeColor2 = vec3(1,0.3f,1);
-
             if(thisFragmentsSecondCascade != -1)
             {
                 float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   

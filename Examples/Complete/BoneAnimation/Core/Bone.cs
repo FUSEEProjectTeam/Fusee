@@ -1,9 +1,8 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
-using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -52,41 +51,35 @@ namespace Fusee.Examples.Bone.Core
             // Load the standard model
             _scene = new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
-                    new SceneNodeContainer
+                    new SceneNode
                     {
-                        Components = new List<SceneComponentContainer>
+                        Components = new List<SceneComponent>
                         {
-                            new TransformComponent
+                            new Transform
                             {
                                 Rotation = float3.Zero,
                                 Translation = new float3(0, 0, 0),
                                 Scale = float3.One
                             },
-                            new BoneComponent()
+                            new Engine.Core.Scene.Bone()
                         },
                         Children = new ChildList()
                         {
-                            new SceneNodeContainer
+                            new SceneNode
                             {
-                                Components = new List<SceneComponentContainer>
+                                Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Rotation = float3.Zero,
                                         Translation = new float3(0, 0.5f, 0),
                                         Scale = float3.One
                                     },
-                                    new BoneComponent(),
-                                    new WeightComponent(),
-                                    new MaterialComponent
-                                    {
-                                        Diffuse = new DiffuseChannelContainer
-                                        {
-                                            Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
-                                        }
-                                    },
+                                    new Engine.Core.Scene.Bone(),
+                                    new Weight(),
+                                    MakeEffect.FromDiffuseSpecular(new float4(1.0f, 0.4f, 0.2f,1.0f), float4.One,0,0),
                                     CreateCuboid(float3.One)
                                 }
                             }
@@ -108,10 +101,10 @@ namespace Fusee.Examples.Bone.Core
             //{
             //    bindingMatrices.Add(float4x4.Identity);
             //}
-            var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
-            var wm = _scene.Children[1].Children[2].GetComponent<WeightComponent>();
-            var WeightMap = new List<VertexWeightList>();
-            for (var i = 0; i < mesh.Vertices.Length; i++)
+            Mesh mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
+            Weight wm = _scene.Children[1].Children[2].GetComponent<Weight>();
+            List<VertexWeightList> WeightMap = new List<VertexWeightList>();
+            for (int i = 0; i < mesh.Vertices.Length; i++)
             {
                 WeightMap.Add(new VertexWeightList
                 {
@@ -131,9 +124,9 @@ namespace Fusee.Examples.Bone.Core
                 });
             }
             wm.WeightMap = WeightMap;
-            var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
+            SceneComponent weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
-            //_scene.Children.Insert(0, new SceneNodeContainer()
+            //_scene.Children.Insert(0, new SceneNode()
             //{
             //    Name = "BoneContainer1",
             //    Components = new List<SceneComponentContainer>()
@@ -147,7 +140,7 @@ namespace Fusee.Examples.Bone.Core
             //    },
             //    Children = new ChildList
             //    {
-            //        new SceneNodeContainer()
+            //        new SceneNode()
             //        {
             //            Components = new List<SceneComponentContainer>
             //            {
@@ -161,7 +154,7 @@ namespace Fusee.Examples.Bone.Core
             //            }
             //        },
 
-            //        new SceneNodeContainer()
+            //        new SceneNode()
             //        {
             //            Name = "BoneContainer2",
             //            Components = new List<SceneComponentContainer>
@@ -176,7 +169,7 @@ namespace Fusee.Examples.Bone.Core
 
             //            Children = new ChildList
             //            {
-            //                new SceneNodeContainer
+            //                new SceneNode
             //                {
             //                Components = new List<SceneComponentContainer>()
             //                {
@@ -208,7 +201,7 @@ namespace Fusee.Examples.Bone.Core
             //_scene = new ConvertSceneGraph().Convert(_scene);
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
-            var bbox = aabbc.GetBox();
+            AABBf? bbox = aabbc.GetBox();
             if (bbox != null)
             {
                 // If the model origin is more than one third away from its bounding box,
@@ -255,7 +248,7 @@ namespace Fusee.Examples.Bone.Core
                 _keys = true;
             }
 
-            var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+            float curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
 
             // Zoom & Roll
             if (Input.Touch.TwoPoint)
@@ -329,14 +322,14 @@ namespace Fusee.Examples.Bone.Core
             _angleRoll = M.MinAngle(_angleRoll);
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
+            float4x4 mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            float4x4 mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
-            var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
+            float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
 
             // move one bone
-            var translation = _scene.Children[1].Children[1].GetComponent<TransformComponent>();
+            Transform translation = _scene.Children[1].Children[1].GetComponent<Transform>();
             translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 

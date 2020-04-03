@@ -2,9 +2,11 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -37,7 +39,7 @@ namespace Fusee.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initWindowWidth;
         private float _initWindowHeight;
         private float _initCanvasWidth;
@@ -45,9 +47,9 @@ namespace Fusee.Examples.UI.Core
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-        private float zNear = 1f;
-        private float zFar = 1000;
-        private float fov = M.PiOver4;
+        private readonly float zNear = 1f;
+        private readonly float zFar = 1000;
+        private readonly float fov = M.PiOver4;
 
         private GUIText _fpsText;
 
@@ -61,14 +63,14 @@ namespace Fusee.Examples.UI.Core
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
-            
+
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 borderScaleFactor = canvasScaleFactor;
             }
 
-            var fps = new TextNodeContainer(
+            var fps = new TextNode(
                 "FPS: 0.00",
                 "FPSText",
                 vsTex,
@@ -87,7 +89,7 @@ namespace Fusee.Examples.UI.Core
 
             _fpsText = fps.GetComponentsInChildren<GUIText>().FirstOrDefault();
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "The five\n" +
                 "boxing wizards\n" +
                 "jump\n" +
@@ -106,11 +108,11 @@ namespace Fusee.Examples.UI.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var catTextureNode = new TextureNodeContainer(
+            var catTextureNode = new TextureNode(
                 "Cat",
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -132,11 +134,11 @@ namespace Fusee.Examples.UI.Core
             { Children = new ChildList() { text } };
             catTextureNode.Components.Add(_btnCat);
 
-            var bltTextureNode = new TextureNodeContainer(
+            var bltTextureNode = new TextureNode(
                 "Blt",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 _bltDestinationTex,
                 //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -149,7 +151,7 @@ namespace Fusee.Examples.UI.Core
                 UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
                 float2.One);
 
-            var quagganTextureNode1 = new TextureNodeContainer(
+            var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
@@ -164,7 +166,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var nineSliceTextureNode = new TextureNodeContainer(
+            var nineSliceTextureNode = new TextureNode(
                 "testImage",
                 vsNineSlice,
                 psNineSlice,
@@ -181,7 +183,7 @@ namespace Fusee.Examples.UI.Core
             )
             { Children = new ChildList() { quagganTextureNode1, text } };
 
-            var quagganTextureNode = new TextureNodeContainer(
+            var quagganTextureNode = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -195,7 +197,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode2 = new TextureNodeContainer(
+            var quagganTextureNode2 = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -209,7 +211,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode3 = new TextureNodeContainer(
+            var quagganTextureNode3 = new TextureNode(
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
@@ -223,7 +225,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -246,39 +248,31 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = new EffectComponent
-            {
-                Effect = MakeShaderEffect.FromMatComp(new MaterialComponent
-                {
-                    Diffuse = new DiffuseChannelContainer { Color = new float4(1, 0, 0, 1) },
-                })
-            };
-
-            canvas.AddComponent(canvasMat);
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(new float4(1, 0, 0, 1), float4.One, 0, 0));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
 
-                    new SceneNodeContainer()
+                    new SceneNode()
                     {
-                        Components = new List<SceneComponentContainer>()
+                        Components = new List<SceneComponent>()
                         {
-                            new TransformComponent()
+                            new Transform()
                             {
                                 Translation = new float3(0,0,0)
-                            } 
+                            }
                         },
                         Children = new ChildList()
                         {
                             canvas
                         }
                     },
-                    
+
                 }
             };
         }
@@ -298,23 +292,15 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = MakeShaderEffect.FromMatComp(new MaterialComponent
-            {
-                Diffuse = new DiffuseChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
-            });
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<EffectComponent>()
-                .Effect = color;
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffect>()
+                .SetFxParam(UniformNameDeclarations.Albedo, new float4(1, 0.4f, 0.1f, 1));
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = MakeShaderEffect.FromMatComp(new MaterialComponent
-            {
-                Diffuse = new DiffuseChannelContainer { Color = new float4(1, 0, 0, 1) },
-            });
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<EffectComponent>()
-                .Effect = color;
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffect>()
+                .SetFxParam(UniformNameDeclarations.Albedo, new float4(1, 0f, 0f, 1));
         }
 
         public void OnBtnCatDown(CodeComponent sender)
@@ -456,17 +442,17 @@ namespace Fusee.Examples.UI.Core
             }
 
             _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;           
+            _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);            
+            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             var view = mtxCam * mtxRot;
             var projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
-            
+
             RC.Projection = projection;
             RC.View = view;
             _sceneRenderer.Render(RC);
-            
+
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);

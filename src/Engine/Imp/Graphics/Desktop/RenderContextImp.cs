@@ -522,10 +522,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
             // mr: Detach Shader & delete
-            //GL.DetachShader(program, fragmentObject);
-            //GL.DetachShader(program, vertexObject);
-            //GL.DeleteShader(fragmentObject);
-            //GL.DeleteShader(vertexObject);
+            GL.DetachShader(program, fragmentObject);
+            GL.DetachShader(program, vertexObject);
+            GL.DeleteShader(fragmentObject);
+            GL.DeleteShader(vertexObject);
 
             return new ShaderHandleImp { Handle = program };
         }
@@ -542,9 +542,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // wait for all threads to be finished
             GL.Finish();
             GL.Flush();
-
-            // cleanup
-            GL.DeleteShader(program);
+           
             GL.DeleteProgram(program);
         }
 

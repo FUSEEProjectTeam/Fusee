@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards
         });
 
         private const string SpecularPbrOutName = "SpecularOut";
-        private static readonly string DerfafultSpecPbrOut = $"{SpecularOutName}(vec4(0), vec3(0), vec4(0), vec4(0), 0.0);";
+        private static readonly string DerfafultSpecPbrOut = $"{SpecularOutName}(vec4(0), vec3(0), vec4(0), 0.0, 0.0, 0.0);";
         private static readonly string SpecularPbrOut = string.Join("\n", new List<string>()
         {
             $"struct {SpecularPbrOutName}",
@@ -59,8 +59,9 @@ namespace Fusee.Engine.Core.ShaderShards
             "   vec4 position;",
             "   vec3 normal;",
             "   vec4 albedo;",
-            "   vec4 specularCol;",
-            "   float roughness;",
+            "   float roughness;" +
+            "   float fresnelReflect;",
+            "   float diffuseFract;",
             "};\n",
         });
 

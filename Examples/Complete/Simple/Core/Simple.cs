@@ -2,11 +2,11 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +30,7 @@ namespace Fusee.Examples.Simple.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -54,12 +54,12 @@ namespace Fusee.Examples.Simple.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             var test = new DefaultSurfaceEffect(LightingSetup.SpecularStd, new SpecularInput());
-            test.SurfIn.Albedo = new float4(1f, 0f, 1f, 1f);
-            test.SurfIn.Shininess = 22;
-            test.SurfIn.SpecularStrength = 1f;
+            test.SurfaceInput.Albedo = new float4(1f, 0f, 1f, 1f);
+            test.SurfaceInput.Shininess = 22;
+            test.SurfaceInput.SpecularStrength = 1f;
 
-            _rocketScene.Children[0].RemoveComponent<EffectComponent>();
-            _rocketScene.Children[0].Components.Insert(1, new EffectComponent() { Effect = test });
+            _rocketScene.Children[0].RemoveComponent<Effect>();
+            _rocketScene.Children[0].Components.Insert(1, test);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -160,11 +160,11 @@ namespace Fusee.Examples.Simple.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -178,7 +178,7 @@ namespace Fusee.Examples.Simple.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
@@ -190,7 +190,7 @@ namespace Fusee.Examples.Simple.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -209,7 +209,7 @@ namespace Fusee.Examples.Simple.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -219,16 +219,16 @@ namespace Fusee.Examples.Simple.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
-            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

@@ -1,6 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
+using Fusee.Engine.Core.Scene;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
@@ -131,15 +131,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             //Textures
             if (effectProps.LightingProps.HasNormalMap)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.BumpTextureTiles));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensity));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.NormalMap));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.NormalTextureTiles));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.NormalMapIntensity));
             }
 
             if (effectProps.LightingProps.HasDiffuseTexture)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMix));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.AlbedoTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.AlbedoMix));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.DiffuseTextureTiles));
             }
 
@@ -177,7 +177,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <param name="lc">The light component, needed to decide if we have a Shadow Cube Map or a standard shadow map.</param>
         /// <param name="isCascaded">If cascaded shadow mapping is used, this should be set to true.</param>
         /// <param name="numberOfCascades">If cascaded shadow mapping is used this is the number of cascades.</param>        
-        public static string DeferredLightAndShadowUniforms(LightComponent lc, bool isCascaded, int numberOfCascades)
+        public static string DeferredLightAndShadowUniforms(Light lc, bool isCascaded, int numberOfCascades)
         {
             var uniforms = new List<string>
             {

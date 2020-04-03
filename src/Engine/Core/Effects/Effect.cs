@@ -1,5 +1,6 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Serialization;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using System;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffect"/>.
     /// </summary>
-    public abstract class Effect
+    public abstract class Effect : SceneComponent
     {
         /// <summary>
         /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.

@@ -69,6 +69,64 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
+    public class SpecularPbrInput : ColorInput
+    {
+        /// <summary>
+        /// The roughness of the specular lighting.
+        /// </summary>
+        public float Roughness
+        {
+            get => _roughness;
+            set
+            {
+                if (value != _roughness)
+                {
+                    _roughness = value;
+                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
+                }
+            }
+        }
+        private float _roughness;
+
+        /// <summary>
+        /// The diffuse fraction of the specular lighting.
+        /// </summary>
+        public float DiffuseFraction
+        {
+            get => _diffuseFraction;
+            set
+            {
+                if (value != _diffuseFraction)
+                {
+                    _diffuseFraction = value;
+                    NotifyPropertyChanged(_diffuseFraction.GetType(), nameof(DiffuseFraction), _diffuseFraction);
+                }
+            }
+        }
+        private float _diffuseFraction;
+
+        /// <summary>
+        /// The diffuse fraction of the specular lighting.
+        /// </summary>
+        public float FresnelReflectance
+        {
+            get => _fresnelReflectance;
+            set
+            {
+                if (value != _fresnelReflectance)
+                {
+                    _fresnelReflectance = value;
+                    NotifyPropertyChanged(_fresnelReflectance.GetType(), nameof(FresnelReflectance), _fresnelReflectance);
+                }
+            }
+        }
+        private float _fresnelReflectance;
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case for specular lighting with strength and shininess.
+    /// </summary>
     public class SpecularInput : ColorInput
     {
         /// <summary>
@@ -115,19 +173,19 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The mix between albedo texture and albedo color.
         /// </summary>
-        public float Mix
+        public float AlbedoMix
         {
-            get => _mix;
+            get => _albedoMix;
             set
             {
-                if (value != _mix)
+                if (value != _albedoMix)
                 {
-                    _mix = value;
-                    NotifyPropertyChanged(_mix.GetType(), nameof(Mix), _mix);
+                    _albedoMix = value;
+                    NotifyPropertyChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
                 }
             }
         }
-        private float _mix;
+        private float _albedoMix;
 
         /// <summary>
         /// The albedo texture.
@@ -162,5 +220,39 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private Texture _normalTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float NormalMappingStrength
+        {
+            get => _normalMappingStrength;
+            set
+            {
+                if (value != _normalMappingStrength)
+                {
+                    _normalMappingStrength = value;
+                    NotifyPropertyChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                }
+            }
+        }
+        private float _normalMappingStrength;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyPropertyChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles;
     }
 }

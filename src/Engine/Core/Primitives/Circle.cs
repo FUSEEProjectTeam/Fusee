@@ -1,5 +1,5 @@
-﻿using Fusee.Math.Core;
-using Fusee.Serialization;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
         /// <param name="fillPercentage">Determines if it is a full circle (default, 100%).</param>
         /// <param name="thickness">Indicates the thickness of the (not filled) circle.</param>
         public Circle(bool fill = false, int segments = 20, float fillPercentage = 100, float thickness = 0.1f)
-        {            
+        {
             var verts = new List<float3>();
             var uvs = new List<float2>();
             var triangles = new List<ushort>();
@@ -38,8 +38,8 @@ namespace Fusee.Engine.Core
                 normals.Add(new float3(0, 0, -1));
             }
 
-            for (int i = 0; i <= segments; i++)
-            {                
+            for (var i = 0; i <= segments; i++)
+            {
                 cos = (float)System.Math.Cos(currentAngle);
                 sin = (float)System.Math.Sin(currentAngle);
 
@@ -61,7 +61,7 @@ namespace Fusee.Engine.Core
                     }
                 }
 
-                var lastVertIndex = verts.Count-1;                
+                var lastVertIndex = verts.Count - 1;
 
                 if (i > 0 && i != segments) //odd
                 {
@@ -81,7 +81,7 @@ namespace Fusee.Engine.Core
                         triangles.Add((ushort)(lastVertIndex - 1)); //1
                         triangles.Add((ushort)lastVertIndex); //2
                     }
-                    
+
                 }
                 else if (i == segments)
                 {
@@ -97,10 +97,10 @@ namespace Fusee.Engine.Core
                     }
                     else
                     {
-                        triangles.Add(0); 
+                        triangles.Add(0);
                         triangles.Add((ushort)lastVertIndex); //3
                         triangles.Add(1);
-                        
+
                     }
 
                 }
@@ -112,7 +112,7 @@ namespace Fusee.Engine.Core
             Triangles = triangles.ToArray();
             UVs = uvs.ToArray();
         }
-        
+
         private float Normalize(float input, float max, float min)
         {
             return (input - min) / (max - min);

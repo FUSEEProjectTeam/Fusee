@@ -245,7 +245,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public const string DiffuseTexture = "DiffuseTexture";
+        public const string AlbedoTexture = "AlbedoTexture";
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
@@ -263,19 +263,19 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string EmissiveTexture = "EmissiveTexture";
 
         /// <summary>
-        /// The var name for the uniform BumpTexture variable within the pixel shaders.
+        /// The var name for the uniform NormalMap variable within the pixel shaders.
         /// </summary>
-        public const string BumpTexture = "BumpTexture";
+        public const string NormalMap = "NormalMap";
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public const string BumpTextureTiles = "BumpTextureTiles";
+        public const string NormalTextureTiles = "NormalTextureTiles";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
         /// </summary>
-        public const string DiffuseMix = "DiffuseMix";
+        public const string AlbedoMix = "AlbedoMix";
 
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.
@@ -295,7 +295,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform SpecularIntensity variable within the pixel shaders.
         /// </summary>
-        public const string SpecularStrength = "SpecularIntensity";
+        public const string SpecularStrength = "SpecularStrength";
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] Describes the roughness of the material.
@@ -315,7 +315,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public const string BumpIntensity = "BumpIntensity";
+        public const string NormalMapIntensity = "NormalMapIntensity";
 
         /// <summary>
         /// List of all possible render texture names.

@@ -1,5 +1,6 @@
-﻿using Fusee.Math.Core;
-using Fusee.Serialization;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
 
@@ -12,7 +13,7 @@ namespace Fusee.Engine.Core
     /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    public class OBBCalculator : SceneVisitor
+    public class OBBCalculator : Visitor<SceneNode, SceneComponent>
     {
         /// <summary>
         /// Contains the model view state while traversing the scene to generate the OBB.
@@ -40,7 +41,7 @@ namespace Fusee.Engine.Core
         }
 
         //private SceneContainer _sc;
-        private IEnumerable<SceneNodeContainer> _sncList;
+        private IEnumerable<SceneNode> _sncList;
         private OBBState _state = new OBBState();
         private List<float3> _allVerticesOfCurrentScene = new List<float3>();
 
@@ -57,7 +58,7 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="OBBCalculator"/> class.
         /// </summary>
         /// <param name="sncList">The list of scene nodes to calculate an axis-aligned bounding box for.</param>
-        public OBBCalculator(IEnumerable<SceneNodeContainer> sncList)
+        public OBBCalculator(IEnumerable<SceneNode> sncList)
         {
             _sncList = sncList;
         }
@@ -66,9 +67,9 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="OBBCalculator"/> class.
         /// </summary>
         /// <param name="snc">A single scene node to calculate an axis-aligned bounding box for.</param>
-        public OBBCalculator(SceneNodeContainer snc)
+        public OBBCalculator(SceneNode snc)
         {
-            _sncList = SceneVisitorHelpers.SingleRootEnumerable(snc);
+            _sncList = VisitorHelpers.SingleRootEnumerable(snc);
         }
 
         /// <summary>
@@ -89,7 +90,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="transform">The transform component.</param>
         [VisitMethod]
-        public void OnTransform(TransformComponent transform)
+        public void OnTransform(Transform transform)
         {
             _state.ModelView *= transform.Matrix();
         }
@@ -143,7 +144,7 @@ namespace Fusee.Engine.Core
     /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
     /// </summary>
     // ReSharper disable once InconsistentNaming
-    public class AABBCalculator : SceneVisitor
+    public class AABBCalculator : Visitor<SceneNode, SceneComponent>
     {
         /// <summary>
         /// Contains the model view state while traversing the scene to generate the ABB.
@@ -171,7 +172,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private IEnumerable<SceneNodeContainer> _sncList;
+        private IEnumerable<SceneNode> _sncList;
         private AABBState _state = new AABBState();
         private bool _boxValid;
         private AABBf _result;
@@ -189,7 +190,7 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
         /// </summary>
         /// <param name="sncList">The list of scene nodes to calculate an axis-aligned bounding box for.</param>
-        public AABBCalculator(IEnumerable<SceneNodeContainer> sncList)
+        public AABBCalculator(IEnumerable<SceneNode> sncList)
         {
             _sncList = sncList;
         }
@@ -198,9 +199,9 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
         /// </summary>
         /// <param name="snc">A single scene node to calculate an axis-aligned bounding box for.</param>
-        public AABBCalculator(SceneNodeContainer snc)
+        public AABBCalculator(SceneNode snc)
         {
-            _sncList = SceneVisitorHelpers.SingleRootEnumerable(snc);
+            _sncList = VisitorHelpers.SingleRootEnumerable(snc);
         }
 
         /// <summary>
@@ -223,7 +224,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="transform">The transform component.</param>
         [VisitMethod]
-        public void OnTransform(TransformComponent transform)
+        public void OnTransform(Transform transform)
         {
             _state.ModelView *= transform.Matrix();
         }

@@ -1,14 +1,13 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
-using Path = Fusee.Base.Common.Path;
-using System.Reflection;
 using System;
+using System.IO;
+using System.Reflection;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Camera.Desktop
 {
@@ -24,32 +23,32 @@ namespace Fusee.Examples.Camera.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                        return new Font{ _fontImp = new FontImp((Stream)storage) };
+                        if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
+                    Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        return Serializer.DeserializeSceneContainer((Stream)storage);
+                        if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
+                    Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.Camera();
-            
+            var app = new Core.CameraExample();
+
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-			app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);            
+            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));

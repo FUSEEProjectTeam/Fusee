@@ -1,4 +1,4 @@
-﻿using Fusee.Serialization;
+﻿using Fusee.Engine.Core.Scene;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards
@@ -140,7 +140,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="mc">The material.</param>
         /// <param name="wc">The weights.</param>
         /// <returns></returns>
-        public static EffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
+        public static EffectProps CollectEffectProps(Mesh mesh, Material mc, Weight wc = null)
         {
             return new EffectProps()
             {
@@ -149,7 +149,7 @@ namespace Fusee.Engine.Core.ShaderShards
             };
         }
 
-        private static LightingProps AnalzyeMaterialParams(MaterialComponent mc)
+        private static LightingProps AnalzyeMaterialParams(Material mc)
         {
             var lProps = new LightingProps
             {
@@ -164,7 +164,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
             if (mc.HasSpecular)
             {
-                if (mc.GetType() == typeof(MaterialPBRComponent))
+                if (mc.GetType() == typeof(MaterialPBR))
                     lProps.SpecularLighting = SpecularLighting.Pbr;
                 else
                     lProps.SpecularLighting = SpecularLighting.Std;
@@ -176,7 +176,7 @@ namespace Fusee.Engine.Core.ShaderShards
         }
 
         //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefor we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....
-        private static MeshProps AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
+        private static MeshProps AnalyzeMesh(Mesh mesh, Weight wc = null)
         {
             return new MeshProps
             {

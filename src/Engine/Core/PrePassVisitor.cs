@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
@@ -14,7 +16,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The light component as present (1 to n times) in the scene graph.
         /// </summary>
-        public LightComponent Light { get; private set; }
+        public Light Light { get; private set; }
 
         /// <summary>
         /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
@@ -36,7 +38,7 @@ namespace Fusee.Engine.Core
         /// Creates a new instance of type LightResult.
         /// </summary>
         /// <param name="light">The LightComponent.</param>
-        public LightResult(LightComponent light)
+        public LightResult(Light light)
         {
             Light = light;
             WorldSpacePos = float3.Zero;
@@ -90,11 +92,11 @@ namespace Fusee.Engine.Core
 
     internal struct CameraResult
     {
-        public CameraComponent Camera { get; private set; }
+        public Camera Camera { get; private set; }
 
         public float4x4 View { get; private set; }
 
-        public CameraResult(CameraComponent cam, float4x4 view)
+        public CameraResult(Camera cam, float4x4 view)
         {
             Camera = cam;
             View = view;
@@ -126,17 +128,17 @@ namespace Fusee.Engine.Core
         }
     }
 
-    internal class PrePassVisitor : SceneVisitor
+    internal class PrePassVisitor : Visitor<SceneNode, SceneComponent>
     {
-        public List<Tuple<SceneNodeContainer, LightResult>> LightPrepassResuls;
-        public List<Tuple<SceneNodeContainer, CameraResult>> CameraPrepassResults;
+        public List<Tuple<SceneNode, LightResult>> LightPrepassResuls;
+        public List<Tuple<SceneNode, CameraResult>> CameraPrepassResults;
 
         /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
         private RendererState _state;
 
-        private CanvasTransformComponent _ctc;
+        private CanvasTransform _ctc;
         private MinMaxRect _parentRect;
         private RenderContext _rc;
         private bool _isCtcInitialized = false;
@@ -144,9 +146,9 @@ namespace Fusee.Engine.Core
 
         public PrePassVisitor()
         {
-            _state = new RendererState();            
-            LightPrepassResuls = new List<Tuple<SceneNodeContainer, LightResult>>();
-            CameraPrepassResults = new List<Tuple<SceneNodeContainer, CameraResult>>();
+            _state = new RendererState();
+            LightPrepassResuls = new List<Tuple<SceneNode, LightResult>>();
+            CameraPrepassResults = new List<Tuple<SceneNode, CameraResult>>();
         }
 
         public void PrePassTraverse(SceneContainer sc, RenderContext rc, bool renderForward)
@@ -192,7 +194,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="ctc">The CanvasTransformComponent.</param>
         [VisitMethod]
-        public void RenderCanvasTransform(CanvasTransformComponent ctc)
+        public void RenderCanvasTransform(CanvasTransform ctc)
         {
             _ctc = ctc;
 
@@ -269,7 +271,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rtc">The XFormComponent.</param>
         [VisitMethod]
-        public void RenderRectTransform(RectTransformComponent rtc)
+        public void RenderRectTransform(RectTransform rtc)
         {
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -306,7 +308,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="xfc">The XFormComponent.</param>
         [VisitMethod]
-        public void RenderXForm(XFormComponent xfc)
+        public void RenderXForm(XForm xfc)
         {
             float4x4 scale;
 
@@ -330,7 +332,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="xfc">The XFormTextComponent.</param>
         [VisitMethod]
-        public void RenderXFormText(XFormTextComponent xfc)
+        public void RenderXFormText(XFormText xfc)
         {
             var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
             var scaleFactor = zNear / 100;
@@ -431,14 +433,14 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
-        public void RenderTransform(TransformComponent transform)
+        public void RenderTransform(Transform transform)
         {
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
         }
 
         [VisitMethod]
-        public void OnLight(LightComponent lightComponent)
+        public void OnLight(Light lightComponent)
         {
             var lightResult = new LightResult(lightComponent)
             {
@@ -446,11 +448,11 @@ namespace Fusee.Engine.Core
                 WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
             };
 
-            LightPrepassResuls.Add(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, lightResult));
+            LightPrepassResuls.Add(new Tuple<SceneNode, LightResult>(CurrentNode, lightResult));
         }
 
         [VisitMethod]
-        public void OnCamera(CameraComponent camComp)
+        public void OnCamera(Camera camComp)
         {
             var scale = float4x4.GetScale(_state.Model);
             var view = _state.Model;
@@ -479,17 +481,17 @@ namespace Fusee.Engine.Core
             view = view.Invert();
 
             var cameraResult = new CameraResult(camComp, view);
-            CameraPrepassResults.Add(new Tuple<SceneNodeContainer, CameraResult>(CurrentNode, cameraResult));
+            CameraPrepassResults.Add(new Tuple<SceneNode, CameraResult>(CurrentNode, cameraResult));
         }
 
         /// <summary>
         /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
         /// </summary>
-        /// <param name="shaderComponent">The ShaderEffectComponent</param>
+        /// <param name="effect">The ShaderEffectComponent</param>
         [VisitMethod]
-        public void BuildFragmentShaderFor(EffectComponent shaderComponent)
+        public void BuildFragmentShaderFor(ShaderEffectProtoPixel effect)
         {
-            _rc.CreateEffect(_renderForward, shaderComponent.Effect);
+            _rc.CreateEffect(_renderForward, effect);
         }
     }
 

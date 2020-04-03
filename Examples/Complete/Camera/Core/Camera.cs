@@ -1,22 +1,23 @@
-using System.Collections.Generic;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
-using System.Threading.Tasks;
-using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Examples.Camera.Core
 {
     [FuseeApplication(Name = "FUSEE Camera Example", Description = " ")]
-    public class Camera : RenderCanvas
+    public class CameraExample : RenderCanvas
     {
         // angle variables
         private readonly float _rotAngle = M.PiOver4;
@@ -31,14 +32,15 @@ namespace Fusee.Examples.Camera.Core
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
-        private TransformComponent _mainCamTransform;
-        private TransformComponent _guiCamTransform;
-        private TransformComponent _sndCamTransform;
-        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 5, 50, M.PiOver4);
-        private readonly CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
-        private readonly CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private Transform _mainCamTransform;
+        private Transform _guiCamTransform;
+        private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        private TransformComponent _cubeOneTransform;
+        private Transform _cubeOneTransform;
+        private Transform _sndCamTransform;
+
         private WireframeCube _frustum;
         private float _anlgeHorznd;
         private float _angleVertSnd;
@@ -67,7 +69,8 @@ namespace Fusee.Examples.Camera.Core
             _guiCam.ClearDepth = false;
             _guiCam.FrustumCullingOn = false;
 
-            _mainCamTransform = _guiCamTransform = new TransformComponent()
+
+            _mainCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 1, -30),
@@ -79,34 +82,34 @@ namespace Fusee.Examples.Camera.Core
             _sih = new SceneInteractionHandler(_gui);
 
             _frustum = new WireframeCube();
-            var frustumNode = new SceneNodeContainer()
+            SceneNode frustumNode = new SceneNode()
             {
                 Name = "Frustum",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
-                    new EffectComponent(){Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.One, 0) },
+                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.One, 0),
                     _frustum
                 }
             };
 
-            var cam = new SceneNodeContainer()
+            SceneNode cam = new SceneNode()
             {
                 Name = "MainCam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
                     _mainCamTransform,
                     _mainCam,
-                    new EffectComponent(){Effect = MakeShaderEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.One, 10) },
+                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.One, 10),
                     new Cube(),
 
                 },
                 Children = new ChildList()
                 {
-                    new SceneNodeContainer()
+                    new SceneNode()
                     {
-                        Components = new List<SceneComponentContainer>()
+                        Components = new List<SceneComponent>()
                         {
-                            new TransformComponent()
+                            new Transform()
                             {
                                 Scale = new float3(0.5f, 0.5f, 1f),
                                 Translation = new float3(0,0, 1f)
@@ -117,17 +120,17 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            _sndCamTransform = new TransformComponent()
+            _sndCamTransform = new Transform()
             {
                 Rotation = new float3(M.PiOver6, 0, 0),//float3.Zero,
                 Translation = new float3(10, 40, -60),
                 Scale = float3.One
             };
 
-            var cam1 = new SceneNodeContainer()
+            SceneNode cam1 = new SceneNode()
             {
                 Name = "SecondCam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
                     _sndCamTransform,
                     _sndCam,
@@ -141,8 +144,10 @@ namespace Fusee.Examples.Camera.Core
 
             // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
+            //_rocketScene = Rocket.Build();
 
-            _cubeOneTransform = _rocketScene.Children[0].GetComponent<TransformComponent>();
+
+            _cubeOneTransform = _rocketScene.Children[0].GetComponent<Transform>();
             //_cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
 
             _rocketScene.Children.Add(cam);
@@ -154,7 +159,7 @@ namespace Fusee.Examples.Camera.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
-            _rotPivot = _rocketScene.Children[1].GetComponent<TransformComponent>().Translation;
+            _rotPivot = _rocketScene.Children[1].GetComponent<Transform>().Translation;
 
             return true;
         }
@@ -187,10 +192,10 @@ namespace Fusee.Examples.Camera.Core
                 _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-            var viewProjection = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
+            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out float4 viewport) * float4x4.Invert(_mainCamTransform.Matrix());
             _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
 
-            var frustum = new Frustum();
+            Frustum frustum = new Frustum();
             frustum.CalculateFrustumPlanes(viewProjection);
 
             // Sets a mesh inactive if it does not pass the culling test and active if it does. 
@@ -202,49 +207,58 @@ namespace Fusee.Examples.Camera.Core
             _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
+            {
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            }
+
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        private void UserSideFrustumCulling(IList<SceneNodeContainer> nodeChildren, Frustum frustum)
+        private void UserSideFrustumCulling(IList<SceneNode> nodeChildren, Frustum frustum)
         {
-            foreach (var node in nodeChildren)
+            foreach (SceneNode node in nodeChildren)
             {
-                var mesh = node.GetComponent<Mesh>();
+                Mesh mesh = node.GetComponent<Mesh>();
                 if (mesh != null)
                 {
                     //We only perform the test for meshes that do have a calculated - non-zero sized - bounding box.
                     if (mesh.BoundingBox.Size != float3.Zero)
                     {
-                        var worldSpaceBoundingBox = node.GetComponent<TransformComponent>().Matrix() * mesh.BoundingBox;
+                        AABBf worldSpaceBoundingBox = node.GetComponent<Transform>().Matrix() * mesh.BoundingBox;
                         if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
                         {
                             mesh.Active = false;
                         }
                         else
+                        {
                             mesh.Active = true;
+                        }
                     }
                 }
 
                 if (node.Children.Count != 0)
+                {
                     UserSideFrustumCulling(node.Children, frustum);
+                }
             }
         }
 
         private SceneContainer CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
+            string vsTex = AssetStorage.Get<string>("texture.vert");
+            string psTex = AssetStorage.Get<string>("texture.frag");
+            string psText = AssetStorage.Get<string>("text.frag");
 
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
+            float canvasWidth = Width / 100f;
+            float canvasHeight = Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            GUIButton btnFuseeLogo = new GUIButton
             {
                 Name = "Canvas_Button"
             };
@@ -252,8 +266,8 @@ namespace Fusee.Examples.Camera.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            Texture guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            TextureNode fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -268,10 +282,10 @@ namespace Fusee.Examples.Camera.Core
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
+            Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            FontMap guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNodeContainer(
+            TextNode text = new TextNode(
                 "FUSEE Camera Example",
                 "ButtonText",
                 vsTex,
@@ -283,7 +297,7 @@ namespace Fusee.Examples.Camera.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var canvas = new CanvasNodeContainer(
+            CanvasNode canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -300,10 +314,10 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            var cam = new SceneNodeContainer()
+            SceneNode cam = new SceneNode()
             {
                 Name = "GUICam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
                     _guiCamTransform,
                     _guiCam
@@ -312,7 +326,7 @@ namespace Fusee.Examples.Camera.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     cam,
                     //Add canvas.
@@ -323,16 +337,16 @@ namespace Fusee.Examples.Camera.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
+            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
-            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 0.8f);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<EffectComponent>().Effect;
+            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.DiffuseMix, 1f);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

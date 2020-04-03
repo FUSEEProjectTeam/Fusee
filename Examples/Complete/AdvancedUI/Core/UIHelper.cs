@@ -2,10 +2,10 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System.Collections.Generic;
 
 namespace Fusee.Examples.AdvancedUI.Core
@@ -59,13 +59,13 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
 
-        internal static readonly ShaderEffect GreenEffect = MakeShaderEffect.FromDiffuseSpecular(Green, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect YellowEffect = MakeShaderEffect.FromDiffuseSpecular(Yellow, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect GrayEffect = MakeShaderEffect.FromDiffuseSpecular(Gray, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, new float4(1, 1, 1, 1), 20, 0);
 
-        internal static readonly ShaderEffect OccludedDummyEffect = MakeShaderEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
 
-        private static float _circleThickness = 0.04f;
+        private static readonly float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
 
         public static float AnnotationDistToLeftOrRightEdge = 1;
@@ -92,9 +92,9 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
+        internal static void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
-            var container = new SceneNodeContainer
+            SceneNode container = new SceneNode
             {
                 Name = "Container"
             };
@@ -128,9 +128,9 @@ namespace Fusee.Examples.AdvancedUI.Core
             parentUiElement.Children.Add(container);
         }
 
-        private static SceneNodeContainer CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
+        private static SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
-            var icon = new TextureNodeContainer(
+            TextureNode icon = new TextureNode(
                 "icon",
                 VsTex,
                 PsTex,
@@ -144,7 +144,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 float2.One
             );
 
-            var annotationText = new TextNodeContainer(
+            TextNode annotationText = new TextNode(
                 text,
                 "annotation text",
                 VsTex,
@@ -160,7 +160,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var annotation = new TextureNodeContainer(
+            TextureNode annotation = new TextureNode(
                 "Annotation",
                 VsNineSlice,
                 PsNineSlice,
@@ -185,7 +185,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             return annotation;
         }
 
-        private static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
+        private static SceneNode CreateCircle(float2 circleDim, MatColor color)
         {
             float4 col;
 
@@ -215,12 +215,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                     break;
             }
 
-            return new SceneNodeContainer
+            return new SceneNode
             {
                 Name = "Circle_" + nameSuffix,
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
-                    new RectTransformComponent
+                    new RectTransform
                     {
                         Name = "circle" + "_RectTransform",
                         Anchors = new MinMaxRect
@@ -230,20 +230,17 @@ namespace Fusee.Examples.AdvancedUI.Core
                         },
                         Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
                     },
-                    new XFormComponent
+                    new XForm
                     {
                         Name = "circle" + "_XForm",
                     },
-                    new EffectComponent()
-                    {
-                        Effect = MakeShaderEffect.FromDiffuseSpecular(col, new float4(1,1,1,1), 20, 0)
-                    },
+                    MakeEffect.FromDiffuseSpecular(col, new float4(1,1,1,1), 20, 0),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
         }
 
-        private static SceneNodeContainer CreateLine(MatColor color)
+        private static SceneNode CreateLine(MatColor color)
         {
             float4 col;
 
@@ -267,12 +264,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                     break;
             }
 
-            return new SceneNodeContainer()
+            return new SceneNode()
             {
                 Name = "line",
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
-                    new RectTransformComponent
+                    new RectTransform
                     {
                         Name = "line" + "_RectTransform",
                         Anchors = new MinMaxRect
@@ -282,14 +279,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                         },
                         Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
                     },
-                    new XFormComponent
+                    new XForm
                     {
                         Name = "line" + "_XForm",
                     },
-                    new EffectComponent()
-                    {
-                        Effect = MakeShaderEffect.FromDiffuseSpecular(col, new float4(1, 1, 1,1), 20, 0)
-                    }
+                    MakeEffect.FromDiffuseSpecular(col, float4.One, 20, 0),
                 }
             };
         }
@@ -315,7 +309,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
         {
-            var color = (float4)effect.GetFxParam<float4>(UniformNameDeclarations.Albedo);
+            float4 color = effect.GetFxParam<float4>(UniformNameDeclarations.Albedo);
             color.w = alpha;
             effect.SetFxParam(UniformNameDeclarations.Albedo, color);
         }

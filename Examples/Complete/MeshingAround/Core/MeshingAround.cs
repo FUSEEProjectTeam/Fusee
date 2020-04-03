@@ -1,8 +1,8 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -22,7 +22,7 @@ namespace Fusee.Examples.MeshingAround.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            var outlineOne = new PolyBoundary //CCW!!
+            PolyBoundary outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -36,7 +36,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var outlineOneHole = new PolyBoundary //CW!!
+            PolyBoundary outlineOneHole = new PolyBoundary //CW!!
             {
                 Points = new List<float3>
                 {
@@ -48,7 +48,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = false
             };
 
-            var outlineTwo = new PolyBoundary //CCW!!
+            PolyBoundary outlineTwo = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -60,7 +60,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var outlineThree = new PolyBoundary //CCW!!
+            PolyBoundary outlineThree = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -71,32 +71,32 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var geomOutlinesOne = new List<PolyBoundary> { outlineOne, outlineOneHole };
-            var geomOne = new Geometry(geomOutlinesOne);
+            List<PolyBoundary> geomOutlinesOne = new List<PolyBoundary> { outlineOne, outlineOneHole };
+            Geometry geomOne = new Geometry(geomOutlinesOne);
             geomOne.Extrude2DPolygon(0.5f, true);
             geomOne.Triangulate();
-            var meshOne = new JometriMesh(geomOne);
+            JometriMesh meshOne = new JometriMesh(geomOne);
 
-            var geomCubeOutlines = new List<PolyBoundary> { outlineTwo };
-            var geomCube = new Geometry(geomCubeOutlines);
+            List<PolyBoundary> geomCubeOutlines = new List<PolyBoundary> { outlineTwo };
+            Geometry geomCube = new Geometry(geomCubeOutlines);
             geomCube.Extrude2DPolygon(1, false);
             //geomCube.Extrude2DPolygon(1, true);
             geomCube.Triangulate();
-            var cube = new JometriMesh(geomCube);
+            JometriMesh cube = new JometriMesh(geomCube);
 
-            var geomTriangleOutlines = new List<PolyBoundary> { outlineThree };
-            var geomTri = new Geometry(geomTriangleOutlines);
+            List<PolyBoundary> geomTriangleOutlines = new List<PolyBoundary> { outlineThree };
+            Geometry geomTri = new Geometry(geomTriangleOutlines);
             geomTri.Triangulate();
-            var triangle = new JometriMesh(geomTri);
+            JometriMesh triangle = new JometriMesh(geomTri);
 
-            ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            var parentNode = new SceneNodeContainer
+            ////////////////// Fill SceneNode ////////////////////////////////
+            SceneNode parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            Transform parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -105,16 +105,16 @@ namespace Fusee.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            SceneNode sceneNodeCOne = new SceneNode { Components = new List<SceneComponent>() };
 
-            var meshCOne = new Mesh
+            Mesh meshCOne = new Mesh
             {
                 Vertices = meshOne.Vertices,
                 Triangles = meshOne.Triangles,
                 Normals = meshOne.Normals,
             };
 
-            var tranC = new TransformComponent
+            Transform tranC = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -124,15 +124,15 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCOne.Components.Add(tranC);
             sceneNodeCOne.Components.Add(meshCOne);
             ///////////////////////////////////////////////////////////
-            var sceneNodeCCube = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            SceneNode sceneNodeCCube = new SceneNode { Components = new List<SceneComponent>() };
 
-            var meshCCube = new Mesh
+            Mesh meshCCube = new Mesh
             {
                 Vertices = cube.Vertices,
                 Triangles = cube.Triangles,
                 Normals = cube.Normals,
             };
-            var tranCube = new TransformComponent
+            Transform tranCube = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -142,15 +142,15 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCCube.Components.Add(tranCube);
             sceneNodeCCube.Components.Add(meshCCube);
             //////////////////////////////////////////////////////////////////
-            var sceneNodeCTri = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            SceneNode sceneNodeCTri = new SceneNode { Components = new List<SceneComponent>() };
 
-            var meshCTri = new Mesh
+            Mesh meshCTri = new Mesh
             {
                 Vertices = triangle.Vertices,
                 Triangles = triangle.Triangles,
                 Normals = triangle.Normals,
             };
-            var tranTri = new TransformComponent
+            Transform tranTri = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -164,7 +164,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };            
+            SceneContainer sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
             _renderer = new SceneRendererForward(sc);
 
@@ -182,7 +182,7 @@ namespace Fusee.Examples.MeshingAround.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-            var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
+            float2 speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _alpha -= speed.x * 0.0001f;
@@ -190,8 +190,8 @@ namespace Fusee.Examples.MeshingAround.Core
             }
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
-            var mtxCam = float4x4.LookAt(0, 0, -3, 0, 0, 0, 0, 1, 0);
+            float4x4 mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
+            float4x4 mtxCam = float4x4.LookAt(0, 0, -3, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
 
             _renderer.Render(RC);
