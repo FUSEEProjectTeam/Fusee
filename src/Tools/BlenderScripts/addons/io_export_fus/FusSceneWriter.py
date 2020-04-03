@@ -301,8 +301,6 @@ class FusSceneWriter:
         else:
             return -1
 
-
-
     def BeginMesh(self, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=None):
         if self.__curComponent == None:
             self.__curComponent, inx = self.AddComponent(name)
@@ -325,7 +323,7 @@ class FusSceneWriter:
 
     def EndMesh(self):
         self.__checkMeshOpen()
-        print('EndMesh(): ' + str(len(self.__curMesh.Triangles)/3) + ' Tris on ' + str(len(self.__curMesh.Vertices)) + ' Verts.')
+        # print('EndMesh(): ' + str(len(self.__curMesh.Triangles)/3) + ' Tris on ' + str(len(self.__curMesh.Vertices)) + ' Verts.')
         self.__curMesh = None
         self.__curComponent = None
 

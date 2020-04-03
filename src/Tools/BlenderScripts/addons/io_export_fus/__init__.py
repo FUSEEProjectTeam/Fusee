@@ -43,7 +43,7 @@ from bpy_extras.io_utils import (
         ExportHelper,
         )
 import bmesh
-from mathutils import *
+import mathutils
 from math import *
 
 # Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
@@ -142,13 +142,8 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
  
         visitor.TraverseList(roots)
         # visitor.PrintFus()
-        timeLast = time.perf_counter()
         visitor.WriteFus(self.filepath)
-        timeCur = time.perf_counter()
-        print(str(timeCur-timeLast) + 's to serialize entire payload')
-        timeLast = timeCur
     
-        print('DONE')
         return {'FINISHED'}
 
 
@@ -202,14 +197,16 @@ class BlenderVisitor:
        a FusSceneWriter to store the data for later serialization into the .fus file format."""
     def __init__(self):
         super().__init__()
+        self.__defaultMatName = 'FUSEE_Default_Material'
 
         # Mesh Processing flags
         self.DoApplyScale = True
         self.DoRecalcOutside = True
         self.DoApplyModifiers = True
 
+        self.__matrixStack = [mathutils.Matrix.Identity(4)]
+        self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)))]
         self.__fusWriter = FusSceneWriter()
-        self.__level = 0
         self.__textures = []
         self.__visitors = {
             'MESH':     self.VisitMesh,
@@ -217,6 +214,30 @@ class BlenderVisitor:
             'CAMERA':   self.VisitCamera,
             'ARMATURE': self.VisitArmature,
         }
+
+    def XFormPush(self, ob):
+        # Retrieve the matrix describing the relative transformation from its (already converted and thus potentially scale-applied) parent
+        curMatrix = self.__matrixStack[-1].inverted() @ ob.matrix_world
+        # Decompose relative position, rotation and scale from it
+        curLoc, curRot, curScale = curMatrix.decompose()
+        if self.DoApplyScale:
+            # If scale will be applied on the mesh, only take the position and rotation part
+            curMatrix = mathutils.Matrix.Translation(curLoc) @ curRot.to_matrix().to_4x4()
+        # Push the absolute transformation matrix onto the stack for possible children
+        self.__matrixStack.append(self.__matrixStack[-1] @ curMatrix)
+        # Push the relative individual transformtion parameters (pos, rot, scale) onto the stack
+        self.__transformStack.append((curLoc, curRot, curScale))
+
+    def XFormPop(self):
+        self.__matrixStack.pop()
+        self.__transformStack.pop()
+
+    def XFormGetTOSMatrix(self):
+        return self.__matrixStack[-1]
+
+    def XFormGetTOSTransform(self):
+        return self.__transformStack[-1]
+
 
     def TraverseList(self, oblist):
         """Traverses the given list of Blender objects. Most likely, this is the entry point for the traversal. Will also be called recursively from TraverseOb."""
@@ -226,11 +247,13 @@ class BlenderVisitor:
     def TraverseOb(self, ob):
         """Traverse the given blender object. Call the appropriate visitor based on the object's Blender type and recursively traverse the list of children"""
         visitor = self.__visitors.get(ob.type, self.VisitUnknown)
+        self.XFormPush(ob)
         visitor(ob)
         if len(ob.children) > 0:
             self.__fusWriter.Push()
             self.TraverseList(ob.children)
             self.__fusWriter.Pop()
+        self.XFormPop()
 
     def PrintFus(self):
         """Print the current FUSEE file contents for debugging purposes"""
@@ -244,7 +267,7 @@ class BlenderVisitor:
             dst = os.path.join(os.path.dirname(self.filepath),os.path.basename(texture))
             copyfile(src,dst)
 
-    def __AddTransform(self, obj, applyscale=False):
+    def __AddTransformOld(self, obj, applyscale=False):
         """Convert the given blender obj's transformation into a FUSEE Transform component"""
         # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scene graph
         if obj.parent is None:
@@ -269,8 +292,26 @@ class BlenderVisitor:
         )
         return appliedscale
 
+    def __AddTransform(self):
+        """Convert the current blender obj's transformation into a FUSEE Transform component"""
+        location, rotation, scale = self.XFormGetTOSTransform()
+        rot_eul = rotation.to_euler('YXZ')
+
+        if self.DoApplyScale:
+            newscale = (1.0, 1.0, 1.0)
+            appliedscale = (scale.x, scale.z, scale.y)
+        else:
+            newscale = (scale.x, scale.z, scale.y)
+            appliedscale = (1.0, 1.0, 1.0)
+
+        self.__fusWriter.AddTransform(
+            (location.x, location.z, location.y),
+            (-rot_eul.x, -rot_eul.z, -rot_eul.y),
+            newscale
+        )
+
     def __GetProcessedBMesh(self, obj):
-        """Create a modifier-applied, normal-flipped, scale-normalized, triangulated BMesh from the Blender mesh object passed. Call result.free() and del result after use on the returned bmesh."""
+        """Create a modifier-applied, normal-flipped, scale-normalized, triangulated BMesh from the Blender mesh object passed. Call result.free() and del result after using the returned bmesh."""
 
         # Create a (deep (linked=False)) copy of obj.
         # Makes use of the new 2.8 override context (taken from https://blender.stackexchange.com/questions/135597/how-to-duplicate-an-object-in-2-8-via-the-python-api-without-using-bpy-ops-obje )
@@ -293,8 +334,8 @@ class BlenderVisitor:
         obj_copy.select_set(True)
 
         # Apply Scale
-        if self.DoApplyScale:
-            bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+        #if self.DoApplyScale:
+        #    bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     
         # Flip normals on the copied object's copied mesh (Important: This happens BEFORE any modifiers are applied)
         if self.DoRecalcOutside:
@@ -312,9 +353,16 @@ class BlenderVisitor:
         else:
            mesh_eval = obj_copy.data
 
-        # Triangulate
+        # Get a BMesh for scaling and triangulation
         bm = bmesh.new()
         bm.from_mesh(mesh_eval)
+
+        # Apply Scale
+        if self.DoApplyScale:
+            scale = self.XFormGetTOSTransform()[2]
+            bmesh.ops.scale(bm, vec=scale, verts=bm.verts)
+
+        # Triangulate
         # Normal recalculation already performed BEFORE modifiers were applied. Otherwise face recalculation yields normals facing inside
         # bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
         bmesh.ops.triangulate(bm, faces=bm.faces)
@@ -425,7 +473,6 @@ class BlenderVisitor:
 
             #### EMISSIVE
             elif node.type == 'EMISSION' and hasEmissive == False:
-                print('----found emissive node')
                 hasEmissive = True
                 # get material color
                 emissColor = node.inputs['Color'].default_value
@@ -517,30 +564,27 @@ class BlenderVisitor:
             self.__AddDefaultMaterial()
 
     def __AddDefaultMaterial(self):
-        matName = 'FUSEE_Default_Material'
-        if self.__fusWriter.TryReferenceMaterial(matName):
+        if self.__fusWriter.TryReferenceMaterial(self.__defaultMatName):
             return
         self.__fusWriter.AddMaterial(
             {
                 'Diffuse':  { 'Color' : (0.7, 0.7, 0.7, 1), 'Mix': 1 },
                 'Specular': { 'Color' : (1, 1, 1, 1), 'Shininess': 0.3, 'Intensity': 0.2 },
-            }, matName)
+            }, self.__defaultMatName)
 
     def VisitMesh(self, mesh):
         self.__fusWriter.AddChild(mesh.name)
-        appliedScale = self.__AddTransform(mesh, self.DoApplyScale)
-        appliedScaleStr = str(appliedScale)
+        self.__AddTransform()
+        
+        if self.DoApplyScale:
+            scale = self.XFormGetTOSTransform()[2]
+            appliedScaleStr = '_scl' + str(scale.x) + '_' + str(scale.z) + '_' + str(scale.y)
+        else:
+            appliedScaleStr = ''
 
         materialCount = max(1, len(mesh.material_slots))
 
         vertsPerMat = []
-
-        if materialCount == 1:
-            if len(mesh.material_slots) < 1:
-                print('WARNING: Object "' + mesh.name + '" has no material. Adding Default material.')
-                self.__AddDefaultMaterial()
-            else:
-                self.__AddMaterial(mesh.material_slots[0].material)                
 
         # <Sort vertices into material bins>
         for iMaterial in range(materialCount):
@@ -566,9 +610,9 @@ class BlenderVisitor:
                     (normal[0], normal[2], normal[1]),
                     (uv[0], uv[1])))
         
-        timeCur = time.perf_counter() 
-        print(str(timeCur-timeLast) + 's to sort vertices into material bins.')
-        timeLast = timeCur
+        #timeCur = time.perf_counter() 
+        #print(str(timeCur-timeLast) + 's to sort vertices into material bins.')
+        #timeLast = timeCur
         
         bm.free()
         del bm
@@ -576,21 +620,33 @@ class BlenderVisitor:
 
         # <For each material: Write out vertices into FUSEE objects>
         for iMaterial in range(materialCount):
+
+            # Figure out material name (or default) BEFORE adding the material because we might need it as part of a child node (might be added if more than one material slot is set on the object).
+            matPresent = False
+            if len(mesh.material_slots) > 0 and mesh.material_slots[iMaterial].name != '':
+                matPresent = True
+                materialName = mesh.material_slots[iMaterial].name
+            else:
+                materialName = self.__defaultMatName
+            
             if materialCount > 1:
                 self.__fusWriter.Push()
-                self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[iMaterial].material.name)
+                self.__fusWriter.AddChild(mesh.name + '_' + materialName)
             
-            self.__AddMaterial(mesh.material_slots[iMaterial].material)
+            if matPresent:
+                self.__AddMaterial(mesh.material_slots[iMaterial].material)
+            else:
+                self.__AddDefaultMaterial()
 
             nVertsTotal = len(vertsPerMat[iMaterial])
             iVert = 0
             iChunk = 0
 
             while iVert < nVertsTotal:
-                meshName = mesh.data.name + '_mat' + str(iMaterial) + '_chnk' + str(iChunk) + '_scl' + appliedScaleStr
+                meshName = mesh.data.name + '_mat' + str(iMaterial) + '_chnk' + str(iChunk) + appliedScaleStr
                 if iChunk > 0:
                     self.__fusWriter.Push()
-                    self.__fusWriter.AddChild(mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk))
+                    self.__fusWriter.AddChild(mesh.name)
 
                 if self.__fusWriter.TryReferenceMesh(meshName):
                     iVert = iVert + self.__fusWriter.GetReferencedMeshTriVertCount(meshName)
@@ -611,16 +667,9 @@ class BlenderVisitor:
                             vert[1],    # Normal
                             vert[2]     # UV
                         )
-                        #if iVert % 10000 == 0:
-                        #    timeCur = time.perf_counter() 
-                        #    print(str(timeCur-timeLast) + 's to add another 10000 vertices.')
-                        #    timeLast = timeCur
-
                         iVert = iVert + 1
                         iVertPerChunk = iVertPerChunk + 1
 
-                    #print ('Chunk ' + mesh.name + '_' + mesh.material_slots[iMaterial].material.name + '_' + str(iChunk) + ' containing ' + str(iVertPerChunk) + ' (=3*' + str(iVertPerChunk/3) + ') verts.') 
-                    #print ('iVert: ' + str(iVert) + ', nVertsTotal: ' + str(nVertsTotal))
                     self.__fusWriter.EndMesh()  
 
                 if iChunk > 0:
@@ -678,7 +727,7 @@ class BlenderVisitor:
         else:
             print('WARNING: Unknown projection type "' + cameraData.type + '" on Camera object "' + camera.name + '"')
         
-        print('Warning: Camera "' + camera.name + '"found but NOT exported"')
+        print('WARNING: Camera "' + camera.name + '"found but NOT exported"')
         ### Write camera node ###
 #        self.__fusWriter.AddChild(camera.name)
 #        self.__AddTransform(camera, false)
