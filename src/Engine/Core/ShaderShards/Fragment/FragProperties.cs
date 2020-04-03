@@ -55,9 +55,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var pxIn = new List<string>
             {
-                GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.ViewDirection),
-                GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Position),
-                GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.CameraPosition)
+                GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Position)
             };
 
             if (effectProps.MeshProbs.HasColors)
@@ -73,9 +71,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
 
             if (effectProps.LightingProps.HasNormalMap)
-            {
                 pxIn.Add(GLSL.CreateIn(GLSL.Type.Mat3, "TBN"));
-            }
 
             if (effectProps.MeshProbs.HasUVs)
                 pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
@@ -85,7 +81,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         /// <summary>
         /// Returns the pre defined Fusee uniform parameters of a fragment shader, depending on the given ShaderEffectProps.
-        /// </summary>       
+        /// </summary>
         /// <returns></returns>
         public static string FuseeMatrixUniforms()
         {
@@ -219,6 +215,5 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <returns></returns>
         public static string FixedNumberLightArray = $"uniform Light allLights[{Lighting.NumberOfLightsForward}];\n";
-
     }
 }

@@ -2,23 +2,40 @@
 
 namespace Fusee.Engine.Core.Effects
 {
+    /// <summary>
+    /// Event arguments that are passed from an <see cref="Effect"/> to the <see cref="EffectManager"/>.
+    /// </summary>
     public class EffectManagerEventArgs : EventArgs
     {
-        public Effect Effect { get; }
-        public ChangedEnum Changed { get; set; }
-        public FxParam EffectParameter { get; }
-        public string ChangedEffectVarName { get; set; }
-        public object ChangedEffectVarValue { get; set; }
+        /// <summary>
+        /// Determines the action that needs to be taken for a uniform variable. 
+        /// </summary>
+        public UniformChangedEnum Changed { get; set; }
 
-        public EffectManagerEventArgs(Effect effect, ChangedEnum changed, string changedName = null, object changedValue = null)
+        /// <summary>
+        /// The name of the uniform variable.
+        /// </summary>
+        public string ChangedUniformName { get; set; }
+
+        /// <summary>
+        /// The value of the uniform variable.
+        /// </summary>
+        public object ChangedUniformValue { get; set; }
+
+        /// <summary>
+        /// Creates a new instance of type "EffectManagerEventArgs".
+        /// </summary>
+        /// <param name="changed">The <see cref="UniformChangedEnum"/>.</param>
+        /// <param name="changedName">The name of the uniform variable.</param>
+        /// <param name="changedValue">The value of the uniform variable.</param>
+        public EffectManagerEventArgs(UniformChangedEnum changed, string changedName = null, object changedValue = null)
         {
-            Effect = effect;
             Changed = changed;
 
             if (changedName == null || changedValue == null) return;
 
-            ChangedEffectVarName = changedName;
-            ChangedEffectVarValue = changedValue;
+            ChangedUniformName = changedName;
+            ChangedUniformValue = changedValue;
         }
     }
 }

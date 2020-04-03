@@ -36,7 +36,6 @@
         /// <summary>
         /// Vertex shader as string
         /// </summary>
-        // ReSharper disable InconsistentNaming
         public string VS { get; set; }
 
         /// <summary>

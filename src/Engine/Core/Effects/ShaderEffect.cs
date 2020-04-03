@@ -25,8 +25,10 @@ namespace Fusee.Engine.Core.Effects
         /// Geometry of all passes
         /// </summary>
         public string GeometryShaderSrc { get; protected set; }
-
-        //TODO: delete if ShaderEffectProtoPixel is redundant
+        
+        /// <summary>
+        /// Default constructor. TODO: delete if ShaderEffectProtoPixel is redundant.
+        /// </summary>
         public ShaderEffect()
         {
 
@@ -62,7 +64,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
 
-            EffectManagerEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
         }       
 
         /// <summary>
@@ -78,7 +80,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public void Dispose()
         {
-            EffectChanged?.Invoke(this, new EffectManagerEventArgs(this, ChangedEnum.DISPOSE));
+            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
         }
     }
 }

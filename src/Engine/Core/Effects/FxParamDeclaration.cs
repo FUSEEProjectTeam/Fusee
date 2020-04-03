@@ -48,8 +48,8 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public Type ParamType => typeof(T);
 
-        IEnumerable<ShaderCategory> IFxParamDeclaration.UsedInShaders => UsedInShaders;
+        IEnumerable<ShaderCategory> IFxParamDeclaration.UsedInShaders => _usedInShaders;
 
-        readonly IEnumerable<ShaderCategory> UsedInShaders;
+        private readonly IEnumerable<ShaderCategory> _usedInShaders;
     }
 }

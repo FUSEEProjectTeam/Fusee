@@ -139,7 +139,7 @@ namespace Fusee.Serialization
         /// The specular intensity.
         /// </summary>
         [ProtoMember(2)]
-        public float Intensity;
+        public float Strength;
 
         #region equals
 
@@ -189,7 +189,7 @@ namespace Fusee.Serialization
         {
             if (other is null)
                 return false;
-            return other.Shininess == Shininess && other.Intensity == Intensity;
+            return other.Shininess == Shininess && other.Strength == Strength;
         }
 
         /// <summary>
@@ -219,7 +219,7 @@ namespace Fusee.Serialization
                 hash = hash * 29 + Mix.GetHashCode();
                 hash = Texture == null ? hash * 29 + 0 : hash * 29 + Texture.GetHashCode();
                 hash = hash * 29 + Shininess.GetHashCode();
-                hash = hash * 29 + Intensity.GetHashCode();
+                hash = hash * 29 + Strength.GetHashCode();
                 return hash;
             }
         }

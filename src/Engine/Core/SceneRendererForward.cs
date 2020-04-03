@@ -273,7 +273,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Renders the scene.
         /// </summary>
-        /// <param name="rc"></param>       
+        /// <param name="rc"></param>
         public void Render(RenderContext rc)
         {
             SetContext(rc);
@@ -413,14 +413,14 @@ namespace Fusee.Engine.Core
                 var frustumCorners = new float4[4];
 
                 frustumCorners[0] = _rc.InvProjection * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = _rc.InvProjection * new float4(1, -1, -1, 1); //nbr 
-                frustumCorners[2] = _rc.InvProjection * new float4(-1, 1, -1, 1); //ntl  
-                frustumCorners[3] = _rc.InvProjection * new float4(1, 1, -1, 1); //ntr                
+                frustumCorners[1] = _rc.InvProjection * new float4(1, -1, -1, 1); //nbr
+                frustumCorners[2] = _rc.InvProjection * new float4(-1, 1, -1, 1); //ntl
+                frustumCorners[3] = _rc.InvProjection * new float4(1, 1, -1, 1); //ntr
 
                 for (int i = 0; i < frustumCorners.Length; i++)
                 {
                     var corner = frustumCorners[i];
-                    corner /= corner.w; //world space frustum corners               
+                    corner /= corner.w; //world space frustum corners
                     frustumCorners[i] = corner;
                 }
 
@@ -789,12 +789,21 @@ namespace Fusee.Engine.Core
 
         private void UpdateShaderParamsForAllLights()
         {
-            for (var i = 0; i < _lightResults.Count; i++)
+            if(_lightResults.Count > Lighting.NumberOfLightsForward)
+                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.NumberOfLightsForward} will be ignored!");
+            
+            for (var i = 0; i < Lighting.NumberOfLightsForward; i++)
             {
-                if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
-                    Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                if (i < _lightResults.Count)
+                {
 
-                UpdateShaderParamForLight(i, _lightResults[i].Item2);
+                    if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
+                        Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+
+                    UpdateShaderParamForLight(i, _lightResults[i].Item2);
+                }
+                else
+                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive", 0);
             }
         }
 

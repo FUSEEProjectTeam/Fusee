@@ -18,11 +18,9 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         {
             var vertProps = new List<string>
             {
-                GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.CameraPosition),
+                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex),
                 GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Position)
             };
-
-            vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
 
             if (effectProps.LightingProps.HasNormalMap)
             {
@@ -36,7 +34,6 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
 
                 vertProps.Add(GLSL.CreateOut(GLSL.Type.Mat3, "TBN"));
-
             }
 
             if (effectProps.LightingProps.SpecularLighting != SpecularLighting.None)
@@ -101,7 +98,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
         /// <summary>
         /// Returns the pre defined Fusee uniform parameters of a vertex shader, depending on the given ShaderEffectProps.
-        /// </summary>       
+        /// </summary>
         /// <returns></returns>
         public static string FuseeUniformsDefault()
         {

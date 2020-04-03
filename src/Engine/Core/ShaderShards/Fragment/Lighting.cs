@@ -147,7 +147,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "// half vector",
                     "vec3 reflectDir = reflect(-L, N);",
-                    $"specularTerm = pow(max(0.0, dot(V, reflectDir)), shininess);",
+                    $"specularTerm = pow(max(dot(V, reflectDir), 0.0), shininess);",
                 "}",
                 "return specularTerm;"
             };
@@ -332,9 +332,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                     methodBody.AddRange(ViewAndLightDir());
                     methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+
                     methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+
                     methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.shininess);");
-                    methodBody.Add($"Ispe = (surfOut.specularCol.rgb * surfOut.specularStrength *light.intensities.rgb) *specularTerm;");
+                    methodBody.Add($"Ispe = surfOut.specularStrength * specularTerm * light.intensities.rgb;");
+
                     methodBody.AddRange(Attenuation());
                     methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
 
@@ -343,12 +346,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                     methodBody.AddRange(ViewAndLightDir());
                     methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+
                     methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+
                     methodBody.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
                     methodBody.Add($"float specular = specularLighting(N, L, V, k, surfOut.specularCol, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue});");
                     methodBody.Add($"Ispe = light.intensities.rgb * surfOut.specularCol.rgb * (k + specular * (1.0 - k));");
-                    methodBody.AddRange(Attenuation());
 
+                    methodBody.AddRange(Attenuation());
                     methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
 
                     break;
@@ -430,7 +435,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             if (lightingProps.SpecularLighting == SpecularLighting.Std)
             {
                 applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
-                applyLightParams.Add($"Ispe = ({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *light.intensities.rgb) *specularTerm;");
+                applyLightParams.Add($"Ispe = {UniformNameDeclarations.SpecularStrength} * specularTerm * light.intensities.rgb;");
             }
             else if (lightingProps.SpecularLighting == SpecularLighting.Pbr)
             {
@@ -442,19 +447,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var pointLight = new List<string>
             {
                 $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, light.position, light.maxDistance);",
-                "lighting = ((Idif * att) + ((Ispe * att) * objCol)) * lightStrength;"
+                "lighting = ((Ispe * att) + ((Idif * att) * objCol)) * lightStrength;"
             };
 
             //No attenuation!
             var parallelLight = new List<string>
             {
-                "lighting = (Idif + (Ispe  * objCol)) * lightStrength;"
+                "lighting = (Ispe + (Idif * objCol)) * lightStrength;"
             };
 
             var spotLight = new List<string>
             {
                 $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);",
-                "lighting = ((Idif * att) + ((Ispe * att) * objCol)) * lightStrength;"
+                "lighting = ((Ispe * att) + ((Idif * att) * objCol)) * lightStrength;"
             };
 
             var methodBody = new List<string>();

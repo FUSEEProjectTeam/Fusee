@@ -84,8 +84,8 @@ namespace Fusee.Examples.Bump.Core
                 Specular = new SpecularChannelContainer()
                 {
                     Color = float4.One,
-                    Shininess = 500f,
-                    Intensity = 1f
+                    Shininess = 85,
+                    Strength = 0.3f
                 }
             };
 

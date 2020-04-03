@@ -50,12 +50,12 @@ namespace Fusee.Engine.Core.Effects
                         if (ParamDecl[name].Equals(value)) return;
 
                     //Implemented using reflections and not "(FxParamDeclaration<T>)ParamDecl[name]" because 
-                    //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.                    
+                    //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.
                     ParamDecl[name].GetType().GetField("Value").SetValue(ParamDecl[name], value);
 
-                    EffectManagerEventArgs.Changed = ChangedEnum.UNIFORM_VAR_UPDATED;
-                    EffectManagerEventArgs.ChangedEffectVarName = name;
-                    EffectManagerEventArgs.ChangedEffectVarValue = value;
+                    EffectManagerEventArgs.Changed = UniformChangedEnum.Update;
+                    EffectManagerEventArgs.ChangedUniformName = name;
+                    EffectManagerEventArgs.ChangedUniformValue = value;
 
                     EffectChanged?.Invoke(this, EffectManagerEventArgs);
                 }

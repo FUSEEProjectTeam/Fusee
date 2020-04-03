@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
 
         private void Remove(Effect ef)
         {
-            _rc.RemoveShader(ef);            
+            _rc.RemoveShader(ef);
         }
 
         private void EffectChanged(object sender, EffectManagerEventArgs args)
@@ -27,12 +27,12 @@ namespace Fusee.Engine.Core
 
             switch (args.Changed)
             {
-                case ChangedEnum.DISPOSE:
+                case UniformChangedEnum.Dispose:
                     Remove(senderSF);
                     break;
-                case ChangedEnum.UNIFORM_VAR_UPDATED:
-                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
-                    break;               
+                case UniformChangedEnum.Update:
+                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedUniformName, args.ChangedUniformValue);
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException($"EffectChanged event called with unknown arguments: {args}, calling Effect: {sender as Effect}");
             }
@@ -64,7 +64,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 
@@ -7,7 +6,7 @@ namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
     /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
-    /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
+    /// In addition a ShaderEffect contains the actual values for all the shader's (uniform) variables.
     /// </summary>
     public class ShaderEffectProtoPixel : ShaderEffect
     {
@@ -41,7 +40,7 @@ namespace Fusee.Engine.Core.Effects
             GeometryShaderSrc = effectPass.GS;
             //PixelShaderSrc is not set here because it gets built in a pre-pass, depending on whether we render deferred or forward.            
 
-            EffectManagerEventArgs = new EffectManagerEventArgs(this, ChangedEnum.UNCHANGED);
+            EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
         }
 
         /// <summary>
@@ -61,7 +60,6 @@ namespace Fusee.Engine.Core.Effects
                     };
 
                 PixelShaderSrc = _effectPass.ProtoPS + string.Join("\n", pxBody);
-
             }
             else
             {

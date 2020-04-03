@@ -978,7 +978,7 @@ namespace Fusee.Engine.Core
                 return;
 
             var compiledEffect = new CompiledEffect();
-            var activeUniforms = new Dictionary<string, ShaderParamInfo>();
+            var shaderParams = new Dictionary<string, ShaderParamInfo>();
 
             string vert = string.Empty;
             string geom = string.Empty;
@@ -1010,19 +1010,19 @@ namespace Fusee.Engine.Core
                     frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc);
                 }
                 var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
-                var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                var activeUniforms = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
 
-                if (shaderParams.Count == 0)
+                if (activeUniforms.Count == 0)
                 {
                     var ex = new Exception();
                     Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { vert, geom, frag }); ;
                     throw new Exception("Error while compiling shader for pass.", ex);
                 }
 
-                foreach (var param in shaderParams)
+                foreach (var param in activeUniforms)
                 {
-                    if (!activeUniforms.ContainsKey(param.Key))
-                        activeUniforms.Add(param.Key, param.Value);
+                    if (!shaderParams.ContainsKey(param.Key))
+                        shaderParams.Add(param.Key, param.Value);
                 }
 
                 compiledEffect.GpuHandle = shaderOnGpu;
@@ -1039,7 +1039,7 @@ namespace Fusee.Engine.Core
             // register built shader effect
             _effectManager.RegisterEffect(ef);
 
-            CreateAllEffectVariables(ef, activeUniforms);
+            CreateAllEffectVariables(ef, shaderParams);
         }
 
         /// <summary>

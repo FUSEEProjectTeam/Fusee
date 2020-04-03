@@ -89,11 +89,7 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public static string PxInOut = ShaderShards.Fragment.FragProperties.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal
 
-
-
         // -------------- Needs to go into the RenderContext if this effect is to be used for forward and deferred -------
-
-       
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
@@ -116,8 +112,6 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Method)]
         public static string PxLightingMethods;
 
-       
-
         //----------------------------------------------------------------------------------------------------------------
 
         #endregion
@@ -134,7 +128,6 @@ namespace Fusee.Engine.Core.Effects
             var surfOutBody = new List<string>()
             {
                 "OUT.albedo = IN.Albedo;",
-                "OUT.specularCol = IN.Specular;",
                 "OUT.specularStrength = IN.SpecularStrength;",
                 "OUT.shininess = IN.Shininess;",
                 $"OUT.normal = {VaryingNameDeclarations.Normal};",

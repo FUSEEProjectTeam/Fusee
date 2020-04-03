@@ -384,7 +384,7 @@ namespace Fusee.Engine.Core
                 {
                     Color = specularColor,
                     Shininess = shininess,
-                    Intensity = specularIntensity,
+                    Strength = specularIntensity,
                 }
             };
             return FromMatComp(temp);
@@ -410,7 +410,7 @@ namespace Fusee.Engine.Core
                 {
                     Color = specularColor,
                     Shininess = shininess,
-                    Intensity = specularIntensity,
+                    Strength = specularIntensity,
                 }
             };
             return ProtoFromMatComp(temp);
@@ -440,7 +440,7 @@ namespace Fusee.Engine.Core
                 {
                     Color = specularColor,
                     Shininess = shininess,
-                    Intensity = specularIntensity,
+                    Strength = specularIntensity,
                 }
             };
             return FromMatComp(temp);
@@ -470,7 +470,7 @@ namespace Fusee.Engine.Core
                 {
                     Color = specularColor,
                     Shininess = shininess,
-                    Intensity = specularIntensity,
+                    Strength = specularIntensity,
                 }
             };
 
@@ -703,7 +703,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new FxParamDeclaration<float>
                     {
                         Name = UniformNameDeclarations.SpecularStrength,
-                        Value = mc.Specular.Intensity
+                        Value = mc.Specular.Strength
                     });
                     if (mc.Specular.Texture != null)
                     {
@@ -840,7 +840,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new FxParamDeclaration<int>
                 {
                     Name = Lighting.LightPararamStringsAllLights[i].IsActive,
-                    Value = 1
+                    Value = 0
                 });
                 effectParameters.Add(new FxParamDeclaration<int>
                 {
@@ -931,7 +931,7 @@ namespace Fusee.Engine.Core
                 Specular = new SpecularChannelContainer
                 {
                     Color = new float4(1, 1, 1, 1),
-                    Intensity = 0.5f,
+                    Strength = 0.5f,
                     Shininess = 22
                 }
             };
