@@ -3831,7 +3831,6 @@ Global
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug|x86.Build.0 = Debug|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3855,7 +3854,6 @@ Global
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release|x86.ActiveCfg = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release|x86.Build.0 = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-Android|x64.Build.0 = Release|Any CPU
 		{7F502A53-AE65-478E-9D72-07258486BAAA}.Release-Android|x86.ActiveCfg = Release|Any CPU
@@ -3884,7 +3882,6 @@ Global
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug|x86.Build.0 = Debug|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3907,7 +3904,6 @@ Global
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release|x86.ActiveCfg = Release|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release|x86.Build.0 = Release|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release-Android|x64.Build.0 = Release|Any CPU
 		{A32C6F37-CFF3-44A5-B02E-21A09F32BFBF}.Release-Android|x86.ActiveCfg = Release|Any CPU
@@ -3936,7 +3932,6 @@ Global
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug|x86.Build.0 = Debug|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3959,7 +3954,6 @@ Global
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release|x86.ActiveCfg = Release|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release|x86.Build.0 = Release|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release-Android|x64.Build.0 = Release|Any CPU
 		{7EB01CBD-C977-4D1C-AAA2-D9A4B854F69C}.Release-Android|x86.ActiveCfg = Release|Any CPU
