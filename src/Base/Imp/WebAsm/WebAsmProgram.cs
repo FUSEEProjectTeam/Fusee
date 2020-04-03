@@ -4,18 +4,25 @@ using WebAssembly;
 
 namespace Fusee.Base.Imp.WebAsm
 {
+    /// <summary>
+    /// A WebAsmProgram contains some runtime variables, like canvasName, the canvas clear color as well as the render loop action
+    /// </summary>
     public class WebAsmProgram
     {
-        protected static readonly float4 CanvasColor = new float4(255, 0, 255, 255);
-        protected static readonly Action<double> loop = new Action<double>(Loop);
-        protected static double previousMilliseconds;
-        protected static JSObject window;
+        private static readonly float4 CanvasColor = new float4(255, 0, 255, 255);
+        private static readonly Action<double> loop = new Action<double>(Loop);
+        private static double previousMilliseconds;
+        private static JSObject window;
 
-        protected static string divCanvasName;
-        protected static string canvasName;
+        private static string divCanvasName;
+        private static string canvasName;
 
-        protected static WebAsmBase mainExecutable;
+        private static WebAsmBase mainExecutable;
 
+        /// <summary>
+        /// Starts the webAsm program
+        /// </summary>
+        /// <param name="webAsm"></param>
         public static void Start(WebAsmBase webAsm)
         {
             // Let's first check if we can continue with WebGL2 instead of crashing.
@@ -27,9 +34,6 @@ namespace Fusee.Base.Imp.WebAsm
 
             // Create our sample
             mainExecutable = webAsm;
-            var sampleName = mainExecutable.GetType().Name;
-
-            HtmlHelper.GetBrowserWindowSize();
 
             divCanvasName = $"div_canvas";
             canvasName = $"canvas";
@@ -39,11 +43,9 @@ namespace Fusee.Base.Imp.WebAsm
                 var windowWidth = (int)window.GetObjectProperty("innerWidth");
                 var windowHeight = (int)window.GetObjectProperty("innerHeight");
 
-                using (var canvas = HtmlHelper.AddCanvas(divCanvasName, canvasName, windowWidth, windowHeight))
-                {
-                    mainExecutable.Init(canvas, CanvasColor);
-                    mainExecutable.Run();
-                }
+                using var canvas = HtmlHelper.AddCanvas(divCanvasName, canvasName, windowWidth, windowHeight);
+                mainExecutable.Init(canvas, CanvasColor);
+                mainExecutable.Run();
             }
 
             AddEnterFullScreenHandler();
@@ -158,15 +160,19 @@ namespace Fusee.Base.Imp.WebAsm
         }
     }
 
+    /// <summary>
+    /// Helper class for often used functions
+    /// </summary>
     public static class HtmlHelper
     {
-        public static void GetBrowserWindowSize()
-        {
-            using var document = (JSObject)Runtime.GetGlobalObject("document");
-            using var body = (JSObject)document.GetObjectProperty("body");
-
-        }
-
+        /// <summary>
+        /// Creates an attaches a canvas to the html page
+        /// </summary>
+        /// <param name="divId"></param>
+        /// <param name="canvasId"></param>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
         public static JSObject AddCanvas(string divId, string canvasId, int width = 800, int height = 600)
         {
             using var document = (JSObject)Runtime.GetGlobalObject("document");
@@ -187,6 +193,11 @@ namespace Fusee.Base.Imp.WebAsm
             return canvas;
         }
 
+        /// <summary>
+        /// Adds a header to the current html page
+        /// </summary>
+        /// <param name="headerIndex"></param>
+        /// <param name="text"></param>
         public static void AddHeader(int headerIndex, string text)
         {
             using var document = (JSObject)Runtime.GetGlobalObject("document");
@@ -197,27 +208,24 @@ namespace Fusee.Base.Imp.WebAsm
             body.Invoke("appendChild", header);
         }
 
-        public static void AddHeader1(string text)
-        {
-            AddHeader(1, text);
-        }
-
-        public static void AddHeader2(string text)
-        {
-            AddHeader(2, text);
-        }
-
+        /// <summary>
+        /// Adds a paragraph to the current html page
+        /// </summary>
+        /// <param name="text"></param>
         public static void AddParagraph(string text)
         {
-            using (var document = (JSObject)Runtime.GetGlobalObject("document"))
-            using (var body = (JSObject)document.GetObjectProperty("body"))
-            using (var paragraph = (JSObject)document.Invoke("createElement", "p"))
-            {
-                paragraph.SetObjectProperty("innerHTML", text);
-                body.Invoke("appendChild", paragraph);
-            }
+            using var document = (JSObject)Runtime.GetGlobalObject("document");
+            using var body = (JSObject)document.GetObjectProperty("body");
+            using var paragraph = (JSObject)document.Invoke("createElement", "p");
+            paragraph.SetObjectProperty("innerHTML", text);
+            body.Invoke("appendChild", paragraph);
         }
 
+        /// <summary>
+        /// Adds a button the current html site
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="text"></param>
         public static void AddButton(string id, string text)
         {
             using (var document = (JSObject)Runtime.GetGlobalObject("document"))
@@ -230,6 +238,11 @@ namespace Fusee.Base.Imp.WebAsm
             }
         }
 
+        /// <summary>
+        /// Attaches an onClick event to the button with the given id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="onClickAction"></param>
         public static void AttachButtonOnClickEvent(string id, Action<JSObject> onClickAction)
         {
             using var document = (JSObject)Runtime.GetGlobalObject("document");

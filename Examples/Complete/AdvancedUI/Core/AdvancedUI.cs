@@ -122,7 +122,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initHeight = Height;
 
             //_scene = BuildScene();
-            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
+            _scene = await AssetStorage.GetAsync<SceneContainer>("Monkey.fus");
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             rnd = new Random();
@@ -160,7 +160,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 _uiInput.Add(input);
             }
 
-            _gui = CreateGui();
+            _gui = await CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -388,7 +388,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         }
 
-        private SceneContainer CreateGui()
+        private async Task<SceneContainer> CreateGui()
         {
             var canvasScaleFactor = _initWidth / _canvasWidth;
             float borderScaleFactor = 1;
@@ -405,7 +405,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 UIHelper.VsTex,
