@@ -56,9 +56,9 @@ In addition to the main program, there is also an additional file that contains 
 
 In order to create your own Maze you have to consider the following in the template file. The walls / cornerstones are the thin rectangles and the small squares. You can fill them with black color to place them. To get an entrance or exit you have to fill the walls with red color. For the starting point you have to color one of the large squares green.
 
-IMPORTANT: The colors should always be maximum
-Red = (255,0,0)
-Green = (0,255,0)
+IMPORTANT: The colors should always be maximum  
+Red = (255,0,0)  
+Green = (0,255,0)  
 Black = (0,0,0)
 
 Once you've done all this, you can save your Maze in the assets folder under the name Maze.bmp
