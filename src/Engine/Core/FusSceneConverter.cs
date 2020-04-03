@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
@@ -193,16 +194,16 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.CENTER
-                ? Scene.HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.LEFT
-                ? Scene.HorizontalTextAlignment.LEFT
-                : Scene.HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.CENTER
-                ? Scene.VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.BOTTOM
-                ? Scene.VerticalTextAlignment.BOTTOM
-                : Scene.VerticalTextAlignment.TOP
+                xft.HorizontalAlignment == Serialization.V1.FusHorizontalTextAlignment.CENTER
+                ? HorizontalTextAlignment.CENTER
+                : xft.HorizontalAlignment == Serialization.V1.FusHorizontalTextAlignment.LEFT
+                ? HorizontalTextAlignment.LEFT
+                : HorizontalTextAlignment.RIGHT,
+                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.FusVerticalTextAlignment.CENTER
+                ? VerticalTextAlignment.CENTER
+                : xft.VerticalAlignment == Serialization.V1.FusVerticalTextAlignment.BOTTOM
+                ? VerticalTextAlignment.BOTTOM
+                : VerticalTextAlignment.TOP
             });
         }
 
@@ -691,17 +692,19 @@ namespace Fusee.Engine.Core
                 Height = xft.Height,
                 Width = xft.Width,
                 Name = xft.Name,
+
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Scene.HorizontalTextAlignment.CENTER
-                ? Serialization.V1.HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Scene.HorizontalTextAlignment.LEFT
-                ? Serialization.V1.HorizontalTextAlignment.LEFT
-                : Serialization.V1.HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Scene.VerticalTextAlignment.CENTER
-                ? Serialization.V1.VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Scene.VerticalTextAlignment.BOTTOM
-                ? Serialization.V1.VerticalTextAlignment.BOTTOM
-                : Serialization.V1.VerticalTextAlignment.TOP
+                xft.HorizontalAlignment == HorizontalTextAlignment.CENTER
+                ? FusHorizontalTextAlignment.CENTER
+                : xft.HorizontalAlignment == HorizontalTextAlignment.LEFT
+                ? FusHorizontalTextAlignment.LEFT
+                : FusHorizontalTextAlignment.RIGHT,
+
+                VerticalAlignment = xft.VerticalAlignment == VerticalTextAlignment.CENTER
+                ? FusVerticalTextAlignment.CENTER
+                : xft.VerticalAlignment == VerticalTextAlignment.BOTTOM
+                ? FusVerticalTextAlignment.BOTTOM
+                : FusVerticalTextAlignment.TOP
             });
         }
 

@@ -84,8 +84,8 @@ namespace Fusee.Serialization.Test
             {
                 Name = "XFormText",
                 Height = 10,
-                HorizontalAlignment = V1.HorizontalTextAlignment.CENTER,
-                VerticalAlignment = V1.VerticalTextAlignment.TOP,
+                HorizontalAlignment = V1.FusHorizontalTextAlignment.CENTER,
+                VerticalAlignment = V1.FusVerticalTextAlignment.TOP,
                 Width = 200
             });
 
