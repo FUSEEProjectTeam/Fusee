@@ -1,5 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
@@ -7,6 +8,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using System.Collections.Generic;
+using static Fusee.Examples.AdvancedUI.Core.UIHelper;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {

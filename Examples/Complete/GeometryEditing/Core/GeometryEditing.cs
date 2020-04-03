@@ -9,6 +9,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
