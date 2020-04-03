@@ -264,33 +264,8 @@ class BlenderVisitor:
         self.__fusWriter.Serialize(filepath)
         for texture in self.__textures:
             src = texture
-            dst = os.path.join(os.path.dirname(self.filepath),os.path.basename(texture))
+            dst = os.path.join(os.path.dirname(filepath),os.path.basename(texture))
             copyfile(src,dst)
-
-    def __AddTransformOld(self, obj, applyscale=False):
-        """Convert the given blender obj's transformation into a FUSEE Transform component"""
-        # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scene graph
-        if obj.parent is None:
-            obj_mtx_clean = obj.matrix_world.copy()
-        else:
-            obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
-
-        location, rotation, scale = obj_mtx_clean.decompose()
-        rot_eul = rotation.to_euler('YXZ')
-
-        if applyscale:
-            newscale = (1.0, 1.0, 1.0)
-            appliedscale = (scale.x, scale.z, scale.y)
-        else:
-            newscale = (scale.x, scale.z, scale.y)
-            appliedscale = (1.0, 1.0, 1.0)
-
-        self.__fusWriter.AddTransform(
-            (location.x, location.z, location.y),
-            (-rot_eul.x, -rot_eul.z, -rot_eul.y),
-            newscale
-        )
-        return appliedscale
 
     def __AddTransform(self):
         """Convert the current blender obj's transformation into a FUSEE Transform component"""
@@ -298,16 +273,12 @@ class BlenderVisitor:
         rot_eul = rotation.to_euler('YXZ')
 
         if self.DoApplyScale:
-            newscale = (1.0, 1.0, 1.0)
-            appliedscale = (scale.x, scale.z, scale.y)
-        else:
-            newscale = (scale.x, scale.z, scale.y)
-            appliedscale = (1.0, 1.0, 1.0)
+            scale = (1.0, 1.0, 1.0)
 
         self.__fusWriter.AddTransform(
             (location.x, location.z, location.y),
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
-            newscale
+            (scale.x, scale.z, scale.y)
         )
 
     def __GetProcessedBMesh(self, obj):
