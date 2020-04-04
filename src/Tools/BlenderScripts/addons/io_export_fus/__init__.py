@@ -16,23 +16,6 @@ bl_info = {
 }
 
 #import dependencies
-
-import subprocess,os,sys, time
-from shutil import copyfile
-
-#set pypath
-paths = os.environ['Path']
-paths = paths.split(';')
-for path in paths:
-    if path.find('Python')!=-1:
-        if path.find('Blender')==-1:
-            sPath=path.split('\\')
-            if sPath[-2].find('Python')!=-1:
-                pypath = os.path.join(path,'Lib','site-packages')
-                sys.path.append(pypath)
-# from .SerializeData import SerializeData, GetParents
-from .BlenderVisitor import BlenderVisitor
-
 import bpy
 from bpy.props import (
         StringProperty,
@@ -42,9 +25,29 @@ from bpy.props import (
 from bpy_extras.io_utils import (
         ExportHelper,
         )
-import bmesh
-import mathutils
-from math import *
+
+import subprocess,os,sys, time
+from shutil import copyfile
+
+# Add some necessary extras to blender's neutered python
+
+# Add anything from any existing full-fledged Python installation
+# because we need google.protobuf !!!
+paths = os.environ['Path']
+paths = paths.split(';')
+for path in paths:
+    if path.find('Python')!=-1:
+        if path.find('Blender')==-1:
+            sPath=path.split('\\')
+            if sPath[-2].find('Python')!=-1:
+                pypath = os.path.join(path,'Lib','site-packages')
+                sys.path.append(pypath)
+
+# Add the current path of THIS file
+this_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(this_path)
+
+from .BlenderVisitor import BlenderVisitor
 
 # Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
 # Now moved to https://docs.microsoft.com/en-us/visualstudio/python/debugging-cross-platform-remote

@@ -10,11 +10,11 @@ except Exception:
         try:
             # The hard (blender) way
             dir_path = os.path.dirname(os.path.realpath(__file__))
-            dir_path = os.path.join(dir_path, 'proto\\')
+            dir_path = os.path.join(dir_path, 'proto')
             sys.path.append(dir_path)        
             import FusSerialization_pb2 as FusSer
-        except Exception:
-            print('Cannot find "FusSerialization_pb2.py" in' + dir_path)
+        except Exception as ex:
+            print('Error importing "FusSerialization_pb2.py" from "' + dir_path + '"' + '\n' + ex)
 
 class FusSceneWriter:
     """Convenience Class to assemble FUSEE scene files from instances of FusNode and FusComponent (and derivatives)."""
