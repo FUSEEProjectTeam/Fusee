@@ -1,3 +1,10 @@
+# THIS FILE IS HERE FOR CODE-REUSE ONLY
+# It contains the old version' spaghetti code of the Blender-Export-Add-On for writing FUS-Files.
+# Unless the current version (__init__.py, FusSceneWriter.py and referenced files) 
+# do not contain the full functionality of the old Add-on, keep this file around
+# to copy code from it, especially as the Blender Python documentation is not as
+# explicit as it should.
+
 '''
 This Add-On currently supports the export of a .fus-file, containing the Mesh-Component,
 the Transform-Component, Light Component (not yet supported by Fusee) and the Material-Component (Diffuse, Emissive and Specular only).
