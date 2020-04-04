@@ -97,8 +97,8 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     )
 
     doApplyModifiers : BoolProperty(
-        name="Create FUSEE Web-Application",
-        description="Apply modifiers to mesh objects",
+        name="Apply Modifiers",
+        description="Apply modifiers such as 'Subdivision Surface' or 'Edge Split' to mesh objects",
         default=True,
     )
 
