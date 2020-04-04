@@ -120,12 +120,12 @@ class FusSceneWriter:
     def AddMaterial(self, material, name=None):
         """Adds a Material component to the current child node. If any of 'RoughnessValue', 'FresnelReflectance' or 'DiffuseFraction' keys is present, a MaterialPBR component will be added.
 
-        :param material: A dictionary containing optional 'Diffuse', 'Specular', 'Emissive', 'Bump' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
+        :param material: A dictionary containing optional 'Albedo', 'Specular', 'Emissive', 'Bump' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
 
         :Example:
         fusWriter.AddMaterial(
             {
-                'Diffuse':  { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
+                'Albedo':   { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
                 'Specular': { 'Color' : (1, 1, 1, 1), 'Texture': 'SpecMap.png', 'Mix': 1.0, 'Shininess': 2.5, 'Intensity': 0.9 },
                 'Emissive': { 'Color' : (0, 0.1, 0, 1), 'Texture': 'DiffuseMap.png', 'Mix': 0.5 },
                 'Bump':     { 'Texture': 'Bumpmap.png', 'Intensity': 0.9 }
@@ -134,9 +134,9 @@ class FusSceneWriter:
         )
         """
         self.BeginMaterial(name)
-        diffuse = material.get('Diffuse', None)
-        if diffuse != None:
-            self.AddDiffuse(diffuse.get('Color', None), diffuse.get('Texture', None), diffuse.get('Mix', 1))
+        albedo = material.get('Albedo', None)
+        if albedo != None:
+            self.AddAlbedo(albedo.get('Color', None), albedo.get('Texture', None), albedo.get('Mix', 1))
         specular = material.get('Specular', None)
         if specular != None:
             self.AddSpecular(specular.get('Color', None), specular.get('Texture', None), specular.get('Mix', 1), specular.get('Shininess', 1), specular.get('Intensity', 1))
@@ -162,16 +162,16 @@ class FusSceneWriter:
         if self.__curMaterial == None:
             raise RuntimeError('Cannot operate on nonexisting material component. Call BeginMaterial()/AddMaterial to add a material.')
 
-    def AddDiffuse(self, color, texture, mix):
+    def AddAlbedo(self, color, texture, mix):
         self.__checkMaterialOpen()
         if color != None:
-            self.__curMaterial.Diffuse.Color.x = color[0]
-            self.__curMaterial.Diffuse.Color.y = color[1]
-            self.__curMaterial.Diffuse.Color.z = color[2]
-            self.__curMaterial.Diffuse.Color.w = color[3]
+            self.__curMaterial.Albedo.Color.x = color[0]
+            self.__curMaterial.Albedo.Color.y = color[1]
+            self.__curMaterial.Albedo.Color.z = color[2]
+            self.__curMaterial.Albedo.Color.w = color[3]
         if texture != None:
-            self.__curMaterial.Diffuse.Texture = texture
-        self.__curMaterial.Diffuse.Mix = mix
+            self.__curMaterial.Albedo.Texture = texture
+        self.__curMaterial.Albedo.Mix = mix
 
     def AddSpecular(self, color, texture, mix, shininess, intensity):
         self.__checkMaterialOpen()

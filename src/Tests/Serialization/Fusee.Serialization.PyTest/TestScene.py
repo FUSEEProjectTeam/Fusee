@@ -15,7 +15,7 @@ writer.AddChild('Child')
 writer.AddChild('Child No2')
 writer.AddMaterial(
     {
-        'Diffuse':  { 'Color' : (1, 0, 0, 1), 'Mix': 0.5 },
+        'Albedo':   { 'Color' : (1, 0, 0, 1), 'Mix': 0.5 },
         'Specular': { 'Color' : (1, 1, 1, 1), 'Shininess': 2.5, 'Intensity': 0.9 },
         'RoughnessValue': 0.42,
         'FresnelReflectance': 0.43,
@@ -31,7 +31,7 @@ writer.Pop()
 writer.AddChild("Second Root")
 writer.AddMaterial(
     {
-        'Diffuse':  { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
+        'Albedo':   { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
         'Specular': { 'Color' : (1, 1, 1, 1), 'Texture': 'SpecMap.png', 'Mix': 1.0, 'Shininess': 2.5, 'Intensity': 0.9 },
         'Emissive': { 'Color' : (0, 0.1, 0, 1), 'Texture': 'DiffuseMap.png', 'Mix': 0.5 },
         'Bump':     { 'Texture': 'Bumpmap.png', 'Intensity': 0.9 }

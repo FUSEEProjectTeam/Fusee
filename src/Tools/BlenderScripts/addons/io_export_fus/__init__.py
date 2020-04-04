@@ -273,7 +273,7 @@ class BlenderVisitor:
         rot_eul = rotation.to_euler('YXZ')
 
         if self.DoApplyScale:
-            scale = (1.0, 1.0, 1.0)
+            scale =  mathutils.Vector((1.0, 1.0, 1.0))
 
         self.__fusWriter.AddTransform(
             (location.x, location.z, location.y),
@@ -521,7 +521,7 @@ class BlenderVisitor:
 
         if hasDiffuse:
             self.__fusWriter.BeginMaterial(matName)
-            self.__fusWriter.AddDiffuse(diffColor, diffTexture, diffMix)
+            self.__fusWriter.AddAlbedo(diffColor, diffTexture, diffMix)
             if hasSpecular:
                 self.__fusWriter.AddSpecular(specColor, specTexture, specMix, specShininess, specIntensity)
             if hasEmissive:
@@ -539,7 +539,7 @@ class BlenderVisitor:
             return
         self.__fusWriter.AddMaterial(
             {
-                'Diffuse':  { 'Color' : (0.7, 0.7, 0.7, 1), 'Mix': 1 },
+                'Albedo':   { 'Color' : (0.7, 0.7, 0.7, 1), 'Mix': 1 },
                 'Specular': { 'Color' : (1, 1, 1, 1), 'Shininess': 0.3, 'Intensity': 0.2 },
             }, self.__defaultMatName)
 

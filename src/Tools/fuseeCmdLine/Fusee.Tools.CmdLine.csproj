@@ -77,7 +77,6 @@
     </ItemGroup>
     <!-- Create the protoschema -->
     <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\FusSerialization.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.exe&quot; protoschema -o &quot;$(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for FusSerialization.proto -->
     <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="$(protoc_executable) --proto_path=$(protoc_tools) --proto_path=$(BlenderAddonSourcePath)\proto_src --python_out=$(BlenderAddonSourcePath)\proto FusSerialization.proto" />
