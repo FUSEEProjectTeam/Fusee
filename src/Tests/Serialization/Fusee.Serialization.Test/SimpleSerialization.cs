@@ -42,7 +42,7 @@ namespace Fusee.Serialization.Test
 
             ((FusScene)file.Contents).Children[0].AddComponent(new FusMaterial
             {
-                Diffuse = new MatChannelContainer { Color = new float4(0.1f, 0.2f, 0.3f, 1) },
+                Albedo = new MatChannelContainer { Color = new float4(0.1f, 0.2f, 0.3f, 1) },
                 Specular = new SpecularChannelContainer { Color = new float4(0.1f, 0.2f, 0.3f, 1), Shininess = 1 },
             });
 

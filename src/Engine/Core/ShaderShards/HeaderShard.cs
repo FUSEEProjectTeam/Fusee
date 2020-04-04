@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Engine.Core.ShaderShards
 {

@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core;
+﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.GUI
 {
@@ -14,7 +14,7 @@ namespace Fusee.Engine.GUI
     public class SceneInteractionHandler : Visitor<SceneNode, SceneComponent>
     {
         //private static List<CodeComponent> _observables;
-        private readonly ScenePicker _scenePicker;       
+        private readonly ScenePicker _scenePicker;
 
         private SceneNode _pickRes;
         private SceneNode _pickResCache;
@@ -23,9 +23,9 @@ namespace Fusee.Engine.GUI
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
         /// </summary>
         /// <param name="scene">The scene the interaction handler belongs to.</param>
-        public SceneInteractionHandler(Scene scene)
+        public SceneInteractionHandler(SceneContainer scene)
         {
-            _scenePicker = new ScenePicker(scene); 
+            _scenePicker = new ScenePicker(scene);
         }
 
         private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
@@ -59,7 +59,7 @@ namespace Fusee.Engine.GUI
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
         public void CheckForInteractiveObjects(RenderContext rc, float2 mousePos, int canvasWidth, int canvasHeight)
-        { 
+        {
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
 
             var pickResults = _scenePicker.Pick(rc, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
@@ -97,6 +97,6 @@ namespace Fusee.Engine.GUI
                 btn.IsMouseOver = true;
                 btn.InvokeEvents();
             }
-        }        
+        }
     }
 }

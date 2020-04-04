@@ -352,6 +352,9 @@ MigrationBackup/
 # Xamarin
 Resource.Designer.cs
 
+# Blender temp files
+*.blend[1-9]
+
 # FUSEE Custom
 # do not exclude any files in ext except some very specific ones
 !ext/**/*

@@ -1,19 +1,17 @@
 ﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
-using Fusee.Xirkit;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use <see cref="ConvertFrom(FusFile)"/> and <see cref="ConvertTo(Scene)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
+    /// Use <see cref="ConvertFrom(FusFile)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
     /// in order to have each visited element converted and/or split into its high/low level, render-ready/serialization-ready components.
     /// </summary>
     public static class FusSceneConverter
@@ -22,19 +20,19 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static Scene ConvertFrom(FusFile fus)
+        public static SceneContainer ConvertFrom(FusFile fus)
         {
             if (fus == null)
             {
                 Diagnostics.Error("Could not read content of scene, file is null!");
-                return new Scene();
+                return new SceneContainer();
             }
 
             // try to cast, if this fails the content is empty or null
             if (!(fus.Contents is FusScene))
             {
                 Diagnostics.Error($"Could not read content of scene from {fus.Header.CreationDate} created by {fus.Header.CreatedBy} with {fus.Header.Generator}");
-                return new Scene();
+                return new SceneContainer();
             }
 
             var instance = new FusFileToSceneConvertV1();
@@ -55,7 +53,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high low level graph <see cref="FusFile"/> by converting and/or splitting its components into the low level equivalents.
         /// </summary>
         /// <param name="sc">The Scene to convert.</param>
-        public static FusFile ConvertTo(Scene sc)
+        public static FusFile ConvertTo(SceneContainer sc)
         {
             if (sc == null)
             {
@@ -80,13 +78,13 @@ namespace Fusee.Engine.Core
 
     internal class FusFileToSceneConvertV1 : Visitor<FusNode, FusComponent>
     {
-        FusScene _fusScene;
-        private readonly Scene _convertedScene;
+        private FusScene _fusScene;
+        private readonly SceneContainer _convertedScene;
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
-        private readonly Dictionary<Material, ShaderEffect> _matMap;
-        private readonly Dictionary<MaterialPBR, ShaderEffect> _pbrComponent;
+        private readonly Dictionary<FusMaterial, ShaderEffect> _matMap;
+        private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Stack<SceneNode> _boneContainers;
 
         /// <summary>
@@ -100,17 +98,17 @@ namespace Fusee.Engine.Core
         internal FusFileToSceneConvertV1()
         {
             _predecessors = new Stack<SceneNode>();
-            _convertedScene = new Scene();
+            _convertedScene = new SceneContainer();
 
-            _matMap = new Dictionary<Material, ShaderEffect>();
-            _pbrComponent = new Dictionary<MaterialPBR, ShaderEffect>();
+            _matMap = new Dictionary<FusMaterial, ShaderEffect>();
+            _meshMap = new Dictionary<FusMesh, Mesh>();
             _boneContainers = new Stack<SceneNode>();
         }
 
-        internal Scene Convert(FusScene sc)
+        internal SceneContainer Convert(FusScene sc)
         {
             _fusScene = sc;
-            Traverse(sc.Children);          
+            Traverse(sc.Children);
             return _convertedScene;
         }
 
@@ -195,15 +193,15 @@ namespace Fusee.Engine.Core
                 Name = xft.Name,
                 HorizontalAlignment =
                 xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.CENTER
-                ? Common.HorizontalTextAlignment.CENTER
+                ? Scene.HorizontalTextAlignment.CENTER
                 : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.LEFT
-                ? Common.HorizontalTextAlignment.LEFT
-                : Common.HorizontalTextAlignment.RIGHT,
+                ? Scene.HorizontalTextAlignment.LEFT
+                : Scene.HorizontalTextAlignment.RIGHT,
                 VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.CENTER
-                ? Common.VerticalTextAlignment.CENTER
+                ? Scene.VerticalTextAlignment.CENTER
                 : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.BOTTOM
-                ? Common.VerticalTextAlignment.BOTTOM
-                : Common.VerticalTextAlignment.TOP
+                ? Scene.VerticalTextAlignment.BOTTOM
+                : Scene.VerticalTextAlignment.TOP
             });
         }
 
@@ -217,8 +215,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.SCREEN
-                ? Common.CanvasRenderMode.SCREEN
-                : Common.CanvasRenderMode.WORLD)
+                ? Scene.CanvasRenderMode.SCREEN
+                : Scene.CanvasRenderMode.WORLD)
             {
                 Name = ct.Name,
                 Scale = ct.Scale,
@@ -300,7 +298,7 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.Orthographic ? Common.ProjectionMethod.Orthographic : Common.ProjectionMethod.Perspective,
+            var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.Orthographic ? Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic : Fusee.Engine.Core.Scene.ProjectionMethod.Perspective,
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
                 Active = cc.Active,
@@ -324,8 +322,14 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
+            if (_meshMap.TryGetValue(m, out var mesh))
+            {
+                _currentNode.Components.Add(mesh);
+                return;
+            }          
+
             // convert mesh
-            var mesh = new Mesh
+            mesh = new Mesh
             {
                 MeshType = m.MeshType,
                 Active = true,
@@ -347,13 +351,15 @@ namespace Fusee.Engine.Core
 
             var currentNodeEffect = _currentNode.GetComponent<ShaderEffect>();
 
-            if (currentNodeEffect?.GetEffectParam(UniformNameDeclarations.BumpTexture) != null)
+            if (currentNodeEffect?.GetEffectParam(UniformNameDeclarations.NormalMap) != null)
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
             }
 
             _currentNode.Components.Add(mesh);
+
+            _meshMap.Add(m, mesh);
         }
 
         /// <summary>
@@ -415,12 +421,12 @@ namespace Fusee.Engine.Core
                 WeightMap = w.WeightMap.Select(wm =>
                 {
 
-                    var currentWeightList = new Common.VertexWeightList
+                    var currentWeightList = new Scene.VertexWeightList
                     {
-                        VertexWeights = new List<Common.VertexWeight>()
+                        VertexWeights = new List<Scene.VertexWeight>()
                     };
 
-                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Common.VertexWeight { JointIndex = ww.JointIndex, Weight = ww.Weight }).ToList();
+                    var currentVertexWeights = wm.VertexWeights.Select(ww => new Scene.VertexWeight { JointIndex = ww.JointIndex, Weight = ww.Weight }).ToList();
 
                     currentWeightList.VertexWeights.AddRange(currentVertexWeights);
                     return currentWeightList;
@@ -448,7 +454,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Converts the octant.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="cc"></param>
         [VisitMethod]
         public void ConvOctant(FusOctant cc)
         {
@@ -477,106 +483,118 @@ namespace Fusee.Engine.Core
 
         private ShaderEffect LookupMaterial(FusMaterial m)
         {
-            var mc = new Material
+            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+
+            var vals = new MaterialValues();
+
+            if (m.HasNormalMap)
             {
-                Name = m.Name ?? ""
-            };
-            if (m.HasBump)
-            {
-                mc.Bump = new BumpChannel
-                {
-                    Intensity = m.HasBump ? m.Bump.Intensity : 0,
-                    Texture = m.Bump.Texture ?? null
-                };
+                vals.NormalMap = m.NormalMap.Texture ?? null;
+                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
             }
-            if (m.HasDiffuse)
+            if (m.HasAlbedo)
             {
-                mc.Diffuse = new MatChannel
-                {
-                    Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture ?? null,
-                    Mix = m.Diffuse.Mix
-                };
+                vals.AlbedoColor = m.Albedo.Color;
+                vals.AlbedoMix = m.Albedo.Mix;
+                vals.AlbedoTexture = m.Albedo.Texture ?? null;
             }
             if (m.HasEmissive)
             {
-                mc.Emissive = new MatChannel
-                {
-                    Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture ?? null,
-                    Mix = m.Emissive.Mix
-                };
-            }
-            if (m.HasSpecular)
-            {
-                mc.Specular = new SpecularChannel
-                {
-                    Color = m.Specular.Color,
-                    Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture ?? null,
-                    Intensity = m.Specular.Intensity,
-                    Shininess = m.Specular.Shininess
-                };
+                vals.EmissiveColor = m.Emissive.Color;
+                vals.EmissiveMix = m.Emissive.Mix;
+                vals.EmissiveTexture = m.Emissive.Texture ?? null;
             }
 
-            if (_matMap.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
-            _matMap.Add(mc, mat);
-            return mat;
+            if (m.HasSpecular)
+            {
+                vals.SpecularColor = m.Specular.Color;
+                vals.SpecularMix = m.Specular.Mix;
+                vals.SpecularTexture = m.Specular.Texture ?? null;
+                vals.SpecularIntensity = m.Specular.Intensity;
+                vals.SpecularShininess = m.Specular.Shininess;
+            }
+
+            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+                new ShaderEffectProps
+                {
+                    MatProbs =
+                    {
+                        HasAlbedo = m.HasAlbedo,
+                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
+                        HasSpecular = m.HasSpecular,
+                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
+                        HasEmissive = m.HasEmissive,
+                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
+                        HasNormalMap = m.HasNormalMap
+                    },
+                    MatType = MaterialType.Standard,
+                    MatValues = vals
+                });
+
+            sfx.Name = m.Name ?? "";
+
+            _matMap.Add(m, sfx);
+            return sfx;
         }
 
         private ShaderEffect LookupMaterial(FusMaterialPBR m)
         {
-            var mc = new MaterialPBR
+            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+
+            var vals = new MaterialValues();
+
+            if (m.HasNormalMap)
             {
-                Name = m.Name ?? null
-            };
-            if (m.HasBump)
-            {
-                mc.Bump = new BumpChannel
-                {
-                    Intensity = m.HasBump ? m.Bump.Intensity : 0,
-                    Texture = m.Bump.Texture ?? null
-                };
+                vals.NormalMap = m.NormalMap.Texture ?? null;
+                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
             }
-            if (m.HasDiffuse)
+            if (m.HasAlbedo)
             {
-                mc.Diffuse = new MatChannel
-                {
-                    Color = m.Diffuse.Color,
-                    Texture = m.Diffuse.Texture ?? null,
-                    Mix = m.Diffuse.Mix
-                };
+                vals.AlbedoColor = m.Albedo.Color;
+                vals.AlbedoMix = m.Albedo.Mix;
+                vals.AlbedoTexture = m.Albedo.Texture ?? null;
             }
             if (m.HasEmissive)
             {
-                mc.Emissive = new MatChannel
-                {
-                    Color = m.Emissive.Color,
-                    Texture = m.Emissive.Texture ?? null,
-                    Mix = m.Emissive.Mix
-                };
+                vals.EmissiveColor = m.Emissive.Color;
+                vals.EmissiveMix = m.Emissive.Mix;
+                vals.EmissiveTexture = m.Emissive.Texture ?? null;
             }
+
             if (m.HasSpecular)
             {
-                mc.Specular = new SpecularChannel
-                {
-                    Color = m.Specular.Color,
-                    Mix = m.Specular.Mix,
-                    Texture = m.Specular.Texture ?? null,
-                    Intensity = m.Specular.Intensity,
-                    Shininess = m.Specular.Shininess
-                };
+                vals.SpecularColor = m.Specular.Color;
+                vals.SpecularMix = m.Specular.Mix;
+                vals.SpecularTexture = m.Specular.Texture ?? null;
+                vals.SpecularIntensity = m.Specular.Intensity;
+                vals.SpecularShininess = m.Specular.Shininess;
             }
 
-            mc.DiffuseFraction = m.DiffuseFraction;
-            mc.FresnelReflectance = m.FresnelReflectance;
-            mc.RoughnessValue = m.RoughnessValue;
+            vals.DiffuseFraction = m.DiffuseFraction;
+            vals.FresnelReflectance = m.FresnelReflectance;
+            vals.RoughnessValue = m.RoughnessValue;
 
-            if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
-            _pbrComponent.Add(mc, mat);
-            return mat;
+            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+                new ShaderEffectProps
+                {
+                    MatProbs =
+                    {
+                        HasAlbedo = m.HasAlbedo,
+                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
+                        HasSpecular = m.HasSpecular,
+                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
+                        HasEmissive = m.HasEmissive,
+                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
+                        HasNormalMap = m.HasNormalMap
+                    },
+                    MatType = MaterialType.MaterialPbr,
+                    MatValues = vals
+                });
+
+            sfx.Name = m.Name ?? "";
+
+            _matMap.Add(m, sfx);
+            return sfx;
         }
 
         #endregion
@@ -601,12 +619,14 @@ namespace Fusee.Engine.Core
         internal SceneToFusFileConvertV1()
         {
             _predecessors = new Stack<FusNode>();
-            _convertedScene = new FusFile();
-            _convertedScene.Contents = new FusScene();
+            _convertedScene = new FusFile
+            {
+                Contents = new FusScene()
+            };
             _boneContainers = new Stack<FusComponent>();
         }
 
-        internal FusFile Convert(Scene sc)
+        internal FusFile Convert(SceneContainer sc)
         {
             Traverse(sc.Children);
             return _convertedScene;
@@ -643,8 +663,8 @@ namespace Fusee.Engine.Core
         /// Converts the animation component.
         ///</summary>
         [VisitMethod]
-        public void ConvAnimation(Common.Animation a)
-        {        
+        public void ConvAnimation(Core.Scene.Animation a)
+        {
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }
 
@@ -654,7 +674,7 @@ namespace Fusee.Engine.Core
         ///</summary>
         [VisitMethod]
         public void ConvXForm(XForm xf)
-        {          
+        {
             _currentNode.AddComponent(new FusXForm
             {
                 Name = xf.Name
@@ -673,14 +693,14 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Common.HorizontalTextAlignment.CENTER
+                xft.HorizontalAlignment == Scene.HorizontalTextAlignment.CENTER
                 ? Serialization.V1.HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Common.HorizontalTextAlignment.LEFT
+                : xft.HorizontalAlignment == Scene.HorizontalTextAlignment.LEFT
                 ? Serialization.V1.HorizontalTextAlignment.LEFT
                 : Serialization.V1.HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Common.VerticalTextAlignment.CENTER
+                VerticalAlignment = xft.VerticalAlignment == Scene.VerticalTextAlignment.CENTER
                 ? Serialization.V1.VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Common.VerticalTextAlignment.BOTTOM
+                : xft.VerticalAlignment == Scene.VerticalTextAlignment.BOTTOM
                 ? Serialization.V1.VerticalTextAlignment.BOTTOM
                 : Serialization.V1.VerticalTextAlignment.TOP
             });
@@ -692,7 +712,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCanvasTransform(CanvasTransform ct)
         {
-            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Common.CanvasRenderMode.SCREEN
+            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Scene.CanvasRenderMode.SCREEN
                 ? Serialization.V1.CanvasRenderMode.SCREEN
                 : Serialization.V1.CanvasRenderMode.WORLD)
             {
@@ -744,14 +764,14 @@ namespace Fusee.Engine.Core
 
             var mat = new FusMaterial();
 
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.DiffuseColor))
-                mat.Diffuse = new MatChannelContainer();
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.AlbedoColor))
+                mat.Albedo = new MatChannelContainer();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
                 mat.Specular = new SpecularChannelContainer();
 
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.BumpTexture))
-                mat.Bump = new BumpChannelContainer();
+            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
+                mat.NormalMap = new NormapMapChannelContainer();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
                 mat.Emissive = new MatChannelContainer();
@@ -760,14 +780,14 @@ namespace Fusee.Engine.Core
             {
                 switch (decl.Key)
                 {
-                    case UniformNameDeclarations.DiffuseColor:
-                        mat.Diffuse.Color = (float4)decl.Value;
+                    case UniformNameDeclarations.AlbedoColor:
+                        mat.Albedo.Color = (float4)decl.Value;
                         break;
-                    case UniformNameDeclarations.DiffuseTexture:
-                        mat.Diffuse.Texture = (string)decl.Value;
+                    case UniformNameDeclarations.AlbedoTexture:
+                        mat.Albedo.Texture = (string)decl.Value;
                         break;
-                    case UniformNameDeclarations.DiffuseMix:
-                        mat.Diffuse.Mix = (float)decl.Value;
+                    case UniformNameDeclarations.AlbedoMix:
+                        mat.Albedo.Mix = (float)decl.Value;
                         break;
 
 
@@ -798,11 +818,11 @@ namespace Fusee.Engine.Core
                         mat.Specular.Intensity = (float)decl.Value;
                         break;
 
-                    case UniformNameDeclarations.BumpTexture:
-                        mat.Bump.Texture = (string)decl.Value;
+                    case UniformNameDeclarations.NormalMap:
+                        mat.NormalMap.Texture = (string)decl.Value;
                         break;
-                    case UniformNameDeclarations.BumpIntensity:
-                        mat.Bump.Intensity = (float)decl.Value;
+                    case UniformNameDeclarations.NormalMapIntensity:
+                        mat.NormalMap.Intensity = (float)decl.Value;
                         break;
                 }
             }
@@ -815,6 +835,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Converts the shader.
         /// </summary>
+        /// <param name="cc">The camera to convert.</param>
         [VisitMethod]
         public void ConvCamComp(Camera cc)
         {
@@ -829,7 +850,7 @@ namespace Fusee.Engine.Core
                 ClippingPlanes = cc.ClippingPlanes,
                 Fov = cc.Fov,
                 Viewport = cc.Viewport,
-                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
+                ProjectionMethod = cc.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 
@@ -886,44 +907,44 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Converts the camera.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="cam"></param>
         [VisitMethod]
-        public void ConvCamera(Camera cc)
+        public void ConvCamera(Camera cam)
         {
             _currentNode.AddComponent(new FusCamera
             {
-                Active = cc.Active,
-                BackgroundColor = cc.BackgroundColor,
-                ClearColor = cc.ClearColor,
-                ClearDepth = cc.ClearDepth,
-                Layer = cc.Layer,
-                Name = cc.Name,
-                ClippingPlanes = cc.ClippingPlanes,
-                Fov = cc.Fov,
-                ProjectionMethod = cc.ProjectionMethod == Common.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
+                Active = cam.Active,
+                BackgroundColor = cam.BackgroundColor,
+                ClearColor = cam.ClearColor,
+                ClearDepth = cam.ClearDepth,
+                Layer = cam.Layer,
+                Name = cam.Name,
+                ClippingPlanes = cam.ClippingPlanes,
+                Fov = cam.Fov,
+                ProjectionMethod = cam.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 
         /// <summary>
         /// Converts the octant.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="oct"></param>
         [VisitMethod]
-        public void ConvOctant(Octant cc)
+        public void ConvOctant(Octant oct)
         {
             _currentNode.AddComponent(new FusOctant
             {
-                Center = cc.Center,
-                Guid = cc.Guid,
-                IsLeaf = cc.IsLeaf,
-                Level = cc.Level,
-                Name = cc.Name,
-                NumberOfPointsInNode = cc.NumberOfPointsInNode,
-                PosInHierarchyTex = cc.PosInHierarchyTex,
-                PosInParent = cc.PosInParent,
-                Size = cc.Size,
-                VisibleChildIndices = cc.VisibleChildIndices,
-                WasLoaded = cc.WasLoaded
+                Center = oct.Center,
+                Guid = oct.Guid,
+                IsLeaf = oct.IsLeaf,
+                Level = oct.Level,
+                Name = oct.Name,
+                NumberOfPointsInNode = oct.NumberOfPointsInNode,
+                PosInHierarchyTex = oct.PosInHierarchyTex,
+                PosInParent = oct.PosInParent,
+                Size = oct.Size,
+                VisibleChildIndices = oct.VisibleChildIndices,
+                WasLoaded = oct.WasLoaded
             });
         }
 

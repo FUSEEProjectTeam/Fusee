@@ -10,6 +10,7 @@ using Path = Fusee.Base.Common.Path;
 using System.Reflection;
 using System;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Examples.Camera.Desktop
 {
@@ -35,7 +36,7 @@ namespace Fusee.Examples.Camera.Desktop
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(Scene),
+                    ReturnedType = typeof(SceneContainer),
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;

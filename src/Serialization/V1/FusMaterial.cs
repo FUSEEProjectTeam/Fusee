@@ -52,10 +52,10 @@ namespace Fusee.Serialization.V1
     }
 
     /// <summary>
-    /// If used, the material shows bumps defined by a normal map (a texture).
+    /// If used, the material shows bumps defined by a normal map (a texture in RGB).
     /// </summary>
     [ProtoContract]
-    public class BumpChannelContainer
+    public class NormapMapChannelContainer
     {
         /// <summary>
         /// The texture to read the normal information from.
@@ -64,7 +64,7 @@ namespace Fusee.Serialization.V1
         public string Texture;
 
         /// <summary>
-        /// The intensity of the bumps.
+        /// The intensity of the normal map..
         /// </summary>
         [ProtoMember(2)]
         public float Intensity;
@@ -78,20 +78,20 @@ namespace Fusee.Serialization.V1
     [ProtoInclude(200, typeof(FusMaterialPBR))]
     public class FusMaterial : FusComponent
     {
-        #region Diffuse
+        #region Albedo
         /// <summary>
-        /// Gets a value indicating whether this instance has a diffuse channel.
+        /// Gets a value indicating whether this instance has an albedo channel.
         /// </summary>
         /// <value>
-        /// <c>true</c> if this instance has a diffuse channel; otherwise, <c>false</c>.
+        /// <c>true</c> if this instance has an albedo channel; otherwise, <c>false</c>.
         /// </value>
-        public bool HasDiffuse { get { return Diffuse != null; } }
+        public bool HasAlbedo { get { return Albedo != null; } }
 
         /// <summary>
-        /// The diffuse channel.
+        /// The albedo channel.
         /// </summary>
         [ProtoMember(1)]
-        public MatChannelContainer Diffuse;
+        public MatChannelContainer Albedo;
         #endregion
 
         #region Specular
@@ -126,20 +126,20 @@ namespace Fusee.Serialization.V1
         public MatChannelContainer Emissive;
         #endregion
 
-        #region Bump
+        #region NormalMap
         /// <summary>
-        /// Gets a value indicating whether this instance has a bump channel.
+        /// Gets a value indicating whether this instance has a normal map channel.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if this instance has a bump channel; otherwise, <c>false</c>.
+        ///   <c>true</c> if this instance has a normal map channel; otherwise, <c>false</c>.
         /// </value>
-        public bool HasBump { get { return Bump != null; } }
+        public bool HasNormalMap { get { return NormalMap != null; } }
 
         /// <summary>
-        /// The bump channel.
+        /// The normal map channel.
         /// </summary>
         [ProtoMember(4)]
-        public BumpChannelContainer Bump;
+        public NormapMapChannelContainer NormalMap;
         #endregion
     }
 

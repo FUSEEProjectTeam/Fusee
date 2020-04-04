@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
@@ -42,10 +43,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public bool SsaoOn
         {
-            get
-            {
-                return _ssaoOn;
-            }
+            get => _ssaoOn;
             set
             {
                 _ssaoOn = value;
@@ -107,7 +105,7 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
         /// <param name="texRes">The g-buffer texture resolution.</param>
         /// <param name="shadowMapRes">The shadow map resolution.</param>       
-        public SceneRendererDeferred(Scene sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
+        public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
         {
             TexRes = texRes;
             ShadowMapRes = shadowMapRes;
@@ -179,7 +177,7 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            Weight wc = CurrentNode.GetWeights();
+            var wc = CurrentNode.GetWeights();
             if (wc != null)
                 AddWeightToMesh(mesh, wc);
 
@@ -240,7 +238,9 @@ namespace Fusee.Engine.Core
                             Diagnostics.Warn("Lambda is > 1 or < 0 and is therefor camped between 0 and 1.");
                         }
                         else
+                        {
                             tmpLambda = PssmLambda;
+                        }
 
                         var zNear = _rc.DefaultState.ZNearDefautlt;
                         var zFar = _rc.DefaultState.ZFarDefault;
@@ -262,7 +262,7 @@ namespace Fusee.Engine.Core
                         }
                         else
                         {
-                            for (int i = 0; i < cascades.Count; i++)
+                            for (var i = 0; i < cascades.Count; i++)
                             {
                                 shadowParamClipPlanes[i] = cascades[i].ClippingPlanes;
                                 var aabbLightSpace = cascades[i].Aabb;
@@ -291,7 +291,7 @@ namespace Fusee.Engine.Core
                         lightSpaceMatrices[0] = lightProjection * lightView;
                         var frustumLeft = new Frustum();
                         frustumLeft.CalculateFrustumPlanes(lightSpaceMatrices[0]);
-                        frustums.Add(frustumLeft);                        
+                        frustums.Add(frustumLeft);
 
                         lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitX, float3.UnitY); //right face
                         lightSpaceMatrices[1] = lightProjection * lightView;
@@ -345,7 +345,7 @@ namespace Fusee.Engine.Core
             }
 
             //2. If we haven't created the shadow params for this light yet, do so,
-            if (!_shadowparams.TryGetValue(key, out ShadowParams outParams))
+            if (!_shadowparams.TryGetValue(key, out var outParams))
             {
                 switch (lr.Light.Type)
                 {
@@ -359,7 +359,7 @@ namespace Fusee.Engine.Core
                     case LightType.Parallel:
                         {
                             var shadowMaps = new IWritableTexture[NumberOfCascades];
-                            for (int i = 0; i < NumberOfCascades; i++)
+                            for (var i = 0; i < NumberOfCascades; i++)
                             {
                                 var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
                                 shadowMaps[i] = shadowMap;
@@ -426,7 +426,9 @@ namespace Fusee.Engine.Core
                 }
             }
             else
+            {
                 RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight), renderTex);
+            }
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam, WritableTexture renderTex = null)
@@ -438,7 +440,7 @@ namespace Fusee.Engine.Core
             else
                 _rc.SetRenderTarget();
 
-            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out var viewport);
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
@@ -486,8 +488,8 @@ namespace Fusee.Engine.Core
             //Pass 4 & 5: FXAA and Lighting
             _currentPass = RenderPasses.LIGHTING;
 
-            int width = renderTex == null ? (int)lightingPassViewport.z : renderTex.Width;
-            int height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
+            var width = renderTex == null ? (int)lightingPassViewport.z : renderTex.Width;
+            var height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
 
             if (!FxaaOn)
             {
@@ -530,7 +532,7 @@ namespace Fusee.Engine.Core
 
             var lightPassCnt = 0;
 
-            for (int i = 0; i < LightViseratorResults.Count; i++)
+            for (var i = 0; i < LightViseratorResults.Count; i++)
             {
                 var isCastingShadows = false; //needed because Android and Web doesn't support geometry shaders.
                 var lightVisRes = LightViseratorResults[i];
@@ -665,7 +667,7 @@ namespace Fusee.Engine.Core
                     case LightType.Parallel:
                         {
                             DoFrumstumCulling = true;
-                            for (int i = 0; i < shadowParams.LightSpaceMatrices.Length; i++)
+                            for (var i = 0; i < shadowParams.LightSpaceMatrices.Length; i++)
                             {
                                 _shadowEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[i]);
                                 _rc.SetShaderEffect(_shadowEffect);

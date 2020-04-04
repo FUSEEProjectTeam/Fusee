@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
-using System.Threading.Tasks;
-
 
 namespace Fusee.Examples.Camera.Core
 {
@@ -22,19 +22,19 @@ namespace Fusee.Examples.Camera.Core
         private float3 _rotAxis;
         private float3 _rotPivot;
 
-        private Scene _rocketScene;
+        private SceneContainer _rocketScene;
         private SceneRendererForward _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
-        private Scene _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
         private Transform _mainCamTransform;
         private Transform _guiCamTransform;
-        private readonly Fusee.Engine.Common.Camera _mainCam = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
-        private readonly Fusee.Engine.Common.Camera _guiCam = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
-        private readonly Fusee.Engine.Common.Camera _sndCam = new Fusee.Engine.Common.Camera(Fusee.Engine.Common.ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private Transform _cubeOneTransform;
         private Transform _sndCamTransform;
@@ -142,7 +142,7 @@ namespace Fusee.Examples.Camera.Core
             _angleVertMain = _mainCamTransform.Rotation.x;
 
             // Load the rocket model            
-            _rocketScene = AssetStorage.Get<Scene>("rnd.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
             //_rocketScene = Rocket.Build();
 
 
@@ -230,7 +230,9 @@ namespace Fusee.Examples.Camera.Core
                             mesh.Active = false;
                         }
                         else
+                        {
                             mesh.Active = true;
+                        }
                     }
                 }
 
@@ -239,7 +241,7 @@ namespace Fusee.Examples.Camera.Core
             }
         }
 
-        private Scene CreateGui()
+        private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -312,7 +314,7 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {

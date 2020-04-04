@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
@@ -23,7 +24,7 @@ namespace Fusee.Examples.UI.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
@@ -52,7 +53,7 @@ namespace Fusee.Examples.UI.Core
         private GUIText _fpsText;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
-        private Scene CreateNineSliceScene()
+        private SceneContainer CreateNineSliceScene()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -109,7 +110,7 @@ namespace Fusee.Examples.UI.Core
                 "Cat",
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -135,7 +136,7 @@ namespace Fusee.Examples.UI.Core
                 "Blt",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 _bltDestinationTex,
                 //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -244,16 +245,13 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-            {
-                Diffuse = new MatChannel { Color = new float4(1, 0, 0, 1) },
-            });
+            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
 
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
@@ -293,23 +291,17 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-            {
-                Diffuse = new MatChannel { Color = new float4(1, 0.4f, 0.1f, 1) },
-            });
+            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0.4f, 0.1f, 1));         
             var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
-            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.DiffuseColor, new float4(1, 0.4f, 0.1f, 1));
+            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0.4f, 0.1f, 1));
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new Material
-            {
-                Diffuse = new MatChannel { Color = new float4(1, 0, 0, 1) },
-            });
+            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0, 0, 1));           
             var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
-            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.DiffuseColor, new float4(1, 0, 0, 1));
+            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0, 0, 1));
         }
 
         public void OnBtnCatDown(CodeComponent sender)

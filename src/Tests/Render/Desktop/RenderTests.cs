@@ -46,7 +46,7 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void BumpMappingTest()
         {
-            Program.Example = new Fusee.Examples.Bump.Core.Bump();
+            Program.Example = new Fusee.Examples.NormalMap.Core.NormalMap();
             Program.Init("BumpMappingTest.png");
 
             var referenceIm = new Bitmap(@"References\BumpMapping.png");

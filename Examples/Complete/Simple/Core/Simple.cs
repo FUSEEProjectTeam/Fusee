@@ -2,6 +2,8 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -22,15 +24,15 @@ namespace Fusee.Examples.Simple.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private Scene _rocketScene;
+        private SceneContainer _rocketScene;
         private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
-        private Scene _gui;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
@@ -48,10 +50,10 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<Scene>("FUSEERocket.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);            
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             return true;
@@ -112,11 +114,11 @@ namespace Fusee.Examples.Simple.Core
 
             // Render the scene loaded in Init()
             RC.View = view;
-            RC.Projection = perspective;            
+            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-           
+
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -124,14 +126,14 @@ namespace Fusee.Examples.Simple.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            
+
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        private Scene CreateGui()
+        private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -152,7 +154,7 @@ namespace Fusee.Examples.Simple.Core
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -192,9 +194,9 @@ namespace Fusee.Examples.Simple.Core
                     fuseeLogo,
                     text
                 }
-            };            
+            };
 
-            return new Scene
+            return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
@@ -206,12 +208,12 @@ namespace Fusee.Examples.Simple.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)

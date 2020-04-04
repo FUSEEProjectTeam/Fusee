@@ -1,6 +1,8 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -8,10 +10,12 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
+using Transform = Fusee.Engine.Core.Scene.Transform;
 
 namespace Fusee.Examples.GeometryEditing.Core
 {
@@ -35,7 +39,7 @@ namespace Fusee.Examples.GeometryEditing.Core
         private bool _twoTouchRepeated;
 
         private SceneNode _parentNode;
-        private Scene _scene;
+        private SceneContainer _scene;
         private SceneRendererForward _renderer;
 
         private Dictionary<int, Geometry> _activeGeometrys;
@@ -71,7 +75,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             _parentNode.Components.Add(parentTrans);
 
 
-            _scene = new Scene { Children = new List<SceneNode> { _parentNode } };           
+            _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };           
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -115,10 +119,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<Material>().Diffuse.Color = _defaultColor;
+                    _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<Material>().Diffuse.Color = _selectedColor;
+                _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _selectedColor);
             }
         }
 
@@ -394,14 +398,10 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var materialComponent = new Material
-            {
-                Diffuse = new MatChannel(),
-                Specular = new SpecularChannel(),
-            };
-            materialComponent.Diffuse.Color = _defaultColor;
+            var shaderEffect = ShaderCodeBuilder.Default;           
+            shaderEffect.SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(materialComponent);
+            sceneNodeContainer.Components.Add(shaderEffect);
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);
