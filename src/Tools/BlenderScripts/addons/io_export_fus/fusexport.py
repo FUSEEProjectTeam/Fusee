@@ -48,7 +48,7 @@ def main():
     # When --help or no args are given, print this help
     usage_text = (
         "Run blender in background mode to load a scene and export to fus:"
-        "  blender MyScene.blend --background --python " + __file__ + " -- [options]"
+        "  blender --background --python " + __file__ + " -- [options]"
     )
 
     parser = argparse.ArgumentParser(description=usage_text)
