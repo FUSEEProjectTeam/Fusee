@@ -23,6 +23,7 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BlenderVisitor.py" />
     <Compile Include="FusSceneWriter.py" />
     <Compile Include="proto\FusSerialization_pb2.py" />
     <Compile Include="proto\protobuf_net\bcl_pb2.py" />

@@ -32,7 +32,7 @@ from shutil import copyfile
 # Add some necessary extras to blender's neutered python
 
 # Add anything from any existing full-fledged Python installation
-# because we need google.protobuf !!!
+# because we need google.protobuf, PTVSD and other stuff!!!
 paths = os.environ['Path']
 paths = paths.split(';')
 for path in paths:
