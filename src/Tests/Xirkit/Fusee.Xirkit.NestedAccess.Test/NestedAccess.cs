@@ -76,7 +76,7 @@ namespace Fusee.Xirkit.Nicetries
 
             // Simple Field -> Nested
             src.Num = 42;
-            // srcNode.Attach("Num", dstNode, "Outer.Inner.Number");
+            srcNode.Attach("Num", dstNode, "Outer.Inner.Number");
 
             circuit.Execute();
 
