@@ -15,8 +15,8 @@
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="..\..\..\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="..\..\..\Serialization\Fusee.Serialization.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
 
     <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
       <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>

@@ -35,7 +35,7 @@ namespace Fusee.Serialization.V1
         /// Should be a value between 0 and 1.
         /// </summary>
         [ProtoMember(4)]
-        public float Strength;
+        public float Strength = 1;
 
         /// <summary>
         /// Represents the type of the light.
@@ -55,15 +55,6 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(7)]
         public float InnerConeAngle;
-
-        /// <summary>
-        /// Creates a new instance of type LightComponent.
-        /// </summary>
-        /// <param name="strength">Represents the strength of the light (non-physically representation of the brightness).</param>
-        public FusLight(float strength = 1)
-        {
-            Strength = strength;
-        }
 
         /// <summary>
         /// Defines if a shadow map is created for this light.
