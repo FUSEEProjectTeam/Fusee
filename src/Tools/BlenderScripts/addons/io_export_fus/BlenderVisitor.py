@@ -309,7 +309,7 @@ class BlenderVisitor:
             #### BUMP
             elif node.type == 'NORMAL_MAP':
                 hasBump = True
-                bumpIntensity =  node.inputs['Strength'].default_value                         
+                bumpIntensity =  node.inputs['Strength'].default_value / 10.0                         
                 links = node.inputs['Color'].links
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
@@ -365,7 +365,7 @@ class BlenderVisitor:
             if hasEmissive:
                 self.__fusWriter.AddEmissive(emissColor, emissTexture, emissMix)
             if hasBump:
-                self.__fusWriter.AddBump(bumpTexture, bumpIntensity)
+                self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
             if hasPBR:
                 self.__fusWriter.AddPBRMaterialSettings(pbrRoughnessValue, pbrFresnelReflectance, pbrDiffuseFraction)
             self.__fusWriter.EndMaterial()

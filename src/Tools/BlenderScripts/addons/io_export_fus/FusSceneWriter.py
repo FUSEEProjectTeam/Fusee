@@ -120,15 +120,15 @@ class FusSceneWriter:
     def AddMaterial(self, material, name=None):
         """Adds a Material component to the current child node. If any of 'RoughnessValue', 'FresnelReflectance' or 'DiffuseFraction' keys is present, a MaterialPBR component will be added.
 
-        :param material: A dictionary containing optional 'Albedo', 'Specular', 'Emissive', 'Bump' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
+        :param material: A dictionary containing optional 'Albedo', 'Specular', 'Emissive', 'NormalMap' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
 
         :Example:
         fusWriter.AddMaterial(
             {
-                'Albedo':   { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
-                'Specular': { 'Color' : (1, 1, 1, 1), 'Texture': 'SpecMap.png', 'Mix': 1.0, 'Shininess': 2.5, 'Intensity': 0.9 },
-                'Emissive': { 'Color' : (0, 0.1, 0, 1), 'Texture': 'DiffuseMap.png', 'Mix': 0.5 },
-                'Bump':     { 'Texture': 'Bumpmap.png', 'Intensity': 0.9 }
+                'Albedo':    { 'Color' : (1, 0, 0, 1), 'Texture': 'SomeTexture.png', 'Mix': 0.5 },
+                'Specular':  { 'Color' : (1, 1, 1, 1), 'Texture': 'SpecMap.png', 'Mix': 1.0, 'Shininess': 2.5, 'Intensity': 0.9 },
+                'Emissive':  { 'Color' : (0, 0.1, 0, 1), 'Texture': 'DiffuseMap.png', 'Mix': 0.5 },
+                'NormalMap': { 'Texture': 'normalmap.png', 'Intensity': 0.9 }
                 'RoughnessValue': 0.42,
             }
         )
@@ -143,9 +143,9 @@ class FusSceneWriter:
         emissive = material.get('Emissive', None)
         if emissive != None:
             self.AddEmissive(emissive.get('Color', None), emissive.get('Texture', None), emissive.get('Mix', 1))
-        bump = material.get('Bump', None)
-        if bump != None:
-            self.AddBump(bump.get('Texture', None), bump.get('Intensity', 1))
+        normalMap = material.get('NormalMap', None)
+        if normalMap != None:
+            self.AddNormalMap(normalMap.get('Texture', None), normalMap.get('Intensity', 1))
         if 'RoughnessValue' in material or 'FresnelReflectance' in material or 'DiffuseFraction' in material:
             self.AddPBRMaterialSettings(material.get('RoughnessValue', 0.2), material.get('FresnelReflectance', 0.2), material.get('DiffuseFraction', 0.2))
         self.EndMaterial()
@@ -197,11 +197,11 @@ class FusSceneWriter:
             self.__curMaterial.Emissive.Texture = texture
         self.__curMaterial.Emissive.Mix = mix
 
-    def AddBump(self, texture, intensity):
+    def AddNormalMap(self, texture, intensity):
         self.__checkMaterialOpen()
         if texture != None:
-            self.__curMaterial.Bump.Texture = texture
-        self.__curMaterial.Bump.Intensity = intensity
+            self.__curMaterial.NormalMap.Texture = texture
+        self.__curMaterial.NormalMap.Intensity = intensity
 
     def AddPBRMaterialSettings(self, roughnessValue, fresnelReflectance, diffuseFraction):
         self.__checkMaterialOpen()

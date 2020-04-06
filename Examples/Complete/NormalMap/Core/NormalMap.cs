@@ -5,6 +5,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.NormalMap.Core
@@ -12,7 +13,7 @@ namespace Fusee.Examples.NormalMap.Core
     [FuseeApplication(Name = "FUSEE Normal Mapping Example", Description = "Quick normal map example")]
     public class NormalMap : RenderCanvas
     {
-        public string ModelFile = "FUSEERocket.fus";
+        public string ModelFile = "BrickBall.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
@@ -51,6 +52,15 @@ namespace Fusee.Examples.NormalMap.Core
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            ShaderEffect bumpeffect = _scene.Children.FindComponents<ShaderEffect>(se => se.GetEffectParam("NormalMap") != null)?.FirstOrDefault();
+            Texture tex = null;
+            if (bumpeffect != null)
+            {
+                tex = (Texture)bumpeffect.GetEffectParam("NormalMap");
+                bumpeffect.SetEffectParam("NormalMapIntensity", 1f);
+            }
+
+            // _scene.Children.FindComponents<SHA
 
             //TODO: export the correct material - with bump channel - from blender exporter
             //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here
