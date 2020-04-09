@@ -222,33 +222,14 @@ namespace Fusee.Test.Xirkit
             root.Attach("text", node, "i");
             root.Attach("text", node, "f");
             root.Attach("text", node, "d");
-            //root.Attach("text", node, "isTrue"); Needs special test.
             root.Attach("text", node, "text");
-            root.Attach("text", node, "d2");
-            root.Attach("text", node, "d3");
-            root.Attach("text", node, "d4");
-            root.Attach("text", node, "d4x4");
-            root.Attach("text", node, "f2");
-            root.Attach("text", node, "f3");
-            root.Attach("text", node, "f4");
-            root.Attach("text", node, "f4x4");
 
             circuit.Execute();
 
             Assert.True(expected.i == i, "Error when parsing to int: Should be " + i + " but is " + expected.i + ".");
             Assert.True(expected.f == f, "Error when parsing to float: Should be " + f + " but is " + expected.f + ".");
             Assert.True(expected.d == d, "Error when parsing to double: Should be " + d + " but is " + expected.d + ".");
-            //Assert.True(expected.isTrue == isTrue, "Error when parsing to bool: Should be " + isTrue + " but is " + expected.isTrue + ".");
             Assert.True(expected.text == text, "Error when parsing to string: Should be " + text + " but is " + expected.text + ".");
-            Assert.True(expected.d2 == d2, "Error when parsing to double2: Should be " + d2 + " but is " + expected.d2 + ".");
-            Assert.True(expected.d3 == d3, "Error when parsing to double3: Should be " + d3 + " but is " + expected.d3 + ".");
-            Assert.True(expected.d4 == d4, "Error when parsing to double4: Should be " + d4 + " but is " + expected.d4 + ".");
-            Assert.True(expected.d4x4 == d4x4, "Error when parsing to double4x4: Should be " + d4x4 + " but is " + expected.d4x4 + ".");
-            Assert.True(expected.f2 == f2, "Error when parsing to float2: Should be " + f2 + " but is " + expected.f2 + ".");
-            Assert.True(expected.f3 == f3, "Error when parsing to float3: Should be " + f3 + " but is " + expected.f3 + ".");
-            Assert.True(expected.f4 == f4, "Error when parsing to float4: Should be " + f4 + " but is " + expected.f4 + ".");
-            Assert.True(expected.f4x4 == f4x4, "Error when parsing to float4x4: Should be " + f4x4 + " but is " + expected.f4x4 + ".");
-
         }
 
         [Fact]
@@ -274,6 +255,166 @@ namespace Fusee.Test.Xirkit
             circuit.Execute();
 
             Assert.False(expected.isTrue, "Error when parsing to bool: Should be false but is " + expected.isTrue + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToDouble2()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1)";
+            root.Attach("text", node, "d2");
+            circuit.Execute();
+
+            Assert.True(expected.d2 == new double2(1,1), "Error when parsing to double2: Should be " + source.text + " but is " + expected.d2 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToDouble3()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1, 1)";
+            root.Attach("text", node, "d3");
+            circuit.Execute();
+
+            Assert.True(expected.d3 == new double3(1, 1, 1), "Error when parsing to double3: Should be " + source.text + " but is " + expected.d3 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToDouble4()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1, 1, 1)";
+            root.Attach("text", node, "d4");
+            circuit.Execute();
+
+            Assert.True(expected.d4 == new double4(1, 1, 1, 1), "Error when parsing to double4: Should be " + source.text + " but is " + expected.d4 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToDouble4x4()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)";
+            root.Attach("text", node, "d4x4");
+            circuit.Execute();
+
+            Assert.True(expected.d4x4 == new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), "Error when parsing to double4x4: Should be " + source.text + " but is " + expected.d4x4 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToFloat2()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1)";
+            root.Attach("text", node, "f2");
+            circuit.Execute();
+
+            Assert.True(expected.f2 == new float2(1, 1), "Error when parsing to float2: Should be " + source.text + " but is " + expected.f2 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToFloat3()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1, 1)";
+            root.Attach("text", node, "f3");
+            circuit.Execute();
+
+            Assert.True(expected.f3 == new float3(1, 1, 1), "Error when parsing to float3: Should be " + source.text + " but is " + expected.f3 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToFloat4()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1, 1, 1)";
+            root.Attach("text", node, "f4");
+            circuit.Execute();
+
+            Assert.True(expected.f4 == new float4(1, 1, 1, 1), "Error when parsing to float4: Should be " + source.text + " but is " + expected.f4 + ".");
+        }
+
+        [Fact]
+        public void ConvertFromStringToFloat4x4()
+        {
+            ConverterClass source = new ConverterClass();
+            ConverterClass expected = new ConverterClass();
+            Node root = new Node(source);
+            Node node = new Node(expected);
+            Circuit circuit = new Circuit();
+
+            circuit.AddNode(root);
+            circuit.AddNode(node);
+            circuit.AddRoot(root);
+
+            source.text = "(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)";
+            root.Attach("text", node, "f4x4");
+            circuit.Execute();
+
+            Assert.True(expected.f4x4 == new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), "Error when parsing to float4x4: Should be " + source.text + " but is " + expected.f4x4 + ".");
         }
 
         [Theory]
