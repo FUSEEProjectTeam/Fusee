@@ -1,9 +1,8 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
-using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -52,41 +51,35 @@ namespace Fusee.Examples.Bone.Core
             // Load the standard model
             _scene = new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
-                    new SceneNodeContainer
+                    new SceneNode
                     {
-                        Components = new List<SceneComponentContainer>
+                        Components = new List<SceneComponent>
                         {
-                            new TransformComponent
+                            new Transform
                             {
                                 Rotation = float3.Zero,
                                 Translation = new float3(0, 0, 0),
                                 Scale = float3.One
                             },
-                            new BoneComponent()
+                            new Fusee.Engine.Core.Scene.Bone()
                         },
                         Children = new ChildList()
                         {
-                            new SceneNodeContainer
+                            new SceneNode
                             {
-                                Components = new List<SceneComponentContainer>
+                                Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Rotation = float3.Zero,
                                         Translation = new float3(0, 0.5f, 0),
                                         Scale = float3.One
                                     },
-                                    new BoneComponent(),
-                                    new WeightComponent(),
-                                    new MaterialComponent
-                                    {
-                                        Diffuse = new MatChannelContainer
-                                        {
-                                            Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
-                                        }
-                                    },
+                                    new Engine.Core.Scene.Bone(),
+                                    new Weight(),
+                                    ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
                                     CreateCuboid(float3.One)
                                 }
                             }
@@ -108,8 +101,8 @@ namespace Fusee.Examples.Bone.Core
             //{
             //    bindingMatrices.Add(float4x4.Identity);
             //}
-            var mesh = _scene.Children[2].Children[2].GetComponent<Mesh>();
-            var wm = _scene.Children[2].Children[2].GetComponent<WeightComponent>();
+            var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
+            var wm = _scene.Children[1].Children[2].GetComponent<Weight>();
             var WeightMap = new List<VertexWeightList>();
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
@@ -131,9 +124,9 @@ namespace Fusee.Examples.Bone.Core
                 });
             }
             wm.WeightMap = WeightMap;
-            var weightMapFromScene = _scene.Children[2].Children[2].Components[1];
+            var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
-            //_scene.Children.Insert(0, new SceneNodeContainer()
+            //_scene.Children.Insert(0, new SceneNode()
             //{
             //    Name = "BoneContainer1",
             //    Components = new List<SceneComponentContainer>()
@@ -147,7 +140,7 @@ namespace Fusee.Examples.Bone.Core
             //    },
             //    Children = new ChildList
             //    {
-            //        new SceneNodeContainer()
+            //        new SceneNode()
             //        {
             //            Components = new List<SceneComponentContainer>
             //            {
@@ -161,7 +154,7 @@ namespace Fusee.Examples.Bone.Core
             //            }
             //        },
 
-            //        new SceneNodeContainer()
+            //        new SceneNode()
             //        {
             //            Name = "BoneContainer2",
             //            Components = new List<SceneComponentContainer>
@@ -176,7 +169,7 @@ namespace Fusee.Examples.Bone.Core
 
             //            Children = new ChildList
             //            {
-            //                new SceneNodeContainer
+            //                new SceneNode
             //                {
             //                Components = new List<SceneComponentContainer>()
             //                {
@@ -207,7 +200,7 @@ namespace Fusee.Examples.Bone.Core
             //// now we can convert the scene
             //_scene = new ConvertSceneGraph().Convert(_scene);
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            var aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
@@ -215,9 +208,9 @@ namespace Fusee.Examples.Bone.Core
                 // recenter it to the bounding box. Do this check individually per dimension.
                 // This way, small deviations will keep the model's original center, while big deviations
                 // will make the model rotate around its geometric center.
-                float3 bbCenter = bbox.Value.Center;
-                float3 bbSize = bbox.Value.Size;
-                float3 center = float3.Zero;
+                var bbCenter = bbox.Value.Center;
+                var bbSize = bbox.Value.Size;
+                var center = float3.Zero;
                 if (System.Math.Abs(bbCenter.x) > bbSize.x * 0.3)
                     center.x = bbCenter.x;
                 if (System.Math.Abs(bbCenter.y) > bbSize.y * 0.3)
@@ -227,7 +220,7 @@ namespace Fusee.Examples.Bone.Core
                 _sceneCenter = float4x4.CreateTranslation(-center);
 
                 // Adjust the model size
-                float maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
+                var maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
                 if (maxScale != 0)
                     _sceneScale = float4x4.CreateScale(200.0f / maxScale);
                 else
@@ -270,7 +263,7 @@ namespace Fusee.Examples.Bone.Core
                 _zoomVel = Input.Touch.TwoPointDistanceVel * -0.01f;
                 _angleRoll = Input.Touch.TwoPointAngle - _angleRollInit;
                 _offset = Input.Touch.TwoPointMidPoint - _offsetInit;
-                float pinchSpeed = Input.Touch.TwoPointDistanceVel;
+                var pinchSpeed = Input.Touch.TwoPointDistanceVel;
                 if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
             }
             else
@@ -330,13 +323,13 @@ namespace Fusee.Examples.Bone.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
-            RC.Projection = mtxOffset * _projection;
+            RC.Projection = mtxOffset * RC.Projection;
 
             // move one bone
-            var translation = _scene.Children[2].Children[1].GetComponent<TransformComponent>();
+            var translation = _scene.Children[1].Children[1].GetComponent<Transform>();
             translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
@@ -346,7 +339,7 @@ namespace Fusee.Examples.Bone.Core
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 

@@ -69,7 +69,8 @@ namespace Fusee.Base.Common
                     case ColorFormat.fRGB32:
                     case ColorFormat.fRGB16:
                         return 12;
-                    case ColorFormat.Depth:
+                    case ColorFormat.Depth16:
+                    case ColorFormat.Depth24:
                         return 2;
                     default:
                         throw new ArgumentOutOfRangeException();

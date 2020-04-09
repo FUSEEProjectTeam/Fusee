@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     internal class MeshManager
     {
         private readonly IRenderContextImp _renderContextImp;
-
-        private Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
-
-        private Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
+        private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
+        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
 
         private void Remove(IMeshImp meshImp)
         {
@@ -49,27 +48,25 @@ namespace Fusee.Engine.Core
 
         private void MeshChanged(object sender, MeshDataEventArgs meshDataEventArgs)
         {
-            IMeshImp toBeUpdatedMeshImp;
-            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier,
-                out toBeUpdatedMeshImp))
-            {
-                throw new KeyNotFoundException("Mesh is not registered.");
-            }
+            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))            
+                throw new KeyNotFoundException("Mesh is not registered.");            
 
-            Mesh mesh = meshDataEventArgs.Mesh;
+            var mesh = meshDataEventArgs.Mesh;
 
             switch (meshDataEventArgs.ChangedEnum)
             {
                 case MeshChangedEnum.Disposed:
+
                     // Add the meshImp to the toBeDeleted Stack...#
                     _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp);
+
                     // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
                     _identifierToMeshImpDictionary.Remove(mesh.SessionUniqueIdentifier);
-                    // add the identifier to the reusable identifiers stack
-                    //_reusableIdentifiers.Push(meshDataEventArgs.Mesh.Identifier);
+                   
                     break;
                 case MeshChangedEnum.Vertices:
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
+                    mesh.BoundingBox = new AABBf(mesh.Vertices);
                     break;
                 case MeshChangedEnum.Triangles:
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
@@ -95,14 +92,13 @@ namespace Fusee.Engine.Core
                 case MeshChangedEnum.BiTangents:
                     _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
                     break;
-
             }
         }
 
         private IMeshImp RegisterNewMesh(Mesh mesh)
         {
             // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
-            IMeshImp meshImp = _renderContextImp.CreateMeshImp();
+            var meshImp = _renderContextImp.CreateMeshImp();
 
             // Begin Setup GPU Buffers / allocate GPU memory
             if (mesh.VerticesSet)

@@ -1,6 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 namespace Fusee.Test.Math.Core
@@ -84,40 +85,44 @@ namespace Fusee.Test.Math.Core
         public void Column0_IsColumn()
         {
             var matrix = double4x4.Identity;
+            matrix.Column0 = new double4(3, 3, 3, 3);
 
             var actual = matrix.Column0;
 
-            Assert.Equal(new double4(1, 0, 0, 0), actual);
+            Assert.Equal(new double4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column1_IsColumn()
         {
             var matrix = double4x4.Identity;
+            matrix.Column1 = new double4(3, 3, 3, 3);
 
             var actual = matrix.Column1;
 
-            Assert.Equal(new double4(0, 1, 0, 0), actual);
+            Assert.Equal(new double4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column2_IsColumn()
         {
             var matrix = double4x4.Identity;
+            matrix.Column2 = new double4(3, 3, 3, 3);
 
             var actual = matrix.Column2;
 
-            Assert.Equal(new double4(0, 0, 1, 0), actual);
+            Assert.Equal(new double4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column3_IsColumn()
         {
             var matrix = double4x4.Identity;
+            matrix.Column3 = new double4(3, 3, 3, 3);
 
             var actual = matrix.Column3;
 
-            Assert.Equal(new double4(0, 0, 0, 1), actual);
+            Assert.Equal(new double4(3, 3, 3, 3), actual);
         }
 
         [Fact]
@@ -622,9 +627,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetSubtraction))]
-        public void Substract_Static(double4x4 left, double4x4 right, double4x4 expected)
+        public void Subtract_Static(double4x4 left, double4x4 right, double4x4 expected)
         {
-            var actual = double4x4.Substract(left, right);
+            var actual = double4x4.Subtract(left, right);
 
             Assert.Equal(expected, actual);
         }
@@ -634,6 +639,8 @@ namespace Fusee.Test.Math.Core
         public void Mult_Static(double4x4 left, double4x4 right, double4x4 expected)
         {
             var actual = double4x4.Mult(left, right);
+
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -646,6 +653,16 @@ namespace Fusee.Test.Math.Core
             var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.Invert();
+
+            Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
+        }            
+
+        [Fact]
+        public void InvertAffine_Static()
+        {
+            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.InvertAffine();
 
             Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
@@ -713,6 +730,55 @@ namespace Fusee.Test.Math.Core
             var actual = double4x4.TransformPerspective(mat, vec);
 
             Assert.Equal(new double3(0, 0, 0.5f), actual);
+        }
+
+        #endregion
+
+        #region TRS Decomposition
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionTranslationMtxs))]
+        public void TranslationDecompositionMtx(double4x4 mat, double4x4 expected)
+        {
+            var result = double4x4.TranslationDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionTranslationVecs))]
+        public void TranslationDecompositionVec(double4x4 mat, double3 expected)
+        {
+            var result = double4x4.GetTranslation(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionRotationMtxs))]
+        public void RotationDecomposition(double4x4 mat, double4x4 expected)
+        {
+            var result = double4x4.RotationDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionScaleMtxs))]
+        public void ScaleDecompositionMtx(double4x4 mat, double4x4 expected)
+        {
+            var result = double4x4.ScaleDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionScaleVecs))]
+        public void ScaleDecompositionVec(double4x4 mat, double3 expected)
+        {
+            var result = double4x4.GetScale(mat);
+
+            Assert.Equal(expected, result);
         }
 
         #endregion
@@ -834,22 +900,48 @@ namespace Fusee.Test.Math.Core
 
         #region Overrides
 
-        [Fact]
-        public void ToString_IsString()
-        {
-            var mat = new double4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-
-            var actual = mat.ToString();
-
-            Assert.Equal("(1, 0, 0, 0)\n(0, 1, 0, 0)\n(0, 0, 1, 0)\n(0, 0, 0, 1)", actual);
-        }
-
         //TODO: GetHasCode
         //TODO: Equals(obj)
 
         #endregion
 
         #region IEnumerables
+
+        public static IEnumerable<object[]> GetTRSDecompositionTranslationMtxs()
+        {
+            yield return new object[] { double4x4.Identity, double4x4.Identity };
+            yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), double4x4.Identity };
+            yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new double4x4(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1) };
+            yield return new object[] { new double4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new double4x4(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionTranslationVecs()
+        {
+            yield return new object[] { new double4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1), double3.Zero };
+            yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), double3.Zero };
+            yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new double3(5, 6, 7) };
+            yield return new object[] { new double4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new double3(5, 6, 7) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionRotationMtxs()
+        {
+            yield return new object[] { double4x4.Identity, double4x4.Identity };
+            yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), double4x4.Identity };
+            yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), double4x4.Identity };
+            yield return new object[] { new double4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new double4x4(0.2672612419124244, 0.48507125007266594, 0.9045340337332909, 0, 0.5345224838248488, 0.7276068751089989, 0.30151134457776363, 0, 0.8017837257372732, 0.48507125007266594, 0.30151134457776363, 0, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionScaleMtxs()
+        {
+            yield return new object[] { double4x4.Identity, double4x4.Identity };
+            yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1) };
+            yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new double4x4(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1) };
+            yield return new object[] { new double4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new double4x4(7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionScaleVecs()
+        {
+            yield return new object[] { double4x4.Identity, double3.One };
+            yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new double3(2, 4, 5) };
+            yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new double3(2, 3, 4) };
+            yield return new object[] { new double4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new double3(7, 7, 7) };
+        }
 
         public static IEnumerable<object[]> GetAxisAngle()
         {
@@ -953,5 +1045,83 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
+
+        #region ToString/Parse
+
+        [Fact]
+        public void ToString_NoCulture()
+        {
+            Assert.NotNull(new double4x4().ToString());
+        }
+
+        [Fact]
+        public void ToString_InvariantCulture()
+        {
+            string s = "(1.5, 0, 0, 0)\n(0, 1.5, 0, 0)\n(0, 0, 1.5, 0)\n(0, 0, 0, 1)";
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ToString_CultureDE()
+        {
+            string s = "(1,5; 0; 0; 0)\n(0; 1,5; 0; 0)\n(0; 0; 1,5; 0)\n(0; 0; 0; 1)";
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_InvariantCulture()
+        {
+            string s = "(1.5, 0, 0, 0)\n(0, 1.5, 0, 0)\n(0, 0, 1.5, 0)\n(0, 0, 0, 1)";
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(f, double4x4.Parse(s, CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_CultureDE()
+        {
+            string s = "(1,5; 0; 0; 0)\n(0; 1,5; 0; 0)\n(0; 0; 1,5; 0)\n(0; 0; 0; 1)";
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(f, double4x4.Parse(s, new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_ToString_NoCulture()
+        {
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(f, double4x4.Parse(f.ToString()));
+        }
+
+        [Fact]
+        public void Parse_ToString_InvariantCulture()
+        {
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(f, double4x4.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_ToString_CultureDE()
+        {
+            double4x4 f = double4x4.Scale(1.5f);
+
+            Assert.Equal(f, double4x4.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_Exception()
+        {
+            string s = "Fusee";
+
+            Assert.Throws<FormatException>(() => double4x4.Parse(s));
+        }
+
+        #endregion ToString/Parse
     }
 }

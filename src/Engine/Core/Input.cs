@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core
 {
 
     /// <summary>
-    /// Parameters sent with a <see cref="InputDriver.DeviceConnected"/> or <see cref="InputDriver.DeviceDisconnected"/>  event.
+    /// Parameters sent when an InputDevice is connected or disconnected.
     /// </summary>
     public class DeviceConnectionArgs : EventArgs
     {

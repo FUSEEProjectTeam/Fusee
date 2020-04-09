@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -9,8 +8,10 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace FuseeApp
 {
@@ -35,7 +36,7 @@ namespace FuseeApp
         private bool _keys;
 
         // Init is called on startup. 
-        public override void Init()
+        public override async Task<bool> Init()
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -45,6 +46,8 @@ namespace FuseeApp
             
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame

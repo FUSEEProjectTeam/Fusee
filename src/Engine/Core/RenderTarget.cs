@@ -63,6 +63,11 @@ namespace Fusee.Engine.Core
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
         }
 
+        /// <summary>
+        /// Sets a RenderTexture into the correct position in the RederTexture array.
+        /// </summary>
+        /// <param name="src">The source RenderTexture.</param>
+        /// <param name="tex">The type of the texture.</param>
         public void SetTexture(WritableTexture src, RenderTargetTextureTypes tex)
         {
             RenderTextures[(int)tex] = src ?? throw new ArgumentException("Texture from source target is null!");
@@ -95,7 +100,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.NONE, TextureCompareFunc compareFunc = TextureCompareFunc.GL_LESS)
+        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
         {
             RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
         }
@@ -116,14 +121,19 @@ namespace Fusee.Engine.Core
             RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
         }
 
-        // Public implementation of Dispose pattern callable by consumers.
+        /// <summary>
+        /// Public implementation of Dispose pattern callable by consumers.
+        /// </summary>
         public void Dispose()
         {            
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        // Protected implementation of Dispose pattern.
+        /// <summary>
+        /// The protected implementation of Dispose pattern callable by consumers.
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {            
             if (Disposed)

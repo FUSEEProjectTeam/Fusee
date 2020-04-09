@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
@@ -139,6 +139,9 @@ namespace Fusee.Engine.Core
             return -1;
         }
 
+        /// <summary>
+        /// Whether or not the app is initialized.
+        /// </summary>
         protected bool _appInitialized;
 
         /// <summary>
@@ -157,6 +160,7 @@ namespace Fusee.Engine.Core
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
+            RC.SetRenderStateSet(RenderStateSet.Default);
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;
@@ -177,11 +181,19 @@ namespace Fusee.Engine.Core
                 // rendering
                 RenderAFrame();
 
+                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
+                RC.ResetToDefaultRenderContextState();
+
                 // post-rendering
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
+            CanvasImplementor.Resize += delegate
+            {
+                RC.DefaultState.CanvasWidth = Width;
+                RC.DefaultState.CanvasHeight = Height;
+                Resize(new ResizeEventArgs(Width, Height));
+            };
         }
 
         /// <summary>

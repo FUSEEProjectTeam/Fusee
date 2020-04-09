@@ -1,6 +1,8 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -8,10 +10,12 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
+using Transform = Fusee.Engine.Core.Scene.Transform;
 
 namespace Fusee.Examples.GeometryEditing.Core
 {
@@ -34,7 +38,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private bool _twoTouchRepeated;
 
-        private SceneNodeContainer _parentNode;
+        private SceneNode _parentNode;
         private SceneContainer _scene;
         private SceneRendererForward _renderer;
 
@@ -48,7 +52,7 @@ namespace Fusee.Examples.GeometryEditing.Core
         private ScenePicker _scenePicker;
         private PickResult _currentPick;
 
-        private SceneNodeContainer _selectedNode;
+        private SceneNode _selectedNode;
         private bool _isTranslating;
         private bool _isScaling;
 
@@ -56,13 +60,13 @@ namespace Fusee.Examples.GeometryEditing.Core
         public override async Task<bool> Init()
         {
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            _parentNode = new SceneNodeContainer
+            _parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -70,10 +74,8 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
             _parentNode.Components.Add(parentTrans);
 
-            _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            _scene.Children[0].Components.Insert(0, projComp);
+            _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };           
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -111,16 +113,16 @@ namespace Fusee.Examples.GeometryEditing.Core
             Present();
         }
 
-        private void SelectGeometry(SceneNodeContainer selectedNode)
+        private void SelectGeometry(SceneNode selectedNode)
         {
             if (selectedNode != _selectedNode && selectedNode != null)
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetMaterial().Diffuse.Color = _defaultColor;
+                    _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetMaterial().Diffuse.Color = _selectedColor;
+                _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _selectedColor);
             }
         }
 
@@ -356,12 +358,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Mouse.RightButton)
             {
                 _pickPos = Mouse.Position;
-                Diagnostics.Log(_pickPos);
+                Diagnostics.Debug(_pickPos);
                 var pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-
-                _scenePicker.View = viewMatrix;
-                _scenePicker.Projection = _projection;
-                var newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                
+                var newPick = _scenePicker.Pick(RC,pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -375,7 +375,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             RC.View = viewMatrix;
             //var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
-            RC.Projection = /*mtxOffset **/ _projection;
+            RC.Projection = /*mtxOffset **/ RC.Projection;
         }
 
         private void AddGeometryToSceneNode(Geometry geometry, float3 position)
@@ -384,7 +384,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             newGeo.Triangulate();
             var geometryMesh = new JometriMesh(newGeo);
 
-            var sceneNodeContainer = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeContainer = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshComponent = new Mesh
             {
@@ -392,20 +392,16 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Triangles = geometryMesh.Triangles,
                 Normals = geometryMesh.Normals,
             };
-            var translationComponent = new TransformComponent
+            var translationComponent = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var materialComponent = new MaterialComponent
-            {
-                Diffuse = new MatChannelContainer(),
-                Specular = new SpecularChannelContainer(),
-            };
-            materialComponent.Diffuse.Color = _defaultColor;
+            var shaderEffect = ShaderCodeBuilder.Default;           
+            shaderEffect.SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(materialComponent);
+            sceneNodeContainer.Components.Add(shaderEffect);
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);

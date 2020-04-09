@@ -4,229 +4,313 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
-    //TODO: define names for "standard" varying parameters?
     /// <summary>
     /// Collection of uniform parameter names, as they should be used in the Shader Shards to make them compatible to each other.
     /// </summary>
     public static class UniformNameDeclarations
     {
+        /// <summary>
+        /// The array postfix as we get it for uniforms of array types, if we call gl.GetShaderParamList().
+        /// </summary>
+        public const string ArrayPostfix = "[0]";
+
         #region Fusee internal
 
         /// <summary>
         /// The vertex attribute name.
         /// </summary>
-        public static readonly string Vertex = "fuVertex";
+        public const string Vertex = "fuVertex";
         /// <summary>
         /// The color attribute name.
         /// </summary>
-        public static readonly string Color = "fuColor";
+        public const string Color = "fuColor";
 
         /// <summary>
         /// The normal attribute name.
         /// </summary>
-        public static readonly string Normal = "fuNormal";
+        public const string Normal = "fuNormal";
 
         /// <summary>
         /// The uv attribute name.
         /// </summary>
-        public static readonly string TextureCoordinates = "fuUV";
+        public const string TextureCoordinates = "fuUV";
 
         /// <summary>
         /// The tangent attribute name.
         /// </summary>
-        public static readonly string TangentAttribName = "fuTangent";
+        public const string TangentAttribName = "fuTangent";
 
         /// <summary>
         /// The bitangent attribute name.
         /// </summary>
-        public static readonly string BitangentAttribName = "fuBitangent";
+        public const string BitangentAttribName = "fuBitangent";
 
         /// <summary>
         /// The bone weight attribute name.
         /// </summary>
-        public static readonly string BoneWeight = "fuBoneWeight";
+        public const string BoneWeight = "fuBoneWeight";
 
         /// <summary>
         /// The bone index attribute name.
         /// </summary>
-        public static readonly string BoneIndex = "fuBoneIndex";
+        public const string BoneIndex = "fuBoneIndex";
 
         /// <summary>
         /// The model matrix. Transforms from model into world space.
         /// </summary>
-        public static readonly string Model = "FUSEE_M";
+        public const string Model = "FUSEE_M";
 
         /// <summary>
         /// The view matrix. Transforms from world into camera space.
         /// </summary>
-        public static readonly string View = "FUSEE_V";
+        public const string View = "FUSEE_V";
 
         /// <summary>
         /// The model view matrix. Transforms from model into camera space.
         /// </summary>
-        public static readonly string ModelView = "FUSEE_MV";
+        public const string ModelView = "FUSEE_MV";
 
         /// <summary>
         /// The model view matrix. Transforms from view into clip space.
         /// </summary>
-        public static readonly string Projection = "FUSEE_P";
+        public const string Projection = "FUSEE_P";
 
         /// <summary>
         /// The model view projection matrix. Transforms from model into clip space.
         /// </summary>
-        public static readonly string ModelViewProjection = "FUSEE_MVP";
+        public const string ModelViewProjection = "FUSEE_MVP";
 
         /// <summary>
         /// The inverse view matrix.
         /// </summary>
-        public static readonly string IView = "FUSEE_IV";
+        public const string IView = "FUSEE_IV";
+
+        /// <summary>
+        /// The inverse view matrix.
+        /// </summary>
+        public const string IModel = "FUSEE_IM";
+
+        /// <summary>
+        /// The inverse view matrix.
+        /// </summary>
+        public const string TModel = "FUSEE_TM";
 
         /// <summary>
         /// The inverse model view matrix.
         /// </summary>
-        public static readonly string IModelView = "FUSEE_IMV";
+        public const string IModelView = "FUSEE_IMV";
 
         /// <summary>
         /// The inverse transposed view matrix.
         /// </summary>
-        public static readonly string ITView = "FUSEE_ITV";
+        public const string TView = "FUSEE_TV";
+
+        /// <summary>
+        /// The inverse transposed view matrix.
+        /// </summary>
+        public const string ITView = "FUSEE_ITV";
 
         /// <summary>
         /// The inverse projection matrix.
         /// </summary>
-        public static readonly string IProjection = "FUSEE_IP";
+        public const string IProjection = "FUSEE_IP";
 
         /// <summary>
         /// The inverse model view projection matrix.
         /// </summary>
-        public static readonly string IModelViewProjection = "FUSEE_IMVP";
+        public const string IModelViewProjection = "FUSEE_IMVP";
 
         /// <summary>
         /// The transposed model view matrix.
         /// </summary>
-        public static readonly string TModelView = "FUSEE_TMV";
+        public const string TModelView = "FUSEE_TMV";
 
         /// <summary>
         /// The transposed projection matrix.
         /// </summary>
-        public static readonly string TProjection = "FUSEE_TP";
+        public const string TProjection = "FUSEE_TP";
 
         /// <summary>
         /// The transposed model view projection matrix.
         /// </summary>
-        public static readonly string TModelViewProjection = "FUSEE_TMVP";
+        public const string TModelViewProjection = "FUSEE_TMVP";
 
         /// <summary>
         /// The inversed transposed model view matrix.
         /// </summary>
-        public static readonly string ITModelView = "FUSEE_ITMV";
+        public const string ITModelView = "FUSEE_ITMV";
 
         /// <summary>
         /// The inversed transposed projection matrix.
         /// </summary>
-        public static readonly string ITProjection = "FUSEE_ITP";
+        public const string ITProjection = "FUSEE_ITP";
 
         /// <summary>
         /// The inversed transposed model view projection matrix.
         /// </summary>
-        public static readonly string ITModelViewProjection = "FUSEE_ITMVP";
+        public const string ITModelViewProjection = "FUSEE_ITMVP";
+
+        /// <summary>
+        /// The inversed transposed model view projection matrix.
+        /// </summary>
+        public const string ITModel = "FUSEE_ITM";
 
         /// <summary>
         /// The bones array.
         /// </summary>
-        public static readonly string Bones = "FUSEE_BONES";
+        public const string Bones = "FUSEE_BONES";        
+
+        /// <summary>
+        /// The bones array including the postfix.
+        /// </summary>
+        public const string BonesArray = Bones + ArrayPostfix;
+
 
         #endregion
 
-        /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixel shaders
-        /// </summary>
-        public static string AmbientStrengthName { get; } = "AmbientStrength";
+        #region SSAO
 
         /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixel shaders
+        /// The var name for the uniform SSAOKernel[0] variable.
         /// </summary>
-        public static string DiffuseColor { get; } = "DiffuseColor";
+        public static string SSAOKernel { get; } = "SSAOKernel[0]";
 
         /// <summary>
-        /// The var name for the uniform SpecularColor variable within the pixel shaders
+        /// The var name for the uniform NoiseTex variable, needed to calculate SSAO.
         /// </summary>
-        public static string SpecularColor { get; } = "SpecularColor";
+        public static string NoiseTex { get; } = "NoiseTex";
 
         /// <summary>
-        /// The var name for the uniform EmissiveColor variable within the pixel shaders
+        /// The var name for the uniform SsaoOn variable.
         /// </summary>
-        public static string EmissiveColorName { get; } = "EmissiveColor";
+        public static string SsaoOn { get; } = "SsaoOn";
+
+        #endregion
+
+        #region Shadow mapping
 
         /// <summary>
-        /// The var name for the uniform DiffuseTexture variable within the pixel shaders
+        /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public static string DiffuseTexture { get; } = "DiffuseTexture";
+        public const string LightSpaceMatrix = "LightSpaceMatrix"; 
 
         /// <summary>
-        /// The var name for the uniform SpecularTexture variable within the pixel shaders
+        /// The var name for the uniform ShadowMap.
         /// </summary>
-        public static string SpecularTextureName { get; } = "SpecularTexture";
+        public const string ShadowMap = "ShadowMap";
 
         /// <summary>
-        /// The var name for the uniform EmissiveTexture variable within the pixel shaders
+        /// The var name for the uniform ShadowCubeMap.
         /// </summary>
-        public static string EmissiveTextureName { get; } = "EmissiveTexture";
+        public const string ShadowCubeMap = "ShadowCubeMap";
+
+        #endregion
+
 
         /// <summary>
-        /// The var name for the uniform BumpTexture variable within the pixel shaders
+        /// The var name for the uniform PassNo variable.
         /// </summary>
-        public static string BumpTextureName { get; } = "BumpTexture";
+        public const string RenderPassNo = "PassNo";
 
         /// <summary>
-        /// The var name for the uniform DiffuseMix variable within the pixel shaders
+        /// The var name for the uniform BackgroundColor.
         /// </summary>
-        public static string DiffuseMix { get; } = "DiffuseMix";
+        public const string BackgroundColor = "BackgroundColor";
 
         /// <summary>
-        /// The var name for the uniform SpecularMix variable within the pixel shaders
+        /// The var name for the uniform ScreenParams (width and height of the window).
         /// </summary>
-        public static string SpecularMixName { get; } = "SpecularMix";
+        public const string ScreenParams = "ScreenParams";
 
         /// <summary>
-        /// The var name for the uniform EmissiveMix variable within the pixel shaders
+        /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public static string EmissiveMixName { get; } = "EmissiveMix";
+        public const string AmbientStrengthName = "AmbientStrength";
 
         /// <summary>
-        /// The var name for the uniform SpecularShininess variable within the pixel shaders
+        /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public static string SpecularShininessName { get; } = "SpecularShininess";
+        public const string AlbedoColor = "AlbedoColor";
 
         /// <summary>
-        /// The var name for the uniform SpecularIntensity variable within the pixel shaders
+        /// The var name for the uniform SpecularColor variable within the pixel shaders.
         /// </summary>
-        public static string SpecularStrength { get; } = "SpecularIntensity";
+        public const string SpecularColor = "SpecularColor";
 
         /// <summary>
-        /// [PBR (Cook-Torrance) only] Describes the roughness of the material
+        /// The var name for the uniform EmissiveColor variable within the pixel shaders.
+        /// </summary>
+        public const string EmissiveColor = "EmissiveColor";
+
+        /// <summary>
+        /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
+        /// </summary>
+        public const string AlbedoTexture = "AlbedoTexture";
+
+        /// <summary>
+        /// The var name for the uniform SpecularTexture variable within the pixel shaders.
+        /// </summary>
+        public const string SpecularTexture = "SpecularTexture";
+
+        /// <summary>
+        /// The var name for the uniform EmissiveTexture variable within the pixel shaders.
+        /// </summary>
+        public const string EmissiveTexture = "EmissiveTexture";
+
+        /// <summary>
+        /// The var name for the uniform NormalMap variable within the pixel shaders.
+        /// </summary>
+        public const string NormalMap = "NormalMap";
+
+        /// <summary>
+        /// The var name for the uniform DiffuseMix variable within the pixel shaders.
+        /// </summary>
+        public const string AlbedoMix = "AlbedoMix";
+
+        /// <summary>
+        /// The var name for the uniform SpecularMix variable within the pixel shaders.
+        /// </summary>
+        public const string SpecularMix = "SpecularMix";
+
+        /// <summary>
+        /// The var name for the uniform EmissiveMix variable within the pixel shaders.
+        /// </summary>
+        public const string EmissiveMix = "EmissiveMix";
+
+        /// <summary>
+        /// The var name for the uniform SpecularShininess variable within the pixel shaders.
+        /// </summary>
+        public const string SpecularShininess = "SpecularShininess";
+
+        /// <summary>
+        /// The var name for the uniform SpecularIntensity variable within the pixel shaders.
+        /// </summary>
+        public const string SpecularIntensity = "SpecularIntensity";
+
+        /// <summary>
+        /// [PBR (Cook-Torrance) only] Describes the roughness of the material.
         /// </summary>       
-        public static string RoughnessValue { get; } = "RoughnessValue";
+        public const string RoughnessValue = "RoughnessValue";
 
         /// <summary>
-        /// [PBR (Cook-Torrance) only] This float describes the fresnel reflectance of the material
+        /// [PBR (Cook-Torrance) only] This float describes the fresnel reflectance of the material.
         /// </summary>        
-        public static string FresnelReflectance { get; } = "FresnelReflectance";
+        public const string FresnelReflectance = "FresnelReflectance";
 
         /// <summary>
-        /// [PBR (Cook-Torrance) only] This float describes the diffuse fraction of the material
+        /// [PBR (Cook-Torrance) only] This float describes the diffuse fraction of the material.
         /// </summary>       
-        public static string DiffuseFraction { get; } = "DiffuseFraction";
+        public const string DiffuseFraction = "DiffuseFraction";
 
         /// <summary>
-        /// The var name for the uniform BumpIntensity variable within the pixel shaders
+        /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public static string BumpIntensityName { get; } = "BumpIntensityName";
-      
+        public const string NormalMapIntensity = "NormalMapIntensity";
+
         /// <summary>
         /// List of all possible render texture names.
         /// </summary>
-        public static List<string> DeferredRenderTextures { get; } = new List<string>()
+        public static readonly List<string> DeferredRenderTextures = new List<string>()
         {
             Enum.GetName(typeof(RenderTargetTextureTypes), 0),
             Enum.GetName(typeof(RenderTargetTextureTypes), 1),
@@ -234,6 +318,6 @@ namespace Fusee.Engine.Core.ShaderShards
             Enum.GetName(typeof(RenderTargetTextureTypes), 3),
             Enum.GetName(typeof(RenderTargetTextureTypes), 4),
             Enum.GetName(typeof(RenderTargetTextureTypes), 5),
-        };
+        };        
     }
 }

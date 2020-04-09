@@ -1,7 +1,6 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Fusee.Math.Core;
 
 namespace Fusee.Xene
 {
@@ -21,12 +20,12 @@ namespace Fusee.Xene
         /// The stack's Pop operation. Decreases the stack Depth about one and restores the previous state.
         /// </summary>
         void Pop();
-        
+
         /// <summary>
         /// Clears the stack. The Depth will be reset to zero.
         /// </summary>
         void Clear();
-        
+
         /// <summary>
         /// Retrieves the stack's depth.
         /// </summary>
@@ -43,7 +42,6 @@ namespace Fusee.Xene
     public class StateStack<T> : IStateStack
     {
         private T[] _array;
-        private int _top;
         private const int _defaultCapacity = 8;
 
         /// <summary>
@@ -54,7 +52,7 @@ namespace Fusee.Xene
         public StateStack(int capacity = _defaultCapacity)
         {
             _array = new T[capacity];
-            _top = 0;
+            Depth = 0;
         }
 
         /// <summary>
@@ -65,8 +63,8 @@ namespace Fusee.Xene
         /// </value>
         public T Tos
         {
-            set { _array[_top] = value; }
-            get { return _array[_top]; }
+            set => _array[Depth] = value;
+            get => _array[Depth];
         }
 
         /// <summary>
@@ -74,15 +72,15 @@ namespace Fusee.Xene
         /// </summary>
         public void Push()
         {
-            int size = _top + 1;
+            var size = Depth + 1;
             if (size == _array.Length)
             {
-                T[] objArray = new T[2 * _array.Length];
+                var objArray = new T[2 * _array.Length];
                 Array.Copy(_array, 0, objArray, 0, size);
                 _array = objArray;
             }
-            _array[size] = _array[_top];
-            _top++;
+            _array[size] = _array[Depth];
+            Depth++;
         }
 
         /// <summary>
@@ -90,7 +88,7 @@ namespace Fusee.Xene
         /// </summary>
         public void Pop()
         {
-            _array[_top--] = default(T);
+            _array[Depth--] = default;
         }
 
         /// <summary>
@@ -98,8 +96,8 @@ namespace Fusee.Xene
         /// </summary>
         public void Clear()
         {
-            Array.Clear(_array, 0, _top+1);
-            _top = 0;
+            Array.Clear(_array, 0, Depth + 1);
+            Depth = 0;
         }
 
         /// <summary>
@@ -108,13 +106,13 @@ namespace Fusee.Xene
         /// <value>
         /// The current depth of the stack.
         /// </value>
-        public int Depth { get { return _top + 1; } }
+        public int Depth { get; private set; }
     }
 
 
     /// <summary>
     /// An <see cref="IStateStack"/> implementation behaving better in situations where many subsequent Push (and Pop) operations occur
-    /// without actually altering the Tos contents. 
+    /// without actually altering the TOS contents. 
     /// </summary>
     /// <remarks>
     /// Using instances of this class is recommended if the Type parameter is a large value type.
@@ -124,7 +122,7 @@ namespace Fusee.Xene
     public class CollapsingStateStack<T> : IStateStack
     {
         private const int _defaultCapacity = 4;
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CollapsingStateStack{T}"/> class.
         /// </summary>
@@ -134,13 +132,13 @@ namespace Fusee.Xene
         {
             // The _impStack keeps the actual top-of-stack values. 
             _impStack = new StateStack<T>(capacity);
-            // The _countStack keeps the number of "Push" operations that occured between two Tos alterations
+            // The _countStack keeps the number of "Push" operations that occurred between two Tos alterations
             _countStack = new StateStack<int>(capacity);
         }
 
         private readonly StateStack<T> _impStack;
         private readonly StateStack<int> _countStack;
-        
+
         /// <summary>
         /// The stack's Push operation. Increases the stack Depth about one and copies the top of stack.
         /// </summary>
@@ -149,7 +147,7 @@ namespace Fusee.Xene
             Depth++;
             _countStack.Tos++;
         }
-        
+
         /// <summary>
         /// The stack's Pop operation. Decreases the stack Depth about one and restores the previous state.
         /// </summary>
@@ -170,7 +168,7 @@ namespace Fusee.Xene
                 _impStack.Pop();
             }
         }
-        
+
         /// <summary>
         /// Clears the stack. The Depth will be reset to zero.
         /// </summary>
@@ -180,7 +178,7 @@ namespace Fusee.Xene
             _countStack.Clear();
             Depth = 0;
         }
-        
+
         /// <summary>
         /// Retrieves the stack's depth.
         /// </summary>
@@ -211,7 +209,7 @@ namespace Fusee.Xene
                 }
                 _impStack.Tos = value;
             }
-            get { return _impStack.Tos;  }
+            get => _impStack.Tos;
         }
     }
 
@@ -223,7 +221,7 @@ namespace Fusee.Xene
     public class EmptyState : IStateStack
     {
         private int _depth;
-        
+
         /// <summary>
         /// The stack's Push operation. Increases the stack Depth about one and copies the top of stack.
         /// </summary>
@@ -254,14 +252,11 @@ namespace Fusee.Xene
         /// <value>
         /// The current depth of the stack.
         /// </value>
-        public int Depth
-        {
-            get { return _depth; }
-        }
+        public int Depth => _depth;
     }
 
     /// <summary>
-    /// Use this as a base class for defining your own state for arbitrary SceneVisitors. 
+    /// Use this as a base class for defining your own state for arbitrary Visitors. 
     /// </summary>
     /// <remarks>
     /// A state is always a list of individual
@@ -298,14 +293,14 @@ namespace Fusee.Xene
     /// </example>
     public class VisitorState : IStateStack
     {
-        private List<IStateStack> _stacks;
+        private readonly List<IStateStack> _stacks;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisitorState"/> class.
         /// </summary>
         public VisitorState()
         {
-            _stacks =  new List<IStateStack>();
+            _stacks = new List<IStateStack>();
         }
 
         /// <summary>
@@ -322,7 +317,7 @@ namespace Fusee.Xene
         /// </summary>
         public void Push()
         {
-            foreach (IStateStack stack in _stacks)
+            foreach (var stack in _stacks)
             {
                 stack.Push();
             }
@@ -333,7 +328,7 @@ namespace Fusee.Xene
         /// </summary>
         public void Pop()
         {
-            foreach (IStateStack stack in _stacks)
+            foreach (var stack in _stacks)
             {
                 stack.Pop();
             }
@@ -344,7 +339,7 @@ namespace Fusee.Xene
         /// </summary>
         public void Clear()
         {
-            foreach (IStateStack stack in _stacks)
+            foreach (var stack in _stacks)
             {
                 stack.Clear();
             }
@@ -356,10 +351,7 @@ namespace Fusee.Xene
         /// <value>
         /// The current depth of the visitor state.
         /// </value>
-        public int Depth
-        {
-            get { return _stacks.First().Depth; }
-        }
+        public int Depth => _stacks[0].Depth;
     }
 
     /// <summary>
@@ -368,9 +360,9 @@ namespace Fusee.Xene
     /// </summary>
     public class StandardState : VisitorState
     {
-        private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-        private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
-        private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
+        private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+        private readonly CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
+        private readonly CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
 
         /// <summary>
         /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
@@ -380,8 +372,8 @@ namespace Fusee.Xene
         /// </value>
         public float4x4 Model
         {
-            set { _model.Tos = value; }
-            get { return _model.Tos; }
+            set => _model.Tos = value;
+            get => _model.Tos;
         }
 
         /// <summary>
@@ -393,8 +385,8 @@ namespace Fusee.Xene
         /// </value>
         public float4x4 View
         {
-            set { _view.Tos = value; }
-            get { return _view.Tos; }
+            set => _view.Tos = value;
+            get => _view.Tos;
         }
 
         /// <summary>
@@ -406,8 +398,8 @@ namespace Fusee.Xene
         /// </value>
         public float4x4 Projection
         {
-            set { _projection.Tos = value; }
-            get { return _projection.Tos; }
+            set => _projection.Tos = value;
+            get => _projection.Tos;
         }
 
         /// <summary>
@@ -420,7 +412,4 @@ namespace Fusee.Xene
             RegisterState(_projection);
         }
     }
-
-
-
 }

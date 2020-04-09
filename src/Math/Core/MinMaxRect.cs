@@ -1,4 +1,6 @@
 ﻿using ProtoBuf;
+using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -6,21 +8,17 @@ namespace Fusee.Math.Core
     /// <summary>
     /// Class containing an axis aligned (two-dimensional) rectangle specified by its minimum (lower-left) and maximum (upper-right)
     /// points in 2d space.
-    /// </summary>
-    [StructLayout(LayoutKind.Sequential)]
-    [ProtoContract]
+    /// </summary>    
     public struct MinMaxRect
     {
         /// <summary>
         /// Returns the minimum (lower-left corner) as a float2 vector.
-        /// </summary>
-        [ProtoMember(1)]
+        /// </summary>       
         public float2 Min;
 
         /// <summary>
         /// Returns the maximum (upper-right corner) as a float2 vector.
-        /// </summary>
-        [ProtoMember(2)]
+        /// </summary>        
         public float2 Max;
 
         /// <summary>
@@ -61,7 +59,27 @@ namespace Fusee.Math.Core
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return $"Min: {Min} Max: {Max}";
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current MinMaxRect.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "Min: {0} Max: {1}", Min.ToString(provider), Max.ToString(provider));
         }
     }
 }

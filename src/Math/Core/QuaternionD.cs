@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -521,6 +522,56 @@ namespace Fusee.Math.Core
 
         #endregion Slerp
 
+        #region Conversion
+
+        /// <summary>
+        ///     Convert Euler angle to Quaternion rotation.
+        /// </summary>
+        /// <param name="e">Euler angle to convert.</param>
+        /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
+        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
+        /// the range of [-PI, PI].
+        ///
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// </remarks>
+        public static QuaternionD EulerToQuaternion(double3 e, bool inDegrees = false)
+        {
+            if (inDegrees)
+            {
+                // Converts all degrees angles to radians.
+                var rX = M.DegreesToRadiansD(e.x);
+                var rY = M.DegreesToRadiansD(e.y);
+                var rZ = M.DegreesToRadiansD(e.z);
+
+                e = new double3(rX, rY, rZ);
+            }
+
+            // Calculating the Sine and Cosine for each half angle.
+            // YAW/HEADING
+            var s1 = System.Math.Sin(e.y * 0.5f);
+            var c1 = System.Math.Cos(e.y * 0.5f);
+
+            // PITCH/ATTITUDE
+            var s2 = System.Math.Sin(e.x * 0.5f);
+            var c2 = System.Math.Cos(e.x * 0.5f);
+
+            // ROLL/BANK
+            var s3 = System.Math.Sin(e.z * 0.5f);
+            var c3 = System.Math.Cos(e.z * 0.5f);
+
+            // Formula to construct a new Quaternion based on Euler Angles.
+            var x = c1 * s2 * c3 - s1 * c2 * s3;
+            var z = s1 * s2 * c3 + c1 * c2 * s3;
+            var y = s1 * c2 * c3 + c1 * s2 * s3;
+            var w = c1 * c2 * c3 - s1 * s2 * s3;
+
+            return new QuaternionD(x, y, z, w);
+        }
+
+        #endregion Conversion
+
         #region Transform
 
         /// <summary>
@@ -634,13 +685,34 @@ namespace Fusee.Math.Core
 
         #region public override string ToString()
 
+
         /// <summary>
         ///     Returns a System.String that represents the current QuaternionD.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("V: {0}, w: {1}", xyz, w);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current QuaternionD.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "V: {0} w: {1}", xyz.ToString(provider), w.ToString(provider));
         }
 
         #endregion public override string ToString()

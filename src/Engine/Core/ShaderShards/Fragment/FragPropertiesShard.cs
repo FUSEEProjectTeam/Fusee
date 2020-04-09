@@ -1,6 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
+using Fusee.Engine.Core.Scene;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
@@ -33,7 +33,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var texCount = 0;
 
             var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            for (var i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 
@@ -115,36 +115,36 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.FresnelReflectance));
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseFraction));
                 }
-                else if(effectProps.MatType == MaterialType.Standard)
-                { 
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularStrength));                    
+                else if (effectProps.MatType == MaterialType.Standard)
+                {
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininess));
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensity));
                 }
             }
 
-            if (effectProps.MatProbs.HasDiffuse)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColor));
+            if (effectProps.MatProbs.HasAlbedo)
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.AlbedoColor));
 
             if (effectProps.MatProbs.HasEmissive)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColor));
 
             //Textures
-            if (effectProps.MatProbs.HasBump)
+            if (effectProps.MatProbs.HasNormalMap)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensityName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.NormalMap));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.NormalMapIntensity));
             }
 
-            if (effectProps.MatProbs.HasDiffuseTexture)
+            if (effectProps.MatProbs.HasAlbedoTexture)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMix));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.AlbedoTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.AlbedoMix));
             }
 
             if (effectProps.MatProbs.HasEmissiveTexture)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTextureName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMixName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMix));
             }
 
             return string.Join("\n", matPropUnifroms);
@@ -158,7 +158,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var uniforms = new List<string>();
             var texCount = 0;
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            for (var i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 
@@ -173,8 +173,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="lc">The light component, needed to decide if we have a Shadow Cube Map or a standard shadow map.</param>
         /// <param name="isCascaded">If cascaded shadow mapping is used, this should be set to true.</param>
-        /// <param name="numberOfCascades">If cascaded shadow mapping is used this is the number of cascades.<param>        
-        public static string DeferredLightAndShadowUniforms(LightComponent lc, bool isCascaded, int numberOfCascades)
+        /// <param name="numberOfCascades">If cascaded shadow mapping is used this is the number of cascades.</param>        
+        public static string DeferredLightAndShadowUniforms(Light lc, bool isCascaded, int numberOfCascades)
         {
             var uniforms = new List<string>
             {
@@ -186,11 +186,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (lc.IsCastingShadows)
                 {
                     if (lc.Type != LightType.Point)
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, "ShadowMap"));                        
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.ShadowMap));
                     else
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, "ShadowCubeMap"));                    
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));
                 }
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "LightSpaceMatrix"));                
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));
             }
             else
             {
@@ -200,10 +200,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");
             }
 
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, "PassNo"));
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, "SsaoOn"));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.RenderPassNo));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.SsaoOn));
 
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, "BackgroundColor"));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.BackgroundColor));
             return string.Join("\n", uniforms);
         }
 
@@ -211,9 +211,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Creates the "allLights" uniform array, as it is used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string FixedNumberLightArray()
-        {
-            return $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
-        }        
+        public static string FixedNumberLightArray = $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
+
     }
 }

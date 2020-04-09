@@ -2,9 +2,10 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -126,29 +127,34 @@ namespace Fusee.Examples.Picking.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
 
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
             // Check
             if (_pick)
             {
-                Diagnostics.Debug(_pickPos);
-                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
-                _scenePicker.View = mtxCam * mtxRot;
+                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                RC.View = mtxCam * mtxRot;
+
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                Diagnostics.Debug(newPick);
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
                     if (_currentPick != null)
                     {
-                        var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        ef.SetEffectParam("DiffuseColor", _oldColor);
+
+                        var ef = _currentPick.Node.GetComponent<ShaderEffect>();
+                        ef.SetEffectParam(UniformNameDeclarations.AlbedoColor, _oldColor);
                     }
 
                     if (newPick != null)
                     {
-                        var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed
-                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
+                        var ef = newPick.Node.GetComponent<ShaderEffect>();
+                        _oldColor = (float4)ef.GetEffectParam(UniformNameDeclarations.AlbedoColor); // cast needed
+                        ef.SetEffectParam(UniformNameDeclarations.AlbedoColor, ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
@@ -157,29 +163,23 @@ namespace Fusee.Examples.Picking.Core
             }
 
             RC.View = mtxCam * mtxRot;
+            RC.Projection = perspective;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
-
+            RC.Projection = orthographic;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
-        }
-
-        private static T ParseToType<T>(object value)
-        {
-            return (T)Convert.ChangeType(value, typeof(T));
         }
 
         private InputDevice Creator(IInputDeviceImp device)
@@ -201,11 +201,11 @@ namespace Fusee.Examples.Picking.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -216,9 +216,9 @@ namespace Fusee.Examples.Picking.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 18);
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Picking Example",
                 "ButtonText",
                 vsTex,
@@ -226,9 +226,11 @@ namespace Fusee.Examples.Picking.Core
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -240,12 +242,9 @@ namespace Fusee.Examples.Picking.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
 
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
-
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -255,12 +254,12 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)
@@ -270,91 +269,94 @@ namespace Fusee.Examples.Picking.Core
 
         private SceneContainer CreateScene()
         {
-            return new ConvertSceneGraph().Convert(new SceneContainer
+            return new SceneContainer
             {
                 Header = new SceneHeader
                 {
                     CreationDate = "April 2017",
                     CreatedBy = "mch@hs-furtwangen.de",
                     Generator = "Handcoded with pride",
-                    Version = 42,
                 },
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
-                    new SceneNodeContainer
+                    new SceneNode
                     {
                         Name = "Base",
-                        Components = new List<SceneComponentContainer>
+                        Components = new List<SceneComponent>
                         {
-                            new TransformComponent { Scale = float3.One },
-                           new MaterialComponent
-                           {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
-                                Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                            },
+                            new Transform { Scale = float3.One },
+                            ShaderCodeBuilder.MakeShaderEffect(
+                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Red),
+                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                        shininess: 4.0f,
+                                                        specularIntensity: 1.0f
+                                                        ),
                             CreateCuboid(new float3(100, 20, 100))
                         },
                         Children = new ChildList
                         {
-                            new SceneNodeContainer
+                            new SceneNode
                             {
                                 Name = "Arm01",
-                                Components = new List<SceneComponentContainer>
+                                Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   new MaterialComponent
-                                    {
-                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
-                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                    },
+                                    new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
+                                     ShaderCodeBuilder.MakeShaderEffect(
+                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Green),
+                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                        shininess: 4.0f,
+                                                        specularIntensity: 1.0f
+                                                        ),
                                     CreateCuboid(new float3(20, 100, 20))
                                 },
                                 Children = new ChildList
                                 {
-                                    new SceneNodeContainer
+                                    new SceneNode
                                     {
                                         Name = "Arm02Rot",
-                                        Components = new List<SceneComponentContainer>
+                                        Components = new List<SceneComponent>
                                         {
-                                            new TransformComponent {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
+                                            new Transform {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
                                         },
                                         Children = new ChildList
                                         {
-                                            new SceneNodeContainer
+                                            new SceneNode
                                             {
                                                 Name = "Arm02",
-                                                Components = new List<SceneComponentContainer>
+                                                Components = new List<SceneComponent>
                                                 {
-                                                    new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    new MaterialComponent
-                                                    {
-                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
-                                                        Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                    },
+                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
+                                                    ShaderCodeBuilder.MakeShaderEffect(
+                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
+                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                        shininess: 4.0f,
+                                                        specularIntensity: 1.0f
+                                                        ),
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
                                                 Children = new ChildList
                                                 {
-                                                    new SceneNodeContainer
+                                                    new SceneNode
                                                     {
                                                         Name = "Arm03Rot",
-                                                        Components = new List<SceneComponentContainer>
+                                                        Components = new List<SceneComponent>
                                                         {
-                                                            new TransformComponent {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
+                                                            new Transform {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
                                                         },
                                                         Children = new ChildList
                                                         {
-                                                            new SceneNodeContainer
+                                                            new SceneNode
                                                             {
                                                                 Name = "Arm03",
-                                                                Components = new List<SceneComponentContainer>
+                                                                Components = new List<SceneComponent>
                                                                 {
-                                                                    new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    new MaterialComponent
-                                                                    {
-                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
-                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                                    },
+                                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
+                                                                     ShaderCodeBuilder.MakeShaderEffect(
+                                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
+                                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
+                                                                        shininess: 4.0f,
+                                                                        specularIntensity: 1.0f
+                                                                        ),
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }
                                                             },
@@ -369,8 +371,9 @@ namespace Fusee.Examples.Picking.Core
                         }
                     },
                 }
-            });
+            };
         }
+
 
         public static Mesh CreateCuboid(float3 size)
         {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Fusee.Math.Core;
+using System.Globalization;
 
 namespace Fusee.Test.Math.Core
 {
@@ -92,40 +93,44 @@ namespace Fusee.Test.Math.Core
         public void Column0_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column0 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column0;
 
-            Assert.Equal(new float4(1, 0, 0, 0), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column1_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column1 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column1;
 
-            Assert.Equal(new float4(0, 1, 0, 0), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column2_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column2 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column2;
 
-            Assert.Equal(new float4(0, 0, 1, 0), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column3_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column3 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column3;
 
-            Assert.Equal(new float4(0, 0, 0, 1), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
@@ -323,7 +328,7 @@ namespace Fusee.Test.Math.Core
         [MemberData(nameof(GetAxisAngle))]
         public void CreateFromAxisAngle_MainAxes(float3 axis, float angle, float4x4 expected)
         {
-            var actual = float4x4.CreateFromAxisAngle(axis, M.DegreesToRadians(90));
+            var actual = float4x4.CreateFromAxisAngle(axis, M.DegreesToRadians(angle));
 
             Assert.Equal(expected, actual);
         }
@@ -623,9 +628,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetSubtraction))]
-        public void Substract_Static(float4x4 left, float4x4 right, float4x4 expected)
+        public void Subtract_Static(float4x4 left, float4x4 right, float4x4 expected)
         {
-            var actual = float4x4.Substract(left, right);
+            var actual = float4x4.Subtract(left, right);
 
             Assert.Equal(expected, actual);
         }
@@ -635,6 +640,8 @@ namespace Fusee.Test.Math.Core
         public void Mult_Static(float4x4 left, float4x4 right, float4x4 expected)
         {
             var actual = float4x4.Mult(left, right);
+
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -647,6 +654,16 @@ namespace Fusee.Test.Math.Core
             var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.Invert();
+
+            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
+        }
+
+        [Fact]
+        public void InvertAffine_Static()
+        {
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.InvertAffine();
 
             Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
@@ -917,16 +934,6 @@ namespace Fusee.Test.Math.Core
 
         #region Overrides
 
-        [Fact]
-        public void ToString_IsString()
-        {
-            var mat = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-
-            var actual = mat.ToString();
-
-            Assert.Equal("(1, 0, 0, 0)\n(0, 1, 0, 0)\n(0, 0, 1, 0)\n(0, 0, 0, 1)", actual);
-        }
-
         //TODO: GetHasCode
         //TODO: Equals(obj)
 
@@ -1072,5 +1079,83 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
+
+        #region ToString/Parse
+
+        [Fact]
+        public void ToString_NoCulture()
+        {
+            Assert.NotNull(new float4x4().ToString());
+        }
+
+        [Fact]
+        public void ToString_InvariantCulture()
+        {
+            string s = "(1.5, 0, 0, 0)\n(0, 1.5, 0, 0)\n(0, 0, 1.5, 0)\n(0, 0, 0, 1)";
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ToString_CultureDE()
+        {
+            string s = "(1,5; 0; 0; 0)\n(0; 1,5; 0; 0)\n(0; 0; 1,5; 0)\n(0; 0; 0; 1)";
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_InvariantCulture()
+        {
+            string s = "(1.5, 0, 0, 0)\n(0, 1.5, 0, 0)\n(0, 0, 1.5, 0)\n(0, 0, 0, 1)";
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(f, float4x4.Parse(s, CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_CultureDE()
+        {
+            string s = "(1,5; 0; 0; 0)\n(0; 1,5; 0; 0)\n(0; 0; 1,5; 0)\n(0; 0; 0; 1)";
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(f, float4x4.Parse(s, new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_ToString_NoCulture()
+        {
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(f, float4x4.Parse(f.ToString()));
+        }
+
+        [Fact]
+        public void Parse_ToString_InvariantCulture()
+        {
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(f, float4x4.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_ToString_CultureDE()
+        {
+            float4x4 f = float4x4.Scale(1.5f);
+
+            Assert.Equal(f, float4x4.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_Exception()
+        {
+            string s = "Fusee";
+
+            Assert.Throws<FormatException>(() => float4x4.Parse(s));
+        }
+
+        #endregion ToString/Parse
     }
 }

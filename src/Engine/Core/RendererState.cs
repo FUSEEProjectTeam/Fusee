@@ -1,4 +1,5 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
@@ -24,12 +25,31 @@ namespace Fusee.Engine.Core
         protected CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
 
         /// <summary>
+        /// State of the <see cref="ShaderEffect"/>.
+        /// </summary>
+        protected CollapsingStateStack<ShaderEffect> _effect = new CollapsingStateStack<ShaderEffect>();
+
+        /// <summary>
+        /// State of the <see cref="RenderStateSet"/>.
+        /// </summary>
+        protected CollapsingStateStack<RenderStateSet> _renderStates = new CollapsingStateStack<RenderStateSet>();
+
+        /// <summary>
+        /// Gets and sets the top of stack of the Render states state stack.
+        /// </summary>
+        public RenderStateSet RenderUndoStates
+        {
+            get => _renderStates.Tos;
+            set => _renderStates.Tos = value;
+        }
+
+        /// <summary>
         /// Gets and sets the top of stack of the Model Matrix state stack.
         /// </summary>
         public float4x4 Model
         {
-            get { return _model.Tos; }
-            set { _model.Tos = value; }
+            get => _model.Tos;
+            set => _model.Tos = value;
         }
 
         /// <summary>
@@ -37,8 +57,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public MinMaxRect UiRect
         {
-            get { return _uiRect.Tos; }
-            set { _uiRect.Tos = value; }
+            get => _uiRect.Tos;
+            set => _uiRect.Tos = value;
         }
 
         /// <summary>
@@ -50,15 +70,13 @@ namespace Fusee.Engine.Core
             set => _canvasXForm.Tos = value;
         }
 
-        private readonly StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
-
         /// <summary>
         /// Gets and sets the shader effect.
         /// </summary>
         public ShaderEffect Effect
         {
-            set { _effect.Tos = value; }
-            get { return _effect.Tos; }
+            set => _effect.Tos = value;
+            get => _effect.Tos;
         }
 
         /// <summary>
@@ -70,6 +88,7 @@ namespace Fusee.Engine.Core
             RegisterState(_canvasXForm);
             RegisterState(_effect);
             RegisterState(_uiRect);
+            RegisterState(_renderStates);
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using Fusee.Math.Core;
-using Fusee.Serialization;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
@@ -154,11 +154,11 @@ namespace Fusee.Engine.Core
                         //calculate inter-segment vertices
                         Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0],
                             segmentCache[3] + (vec03CacheLength * vec03Cache), v0 + (vec30Length * vec30), v3,
-                            out float3 intersectionPoint1);
+                            out var intersectionPoint1);
 
                         Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1],
                             segmentCache[2] + (vec12CacheLength * vec12Cache), v1 + (vec21Length * vec21), v2,
-                            out float3 intersectionPoint2);
+                            out var intersectionPoint2);
 
                         verts.Add(intersectionPoint1);
                         verts.Add(intersectionPoint2);

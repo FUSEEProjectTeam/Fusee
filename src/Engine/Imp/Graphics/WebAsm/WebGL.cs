@@ -3,6 +3,7 @@ using WebAssembly.Core;
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
 #pragma warning disable MEN002
+#pragma warning disable 1591
     public partial class WebGLContextAttributes
     {
         public bool Alpha { get; set; } = true;
@@ -1796,4 +1797,5 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
     }
 
 #pragma warning restore MEN002
+#pragma warning restore 1591
 }
