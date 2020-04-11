@@ -283,7 +283,7 @@ namespace Fusee.Engine.Core
             }
             catch
             {
-                return default;
+                return _glyphOnMapCache[63];
             }
         }
     }
