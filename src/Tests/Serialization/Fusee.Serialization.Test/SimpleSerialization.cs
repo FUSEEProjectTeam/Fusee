@@ -4,8 +4,9 @@ using Fusee.Math.Core;
 using System.Collections.Generic;
 using System.IO;
 using Fusee.Serialization.V1;
+using Fusee.Serialization;
 
-namespace Fusee.Serialization.Test
+namespace Fusee.Test.Serialization.V1
 {
     public class SimpleSerialization
     {
