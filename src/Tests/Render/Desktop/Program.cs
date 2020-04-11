@@ -34,15 +34,10 @@ namespace Fusee.Test.Render.Desktop
                         ReturnedType = typeof(Font),
                         Decoder = (string id, object storage) =>
                         {
-                            if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
+                            if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                             return new Font { _fontImp = new FontImp((Stream)storage) };
                         },
-                        DecoderAsync = async (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
-                            return await Task.Factory.StartNew(() =>  new Font { _fontImp = new FontImp((Stream)storage) } ).ConfigureAwait(false);
-                        },
-                        Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
+                        Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                     });
                 fap.RegisterTypeHandler(
                     new AssetHandler
@@ -50,17 +45,11 @@ namespace Fusee.Test.Render.Desktop
                         ReturnedType = typeof(SceneContainer),
                         Decoder = (string id, object storage) =>
                         {
-                            if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
+                            if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
                             return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                         },
-                        DecoderAsync = async (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
-                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage))).ConfigureAwait(false);
-                        },
-                        Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
+                        Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                     });
-
                 AssetStorage.RegisterProvider(fap);
 
                 var app = Example;
@@ -74,6 +63,7 @@ namespace Fusee.Test.Render.Desktop
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp));
 
                 // Initialize canvas/app and canvas implementor
+                app.InitCanvas();
                 app.Init();
 
                 // Render a single frame and save it
