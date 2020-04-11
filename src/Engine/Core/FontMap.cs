@@ -277,7 +277,14 @@ namespace Fusee.Engine.Core
         /// <returns>The <see cref="GlyphOnMap"/> record for the given character containing information where on the texture the glyph resides.</returns>
         public GlyphOnMap GetGlyphOnMap(uint c)
         {
-            return _glyphOnMapCache[c];
+            try
+            {
+                return _glyphOnMapCache[c];
+            }
+            catch
+            {
+                return default;
+            }
         }
     }
 }
