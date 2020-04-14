@@ -13,6 +13,7 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         dotnet: [ '3.1.201' ]
         os: [ 'windows-latest', 'ubuntu-latest' ]
