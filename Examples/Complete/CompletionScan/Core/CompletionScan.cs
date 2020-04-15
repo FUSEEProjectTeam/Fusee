@@ -129,7 +129,28 @@ namespace Fusee.Examples.CompletionScan.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sphere.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sphere_inside.fus");
+
+            var sphere = _rocketScene.Children[0];
+
+            float3[] normals = sphere.GetComponent<Mesh>().Normals;
+            
+            for (int i = 0; i < normals.Length; i++)
+            {
+                normals[i] -= 2 * normals[i];
+            }
+
+            sphere.GetComponent<Mesh>().Normals = normals;
+
+            ushort[] triangles = sphere.GetComponent<Mesh>().Triangles;
+            ushort[] triangles2 = new ushort[triangles.Length];
+
+            for (int i=0; i< triangles.Length; i++)
+            {
+                triangles2[i] = triangles[triangles.Length - i - 1];
+            }
+
+            sphere.GetComponent<Mesh>().Triangles = triangles2;
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
