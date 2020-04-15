@@ -47,7 +47,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
-    <PackageReference Include="Google.Protobuf.Tools" Version="3.9.1" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
   </ItemGroup>  
   

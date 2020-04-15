@@ -1,9 +1,10 @@
+using Fusee.Xene;
 using System;
-using Xunit;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
-namespace Fusee.Xene.Test
+namespace Fusee.Test.Xene
 {
     public class SimpleXene
     {
@@ -13,7 +14,7 @@ namespace Fusee.Xene.Test
         {
             TestNode node = new TestNode();
            
-            var singleNodeEnumerator = Xene.VisitorHelpers.SingleRootEnumerator(node);
+            var singleNodeEnumerator = VisitorHelpers.SingleRootEnumerator(node);
 
             // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:
             // "The Reset method is provided for COM interoperability. It does not necessarily need to be implemented;
@@ -26,7 +27,7 @@ namespace Fusee.Xene.Test
         {
             TestNode node = new TestNode();
 
-            var singleNodeEnumerable = Xene.VisitorHelpers.SingleRootEnumerable(node);
+            var singleNodeEnumerable = VisitorHelpers.SingleRootEnumerable(node);
 
             int i = 0;
             foreach (var curNode in singleNodeEnumerable)
@@ -45,7 +46,7 @@ namespace Fusee.Xene.Test
             // (enumerable should yield a new enumerator every time it's called)
             TestNode node = new TestNode();
 
-            var singleNodeEnumerable = Xene.VisitorHelpers.SingleRootEnumerable(node);
+            var singleNodeEnumerable = VisitorHelpers.SingleRootEnumerable(node);
 
             int i = 0;
             foreach (var curNode in singleNodeEnumerable)
