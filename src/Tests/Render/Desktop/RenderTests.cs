@@ -28,20 +28,20 @@ namespace Fusee.Test.Render.Desktop
             output.WriteLine(percent.ToString());
         }
 
-        [Fact]
-        public void BoneAnimationTest()
-        {
-            Program.Example = new Fusee.Examples.Bone.Core.Bone();
-            Program.Init("BoneAnimationTest.png");
+        //[Fact]
+        //public void BoneAnimationTest()
+        //{
+        //    Program.Example = new Fusee.Examples.Bone.Core.Bone();
+        //    Program.Init("BoneAnimationTest.png");
 
-            var referenceIm = new Bitmap(@"References\BoneAnimation.png");
-            var testIm = new Bitmap("BoneAnimationTest.png");
+        //    var referenceIm = new Bitmap(@"References\BoneAnimation.png");
+        //    var testIm = new Bitmap("BoneAnimationTest.png");
 
-            var percent = CompareImage(referenceIm, testIm);
+        //    var percent = CompareImage(referenceIm, testIm);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
-        }
+        //    Assert.InRange(percent, 0.99f, 1f);
+        //    output.WriteLine(percent.ToString());
+        //}
 
         [Fact]
         public void BumpMappingTest()
@@ -118,20 +118,20 @@ namespace Fusee.Test.Render.Desktop
             output.WriteLine(percent.ToString());
         }
 
-        [Fact]
-        public void SimpleDeferredTest()
-        {
-            Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
-            Program.Init("SimpleDeferredTest.png");
+        //[Fact]
+        //public void SimpleDeferredTest()
+        //{
+        //    Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
+        //    Program.Init("SimpleDeferredTest.png");
 
-            var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
-            var testIm = new Bitmap("SimpleDeferredTest.png");
+        //    var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
+        //    var testIm = new Bitmap("SimpleDeferredTest.png");
 
-            var percent = CompareImage(referenceIm, testIm);
+        //    var percent = CompareImage(referenceIm, testIm);
 
-            Assert.InRange(percent, 0.01f, 1f);
-            output.WriteLine(percent.ToString());
-        }
+        //    Assert.InRange(percent, 0.01f, 1f);
+        //    output.WriteLine(percent.ToString());
+        //}
 
         [Fact]
         public void ThreeDFontTest()
