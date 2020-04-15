@@ -30,17 +30,16 @@ namespace Fusee.Examples.CompletionScan.Core
         private Transform _camTransform;
         private Transform _guiCamTransform;
         private Transform _sndCamTransform;
-        private readonly Camera _cam = new Camera(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Camera _cam = new Camera(ProjectionMethod.Perspective, 1, 100, M.PiOver4);
         private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private readonly Camera _sndCam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         // Angle variables
         private float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
         private float _angleHorzSnd, _angleVertSnd, _angleVelHorzSnd, _angleVelVertSnd;
-        private float3 _rotAxis;
-        private float3 _rotPivot;
 
         private const float Damping = 0.003f;
+        private WireframeCube _frustum;
 
         // Init is called on startup.
         public override async Task<bool> Init()
@@ -49,16 +48,24 @@ namespace Fusee.Examples.CompletionScan.Core
             _cam.BackgroundColor = new float4(1, 1, 1, 1);
             _cam.Layer = -1;
 
+            _sndCam.Viewport = new float4(60, 60, 40, 40);
+            _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _sndCam.Layer = 10;
+
+            _guiCam.ClearColor = false;
+            _guiCam.ClearDepth = false;
+            _guiCam.FrustumCullingOn = false;
+
             _camTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
-                Translation = new float3(0, 1, -30),
-                Scale = new float3(1, 1, 1)
+                Translation = new float3(0, 0, 0),
+                Scale = float3.One
             };
             _sndCamTransform = new Transform()
             {
-                Rotation = new float3(M.PiOver6, 0, 0),
-                Translation = new float3(10, 40, -60),
+                Rotation = new float3(M.PiOver2, 0, 0),
+                Translation = new float3(0, 30, 0),
                 Scale = float3.One
             };
 
@@ -104,23 +111,33 @@ namespace Fusee.Examples.CompletionScan.Core
             _angleHorz = _camTransform.Rotation.y;
             _angleVert = _camTransform.Rotation.x;
 
+            _frustum = new WireframeCube();
+            var frustumNode = new SceneNode()
+            {
+                Name = "Frustum",
+                Components = new List<SceneComponent>()
+                {
+                    new Transform(),
+                    ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0),
+                    _frustum
+                }
+            };
+
             _gui = CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sphere.fus");
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
+            _rocketScene.Children.Add(frustumNode);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
-            _rotPivot = _rocketScene.Children[1].GetComponent<Transform>().Translation;
 
             return true;
         }
@@ -152,6 +169,9 @@ namespace Fusee.Examples.CompletionScan.Core
 
                 _sndCamTransform.FpsView(_angleHorzSnd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
+
+            var viewProjection = _cam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_camTransform.Matrix());
+            _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -242,6 +262,7 @@ namespace Fusee.Examples.CompletionScan.Core
             {
                 Children = new List<SceneNode>
                 {
+                    cam,
                     canvas
                 }
             };
