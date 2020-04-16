@@ -15,7 +15,7 @@ using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.CompletionScan.Core
 {
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE Texture Changing Example", Description = "Yet another FUSEE App ;).")]
     public class CompletionScan : RenderCanvas
     {
         private SceneContainer _rocketScene;
@@ -40,6 +40,10 @@ namespace Fusee.Examples.CompletionScan.Core
 
         private const float Damping = 0.003f;
         private WireframeCube _frustum;
+
+        private SceneNode _sphere;
+        private Texture _texture;
+        private ShaderEffect _shader;
 
         // Init is called on startup.
         public override async Task<bool> Init()
@@ -129,28 +133,15 @@ namespace Fusee.Examples.CompletionScan.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sphere_inside.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sphere.fus");
 
-            var sphere = _rocketScene.Children[0];
+            _sphere = _rocketScene.Children[0];
+            _shader = _sphere.GetComponent<ShaderEffect>();
 
-            float3[] normals = sphere.GetComponent<Mesh>().Normals;
-            
-            for (int i = 0; i < normals.Length; i++)
-            {
-                normals[i] -= 2 * normals[i];
-            }
+            ImageData image = AssetStorage.Get<ImageData>("green.png");
+            _texture = new Texture(image);
 
-            sphere.GetComponent<Mesh>().Normals = normals;
-
-            ushort[] triangles = sphere.GetComponent<Mesh>().Triangles;
-            ushort[] triangles2 = new ushort[triangles.Length];
-
-            for (int i=0; i< triangles.Length; i++)
-            {
-                triangles2[i] = triangles[triangles.Length - i - 1];
-            }
-
-            sphere.GetComponent<Mesh>().Triangles = triangles2;
+            _shader.SetEffectParam("AlbedoTexture", _texture);
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
@@ -193,6 +184,22 @@ namespace Fusee.Examples.CompletionScan.Core
 
             var viewProjection = _cam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_camTransform.Matrix());
             _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
+
+
+            if (Keyboard.GetButton(32))
+            {
+                /*ImageData image = new ImageData(_texture.PixelData, _texture.Width, _texture.Height, _texture.PixelFormat);
+
+                image.Blt(0, 0, AssetStorage.Get<ImageData>("red.png"));
+
+                Texture newTex = new Texture(image);
+
+                _shader.SetEffectParam("AlbedoTexture", newTex);*/
+
+                _texture.Blt(0, 0, AssetStorage.Get<ImageData>("red.png"));
+            }
+
+
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
