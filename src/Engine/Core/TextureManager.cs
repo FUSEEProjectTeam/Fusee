@@ -38,9 +38,9 @@ namespace Fusee.Engine.Core
                     break;
                 case TextureChangedEnum.RegionChanged:
                     //TODO: An IWritableTexture has no implementation of UpdateTextureRegion (yet)
-                    if (texture.GetType() == typeof(ITexture))
+                    if (texture is ITexture iTexture)
                     {
-                        _renderContextImp.UpdateTextureRegion(toBeUpdatedTextureHandle, (ITexture)texture,
+                        _renderContextImp.UpdateTextureRegion(toBeUpdatedTextureHandle, iTexture,
                             textureDataEventArgs.XStart, textureDataEventArgs.YStart, textureDataEventArgs.Width,
                             textureDataEventArgs.Height);
                     }
