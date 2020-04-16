@@ -343,7 +343,7 @@ namespace Fusee.Examples.Labyrinth.Core
             }
 
             Ballmovement();
-            Collision();
+            //Collision();
             Winner();
 
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
@@ -489,11 +489,12 @@ namespace Fusee.Examples.Labyrinth.Core
                 var miliseconds = Time.TimeSinceStart % 0.99f;
                 timertext.Text = minutes.ToString("00") + ":" + seconds.ToString("00") + miliseconds.ToString(".00", new System.Globalization.CultureInfo("en-US"));
 
+                Diagnostics.Debug(_head.Translation);
                 //camera
                 angle = _angleVert;
                 if (Keyboard.GetKey(KeyCodes.E))
                 {
-                    mtxCam = float4x4.LookAt(length / 2, 100, height / 2, length / 2, 0, height / 2, 1, 0, 0);
+                    mtxCam = float4x4.LookAt(length / 2, 100, height / 2, length / 2, 0, height / 2, -1, 0, 0);
                     movement = false;
                 }
                 else
@@ -987,25 +988,30 @@ namespace Fusee.Examples.Labyrinth.Core
             int posX = 0;
             int posY = 0;
 
-            Bitmap img = new Bitmap(@"Assets/" + "Maze.bmp");
+            ImageData img = AssetStorage.Get<ImageData>("Maze.bmp");
             int[,] image = new int[img.Width / x, img.Height / y];
+            Color[,] pixel = imageorder(img.PixelData, img.Width, img.Height);
             for (int j = 5; j < img.Height; j += y)
             {
                 for (int i = 5; i < img.Width; i += x)
                 {
-                    Color pixel = img.GetPixel(i, j);
 
-                    if (pixel.Equals(Color.FromArgb(255, 0, 0, 0)))
+
+                    if (pixel[j, i].Equals(Color.FromArgb(255, 0, 0, 0)))
                     {
                         image[posY, posX] = 1;
                     }
-                    else if (pixel.Equals(Color.FromArgb(255, 0, 255, 0)))
+                    else if (pixel[j, i].Equals(Color.FromArgb(255, 0, 255, 0)))
                     {
                         image[posY, posX] = -1;
                     }
-                    else if (pixel.Equals(Color.FromArgb(255, 255, 0, 0)))
+                    else if (pixel[j, i].Equals(Color.FromArgb(255, 255, 0, 0)))
                     {
                         image[posY, posX] = 2;
+                    }
+                    else if (pixel[j, i].Equals(Color.FromArgb(255, 0, 0, 255)))
+                    {
+                        image[posY, posX] = 3;
                     }
                     else
                     {
@@ -1021,5 +1027,23 @@ namespace Fusee.Examples.Labyrinth.Core
             }
             return image;
         }
+
+        public static Color[,] imageorder(byte[] arr, int width, int height)
+        {
+            Color[,] image = new Color[height , width];
+
+            for(int i = 0; i < height; i ++)
+            {
+                for (int j = 0; j < width; j ++)
+                {
+                    image[j, i] = Color.FromArgb(arr[4*(width * i +j) + 3], arr[4 * (width * i + j)], arr[4 * (width * i + j) + 1], arr[4 * (width * i + j) + 2]);
+
+                } 
+            }
+
+
+            return image;
+        }
+
     }
 }
