@@ -53,7 +53,7 @@ namespace Fusee.Examples.UI.Core
         private GUIText _fpsText;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
-        private SceneContainer CreateNineSliceScene()
+        private async Task<SceneContainer> CreateNineSliceScene()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -245,7 +245,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
+            var canvasMat = await ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
 
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
@@ -387,7 +387,7 @@ namespace Fusee.Examples.UI.Core
             _btnCat.OnMouseOver += OnMouseOverBtnCat;
 
             // Set the scene by creating a scene graph
-            _scene = CreateNineSliceScene();
+            _scene = await CreateNineSliceScene();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);

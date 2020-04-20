@@ -58,10 +58,8 @@ namespace Fusee.Base.Imp.WebAsm
                 DecoderAsync = async (string id, object storage) =>
                 {
                     var storageStream = (Stream)storage;
-                    using (var streamReader = new StreamReader(storageStream, Encoding.ASCII))
-                    {
-                        return await streamReader.ReadToEndAsync().ConfigureAwait(false);
-                    }
+                    using var streamReader = new StreamReader(storageStream, Encoding.ASCII);
+                    return await streamReader.ReadToEndAsync().ConfigureAwait(false);
                 },
                 Checker = id => true // If it's there, we can handle it...
             });
@@ -80,11 +78,9 @@ namespace Fusee.Base.Imp.WebAsm
         protected override Stream GetStream(string id)
         {
             var baseAddress = WasmResourceLoader.GetLocalAddress() + "Assets/";
-            using (var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) })
-            {
-                var response = httpClient.GetAsync(id);
-                return response.Result.Content.ReadAsStreamAsync().Result;
-            }
+            using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            var response = httpClient.GetAsync(id);
+            return response.Result.Content.ReadAsStreamAsync().Result;
         }
 
         /// <summary>
@@ -98,23 +94,21 @@ namespace Fusee.Base.Imp.WebAsm
         protected override async Task<Stream> GetStreamAsync(string id)
         {
             var baseAddress = WasmResourceLoader.GetLocalAddress() + "Assets/";
-            using (var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) })
-            {
+            using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
 
-#if DEBUG
-                Console.WriteLine($"Requesting '{id}' at '{baseAddress}'...");
-#endif
-                try
-                {
-                    var response = await httpClient.GetAsync(id).ConfigureAwait(false);
-                    response.EnsureSuccessStatusCode();
-                    return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine($"[Error] {nameof(WasmResourceLoader)}.{nameof(GetStreamAsync)}(): {exception}");
-                    return null;
-                }
+//#if DEBUG
+            Console.WriteLine($"Requesting '{id}' at '{baseAddress}'...");
+//#endif
+            try
+            {
+                var response = await httpClient.GetAsync(id).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[Error] {nameof(WasmResourceLoader)}.{nameof(GetStreamAsync)}(): {exception}");
+                return null;
             }
         }
 

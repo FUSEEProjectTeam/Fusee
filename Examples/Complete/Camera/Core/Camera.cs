@@ -86,7 +86,7 @@ namespace Fusee.Examples.Camera.Core
                 Components = new List<SceneComponent>()
                 {
                     new Transform(),
-                   ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0),
+                   await ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0),
                     _frustum
                 }
             };
@@ -98,7 +98,7 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10),
+                    await ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10),
                     new Cube(),
 
                 },
