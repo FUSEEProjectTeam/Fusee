@@ -422,6 +422,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.WebAs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ThreeDFont.WebAsm", "Examples\Complete\ThreeDFont\WebAsm\Fusee.Examples.ThreeDFont.WebAsm.csproj", "{8F8D9C61-6962-469D-A539-1BBAA029A303}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.UI.WebAsm", "Examples\Complete\UI\WebAsm\Fusee.Examples.UI.WebAsm.csproj", "{98BBC55B-DEE1-4475-B80A-8052B3C30278}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -4621,6 +4623,60 @@ Global
 		{8F8D9C61-6962-469D-A539-1BBAA029A303}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{8F8D9C61-6962-469D-A539-1BBAA029A303}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
 		{8F8D9C61-6962-469D-A539-1BBAA029A303}.Release-WebAsm|x86.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug|x64.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug|x86.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Android|x64.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Android|x86.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Desktop|x64.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Debug-WebAsm|x86.Build.0 = Debug|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release|Any CPU.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release|x64.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release|x64.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release|x86.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release|x86.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Android|x64.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Android|x64.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Android|x86.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Android|x86.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Desktop|x64.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Desktop|x64.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-NuGet|x64.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-NuGet|x86.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -4726,6 +4782,7 @@ Global
 		{8CCD9D2E-5830-41D6-A04D-6E14FFB8DE3A} = {D275FDA5-BC2B-425D-BC31-D8985204BB1E}
 		{777C0C97-5559-47EC-9EE8-AA7CFD0861BB} = {F799DB2B-D7BA-4B88-A16F-F8E2317137D3}
 		{8F8D9C61-6962-469D-A539-1BBAA029A303} = {DF5CEA4E-1434-466F-9DC2-80AFDBB5A340}
+		{98BBC55B-DEE1-4475-B80A-8052B3C30278} = {226F5DF2-518E-4440-8CB5-EF93977517A3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
