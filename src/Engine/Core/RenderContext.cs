@@ -31,7 +31,7 @@ namespace Fusee.Engine.Core
             set => _rci.ClearColor = value;
             get => _rci.ClearColor;
         }
-
+         
         /// <summary>
         /// The depth value to use when clearing the color buffer.
         /// </summary>

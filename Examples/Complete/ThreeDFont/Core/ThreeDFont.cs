@@ -29,9 +29,9 @@ namespace Fusee.Examples.ThreeDFont.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
-            var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
+            var vladimir = await AssetStorage.GetAsync<Font>("VLADIMIR.TTF");
+            var gnuSerif = await AssetStorage.GetAsync<Font>("GNU-FreeSerif.ttf");
 
             _text = "FUSEE ThreeDFont Example";
 
@@ -141,8 +141,8 @@ namespace Fusee.Examples.ThreeDFont.Core
             var shaderFx = new ShaderEffect(new[] {
                 new EffectPassDeclaration
                 {
-                    PS = AssetStorage.Get<string>("FragShader.frag"),
-                    VS = AssetStorage.Get<string>("VertShader.vert"),
+                    PS = await AssetStorage.GetAsync<string>("FragShader.frag"),
+                    VS = await AssetStorage.GetAsync<string>("VertShader.vert"),
                     StateSet = new RenderStateSet
                     {
                         ZEnable = true
