@@ -12,12 +12,13 @@ using System.Threading.Tasks;
 using Fusee.Serialization.V1;
 using HorizontalTextAlignment = Fusee.Engine.Core.Scene.HorizontalTextAlignment;
 using VerticalTextAlignment = Fusee.Engine.Core.Scene.VerticalTextAlignment;
+using System.Runtime.CompilerServices;
 
 namespace Fusee.Examples.AdvancedUI.Core
-{
-    internal static class UIHelper
+{ 
+    internal class UIHelper
     {
-        internal static List<string> DummySegmentationClasses = new List<string>()
+        internal List<string> DummySegmentationClasses = new List<string>()
         {
             "orangutan",
             "banana",
@@ -37,52 +38,83 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static float2 AnnotationDim = new float2(3f, 0.5f);
         internal static float4 AnnotationBorderThickness = new float4(6, 0.5f, 0.5f, 0.5f);
 
-        internal static string VsTex = AssetStorage.Get<string>("texture.vert");
-        internal static string PsTex = AssetStorage.Get<string>("texture.frag");
-        internal static string VsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
-        internal static string PsNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
+        internal string VsTex;
+        internal string PsTex;
+        internal string VsNineSlice;
+        internal string PsNineSlice;
 
-        internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
-        internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 24);
+        internal Font FontRaleway;
+        internal FontMap RalewayFontMap;
 
         internal static float alphaInv = 0.5f;
         internal static float alphaVis = 1f;
 
-        internal static readonly float4 Green = new float4(0.14117f, 0.76078f, 0.48627f, alphaVis);
-        internal static readonly float4 Yellow = new float4(0.89411f, 0.63137f, 0.31372f, alphaVis);
-        internal static readonly float4 Gray = new float4(0.47843f, 0.52549f, 0.54901f, alphaVis);
+        internal readonly float4 Green = new float4(0.14117f, 0.76078f, 0.48627f, alphaVis);
+        internal readonly float4 Yellow = new float4(0.89411f, 0.63137f, 0.31372f, alphaVis);
+        internal readonly float4 Gray = new float4(0.47843f, 0.52549f, 0.54901f, alphaVis);
 
-        internal static readonly float4 White = new float4(1, 1, 1, 1);
+        internal readonly float4 White = new float4(1, 1, 1, 1);
 
-        private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"));
-        private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"));
-        private static readonly Texture _frameRecognizedMLOrConfirmed = new Texture(AssetStorage.Get<ImageData>("frame_green.png"));
+        private Texture _frameToCheck;
+        private Texture _frameDiscarded;
+        private Texture _frameRecognizedMLOrConfirmed;
 
-        private static readonly Texture _iconToCheck = new Texture(AssetStorage.Get<ImageData>("lightbulb.png"));
-        private static readonly Texture _iconDiscarded = new Texture(AssetStorage.Get<ImageData>("minus-oktagon.png"));
-        private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
-        private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
+        private Texture _iconToCheck;
+        private Texture _iconDiscarded;
+        private Texture _iconRecognizedML;
+        private Texture _iconConfirmed;
 
-        internal static ShaderEffect GreenEffect;
-        internal static ShaderEffect YellowEffect;
-        internal static ShaderEffect GrayEffect;
+        internal ShaderEffect GreenEffect;
+        internal ShaderEffect YellowEffect;
+        internal ShaderEffect GrayEffect;
 
         internal static ShaderEffect OccludedDummyEffect;
 
-        static UIHelper()
+        private static UIHelper _instance;
+        
+        internal static async Task<UIHelper> Initialize()
         {
-            CreateAsyncs();
+            if (_instance != null) return _instance;
+
+            _instance = new UIHelper();
+            await _instance.CreateAsyncs();
+
+            return _instance;
+        }
+        
+        private UIHelper()
+        {
+
         }
 
-        private static async void CreateAsyncs()
+        private async Task<bool> CreateAsyncs()
         {
+            VsTex = await AssetStorage.GetAsync<string>("texture.vert");
+            PsTex = await AssetStorage.GetAsync<string>("texture.frag");
+            VsNineSlice = await AssetStorage.GetAsync<string>("nineSlice.vert");
+            PsNineSlice = await AssetStorage.GetAsync<string>("nineSliceTile.frag");
+
             GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
             YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
             GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
             OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+
+            FontRaleway = await AssetStorage.GetAsync<Font>("Raleway-Regular.ttf");
+            RalewayFontMap = new FontMap(FontRaleway, 24);
+
+            _frameToCheck = new Texture(await AssetStorage.GetAsync<ImageData>("frame_yellow.png"));
+            _frameDiscarded = new Texture(await AssetStorage.GetAsync<ImageData>("frame_gray.png"));
+            _frameRecognizedMLOrConfirmed = new Texture(await AssetStorage.GetAsync<ImageData>("frame_green.png"));
+
+            _iconToCheck = new Texture(await AssetStorage.GetAsync<ImageData>("lightbulb.png"));
+            _iconDiscarded = new Texture(await AssetStorage.GetAsync<ImageData>("minus-oktagon.png"));
+            _iconRecognizedML = new Texture(await AssetStorage.GetAsync<ImageData>("check-circle.png"));
+            _iconConfirmed = new Texture(await AssetStorage.GetAsync<ImageData>("check-circle_filled.png"));
+
+            return true;
         }
 
-        private static float _circleThickness = 0.04f;
+        private static readonly float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
 
         public static float AnnotationDistToLeftOrRightEdge = 1;
@@ -109,8 +141,9 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static async void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
+        internal void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
+
             var container = new SceneNode
             {
                 Name = "Container"
@@ -119,33 +152,33 @@ namespace Fusee.Examples.AdvancedUI.Core
             switch (annotationKind)
             {
                 case AnnotationKind.TO_CHECK:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.YELLOW));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconToCheck, _frameToCheck));
-                    container.Children.Add(await CreateLine(MatColor.YELLOW));
+                    container.Children.Add(CreateLine(MatColor.YELLOW));
                     break;
 
                 case AnnotationKind.DISCARDED:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GRAY));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconDiscarded, _frameDiscarded));
-                    container.Children.Add(await CreateLine(MatColor.GRAY));
+                    container.Children.Add(CreateLine(MatColor.GRAY));
                     break;
 
                 case AnnotationKind.RECOGNIZED_ML:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed));
-                    container.Children.Add(await CreateLine(MatColor.GREEN));
+                    container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
 
                 case AnnotationKind.CONFIRMED:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed));
-                    container.Children.Add(await CreateLine(MatColor.GREEN));
+                    container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
             }
             parentUiElement.Children.Add(container);
         }
 
-        private static SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
+        private SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
             var icon = new TextureNode(
                 "icon",
@@ -201,7 +234,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             return annotation;
         }
 
-        private static async Task<SceneNode> CreateCircle(float2 circleDim, MatColor color)
+        private SceneNode CreateCircle(float2 circleDim, MatColor color)
         {
             float4 col;
 
@@ -256,30 +289,15 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
         }
 
-        private static async Task<SceneNode> CreateLine(MatColor color)
+        private SceneNode CreateLine(MatColor color)
         {
-            float4 col;
-
-            switch (color)
+            var col = color switch
             {
-                default:
-                case MatColor.WHITE:
-                    col = White;
-                    break;
-
-                case MatColor.GREEN:
-                    col = Green;
-                    break;
-
-                case MatColor.YELLOW:
-                    col = Yellow;
-                    break;
-
-                case MatColor.GRAY:
-                    col = Gray;
-                    break;
-            }
-
+                MatColor.GREEN => Green,
+                MatColor.YELLOW => Yellow,
+                MatColor.GRAY => Gray,
+                _ => White,
+            };
             return new SceneNode()
             {
                 Name = "line",
@@ -299,43 +317,38 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)                    
+                    ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
                 }
             };
         }
 
-        internal static ShaderEffect GetShaderEffectFromMatColor(MatColor col)
+        internal ShaderEffect GetShaderEffectFromMatColor(MatColor col)
         {
-            switch (col)
+            return col switch
             {
-                default:
-                case MatColor.WHITE:
-                    return OccludedDummyEffect;
-
-                case MatColor.GREEN:
-                    return GreenEffect;
-
-                case MatColor.YELLOW:
-                    return YellowEffect;
-
-                case MatColor.GRAY:
-                    return GrayEffect;
-            }
+                MatColor.GREEN => GreenEffect,
+                MatColor.YELLOW => YellowEffect,
+                MatColor.GRAY => GrayEffect,
+                _ => OccludedDummyEffect,
+            };
         }
 
-        internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
-        {
-            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.AlbedoColor);
-            color.w = alpha;
-            effect.SetEffectParam(UniformNameDeclarations.AlbedoColor, color);
-        }
-
-        internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)
+        internal bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)
         {
             return firstAnnotation.x + intersectionBuffer.x + AnnotationDim.x > secondAnnotation.x - intersectionBuffer.x &&
                    firstAnnotation.x - intersectionBuffer.x < secondAnnotation.x + intersectionBuffer.x + AnnotationDim.x &&
                    firstAnnotation.y + intersectionBuffer.y + AnnotationDim.y > secondAnnotation.y - intersectionBuffer.y &&
                    firstAnnotation.y - intersectionBuffer.y < secondAnnotation.y + AnnotationDim.y + intersectionBuffer.y;
+        }
+    }
+
+    internal static class UIHelperExtensions
+    {
+        internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
+        {
+            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.AlbedoColor);
+            color.w = alpha;
+            effect.SetEffectParam(UniformNameDeclarations.AlbedoColor, color);
         }
     }
 }

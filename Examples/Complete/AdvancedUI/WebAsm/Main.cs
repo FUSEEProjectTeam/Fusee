@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using ProtoBuf;
 using SkiaSharp;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Path = Fusee.Base.Common.Path;
@@ -40,12 +41,14 @@ namespace Fusee.Examples.AdvancedUI.Main
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.WebAsm.IOImp();
 
+            #region FAP
 
             var fap = new Fusee.Base.Imp.WebAsm.AssetProvider();
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
+                    Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).IndexOf("ttf", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -70,6 +73,7 @@ namespace Fusee.Examples.AdvancedUI.Main
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
+                    Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -88,13 +92,12 @@ namespace Fusee.Examples.AdvancedUI.Main
             fap.RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(Base.Core.ImageData),
+                Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
                 DecoderAsync = async (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
-                        //case ".jpg": // not possible YET!
-                        // case ".jpeg":
                         case ".png":
                         case ".bmp":
                             using (var bitmap = await Task<SKBitmap>.Factory.StartNew(() => SKBitmap.Decode((Stream)storage)))
@@ -104,7 +107,7 @@ namespace Fusee.Examples.AdvancedUI.Main
                                 using (var surface = new SKCanvas(rotated))
                                 {
                                     surface.Clear();
-                                    surface.Scale(1, -1, 0, bitmap.Height / 2.0f); // this mirrors the image within its' x-axis
+                                    surface.Scale(1, -1, 0, bitmap.Height / 2.0f); // this mirrors the image within its x-axis
                                     surface.DrawBitmap(bitmap, 0, 0);
                                 }
 
@@ -130,6 +133,8 @@ namespace Fusee.Examples.AdvancedUI.Main
             });
 
             AssetStorage.RegisterProvider(fap);
+
+            #endregion
 
             _app = new Core.AdvancedUI();
 

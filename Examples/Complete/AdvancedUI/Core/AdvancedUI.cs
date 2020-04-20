@@ -48,6 +48,8 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private ScenePicker _scenePicker;
 
+        private UIHelper _uiHelper;
+
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
 
@@ -126,9 +128,13 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
 
+            _uiHelper = await UIHelper.Initialize();
+
+
             // Check if rnd was injected (render tests inject a seeded random)
             if (rnd == null)
                 rnd = new Random();
+
 
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
@@ -149,7 +155,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 var prob = (float)rnd.NextDouble();
                 prob = (float)System.Math.Round(prob, 3);
-                var dummyClass = UIHelper.DummySegmentationClasses[rnd.Next(0, UIHelper.DummySegmentationClasses.Count - 1)];
+                var dummyClass = _uiHelper.DummySegmentationClasses[rnd.Next(0, _uiHelper.DummySegmentationClasses.Count - 1)];
 
                 var annotationKind = (UIHelper.AnnotationKind)rnd.Next(0, Enum.GetNames(typeof(UIHelper.AnnotationKind)).Length);
 
@@ -385,6 +391,8 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
+            if (_uiHelper == null) return;
+
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
@@ -412,8 +420,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
-                UIHelper.VsTex,
-                UIHelper.PsTex,
+                _uiHelper.VsTex,
+                _uiHelper.PsTex,
                 guiFuseeLogo,
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
@@ -440,12 +448,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                 var item = _uiInput[i];
                 if (item.AnnotationKind != UIHelper.AnnotationKind.CONFIRMED)
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
+                    _uiHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                     "#" + i + " " + item.SegmentationClass + ", " + item.Probability.ToString(CultureInfo.GetCultureInfo("en-gb")));
                 }
                 else
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
+                    _uiHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
             }
@@ -566,7 +574,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 var halfAnnotationHeight = (UIHelper.AnnotationDim.y / 2f);
                 var buffer = halfAnnotationHeight - (halfAnnotationHeight / 100f * 10f);
                 //If we do not multiply by the resize scale factor the intersction test will return wrong results because AnnotationCanvasPos is in the range of the size of the initial canvas.
-                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos, new float2(0, buffer));
+                var intersect = _uiHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos, new float2(0, buffer));
 
                 if (!intersect || intersectedAnnotations.ContainsKey(counterpart.Identifier)) continue;
 

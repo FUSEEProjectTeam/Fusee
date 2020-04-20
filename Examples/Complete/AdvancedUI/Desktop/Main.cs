@@ -5,8 +5,10 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
+using ProtoBuf;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.AdvancedUI.Desktop
@@ -28,6 +30,11 @@ namespace Fusee.Examples.AdvancedUI.Desktop
                         if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.Factory.StartNew(() => new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
                     Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
@@ -39,7 +46,14 @@ namespace Fusee.Examples.AdvancedUI.Desktop
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
-                    
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        {
+                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
+                        }
+                        return null;
+                    },
                     Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
 
