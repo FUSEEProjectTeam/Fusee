@@ -1,0 +1,45 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <script src="Scripts/loading.js" type="text/javascript"></script>    
+    <script src="runtime.js"></script>
+    <script defer src="Scripts/mono_support.js"></script>
+    <script defer src="Scripts/SkiaSharp.js"></script>
+    <script defer src="canvaskit.js"></script>
+    <script defer src="dotnet.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <link href="Assets/Styles/browser.css" rel="stylesheet">
+</head>
+<body>
+    <div id="feedback-body" class="container-fluid">
+    </div>
+
+    <script type="text/javascript">
+        var App = {
+            init: function () {
+
+                BINDING.call_static_method("[Fusee.Examples.Camera.WebAsm] Fusee.Examples.Camera.Main.Program:Main", []);
+
+
+                // loading stop
+                var feedback = document.getElementById("feedback-body");
+                if (feedback) {
+                    LaFuStartRocket();
+                }
+
+            },
+        };
+
+
+    </script>
+
+</body>
+</html>

@@ -75,7 +75,7 @@ namespace Fusee.Examples.Camera.Core
                 Scale = new float3(1, 1, 1)
             };
 
-            _gui = CreateGui();
+            _gui = await CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -142,7 +142,7 @@ namespace Fusee.Examples.Camera.Core
             _angleVertMain = _mainCamTransform.Rotation.x;
 
             // Load the rocket model            
-            _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("rnd.fus");
             //_rocketScene = Rocket.Build();
 
 
@@ -241,10 +241,10 @@ namespace Fusee.Examples.Camera.Core
             }
         }
 
-        private SceneContainer CreateGui()
+        private async Task<SceneContainer> CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
+            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
+            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
 
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
@@ -257,7 +257,7 @@ namespace Fusee.Examples.Camera.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
@@ -272,7 +272,7 @@ namespace Fusee.Examples.Camera.Core
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(

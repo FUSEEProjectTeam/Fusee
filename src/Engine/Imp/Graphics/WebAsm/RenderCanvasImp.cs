@@ -53,7 +53,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Gets and sets a value indicating whether vertical snychronization is used.
         /// </summary>
         /// <remarks> Currently not implemented.</remarks>
-        public bool VerticalSync { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool VerticalSync { get => true; set => _ = true; }
 
         /// <summary>
         /// Gets and sets a value indicating whether fullscreen is enabled.
