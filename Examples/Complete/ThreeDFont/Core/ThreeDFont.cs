@@ -134,27 +134,9 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };           
+            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
             _renderer = new SceneRendererForward(sc);
-
-            var shaderFx = new ShaderEffect(new[] {
-                new EffectPassDeclaration
-                {
-                    PS = await AssetStorage.GetAsync<string>("FragShader.frag"),
-                    VS = await AssetStorage.GetAsync<string>("VertShader.vert"),
-                    StateSet = new RenderStateSet
-                    {
-                        ZEnable = true
-                    }
-                }
-            },
-            new List<EffectParameterDeclaration>
-            {
-                new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
-            });
-
-            RC.SetShaderEffect(shaderFx);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
