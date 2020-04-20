@@ -125,7 +125,11 @@ namespace Fusee.Examples.AdvancedUI.Core
             _scene = await AssetStorage.GetAsync<SceneContainer>("Monkey.fus");
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
-            rnd = new Random();
+
+            // Check if rnd was injected (render tests inject a seeded random)
+            if (rnd == null)
+                rnd = new Random();
+
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
             //Create dummy positions on model
