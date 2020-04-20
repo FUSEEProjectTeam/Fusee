@@ -1,11 +1,8 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Fusee.Examples.NormalMap.Core
@@ -50,34 +47,59 @@ namespace Fusee.Examples.NormalMap.Core
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
-            ShaderEffect bumpeffect = _scene.Children.FindComponents<ShaderEffect>(se => se.GetEffectParam("NormalMap") != null)?.FirstOrDefault();
-            Texture tex = null;
-            if (bumpeffect != null)
+            var plane = new Plane();
+            plane.Tangents = plane.CalculateTangents();
+            plane.BiTangents = plane.CalculateBiTangents();
+
+            var sfx = await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto
+            (
+                new Engine.Core.ShaderShards.ShaderEffectProps
+                {
+                    MatProbs =
+                    {
+                        HasAlbedo = true,
+                        HasAlbedoTexture = true,
+                        HasNormalMap = true,
+                        HasSpecular = true
+                    },
+                    MatType = Engine.Core.ShaderShards.MaterialType.Standard,
+                    MatValues =
+                    {
+                        AlbedoColor = float4.One * 0.5f,
+                        AlbedoTexture = "Bricks_1K_Color.png",
+                        AlbedoMix = 1.0f,
+                        SpecularColor = float4.One,
+                        SpecularIntensity = .8f,
+                        SpecularShininess = 128f,
+                        NormalMap = "Bricks_1K_Normal.png",
+                        NormalMapIntensity = 1.0f
+                    }
+                }
+            );
+
+
+            _scene = new SceneContainer
             {
-                tex = (Texture)bumpeffect.GetEffectParam("NormalMap");
-                bumpeffect.SetEffectParam("NormalMapIntensity", 1f);
-            }
+                Children = new System.Collections.Generic.List<SceneNode>
+                    {
+                        new SceneNode
+                        {
+                            Components = new System.Collections.Generic.List<SceneComponent>
+                            {
+                                new Transform
+                                {
+                                    Rotation = new float3(0, -M.PiOver3, 0),
+                                    Scale = float3.One  * 500f
+                                },
+                                sfx,
+                                plane
 
-            // _scene.Children.FindComponents<SHA
+                            }
+                        }
+                    }
+            };
 
-            //TODO: export the correct material - with bump channel - from blender exporter
-            //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here
-
-            //_scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            //{
-            //    Intensity = 0.5f,
-            //    Texture = "bump.png"
-            //};
-
-            //_scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            //{
-            //    Intensity = 1.0f,
-            //    Texture = "bump.png"
-            //};
-
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            var aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
@@ -85,9 +107,9 @@ namespace Fusee.Examples.NormalMap.Core
                 // recenter it to the bounding box. Do this check individually per dimension.
                 // This way, small deviations will keep the model's original center, while big deviations
                 // will make the model rotate around its geometric center.
-                float3 bbCenter = bbox.Value.Center;
-                float3 bbSize = bbox.Value.Size;
-                float3 center = float3.Zero;
+                var bbCenter = bbox.Value.Center;
+                var bbSize = bbox.Value.Size;
+                var center = float3.Zero;
                 if (System.Math.Abs(bbCenter.x) > bbSize.x * 0.3)
                     center.x = bbCenter.x;
                 if (System.Math.Abs(bbCenter.y) > bbSize.y * 0.3)
@@ -97,7 +119,7 @@ namespace Fusee.Examples.NormalMap.Core
                 _sceneCenter = float4x4.CreateTranslation(-center);
 
                 // Adjust the model size
-                float maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
+                var maxScale = System.Math.Max(bbSize.x, System.Math.Max(bbSize.y, bbSize.z));
                 if (maxScale != 0)
                     _sceneScale = float4x4.CreateScale(200.0f / maxScale);
                 else
@@ -113,7 +135,6 @@ namespace Fusee.Examples.NormalMap.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -140,7 +161,7 @@ namespace Fusee.Examples.NormalMap.Core
                 _zoomVel = Input.Touch.TwoPointDistanceVel * -0.01f;
                 _angleRoll = Input.Touch.TwoPointAngle - _angleRollInit;
                 _offset = Input.Touch.TwoPointMidPoint - _offsetInit;
-                float pinchSpeed = Input.Touch.TwoPointDistanceVel;
+                var pinchSpeed = Input.Touch.TwoPointDistanceVel;
                 if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
             }
             else
