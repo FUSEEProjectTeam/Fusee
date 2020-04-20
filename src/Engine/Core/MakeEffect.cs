@@ -422,72 +422,72 @@ namespace Fusee.Engine.Core
             return new DefaultSurfaceEffect(LightingSetup.SpecularStd, input, FragShards.SurfOutBody_Textures(true, false));
         }
 
-        /// <summary>
-        /// Builds a simple shader effect with diffuse and specular color.
-        /// </summary>
-        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
-        /// <param name="specularColor">The specular color for the resulting effect.</param>
-        /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
-        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel ProtoFromDiffuseSpecular(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
-        {
-            MaterialComponent temp = new MaterialComponent
-            {
-                Diffuse = new DiffuseChannelContainer
-                {
-                    Color = diffuseColor
-                },
-                Specular = new SpecularChannelContainer
-                {
-                    Color = specularColor,
-                    Shininess = shininess,
-                    Strength = specularIntensity,
-                }
-            };
-            return ProtoFromMatComp(temp);
-        }
+        ///// <summary>
+        ///// Builds a simple shader effect with diffuse and specular color.
+        ///// </summary>
+        ///// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        ///// <param name="specularColor">The specular color for the resulting effect.</param>
+        ///// <param name="shininess">The resulting effect's shininess.</param>
+        ///// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        ///// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        //public static ShaderEffectProtoPixel ProtoFromDiffuseSpecular(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        //{
+        //    MaterialComponent temp = new MaterialComponent
+        //    {
+        //        Diffuse = new DiffuseChannelContainer
+        //        {
+        //            Color = diffuseColor
+        //        },
+        //        Specular = new SpecularChannelContainer
+        //        {
+        //            Color = specularColor,
+        //            Shininess = shininess,
+        //            Strength = specularIntensity,
+        //        }
+        //    };
+        //    return ProtoFromMatComp(temp);
+        //}
 
 
-        /// <summary> 
-        /// Creates a ShaderEffectComponent from a MaterialComponent 
-        /// </summary> 
-        /// <param name="mc">The MaterialComponent</param> 
-        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
-        /// <returns></returns> 
-        /// <exception cref="Exception"></exception> 
-        public static ShaderEffectProtoPixel ProtoFromMatComp(MaterialComponent mc, Weight wc = null)
-        {
-            var effectProps = Utility.CollectEffectProps(null, mc, wc);
-            string vs = CreateVertexShader(wc, effectProps);
-            string ps = CreateProtoPixelShader(effectProps);
-            var effectParameters = AssembleEffectParamers(mc);
+        ///// <summary> 
+        ///// Creates a ShaderEffectComponent from a MaterialComponent 
+        ///// </summary> 
+        ///// <param name="mc">The MaterialComponent</param> 
+        ///// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
+        ///// <returns></returns> 
+        ///// <exception cref="Exception"></exception> 
+        //public static ShaderEffectProtoPixel ProtoFromMatComp(MaterialComponent mc, Weight wc = null)
+        //{
+        //    var effectProps = Utility.CollectEffectProps(null, mc, wc);
+        //    string vs = CreateVertexShader(wc, effectProps);
+        //    string ps = CreateProtoPixelShader(effectProps);
+        //    var effectParameters = AssembleEffectParamers(mc);
 
-            if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
+        //    if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
-            var ret = new ShaderEffectProtoPixel(
-                new FxPassDeclarationProto
-                {
-                    VS = vs,
-                    //VS = VsBones, 
-                    ProtoPS = ps,
-                    StateSet = new RenderStateSet
-                    {
-                        ZEnable = true,
-                        AlphaBlendEnable = true,
-                        SourceBlend = Blend.SourceAlpha,
-                        DestinationBlend = Blend.InverseSourceAlpha,
-                        BlendOperation = BlendOperation.Add,
-                    }
+        //    var ret = new ShaderEffectProtoPixel(
+        //        new FxPassDeclarationProto
+        //        {
+        //            VS = vs,
+        //            //VS = VsBones, 
+        //            ProtoPS = ps,
+        //            StateSet = new RenderStateSet
+        //            {
+        //                ZEnable = true,
+        //                AlphaBlendEnable = true,
+        //                SourceBlend = Blend.SourceAlpha,
+        //                DestinationBlend = Blend.InverseSourceAlpha,
+        //                BlendOperation = BlendOperation.Add,
+        //            }
 
-                },
-                effectParameters
-            )
-            {
-                EffectProps = effectProps
-            };
-            return ret;
-        }
+        //        },
+        //        effectParameters
+        //    )
+        //    {
+        //        EffectProps = effectProps
+        //    };
+        //    return ret;
+        //}
 
         #endregion
 
@@ -588,257 +588,257 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private static IEnumerable<IFxParamDeclaration> AssembleEffectParamers(MaterialComponent mc)
-        {
-            var effectParameters = new List<IFxParamDeclaration>();
+        //private static IEnumerable<IFxParamDeclaration> AssembleEffectParamers(LightingSetup lightSetup)
+        //{
+        //    var effectParameters = new List<IFxParamDeclaration>();
 
-            if (mc.HasDiffuse)
-            {
-                effectParameters.Add(new FxParamDeclaration<float4>
-                {
-                    Name = UniformNameDeclarations.Albedo,
-                    Value = mc.Diffuse.Color
-                });
-                if (mc.Diffuse.Texture != null)
-                {
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.AlbedoMix,
-                        Value = mc.Diffuse.Mix
-                    });
-                    effectParameters.Add(new FxParamDeclaration<Texture>
-                    {
-                        Name = UniformNameDeclarations.AlbedoTexture,
-                        Value = LoadTexture(mc.Diffuse.Texture)
-                    });
-                    effectParameters.Add(new FxParamDeclaration<float2>
-                    {
-                        Name = UniformNameDeclarations.DiffuseTextureTiles,
-                        Value = mc.Diffuse.Tiles
-                    });
-                }
-            }
+        //    if (lightSetup != LightingSetup.Unlit)
+        //    {
+        //        effectParameters.Add(new FxParamDeclaration<float4>
+        //        {
+        //            Name = UniformNameDeclarations.Albedo,
+        //            Value = mc.Diffuse.Color
+        //        });
+        //        if (mc.Diffuse.Texture != null)
+        //        {
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.AlbedoMix,
+        //                Value = mc.Diffuse.Mix
+        //            });
+        //            effectParameters.Add(new FxParamDeclaration<Texture>
+        //            {
+        //                Name = UniformNameDeclarations.AlbedoTexture,
+        //                Value = LoadTexture(mc.Diffuse.Texture)
+        //            });
+        //            effectParameters.Add(new FxParamDeclaration<float2>
+        //            {
+        //                Name = UniformNameDeclarations.DiffuseTextureTiles,
+        //                Value = mc.Diffuse.Tiles
+        //            });
+        //        }
+        //    }
 
-            if (mc.HasSpecular)
-            {
-                effectParameters.Add(new FxParamDeclaration<float4>
-                {
-                    Name = UniformNameDeclarations.SpecularColor,
-                    Value = mc.Specular.Color
-                });
+        //    if (lightSetup == LightingSetup.SpecularPbr || lightSetup == LightingSetup.SpecularStd)
+        //    {
+        //        effectParameters.Add(new FxParamDeclaration<float4>
+        //        {
+        //            Name = UniformNameDeclarations.SpecularColor,
+        //            Value = mc.Specular.Color
+        //        });
 
-                if (mc.GetType() == typeof(MaterialComponent))
-                {
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.SpecularShininess,
-                        Value = mc.Specular.Shininess
-                    });
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.SpecularStrength,
-                        Value = mc.Specular.Strength
-                    });
-                    if (mc.Specular.Texture != null)
-                    {
-                        effectParameters.Add(new FxParamDeclaration<float>
-                        {
-                            Name = UniformNameDeclarations.SpecularMix,
-                            Value = mc.Specular.Mix
-                        });
-                        effectParameters.Add(new FxParamDeclaration<Texture>
-                        {
-                            Name = UniformNameDeclarations.SpecularTexture,
-                            Value = LoadTexture(mc.Specular.Texture)
-                        });
-                    }
-                }
-                else if (mc.GetType() == typeof(MaterialPBRComponent))
-                {
-                    var mcPbr = (MaterialPBRComponent)mc;
+        //        if (lightSetup == LightingSetup.SpecularStd)
+        //        {
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.SpecularShininess,
+        //                Value = mc.Specular.Shininess
+        //            });
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.SpecularStrength,
+        //                Value = mc.Specular.Strength
+        //            });
+        //            if (mc.Specular.Texture != null)
+        //            {
+        //                effectParameters.Add(new FxParamDeclaration<float>
+        //                {
+        //                    Name = UniformNameDeclarations.SpecularMix,
+        //                    Value = mc.Specular.Mix
+        //                });
+        //                effectParameters.Add(new FxParamDeclaration<Texture>
+        //                {
+        //                    Name = UniformNameDeclarations.SpecularTexture,
+        //                    Value = LoadTexture(mc.Specular.Texture)
+        //                });
+        //            }
+        //        }
+        //        else if (lightSetup == LightingSetup.SpecularPbr)
+        //        {
+        //            var mcPbr = (MaterialPBRComponent)mc;
 
-                    var delta = 0.0000001f;
-                    var diffuseFractionDelta = 0.99999f; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
+        //            var delta = 0.0000001f;
+        //            var diffuseFractionDelta = 0.99999f; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
 
-                    var roughness = mcPbr.RoughnessValue + delta; // always float, never int!
-                    var fresnel = mcPbr.FresnelReflectance + delta;
-                    var df = mcPbr.DiffuseFraction == 0 ? diffuseFractionDelta : mcPbr.DiffuseFraction + delta;
+        //            var roughness = mcPbr.RoughnessValue + delta; // always float, never int!
+        //            var fresnel = mcPbr.FresnelReflectance + delta;
+        //            var df = mcPbr.DiffuseFraction == 0 ? diffuseFractionDelta : mcPbr.DiffuseFraction + delta;
 
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.RoughnessValue,
-                        Value = roughness
-                    });
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.FresnelReflectance,
-                        Value = fresnel
-                    });
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.DiffuseFraction,
-                        Value = df
-                    });
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.RoughnessValue,
+        //                Value = roughness
+        //            });
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.FresnelReflectance,
+        //                Value = fresnel
+        //            });
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.DiffuseFraction,
+        //                Value = df
+        //            });
 
-                }
-            }
+        //        }
+        //    }
 
-            if (mc.HasEmissive)
-            {
-                effectParameters.Add(new FxParamDeclaration<float4>
-                {
-                    Name = UniformNameDeclarations.EmissiveColor,
-                    Value = mc.Emissive.Color
-                });
-                if (mc.Emissive.Texture != null)
-                {
-                    effectParameters.Add(new FxParamDeclaration<float>
-                    {
-                        Name = UniformNameDeclarations.EmissiveMix,
-                        Value = mc.Emissive.Mix
-                    });
-                    effectParameters.Add(new FxParamDeclaration<Texture>
-                    {
-                        Name = UniformNameDeclarations.EmissiveTexture,
-                        Value = LoadTexture(mc.Emissive.Texture)
-                    });
-                }
-            }
+        //    if (mc.HasEmissive)
+        //    {
+        //        effectParameters.Add(new FxParamDeclaration<float4>
+        //        {
+        //            Name = UniformNameDeclarations.EmissiveColor,
+        //            Value = mc.Emissive.Color
+        //        });
+        //        if (mc.Emissive.Texture != null)
+        //        {
+        //            effectParameters.Add(new FxParamDeclaration<float>
+        //            {
+        //                Name = UniformNameDeclarations.EmissiveMix,
+        //                Value = mc.Emissive.Mix
+        //            });
+        //            effectParameters.Add(new FxParamDeclaration<Texture>
+        //            {
+        //                Name = UniformNameDeclarations.EmissiveTexture,
+        //                Value = LoadTexture(mc.Emissive.Texture)
+        //            });
+        //        }
+        //    }
 
-            if (mc.HasBump)
-            {
-                effectParameters.Add(new FxParamDeclaration<float>
-                {
-                    Name = UniformNameDeclarations.NormalMapIntensity,
-                    Value = mc.Bump.Intensity
-                });
-                effectParameters.Add(new FxParamDeclaration<Texture>
-                {
-                    Name = UniformNameDeclarations.NormalMap,
-                    Value = LoadTexture(mc.Bump.Texture)
-                });
-                effectParameters.Add(new FxParamDeclaration<float2>
-                {
-                    Name = UniformNameDeclarations.NormalTextureTiles,
-                    Value = mc.Bump.Tiles
-                });
-            }
+        //    if (mc.HasBump)
+        //    {
+        //        effectParameters.Add(new FxParamDeclaration<float>
+        //        {
+        //            Name = UniformNameDeclarations.NormalMapIntensity,
+        //            Value = mc.Bump.Intensity
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<Texture>
+        //        {
+        //            Name = UniformNameDeclarations.NormalMap,
+        //            Value = LoadTexture(mc.Bump.Texture)
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float2>
+        //        {
+        //            Name = UniformNameDeclarations.NormalTextureTiles,
+        //            Value = mc.Bump.Tiles
+        //        });
+        //    }
 
-            for (int i = 0; i < Lighting.NumberOfLightsForward; i++)
-            {
-                if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
-                {
-                    Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
-                }
+        //    for (int i = 0; i < Lighting.NumberOfLightsForward; i++)
+        //    {
+        //        if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
+        //        {
+        //            Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+        //        }
 
-                effectParameters.Add(new FxParamDeclaration<float3>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].PositionViewSpace,
-                    Value = new float3(0, 0, -1.0f)
-                });
-                effectParameters.Add(new FxParamDeclaration<float4>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].Intensities,
-                    Value = float4.Zero
-                });
-                effectParameters.Add(new FxParamDeclaration<float>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].MaxDistance,
-                    Value = 0.0f
-                });
-                effectParameters.Add(new FxParamDeclaration<float>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].Strength,
-                    Value = 0.0f
-                });
-                effectParameters.Add(new FxParamDeclaration<float>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].OuterAngle,
-                    Value = 0.0f
-                });
-                effectParameters.Add(new FxParamDeclaration<float>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].InnerAngle,
-                    Value = 0.0f
-                });
-                effectParameters.Add(new FxParamDeclaration<float3>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].Direction,
-                    Value = float3.Zero
-                });
-                effectParameters.Add(new FxParamDeclaration<int>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].LightType,
-                    Value = 1
-                });
-                effectParameters.Add(new FxParamDeclaration<int>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].IsActive,
-                    Value = 0
-                });
-                effectParameters.Add(new FxParamDeclaration<int>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].IsCastingShadows,
-                    Value = 0
-                });
-                effectParameters.Add(new FxParamDeclaration<float>
-                {
-                    Name = Lighting.LightPararamStringsAllLights[i].Bias,
-                    Value = 0f
-                });
-            }
+        //        effectParameters.Add(new FxParamDeclaration<float3>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].PositionViewSpace,
+        //            Value = new float3(0, 0, -1.0f)
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float4>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].Intensities,
+        //            Value = float4.Zero
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].MaxDistance,
+        //            Value = 0.0f
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].Strength,
+        //            Value = 0.0f
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].OuterAngle,
+        //            Value = 0.0f
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].InnerAngle,
+        //            Value = 0.0f
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float3>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].Direction,
+        //            Value = float3.Zero
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<int>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].LightType,
+        //            Value = 1
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<int>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].IsActive,
+        //            Value = 0
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<int>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].IsCastingShadows,
+        //            Value = 0
+        //        });
+        //        effectParameters.Add(new FxParamDeclaration<float>
+        //        {
+        //            Name = Lighting.LightPararamStringsAllLights[i].Bias,
+        //            Value = 0f
+        //        });
+        //    }
 
-            // FUSEE_ PARAMS
-            // TODO: Just add the necessary ones!
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.Model,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ModelView,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ModelViewProjection,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ITModelView,
-                Value = float4x4.Identity
-            });
+        //    // FUSEE_ PARAMS
+        //    // TODO: Just add the necessary ones!
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.Model,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.ModelView,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.ModelViewProjection,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.ITModelView,
+        //        Value = float4x4.Identity
+        //    });
 
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.IModelView,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ITView,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.View,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.Projection,
-                Value = float4x4.Identity
-            });
-            effectParameters.Add(new FxParamDeclaration<float4x4[]>
-            {
-                Name = UniformNameDeclarations.BonesArray,
-                Value = new[] { float4x4.Identity }
-            });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.IModelView,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.ITView,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.View,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4>
+        //    {
+        //        Name = UniformNameDeclarations.Projection,
+        //        Value = float4x4.Identity
+        //    });
+        //    effectParameters.Add(new FxParamDeclaration<float4x4[]>
+        //    {
+        //        Name = UniformNameDeclarations.BonesArray,
+        //        Value = new[] { float4x4.Identity }
+        //    });
 
-            return effectParameters;
-        }
+        //    return effectParameters;
+        //}
 
         private static Texture LoadTexture(string path)
         {

@@ -29,9 +29,7 @@ namespace Fusee.Engine.Core.Effects
             }
         };
 
-        #region struct declaration
 
-        #endregion
 
         #region Uniform Declarations
 
@@ -103,14 +101,14 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public static string PxColorOut = ShaderShards.Fragment.FragProperties.ColorOut();
 
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Main)]
-        public static string PxMain = ShaderShards.Fragment.FragMain.ForwardLighting(typeof(SpecularInput), "SurfIn", ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd).Name);
+        //[FxShader(ShaderCategory.Fragment)]
+        //[FxShard(ShardCategory.Main)]
+        //public static string PxMain = ShaderShards.Fragment.FragMain.ForwardLighting(typeof(SpecularInput), "SurfIn", ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd).Name);
 
-        //Note that "AssembleLightingMethods" contains more than the main method BUT in the correct order. Therefor we do not more than one shard here.
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Method)]
-        public static string PxLightingMethods;
+        ////Note that "AssembleLightingMethods" contains more than the main method BUT in the correct order. Therefor we do not more than one shard here.
+        //[FxShader(ShaderCategory.Fragment)]
+        //[FxShard(ShardCategory.Method)]
+        //public static string PxLightingMethods;
 
         //----------------------------------------------------------------------------------------------------------------
 
@@ -122,9 +120,9 @@ namespace Fusee.Engine.Core.Effects
         public DefaultSurfaceEffect(LightingSetup lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null) 
             : base(lightingSetup, input, rendererStates) 
         {
-            PxLightingMethods = ShaderShards.Fragment.Lighting.AssembleLightingMethods(LightingSetup);
+            //PxLightingMethods = ShaderShards.Fragment.Lighting.AssembleLightingMethods(LightingSetup);
             SurfOutMethodBody.InsertRange(1, surfOutBody);
-            SurfOutMethod = ShaderShards.Fragment.FragShards.GetChangeSurfFragMethod(LightingSetup, SurfOutMethodBody, typeof(SpecularInput));
+            SurfOutMethod = ShaderShards.Fragment.FragShards.GetChangeSurfFragMethod(LightingSetup, SurfOutMethodBody, input.GetType());
             HandleFieldsAndProps();
         }
     }

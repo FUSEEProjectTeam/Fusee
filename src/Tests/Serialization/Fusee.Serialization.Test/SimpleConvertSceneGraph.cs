@@ -85,8 +85,8 @@ namespace Fusee.Test.Serialization.V1
             {
                 Name = "XFormText",
                 Height = 10,
-                HorizontalAlignment = V1.FusHorizontalTextAlignment.CENTER,
-                VerticalAlignment = V1.FusVerticalTextAlignment.TOP,
+                HorizontalAlignment = Fusee.Serialization.V1.FusHorizontalTextAlignment.CENTER,
+                VerticalAlignment = Fusee.Serialization.V1.FusVerticalTextAlignment.TOP,
                 Width = 200
             });
 
@@ -149,8 +149,8 @@ namespace Fusee.Test.Serialization.V1
 
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusMaterial
             {
-                Albedo = new V1.MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
-                Specular = new V1.SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
+                Albedo = new Fusee.Serialization.V1.AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Red) },
+                Specular = new Fusee.Serialization.V1.SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
             });
 
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusLight
@@ -215,8 +215,8 @@ namespace Fusee.Test.Serialization.V1
 
             ((FusScene)scene.Contents).Children[0].Children[0].AddComponent(new FusMaterial
             {
-                Albedo = new V1.MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
-                Specular = new V1.SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
+                Albedo = new Fusee.Serialization.V1.AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Green) },
+                Specular = new Fusee.Serialization.V1.SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
             });
 
             ((FusScene)scene.Contents).Children[0].Children[0].AddComponent(daMesh);
@@ -256,8 +256,8 @@ namespace Fusee.Test.Serialization.V1
 
             ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterial
             {
-                Albedo = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
-                Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
+                Albedo = new AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
+                Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
             });
 
 
@@ -293,8 +293,8 @@ namespace Fusee.Test.Serialization.V1
 
             ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterial
             {
-                Albedo = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
-                Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f }
+                Albedo = new AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Blue) },
+                Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
             });
 
             ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].Children[0].Children[0].AddComponent(daMesh);
@@ -373,7 +373,7 @@ namespace Fusee.Test.Serialization.V1
                         Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.AlbedoMix), ((FusMaterial)fusFileComp).Albedo.Mix);
                         //Assert.Equal(fx.GetFxParam<Texture>(UniformNameDeclarations.AlbedoTexture), ((FusMaterial)fusFileComp).Albedo.Texture); //TODO: broken --> compares a texture to the path to a texture.
                     }
-                  
+
                     if (fx.GetFxParam<float>(UniformNameDeclarations.SpecularMix) != null)
                     {
                         Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularMix), ((FusMaterial)fusFileComp).Specular.Mix);
@@ -384,7 +384,7 @@ namespace Fusee.Test.Serialization.V1
                     {
                         Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.SpecularColor), ((FusMaterial)fusFileComp).Specular.Color);
                         Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularShininess), ((FusMaterial)fusFileComp).Specular.Shininess);
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularStrength), ((FusMaterial)fusFileComp).Specular.Intensity);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularStrength), ((FusMaterial)fusFileComp).Specular.Strength);
                     }
 
                     if (fx.GetFxParam<float4>(UniformNameDeclarations.EmissiveColor) != null)
@@ -535,7 +535,7 @@ namespace Fusee.Test.Serialization.V1
                 }
 
                 if (gtComp is ShaderEffect fx)
-                {     
+                {
                     // HACK (mr): Problem with null vs string comparison. Should be re-enabled after <nullable> is enabled for F.E.Core & Serialization
                     //Assert.Equal(fx.Name, ((ShaderEffect)sceneFileComp).Name);
 
@@ -716,8 +716,8 @@ namespace Fusee.Test.Serialization.V1
                         {
                             Name = "XFormText",
                             Height = 10,
-                            HorizontalAlignment = Engine.Core.Scene.HorizontalTextAlignment.CENTER,
-                            VerticalAlignment = Engine.Core.Scene.VerticalTextAlignment.TOP,
+                            HorizontalAlignment = Engine.Common.HorizontalTextAlignment.CENTER,
+                            VerticalAlignment = Engine.Common.VerticalTextAlignment.TOP,
                             Width = 200
                         },
                        new XForm
@@ -770,9 +770,8 @@ namespace Fusee.Test.Serialization.V1
                        },
                        MakeEffect.FromDiffuseSpecular(
                            albedoColor: ColorUint.Tofloat4(ColorUint.Red),
-                           specularColor: ColorUint.Tofloat4(ColorUint.White),
                            shininess: 4.0f,
-                           specularIntensity: 1.0f),
+                           specularStrength: 1.0f),
 
                        new Light
                        {
@@ -816,8 +815,7 @@ namespace Fusee.Test.Serialization.V1
                                 new Transform {Translation=new float3(0, 60, 0),  Scale = new float3(20, 100, 20) },
                                 MakeEffect.FromDiffuseSpecular(
                                     albedoColor: ColorUint.Tofloat4(ColorUint.Green),
-                                    specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                    specularIntensity: 1.0f,
+                                    specularStrength: 1.0f,
                                     shininess: 4.0f),
                                 new Cube()
                             },
@@ -844,8 +842,7 @@ namespace Fusee.Test.Serialization.V1
                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
                                                 MakeEffect.FromDiffuseSpecular(
                                                     albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
-                                                    specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                                    specularIntensity: 1.0f,
+                                                    specularStrength: 1.0f,
                                                     shininess: 4.0f),
                                                 new Cube()
                                             },
@@ -868,8 +865,7 @@ namespace Fusee.Test.Serialization.V1
                                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
                                                                 MakeEffect.FromDiffuseSpecular(
                                                                                     albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
-                                                                                    specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                                                                    specularIntensity: 1.0f,
+                                                                                    specularStrength: 1.0f,
                                                                                     shininess: 4.0f),
                                                                 new Cube()
                                                             }

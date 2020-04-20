@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
-        private readonly Dictionary<FusMaterial, ShaderEffect> _matMap;
+        private readonly Dictionary<FusMaterial, Effect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Stack<SceneNode> _boneContainers;
 
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new SceneContainer();
 
-            _matMap = new Dictionary<FusMaterial, ShaderEffect>();
+            _matMap = new Dictionary<FusMaterial, Effect>();
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _boneContainers = new Stack<SceneNode>();
         }
@@ -483,117 +483,58 @@ namespace Fusee.Engine.Core
 
         #region Make ShaderEffect
 
-        private ShaderEffect LookupMaterial(FusMaterial m)
+        private Effect LookupMaterial(FusMaterial m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var vals = new MaterialValues();
+            var lightSetup = LightingSetup.SpecularStd;
 
-            if (m.HasNormalMap)
+            // TODO: ensure we're able to build surface effects for all of the material properties below
+            //if (m.HasNormalMap)           
+            //if (m.HasAlbedo)           
+            //if (m.HasEmissive)           
+            //if (m.HasSpecular)            
+
+            var colIn = new SpecularInput()
             {
-                vals.NormalMap = m.NormalMap.Texture ?? null;
-                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
-            }
-            if (m.HasAlbedo)
+                Albedo = m.Albedo.Color,
+                Shininess = m.Specular.Shininess,
+                SpecularStrength = m.Specular.Shininess
+            };
+
+            sfx = new DefaultSurfaceEffect(lightSetup, colIn, ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd)
             {
-                vals.AlbedoColor = m.Albedo.Color;
-                vals.AlbedoMix = m.Albedo.Mix;
-                vals.AlbedoTexture = m.Albedo.Texture ?? null;
-            }
-            if (m.HasEmissive)
-            {
-                vals.EmissiveColor = m.Emissive.Color;
-                vals.EmissiveMix = m.Emissive.Mix;
-                vals.EmissiveTexture = m.Emissive.Texture ?? null;
-            }
-
-            if (m.HasSpecular)
-            {
-                vals.SpecularColor = m.Specular.Color;
-                vals.SpecularMix = m.Specular.Mix;
-                vals.SpecularTexture = m.Specular.Texture ?? null;
-                vals.SpecularIntensity = m.Specular.Strength;
-                vals.SpecularShininess = m.Specular.Shininess;
-            }
-
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
-                new ShaderEffectProps
-                {
-                    MatProbs =
-                    {
-                        HasAlbedo = m.HasAlbedo,
-                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
-                        HasSpecular = m.HasSpecular,
-                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
-                        HasEmissive = m.HasEmissive,
-                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
-                        HasNormalMap = m.HasNormalMap
-                    },
-
-                    MatValues = vals
-                });
-
-            sfx.Name = m.Name ?? "";
+                Name = m.Name ?? ""
+            };
 
             _matMap.Add(m, sfx);
             return sfx;
         }
 
-        private ShaderEffect LookupMaterial(FusMaterialPBR m)
+        private Effect LookupMaterial(FusMaterialPBR m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var vals = new MaterialValues();
+            var lightSetup = LightingSetup.SpecularPbr;
 
-            if (m.HasNormalMap)
+            // TODO: ensure we're able to build surface effects for all of the material properties below
+            //if (m.HasNormalMap)           
+            //if (m.HasAlbedo)           
+            //if (m.HasEmissive)           
+            //if (m.HasSpecular)            
+
+            var colIn = new SpecularPbrInput()
             {
-                vals.NormalMap = m.NormalMap.Texture ?? null;
-                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
-            }
-            if (m.HasAlbedo)
+                Albedo = m.Albedo.Color,
+                DiffuseFraction = m.DiffuseFraction,
+                FresnelReflectance = m.FresnelReflectance,
+                Roughness = m.RoughnessValue
+            };
+
+            sfx = new DefaultSurfaceEffect(lightSetup, colIn, ShaderShards.Fragment.FragShards.SurfOutBody_SpecularPbr)
             {
-                vals.AlbedoColor = m.Albedo.Color;
-                vals.AlbedoMix = m.Albedo.Mix;
-                vals.AlbedoTexture = m.Albedo.Texture ?? null;
-            }
-            if (m.HasEmissive)
-            {
-                vals.EmissiveColor = m.Emissive.Color;
-                vals.EmissiveMix = m.Emissive.Mix;
-                vals.EmissiveTexture = m.Emissive.Texture ?? null;
-            }
-
-            if (m.HasSpecular)
-            {
-                vals.SpecularColor = m.Specular.Color;
-                vals.SpecularMix = m.Specular.Mix;
-                vals.SpecularTexture = m.Specular.Texture ?? null;
-                vals.SpecularIntensity = m.Specular.Intensity;
-                vals.SpecularShininess = m.Specular.Shininess;
-            }
-
-            vals.DiffuseFraction = m.DiffuseFraction;
-            vals.FresnelReflectance = m.FresnelReflectance;
-            vals.RoughnessValue = m.RoughnessValue;
-
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
-                new ShaderEffectProps
-                {
-                    MatProbs =
-                    {
-                        HasAlbedo = m.HasAlbedo,
-                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
-                        HasSpecular = m.HasSpecular,
-                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
-                        HasEmissive = m.HasEmissive,
-                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
-                        HasNormalMap = m.HasNormalMap
-                    },
-                    MatType = MaterialType.MaterialPbr,
-                    MatValues = vals
-                });
-
-            sfx.Name = m.Name ?? "";
+                Name = m.Name ?? ""
+            };
 
             _matMap.Add(m, sfx);
             return sfx;
@@ -767,64 +708,64 @@ namespace Fusee.Engine.Core
             var mat = new FusMaterial();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.Albedo))
-                mat.Albedo = new MatChannelContainer();
+                mat.Albedo = new AlbedoChannel();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
                 mat.Specular = new SpecularChannel();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
-                mat.NormalMap = new NormapMapChannelContainer();
+                mat.NormalMap = new NormapMapChannel();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
-                mat.Emissive = new MatChannelContainer();
+                mat.Emissive = new AlbedoChannel();
 
             foreach (var decl in fx.ParamDecl)
             {
                 switch (decl.Key)
                 {
                     case UniformNameDeclarations.Albedo:
-                        mat.Albedo.Color = (float4)decl.Value;
+                        mat.Albedo.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
                         break;
                     case UniformNameDeclarations.AlbedoTexture:
-                        mat.Albedo.Texture = (string)decl.Value;
+                        //mat.Albedo.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
                         break;
                     case UniformNameDeclarations.AlbedoMix:
-                        mat.Albedo.Mix = (float)decl.Value;
+                        mat.Albedo.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
 
 
                     case UniformNameDeclarations.EmissiveColor:
-                        mat.Emissive.Color = (float4)decl.Value;
+                        mat.Emissive.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
                         break;
                     case UniformNameDeclarations.EmissiveTexture:
-                        mat.Emissive.Texture = (string)decl.Value;
+                        //mat.Emissive.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
                         break;
                     case UniformNameDeclarations.EmissiveMix:
-                        mat.Emissive.Mix = (float)decl.Value;
+                        mat.Emissive.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
 
 
                     case UniformNameDeclarations.SpecularColor:
-                        mat.Specular.Color = (float4)decl.Value;
+                        mat.Specular.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
                         break;
                     case UniformNameDeclarations.SpecularTexture:
-                        mat.Specular.Texture = (string)decl.Value;
+                        //mat.Specular.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
                         break;
                     case UniformNameDeclarations.SpecularMix:
-                        mat.Specular.Mix = (float)decl.Value;
+                        mat.Specular.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
                     case UniformNameDeclarations.SpecularShininess:
-                        mat.Specular.Shininess = (float)decl.Value;
+                        mat.Specular.Shininess = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
                     case UniformNameDeclarations.SpecularStrength:
-                        mat.Specular.Intensity = decl.Value;
+                        mat.Specular.Strength = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
 
                     case UniformNameDeclarations.NormalMap:
-                        mat.NormalMap.Texture = (string)decl.Value;
+                        //mat.NormalMap.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
                         break;
                     case UniformNameDeclarations.NormalMapIntensity:
-                        mat.NormalMap.Intensity = (float)decl.Value;
+                        mat.NormalMap.Intensity = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
                 }
             }

@@ -15,7 +15,8 @@ namespace Fusee.Engine.Core.ShaderShards
         SpecularStd,
         SpecularPbr,
         DiffuseOnly,
-        Unlit
+        Unlit,
+        GBuffer
     }
 
     public static class ShaderSurfaceOut
@@ -59,11 +60,27 @@ namespace Fusee.Engine.Core.ShaderShards
             "   vec4 position;",
             "   vec3 normal;",
             "   vec4 albedo;",
-            "   float roughness;" +
+            "   float roughness;",
             "   float fresnelReflect;",
             "   float diffuseFract;",
             "};\n",
         });
+
+
+        private const string GBufferOutName = "GBufferOut";
+        private static readonly string DerfafultGBufferOut = $"{GBufferOutName}(vec4(0), vec4(0), vec4(0), vec4(0), vec4(0));";
+        private static readonly string GBufferOut = string.Join("\n", new List<string>()
+        {
+            $"struct {GBufferOutName}",
+            "{",
+            "   vec4 position;",
+            "   vec4 albedo;",
+            "   vec4 normal;",
+            "   vec4 depth;",
+            "   vec4 specular;",
+            "};\n",
+        });
+
 
         public static LightingSetupShards GetLightingSetupShards(LightingSetup setup)
         {
@@ -101,6 +118,16 @@ namespace Fusee.Engine.Core.ShaderShards
                             Name = DiffuseOutName,
                             StructDecl = DiffuseOut,
                             DefaultInstance = DefaultDiffuseOut
+                        };
+                        return _lightingSetupCache[setup];
+                    }
+                case LightingSetup.GBuffer:
+                    {
+                        _lightingSetupCache[setup] = new LightingSetupShards()
+                        {
+                            Name = GBufferOutName,
+                            StructDecl = GBufferOut,
+                            DefaultInstance = DerfafultGBufferOut
                         };
                         return _lightingSetupCache[setup];
                     }

@@ -79,7 +79,7 @@ namespace Fusee.Examples.Bone.Core
                                     },
                                     new Engine.Core.Scene.Bone(),
                                     new Weight(),
-                                    MakeEffect.FromDiffuseSpecular(new float4(1.0f, 0.4f, 0.2f,1.0f), float4.One,0,0),
+                                    MakeEffect.FromDiffuseSpecular(new float4(1.0f, 0.4f, 0.2f,1.0f),0,0),
                                     CreateCuboid(float3.One)
                                 }
                             }

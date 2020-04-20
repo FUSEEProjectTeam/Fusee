@@ -36,8 +36,8 @@ namespace Fusee.Engine.Core.Effects
         //================== Shard IN ==========================//
         public LightingSetup LightingSetup;
 
-        [FxShader(ShaderCategory.Fragment)]                     // => Adds shader code to the fragment shader only.
-        [FxShard(ShardCategory.Struct | ShardCategory.Uniform)] // => will crate the struct at the appropriate place in the shader.       
+        //[FxShader(ShaderCategory.Fragment)]                     // => Adds shader code to the fragment shader only.
+        //[FxShard(ShardCategory.Struct | ShardCategory.Uniform)] // => will crate the struct at the appropriate place in the shader.
         public ColorInput SurfaceInput { get; set; }
         //======================================================//
 
@@ -54,16 +54,31 @@ namespace Fusee.Engine.Core.Effects
         //======================================================//
         #endregion
 
-
         /// <summary>
         /// Creates a new Instance of type SurfaceEffect.
         /// </summary>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
         public SurfaceEffect(LightingSetup lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
-            var lightingShards = ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd);
-            SurfaceInput = surfaceInput;
+            EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
+            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+
             LightingSetup = lightingSetup;
+            var lightingShards = ShaderSurfaceOut.GetLightingSetupShards(LightingSetup);
+
+            SurfaceInput = surfaceInput;
+            SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
+
+            var surfInType = surfaceInput.GetType();
+            var surfInName = nameof(SurfaceInput);
+            HandleStruct(ShaderCategory.Fragment, surfInType);
+            foreach (var structProp in surfInType.GetProperties())
+            {
+                var paramDcl = BuildFxParamDecl(structProp, GetType().GetProperty(surfInName));
+                ParamDecl.Add(paramDcl.Name, paramDcl);
+            }
+            HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
+
             SurfaceOutput = lightingShards.StructDecl;
 
             SurfOutMethodBody = new List<string>()
@@ -71,11 +86,6 @@ namespace Fusee.Engine.Core.Effects
                 $"{lightingShards.Name} OUT = {lightingShards.DefaultInstance};",
                 "return OUT;"
             };
-
-            EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
-
-            SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
 
             if (renderStateSet == null)
             {
@@ -88,10 +98,6 @@ namespace Fusee.Engine.Core.Effects
                     BlendOperation = BlendOperation.Add,
                 };
             }
-
-            //TODO: Difference forward/deferred. Lights as properties? Would be difficult because each Light property must be one property in the SurfaceEffect.
-            foreach (var dcl in CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
-                ParamDecl.Add(dcl.Name, dcl);
 
             //TODO: ParamDecls for FUSEE_Matrices -  they should not be set by ShaderEffect.FUSEE_MVP = new float4x4() because they are managed under the hood in most cases.
             foreach (var dcl in CreateMatParamDecls())
@@ -140,7 +146,7 @@ namespace Fusee.Engine.Core.Effects
                         {
                             var paramDcl = BuildFxParamDecl(prop);
                             ParamDecl.Add(paramDcl.Name, paramDcl);
-                            HandleUniform(shaderAttribute, paramDcl.Name, paramDcl.ParamType);
+                            HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }
                     case ShardCategory.Header:
@@ -148,21 +154,21 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                         if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
-                            HandleShard(shaderAttribute, shardAttribute, (string)prop.GetValue(this));
+                            HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)prop.GetValue(this));
                         else
                             throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
                         continue;
                     case ShardCategory.Struct:
-                        HandleStruct(shaderAttribute, prop.PropertyType);
+                        HandleStruct(shaderAttribute.ShaderCategory, prop.PropertyType);
                         continue;
                     case ShardCategory.Struct | ShardCategory.Uniform:
-                        HandleStruct(shaderAttribute, prop.PropertyType);
+                        HandleStruct(shaderAttribute.ShaderCategory, prop.PropertyType);
                         foreach (var structProp in prop.PropertyType.GetProperties())
                         {
                             var paramDcl = BuildFxParamDecl(structProp, prop);
                             ParamDecl.Add(paramDcl.Name, paramDcl);
                         }
-                        HandleUniform(shaderAttribute, prop.Name, prop.PropertyType);
+                        HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
                         continue;
                     default:
                         break;
@@ -208,12 +214,12 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                         if (field.IsStatic && field.FieldType == typeof(string))
-                            HandleShard(shaderAttribute, shardAttribute, (string)field.GetValue(this));
+                            HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)field.GetValue(this));
                         else
                             throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
                         continue;
                     case ShardCategory.Struct:
-                        HandleStruct(shaderAttribute, field.FieldType);
+                        HandleStruct(shaderAttribute.ShaderCategory, field.FieldType);
                         continue;
                     default:
                         break;
@@ -221,6 +227,7 @@ namespace Fusee.Engine.Core.Effects
 
             }
         }
+
         internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList)
         {
             string res = string.Empty;
@@ -230,9 +237,9 @@ namespace Fusee.Engine.Core.Effects
             return res;
         }
 
-        private void HandleShard(FxShaderAttribute shaderAttrib, FxShardAttribute shardAttrib, string shardCode)
+        private void HandleShard(ShaderCategory shaderCategory, FxShardAttribute shardAttrib, string shardCode)
         {
-            switch (shaderAttrib.ShaderCategory)
+            switch (shaderCategory)
             {
                 case ShaderCategory.Vertex:
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(shardAttrib.ShardCategory, shardCode));
@@ -277,10 +284,10 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private void HandleUniform(FxShaderAttribute shaderAttrib, string uniformName, Type type)
+        private void HandleUniform(ShaderCategory shaderCategory, string uniformName, Type type)
         {
             var uniform = "uniform ";
-            switch (shaderAttrib.ShaderCategory)
+            switch (shaderCategory)
             {
                 case ShaderCategory.Vertex:
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, uniform + GLSL.DecodeType(type) + " " + uniformName + ";\n"));
@@ -326,10 +333,10 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        private void HandleStruct(FxShaderAttribute shaderAttrib, Type type)
+        private void HandleStruct(ShaderCategory shaderCategory, Type type)
         {
             var glslStruct = GLSL.DecodeSystemStructOrClass(type);
-            switch (shaderAttrib.ShaderCategory)
+            switch (shaderCategory)
             {
                 case ShaderCategory.Vertex:
                     VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Struct, glslStruct));
@@ -397,7 +404,7 @@ namespace Fusee.Engine.Core.Effects
             return (IFxParamDeclaration)ob;
         }
 
-        private static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
+        internal static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
         {
             for (int i = 0; i < numberOfLights; i++)
             {

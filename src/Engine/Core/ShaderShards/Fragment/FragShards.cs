@@ -21,14 +21,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             $"OUT.position = {VaryingNameDeclarations.Position};",
         };
 
+        public static readonly List<string> SurfOutBody_GBuffer = new List<string>()
+        {
+            $"OUT.position = {VaryingNameDeclarations.Position}",
+            "OUT.albedo = IN.Albedo;",
+            $"OUT.normal = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);",
+            "OUT.depth = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);",
+            $"OUT.specular =  vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);"
+        };
+
         public static readonly List<string> SurfOutBody_SpecularPbr = new List<string>()
         {
             $"OUT.normal = {VaryingNameDeclarations.Normal};",
             $"OUT.position = {VaryingNameDeclarations.Position};",
             "OUT.albedo = IN.Albedo;",
-            "OUT.roughness = IN.Roughness;" +
-            "OUT.fresnelReflect = IN.DiffuseFraction;",
-            "OUT.diffuseFract = IN.FresnelReflectance;"
+            "OUT.roughness = IN.Roughness;",
+            "OUT.fresnelReflect = IN.FresnelReflectance;",
+            "OUT.diffuseFract = IN.DiffuseFraction;"
         };
 
         public static List<string> SurfOutBody_Textures(bool hasAlebedoTex, bool hasNormalTex)

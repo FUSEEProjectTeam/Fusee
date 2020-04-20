@@ -8,7 +8,6 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using System.Collections.Generic;
-using static Fusee.Examples.AdvancedUI.Core.UIHelper;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -61,11 +60,11 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
 
-        internal static readonly ShaderEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, 20f, 0f);
+        internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, 20f, 0f);
+        internal static readonly SurfaceEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, 20f, 0f);
 
-        internal static readonly ShaderEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly SurfaceEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), 20, 0);
 
         private static readonly float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
@@ -236,7 +235,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "circle" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, new float4(1,1,1,1), 20, 0),
+                    MakeEffect.FromDiffuseSpecular(col, 20, 0),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
@@ -285,12 +284,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, float4.One, 20, 0),
+                    MakeEffect.FromDiffuseSpecular(col, 20, 0),
                 }
             };
         }
 
-        internal static ShaderEffect GetShaderEffectFromMatColor(MatColor col)
+        internal static SurfaceEffect GetShaderEffectFromMatColor(MatColor col)
         {
             switch (col)
             {

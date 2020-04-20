@@ -6,6 +6,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core
 {
@@ -967,15 +968,15 @@ namespace Fusee.Engine.Core
 
         internal void CreateEffect(bool renderForward, Effect ef)
         {
-            if (_rci == null)
-                throw new NullReferenceException("No render context Implementation found!");
-
             if (ef == null)
                 throw new NullReferenceException("No Effect found!");
 
             // Is this shader effect already built?
             if (_effectManager.GetEffect(ef) != null)
                 return;
+
+            if (_rci == null)
+                throw new NullReferenceException("No render context Implementation found!");
 
             var compiledEffect = new CompiledEffect();
             var shaderParams = new Dictionary<string, ShaderParamInfo>();
@@ -1005,6 +1006,19 @@ namespace Fusee.Engine.Core
                 else
                 {
                     var surfEffect = (SurfaceEffect)ef;
+
+                    if (renderForward) {
+                        foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
+                            surfEffect.ParamDecl.Add(dcl.Name, dcl);
+
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(nameof(surfEffect.SurfaceInput), ShaderSurfaceOut.GetLightingSetupShards(surfEffect.LightingSetup).Name)));
+                    }
+                    else
+                    {
+
+                    }
+
                     vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
                     geom = SurfaceEffect.JoinShards(surfEffect.GeometryShaderSrc);
                     frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc);

@@ -433,7 +433,7 @@ namespace Fusee.Engine.GUI
                                 {
                                     new FxParamDeclaration<Texture>
                                     {
-                                        Name = "DiffuseTexture",
+                                        Name = UniformNameDeclarations.AlbedoTexture,
                                         Value = new Texture(fontMap.Image)
                                     },
                                     new FxParamDeclaration<float4>

@@ -53,10 +53,14 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
-            var test = new DefaultSurfaceEffect(LightingSetup.SpecularStd, new SpecularInput());
-            test.SurfaceInput.Albedo = new float4(1f, 0f, 1f, 1f);
-            test.SurfaceInput.Shininess = 22;
-            test.SurfaceInput.SpecularStrength = 1f;
+            var specularIn = new SpecularInput()
+            {
+                Albedo = new float4(1f, 0f, 1f, 1f),
+                Shininess = 22f,
+                SpecularStrength = 1f
+            };
+
+            var test = new DefaultSurfaceEffect(LightingSetup.SpecularStd, specularIn, Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd);           
 
             _rocketScene.Children[0].RemoveComponent<Effect>();
             _rocketScene.Children[0].Components.Insert(1, test);

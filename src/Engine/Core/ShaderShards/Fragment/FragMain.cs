@@ -1,9 +1,5 @@
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.Effects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
@@ -55,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Lighting Main method for forward rendering.
         /// </summary>
-        public static string ForwardLighting(Type inType, string inStructName, string outStructType)
+        public static string ForwardLighting(string inStructName, string outStructType)
         {
             var fragMainBody = new List<string>
             {

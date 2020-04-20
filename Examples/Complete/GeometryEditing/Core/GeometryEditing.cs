@@ -404,7 +404,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
 
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor, float4.One, 0, 0));
+            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor, 0, 0));
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);

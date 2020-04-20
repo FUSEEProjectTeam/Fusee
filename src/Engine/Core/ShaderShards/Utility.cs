@@ -133,47 +133,47 @@ namespace Fusee.Engine.Core.ShaderShards
                 new[] { "" }, methodBody);
         }
 
-        /// <summary>
-        /// Creates a new <see cref="EffectProps"/> from a MaterialComponent, a WeightComponent and a mesh.
-        /// </summary>
-        /// <param name="mesh">The mesh.</param>
-        /// <param name="mc">The material.</param>
-        /// <param name="wc">The weights.</param>
-        /// <returns></returns>
-        public static EffectProps CollectEffectProps(Mesh mesh, Material mc, Weight wc = null)
-        {
-            return new EffectProps()
-            {
-                LightingProps = AnalzyeMaterialParams(mc),
-                MeshProbs = AnalyzeMesh(mesh, wc),
-            };
-        }
+        ///// <summary>
+        ///// Creates a new <see cref="EffectProps"/> from a MaterialComponent, a WeightComponent and a mesh.
+        ///// </summary>
+        ///// <param name="mesh">The mesh.</param>
+        ///// <param name="mc">The material.</param>
+        ///// <param name="wc">The weights.</param>
+        ///// <returns></returns>
+        //public static EffectProps CollectEffectProps(Mesh mesh, Material mc, Weight wc = null)
+        //{
+        //    return new EffectProps()
+        //    {
+        //        LightingProps = AnalzyeMaterialParams(mc),
+        //        MeshProbs = AnalyzeMesh(mesh, wc),
+        //    };
+        //}
 
-        private static LightingProps AnalzyeMaterialParams(Material mc)
-        {
-            var lProps = new LightingProps
-            {
-                DoDiffuseLighting = mc.HasDiffuse,
-                HasDiffuseTexture = mc.HasDiffuse && mc.Diffuse.Texture != null,
+        //private static LightingProps AnalzyeMaterialParams(Material mc)
+        //{
+        //    var lProps = new LightingProps
+        //    {
+        //        DoDiffuseLighting = mc.HasDiffuse,
+        //        HasDiffuseTexture = mc.HasDiffuse && mc.Diffuse.Texture != null,
 
-                HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
-                HasEmissive = mc.HasEmissive,
-                HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
-                HasNormalMap = mc.HasBump
-            };
+        //        HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
+        //        HasEmissive = mc.HasEmissive,
+        //        HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
+        //        HasNormalMap = mc.HasBump
+        //    };
 
-            if (mc.HasSpecular)
-            {
-                if (mc.GetType() == typeof(MaterialPBR))
-                    lProps.SpecularLighting = SpecularLighting.Pbr;
-                else
-                    lProps.SpecularLighting = SpecularLighting.Std;
-            }
-            else
-                lProps.SpecularLighting = SpecularLighting.None;
+        //    if (mc.HasSpecular)
+        //    {
+        //        if (mc.GetType() == typeof(MaterialPBR))
+        //            lProps.SpecularLighting = SpecularLighting.Pbr;
+        //        else
+        //            lProps.SpecularLighting = SpecularLighting.Std;
+        //    }
+        //    else
+        //        lProps.SpecularLighting = SpecularLighting.None;
 
-            return lProps;
-        }
+        //    return lProps;
+        //}
 
         //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefor we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....
         private static MeshProps AnalyzeMesh(Mesh mesh, Weight wc = null)

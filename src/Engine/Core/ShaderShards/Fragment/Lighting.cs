@@ -199,7 +199,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     "// -- fresnel",
                     "// [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]",
                     "float fresnel = pow(1.0 - VdotH, 5.0);",
-                    $"fresnel = clamp((50.0 * specularCol.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
+                    $"fresnel = clamp((50.0 * lightCol.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
                     "",
                     $"specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);",
                     "",
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Float, "k"), GLSL.CreateVar(GLSL.Type.Vec4, "specularCol"), GLSL.CreateVar(GLSL.Type.Float, "F0"),
+                    GLSL.CreateVar(GLSL.Type.Float, "k"), GLSL.CreateVar(GLSL.Type.Vec4, "lightCol"), GLSL.CreateVar(GLSL.Type.Float, "F0"),
                     GLSL.CreateVar(GLSL.Type.Float, "roughnessValue")
                 }, methodBody);
         }
@@ -333,9 +333,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
                     methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
 
-                    methodBody.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
-                    methodBody.Add($"float specular = specularLighting(N, L, V, k, surfOut.specularCol, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue});");
-                    methodBody.Add($"Ispe = light.intensities.rgb * surfOut.specularCol.rgb * (k + specular * (1.0 - k));");
+                    methodBody.Add($"float k = 1.0 - surfOut.diffuseFract;");
+                    methodBody.Add($"float specular = specularLighting(N, L, V, k, light.intensities, surfOut.fresnelReflect, surfOut.roughness);");
+                    methodBody.Add($"Ispe = light.intensities.rgb * (k + specular * (1.0 - k));");
 
                     methodBody.AddRange(Attenuation());
                     methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
@@ -424,8 +424,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             else if (lightingProps.SpecularLighting == SpecularLighting.Pbr)
             {
                 applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
-                applyLightParams.Add($"float specular = specularLighting(N, L, V, k, {UniformNameDeclarations.SpecularColor}, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue});");
-                applyLightParams.Add($"Ispe = light.intensities.rgb * {UniformNameDeclarations.SpecularColor}.rgb * (k + specular * (1.0 - k));");
+                applyLightParams.Add($"float specular = specularLighting(N, L, V, k, light.intensities, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue});");
+                applyLightParams.Add($"Ispe = light.intensities.rgb * (k + specular * (1.0 - k));");
             }
 
             var pointLight = new List<string>
