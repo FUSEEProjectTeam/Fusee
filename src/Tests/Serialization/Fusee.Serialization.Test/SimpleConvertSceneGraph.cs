@@ -4,13 +4,14 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Fusee.Serialization.Test
+namespace Fusee.Test.Serialization.V1
 {
     public class SimpleConvertSceneGraphV1
     {
@@ -61,7 +62,7 @@ namespace Fusee.Serialization.Test
                 Name = "Base"
             });
 
-            ((FusScene)scene.Contents).Children[0].AddComponent(new FusCanvasTransform(V1.CanvasRenderMode.SCREEN)
+            ((FusScene)scene.Contents).Children[0].AddComponent(new FusCanvasTransform(Fusee.Serialization.V1.CanvasRenderMode.SCREEN)
             {
                 Name = "CanvasTransform",
                 Scale = float2.One * 2,
@@ -125,18 +126,18 @@ namespace Fusee.Serialization.Test
                 BindingMatrices = new List<float4x4>(),
                 Joints = new List<FusComponent>(),
                 Name = "MyWeight",
-                WeightMap = new List<V1.VertexWeightList>
+                WeightMap = new List<Fusee.Serialization.V1.VertexWeightList>
                            {
-                               new V1.VertexWeightList
+                               new Fusee.Serialization.V1.VertexWeightList
                                {
-                                   VertexWeights = new List<V1.VertexWeight>
+                                   VertexWeights = new List<Fusee.Serialization.V1.VertexWeight>
                                    {
-                                       new V1.VertexWeight
+                                       new Fusee.Serialization.V1.VertexWeight
                                        {
                                            Weight = 20,
                                            JointIndex = 0
                                        },
-                                        new V1.VertexWeight
+                                        new Fusee.Serialization.V1.VertexWeight
                                        {
                                            Weight = 30,
                                            JointIndex = 1
@@ -184,7 +185,7 @@ namespace Fusee.Serialization.Test
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusCamera
             {
                 Fov = 2000,
-                ProjectionMethod = V1.ProjectionMethod.Orthographic,
+                ProjectionMethod = Fusee.Serialization.V1.ProjectionMethod.Orthographic,
                 ClippingPlanes = new float2(0, 500)
             });
 
@@ -332,7 +333,7 @@ namespace Fusee.Serialization.Test
                 {
                     Assert.Equal(camera.Name, ((FusCamera)fusFileComp).Name);
                     Assert.Equal(camera.Layer, ((FusCamera)fusFileComp).Layer);
-                    Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == V1.ProjectionMethod.Orthographic ?
+                    Assert.Equal(camera.ProjectionMethod, (((FusCamera)fusFileComp).ProjectionMethod == Fusee.Serialization.V1.ProjectionMethod.Orthographic ?
                         Engine.Core.Scene.ProjectionMethod.Orthographic : Engine.Core.Scene.ProjectionMethod.Perspective));
                     Assert.Equal(camera.Viewport, ((FusCamera)fusFileComp).Viewport);
                     Assert.Equal(camera.Fov, ((FusCamera)fusFileComp).Fov);

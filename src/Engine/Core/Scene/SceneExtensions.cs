@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Finds all components matching a given search predicate within the given node.
+        /// Finds all components matching a given search predicate within the given list of nodes.
         /// </summary>
         /// <param name="roots"></param>
         /// <param name="match"></param>
@@ -36,6 +36,34 @@ namespace Fusee.Engine.Core.Scene
         public static IEnumerable<SceneComponent> FindComponents(this IEnumerable<SceneNode> roots, Predicate<SceneComponent> match)
         {
             return roots.FindComponents<SceneNode, SceneComponent>(match);
+        }
+
+        /// <summary>
+        /// Finds all components of a certain type matching a given search predicate within the given node.
+        /// </summary>
+        /// <remarks>
+        /// Narrows the generic parameters of <see cref="Fusee.Xene.SceneFinderExtensions.FindComponents{TNode, TComponent}(TNode, Predicate{TComponent})"/> 
+        /// to the concrete Types <see cref="SceneNode"/> and <see cref="SceneComponent"/>.
+        /// </remarks>
+        /// <param name="root">The root node where to start the traversal.</param>
+        /// <param name="match">The matching predicate. Enumeration will yield on every matching node.</param>
+        /// <returns>An enumerable that can be used in foreach statements.</returns>
+        public static IEnumerable<TComponentToFind> FindComponents<TComponentToFind>(this SceneNode root, Predicate<TComponentToFind> match)
+            where TComponentToFind : SceneComponent
+        {
+            return root.FindComponents<TComponentToFind, SceneNode, SceneComponent>(match);
+        }
+
+        /// <summary>
+        /// Finds all components of a certain type matching a given search predicate within the given list of nodes.
+        /// </summary>
+        /// <param name="roots"></param>
+        /// <param name="match"></param>
+        /// <returns></returns>
+        public static IEnumerable<TComponentToFind> FindComponents<TComponentToFind>(this IEnumerable<SceneNode> roots, Predicate<TComponentToFind> match)
+            where TComponentToFind : SceneComponent
+        {
+            return roots.FindComponents<TComponentToFind, SceneNode, SceneComponent>(match);
         }
 
         /// <summary>

@@ -47,7 +47,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.7.82" />
-    <PackageReference Include="Google.Protobuf.Tools" Version="3.9.1" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
   </ItemGroup>  
   
@@ -76,17 +76,11 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.exe&quot; protoschema -o &quot;$(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\FusSerialization.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
-    <!-- for Scene.proto -->
-    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="$(protoc_executable) --proto_path=$(protoc_tools) --proto_path=$(BlenderAddonSourcePath)\proto_src --python_out=$(BlenderAddonSourcePath)\proto Scene.proto" />
-    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\Scene.proto;$(BlenderAddonSourcePath)\proto\Scene_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
-    <!-- for bcl.proto -->
-    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="$(protoc_executable) --proto_path=$(protoc_tools) --proto_path=$(BlenderAddonSourcePath)\proto_src\protobuf-net --python_out=$(BlenderAddonSourcePath)\proto bcl.proto" />
-    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\protobuf-net\bcl.proto;$(BlenderAddonSourcePath)\proto\bcl_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\protobuf_net\" />
-    <!-- for protogen.proto -->
-    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="$(protoc_executable) --proto_path=$(protoc_tools) --proto_path=$(BlenderAddonSourcePath)\proto_src\protobuf-net --python_out=$(BlenderAddonSourcePath)\proto protogen.proto" />
-    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\protobuf-net\protogen.proto;$(BlenderAddonSourcePath)\proto\protogen_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\protobuf_net\" />
+    <!-- for FusSerialization.proto -->
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="$(protoc_executable) --proto_path=$(protoc_tools) --proto_path=$(BlenderAddonSourcePath)\proto_src --python_out=$(BlenderAddonSourcePath)\proto FusSerialization.proto" />
+    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\FusSerialization.proto;$(BlenderAddonSourcePath)\proto\FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
     <!-- Copy the python files to the bin output folder -->
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
