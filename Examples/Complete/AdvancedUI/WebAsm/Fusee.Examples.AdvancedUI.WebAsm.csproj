@@ -12,7 +12,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <OutputPath>$(BaseOutputPath)\Player\WebAsm\</OutputPath>       
+        <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\WebAsm\</OutputPath>       
     </PropertyGroup>
 
     <ItemGroup>

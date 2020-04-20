@@ -87,7 +87,7 @@ namespace Fusee.Examples.Bone.Core
                     }
                 }
             };
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+            _scene = await AssetStorage.GetAsync<SceneContainer>("BoneAnim.fus");
             // convert scene graph is not called in this project, so we can add a bone animation
 
             // then add a weightcomponent with weight matrices etc:

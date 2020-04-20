@@ -20,6 +20,8 @@ namespace Fusee.Examples.AdvancedUI.Desktop
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
+            #region FAP
+
             var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
@@ -58,6 +60,8 @@ namespace Fusee.Examples.AdvancedUI.Desktop
                 });
 
             AssetStorage.RegisterProvider(fap);
+
+            #endregion
 
             var app = new Core.AdvancedUI();
 
