@@ -4,7 +4,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using System.Collections.Generic;
@@ -289,30 +288,11 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
         }
 
-        internal static SurfaceEffect GetShaderEffectFromMatColor(MatColor col)
+        internal static void SetDiffuseAlphaInShaderEffect(this DefaultSurfaceEffect effect, float alpha)
         {
-            switch (col)
-            {
-                default:
-                case MatColor.WHITE:
-                    return OccludedDummyEffect;
-
-                case MatColor.GREEN:
-                    return GreenEffect;
-
-                case MatColor.YELLOW:
-                    return YellowEffect;
-
-                case MatColor.GRAY:
-                    return GrayEffect;
-            }
-        }
-
-        internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
-        {
-            float4 color = effect.GetFxParam<float4>(UniformNameDeclarations.Albedo);
+            float4 color = effect.SurfaceInput.Albedo;
             color.w = alpha;
-            effect.SetFxParam(UniformNameDeclarations.Albedo, color);
+            effect.SurfaceInput.Albedo = color;
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)

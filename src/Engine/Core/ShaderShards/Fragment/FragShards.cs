@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         public static string GetChangeSurfFragMethod(LightingSetup setup, List<string> methodBody, Type inputType)
         {
-            return GLSL.CreateMethod(ShaderSurfaceOut.GetLightingSetupShards(setup).Name, ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, methodBody);
+            return GLSL.CreateMethod(SurfaceOut.GetLightingSetupShards(setup).Name, ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, methodBody);
         }
 
         public static readonly List<string> SurfOutBody_SpecularStd = new List<string>()

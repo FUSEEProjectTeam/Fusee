@@ -131,7 +131,75 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                             }
                             else if (effectProps.LightingProps.SpecularLighting == SpecularLighting.Std)
                             {
-                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);");
+                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}, 1.0, 1.0);");
+                            }
+                            break;
+                        }
+                }
+            }
+
+            return Utility.MainMethod(fragMainBody);
+        }
+
+        /// <summary>
+        /// The main method for rendering into a G-Buffer object.
+        /// </summary>       
+        /// <returns></returns>
+        public static string RenderToGBuffer(LightingSetup lightingSetup, string inStructName, string outStructType)
+        {
+            var fragMainBody = new List<string>
+            {
+                $"{outStructType} surfOut = {FragShards.ChangeSurfFrag}({inStructName});"
+            };
+
+            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            {
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+                if (texName == ssaoString) continue;
+                switch (i)
+                {
+                    case (int)RenderTargetTextureTypes.G_POSITION:
+                        fragMainBody.Add($"{texName} = vec4(surfOut.position);");
+                        break;
+                    case (int)RenderTargetTextureTypes.G_ALBEDO:
+                        //if (effectProps.LightingProps.HasDiffuseTexture)
+                        //{
+                        //    fragMainBody.Add($"vec4 texCol = texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.DiffuseTextureTiles});");
+                        //    fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.Albedo}.xyz, texCol.xyz, {UniformNameDeclarations.AlbedoMix}), texCol.a);");
+                        //}
+                        //else
+                            fragMainBody.Add($"{texName} = surfOut.albedo;");
+
+                        break;
+                    case (int)RenderTargetTextureTypes.G_NORMAL:
+                        {
+                            //if (!effectProps.LightingProps.HasNormalMap)
+                                fragMainBody.Add($"{texName} = vec4(normalize(surfOut.normal.xyz), 1.0);");
+                            //else
+                            //{
+                            //    fragMainBody.Add($"vec3 N = texture({UniformNameDeclarations.NormalMap}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.NormalTextureTiles}).rgb;");
+                            //    fragMainBody.Add($"N = N * 2.0 - 1.0;");
+                            //    fragMainBody.Add($"N.xy *= {UniformNameDeclarations.NormalMapIntensity};");
+                            //    fragMainBody.Add($"{texName} = vec4(normalize(TBN * N), 1.0);");
+                            //}
+                        }
+
+                        break;
+                    case (int)RenderTargetTextureTypes.G_DEPTH:
+                        fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
+                        break;
+                    case (int)RenderTargetTextureTypes.G_SPECULAR:
+                        {
+                            if (lightingSetup == LightingSetup.SpecularPbr)
+                            {
+                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.fresnelReflect, surfOut.diffuseFract, 1.0);");
+                            }
+                            else if (lightingSetup == LightingSetup.SpecularStd)
+                            {
+                                fragMainBody.Add("//reason for multiplying by 0.5: keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength * 0.5, surfOut.shininess * 0.5, 0.0, 2.0);");
                             }
                             break;
                         }

@@ -966,7 +966,7 @@ namespace Fusee.Engine.Core
             throw new KeyNotFoundException("Trying to set unknown effect!");
         }
 
-        internal void CreateEffect(bool renderForward, Effect ef)
+        public void CreateEffect(bool renderForward, Effect ef)
         {
             if (ef == null)
                 throw new NullReferenceException("No Effect found!");
@@ -995,28 +995,27 @@ namespace Fusee.Engine.Core
                     geom = shaderEffect.GeometryShaderSrc;
                     frag = shaderEffect.PixelShaderSrc;
                 }
-                else if (efType == typeof(ShaderEffectProtoPixel))
-                {
-                    var shaderEffect = (ShaderEffectProtoPixel)ef;
-                    shaderEffect.CreateFragmentShader(renderForward);
-                    vert = shaderEffect.VertexShaderSrc;
-                    geom = shaderEffect.GeometryShaderSrc;
-                    frag = shaderEffect.PixelShaderSrc;
-                }
                 else
                 {
                     var surfEffect = (SurfaceEffect)ef;
 
-                    if (renderForward) {
+                    if (renderForward)
+                    {
                         foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
                             surfEffect.ParamDecl.Add(dcl.Name, dcl);
 
                         surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(nameof(surfEffect.SurfaceInput), ShaderSurfaceOut.GetLightingSetupShards(surfEffect.LightingSetup).Name)));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(nameof(surfEffect.SurfaceInput), SurfaceOut.GetLightingSetupShards(surfEffect.LightingSetup).Name)));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
+                        surfEffect.FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     }
                     else
                     {
-
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.GetLightingSetupShards(surfEffect.LightingSetup).Name)));
+                        surfEffect.FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                     }
 
                     vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);

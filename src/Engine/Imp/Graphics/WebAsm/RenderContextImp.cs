@@ -221,7 +221,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     internalFormat = RGB16F;
                     format = RGB;
                     pxType = FLOAT;
-
+                    break;
+                case ColorFormat.fRGBA16:
+                    internalFormat = RGBA16F;
+                    format = RGBA;
+                    pxType = FLOAT;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");

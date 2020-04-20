@@ -29,8 +29,6 @@ namespace Fusee.Engine.Core.Effects
             }
         };
 
-
-
         #region Uniform Declarations
 
         //This region contains all user-defined uniform parameters
@@ -80,37 +78,11 @@ namespace Fusee.Engine.Core.Effects
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public static string FuseeMat = ShaderShards.Fragment.FragProperties.FuseeMatrixUniforms();
-
         
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string PxInOut = ShaderShards.Fragment.FragProperties.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal
-
-        // -------------- Needs to go into the RenderContext if this effect is to be used for forward and deferred -------
-
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
-        public static string LightStruct = ShaderShards.Fragment.Lighting.LightStructDeclaration;
-
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
-        public static string PxLightArray = ShaderShards.Fragment.FragProperties.FixedNumberLightArray;
-
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
-        public static string PxColorOut = ShaderShards.Fragment.FragProperties.ColorOut();
-
-        //[FxShader(ShaderCategory.Fragment)]
-        //[FxShard(ShardCategory.Main)]
-        //public static string PxMain = ShaderShards.Fragment.FragMain.ForwardLighting(typeof(SpecularInput), "SurfIn", ShaderSurfaceOut.GetLightingSetupShards(LightingSetup.SpecularStd).Name);
-
-        ////Note that "AssembleLightingMethods" contains more than the main method BUT in the correct order. Therefor we do not more than one shard here.
-        //[FxShader(ShaderCategory.Fragment)]
-        //[FxShard(ShardCategory.Method)]
-        //public static string PxLightingMethods;
-
-        //----------------------------------------------------------------------------------------------------------------
+        public static string PxIn = ShaderShards.Fragment.FragProperties.InParams(_effectProps);//"fu" variables like fuVertex, fuNormal
 
         #endregion
 
@@ -120,7 +92,7 @@ namespace Fusee.Engine.Core.Effects
         public DefaultSurfaceEffect(LightingSetup lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null) 
             : base(lightingSetup, input, rendererStates) 
         {
-            //PxLightingMethods = ShaderShards.Fragment.Lighting.AssembleLightingMethods(LightingSetup);
+            LightingSetup = lightingSetup;
             SurfOutMethodBody.InsertRange(1, surfOutBody);
             SurfOutMethod = ShaderShards.Fragment.FragShards.GetChangeSurfFragMethod(LightingSetup, SurfOutMethodBody, input.GetType());
             HandleFieldsAndProps();

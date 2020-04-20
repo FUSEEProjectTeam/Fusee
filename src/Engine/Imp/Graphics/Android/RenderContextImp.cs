@@ -192,6 +192,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     return TextureComponentCount.Rgb32f;
                 case ColorFormat.fRGB16:
                     return TextureComponentCount.Rgb16f;
+                case ColorFormat.fRGBA16:
+                    return TextureComponentCount.Rgba16f;
                 case ColorFormat.Depth16:
                     return TextureComponentCount.DepthComponent16;
                 case ColorFormat.Depth24:
@@ -266,6 +268,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     //pxType = PixelType.Float;
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
+                    pxType = PixelType.UnsignedByte;
+                    break;
+                case ColorFormat.fRGBA16:
+                    // SHOULD:
+                    //internalFormat = (PixelInternalFormat)SizedInternalFormat.Rgb16f;
+                    //format = PixelFormat.Rgb;
+                    //pxType = PixelType.Float;
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
                     break;
 

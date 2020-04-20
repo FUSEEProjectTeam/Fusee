@@ -39,6 +39,8 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
+        private DefaultSurfaceEffect _sufEffect;
+
         // Init is called on startup.
         public override async Task<bool> Init()
         {
@@ -55,15 +57,14 @@ namespace Fusee.Examples.Simple.Core
 
             var specularIn = new SpecularInput()
             {
-                Albedo = new float4(1f, 0f, 1f, 1f),
+                Albedo = new float4(1f, 0f, 0f, 1f),
                 Shininess = 22f,
                 SpecularStrength = 1f
             };
 
-            var test = new DefaultSurfaceEffect(LightingSetup.SpecularStd, specularIn, Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd);           
-
-            _rocketScene.Children[0].RemoveComponent<Effect>();
-            _rocketScene.Children[0].Components.Insert(1, test);
+            _sufEffect = new DefaultSurfaceEffect(LightingSetup.SpecularStd, specularIn, Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd);
+            _rocketScene.Children[0].Children[1].RemoveComponent<DefaultSurfaceEffect>();
+            _rocketScene.Children[0].Children[1].Components.Insert(0, _sufEffect);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -79,6 +80,17 @@ namespace Fusee.Examples.Simple.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
+
+            if (Keyboard.IsKeyDown(KeyCodes.W))
+            {
+                if (_sufEffect.SurfaceInput.Albedo.g <= 1.0f)
+                    _sufEffect.SurfaceInput.Albedo += new float4(0, 0.2f, 0, 0);
+            }
+            if (Keyboard.IsKeyDown(KeyCodes.S))
+            {
+                if (_sufEffect.SurfaceInput.Albedo.g >= 0.0f)
+                    _sufEffect.SurfaceInput.Albedo -= new float4(0, 0.2f, 0, 0);
+            }
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)

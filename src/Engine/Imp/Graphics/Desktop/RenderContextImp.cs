@@ -225,6 +225,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
                     break;
+                case ColorFormat.fRGBA16:
+                    internalFormat = PixelInternalFormat.Rgba16f;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.Float;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }

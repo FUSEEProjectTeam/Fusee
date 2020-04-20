@@ -140,6 +140,7 @@ namespace Fusee.Engine.Core
 
             if (_currentPass != RenderPasses.SHADOW)
             {
+                _rc.CreateEffect(false, effect);
                 _rc.SetEffect(effect);
                 _state.Effect = effect;
             }

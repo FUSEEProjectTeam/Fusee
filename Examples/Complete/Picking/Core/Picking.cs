@@ -134,7 +134,6 @@ namespace Fusee.Examples.Picking.Core
             // Check
             if (_pick)
             {
-
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
                 RC.View = mtxCam * mtxRot;
@@ -146,15 +145,15 @@ namespace Fusee.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-                        var ef = _currentPick.Node.GetComponent<ShaderEffect>();
-                        ef.SetFxParam(UniformNameDeclarations.Albedo, _oldColor);
+                        var ef = _currentPick.Node.GetComponent<DefaultSurfaceEffect>();
+                        ef.SurfaceInput.Albedo = _oldColor;
                     }
 
                     if (newPick != null)
                     {
-                        var ef = newPick.Node.GetComponent<ShaderEffect>();
-                        _oldColor = ef.GetFxParam<float4>(UniformNameDeclarations.Albedo);
-                        ef.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.Tofloat4(ColorUint.LawnGreen));
+                        var ef = newPick.Node.GetComponent<DefaultSurfaceEffect>();
+                        _oldColor = ef.SurfaceInput.Albedo;
+                        ef.SurfaceInput.Albedo = ColorUint.Tofloat4(ColorUint.LawnGreen);
                     }
                     _currentPick = newPick;
                 }

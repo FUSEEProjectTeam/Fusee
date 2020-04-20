@@ -16,10 +16,9 @@ namespace Fusee.Engine.Core.ShaderShards
         SpecularPbr,
         DiffuseOnly,
         Unlit,
-        GBuffer
     }
 
-    public static class ShaderSurfaceOut
+    public static class SurfaceOut
     {
         private static readonly Dictionary<LightingSetup, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetup, LightingSetupShards>();
 
@@ -51,8 +50,8 @@ namespace Fusee.Engine.Core.ShaderShards
             "};\n",
         });
 
-        private const string SpecularPbrOutName = "SpecularOut";
-        private static readonly string DerfafultSpecPbrOut = $"{SpecularOutName}(vec4(0), vec3(0), vec4(0), 0.0, 0.0, 0.0);";
+        private const string SpecularPbrOutName = "SpecularPbrOut";
+        private static readonly string DerfafultSpecPbrOut = $"{SpecularPbrOutName}(vec4(0), vec3(0), vec4(0), 1.0, 1.0, 0.0)";
         private static readonly string SpecularPbrOut = string.Join("\n", new List<string>()
         {
             $"struct {SpecularPbrOutName}",
@@ -65,22 +64,6 @@ namespace Fusee.Engine.Core.ShaderShards
             "   float diffuseFract;",
             "};\n",
         });
-
-
-        private const string GBufferOutName = "GBufferOut";
-        private static readonly string DerfafultGBufferOut = $"{GBufferOutName}(vec4(0), vec4(0), vec4(0), vec4(0), vec4(0));";
-        private static readonly string GBufferOut = string.Join("\n", new List<string>()
-        {
-            $"struct {GBufferOutName}",
-            "{",
-            "   vec4 position;",
-            "   vec4 albedo;",
-            "   vec4 normal;",
-            "   vec4 depth;",
-            "   vec4 specular;",
-            "};\n",
-        });
-
 
         public static LightingSetupShards GetLightingSetupShards(LightingSetup setup)
         {
@@ -121,17 +104,6 @@ namespace Fusee.Engine.Core.ShaderShards
                         };
                         return _lightingSetupCache[setup];
                     }
-                case LightingSetup.GBuffer:
-                    {
-                        _lightingSetupCache[setup] = new LightingSetupShards()
-                        {
-                            Name = GBufferOutName,
-                            StructDecl = GBufferOut,
-                            DefaultInstance = DerfafultGBufferOut
-                        };
-                        return _lightingSetupCache[setup];
-                    }
-
                 default:
                     throw new ArgumentException($"Invalid argument: {setup}");
             }

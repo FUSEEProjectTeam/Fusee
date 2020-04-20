@@ -154,7 +154,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateSpecularTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_SPECULAR, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.G_SPECULAR, new ImagePixelFormat(ColorFormat.fRGBA16), width, height, false);
         }
 
         /// <summary>

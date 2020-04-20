@@ -224,6 +224,9 @@ namespace Fusee.Examples.Camera.Core
         {
             foreach (SceneNode node in nodeChildren)
             {
+                if (node.Name == "Frustum" || node.Name.Contains("Cam"))
+                    continue;
+
                 Mesh mesh = node.GetComponent<Mesh>();
                 if (mesh != null)
                 {

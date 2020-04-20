@@ -33,15 +33,13 @@ namespace Fusee.Engine.Core.Effects
 
         #region MUST HAVE for the fragment shader surface shard
 
-        //================== Shard IN ==========================//
+        //================== Surface Shard IN ==========================//
         public LightingSetup LightingSetup;
-
-        //[FxShader(ShaderCategory.Fragment)]                     // => Adds shader code to the fragment shader only.
-        //[FxShard(ShardCategory.Struct | ShardCategory.Uniform)] // => will crate the struct at the appropriate place in the shader.
+        
         public ColorInput SurfaceInput { get; set; }
         //======================================================//
 
-        //================== Shard OUT ==========================//
+        //================== Surface Shard OUT ==========================//
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public static string SurfaceOutput = string.Empty;
@@ -52,6 +50,7 @@ namespace Fusee.Engine.Core.Effects
 
         public static List<string> SurfOutMethodBody;
         //======================================================//
+
         #endregion
 
         /// <summary>
@@ -64,7 +63,7 @@ namespace Fusee.Engine.Core.Effects
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
 
             LightingSetup = lightingSetup;
-            var lightingShards = ShaderSurfaceOut.GetLightingSetupShards(LightingSetup);
+            var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup);
 
             SurfaceInput = surfaceInput;
             SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));

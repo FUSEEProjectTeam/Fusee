@@ -486,16 +486,6 @@ namespace Fusee.Engine.Core
             var cameraResult = new CameraResult(camComp, view);
             CameraPrepassResults.Add(new Tuple<SceneNode, CameraResult>(CurrentNode, cameraResult));
         }
-
-        /// <summary>
-        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="effect">The ShaderEffectComponent</param>
-        [VisitMethod]
-        public void BuildFragmentShaderFor(ShaderEffectProtoPixel effect)
-        {
-            _rc.CreateEffect(_renderForward, effect);
-        }
     }
 
 }

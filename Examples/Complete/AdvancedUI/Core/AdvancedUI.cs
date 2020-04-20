@@ -297,14 +297,14 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         uiInput.IsVisible = true;
 
-                        ShaderEffect shaderEffect = circle.GetComponent<ShaderEffect>();
-                        shaderEffect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
+                        var effect = circle.GetComponent<DefaultSurfaceEffect>();
+                        effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
-                        ShaderEffect shaderEffect = circle.GetComponent<ShaderEffect>();
-                        shaderEffect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
+                        var effect = circle.GetComponent<DefaultSurfaceEffect>();
+                        effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
 
                     }
 
@@ -465,14 +465,14 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<DefaultSurfaceEffect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<DefaultSurfaceEffect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
