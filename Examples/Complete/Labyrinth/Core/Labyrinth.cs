@@ -2,9 +2,9 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Drawing;
@@ -22,7 +22,7 @@ namespace Fusee.Examples.Labyrinth.Core
         //my var
 
         // angle variables
-        private static float _angleVert , _angleVelVert, _angle;
+        private static float _angleVert, _angleVelVert, _angle;
 
         //mouse rotation speed
         private const float _rotationSpeed = 7;
@@ -78,13 +78,13 @@ namespace Fusee.Examples.Labyrinth.Core
 
         private float _camAngle = 0;
 
-        //TransformComponent and SceneContainer
-        private TransformComponent _head;
+        //Transform and SceneContainer
+        private Transform _head;
 
-        private TransformComponent _body;
-        private TransformComponent _bodytrans;
+        private Transform _body;
+        private Transform _bodytrans;
         private SceneContainer _scene;
-        private TransformComponent mazeTransform = new TransformComponent();
+        private Transform mazeTransform = new Transform();
 
         //other var
         private SceneRendererForward _sceneRenderer;
@@ -102,21 +102,21 @@ namespace Fusee.Examples.Labyrinth.Core
         {
             //load the Nodes in
             SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
-            SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
-            SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
-            SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
-            SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Body").First();
-            SceneNodeContainer head = mazeScene.Children.FindNodes(n => n.Name == "Head").First();
+            SceneNode cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
+            SceneNode wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
+            SceneNode wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
+            SceneNode ball = mazeScene.Children.FindNodes(n => n.Name == "Body").First();
+            SceneNode head = mazeScene.Children.FindNodes(n => n.Name == "Head").First();
             Cube _ground = new Cube();
 
-            SceneNodeContainer maze = new SceneNodeContainer
+            SceneNode maze = new SceneNode
             {
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
                     // TRANSFROM COMPONENT
                     mazeTransform,
                     // SHADER EFFECT COMPONENT
-                    cornerstone.GetComponent<ShaderEffectComponent>(),
+                    cornerstone.GetComponent<ShaderEffect>(),
                 },
                 Children = new ChildList()
             };
@@ -127,15 +127,15 @@ namespace Fusee.Examples.Labyrinth.Core
                 {
                     if (countX % 2 == 0 && countY % 2 == 0 && _bmp[countY, countX] == 1)
                     {
-                        maze.Children.Add(new SceneNodeContainer
+                        maze.Children.Add(new SceneNode
                         {
-                            Components = new List<SceneComponentContainer>
+                            Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, 2.2f, countY * (_wallZbox.y + _cornerbox.y)/2)
                                     },
-                                    cornerstone.GetComponent<ShaderEffectComponent>(),
+                                    cornerstone.GetComponent<ShaderEffect>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -145,15 +145,15 @@ namespace Fusee.Examples.Labyrinth.Core
 
                     if (countX % 2 == 1 && countY % 2 == 0 && _bmp[countY, countX] == 1)
                     {
-                        maze.Children.Add(new SceneNodeContainer
+                        maze.Children.Add(new SceneNode
                         {
-                            Components = new List<SceneComponentContainer>
+                            Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, 2.2f, countY * (_wallZbox.y + _cornerbox.y)/2)
                                     },
-                                    wallX.GetComponent<ShaderEffectComponent>(),
+                                    wallX.GetComponent<ShaderEffect>(),
                                     wallX.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -163,15 +163,15 @@ namespace Fusee.Examples.Labyrinth.Core
 
                     if (countX % 2 == 0 && countY % 2 == 1 && _bmp[countY, countX] == 1)
                     {
-                        maze.Children.Add(new SceneNodeContainer
+                        maze.Children.Add(new SceneNode
                         {
-                            Components = new List<SceneComponentContainer>
+                            Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, 2.2f, countY * (_wallZbox.y + _cornerbox.y)/2)
                                     },
-                                    wallZ.GetComponent<ShaderEffectComponent>(),
+                                    wallZ.GetComponent<ShaderEffect>(),
                                     wallZ.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -181,26 +181,26 @@ namespace Fusee.Examples.Labyrinth.Core
 
                     if (countX % 2 == 1 && countY % 2 == 1 && _bmp[countY, countX] == -1)
                     {
-                        maze.Children.Add(new SceneNodeContainer
+                        maze.Children.Add(new SceneNode
                         {
-                            Components = new List<SceneComponentContainer>
+                            Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.y + _cornerbox.y)/2),
                                     },
-                                    head.GetComponent<ShaderEffectComponent>(),
+                                    head.GetComponent<ShaderEffect>(),
                                     head.GetComponent<Mesh>()
                                 },
                             Name = "Head",
 
                             Children = new ChildList
                             {
-                                new SceneNodeContainer
+                                new SceneNode
                                 {
-                                    Components = new List<SceneComponentContainer>
+                                    Components = new List<SceneComponent>
                                     {
-                                    new TransformComponent
+                                    new Transform
                                         {
                                             Translation = new float3(0,0,0)
                                         },
@@ -209,15 +209,15 @@ namespace Fusee.Examples.Labyrinth.Core
 
                                 Children = new ChildList
                                 {
-                                    new SceneNodeContainer
+                                    new SceneNode
                                     {
-                                        Components = new List<SceneComponentContainer>
+                                        Components = new List<SceneComponent>
                                         {
-                                        new TransformComponent
+                                        new Transform
                                             {
                                                 Translation = new float3(0,0,0)
                                             },
-                                            ball.GetComponent<ShaderEffectComponent>(),
+                                            ball.GetComponent<ShaderEffect>(),
                                             ball.GetComponent<Mesh>()
                                         },
                                     Name = "Body",
@@ -231,19 +231,16 @@ namespace Fusee.Examples.Labyrinth.Core
                 }
             }
 
-            maze.Children.Add(new SceneNodeContainer
+            maze.Children.Add(new SceneNode
             {
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                                 {
-                                    new TransformComponent
+                                    new Transform
                                     {
                                         Scale = new float3(_length, 1, _height),
                                         Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.y/2)
                                     },
-                                    new ShaderEffectComponent
-                                    {
-                                        Effect = ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.545f, 0.270f, 0.074f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f)
-                                    },
+                                    ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.545f, 0.270f, 0.074f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
                                     _ground
                                 },
                 Name = "Ground"
@@ -252,7 +249,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     maze
                 }
@@ -377,7 +374,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -393,7 +390,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
             var guiLatoBlack = new FontMap(_fontLato, 18);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 vsTex,
@@ -406,7 +403,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.CENTER);
 
             //create stopwatch
-            var timer = new TextNodeContainer(
+            var timer = new TextNode(
                 "00:00.00",
                 "Timer",
                 vsTex,
@@ -425,7 +422,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
             _timertext = timer.GetComponentsInChildren<GUIText>().FirstOrDefault();
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -445,7 +442,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -455,12 +452,12 @@ namespace Fusee.Examples.Labyrinth.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)
@@ -605,7 +602,7 @@ namespace Fusee.Examples.Labyrinth.Core
                             }
                         }
                     }
-                }               
+                }
             }
         }
 
@@ -824,7 +821,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -841,7 +838,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
-            var text = new TextNodeContainer(
+            var text = new TextNode(
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
@@ -853,7 +850,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 HorizontalTextAlignment.CENTER,
                 VerticalTextAlignment.CENTER);
 
-            var endtime = new TextNodeContainer(
+            var endtime = new TextNode(
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",
@@ -871,7 +868,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.CENTER
             );
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -891,7 +888,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -971,20 +968,18 @@ namespace Fusee.Examples.Labyrinth.Core
 
             int posX = 0;
             int posY = 0;
-            
+
             ImageData img = AssetStorage.Get<ImageData>("Maze.png");
             int[,] image = new int[img.Width / x, img.Height / y];
             for (int j = 5; j < img.Height; j += y)
             {
                 for (int i = 5; i < img.Width; i += x)
                 {
-
-
-                    if (GetPixel(img,j, i).Equals(ColorUint.FromRgba(0x000000FF)))
+                    if (GetPixel(img, j, i).Equals(ColorUint.FromRgba(0x000000FF)))
                     {
                         image[posY, posX] = 1;
                     }
-                    else if (GetPixel(img,j, i).Equals(ColorUint.FromRgba(0x00FF00FF)))
+                    else if (GetPixel(img, j, i).Equals(ColorUint.FromRgba(0x00FF00FF)))
                     {
                         image[posY, posX] = -1;
                     }
@@ -1015,15 +1010,13 @@ namespace Fusee.Examples.Labyrinth.Core
         {
             Color[,] image = new Color[width, height];
 
-            for(int i = height - 1; i >= 0; i --)
+            for (int i = height - 1; i >= 0; i--)
             {
-                for (int j = 0; j < width; j ++)
+                for (int j = 0; j < width; j++)
                 {
-                    image[j, height - 1 - i] = Color.FromArgb(arr[4*(width * i +j) + 3], arr[4 * (width * i + j) + 2], arr[4 * (width * i + j) + 1], arr[4 * (width * i + j)]);
-
-                } 
+                    image[j, height - 1 - i] = Color.FromArgb(arr[4 * (width * i + j) + 3], arr[4 * (width * i + j) + 2], arr[4 * (width * i + j) + 1], arr[4 * (width * i + j)]);
+                }
             }
-
 
             return image;
         }
@@ -1034,10 +1027,8 @@ namespace Fusee.Examples.Labyrinth.Core
             string a = img.PixelData[4 * (img.Width * y + x) + 2].ToString("X2") + img.PixelData[4 * (img.Width * y + x) + 1].ToString("X2") + img.PixelData[4 * (img.Width * y + x)].ToString("X2") + img.PixelData[4 * (img.Width * y + x) + 3].ToString("X2");
             uint value = uint.Parse(a, System.Globalization.NumberStyles.HexNumber);
             image = ColorUint.FromRgba(value);
-               
 
             return image;
         }
-
     }
 }

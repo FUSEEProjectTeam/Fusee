@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
@@ -9,7 +10,7 @@ using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Labyrinth.Desktop
 {
-    public class Labyrinth
+    public class MainDesktop
     {
         public static void Main()
         {
@@ -21,23 +22,23 @@ namespace Fusee.Examples.Labyrinth.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
+                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        return Serializer.DeserializeSceneContainer((Stream)storage);
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
+                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);
