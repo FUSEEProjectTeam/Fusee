@@ -63,6 +63,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
             Line line = new Line(lineControlPoints, 0.2f);
 
+            var paperTex = new Texture(AssetStorage.Get<ImageData>("crumpled-paper-free.jpg"));
+
             return new SceneContainer()
             {
                 Children = new List<SceneNode>()
@@ -78,7 +80,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            MakeEffect.FromDiffuseSpecularTexture(new float4(0.90980f, 0.35686f, 0.35686f,1), 20,"crumpled-paper-free.jpg",0.5f)                            
+                            MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1), 20, paperTex, 1.0f, float2.One, 0.5f)                            
                             //sphere
                         }
                     },
@@ -465,14 +467,14 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<DefaultSurfaceEffect>();
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<DefaultSurfaceEffect>();
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
             effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }

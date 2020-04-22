@@ -43,6 +43,9 @@ namespace Fusee.Examples.Materials.Core
             float canvasWidth = Width / 100f;
             float canvasHeight = Height / 100f;
 
+            var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("albedoTex.jpg"));
+            var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("normalTex.jpg"));
+
             SceneContainer guiDescriptionScene = new SceneContainer
             {
                 Children = new List<SceneNode>
@@ -69,159 +72,159 @@ namespace Fusee.Examples.Materials.Core
                         }
                     },
                     new CanvasNode("Complete", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
+                    {
+                        Components = new List<SceneComponent>
+                        {
+                            new Transform
                             {
-                                Components = new List<SceneComponent>
+                                Name = "TextTransform",
+                                Translation = new float3(-15, 2.5f, 0)
+                            }
+                        },
+                        Children = new ChildList
+                        {
+                                new TextNode(
+                                "Complete",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect(),
+                                fontLatoMap,
+                                new float4(0,0,0,1),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER),new TextNode(
+                                "NOT YET IMPLEMENTED",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect
                                 {
-                                    new Transform
-                                    {
-                                        Name = "TextTransform",
-                                        Translation = new float3(-15, 2.5f, 0)
-                                    }
+                                    Max = new float2(0, 0),
+                                    Min = new float2(0, -1.25f)
                                 },
-                                Children = new ChildList
-                                {
-                                     new TextNode(
-                                        "Complete",
-                                        "desc",
-                                        vsTex,
-                                        psTex,
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect(),
-                                        fontLatoMap,
-                                        new float4(0,0,0,1),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER),new TextNode(
-                                        "NOT YET IMPLEMENTED",
-                                        "desc",
-                                        vsTex,
-                                        psTex,
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect
-                                        {
-                                            Max = new float2(0, 0),
-                                            Min = new float2(0, -1.25f)
-                                        },
-                                        fontLatoMap,
-                                        new float4(1,0,0,0.5f),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER)
-                                }
-                            },
+                                fontLatoMap,
+                                new float4(1,0,0,0.5f),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER)
+                        }
+                    },
                     new CanvasNode("Albedo and specular", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
+                    {
+                        Components = new List<SceneComponent>
+                        {
+                            new Transform
                             {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Name = "TextTransform",
-                                        Translation = new float3(-10, 2.5f, 0)
-                                    }
-                                },
-                                Children = new ChildList
-                                {
-                                     new TextNode(
-                                        "Albedo and Specular",
-                                        "desc",
-                                        vsTex,
-                                        psTex,
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect(),
-                                        fontLatoMap,
-                                        new float4(0,0,0,1),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER)
-                                }
-                            },
+                                Name = "TextTransform",
+                                Translation = new float3(-10, 2.5f, 0)
+                            }
+                        },
+                        Children = new ChildList
+                        {
+                                new TextNode(
+                                "Albedo and Specular",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect(),
+                                fontLatoMap,
+                                new float4(0,0,0,1),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER)
+                        }
+                    },
                     new CanvasNode("Albedo, specular and albedo texture", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
+                    {
+                        Components = new List<SceneComponent>
+                        {
+                            new Transform
                             {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Name = "TextTransform",
-                                        Translation = new float3(-5, 2.5f, 0)
-                                    }
-                                },
-                                Children = new ChildList
-                                {
-                                     new TextNode(
-                                        "Albedo, specular and\nalbedo texture",
-                                        "desc",
-                                        vsTex,
-                                        psTex,
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect(),
-                                        fontLatoMap,
-                                        new float4(0,0,0,1),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER)
-                                }
-                            },
+                                Name = "TextTransform",
+                                Translation = new float3(-5, 2.5f, 0)
+                            }
+                        },
+                        Children = new ChildList
+                        {
+                                new TextNode(
+                                "Albedo, specular and\nalbedo texture",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect(),
+                                fontLatoMap,
+                                new float4(0,0,0,1),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER)
+                        }
+                    },
                     new CanvasNode("Specular texture", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
+                    {
+                        Components = new List<SceneComponent>
+                        {
+                            new Transform
                             {
-                                Components = new List<SceneComponent>
+                                Name = "TextTransform",
+                                Translation = new float3(0, 2.5f, 0)
+                            }
+                        },
+                        Children = new ChildList
+                        {
+                                new TextNode(
+                                "Specular texture",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect(),
+                                fontLatoMap,
+                                new float4(0,0,0,1),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER),
+                                new TextNode(
+                                "NOT YET IMPLEMENTED",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect
                                 {
-                                    new Transform
-                                    {
-                                        Name = "TextTransform",
-                                        Translation = new float3(0, 2.5f, 0)
-                                    }
+                                    Max = new float2(0, 0),
+                                    Min = new float2(0, -1.25f)
                                 },
-                                Children = new ChildList
-                                {
-                                     new TextNode(
-                                        "Specular texture",
-                                        "desc",
-                                        vsTex,
-                                        psTex,
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect(),
-                                        fontLatoMap,
-                                        new float4(0,0,0,1),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER),
-                                      new TextNode(
-                                        "NOT YET IMPLEMENTED",
-                                        "desc",
-                                        vsTex,
-                                        psTex,
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect
-                                        {
-                                            Max = new float2(0, 0),
-                                            Min = new float2(0, -1.25f)
-                                        },
-                                        fontLatoMap,
-                                        new float4(1,0,0,0.75f),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER)
-                                }
-                            },
+                                fontLatoMap,
+                                new float4(1,0,0,0.75f),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER)
+                        }
+                    },
                     new CanvasNode("Normal map", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                                                {
-                                                    Components = new List<SceneComponent>
-                                                    {
-                                                        new Transform
-                                                        {
-                                                            Name = "TextTransform",
-                                                            Translation = new float3(5, 2.5f, 0)
-                                                        }
-                                                    },
-                                                    Children = new ChildList
-                                                    {
-                                                         new TextNode(
-                                                            "Normal map",
-                                                            "desc",
-                                                            vsTex,
-                                                            psTex,
-                                                            MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                                            new MinMaxRect(),
-                                                            fontLatoMap,
-                                                            new float4(0,0,0,1),
-                                                            HorizontalTextAlignment.LEFT,
-                                                            VerticalTextAlignment.CENTER)
-                                                    }
-                                                },
+                    {
+                        Components = new List<SceneComponent>
+                        {
+                            new Transform
+                            {
+                                Name = "TextTransform",
+                                Translation = new float3(5, 2.5f, 0)
+                            }
+                        },
+                        Children = new ChildList
+                        {
+                                new TextNode(
+                                "Normal map",
+                                "desc",
+                                vsTex,
+                                psTex,
+                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
+                                new MinMaxRect(),
+                                fontLatoMap,
+                                new float4(0,0,0,1),
+                                HorizontalTextAlignment.LEFT,
+                                VerticalTextAlignment.CENTER)
+                        }
+                    },
                     new CanvasNode("Albedo and emissive", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
                             {
                                 Components = new List<SceneComponent>
@@ -328,36 +331,23 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "complete",
                                         Translation = new float3(-15, 0, 0)
                                     },
-                                       ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                                        {
-                                            MatProbs =
-                                            {
-                                                HasAlbedo = true,
-                                                HasAlbedoTexture = true,
-                                                HasSpecular = true,
-                                                HasSpecularTexture = true,
-                                                HasEmissive = true,
-                                                HasEmissiveTexture = true,
-                                                HasNormalMap = true
-                                            },
-                                            MatType = MaterialType.Standard,
-                                            MatValues =
-                                            {
-                                                AlbedoColor = float4.One * 0.25f,
-                                                AlbedoMix = 1f,
-                                                AlbedoTexture = "albedoTex.jpg",
-                                                SpecularColor = float4.One,
-                                                SpecularIntensity = 2f,
-                                                SpecularShininess = 25f,
-                                                SpecularMix = 1f,
-                                                SpecularTexture = "specularTex.jpg",
-                                                NormalMap = "normalTex.jpg",
-                                                NormalMapIntensity = 1f,
-                                                EmissiveColor = new float4(0, 1, 1, 1),
-                                                EmissiveMix = 0.5f,
-                                                EmissiveTexture = "emissiveTex.jpg"
-                                            }
-                                        }),
+                                    MakeEffect.FromDiffuseSpecularTexture(
+                                        albedoColor : float4.One * 0.25f,
+                                        shininess : 25f,
+                                        albedoTex : albedoTex,
+                                        normalTex : normalTex,
+                                        albedoMix : 1f,
+                                        texTiles: float2.One,
+                                        specularStrength : 1f,
+                                        normalMapStrength : 1f
+
+                                        //SpecularMix = 1f,
+                                        //SpecularTexture = "specularTex.jpg",
+                                        
+                                        //EmissiveColor = new float4(0, 1, 1, 1),
+                                        //EmissiveMix = 0.5f,
+                                        //EmissiveTexture = "emissiveTex.jpg"
+                                    ),
                                     icosphereWithTangents,
                                 }
                             },
@@ -370,10 +360,9 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo and specular",
                                         Translation = new float3(-10, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
-                                    specularColor: new float4(.5f, .5f, .5f, 1),
+                                    MakeEffect.FromDiffuseSpecular(albedoColor: new float4(0.39f, 0.19f, 0, 1),
                                     shininess: 25.0f,
-                                    specularIntensity: 2.5f),
+                                    specularStrength: 1f),
                                     icosphereWithTangents
                                 }
                             },
@@ -386,12 +375,15 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, specular, albedo texture",
                                         Translation = new float3(-5, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
-                                    specularColor: new float4(.5f, .5f, .5f, 1),
-                                    albedoTexture: "albedoTex.jpg",
-                                    albedoTextureMix: 1f,
-                                    shininess: 256.0f,
-                                    specularIntensity: 20.0f),
+                                    MakeEffect.FromDiffuseSpecularAlbedoTexture
+                                    (
+                                        albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                        shininess: 256.0f,
+                                        albedoTex: albedoTex,
+                                        albedoMix: 1f,
+                                        texTiles : float2.One,
+                                        specularStrength: 1.0f
+                                    ),
                                     icosphereWithTangents
                                 }
                             },
@@ -401,29 +393,10 @@ namespace Fusee.Examples.Materials.Core
                                 {
                                     new Transform
                                     {
-                                        Name = "specular texture",
+                                        Name = "specular texture - not impl.",
                                         Translation = new float3(0, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                                    {
-                                        MatProbs =
-                                        {
-                                            HasAlbedo = true,
-                                            HasAlbedoTexture = true,
-                                            HasSpecular = true,
-                                            HasSpecularTexture = true
-                                        },
-                                        MatType = MaterialType.Standard,
-                                        MatValues =
-                                        {
-                                            AlbedoColor = new float4(0.39f, 0.19f, 0, 1),
-                                            SpecularColor = float4.One,
-                                            SpecularIntensity = 2f,
-                                            SpecularShininess = 25f,
-                                            SpecularMix = 1f, // TODO: Implement in ShaderShards
-                                            SpecularTexture = "specularTex.jpg" // TODO: Implement in ShaderShards
-                                        }
-                                    }),
+                                    MakeEffect.FromDiffuseSpecular(float4.One, 85),
                                     icosphereWithTangents
                                 }
                             },
@@ -436,28 +409,16 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "normal map",
                                         Translation = new float3(5, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                                    {
-                                        MatProbs =
-                                        {
-                                            HasAlbedo = true,
-                                            HasAlbedoTexture = true,
-                                            HasNormalMap = true,
-                                            HasSpecular = true
-                                        },
-                                        MatType = MaterialType.Standard,
-                                        MatValues =
-                                        {
-                                            AlbedoColor = float4.One * 0.25f,
-                                            AlbedoMix = 1f,
-                                            AlbedoTexture = "albedoTex.jpg",
-                                            SpecularColor = float4.One,
-                                            SpecularIntensity = 5f,
-                                            SpecularShininess = 200f,
-                                            NormalMap = "normalTex.jpg",
-                                            NormalMapIntensity = 1f
-                                        }
-                                    }),
+                                    MakeEffect.FromDiffuseSpecularTexture(
+                                            albedoColor: float4.One * 0.25f,
+                                            shininess: 200f,
+                                            albedoTex : albedoTex,
+                                            normalTex : normalTex,
+                                            albedoMix: 1f,
+                                            texTiles : float2.One,
+                                            specularStrength : 1f,
+                                            normalMapStrength : 1f
+                                    ),
                                     icosphereWithTangents
                                 }
                             },
@@ -467,26 +428,15 @@ namespace Fusee.Examples.Materials.Core
                                 {
                                     new Transform
                                     {
-                                        Name = "albedo, emissive",
+                                        Name = "albedo, emissive - not impl.",
                                         Translation = new float3(10, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                                    {
-                                        MatProbs =
-                                        {
-                                            HasAlbedo = true,
-                                            HasAlbedoTexture = true,
-                                            HasEmissive = true
-                                        },
-                                        MatType = MaterialType.Standard,
-                                        MatValues =
-                                        {
-                                            AlbedoColor = float4.One * 0.25f,
-                                            AlbedoMix = 1f,
-                                            AlbedoTexture = "albedoTex.jpg",
-                                            EmissiveColor = new float4(1, 0, 0, 1) // TODO: Implement in ShaderShards
-                                        }
-                                    }),
+                                    MakeEffect.FromDiffuseSpecularAlbedoTexture(albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    shininess: 256.0f,
+                                    albedoTex: albedoTex,
+                                    albedoMix: 1f,
+                                    texTiles:float2.One,
+                                    specularStrength: 1f),
                                     icosphereWithTangents
                                 }
                             },
@@ -496,29 +446,15 @@ namespace Fusee.Examples.Materials.Core
                                 {
                                     new Transform
                                     {
-                                        Name = "albedo, emissive, emissive texture",
+                                        Name = "albedo, emissive, emissive texture - not impl.",
                                         Translation = new float3(15, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                                    {
-                                        MatProbs =
-                                        {
-                                            HasAlbedo = true,
-                                            HasAlbedoTexture = true,
-                                            HasEmissive = true,
-                                            HasEmissiveTexture = true
-                                        },
-                                        MatType = MaterialType.Standard,
-                                        MatValues =
-                                        {
-                                            AlbedoColor = float4.One * 0.25f,
-                                            AlbedoMix = 1f,
-                                            AlbedoTexture = "albedoTex.jpg",
-                                            EmissiveColor = new float4(0, 1, 1, 1), // TODO: Implement in ShaderShards
-                                            EmissiveMix = 0.5f, // TODO: Implement in ShaderShards
-                                            EmissiveTexture = "emissiveTex.jpg" // TODO: Implement in ShaderShards
-                                        }
-                                    }),
+                                    MakeEffect.FromDiffuseSpecularAlbedoTexture(albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    shininess: 256.0f,
+                                    albedoTex: albedoTex,
+                                    albedoMix: 1f,
+                                    texTiles: float2.One,
+                                    specularStrength: 1.0f),
                                     icosphereWithTangents
                                 }
                             }

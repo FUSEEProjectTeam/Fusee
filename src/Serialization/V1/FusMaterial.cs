@@ -240,14 +240,14 @@ namespace Fusee.Serialization.V1
         public string Texture;
 
         /// <summary>
-        /// The intensity of the bumps.
+        /// The strength of the normal mapping effect.
         /// </summary>
         [ProtoMember(2)]
         public float Intensity;
 
         /// <summary>
-        /// The bump texture tiling.
-        /// </summary>        
+        /// The normal map texture tiling.
+        /// </summary>
         public float2 Tiles = float2.One;
 
         #region equals
@@ -288,11 +288,11 @@ namespace Fusee.Serialization.V1
         }
 
         /// <summary>
-        /// Indicates whether the BumpChannelContainer is equal to another one.
+        /// Indicates whether the NormapMapChannel is equal to another one.
         /// </summary>
-        /// <param name="other">The BumpChannelContainer to compare with this one.</param>
+        /// <param name="other">The NormapMapChannel to compare with this one.</param>
         /// <returns>
-        /// true if the current BumpChannelContainer is equal to the other; otherwise, false.
+        /// true if the current NormapMapChannel is equal to the other; otherwise, false.
         /// </returns>
         public bool Equals(NormapMapChannel other)
         {

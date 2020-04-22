@@ -802,7 +802,7 @@ namespace Fusee.Test.Serialization.V1
                            WasLoaded = true
                        },
                        new Camera(Engine.Core.Scene.ProjectionMethod.Orthographic, 0, 500, 2000),
-                       MakeEffect.FromDiffusePbrSpecular(ColorUint.Tofloat4(ColorUint.Green), 100, 200, 1),
+                       MakeEffect.FromDiffuseSpecularPbr(ColorUint.Tofloat4(ColorUint.Green), 100, 200, 1),
                        new Cube()
                     },
                     Children = new ChildList

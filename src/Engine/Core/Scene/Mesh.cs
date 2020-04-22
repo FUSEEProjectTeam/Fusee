@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core.Scene
         public AABBf BoundingBox;
 
         /// <summary>
-        /// The tangent of each triangle for bump mapping.
+        /// The tangent of each triangle for normal mapping.
         /// w-component is handedness
         /// </summary>
         public float4[] Tangents
@@ -255,7 +255,7 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// The bi tangent of each triangle for bump mapping.
+        /// The bi tangent of each triangle for normal mapping.
         /// </summary>
         public float3[] BiTangents
         {

@@ -31,7 +31,7 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Header)]
         public static string Precision = Header.EsPrecisionHighpFloat;
 
-        #region MUST HAVE for the fragment shader surface shard
+        #region MUST HAVE fields
 
         //================== Surface Shard IN ==========================//
         public LightingSetup LightingSetup;
@@ -45,11 +45,42 @@ namespace Fusee.Engine.Core.Effects
         public static string SurfaceOutput = string.Empty;
 
         [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public static string SurfVarying = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public static string UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
+
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public static string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, "TBN");
+
+        [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Method)]
         public static string SurfOutMethod = string.Empty;
 
         public static List<string> SurfOutMethodBody;
         //======================================================//
+
+        /// <summary>
+        /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public static string VertIn = ShaderShards.Vertex.VertProperties.InParams();
+
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public static string VertOut = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public static string UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
+
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3,"TBN");
 
         #endregion
 
@@ -80,12 +111,6 @@ namespace Fusee.Engine.Core.Effects
 
             SurfaceOutput = lightingShards.StructDecl;
 
-            SurfOutMethodBody = new List<string>()
-            {
-                $"{lightingShards.Name} OUT = {lightingShards.DefaultInstance};",
-                "return OUT;"
-            };
-
             if (renderStateSet == null)
             {
                 RendererStates = new RenderStateSet
@@ -97,10 +122,6 @@ namespace Fusee.Engine.Core.Effects
                     BlendOperation = BlendOperation.Add,
                 };
             }
-
-            //TODO: ParamDecls for FUSEE_Matrices -  they should not be set by ShaderEffect.FUSEE_MVP = new float4x4() because they are managed under the hood in most cases.
-            foreach (var dcl in CreateMatParamDecls())
-                ParamDecl.Add(dcl.Name, dcl);
         }
 
         protected void HandleFieldsAndProps()
@@ -141,6 +162,7 @@ namespace Fusee.Engine.Core.Effects
 
                 switch (shardAttribute.ShardCategory)
                 {
+                    case ShardCategory.Matrix:
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
@@ -152,6 +174,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Main:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
+                    
                         if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
                             HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)prop.GetValue(this));
                         else
@@ -170,12 +193,13 @@ namespace Fusee.Engine.Core.Effects
                         HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
                         continue;
                     default:
-                        break;
+                        throw new ArgumentException($"Unknown shard category: {shardAttribute.ShardCategory}");
+                        
                 }
             }
 
-            var allFields = t.BaseType.GetFields().ToList();
-            allFields.AddRange(t.GetFields());
+           
+            var allFields = (t.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)).ToList();
             foreach (var field in allFields)
             {
                 shaderAttribute = null;
@@ -208,6 +232,13 @@ namespace Fusee.Engine.Core.Effects
                 {
                     case ShardCategory.Uniform:
                         throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} must be a Property that calls SetFxParam in the setter.");
+                    case ShardCategory.Matrix:
+                        {
+                            var paramDcl = BuildFxParamDecl(field);
+                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
+                            continue;
+                        }
                     case ShardCategory.Header:
                     case ShardCategory.Main:
                     case ShardCategory.Property:
@@ -393,12 +424,39 @@ namespace Fusee.Engine.Core.Effects
             //Error because property ParamType has no setter.
             //concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
 
-            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, parent.Name + "." + prop.Name);
+            
             object val;
             if (parent == null)
+            {
+                concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, prop.Name);
                 val = prop.GetValue(this);
+            }
             else
+            {
+                concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, parent.Name + "." + prop.Name);
                 val = prop.GetValue(parent.GetValue(this));
+            }
+            concreteParamDecl.GetField("Value").SetValue(ob, val);
+            return (IFxParamDeclaration)ob;
+        }
+
+        private IFxParamDeclaration BuildFxParamDecl(FieldInfo field)
+        {
+            // Perform `new FxParamDeclaration<ParamType>{Name = paramName};`
+            // Since we do not know ParamType at compile time we need to use reflection.
+            Type concreteParamDecl = typeof(FxParamDeclaration<>).MakeGenericType(new Type[] { field.FieldType });
+            //Cannot use GetConstructor(Type.EmptyTypes) with a struct!!
+            //object ob = concreteParamDecl.GetConstructor(Type.EmptyTypes).Invoke(null);
+            var ob = Activator.CreateInstance(concreteParamDecl);
+
+            //Error because property ParamType has no setter.
+            //concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
+
+            concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, field.Name);
+            object val;
+           
+            val = field.GetValue(this);
+           
             concreteParamDecl.GetField("Value").SetValue(ob, val);
             return (IFxParamDeclaration)ob;
         }
@@ -478,58 +536,6 @@ namespace Fusee.Engine.Core.Effects
                     Value = 0f
                 };
             }
-        }
-
-        private static IEnumerable<IFxParamDeclaration> CreateMatParamDecls()
-        {
-            // FUSEE_ PARAMS
-            // TODO: Just add the necessary ones!
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.Model,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ModelView,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ModelViewProjection,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ITModelView,
-                Value = float4x4.Identity
-            };
-
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.IModelView,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.ITView,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.View,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4>
-            {
-                Name = UniformNameDeclarations.Projection,
-                Value = float4x4.Identity
-            };
-            yield return new FxParamDeclaration<float4x4[]>
-            {
-                Name = UniformNameDeclarations.BonesArray,
-                Value = new[] { float4x4.Identity }
-            };
         }
 
         /// <summary>

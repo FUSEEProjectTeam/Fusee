@@ -382,21 +382,47 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Builds a simple shader effect with diffuse and specular components.
         /// </summary>
-        /// <param name="albedoColor">The albedo color.</param>
-        /// <param name="fresnelReflect">The fresnel reflectance for physically-based specular calculation.</param>
-        /// <param name="diffuseFraction">The diffuse fraction for physically-based specular calculation.</param>
-        /// <param name="roughness">The roughness for physically-based specular calculation.</param>
-        /// <returns></returns>
-        public static SurfaceEffect FromDiffusePbrSpecular(float4 albedoColor, float fresnelReflect, float diffuseFraction, float roughness)
+        /// <param name="albedoColor">The diffuse color the resulting effect.</param>
+        /// <param name="roughness"></param>
+        /// <param name="fresnel"></param>
+        /// <param name="diffuseFract"></param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static SurfaceEffect FromDiffuseSpecularPbr(float4 albedoColor, float roughness, float fresnel, float diffuseFract)
         {
             var input = new SpecularPbrInput()
             {
                 Albedo = albedoColor,
-                FresnelReflectance = fresnelReflect,
                 Roughness = roughness,
-                DiffuseFraction = diffuseFraction
+                FresnelReflectance = fresnel,
+                DiffuseFraction = diffuseFract
             };
             return new DefaultSurfaceEffect(LightingSetup.SpecularPbr, input, FragShards.SurfOutBody_SpecularPbr);
+        }
+        
+
+        /// <summary>
+        /// Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="albedoTex">The albedo texture.</param>
+        /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        /// <param name="specularStrength">The resulting effects specular intensity.</param>       
+        public static SurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float shininess, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
+        {
+            var input = new TextureInput()
+            {
+                Albedo = albedoColor,
+                Shininess = shininess,
+                SpecularStrength = specularStrength,
+                AlbedoMix = albedoMix,
+                AlbedoTex = albedoTex,
+                TexTiles = texTiles
+            };
+
+            var lighingSetup = LightingSetup.SpecularStd | LightingSetup.AlbedoTex;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
         }
 
         /// <summary>
@@ -404,26 +430,135 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="tex">The albedo texture.</param>
-        /// <param name="albedo">Determines how much the diffuse color and the color from the texture are mixed.</param>
-        /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static SurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float shininess, Texture tex, float albedo, float specularStrength = 0.5f)
+        /// <param name="normalTex">The normal map.</param>
+        /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        /// <param name="specularStrength">The resulting effects specular intensity.</param>        
+        public static SurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float shininess, Texture normalTex, float normalMapStrength, float2 texTiles, float specularStrength = 0.5f)
         {
             var input = new TextureInput()
             {
                 Albedo = albedoColor,
                 Shininess = shininess,
                 SpecularStrength = specularStrength,
-                AlbedoMix = albedo,
-                AlbedoTex = tex
+                NormalTex = normalTex,
+                NormalMappingStrength = normalMapStrength,
+                TexTiles = texTiles
             };
-            return new DefaultSurfaceEffect(LightingSetup.SpecularStd, input, FragShards.SurfOutBody_Textures(true, false));
+
+            var lighingSetup = LightingSetup.SpecularStd | LightingSetup.AlbedoTex;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+        }
+
+        /// <summary>
+        /// Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="albedoTex">The albedo texture.</param>        
+        /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="normalTex">The normal map.</param>
+        /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        /// <param name="specularStrength">The resulting effects specular intensity.</param>
+        public static SurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float shininess, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f, float normalMapStrength = 0.5f)
+        {
+            var input = new TextureInput()
+            {
+                Albedo = albedoColor,
+                Shininess = shininess,
+                SpecularStrength = specularStrength,
+                AlbedoMix = albedoMix,
+                AlbedoTex = albedoTex,
+                NormalTex = normalTex,
+                NormalMappingStrength = normalMapStrength,
+                TexTiles = texTiles
+            };
+
+            var lighingSetup = LightingSetup.SpecularStd | LightingSetup.AlbedoTex | LightingSetup.NormalMap;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+        }
+
+        /// <summary>
+        /// Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="albedoTex">The albedo texture.</param>
+        /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        /// <param name="specularStrength">The resulting effects specular intensity.</param>       
+        public static SurfaceEffect FromDiffuseSpecularPbrAlbedoTexture(float4 albedoColor, float roughness, float fresnel, float diffuseFraction, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
+        {
+            var input = new TextureInputPbr()
+            {
+                Albedo = albedoColor,
+                AlbedoMix = albedoMix,
+                AlbedoTex = albedoTex,
+                Roughness = roughness,
+                FresnelReflectance = fresnel,
+                DiffuseFraction = diffuseFraction,
+                TexTiles = texTiles
+            };
+
+            var lighingSetup = LightingSetup.SpecularPbr | LightingSetup.AlbedoTex;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+        }
+
+        /// <summary>
+        /// Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="normalTex">The normal map.</param>
+        /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>        
+        public static SurfaceEffect FromDiffuseSpecularPbrNormalTexture(float4 albedoColor, float roughness, float fresnel, float diffuseFraction, Texture normalTex, float normalMapStrength, float2 texTiles)
+        {
+            var input = new TextureInputPbr()
+            {
+                Albedo = albedoColor,
+                Roughness = roughness,
+                FresnelReflectance = fresnel,
+                DiffuseFraction = diffuseFraction,
+                NormalTex = normalTex,
+                NormalMappingStrength = normalMapStrength,
+                TexTiles = texTiles
+            };
+
+            var lighingSetup = LightingSetup.SpecularPbr | LightingSetup.AlbedoTex;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+        }
+
+        /// <summary>
+        /// Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="albedoTex">The albedo texture.</param>
+        /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="normalTex">The normal map.</param>
+        /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        public static SurfaceEffect FromDiffuseSpecularPbrTexture(float4 albedoColor, float roughness, float fresnel, float diffuseFraction, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
+        {
+            var input = new TextureInputPbr()
+            {
+                Albedo = albedoColor,
+                AlbedoMix = albedoMix,
+                AlbedoTex = albedoTex,
+                Roughness = roughness,
+                FresnelReflectance = fresnel,
+                DiffuseFraction = diffuseFraction,
+                NormalTex = normalTex,
+                NormalMappingStrength = normalMapStrength,
+                TexTiles = texTiles
+            };
+
+            var lighingSetup = LightingSetup.SpecularPbr | LightingSetup.AlbedoTex | LightingSetup.NormalMap;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
         }
 
         #endregion
 
-        #region Create Shaders from Shards
+        #region Create Shaders from code fragments
 
         private static string CreateDeferredLightingPixelShader(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {

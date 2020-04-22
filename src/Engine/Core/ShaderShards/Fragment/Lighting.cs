@@ -43,42 +43,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
-        /// Collects all lighting methods, dependent on what is defined in the given <see cref="EffectProps"/> and the LightingCalculationMethod.
-        /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>
-        public static string AssembleLightingMethods(EffectProps effectProps)
-        {
-            var lighting = new List<string>
-            {
-                AttenuationPointComponent(),
-                AttenuationConeComponent()
-            };
-
-            if (effectProps.LightingProps.DoDiffuseLighting)
-                lighting.Add(DiffuseComponent());
-
-            //Adds methods to the PS that calculate the single light components (diffuse, specular)
-            switch (effectProps.LightingProps.SpecularLighting)
-            {
-                case SpecularLighting.Std:
-                    lighting.Add(SpecularComponent());
-                    break;
-                case SpecularLighting.Pbr:
-                    lighting.Add(PbrSpecularComponent());
-                    break;
-                case SpecularLighting.None:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.LightingProps.SpecularLighting}");
-            }
-
-            lighting.Add(ApplyLightForward(effectProps.LightingProps));
-
-            return string.Join("\n", lighting);
-        }
-
-        /// <summary>
-        /// Collects all lighting methods, dependent on what is defined in the given <see cref="EffectProps"/> and the LightingCalculationMethod.
+        /// Collects all lighting methods, dependent on what is defined in the given <see cref="LightingSetup"/> and the LightingCalculationMethod.
         /// </summary>
         /// <param name="setup">The <see cref="LightingSetup"/> which is used to decide which lighting methods we need.</param>
         public static string AssembleLightingMethods(LightingSetup setup)
@@ -89,29 +54,29 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var lighting = new List<string>();
 
             //Adds methods to the PS that calculate the single light components (diffuse, specular)
-            switch (setup)
+            if (setup.HasFlag(LightingSetup.SpecularStd))
             {
-                case LightingSetup.SpecularStd:
-                    lighting.Add(AttenuationPointComponent());
-                    lighting.Add(AttenuationConeComponent());
-                    lighting.Add(DiffuseComponent());
-                    lighting.Add(SpecularComponent());
-                    break;
-                case LightingSetup.SpecularPbr:
-                    lighting.Add(AttenuationPointComponent());
-                    lighting.Add(AttenuationConeComponent());
-                    lighting.Add(DiffuseComponent());
-                    lighting.Add(PbrSpecularComponent());
-                    break;
-                case LightingSetup.Unlit:
-                    break;
-                case LightingSetup.DiffuseOnly:
-                    lighting.Add(AttenuationPointComponent());
-                    lighting.Add(AttenuationConeComponent());
-                    lighting.Add(DiffuseComponent());
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
+                lighting.Add(AttenuationPointComponent());
+                lighting.Add(AttenuationConeComponent());
+                lighting.Add(DiffuseComponent());
+                lighting.Add(SpecularComponent());
+            }
+            else if (setup.HasFlag(LightingSetup.SpecularPbr))
+            {
+                lighting.Add(AttenuationPointComponent());
+                lighting.Add(AttenuationConeComponent());
+                lighting.Add(DiffuseComponent());
+                lighting.Add(PbrSpecularComponent());
+            }
+            else if (setup.HasFlag(LightingSetup.Diffuse))
+            {
+                lighting.Add(AttenuationPointComponent());
+                lighting.Add(AttenuationConeComponent());
+                lighting.Add(DiffuseComponent());
+            }
+            else if (!setup.HasFlag(LightingSetup.Unlit))
+            {
+                throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
             }
 
             lighting.Add(ApplyLightForward(setup));
@@ -307,174 +272,60 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string ApplyLightForward(LightingSetup setup)
         {
-            var setupShards = SurfaceOut.GetLightingSetupShards(setup);
             var methodBody = new List<string>();
 
-            switch (setup)
+            if (setup.HasFlag(LightingSetup.SpecularStd))
             {
-                case LightingSetup.SpecularStd:
-                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-                    methodBody.AddRange(ViewAndLightDir());
-                    methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+                methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                methodBody.AddRange(ViewAndLightDir());
+                methodBody.Add($"vec3 N = normalize(surfOut.normal);");
 
-                    methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
 
-                    methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.shininess);");
-                    methodBody.Add($"Ispe = surfOut.specularStrength * specularTerm * light.intensities.rgb;");
+                methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.shininess);");
+                methodBody.Add($"Ispe = surfOut.specularStrength * specularTerm * light.intensities.rgb;");
 
-                    methodBody.AddRange(Attenuation());
-                    methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
-
-                    break;
-                case LightingSetup.SpecularPbr:
-                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-                    methodBody.AddRange(ViewAndLightDir());
-                    methodBody.Add($"vec3 N = normalize(surfOut.normal);");
-
-                    methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
-
-                    methodBody.Add($"//Note that only the variable 'specular' is calculated using the cook torrance model...");
-                    methodBody.Add($"float specular = specularLighting(N, L, V, light.intensities, surfOut.fresnelReflect, surfOut.roughness);");
-                    methodBody.Add($"Ispe = vec3(specular) * light.intensities.rgb;");
-
-                    methodBody.AddRange(Attenuation());
-                    methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
-
-                    break;
-                case LightingSetup.DiffuseOnly:
-                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-                    methodBody.AddRange(ViewAndLightDir());
-                    methodBody.Add($"vec3 N = normalize(surfOut.normal);");
-                    methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
-                    methodBody.AddRange(Attenuation());
-
-                    methodBody.Add("return ((Idif * att) * surfOut.albedo.rgb) * lightStrength;");
-
-                    break;
-                case LightingSetup.Unlit:
-                    methodBody.Add("return surfOut.albedo.rgb;");
-                    break;
-                default:
-                    break;
+                methodBody.AddRange(Attenuation());
+                methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
             }
+            else if (setup.HasFlag(LightingSetup.SpecularPbr))
+            {
+                methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                methodBody.AddRange(ViewAndLightDir());
+                methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+
+                methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+
+                methodBody.Add($"//Note that only the variable 'specular' is calculated using the cook torrance model...");
+                methodBody.Add($"float specular = specularLighting(N, L, V, light.intensities, surfOut.fresnelReflect, surfOut.roughness);");
+                methodBody.Add($"Ispe = vec3(specular) * light.intensities.rgb;");
+
+                methodBody.AddRange(Attenuation());
+                methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
+            }
+            else if (setup.HasFlag(LightingSetup.Diffuse))
+            {
+                methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                methodBody.AddRange(ViewAndLightDir());
+                methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+                methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                methodBody.AddRange(Attenuation());
+
+                methodBody.Add("return ((Idif * att) * surfOut.albedo.rgb) * lightStrength;");
+            }
+            else if (setup.HasFlag(LightingSetup.Unlit))
+                methodBody.Add("return surfOut.albedo.rgb;");
+            else
+                throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
+
 
             return GLSL.CreateMethod(GLSL.Type.Vec3, "ApplyLight",
             new[]
             {
                 "Light light",
-                $"{setupShards.Name} surfOut",
+                $"{SurfaceOut.StructName} surfOut",
                 GLSL.CreateVar(GLSL.Type.Float, "ambientCo"),
             }, methodBody);
-        }
-
-        /// <summary>
-        /// Wraps all the lighting methods into a single one.
-        /// </summary>
-        public static string ApplyLightForward(LightingProps lightingProps)
-        {
-            var normals = new List<string>();
-            if (lightingProps.HasNormalMap)
-            {
-                normals.Add($"vec3 N = texture({UniformNameDeclarations.NormalMap}, {VaryingNameDeclarations.TextureCoordinates} * {UniformNameDeclarations.NormalTextureTiles}).rgb;");
-                normals.Add($"N = N * 2.0 - 1.0;");
-                normals.Add($"N.xy *= {UniformNameDeclarations.NormalMapIntensity};");
-                normals.Add("N = normalize(TBN * N);");
-            }
-            else
-                normals = new List<string>
-                {
-                    $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
-                };
-
-            var fragToLightDirAndLightInit = new List<string>
-            {
-                "vec3 L = vec3(0.0, 0.0, 0.0);",
-                "if(light.lightType == 1){L = -normalize(light.direction);}",
-                "else",
-                "{",
-                $"L = normalize(light.position - {VaryingNameDeclarations.Position}.xyz);",
-                "}",
-                $"vec3 V = normalize(-{VaryingNameDeclarations.Position}.xyz);",
-                "if(light.lightType == 3)",
-                "{",
-                "L = normalize(vec3(0.0,0.0,-1.0));",
-                "}",
-                $"vec2 o_texcoords = {VaryingNameDeclarations.TextureCoordinates};",
-                "",
-                "vec3 Idif = vec3(0);",
-                "vec3 Ispe = vec3(0);",
-                ""
-            };
-
-            var applyLightParams = new List<string>();
-            applyLightParams.AddRange(normals);
-            applyLightParams.AddRange(fragToLightDirAndLightInit);
-
-            applyLightParams.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-
-            if (lightingProps.DoDiffuseLighting)
-                applyLightParams.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
-
-
-            if (lightingProps.SpecularLighting == SpecularLighting.Std)
-            {
-                applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
-                applyLightParams.Add($"Ispe = {UniformNameDeclarations.SpecularStrength} * specularTerm * light.intensities.rgb;");
-            }
-            else if (lightingProps.SpecularLighting == SpecularLighting.Pbr)
-            {
-                applyLightParams.Add($"//Note that only the variable 'specular' is calculated using the cook torrance model...");
-                applyLightParams.Add($"float specular = specularLighting(N, L, V, light.intensities, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.RoughnessValue};");
-                applyLightParams.Add($"Ispe = vec3(specular) * light.intensities.rgb;");
-            }
-
-            var pointLight = new List<string>
-            {
-                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, light.position, light.maxDistance);",
-                "lighting = ((Ispe * att) + ((Idif * att) * objCol)) * lightStrength;"
-            };
-
-            //No attenuation!
-            var parallelLight = new List<string>
-            {
-                "lighting = (Ispe + (Idif * objCol)) * lightStrength;"
-            };
-
-            var spotLight = new List<string>
-            {
-                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);",
-                "lighting = ((Ispe * att) + ((Idif * att) * objCol)) * lightStrength;"
-            };
-
-            var methodBody = new List<string>();
-            methodBody.AddRange(applyLightParams);
-            methodBody.Add("vec3 lighting = vec3(0);");
-            methodBody.Add("");
-            methodBody.Add("if(light.lightType == 0) // PointLight");
-            methodBody.Add("{");
-            methodBody.AddRange(pointLight);
-            methodBody.Add("}");
-            methodBody.Add("else if(light.lightType == 1 || light.lightType == 3) // ParallelLight or LegacyLight");
-            methodBody.Add("{");
-            methodBody.AddRange(parallelLight);
-            methodBody.Add("}");
-            methodBody.Add("else if(light.lightType == 2) // SpotLight");
-            methodBody.Add("{");
-            methodBody.AddRange(spotLight);
-            methodBody.Add("}");
-            methodBody.Add("");
-            //methodBody.AddRange(gammaCorrection); // - Disable GammaCorrection for better colors
-            methodBody.Add("");
-
-            methodBody.Add("return lighting;");
-
-            return GLSL.CreateMethod(GLSL.Type.Vec3, "ApplyLight",
-                new[]
-                {
-                    "Light light",
-                    GLSL.CreateVar(GLSL.Type.Vec3, "objCol"),
-                    GLSL.CreateVar(GLSL.Type.Float, "ambientCo"),
-                }, methodBody);
         }
 
         /// <summary>
@@ -520,21 +371,21 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "vec4 specular = vec4(0,0,0,1);",
             $"if({UniformNameDeclarations.RenderPassNo} == 0)",
             "{",
-            "   ambient = vec4(ambientCo, ambientCo, ambientCo, 1.0);",
+                "ambient = vec4(ambientCo, ambientCo, ambientCo, 1.0);",
                 "",
-            $"   if({UniformNameDeclarations.SsaoOn} == 1)",
-             "  {",
-            $"      vec4 occlusion = vec4(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb, 1.0);",
-            "       ambient *= occlusion;",
-            "    }",
+                $"if({UniformNameDeclarations.SsaoOn} == 1)",
+                "{",
+                    $"vec4 occlusion = vec4(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb, 1.0);",
+                    "ambient *= occlusion;",
+                "}",
             "}",
             ""
             });
 
             methodBody.AddRange(new List<string>()
             {
-            "   //attenuation",
-            "   float attenuation = 1.0;"
+                "//attenuation",
+                "float attenuation = 1.0;"
             });
 
             //Light variables
@@ -543,10 +394,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "float shadow = 0.0;",
             "if(light.isActive == 1)",
             "{",
-            "   vec4 lightColor = light.intensities;",
-            "   vec3 lightPosition = light.position;",
-            "   vec3 lightDir = normalize(lightPosition - fragPos.xyz);",
-            "" });
+                "vec4 lightColor = light.intensities;",
+                "vec3 lightPosition = light.position;",
+                "vec3 lightDir = normalize(lightPosition - fragPos.xyz);",
+            });
 
             switch (lc.Type)
             {
@@ -575,22 +426,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add(GetShadow(lc, isCascaded, numberOfCascades));
             }
 
+            methodBody.Add($"float strength = (1.0 - ambientCo) * light.strength;");
+
             // diffuse 
             methodBody.AddRange(
             new List<string>() {
-            "    diffuse = vec4(diffuseLighting(normal, lightDir) * lightColor.rgb, 1.0);",
-            //"    diffuse = (1.0 - shadow) * (diffuse * attenuation);"
+            "diffuse = vec4(diffuseLighting(normal, lightDir) * lightColor.rgb, 1.0);",
+            "diffuse = diffuse * attenuation * strength;"
             });
 
             // specular
-
-            methodBody.AddRange(
-               new List<string>()
-               {
-
-               }
-           );
-
             methodBody.AddRange(
             new List<string>() {
             "vec3 viewDir = normalize(-fragPos.xyz);",
@@ -603,7 +448,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float specularTerm = specularLighting(normal, lightDir, viewDir, shininess);",
                 "",
                 "specular = vec4(specularStrength * specularTerm * lightColor.rgb, 1.0);",
-                //"specular = (1.0 - shadow) * (specular * attenuation);",
+                "specular = specular * attenuation * strength;",
             "}",
             "else if(specularVars.a == 1.0)",
             "{",
@@ -621,13 +466,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             methodBody.Add("}");
 
-            methodBody.Add($"float strength = (1.0 - ambientCo) * light.strength;");
-            methodBody.Add($"lighting = ((specular * attenuation) + ((diffuse * attenuation) * albedo)) * strength * (1.0 - shadow);");
-
-            //methodBody.Add($"lighting = (((specular + diffuse) * strength) + ambient) * albedo;");
+            
+            
+            methodBody.Add($"lighting =(ambient + (1.0 - shadow) * (diffuse + specular)) * albedo;");
+            
             methodBody.Add($"{FragProperties.OutColorName} = lighting;");
 
-            return Utility.MainMethod(methodBody);
+            return GLSL.MainMethod(methodBody);
         }
 
         /// <summary>

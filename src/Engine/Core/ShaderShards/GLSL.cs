@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateIn(Type type, string varName)
         {
-            return $"in  {DecodeType(type)} {varName};";
+            return $"in  {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateVar(Type type, string varName)
@@ -49,21 +49,32 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="returnType"></param>
         /// <param name="methodName"></param>
         /// <param name="methodParams"></param>
-        /// <param name="method">method body goes here</param>
+        /// <param name="methodBody">method body goes here</param>
         /// <returns></returns>
-        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> method)
+        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> methodBody)
         {
             var tmpList = new List<string>
             {
                 $"{DecodeType(returnType)} {methodName}({string.Join(", ", methodParams)})",
                 "{"
             };
-            tmpList.AddRange(method);
+            tmpList.AddRange(methodBody);
             tmpList.Add("}");
             tmpList.Add("\n");
             AddTabsToMethods(tmpList);
 
             return string.Join("\n", tmpList);
+        }
+
+        /// <summary>
+        /// Creates a main method with the given method body.
+        /// </summary>
+        /// <param name="methodBody">The content of the method.</param>
+        /// <returns></returns>
+        public static string MainMethod(IList<string> methodBody)
+        {
+            return GLSL.CreateMethod(GLSL.Type.Void, "main",
+                new[] { "" }, methodBody);
         }
 
         /// <summary>

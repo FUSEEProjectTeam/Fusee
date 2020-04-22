@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         /// <summary>
         /// Creates a single color (vec4) out parameter.
-        /// </summary>       
+        /// </summary>
         public static string ColorOut()
         {
             return GLSL.CreateOut(GLSL.Type.Vec4, OutColorName);
@@ -47,39 +47,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
-        /// Returns the in parameters for a ShaderEffect, depending on the given ShaderEffectProps.
-        /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>
-        /// <returns></returns>
-        public static string InParams(EffectProps effectProps)
-        {
-            var pxIn = new List<string>
-            {
-                GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Position)
-            };
-
-            if (effectProps.MeshProbs.HasColors)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Color));
-
-            if (effectProps.MeshProbs.HasNormals)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Normal));
-
-            if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
-            {
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Tangent));
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
-            }
-
-            if (effectProps.LightingProps.HasNormalMap)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Mat3, "TBN"));
-
-            if (effectProps.MeshProbs.HasUVs)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
-            pxIn.Add("\n");
-            return string.Join("\n", pxIn);
-        }
-
-        /// <summary>
         /// Returns the pre defined Fusee uniform parameters of a fragment shader, depending on the given ShaderEffectProps.
         /// </summary>
         /// <returns></returns>
@@ -97,59 +64,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             };
 
             return string.Join("\n", pxFusUniforms);
-        }
-
-        /// <summary>
-        /// Returns all uniforms, as they are given in the <see cref="LightingProps"/> object.
-        /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>
-        /// <returns></returns>
-        public static string MaterialPropsUniforms(EffectProps effectProps)
-        {
-            var matPropUnifroms = new List<string>();
-
-            if (effectProps.LightingProps.SpecularLighting == SpecularLighting.Pbr)
-            {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColor));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.RoughnessValue));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.FresnelReflectance));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseFraction));
-            }
-            else if (effectProps.LightingProps.SpecularLighting == SpecularLighting.Std)
-            {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColor));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininess));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularStrength));
-            }
-
-            if (effectProps.LightingProps.DoDiffuseLighting)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.Albedo));
-
-            if (effectProps.LightingProps.HasEmissive)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColor));
-
-            //Textures
-            if (effectProps.LightingProps.HasNormalMap)
-            {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.NormalMap));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.NormalTextureTiles));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.NormalMapIntensity));
-            }
-
-            if (effectProps.LightingProps.HasDiffuseTexture)
-            {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.AlbedoTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.AlbedoMix));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.DiffuseTextureTiles));
-            }
-
-            if (effectProps.LightingProps.HasEmissiveTexture)
-            {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTexture));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMix));
-            }
-            matPropUnifroms.Add("\n");
-            return string.Join("\n", matPropUnifroms);
         }
 
         /// <summary>

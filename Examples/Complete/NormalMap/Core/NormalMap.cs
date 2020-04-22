@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -64,39 +65,19 @@ namespace Fusee.Examples.NormalMap.Core
                 }
             };
 
-            var matCompForBumpFrag = new MaterialComponent()
-            {
-                Bump = new BumpChannelContainer()
-                {
-                    Intensity = 1f,
-                    Texture = "brickwall_normal.jpg",
-                    Tiles = new float2(2, 2)
-                },
-                Diffuse = new DiffuseChannelContainer()
-                {
-                    Color = new float4(1f, 0f, 0f, 1f),
-                    Mix = 1f,
-                    Texture = "brickwall.jpg",
-                    Tiles = new float2(2, 2)
-                },
-                Specular = new SpecularChannelContainer()
-                {
-                    Color = float4.One,
-                    Shininess = 85,
-                    Strength = 0.3f
-                }
-            };
+            var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"));
+            var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"));
 
-            Engine.Core.Effects.ShaderEffectProtoPixel bumpEffect = MakeEffect.ProtoFromMatComp(matCompForBumpFrag);
-            bumpEffect.RendererStates.AlphaBlendEnable = true;
-            bumpEffect.RendererStates.SourceBlend = Blend.SourceAlpha;
-            bumpEffect.RendererStates.DestinationBlend = Blend.InverseSourceAlpha;
-            bumpEffect.RendererStates.BlendOperation = BlendOperation.Add;
+            var normalMappingEffect = MakeEffect.FromDiffuseSpecularTexture(float4.One, 85, albedoTex, normalTex, 1.0f, new float2(2, 2), 0.2f, 0.3f);
+            normalMappingEffect.RendererStates.AlphaBlendEnable = true;
+            normalMappingEffect.RendererStates.SourceBlend = Blend.SourceAlpha;
+            normalMappingEffect.RendererStates.DestinationBlend = Blend.InverseSourceAlpha;
+            normalMappingEffect.RendererStates.BlendOperation = BlendOperation.Add;
 
             _mesh = _scene.Children[0].GetComponent<Plane>();
             _mesh.Tangents = _mesh.CalculateTangents();
             _mesh.BiTangents = _mesh.CalculateBiTangents();
-            _scene.Children[0].Components.Insert(1, bumpEffect);
+            _scene.Children[0].Components.Insert(1, normalMappingEffect);
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             AABBf? bbox = aabbc.GetBox();
@@ -236,21 +217,6 @@ namespace Fusee.Examples.NormalMap.Core
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
-
-            //for (int i = 0; i < _mesh.Vertices.Length; i++)
-            //{
-            //    var nStart = _mesh.Vertices[i];
-            //    var nEnd = _mesh.Vertices[i] + (_mesh.Normals[i] * 0.1f);
-            //    RC.DebugLine(nStart, nEnd, new float4(0, 0, 1, 1));
-
-            //    var tStart = _mesh.Vertices[i];
-            //    var tEnd = _mesh.Vertices[i] + (_mesh.Tangents[i].xyz * 0.1f);
-            //    RC.DebugLine(tStart, tEnd, new float4(0, 0, 1, 1));
-
-            //    var bStart = _mesh.Vertices[i];
-            //    var bEnd = _mesh.Vertices[i] + (_mesh.BiTangents[i].xyz * 0.1f);
-            //    RC.DebugLine(bStart, bEnd, new float4(0, 0, 1, 1));
-            //}
 
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();

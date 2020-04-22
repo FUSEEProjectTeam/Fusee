@@ -481,31 +481,41 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Make ShaderEffect
+        #region Make Effect
 
         private Effect LookupMaterial(FusMaterial m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightSetup = LightingSetup.SpecularStd;
+            var lightingSetup = m.HasSpecular ? LightingSetup.SpecularStd : LightingSetup.Diffuse;
+            if (m.Albedo.Texture != null)
+                lightingSetup |= LightingSetup.AlbedoTex;
+            if (m.NormalMap?.Texture != null)
+                lightingSetup |= LightingSetup.NormalMap;
 
-            // TODO: ensure we're able to build surface effects for all of the material properties below
-            //if (m.HasNormalMap)           
-            //if (m.HasAlbedo)           
-            //if (m.HasEmissive)           
-            //if (m.HasSpecular)            
-
-            var colIn = new SpecularInput()
+            //TODO: test what happens if there is a albedo texture but no normal texture and vice versa
+            if (lightingSetup.HasFlag(LightingSetup.AlbedoTex) && !lightingSetup.HasFlag(LightingSetup.NormalMap))
             {
-                Albedo = m.Albedo.Color,
-                Shininess = m.Specular.Shininess,
-                SpecularStrength = m.Specular.Shininess
-            };
-
-            sfx = new DefaultSurfaceEffect(lightSetup, colIn, ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd)
+                var albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
+            }
+            else if (!lightingSetup.HasFlag(LightingSetup.AlbedoTex) && lightingSetup.HasFlag(LightingSetup.NormalMap))
             {
-                Name = m.Name ?? ""
-            };
+                var normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
+            }
+            else if (lightingSetup.HasFlag(LightingSetup.AlbedoTex) && lightingSetup.HasFlag(LightingSetup.NormalMap))
+            {
+                var normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                var albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
+            }
+            else if (lightingSetup == LightingSetup.SpecularStd)
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, m.Specular.Shininess, m.Specular.Strength);
+            else if (lightingSetup == LightingSetup.Diffuse)
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
+            else
+                throw new System.ArgumentException("Material couldn't be resolved.");
 
             _matMap.Add(m, sfx);
             return sfx;
@@ -515,31 +525,39 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightSetup = LightingSetup.SpecularPbr;
+            var lightingSetup = m.HasSpecular ? LightingSetup.SpecularPbr : LightingSetup.Diffuse;
+            if (m.Albedo.Texture != null)
+                lightingSetup |= LightingSetup.AlbedoTex;
+            if (m.NormalMap?.Texture != null)
+                lightingSetup |= LightingSetup.NormalMap;
 
-            // TODO: ensure we're able to build surface effects for all of the material properties below
-            //if (m.HasNormalMap)           
-            //if (m.HasAlbedo)           
-            //if (m.HasEmissive)           
-            //if (m.HasSpecular)            
-
-            var colIn = new SpecularPbrInput()
+            //TODO: test what happens if there is a albedo texture but no normal texture and vice versa
+            if (lightingSetup.HasFlag(LightingSetup.AlbedoTex) && !lightingSetup.HasFlag(LightingSetup.NormalMap))
             {
-                Albedo = m.Albedo.Color,
-                DiffuseFraction = m.DiffuseFraction,
-                FresnelReflectance = m.FresnelReflectance,
-                Roughness = m.RoughnessValue
-            };
-
-            sfx = new DefaultSurfaceEffect(lightSetup, colIn, ShaderShards.Fragment.FragShards.SurfOutBody_SpecularPbr)
+                var albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                sfx = MakeEffect.FromDiffuseSpecularPbrAlbedoTexture(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
+            }
+            else if (!lightingSetup.HasFlag(LightingSetup.AlbedoTex) && lightingSetup.HasFlag(LightingSetup.NormalMap))
             {
-                Name = m.Name ?? ""
-            };
+                var normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                sfx = MakeEffect.FromDiffuseSpecularPbrNormalTexture(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
+            }
+            else if (lightingSetup.HasFlag(LightingSetup.AlbedoTex) && lightingSetup.HasFlag(LightingSetup.NormalMap))
+            {
+                var normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                var albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                sfx = MakeEffect.FromDiffuseSpecularPbrTexture(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
+            }
+            else if (lightingSetup == LightingSetup.SpecularPbr)
+                sfx = MakeEffect.FromDiffuseSpecularPbr(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction);
+            else if (lightingSetup == LightingSetup.Diffuse)
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
+            else
+                throw new System.ArgumentException("Material couldn't be resolved.");
 
             _matMap.Add(m, sfx);
             return sfx;
         }
-
         #endregion
     }
 

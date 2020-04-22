@@ -255,4 +255,96 @@ namespace Fusee.Engine.Core.Effects
         }
         private float2 _texTiles;
     }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case for specular lighting with strength and shininess.
+    /// </summary>
+    public class TextureInputPbr : SpecularPbrInput
+    {
+        /// <summary>
+        /// The mix between albedo texture and albedo color.
+        /// </summary>
+        public float AlbedoMix
+        {
+            get => _albedoMix;
+            set
+            {
+                if (value != _albedoMix)
+                {
+                    _albedoMix = value;
+                    NotifyPropertyChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                }
+            }
+        }
+        private float _albedoMix;
+
+        /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture AlbedoTex
+        {
+            get => _albedoTex;
+            set
+            {
+                if (value != _albedoTex)
+                {
+                    _albedoTex = value;
+                    NotifyPropertyChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                }
+            }
+        }
+        private Texture _albedoTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public Texture NormalTex
+        {
+            get => _normalTex;
+            set
+            {
+                if (value != _normalTex)
+                {
+                    _normalTex = value;
+                    NotifyPropertyChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                }
+            }
+        }
+        private Texture _normalTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float NormalMappingStrength
+        {
+            get => _normalMappingStrength;
+            set
+            {
+                if (value != _normalMappingStrength)
+                {
+                    _normalMappingStrength = value;
+                    NotifyPropertyChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                }
+            }
+        }
+        private float _normalMappingStrength;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyPropertyChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles;
+    }
 }

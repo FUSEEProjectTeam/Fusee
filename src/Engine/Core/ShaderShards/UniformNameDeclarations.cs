@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The color attribute name.
         /// </summary>
-        public const string Color = "fuColor";
+        public const string VertexColor = "fuColor";
 
         /// <summary>
         /// The normal attribute name.
@@ -313,7 +313,7 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string DiffuseFraction = "DiffuseFraction";
 
         /// <summary>
-        /// The var name for the uniform BumpIntensity variable within the pixel shaders.
+        /// The var name for the uniform NormalMapIntensity variable within the pixel shaders.
         /// </summary>
         public const string NormalMapIntensity = "NormalMapIntensity";
 

@@ -25,11 +25,9 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Sets preprocessor that defines the bone count.
         /// </summary>
-        public static string DefineBones(EffectProps effectProps, Weight wc)
+        public static string DefineBones(Weight wc)
         {
-            if (effectProps.MeshProbs.HasWeightMap)
-                return $"#define {BoneDefineVar} {wc.Joints.Count}";
-            else return "";
+            return $"#define {BoneDefineVar} {wc.Joints.Count}";
         }
     }
 }

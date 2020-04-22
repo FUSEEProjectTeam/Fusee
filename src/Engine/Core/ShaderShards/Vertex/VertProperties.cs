@@ -1,6 +1,4 @@
-﻿using Fusee.Base.Core;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -9,107 +7,30 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
     /// </summary>
     public static class VertProperties
     {
+        //TODO: don't add all of them....
         /// <summary>
         /// Creates the in (with prefix "fu") and out parameters of the vertex shader, depending on the given ShaderEffectProps.
         /// </summary>
-        /// <param name="effectProps">>The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string InAndOutParams(EffectProps effectProps)
+        public static string InParams()
         {
             var vertProps = new List<string>
             {
                 GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex),
-                GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Position)
+                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Normal),
+                GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.TextureCoordinates),
+
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor),
+
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Tangent),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Bitangent),
+
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneIndex),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight)
+
             };
-
-            if (effectProps.LightingProps.HasNormalMap)
-            {
-                if (!effectProps.MeshProbs.HasTangents || !effectProps.MeshProbs.HasBiTangents)
-                    Diagnostics.Error(effectProps, new ArgumentException("The effect props state the material has a bump map but is missing tangents and/or bitangents!"));
-
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Tangent));
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Bitangent));
-
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Tangent));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
-
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Mat3, "TBN"));
-            }
-
-            if (effectProps.LightingProps.SpecularLighting != SpecularLighting.None)
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.ViewDirection));
-
-            if (effectProps.MeshProbs.HasWeightMap)
-            {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneIndex));
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight));
-            }
-
-            if (effectProps.MeshProbs.HasNormals)
-            {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Normal));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.Normal));
-            }
-
-            if (effectProps.MeshProbs.HasUVs)
-            {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.TextureCoordinates));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
-            }
-
-            if (effectProps.MeshProbs.HasColors)
-            {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Color));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color));
-            }
 
             return string.Join("\n", vertProps);
-        }
-
-        /// <summary>
-        /// Returns the pre defined Fusee uniform parameters of a vertex shader, depending on the given ShaderEffectProps.
-        /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>
-        /// <returns></returns>
-        public static string FuseeMatUniforms(EffectProps effectProps)
-        {
-            var uniforms = new List<string>
-            {
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelViewProjection)
-            };
-
-            if (effectProps.MeshProbs.HasNormals)
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITModelView));
-
-            if (effectProps.LightingProps.SpecularLighting != SpecularLighting.None && !effectProps.MeshProbs.HasWeightMap)
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
-
-            if (effectProps.MeshProbs.HasWeightMap)
-            {
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Projection));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones + "[" + Header.BoneDefineVar + "]"));
-            }
-
-            return string.Join("\n", uniforms);
-        }
-
-        /// <summary>
-        /// Returns the pre defined Fusee uniform parameters of a vertex shader, depending on the given ShaderEffectProps.
-        /// </summary>
-        /// <returns></returns>
-        public static string FuseeUniformsDefault()
-        {
-            var uniforms = new List<string>
-            {
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelViewProjection),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITModelView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView)
-            };
-            return string.Join("\n", uniforms);
         }
     }
 }

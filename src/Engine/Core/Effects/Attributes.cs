@@ -94,6 +94,12 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The shader shard is, or is part of, the main method of the source shader.
         /// </summary>
-        Main = 31
+        Main = 31,
+
+        /// <summary>
+        /// Describes a matrix, like the mvp matrix. 
+        /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffect"/> because they will be updated by the SceneRenderer.
+        /// </summary>
+        Matrix = 62
     }
 }

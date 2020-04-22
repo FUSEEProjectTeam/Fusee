@@ -5,107 +5,105 @@ namespace Fusee.Engine.Core.ShaderShards
 {
     public struct LightingSetupShards
     {
-        public string Name;
         public string StructDecl;
         public string DefaultInstance;
     }
 
     public enum LightingSetup
     {
-        SpecularStd,
-        SpecularPbr,
-        DiffuseOnly,
-        Unlit,
+        AlbedoTex = 32,
+        NormalMap = 16,
+        SpecularStd = 8,
+        SpecularPbr = 4,
+        Diffuse = 2,
+        Unlit = 1,
     }
 
     public static class SurfaceOut
     {
+        public const string StructName = "SurfOut";
+        public static readonly string SurfOutVaryingName = $"surfOut";
+
         private static readonly Dictionary<LightingSetup, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetup, LightingSetupShards>();
 
-        private const string DiffuseOutName = "DiffuseOut";
-        private static readonly string DefaultDiffuseOut = $"{DiffuseOutName}(vec4(0), vec3(0), vec4(0))";
-        private static readonly string DiffuseOut = string.Join("\n", new List<string>()
-        {
-            $"struct {DiffuseOutName}",
-            "{",
-            "   vec4 position;",
-            "   vec3 normal;",
-            "   vec4 albedo;",
-            "};\n",
-        });
+        internal static readonly Tuple<GLSL.Type, string> Pos = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "position");
+        internal static readonly Tuple<GLSL.Type, string> Normal = new Tuple<GLSL.Type, string>(GLSL.Type.Vec3, "normal");
+        internal static readonly Tuple<GLSL.Type, string> Albedo = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "albedo");
+        internal static readonly Tuple<GLSL.Type, string> Shininess = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "shininess");
+        internal static readonly Tuple<GLSL.Type, string> SpecularStrength = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specularStrength");
+        internal static readonly Tuple<GLSL.Type, string> Roughness = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "roughness");
+        internal static readonly Tuple<GLSL.Type, string> Fresnel = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "fresnelReflect");
+        internal static readonly Tuple<GLSL.Type, string> DiffuseFraction = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "diffuseFract");
 
+        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec3(0), vec4(0))";
+        private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
+        private static readonly string DerfafultSpecPbrOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 1.0, 1.0, 0.0)";
 
-        private const string SpecularOutName = "SpecularOut";
-        private static readonly string DefaultSpecOut = $"{SpecularOutName}(vec4(0), vec3(0), vec4(0), vec4(0), 0.0, 0.0)";
-        private static readonly string SpecularOut = string.Join("\n", new List<string>()
+        private static string BuildStructDecl(LightingSetup lightingSetup)
         {
-            $"struct {SpecularOutName}",
-            "{",
-            "   vec4 position;",
-            "   vec3 normal;",
-            "   vec4 albedo;",
-            "   vec4 specularCol;",
-            "   float specularStrength;",
-            "   float shininess;",
-            "};\n",
-        });
+            var dcl = new List<string>
+            {
+                $"struct {StructName}",
+                "{",
+                $"   {GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
+                $"   {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
+            };
 
-        private const string SpecularPbrOutName = "SpecularPbrOut";
-        private static readonly string DerfafultSpecPbrOut = $"{SpecularPbrOutName}(vec4(0), vec3(0), vec4(0), 1.0, 1.0, 0.0)";
-        private static readonly string SpecularPbrOut = string.Join("\n", new List<string>()
-        {
-            $"struct {SpecularPbrOutName}",
-            "{",
-            "   vec4 position;",
-            "   vec3 normal;",
-            "   vec4 albedo;",
-            "   float roughness;",
-            "   float fresnelReflect;",
-            "   float diffuseFract;",
-            "};\n",
-        });
+            if (!lightingSetup.HasFlag(LightingSetup.Unlit))
+                dcl.Add($"   {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
+
+            if (lightingSetup.HasFlag(LightingSetup.SpecularStd))
+            {
+                dcl.Add($"   {GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
+                dcl.Add($"   {GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
+            }
+            else if (lightingSetup.HasFlag(LightingSetup.SpecularPbr))
+            {
+                dcl.Add($"   {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
+                dcl.Add($"   {GLSL.DecodeType(Fresnel.Item1)} {Fresnel.Item2};");
+                dcl.Add($"   {GLSL.DecodeType(DiffuseFraction.Item1)} {DiffuseFraction.Item2};");
+            }
+            dcl.Add("};");
+            return string.Join("\n", dcl);
+        }
 
         public static LightingSetupShards GetLightingSetupShards(LightingSetup setup)
         {
             if (_lightingSetupCache.TryGetValue(setup, out var res))
                 return res;
-            switch (setup)
+
+            var structDcl = BuildStructDecl(setup);
+
+            if (setup.HasFlag(LightingSetup.SpecularStd))
             {
-                case LightingSetup.SpecularStd:
-                    {
-                        _lightingSetupCache[setup] = new LightingSetupShards()
-                        {
-                            Name = SpecularOutName,
-                            StructDecl = SpecularOut,
-                            DefaultInstance = DefaultSpecOut
-                        };
-                        return _lightingSetupCache[setup];
-
-                    }
-                case LightingSetup.SpecularPbr:
-                    {
-                        _lightingSetupCache[setup] = new LightingSetupShards()
-                        {
-                            Name = SpecularPbrOutName,
-                            StructDecl = SpecularPbrOut,
-                            DefaultInstance = DerfafultSpecPbrOut
-                        };
-                        return _lightingSetupCache[setup];
-
-                    }
-                case LightingSetup.Unlit:
-                case LightingSetup.DiffuseOnly:
-                    {
-                        _lightingSetupCache[setup] = new LightingSetupShards()
-                        {
-                            Name = DiffuseOutName,
-                            StructDecl = DiffuseOut,
-                            DefaultInstance = DefaultDiffuseOut
-                        };
-                        return _lightingSetupCache[setup];
-                    }
-                default:
-                    throw new ArgumentException($"Invalid argument: {setup}");
+                _lightingSetupCache[setup] = new LightingSetupShards()
+                {
+                    StructDecl = structDcl,
+                    DefaultInstance = DefaultSpecOut
+                };
+                return _lightingSetupCache[setup];
+            }
+            else if (setup.HasFlag(LightingSetup.SpecularPbr))
+            {
+                _lightingSetupCache[setup] = new LightingSetupShards()
+                {
+                    StructDecl = structDcl,
+                    DefaultInstance = DerfafultSpecPbrOut
+                };
+                return _lightingSetupCache[setup];
+            }
+            else if (setup.HasFlag(LightingSetup.Unlit) || setup.HasFlag(LightingSetup.Diffuse))
+            {
+                _lightingSetupCache[setup] = new LightingSetupShards()
+                {
+                    StructDecl = structDcl,
+                    DefaultInstance = DefaultDiffuseOut
+                };
+                return _lightingSetupCache[setup];
+            }
+            else
+            {
+                throw new ArgumentException($"Invalid Lighting flags: {setup}");
             }
         }
     }
