@@ -1,9 +1,9 @@
-﻿using Fusee.Serialization;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
 {
-    internal class ProtoToFrag : SceneVisitor
+    internal class ProtoToFrag : Visitor<SceneNode, SceneComponent>
     {
         /// <summary>
         /// The SceneContainer, containing the scene that gets rendered.
@@ -28,12 +28,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="shaderComponent">The ShaderEffectComponent</param>
         [VisitMethod]
-        public void BuildFragmentShaderFor(ShaderEffectComponent shaderComponent)
+        public void BuildFragmentShaderFor(ShaderEffect shaderComponent)
         {
-            if (shaderComponent.Effect.GetType() != typeof(ShaderEffectProtoPixel)) return;
+            if (shaderComponent.GetType() != typeof(ShaderEffectProtoPixel)) return;
 
-            var effect = (ShaderEffectProtoPixel)shaderComponent.Effect;           
-            effect.CreateFragmentShader(_renderForward);           
+            var effect = (ShaderEffectProtoPixel)shaderComponent;
+            effect.CreateFragmentShader(_renderForward);
 
         }
     }

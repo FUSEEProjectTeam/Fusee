@@ -18,7 +18,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -42,7 +42,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BoneAnimation\Core\Fusee.Examples.Bone.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BumpMapping\Core\Fusee.Examples.Bump.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\NormalMap\Core\Fusee.Examples.NormalMap.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\GeometryEditing\Core\Fusee.Examples.GeometryEditing.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\MeshingAround\Core\Fusee.Examples.MeshingAround.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Picking\Core\Fusee.Examples.Picking.Core.csproj" />

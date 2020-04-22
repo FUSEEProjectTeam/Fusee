@@ -1,9 +1,9 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -37,16 +37,16 @@ namespace Fusee.Examples.AdvancedUI.Core
         private float _initWidth;
         private float _initHeight;
         private float2 _resizeScaleFactor;
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
         private float _canvasWidth;
         private float _canvasHeight;
 
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private List<UIInput> _uiInput;
 
-        private ScenePicker _scenePicker;        
+        private ScenePicker _scenePicker;
 
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
@@ -63,41 +63,35 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             return new SceneContainer()
             {
-                Children = new List<SceneNodeContainer>()
+                Children = new List<SceneNode>()
                 {
-                    new SceneNodeContainer()
+                    new SceneNode()
                     {
-                        Components = new List<SceneComponentContainer>()
+                        Components = new List<SceneComponent>()
                         {
-                            new TransformComponent()
+                            new Transform()
                             {
                                 Name = "SphereTransform",
                                 Rotation = new float3(0,0,0),
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            new ShaderEffectComponent()
-                            {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
-                            },
+                            ShaderCodeBuilder.MakeShaderEffect(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)                            
                             //sphere
                         }
                     },
-                    new SceneNodeContainer()
+                    new SceneNode()
                     {
-                        Components = new List<SceneComponentContainer>()
+                        Components = new List<SceneComponent>()
                         {
-                            new TransformComponent()
+                            new Transform()
                             {
                                 Name = "LineTransform",
                                 Rotation = new float3(0,0,0),
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            new ShaderEffectComponent()
-                            {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20)
-                            },
+                            ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20),
                             line
                         }
                     }
@@ -128,10 +122,14 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initHeight = Height;
 
             //_scene = BuildScene();
-            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");            
+            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
-            rnd = new Random();
+
+            // Check if rnd was injected (render tests inject a seeded random)
+            if (rnd == null)
+                rnd = new Random();
+
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
             //Create dummy positions on model
@@ -287,25 +285,25 @@ namespace Fusee.Examples.AdvancedUI.Core
                     uiInput.CircleCanvasPos = canvasPosCircle;
 
                     var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
-                    circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
+                    circle.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    
+
                     var newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
                         uiInput.IsVisible = true;
 
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
+                        circle.GetComponent<ShaderEffect>().SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
 
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
+                        circle.GetComponent<ShaderEffect>().SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
 
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
+                        circle.GetComponent<ShaderEffect>().SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
                     }
 
                     //1.2   Calculate annotation positions without intersections.
@@ -375,9 +373,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                     _uiInput[k] = uiInput;
                 }
             }
-            
+
             _sceneRenderer.Render(RC);
-            
+
             RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             _guiRenderer.Render(RC);
 
@@ -396,7 +394,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private SceneContainer CreateGui()
         {
-            var canvasScaleFactor = _initWidth / _canvasWidth;           
+            var canvasScaleFactor = _initWidth / _canvasWidth;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
@@ -412,7 +410,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 UIHelper.VsTex,
                 UIHelper.PsTex,
@@ -421,12 +419,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var markModelContainer = new SceneNodeContainer
+            var markModelContainer = new SceneNode
             {
                 Name = "MarkModelContainer",
             };
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -450,11 +448,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                     UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
-            }           
+            }
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -464,12 +462,12 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)
@@ -477,29 +475,29 @@ namespace Fusee.Examples.AdvancedUI.Core
             OpenLink("http://fusee3d.org");
         }
 
-        private void UpdateAnnotationOffsets(SceneNodeContainer sncAnnotation, UIInput input)
+        private void UpdateAnnotationOffsets(SceneNode sncAnnotation, UIInput input)
         {
             if (input.CircleCanvasPos.x <= _canvasWidth / 2)
             {
                 //LEFT
-                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT);
+                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT);
 
-                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(
+                sncAnnotation.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(
                     AnchorPos.DOWN_DOWN_LEFT, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
             else
             {
                 //RIGHT
-                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT);
+                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT);
 
-                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(
+                sncAnnotation.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(
                     AnchorPos.DOWN_DOWN_RIGHT, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
         }
 
-        private void DrawLine(SceneNodeContainer sncLine, UIInput uiInput)
+        private void DrawLine(SceneNode sncLine, UIInput uiInput)
         {
             if (uiInput.IsVisible)
             {
@@ -527,7 +525,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     };
                 }
 
-                sncLine.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
+                sncLine.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
 
                 var mesh = sncLine.GetComponent<Line>();
 

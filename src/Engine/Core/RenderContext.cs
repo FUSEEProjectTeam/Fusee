@@ -1,7 +1,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,8 +28,8 @@ namespace Fusee.Engine.Core
         /// <seealso cref="Clear"/>
         public float4 ClearColor
         {
-            set { _rci.ClearColor = value; }
-            get { return _rci.ClearColor; }
+            set => _rci.ClearColor = value;
+            get => _rci.ClearColor;
         }
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float ClearDepth
         {
-            set { _rci.ClearDepth = value; }
-            get { return _rci.ClearDepth; }
+            set => _rci.ClearDepth = value;
+            get => _rci.ClearDepth;
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 View
         {
-            get { return _view; }
+            get => _view;
             set
             {
                 _view = value;
@@ -232,7 +232,7 @@ namespace Fusee.Engine.Core
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
-                RenderFrustum.CalculateFrustumPlanes(_projection  * View);
+                RenderFrustum.CalculateFrustumPlanes(_projection * View);
             }
         }
 
@@ -247,7 +247,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Model
         {
-            get { return _model; }
+            get => _model;
             set
             {
                 _model = value;
@@ -300,7 +300,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Projection
         {
-            get { return _projection; }
+            get => _projection;
             set
             {
                 // Update matrix
@@ -320,7 +320,7 @@ namespace Fusee.Engine.Core
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
-                RenderFrustum.CalculateFrustumPlanes(_projection *  View);
+                RenderFrustum.CalculateFrustumPlanes(_projection * View);
             }
         }
 
@@ -766,7 +766,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4[] Bones
         {
-            get { return _bones; }
+            get => _bones;
             set
             {
                 _bones = value;
@@ -788,7 +788,7 @@ namespace Fusee.Engine.Core
 
             View = DefaultState.View;
             Model = float4x4.Identity;
-            Projection = DefaultState.Projection;            
+            Projection = DefaultState.Projection;
 
             // mesh management
             _meshManager = new MeshManager(_rci);
@@ -852,7 +852,7 @@ namespace Fusee.Engine.Core
         /// <param name="height">Height in pixels.</param>
         internal void UpdateTextureRegion(Texture dstTexture, Texture srcTexture, int startX, int startY, int width, int height)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(dstTexture);
+            var textureHandle = _textureManager.GetTextureHandleFromTexture(dstTexture);
             _rci.UpdateTextureRegion(textureHandle, srcTexture, startX, startY, width, height);
         }
 
@@ -881,7 +881,7 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         private void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            var textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
         }
 
@@ -892,7 +892,7 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         private void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
+            var textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
         }
 
@@ -906,7 +906,7 @@ namespace Fusee.Engine.Core
             var texHandles = new List<ITextureHandle>();
             foreach (var tex in textures)
             {
-                ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
+                var textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
                 texHandles.Add(textureHandle);
             }
             var handlesAsArray = texHandles.ToArray();
@@ -920,7 +920,7 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         private void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
+            var textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE_CUBE_MAP);
         }
 
@@ -1007,13 +1007,13 @@ namespace Fusee.Engine.Core
             if (compiledEffect.Parameters.Count != 0)
                 throw new ArgumentException("The compiled effect already has parameters!");
 
-            for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
+            for (var i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
                 compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
             foreach (var param in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(param.Key, out object initialValue))
+                if (!ef.ParamDecl.TryGetValue(param.Key, out var initialValue))
                 {
                     Diagnostics.Error(initialValue, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
                     continue;
@@ -1025,7 +1025,7 @@ namespace Fusee.Engine.Core
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(param.Key, out var globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
                     effectParam.Value = initialValue;
@@ -1033,7 +1033,7 @@ namespace Fusee.Engine.Core
                 compiledEffect.Parameters.Add(param.Key, effectParam);
 
                 //For each pass (== ShaderProgram) add the same(!) EffectParam to the ParamsPerPass Dictionary
-                for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
+                for (var i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
                 {
                     var shaderProgram = compiledEffect.ShaderPrograms[i];
                     if (shaderProgram.ParamsByName.ContainsKey(param.Key))
@@ -1069,17 +1069,19 @@ namespace Fusee.Engine.Core
         /// <param name="paramValue">The parameter's value.</param>
         internal void UpdateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
         {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
 
             //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
             //Because of this we do not need to take about which passes this effect belongs to.
-            if (compiledEffect.Parameters.TryGetValue(name, out EffectParam effectParam))
+            if (compiledEffect.Parameters.TryGetValue(name, out var effectParam))
             {
                 effectParam.Value = paramValue;
                 effectParam.HasValueChanged = true;
             }
             else
+            {
                 Diagnostics.Warn($"Parameter {name} is declared in ShaderEffect but currently not used by the shader.");
+            }
         }
 
         /// <summary>
@@ -1088,7 +1090,7 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The ShaderEffect.</param>
         internal void RemoveShader(ShaderEffect ef)
         {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) return;
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out var sFxParam)) return;
 
             foreach (var program in sFxParam.ShaderPrograms)
             {
@@ -1190,24 +1192,24 @@ namespace Fusee.Engine.Core
                 {
                     if (param.Value is IWritableCubeMap)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)param.Value);
+                        var textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE_CUBE_MAP);
                     }
                     else if (param.Value is IWritableTexture)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)param.Value);
+                        var textureHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
                     }
                     else if (param.Value is ITexture)
                     {
-                        ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture((Texture)param.Value);
+                        var textureHandle = _textureManager.GetTextureHandleFromTexture((Texture)param.Value);
                         _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
                     }
                     else if (param.Value is IWritableTexture[])
                     {
                         foreach (var tex in (WritableTexture[])param.Value)
                         {
-                            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
+                            var textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
                             _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
                         }
                     }
@@ -1220,7 +1222,7 @@ namespace Fusee.Engine.Core
 
         #region Render related methods
 
-        
+
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -1285,7 +1287,7 @@ namespace Fusee.Engine.Core
         {
             if (LockedStates.Count == 0) return;
 
-            for (int i = 0; i < LockedStates.Count; i++)
+            for (var i = 0; i < LockedStates.Count; i++)
                 UnlockRenderState(LockedStates.ElementAt(i).Key, resetValue);
         }
 
@@ -1315,7 +1317,9 @@ namespace Fusee.Engine.Core
                         Diagnostics.Warn("PREVIOUSLY LOCKED STATE WAS OVERWRITTEN: Render state " + renderState + " was locked and will remain its old value.\n Call UnlockRenderState(renderState) to undo it.");
                     }
                     else
+                    {
                         Diagnostics.Warn("Render state " + renderState + " was locked and will remain its old value.\n Call UndoLockRenderState(renderState) to undo it.");
+                    }
 
                     return;
                 }
@@ -1378,7 +1382,7 @@ namespace Fusee.Engine.Core
             {
                 texHandles = new ITextureHandle[renderTarget.RenderTextures.Length];
 
-                for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+                for (var i = 0; i < renderTarget.RenderTextures.Length; i++)
                 {
                     var tex = renderTarget.RenderTextures[i];
                     if (renderTarget.RenderTextures[i] == null) continue;
@@ -1432,7 +1436,7 @@ namespace Fusee.Engine.Core
 
             var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
 
-            for (int i = 0; i < compiledShaderEffect.ShaderPrograms.Length; i++)
+            for (var i = 0; i < compiledShaderEffect.ShaderPrograms.Length; i++)
             {
                 try
                 {
@@ -1441,14 +1445,14 @@ namespace Fusee.Engine.Core
 
                     foreach (var paramItem in compiledShaderEffect.ShaderPrograms[i].ParamsByName)
                     {
-                        if (!_currentShaderEffect.ParamDecl.TryGetValue(paramItem.Key, out object currentValue))
+                        if (!_currentShaderEffect.ParamDecl.TryGetValue(paramItem.Key, out var currentValue))
                         {
                             Diagnostics.Error(currentValue, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
                             continue;
                         }
 
                         // OVERWRITE Values in the ShaderEffect with the newest ones from the GlobalFXParams collection.
-                        if (GlobalFXParams.TryGetValue(paramItem.Key, out object globalFXValue))
+                        if (GlobalFXParams.TryGetValue(paramItem.Key, out var globalFXValue))
                         {
                             if (!currentValue.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
                                 _currentShaderEffect.SetEffectParam(paramItem.Key, globalFXValue);
@@ -1487,7 +1491,7 @@ namespace Fusee.Engine.Core
         {
             Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
-            Projection = DefaultState.Projection;            
+            Projection = DefaultState.Projection;
         }
     }
 }

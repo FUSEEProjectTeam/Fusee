@@ -22,37 +22,37 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\AdvancedUI.png");
             var testIm = new Bitmap("AdvancedUITest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
         }
 
-        [Fact]
-        public void BoneAnimationTest()
-        {
-            Program.Example = new Fusee.Examples.Bone.Core.Bone();
-            Program.Init("BoneAnimationTest.png");
+        //[Fact]
+        //public void BoneAnimationTest()
+        //{
+        //    Program.Example = new Fusee.Examples.Bone.Core.Bone();
+        //    Program.Init("BoneAnimationTest.png");
 
-            var referenceIm = new Bitmap(@"References\BoneAnimation.png");
-            var testIm = new Bitmap("BoneAnimationTest.png");
+        //    var referenceIm = new Bitmap(@"References\BoneAnimation.png");
+        //    var testIm = new Bitmap("BoneAnimationTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+        //    var percent = CompareImage(referenceIm, testIm);
 
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
-        }
+        //    Assert.InRange(percent, 0.99f, 1f);
+        //    output.WriteLine(percent.ToString());
+        //}
 
         [Fact]
         public void BumpMappingTest()
         {
-            Program.Example = new Fusee.Examples.Bump.Core.Bump();
+            Program.Example = new Fusee.Examples.NormalMap.Core.NormalMap();
             Program.Init("BumpMappingTest.png");
 
             var referenceIm = new Bitmap(@"References\BumpMapping.png");
             var testIm = new Bitmap("BumpMappingTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.98f, 1f);
             output.WriteLine(percent.ToString());
@@ -67,7 +67,7 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\GeometryEditing.png");
             var testIm = new Bitmap("GeometryEditingTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
@@ -82,7 +82,7 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\MeshingAround.png");
             var testIm = new Bitmap("MeshingAroundTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
@@ -97,7 +97,7 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\Picking.png");
             var testIm = new Bitmap("PickingTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
@@ -112,26 +112,26 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\Simple.png");
             var testIm = new Bitmap("SimpleTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.98f, 1f);
             output.WriteLine(percent.ToString());
         }
 
-        [Fact]
-        public void SimpleDeferredTest()
-        {
-            Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
-            Program.Init("SimpleDeferredTest.png");
+        //[Fact]
+        //public void SimpleDeferredTest()
+        //{
+        //    Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
+        //    Program.Init("SimpleDeferredTest.png");
 
-            var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
-            var testIm = new Bitmap("SimpleDeferredTest.png");
+        //    var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
+        //    var testIm = new Bitmap("SimpleDeferredTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+        //    var percent = CompareImage(referenceIm, testIm);
 
-            Assert.InRange(percent, 0.01f, 1f);
-            output.WriteLine(percent.ToString());
-        }
+        //    Assert.InRange(percent, 0.01f, 1f);
+        //    output.WriteLine(percent.ToString());
+        //}
 
         [Fact]
         public void ThreeDFontTest()
@@ -142,7 +142,7 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\ThreeDFont.png");
             var testIm = new Bitmap("ThreeDFontTest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
@@ -157,7 +157,7 @@ namespace Fusee.Test.Render.Desktop
             var referenceIm = new Bitmap(@"References\UI.png");
             var testIm = new Bitmap("UITest.png");
 
-            var percent = compareImage(referenceIm, testIm);
+            var percent = CompareImage(referenceIm, testIm);
 
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
@@ -169,7 +169,7 @@ namespace Fusee.Test.Render.Desktop
         /// <param name="referenceIm">The reference image to compare to.</param>
         /// <param name="testIm">The image that is to be compared.</param>
         /// <returns>The percentage of pixels not the same in the two images.</returns>
-        private static float compareImage(Bitmap referenceIm, Bitmap testIm)
+        private static float CompareImage(Bitmap referenceIm, Bitmap testIm)
         {
             var count = 0;
 

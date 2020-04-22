@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The scene code container.
         /// </summary>
-        public SceneNodeContainer Node;
+        public SceneNode Node;
 
         /// <summary>
         /// The mesh.
@@ -67,8 +67,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float3 a, b, c;
-                GetTriangle(out a, out b, out c);
+                GetTriangle(out var a, out var b, out var c);
                 return (a + b + c) / 3;
             }
         }
@@ -79,8 +78,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float3 a, b, c;
-                GetTriangle(out a, out b, out c);
+                GetTriangle(out var a, out var b, out var c);
                 return float3.Barycentric(a, b, c, U, V);
             }
         }
@@ -103,8 +101,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float3 a, b, c;
-                GetNormals(out a, out b, out c);
+                GetNormals(out var a, out var b, out var c);
                 return (a + b + c) / 3;
             }
         }
@@ -115,21 +112,14 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                float3 a, b, c;
-                GetNormals(out a, out b, out c);
+                GetNormals(out var a, out var b, out var c);
                 return float3.Barycentric(a, b, c, U, V);
             }
         }
         /// <summary>
         /// Returns the model position.
         /// </summary>
-        public float3 ModelPos
-        {
-            get
-            {
-                return TriangleBarycentric;
-            }
-        }
+        public float3 ModelPos => TriangleBarycentric;
         /// <summary>
         /// Returns the clipping position of the model.
         /// </summary>
@@ -144,13 +134,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns the world position of the model.
         /// </summary>
-        public float3 WorldPos
-        {
-            get
-            {
-                return float4x4.TransformPerspective(Model, ModelPos);
-            }
-        }
+        public float3 WorldPos => float4x4.TransformPerspective(Model, ModelPos);
         /// <summary>
         /// Returns the camera position.
         /// </summary>
@@ -167,9 +151,9 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Implements the scene picker.
     /// </summary>
-    public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState>
+    public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState, SceneNode, SceneComponent>
     {
-        private CanvasTransformComponent _ctc;
+        private CanvasTransform _ctc;
         private RenderContext _rc;
 
         private bool isCtcInitialized = false;
@@ -181,17 +165,17 @@ namespace Fusee.Engine.Core
         /// </summary>
         public class PickerState : VisitorState
         {
-            private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
-            private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-            private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
+            private readonly CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
+            private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            private readonly CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
 
             /// <summary>
             /// The registered model.
             /// </summary>
             public float4x4 Model
             {
-                set { _model.Tos = value; }
-                get { return _model.Tos; }
+                set => _model.Tos = value;
+                get => _model.Tos;
             }
 
             /// <summary>
@@ -199,8 +183,8 @@ namespace Fusee.Engine.Core
             /// </summary>
             public MinMaxRect UiRect
             {
-                set { _uiRect.Tos = value; }
-                get { return _uiRect.Tos; }
+                set => _uiRect.Tos = value;
+                get => _uiRect.Tos;
             }
 
             /// <summary>
@@ -240,7 +224,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
         public ScenePicker(SceneContainer scene)
-            : base(scene.Children.GetEnumerator())
+            : base(scene.Children)
         {
             View = float4x4.Identity;
             Projection = float4x4.Identity;
@@ -268,18 +252,18 @@ namespace Fusee.Engine.Core
             PickPosClip = pickPos;
             View = _rc.View;
             Projection = _rc.Projection;
-            return Viserate();            
+            return Viserate();
         }
 
 
         #region Visitors
-        
+
         /// <summary>
         /// Sets the state of the model matrices and UiRects.
         /// </summary>
         /// <param name="ctc">The CanvasTransformComponent.</param>
         [VisitMethod]
-        public void RenderCanvasTransform(CanvasTransformComponent ctc)
+        public void RenderCanvasTransform(CanvasTransform ctc)
         {
             _ctc = ctc;
 
@@ -309,7 +293,7 @@ namespace Fusee.Engine.Core
                 frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
                 frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr
 
-                for (int i = 0; i < frustumCorners.Length; i++)
+                for (var i = 0; i < frustumCorners.Length; i++)
                 {
                     var corner = frustumCorners[i];
                     corner /= corner.w; //world space frustum corners
@@ -356,7 +340,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rtc">The XFormComponent.</param>
         [VisitMethod]
-        public void RenderRectTransform(RectTransformComponent rtc)
+        public void RenderRectTransform(RectTransform rtc)
         {
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -393,7 +377,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="xfc">The XFormComponent.</param>
         [VisitMethod]
-        public void RenderXForm(XFormComponent xfc)
+        public void RenderXForm(XForm xfc)
         {
             float4x4 scale;
 
@@ -404,9 +388,13 @@ namespace Fusee.Engine.Core
                 scale = float4x4.CreateScale(scaleX, scaleY, 1);
             }
             else if (State.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
+            {
                 scale = float4x4.CreateScale(State.UiRect.Size.x, State.UiRect.Size.y, 1);
+            }
             else
+            {
                 scale = float4x4.CreateScale(1, 1, 1);
+            }
 
             State.Model *= scale;
             _rc.Model = State.Model;
@@ -417,7 +405,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="xfc">The XFormTextComponent.</param>
         [VisitMethod]
-        public void RenderXFormText(XFormTextComponent xfc)
+        public void RenderXFormText(XFormText xfc)
         {
             var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
             var scaleFactor = zNear / 100;
@@ -518,7 +506,7 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
-        public void RenderTransform(TransformComponent transform)
+        public void RenderTransform(Transform transform)
         {
             State.Model *= transform.Matrix();
             _rc.Model = State.Model;
@@ -533,31 +521,29 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
             var mvp = Projection * View * State.Model;
-            for (int i = 0; i < mesh.Triangles.Length; i += 3)
+            for (var i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // a, b c: current triangle's vertices in clip coordinates
-                float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1);
+                var a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1);
                 a = float4x4.TransformPerspective(mvp, a);
 
-                float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1);
+                var b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1);
                 b = float4x4.TransformPerspective(mvp, b);
 
-                float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1);
+                var c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1);
                 c = float4x4.TransformPerspective(mvp, c);
 
-                float u, v;
                 // Point-in-Triangle-Test
-                if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
+                if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
                 {
-
                     YieldItem(new PickResult
                     {
                         Mesh = mesh,
                         Node = CurrentNode,
                         Triangle = i,
                         Model = State.Model,
-                        View = this.View,
-                        Projection = this.Projection,
+                        View = View,
+                        Projection = Projection,
                         U = u,
                         V = v
                     });
