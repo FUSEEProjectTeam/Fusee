@@ -190,7 +190,8 @@ namespace Fusee.Xirkit
         // [JSIgnore] (ignoring it will generate an exception in JSIl-generated PinFactory constructor)
         private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
-        private static void InitConvMap()
+        //private static void InitConvMap()
+        static PinFactory()
         {
             // Look at http://msdn.microsoft.com/de-de/library/bb882516.aspx or 
             // google "anonymous functions c#" to see how to define the anonymous converter code.
@@ -408,16 +409,16 @@ namespace Fusee.Xirkit
 
         private static Delegate LookupConverter(Type from, Type to)
         {
-            if (_convMap == null)
-                InitConvMap();
+            //if (_convMap == null)
+            //    InitConvMap();
 
             return _convMap[from][to];
         }
 
         private static bool CanConvert(Type from, Type to)
         {
-            if (_convMap == null)
-                InitConvMap();
+            //if (_convMap == null)
+            //    InitConvMap();
 
             Dictionary<Type, Delegate> dict;
             if (!_convMap.TryGetValue(from, out dict))
