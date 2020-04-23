@@ -22,7 +22,7 @@ namespace Fusee.Examples.Labyrinth.Core
         //my var
 
         // angle variables
-        private static float _angleVert, _angleVelVert, _angle;
+        private static float _angleVert = 1.5707f, _angleVelVert, _angle;
 
         //mouse rotation speed
         private const float _rotationSpeed = 7;
@@ -486,7 +486,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 else
                 {
                     _mtxCam = float4x4.LookAt(_head.Translation.x - _cam.x * M.Cos(_angle), _head.Translation.y + _cam.y, _head.Translation.z - _cam.z * M.Sin(_angle), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                    _head.Rotation = new float3(_head.Rotation.x, -_angle, _head.Rotation.z);
+                    _head.Rotation = new float3(_head.Rotation.x, -_angle - 90 * M.Pi / 180, _head.Rotation.z);
                     _bodytrans.Rotation = new float3(0, _angle, 0);
                     _movement = true;
                 }
