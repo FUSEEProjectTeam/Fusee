@@ -659,7 +659,7 @@ namespace Fusee.Engine.Core
                 HasNumberOfLightsChanged = false;
             }
             _state.Effect = effect;
-            _rc.CreateEffect(true, _state.Effect);
+            _rc.CreateShaderProgram(true, _state.Effect);
             _rc.SetEffect(_state.Effect);
         }
 
@@ -768,7 +768,7 @@ namespace Fusee.Engine.Core
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = MakeEffect.Default;
-            _rc.CreateEffect(true, _state.Effect);
+            _rc.CreateShaderProgram(true, _state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
         }
 

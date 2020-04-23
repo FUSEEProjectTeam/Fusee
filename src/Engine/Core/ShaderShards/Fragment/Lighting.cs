@@ -43,38 +43,38 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
-        /// Collects all lighting methods, dependent on what is defined in the given <see cref="LightingSetup"/> and the LightingCalculationMethod.
+        /// Collects all lighting methods, dependent on what is defined in the given <see cref="LightingSetupFlags"/> and the LightingCalculationMethod.
         /// </summary>
-        /// <param name="setup">The <see cref="LightingSetup"/> which is used to decide which lighting methods we need.</param>
-        public static string AssembleLightingMethods(LightingSetup setup)
+        /// <param name="setup">The <see cref="LightingSetupFlags"/> which is used to decide which lighting methods we need.</param>
+        public static string AssembleLightingMethods(LightingSetupFlags setup)
         {
-            if (setup == LightingSetup.Unlit)
+            if (setup == LightingSetupFlags.Unlit)
                 return string.Empty;
 
             var lighting = new List<string>();
 
             //Adds methods to the PS that calculate the single light components (diffuse, specular)
-            if (setup.HasFlag(LightingSetup.SpecularStd))
+            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
                 lighting.Add(DiffuseComponent());
                 lighting.Add(SpecularComponent());
             }
-            else if (setup.HasFlag(LightingSetup.SpecularPbr))
+            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
                 lighting.Add(DiffuseComponent());
                 lighting.Add(PbrSpecularComponent());
             }
-            else if (setup.HasFlag(LightingSetup.Diffuse))
+            else if (setup.HasFlag(LightingSetupFlags.Diffuse))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
                 lighting.Add(DiffuseComponent());
             }
-            else if (!setup.HasFlag(LightingSetup.Unlit))
+            else if (!setup.HasFlag(LightingSetupFlags.Unlit))
             {
                 throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
             }
@@ -270,11 +270,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one.
         /// </summary>
-        public static string ApplyLightForward(LightingSetup setup)
+        public static string ApplyLightForward(LightingSetupFlags setup)
         {
             var methodBody = new List<string>();
 
-            if (setup.HasFlag(LightingSetup.SpecularStd))
+            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
@@ -288,7 +288,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.AddRange(Attenuation());
                 methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
             }
-            else if (setup.HasFlag(LightingSetup.SpecularPbr))
+            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
@@ -303,7 +303,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.AddRange(Attenuation());
                 methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
             }
-            else if (setup.HasFlag(LightingSetup.Diffuse))
+            else if (setup.HasFlag(LightingSetupFlags.Diffuse))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
@@ -313,7 +313,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
                 methodBody.Add("return ((Idif * att) * surfOut.albedo.rgb) * lightStrength;");
             }
-            else if (setup.HasFlag(LightingSetup.Unlit))
+            else if (setup.HasFlag(LightingSetupFlags.Unlit))
                 methodBody.Add("return surfOut.albedo.rgb;");
             else
                 throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");

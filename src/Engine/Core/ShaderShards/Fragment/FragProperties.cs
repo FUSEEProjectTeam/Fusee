@@ -47,26 +47,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
-        /// Returns the pre defined Fusee uniform parameters of a fragment shader, depending on the given ShaderEffectProps.
-        /// </summary>
-        /// <returns></returns>
-        public static string FuseeMatrixUniforms()
-        {
-            var pxFusUniforms = new List<string>
-            {
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IView),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View),
-                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITModelView),
-                "\n"
-            };
-
-            return string.Join("\n", pxFusUniforms);
-        }
-
-        /// <summary>
         /// Creates the uniform texture parameters for the lighting pass, as used in deferred rendering.
         /// </summary>
         /// <returns></returns>
@@ -111,7 +91,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
             else
             {
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTexture, "ShadowMap"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTexture, UniformNameDeclarations.ShadowMap));
                 //No implementation for GLSL.CreateArrayUniform yet...
                 uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] ClipPlanes;\n");
                 uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");

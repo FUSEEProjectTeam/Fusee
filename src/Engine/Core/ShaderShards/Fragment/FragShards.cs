@@ -37,22 +37,22 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "return OUT;"
         };
 
-        public static List<string> SurfOutBody_Textures(LightingSetup lightingSetup)
+        public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetup.SpecularStd))
+            if (lightingSetup.HasFlag(LightingSetupFlags.SpecularStd))
             {
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
             }
-            else if (lightingSetup.HasFlag(LightingSetup.SpecularPbr))
+            else if (lightingSetup.HasFlag(LightingSetupFlags.SpecularPbr))
             {
                 res.Add("OUT.roughness = IN.Roughness;");
                 res.Add("OUT.fresnelReflect = IN.FresnelReflectance;");
                 res.Add("OUT.diffuseFract = IN.DiffuseFraction;");
             }
 
-            if (lightingSetup.HasFlag(LightingSetup.AlbedoTex))
+            if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
             {
                 res.Add($"vec4 texCol = texture(IN.AlbedoTex, {VaryingNameDeclarations.TextureCoordinates} * IN.TexTiles);");
                 res.Add($"vec3 mix = mix(IN.Albedo.rgb, texCol.xyz, IN.AlbedoMix);");
@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             else
                 res.Add("OUT.albedo = IN.Albedo;");
 
-            if (lightingSetup.HasFlag(LightingSetup.NormalMap))
+            if (lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 res.AddRange(new List<string>
                 {

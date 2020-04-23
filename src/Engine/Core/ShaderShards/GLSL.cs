@@ -46,11 +46,10 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Creates a GLSL method
         /// </summary>
-        /// <param name="returnType"></param>
-        /// <param name="methodName"></param>
-        /// <param name="methodParams"></param>
-        /// <param name="methodBody">method body goes here</param>
-        /// <returns></returns>
+        /// <param name="returnType">The (GLSL) return type of the method.</param>
+        /// <param name="methodName">The method name.</param>
+        /// <param name="methodParams">All method parameters. Use <see cref="CreateVar(Type, string)"/> to get the correct string.</param>
+        /// <param name="methodBody">The method body goes here.</param>
         internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> methodBody)
         {
             var tmpList = new List<string>
@@ -58,6 +57,29 @@ namespace Fusee.Engine.Core.ShaderShards
                 $"{DecodeType(returnType)} {methodName}({string.Join(", ", methodParams)})",
                 "{"
             };
+            tmpList.AddRange(methodBody);
+            tmpList.Add("}");
+            tmpList.Add("\n");
+            AddTabsToMethods(tmpList);
+
+            return string.Join("\n", tmpList);
+        }
+
+        /// <summary>
+        /// Creates a GLSL method
+        /// </summary>
+        /// <param name="returnType">The return type of the method.</param>
+        /// <param name="methodName">The method name.</param>
+        /// <param name="methodParams">All method parameters. Use <see cref="CreateVar(Type, string)"/> to get the correct string.</param>
+        /// <param name="methodBody">The method body goes here.</param>
+        internal static string CreateMethod(string returnType, string methodName, string[] methodParams, IList<string> methodBody)
+        {
+            var tmpList = new List<string>
+            {
+                $"{returnType} {methodName}({string.Join(", ", methodParams)})",
+                "{"
+            };
+
             tmpList.AddRange(methodBody);
             tmpList.Add("}");
             tmpList.Add("\n");
@@ -78,31 +100,7 @@ namespace Fusee.Engine.Core.ShaderShards
         }
 
         /// <summary>
-        /// Creates a GLSL method
-        /// </summary>
-        /// <param name="returnType"></param>
-        /// <param name="methodName"></param>
-        /// <param name="methodParams"></param>
-        /// <param name="method">method body goes here</param>
-        /// <returns></returns>
-        internal static string CreateMethod(string returnType, string methodName, string[] methodParams, IList<string> method)
-        {
-            var tmpList = new List<string>
-            {
-                $"{returnType} {methodName}({string.Join(", ", methodParams)})",
-                "{"
-            };
-
-            tmpList.AddRange(method);
-            tmpList.Add("}");
-            tmpList.Add("\n");
-            AddTabsToMethods(tmpList);
-
-            return string.Join("\n", tmpList);
-        }
-
-        /// <summary>
-        /// Tranlates this class or struct to GLSL. Will only convert fields and properties.
+        /// Translates this class or struct to GLSL. Will only convert fields and properties.
         /// </summary>
         /// <param name="type">The type to translate.</param>
         /// <returns></returns>
@@ -199,7 +197,7 @@ namespace Fusee.Engine.Core.ShaderShards
             for (var i = 0; i < list.Count; i++)
             {
                 var s = list[i];
-                
+
                 if (s == "}" || s == "};")
                     indentCnt--;
 

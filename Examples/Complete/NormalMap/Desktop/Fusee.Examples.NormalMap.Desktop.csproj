@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <RootNamespace>Fusee.Examples.Bump.Desktop</RootNamespace>
+        <RootNamespace>Fusee.Examples.NormalMap.Desktop</RootNamespace>
         <PackageId>Fusee.Examples.Bump.Desktop</PackageId>
         <TargetFramework>netcoreapp3.0</TargetFramework>
         <OutputType>WinExe</OutputType>
@@ -9,7 +9,7 @@
     </PropertyGroup>
 
     <PropertyGroup>
-        <OutputPath>$(BaseOutputPath)\Examples\Bump\Desktop\</OutputPath>
+        <OutputPath>D:\Dokumente\Git\Fusee\\\bin\Debug\Examples\NormalMap\Desktop\</OutputPath>
     </PropertyGroup>
 
     <ItemGroup>

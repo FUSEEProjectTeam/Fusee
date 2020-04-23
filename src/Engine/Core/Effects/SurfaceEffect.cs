@@ -34,15 +34,15 @@ namespace Fusee.Engine.Core.Effects
         #region MUST HAVE fields
 
         //================== Surface Shard IN ==========================//
-        public LightingSetup LightingSetup;
-        
+        public LightingSetupFlags LightingSetup;
+
         public ColorInput SurfaceInput { get; set; }
         //======================================================//
 
         //================== Surface Shard OUT ==========================//
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string SurfaceOutput = string.Empty;
+        public static string SurfaceOutput;
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Method)]
-        public static string SurfOutMethod = string.Empty;
+        public static string SurfOutMethod;
 
         public static List<string> SurfOutMethodBody;
         //======================================================//
@@ -68,7 +68,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string VertIn = ShaderShards.Vertex.VertProperties.InParams();
+        public static string VertIn;
 
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
@@ -80,7 +80,7 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3,"TBN");
+        public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, "TBN");
 
         #endregion
 
@@ -88,13 +88,15 @@ namespace Fusee.Engine.Core.Effects
         /// Creates a new Instance of type SurfaceEffect.
         /// </summary>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffect(LightingSetup lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
+        public SurfaceEffect(LightingSetupFlags lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
 
             LightingSetup = lightingSetup;
             var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup);
+
+            VertIn = ShaderShards.Vertex.VertProperties.InParams(lightingSetup);
 
             SurfaceInput = surfaceInput;
             SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
@@ -131,7 +133,7 @@ namespace Fusee.Engine.Core.Effects
             FxShaderAttribute shaderAttribute;
             FxShardAttribute shardAttribute;
 
-            foreach (var prop in t.GetProperties().ToList())
+            foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
             {
                 var attribs = prop.GetCustomAttributes().ToList();
 
@@ -174,7 +176,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Main:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
-                    
+
                         if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
                             HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)prop.GetValue(this));
                         else
@@ -194,12 +196,11 @@ namespace Fusee.Engine.Core.Effects
                         continue;
                     default:
                         throw new ArgumentException($"Unknown shard category: {shardAttribute.ShardCategory}");
-                        
+
                 }
             }
 
-           
-            var allFields = (t.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)).ToList();
+            var allFields = t.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
             foreach (var field in allFields)
             {
                 shaderAttribute = null;
@@ -424,7 +425,6 @@ namespace Fusee.Engine.Core.Effects
             //Error because property ParamType has no setter.
             //concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.ParamType)).SetValue(ob, prop.GetType());
 
-            
             object val;
             if (parent == null)
             {
@@ -454,9 +454,9 @@ namespace Fusee.Engine.Core.Effects
 
             concreteParamDecl.GetProperty(nameof(IFxParamDeclaration.Name)).SetValue(ob, field.Name);
             object val;
-           
+
             val = field.GetValue(this);
-           
+
             concreteParamDecl.GetField("Value").SetValue(ob, val);
             return (IFxParamDeclaration)ob;
         }

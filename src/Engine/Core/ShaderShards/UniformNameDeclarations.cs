@@ -206,7 +206,6 @@ namespace Fusee.Engine.Core.ShaderShards
 
         #endregion
 
-
         /// <summary>
         /// The var name for the uniform PassNo variable.
         /// </summary>

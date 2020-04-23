@@ -1,6 +1,4 @@
-﻿using Fusee.Base.Core;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -36,7 +34,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// </summary>
         public static string TransformNormalByBone()
         {
-            var methodBody = new List<string>() 
+            var methodBody = new List<string>()
             {
                 "vec4 newNormal;",
                 $"newNormal = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.x)] * vec4(normal, 0.0)) * {UniformNameDeclarations.BoneWeight}.x;",
@@ -54,7 +52,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(LightingSetup setup)
+        public static string VertexMain(LightingSetupFlags setup)
         {
             var vertMainBody = new List<string>
             {
@@ -63,22 +61,20 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}, 1.0));",
             };
 
-            if (setup.HasFlag(LightingSetup.AlbedoTex) || setup.HasFlag(LightingSetup.NormalMap))
+            if (setup.HasFlag(LightingSetupFlags.AlbedoTex) || setup.HasFlag(LightingSetupFlags.NormalMap))
                 vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
-            if (setup.HasFlag(LightingSetup.NormalMap))
+            if (setup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 vertMainBody.Add($"vec3 T = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
                 vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}.xyz, 0.0)));");
-
-                //vertMainBody.Add($"{VaryingNameDeclarations.Tangent} = vec4(T, {UniformNameDeclarations.Tangent}.w);");
-                //vertMainBody.Add($"{VaryingNameDeclarations.Bitangent} = B;");
 
                 vertMainBody.Add($"TBN = mat3(T,B,{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
             vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4({UniformNameDeclarations.Vertex}, 1.0);");
 
+            //TODO: needed when bone animation is working (again)
             //vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
             //? $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(vec3(newVertex), 1.0);"
             //: $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4({UniformNameDeclarations.Vertex}, 1.0);"

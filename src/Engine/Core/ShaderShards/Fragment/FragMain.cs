@@ -38,9 +38,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         /// <summary>
         /// The main method for rendering into a G-Buffer object.
-        /// </summary>       
-        /// <returns></returns>
-        public static string RenderToGBuffer(LightingSetup lightingSetup, string inStructName, string outStructType)
+        /// </summary>
+        public static string RenderToGBuffer(LightingSetupFlags lightingSetup, string inStructName, string outStructType)
         {
             var fragMainBody = new List<string>
             {
@@ -73,11 +72,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_SPECULAR:
                         {
-                            if (lightingSetup.HasFlag(LightingSetup.SpecularPbr))
+                            if (lightingSetup.HasFlag(LightingSetupFlags.SpecularPbr))
                             {
                                 fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.fresnelReflect, surfOut.diffuseFract, 1.0);");
                             }
-                            else if (lightingSetup.HasFlag(LightingSetup.SpecularStd))
+                            else if (lightingSetup.HasFlag(LightingSetupFlags.SpecularStd))
                             {
                                 fragMainBody.Add("//reason for multiplying by 0.5: keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
                                 fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength * 0.5, surfOut.shininess * 0.5, 0.0, 2.0);");

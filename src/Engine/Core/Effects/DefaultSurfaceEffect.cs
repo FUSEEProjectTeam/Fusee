@@ -32,29 +32,14 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Matrix)]
         public static float4x4 FUSEE_MV = float4x4.Identity;
 
-        /// <summary>
-        /// The shader shard containing a matrix uniform which should NOT be settable via property because they get updated internally.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Matrix)]
-        public static float4x4 FUSEE_IMV = float4x4.Identity;
-
         #endregion
-
-        /// <summary>
-        /// The shader shard containing the main method of the vertex shader.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Main)]
-        public static string VertMain;
 
         /// <summary>
         /// Create a new instance of type ShaderEffectDefault
         /// </summary>
-        public DefaultSurfaceEffect(LightingSetup lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null)
+        public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null)
             : base(lightingSetup, input, rendererStates)
         {
-            VertMain = ShaderShards.Vertex.VertMain.VertexMain(lightingSetup);
             SurfOutMethodBody = new List<string>()
             {
                $"{SurfaceOut.StructName} OUT = {SurfaceOut.SurfOutVaryingName};"

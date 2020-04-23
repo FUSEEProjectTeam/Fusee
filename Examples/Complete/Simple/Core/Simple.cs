@@ -62,7 +62,7 @@ namespace Fusee.Examples.Simple.Core
                 SpecularStrength = 1f
             };
 
-            _sufEffect = new DefaultSurfaceEffect(LightingSetup.SpecularStd, specularIn, Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd);
+            _sufEffect = new DefaultSurfaceEffect(LightingSetupFlags.SpecularStd, specularIn, Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd);
             _rocketScene.Children[0].Children[1].RemoveComponent<DefaultSurfaceEffect>();
             _rocketScene.Children[0].Children[1].Components.Insert(0, _sufEffect);
 

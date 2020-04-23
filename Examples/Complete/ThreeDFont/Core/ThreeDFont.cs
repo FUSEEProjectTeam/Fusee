@@ -153,7 +153,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 new FxParamDeclaration<float4x4> { Name = "xform", Value = float4x4.Identity}
             });
 
-            RC.CreateEffect(true, shaderFx);
+            RC.CreateShaderProgram(true, shaderFx);
             RC.SetEffect(shaderFx);
 
             // Set the clear color for the backbuffer

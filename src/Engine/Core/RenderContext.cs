@@ -966,7 +966,12 @@ namespace Fusee.Engine.Core
             throw new KeyNotFoundException("Trying to set unknown effect!");
         }
 
-        public void CreateEffect(bool renderForward, Effect ef)
+        /// <summary>
+        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect)"/>.
+        /// </summary>
+        /// <param name="renderForward">Is this effect used in a forward or a deferred renderer?</param>
+        /// <param name="ef">The effect.</param>
+        public void CreateShaderProgram(bool renderForward, Effect ef)
         {
             if (ef == null)
                 throw new NullReferenceException("No Effect found!");
@@ -998,6 +1003,8 @@ namespace Fusee.Engine.Core
                 else
                 {
                     var surfEffect = (SurfaceEffect)ef;
+
+                    surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
 
                     if (renderForward)
                     {

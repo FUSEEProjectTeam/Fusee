@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.ShaderShards
             var allLines = rawShaderString.Split(new[] { '\r', '\n' });
             foreach (var line in allLines)
             {
-                // if we have one or more includes we need to replace them                
+                // if we have one or more includes we need to replace them
                 if (line.Contains("#include"))
                 {
                     var includeLine = line.Replace(@"#include ", string.Empty);
