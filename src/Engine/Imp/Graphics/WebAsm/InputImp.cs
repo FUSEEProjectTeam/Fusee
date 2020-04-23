@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Fusee.Engine.Common;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,13 +33,16 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             _keyboard = new KeyboardDeviceImp(_canvas);
             _mouse = new MouseDeviceImp(_canvas);
             _touch = new TouchDeviceImp(_canvas);
+            _gamePad = new GamePadDeviceImp(_window);
         }
 
         // The webgl canvas. Will be set in the c# constructor
         internal JSObject _canvas;
+        internal JSObject _window;
         private KeyboardDeviceImp _keyboard;
         private MouseDeviceImp _mouse;
         private TouchDeviceImp _touch;
+        private GamePadDeviceImp _gamePad;
 
         /// <summary>
         /// Devices supported by this driver: One mouse and one keyboard.
@@ -51,13 +54,15 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 yield return _mouse;
                 yield return _keyboard;
                 yield return _touch;
+                yield return _gamePad;
+
             }
         }
 
         /// <summary>
         /// Returns a human readable description of this driver.
         /// </summary>
-        public string DriverDesc => "WebAsm Mouse, Keyboard and Touch input driver";
+        public string DriverDesc => "WebAsm Mouse, Keyboard, Gamepad and Touch input driver";
 
         /// <summary>
         /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
@@ -120,6 +125,430 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         #endregion
     }
 
+    /// <summary>
+    /// Gamepad input device implementation for the WebAsm platform.
+    /// </summary>
+    public class GamePadDeviceImp : IInputDeviceImp
+    {
+        private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
+        private JSObject _window;
+        private JSObject navigtor;
+        private int DeviceID;
+        #region JSExternals
+
+
+        #endregion
+
+        #region Javascript callback code
+
+        #endregion
+
+        internal GamePadDeviceImp(JSObject Window, int deviceID = 1)
+        {
+            JSObject _window = Window;
+            DeviceID = deviceID;
+
+            _btnADesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP A",
+                    Id = 0
+                },
+                PollButton = true
+            };
+            _btnXDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP X",
+                    Id = 2
+                },
+                PollButton = true
+            };
+            _btnYDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Y",
+                    Id = 3
+                },
+                PollButton = true
+            };
+            _btnBDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP B",
+                    Id = 1
+                },
+                PollButton = true
+            };
+            _btnStartDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Start",
+                    Id = 9
+                },
+                PollButton = true
+            };
+            _btnSelectDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Back",
+                    Id = 8
+                },
+                PollButton = true
+            };
+            _btnLeftDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP left button",
+                    Id = 4
+                },
+                PollButton = true
+            };
+            _btnRightDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP right button",
+                    Id = 5
+                },
+                PollButton = true
+            };
+            _btnL3Desc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP L3 button",
+                    Id = 10
+                },
+                PollButton = true
+            };
+            _btnR3Desc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP R3 button",
+                    Id = 11
+                },
+                PollButton = true
+            };
+            _dpadUpDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad up",
+                    Id = 12
+                },
+                PollButton = true
+            };
+            _dpadDownDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Down",
+                    Id = 13
+                },
+                PollButton = true
+            };
+            _dpadLeftDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Left",
+                    Id = 14
+                },
+                PollButton = true
+            };
+            _dpadRightDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Right",
+                    Id = 15
+                },
+                PollButton = true
+            };
+        }
+
+        public string Id
+        {
+            get
+            {
+                string Index = "0";
+
+                using (JSObject navigator = (JSObject)Runtime.GetGlobalObject("navigator"))
+                {
+                    using JSObject Gamepads = (JSObject)navigator.Invoke("getGamepads");
+                    Diagnostics.Debug($"Trying to connect to {Gamepads.Length} gamepads:");
+
+                    for (int i = 0; i < Gamepads.Length; i++)
+                    {
+                        using JSObject Gamepad = (JSObject)Gamepads.GetObjectProperty(i.ToString());
+                        //Checks if the connected gamepads are actual gamepads or just dummy connections.
+                        if (Gamepad == null)
+                            Diagnostics.Debug($"Gamepad {i} can not be accessed.");
+                        if (Gamepad != null)
+                        {
+                            string id = (string)Gamepad.GetObjectProperty("id");
+                            Diagnostics.Debug($"Gamepad {i}: ID={id}");
+                        }
+                    }
+                    using (JSObject Gamepad = (JSObject)Gamepads.GetObjectProperty(DeviceID.ToString()))
+                    {
+                        if (Gamepad != null)
+                        {
+                            string _index = (string)Gamepad.GetObjectProperty("id");
+                            {
+                                Index = _index.ToString();
+                            }
+                        }
+                    }
+                }
+                return Index;
+            }
+        }
+
+        /// <summary>
+        /// Description.
+        /// </summary>
+        public string Desc
+        {
+            get
+            {
+                return "WebAsm XBox-Gamepad input implementation.";
+            }
+        }
+
+        /// <summary>
+        /// Returns Type of input device.
+        /// </summary>
+        public DeviceCategory Category
+        {
+            get
+            {
+                return DeviceCategory.GameController;
+            }
+        }
+
+        public int AxesCount => 4;
+
+        public IEnumerable<AxisImpDescription> AxisImpDesc
+        {
+            get
+            {
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Left Stick X",
+                        Id = 0,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Left Stick Y",
+                        Id = 1,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Right Stick X",
+                        Id = 2,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Right Stick Y",
+                        Id = 3,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+            }
+        }
+
+        public int ButtonCount => 14;
+
+        public IEnumerable<ButtonImpDescription> ButtonImpDesc
+        {
+            get
+            {
+                yield return _btnADesc;
+                yield return _btnXDesc;
+                yield return _btnYDesc;
+                yield return _btnBDesc;
+                yield return _btnStartDesc;
+                yield return _btnSelectDesc;
+                yield return _btnRightDesc;
+                yield return _btnLeftDesc;
+                yield return _btnR3Desc;
+                yield return _btnL3Desc;
+                yield return _dpadUpDesc;
+                yield return _dpadDownDesc;
+                yield return _dpadLeftDesc;
+                yield return _dpadRightDesc;
+            }
+        }
+
+        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+
+        /// <summary>
+        /// All Axes on this Device are polled.
+        /// </summary>
+        /// <param name="iAxisId">The Axis to be polled.</param>
+        /// <returns>A float value between -1 and 1 determining the offset of the axis.</returns>
+        public float GetAxis(int iAxisId)
+        {
+            float Axis;
+            JSObject _GamePad;
+            JSObject Axes;
+            using (JSObject navigator = (JSObject)Runtime.GetGlobalObject("navigator"))
+            {
+                using (JSObject Gamepads = (JSObject)navigator.Invoke("getGamepads"))
+                {
+                    using (_GamePad = (JSObject)Gamepads.GetObjectProperty(DeviceID.ToString()))
+                    {
+                        if (_GamePad != null)
+                        {
+                            using (Axes = (JSObject)_GamePad.GetObjectProperty("axes"))
+                            {
+                                switch (iAxisId)
+                                {
+                                    case 0:
+                                        Axis = (float)Axes.GetObjectProperty("[0]");
+                                        return Axis;
+                                    case 1:
+                                        Axis = (float)Axes.GetObjectProperty("[1]");
+                                        return Axis;
+                                    case 2:
+                                        Axis = (float)Axes.GetObjectProperty("[2]");
+                                        return Axis;
+                                    case 3:
+                                        Axis = (float)Axes.GetObjectProperty("[3]");
+                                        return Axis;
+                                }
+                                throw new InvalidOperationException($"Unsupported axis {iAxisId}.");
+                            }
+                        }
+                    }
+                }
+            }
+            return 0;
+        }
+
+
+
+
+
+        /// <summary>
+        /// All buttons on this device are polled.
+        /// </summary>
+        /// <param name="iButtonId">The button to be polled.</param>
+        /// <returns>A Boolean value determining wether the button is pressed or not.</returns>
+        public bool GetButton(int iButtonId)
+        {
+            bool retval;
+            JSObject _GamePad;
+            JSObject Buttons;
+            using (var navigator = (JSObject)Runtime.GetGlobalObject("navigator"))
+            {
+                using (JSObject Gamepads = (JSObject)navigator.Invoke("getGamepads"))
+                {
+                    using (_GamePad = (JSObject)Gamepads.GetObjectProperty(DeviceID.ToString()))
+                    {
+                        if (_GamePad != null)
+                        {
+                            using (Buttons = (JSObject)_GamePad.GetObjectProperty("buttons"))
+                            {
+                                switch (iButtonId)
+                                {
+                                    case 0:
+                                        retval = ((int)Buttons.GetObjectProperty("[0]")) == 0 ? false : true;
+                                        return retval;
+                                    case 1:
+                                        retval = ((int)Buttons.GetObjectProperty("[1]")) == 0 ? false : true;
+                                        return retval;
+                                    case 2:
+                                        retval = ((int)Buttons.GetObjectProperty("[2]")) == 0 ? false : true;
+                                        return retval;
+                                    case 3:
+                                        retval = ((int)Buttons.GetObjectProperty("[3]")) == 0 ? false : true;
+                                        return retval;
+                                    case 4:
+                                        retval = ((int)Buttons.GetObjectProperty("[4]")) == 0 ? false : true;
+                                        return retval;
+                                    case 5:
+                                        retval = ((int)Buttons.GetObjectProperty("[5]")) == 0 ? false : true;
+                                        return retval;
+                                    case 6:
+                                        retval = ((int)Buttons.GetObjectProperty("[6]")) == 0 ? false : true;
+                                        return retval;
+                                    case 7:
+                                        retval = ((int)Buttons.GetObjectProperty("[7]")) == 0 ? false : true;
+                                        return retval;
+                                    case 8:
+                                        retval = ((int)Buttons.GetObjectProperty("[8]")) == 0 ? false : true;
+                                        return retval;
+                                    case 9:
+                                        retval = ((int)Buttons.GetObjectProperty("[9]")) == 0 ? false : true;
+                                        return retval;
+                                    case 10:
+                                        retval = ((int)Buttons.GetObjectProperty("[10]")) == 0 ? false : true;
+                                        return retval;
+                                    case 11:
+                                        retval = ((int)Buttons.GetObjectProperty("[11]")) == 0 ? false : true;
+                                        return retval;
+                                    case 12:
+                                        retval = ((int)Buttons.GetObjectProperty("[12]")) == 0 ? false : true;
+                                        return retval;
+                                    case 13:
+                                        retval = ((int)Buttons.GetObjectProperty("[13]")) == 0 ? false : true;
+                                        return retval;
+                                }
+                                throw new InvalidOperationException($"Unsupported button {iButtonId}.");
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+    }
 
     /// <summary>
     /// Keyboard input device implementation for the WebAsm platform.
