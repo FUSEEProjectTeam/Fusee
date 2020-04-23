@@ -4,7 +4,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -50,6 +49,9 @@ namespace Fusee.Examples.UI.Core
         private readonly float zNear = 1f;
         private readonly float zFar = 1000;
         private readonly float fov = M.PiOver4;
+
+        private readonly float4 _canvasDefaultColor = new float4(1, 0f, 0f, 1);
+        private readonly float4 _canvasHoverColor = new float4(1, 0.4f, 0.1f, 1);
 
         private GUIText _fpsText;
 
@@ -113,7 +115,7 @@ namespace Fusee.Examples.UI.Core
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
                 //Set the albedo texture you want to use.
-                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.LINEAR),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -155,7 +157,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
@@ -187,7 +189,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -201,7 +203,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -215,7 +217,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_VERTICAL), //Anchor is in the lower right corner. Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_VERTICAL, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -292,15 +294,13 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffect>()
-                .SetFxParam(UniformNameDeclarations.Albedo, new float4(1, 0.4f, 0.1f, 1));
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasHoverColor;
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffect>()
-                .SetFxParam(UniformNameDeclarations.Albedo, new float4(1, 0f, 0f, 1));
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasDefaultColor;
         }
 
         public void OnBtnCatDown(CodeComponent sender)

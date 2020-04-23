@@ -100,19 +100,19 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     break;
                 case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
                     minFilter = (int)NEAREST_MIPMAP_NEAREST;
-                    magFilter = (int)NEAREST_MIPMAP_NEAREST;
+                    magFilter = (int)NEAREST;
                     break;
                 case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
                     minFilter = (int)LINEAR_MIPMAP_NEAREST;
-                    magFilter = (int)LINEAR_MIPMAP_NEAREST;
+                    magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
-                    magFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)NEAREST;
                     break;
                 case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
-                    magFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)LINEAR;
                     break;
             }
 
@@ -256,10 +256,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
 
+            gl2.TexImage3D(TEXTURE_2D_ARRAY, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
             if (img.DoGenerateMipMaps)
                 gl2.GenerateMipmap(TEXTURE_2D_ARRAY);
-
-            gl2.TexImage3D(TEXTURE_2D_ARRAY, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
             gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));

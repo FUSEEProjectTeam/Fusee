@@ -307,11 +307,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
+            
+            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2DArray);
-            
-            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
             GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
@@ -375,11 +375,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var pxInfo = GetTexturePixelInfo(img);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
-           
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -411,10 +411,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var pxInfo = GetTexturePixelInfo(img);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));

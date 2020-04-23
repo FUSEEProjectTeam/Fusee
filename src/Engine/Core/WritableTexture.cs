@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
-        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
+        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NEAREST_MIPMAP_LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             PixelFormat = colorFormat;
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateAlbedoTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.RGBA), width, height, false, TextureFilterMode.LINEAR);
         }
 
         /// <summary>
@@ -154,7 +154,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateSpecularTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_SPECULAR, new ImagePixelFormat(ColorFormat.fRGBA16), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.G_SPECULAR, new ImagePixelFormat(ColorFormat.fRGBA16), width, height, false, TextureFilterMode.LINEAR);
         }
 
         /// <summary>

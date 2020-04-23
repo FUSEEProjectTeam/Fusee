@@ -50,14 +50,14 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static readonly float4 White = new float4(1, 1, 1, 1);
 
-        private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"));
-        private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"));
-        private static readonly Texture _frameRecognizedMLOrConfirmed = new Texture(AssetStorage.Get<ImageData>("frame_green.png"));
+        private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"), false, TextureFilterMode.LINEAR);
+        private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"), false, TextureFilterMode.LINEAR);
+        private static readonly Texture _frameRecognizedMLOrConfirmed = new Texture(AssetStorage.Get<ImageData>("frame_green.png"), false, TextureFilterMode.LINEAR);
 
-        private static readonly Texture _iconToCheck = new Texture(AssetStorage.Get<ImageData>("lightbulb.png"));
-        private static readonly Texture _iconDiscarded = new Texture(AssetStorage.Get<ImageData>("minus-oktagon.png"));
-        private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
-        private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
+        private static readonly Texture _iconToCheck = new Texture(AssetStorage.Get<ImageData>("lightbulb.png"), false, TextureFilterMode.LINEAR);
+        private static readonly Texture _iconDiscarded = new Texture(AssetStorage.Get<ImageData>("minus-oktagon.png"), false, TextureFilterMode.LINEAR);
+        private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"), false, TextureFilterMode.LINEAR);
+        private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"), false, TextureFilterMode.LINEAR);
 
         internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, 20f, 0f);
         internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, 20f, 0f);

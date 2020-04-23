@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
-using Fusee.Serialization;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.GUI
 {

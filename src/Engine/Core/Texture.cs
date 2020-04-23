@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core
     public class Texture : ITexture
     {
         #region RenderContext Asset Management
-        
+
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
@@ -117,13 +117,13 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR_MIPMAP_LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(pixelData, width, height, colorFormat);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
-            WrapMode = wrapMode;            
+            WrapMode = wrapMode;
         }
 
         /// <summary>
@@ -133,13 +133,13 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NEAREST_MIPMAP_LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(
                 new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
                 imageData.Width, imageData.Height, imageData.PixelFormat);
-            _imageData.Blt(0,0, imageData);
+            _imageData.Blt(0, 0, imageData);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;
