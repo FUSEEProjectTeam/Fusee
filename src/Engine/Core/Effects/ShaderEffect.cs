@@ -29,13 +29,9 @@ namespace Fusee.Engine.Core.Effects
         /// The constructor to create a shader effect.
         /// </summary>
         /// <param name="effectPass">See <see cref="FxPassDeclaration"/>.</param>
-        /// <param name="effectParameters">A list of (uniform) parameters possibly occurring in one of the shaders in the various passes.
-        /// Each array entry consists of the parameter's name and its initial value. The concrete type of the object also indicates the
-        /// parameter's type.
+        /// <param name="effectParameters">The list of (uniform) parameters. The concrete type of the object also indicates the parameter's type.
         /// </param>
-        /// <remarks>Make sure to list any parameter in any of the different passes' shaders you want to change later on in the effectParameters
-        /// list. Shaders must not contain parameters with names listed in the effectParameters but declared with different types than those of 
-        /// the respective default values given here.</remarks>
+        /// <remarks> Make sure to insert all uniform variable in "effectParameters" that are declared in the shader code.</remarks>
         public ShaderEffect(FxPassDeclaration effectPass, IEnumerable<IFxParamDeclaration> effectParameters)
         {
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
