@@ -1,12 +1,12 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core
 {
@@ -1104,7 +1104,7 @@ namespace Fusee.Engine.Core
         /// Changes will only have an effect when rendering.
         /// </summary>
         /// <param name="name">Effect parameter name.</param>
-        /// <param name="value">Effect parameter value.</param>        
+        /// <param name="value">Effect parameter value.</param>
         internal void SetGlobalEffectParam(string name, object value)
         {
             if (GlobalFXParams.TryGetValue(name, out var currentValue))

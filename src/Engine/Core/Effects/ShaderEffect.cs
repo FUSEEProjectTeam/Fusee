@@ -1,38 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Base.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
-    /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
+    /// A ShaderEffect contains a string for each, the vertex, fragment and geometry shader and a set of render states.
+    /// Use this if you want to write the shader code on your own. 
+    /// The values of uniform variables you defined (<see cref="Effect.ParamDecl"/>) can be set using <see cref="Effect.SetFxParam{T}(string, T)"/>. 
     /// </summary>
     public class ShaderEffect : Effect, IDisposable
     {
         /// <summary>
-        /// Vertex shaders of all passes
+        /// The Vertex shader code.
         /// </summary>
         public string VertexShaderSrc { get; protected set; }
 
         /// <summary>
-        /// Pixel- or fragment shader of all passes
+        /// The Fragment shader code.
         /// </summary>
         public string PixelShaderSrc { get; protected set; }
 
         /// <summary>
-        /// Geometry of all passes
+        /// The Geometry shader code.
         /// </summary>
         public string GeometryShaderSrc { get; protected set; }
-        
-        /// <summary>
-        /// Default constructor. TODO: delete if ShaderEffectProtoPixel is redundant.
-        /// </summary>
-        public ShaderEffect()
-        {
-
-        }
 
         /// <summary>
         /// The constructor to create a shader effect.
@@ -54,18 +45,14 @@ namespace Fusee.Engine.Core.Effects
             PixelShaderSrc = effectPass.PS;
             GeometryShaderSrc = effectPass.GS;
 
-
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                {
-                    //var val = param.GetType().GetField("Value").GetValue(param);
                     ParamDecl.Add(param.Name, param);
-                }
             }
 
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-        }       
+        }
 
         /// <summary>
         /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.

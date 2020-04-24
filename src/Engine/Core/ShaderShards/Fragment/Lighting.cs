@@ -126,11 +126,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         }
 
-        //TODO: At the moment Blender's Principled BSDF material gets translated into a MaterialPBR and internally uses this lighting method for the specular component.
-        //This is not the same lighting method as is used in Blender and will therefor only produce approximately visually correct results.
+        //TODO: At the moment Blender's Principled BSDF material gets translated into a MaterialPBR and internally.
+        //Those two do not use the same lighting method and the lighting result will therefore differ from the one in Blender.
         /// <summary>
         /// Method for calculation the specular lighting component.
-        /// Replaces the standard specular calculation with the Cook-Torrance-Shader
+        /// Replaces the standard specular calculation with the Cook-Torrance calculation.
         /// </summary>
         public static string PbrSpecularComponent()
         {
@@ -286,7 +286,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"Ispe = surfOut.specularStrength * specularTerm * light.intensities.rgb;");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
+                methodBody.Add("return  (Idif + Ispe) * att * lightStrength * surfOut.albedo.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
             {
@@ -296,12 +296,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
                 methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
 
-                methodBody.Add($"//Note that only the variable 'specular' is calculated using the cook torrance model...");
+                methodBody.Add($"//Note that only the variable 'specular' is calculated using the Cook-Torrance model...");
                 methodBody.Add($"float specular = specularLighting(N, L, V, light.intensities, surfOut.fresnelReflect, surfOut.roughness);");
                 methodBody.Add($"Ispe = vec3(specular) * light.intensities.rgb;");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return ((Ispe * att) + ((Idif * att) * surfOut.albedo.rgb)) * lightStrength;");
+                methodBody.Add("return (Idif + Ispe) * att * lightStrength * surfOut.albedo.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.Diffuse))
             {
@@ -311,7 +311,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
                 methodBody.AddRange(Attenuation());
 
-                methodBody.Add("return ((Idif * att) * surfOut.albedo.rgb) * lightStrength;");
+                methodBody.Add("return Idif * att * lightStrength * surfOut.albedo.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.Unlit))
                 methodBody.Add("return surfOut.albedo.rgb;");
@@ -346,8 +346,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "if(normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)",
             "{"
             });
-            methodBody.Add($"    {FragProperties.OutColorName} = {UniformNameDeclarations.BackgroundColor};");
-            methodBody.Add(@"    return;");
+            methodBody.Add($"{FragProperties.OutColorName} = {UniformNameDeclarations.BackgroundColor};");
+            methodBody.Add("return;");
             methodBody.Add("}");
 
             methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION]}, {VaryingNameDeclarations.TextureCoordinates});");
@@ -466,10 +466,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             methodBody.Add("}");
 
-            
-            
+
+
             methodBody.Add($"lighting =(ambient + (1.0 - shadow) * (diffuse + specular)) * albedo;");
-            
+
             methodBody.Add($"{FragProperties.OutColorName} = lighting;");
 
             return GLSL.MainMethod(methodBody);

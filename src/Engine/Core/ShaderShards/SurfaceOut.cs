@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Engine.Core.Effects;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards
@@ -55,10 +56,22 @@ namespace Fusee.Engine.Core.ShaderShards
         Unlit = 1,
     }
 
-    internal static class SurfaceOut
+    /// <summary>
+    /// Contains all needed information to define the <see cref="SurfaceEffect.SurfaceOutput"/>.
+    /// </summary>
+    public static class SurfaceOut
     {
+        /// <summary>
+        /// The surface effects "out"-struct (<see cref="SurfaceEffect.SurfaceOutput"/>) always has this type in the shader code.
+        /// </summary>
         public const string StructName = "SurfOut";
-        public static readonly string SurfOutVaryingName = $"surfOut";
+
+        /// <summary>
+        /// The surface effects "out"-struct (<see cref="SurfaceEffect.SurfaceOutput"/>) always has this variable name in the shader code.
+        /// </summary>
+        public const string SurfOutVaryingName = "surfOut";
+
+        internal static readonly string ChangeSurfFrag = "ChangeSurfFrag";
 
         #region Variables that can be changed in a Shader Shard
         internal static readonly Tuple<GLSL.Type, string> Pos = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "position");
@@ -77,34 +90,11 @@ namespace Fusee.Engine.Core.ShaderShards
         private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
         private static readonly string DerfafultSpecPbrOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 1.0, 1.0, 0.0)";
 
-        private static string BuildStructDecl(LightingSetupFlags setup)
-        {
-            var dcl = new List<string>
-            {
-                $"struct {StructName}",
-                "{",
-                $"{GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
-                $"{GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
-            };
-
-            if (!setup.HasFlag(LightingSetupFlags.Unlit))
-                dcl.Add($"{GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
-
-            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
-            {
-                dcl.Add($"{GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
-                dcl.Add($"{GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
-            }
-            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
-            {
-                dcl.Add($"{GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
-                dcl.Add($"{GLSL.DecodeType(Fresnel.Item1)} {Fresnel.Item2};");
-                dcl.Add($"{GLSL.DecodeType(DiffuseFraction.Item1)} {DiffuseFraction.Item2};");
-            }
-            dcl.Add("};");
-            return string.Join("\n", dcl);
-        }
-
+        /// <summary>
+        /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
+        /// </summary>
+        /// <param name="setup">The <see cref="LightingSetupFlags"/> that decides what the appropriate struct is.</param>
+        /// <returns></returns>
         public static LightingSetupShards GetLightingSetupShards(LightingSetupFlags setup)
         {
             if (_lightingSetupCache.TryGetValue(setup, out var res))
@@ -143,6 +133,51 @@ namespace Fusee.Engine.Core.ShaderShards
             {
                 throw new ArgumentException($"Invalid Lighting flags: {setup}");
             }
+        }
+
+        /// <summary>
+        /// Returns the GLSL method that modifies the values of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
+        /// </summary>
+        /// <param name="methodBody">User-written shader code for modifying.</param>
+        /// <param name="inputType">The type of the <see cref="SurfaceEffect.SurfaceInput"/> struct.</param>
+        /// <returns></returns>
+        public static string GetChangeSurfFragMethod(List<string> methodBody, Type inputType)
+        {
+            var bodyCompl = new List<string>()
+            {
+                $"{StructName} OUT = {SurfOutVaryingName};"
+            };
+            bodyCompl.AddRange(methodBody);
+            bodyCompl.Add("return OUT;");
+            return GLSL.CreateMethod(StructName, ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, bodyCompl);
+        }
+
+        private static string BuildStructDecl(LightingSetupFlags setup)
+        {
+            var dcl = new List<string>
+            {
+                $"struct {StructName}",
+                "{",
+                $"{GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
+                $"{GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
+            };
+
+            if (!setup.HasFlag(LightingSetupFlags.Unlit))
+                dcl.Add($"{GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
+
+            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
+            {
+                dcl.Add($"{GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
+                dcl.Add($"{GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
+            }
+            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
+            {
+                dcl.Add($"{GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
+                dcl.Add($"{GLSL.DecodeType(Fresnel.Item1)} {Fresnel.Item2};");
+                dcl.Add($"{GLSL.DecodeType(DiffuseFraction.Item1)} {DiffuseFraction.Item2};");
+            }
+            dcl.Add("};");
+            return string.Join("\n", dcl);
         }
     }
 }

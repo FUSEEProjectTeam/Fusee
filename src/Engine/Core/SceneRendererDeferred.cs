@@ -8,6 +8,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Engine.Core.Primitives;
 
 namespace Fusee.Engine.Core
 {

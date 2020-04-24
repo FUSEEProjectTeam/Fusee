@@ -11,22 +11,23 @@ namespace Fusee.Engine.Core.Effects
     public class DefaultSurfaceEffect : SurfaceEffect
     {
         #region Matrices
+
         /// <summary>
-        /// The shader shard containing a matrix uniform which should NOT be settable via property because they get updated internally.
+        /// The shader shard containing the model view projection matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Matrix)]
         public static float4x4 FUSEE_MVP = float4x4.Identity;
 
         /// <summary>
-        /// The shader shard containing a matrix uniform which should NOT be settable via property because they get updated internally.
+        /// The shader shard containing the inverse transposed model view matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Matrix)]
         public static float4x4 FUSEE_ITMV = float4x4.Identity;
 
         /// <summary>
-        /// The shader shard containing a matrix uniform which should NOT be settable via property because they get updated internally.
+        /// The shader shard containing the model view matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Matrix)]
@@ -35,17 +36,16 @@ namespace Fusee.Engine.Core.Effects
         #endregion
 
         /// <summary>
-        /// Create a new instance of type ShaderEffectDefault
+        /// Creates a new instance of type DefaultSurfaceEffect.
         /// </summary>
+        /// <param name="lightingSetup">See <see cref="SurfaceEffect.LightingSetup"/>.</param>
+        /// <param name="input">See <see cref="SurfaceEffect.SurfaceInput"/>.</param>
+        /// <param name="surfOutBody"></param>
+        /// <param name="rendererStates"></param>
         public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null)
             : base(lightingSetup, input, rendererStates)
         {
-            SurfOutMethodBody = new List<string>()
-            {
-               $"{SurfaceOut.StructName} OUT = {SurfaceOut.SurfOutVaryingName};"
-            };
-            SurfOutMethodBody.InsertRange(1, surfOutBody);
-            SurfOutMethod = ShaderShards.Fragment.FragShards.GetChangeSurfFragMethod(SurfOutMethodBody, input.GetType());
+            SurfOutMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutBody, input.GetType());
             HandleFieldsAndProps();
         }
     }

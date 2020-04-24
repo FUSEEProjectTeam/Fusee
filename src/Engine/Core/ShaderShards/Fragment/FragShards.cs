@@ -1,23 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
+    /// <summary>
+    /// Contains pre-defined Shader Shards (= content of the Fragment Shader's method that lets us change values of the "out"-struct). 
+    /// </summary>
     public static class FragShards
     {
-        public static readonly string ChangeSurfFrag = "ChangeSurfFrag";
-
-        public static string GetChangeSurfFragMethod(List<string> methodBody, Type inputType)
-        {
-            return GLSL.CreateMethod(SurfaceOut.StructName, ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, methodBody);
-        }
-
         public static readonly List<string> SurfOutBody_SpecularStd = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
             "OUT.shininess = IN.Shininess;",
-            "return OUT;"
         };
 
         public static readonly List<string> SurfOutBody_GBuffer = new List<string>()

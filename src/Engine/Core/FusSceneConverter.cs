@@ -195,14 +195,14 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Serialization.V1.FusHorizontalTextAlignment.CENTER
+                xft.HorizontalAlignment == FusHorizontalTextAlignment.CENTER
                 ? HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Serialization.V1.FusHorizontalTextAlignment.LEFT
+                : xft.HorizontalAlignment == FusHorizontalTextAlignment.LEFT
                 ? HorizontalTextAlignment.LEFT
                 : HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.FusVerticalTextAlignment.CENTER
+                VerticalAlignment = xft.VerticalAlignment == FusVerticalTextAlignment.CENTER
                 ? VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Serialization.V1.FusVerticalTextAlignment.BOTTOM
+                : xft.VerticalAlignment == FusVerticalTextAlignment.BOTTOM
                 ? VerticalTextAlignment.BOTTOM
                 : VerticalTextAlignment.TOP
             });
@@ -352,9 +352,7 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var currentNodeEffect = _currentNode.GetComponent<ShaderEffect>();
-
-            if (currentNodeEffect?.GetFxParam<Texture>(UniformNameDeclarations.NormalMap) != null)
+            if (_currentNode.GetComponent<DefaultSurfaceEffect>().LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -489,9 +487,9 @@ namespace Fusee.Engine.Core
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
             var lightingSetup = m.HasSpecular ? LightingSetupFlags.SpecularStd : LightingSetupFlags.Diffuse;
-            if (m.Albedo.Texture != null)
+            if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
-            if (m.NormalMap?.Texture != null)
+            if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
 
             //TODO: test what happens if there is a albedo texture but no normal texture and vice versa.
@@ -508,7 +506,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
@@ -522,7 +520,7 @@ namespace Fusee.Engine.Core
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
@@ -543,9 +541,9 @@ namespace Fusee.Engine.Core
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
             var lightingSetup = m.HasSpecular ? LightingSetupFlags.SpecularPbr : LightingSetupFlags.Diffuse;
-            if (m.Albedo.Texture != null)
+            if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
-            if (m.NormalMap?.Texture != null)
+            if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
 
             //TODO: test what happens if there is a albedo texture but no normal texture and vice versa
@@ -562,7 +560,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularPbrNormalTexture(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
@@ -576,7 +574,7 @@ namespace Fusee.Engine.Core
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture));
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularPbrTexture(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
@@ -753,6 +751,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvShaderEffect(ShaderEffect fx)
         {
+            // TODO: SurfaceEffect to FusMaterial and SurfaceEffect to FusMaterialPBR
             // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
 
             var mat = new FusMaterial();
@@ -782,7 +781,6 @@ namespace Fusee.Engine.Core
                     case UniformNameDeclarations.AlbedoMix:
                         mat.Albedo.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
                         break;
-
 
                     case UniformNameDeclarations.EmissiveColor:
                         mat.Emissive.Color = ((FxParamDeclaration<float4>)decl.Value).Value;

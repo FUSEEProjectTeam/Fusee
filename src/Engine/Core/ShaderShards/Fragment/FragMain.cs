@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>
             {
-                $"{outStructType} surfOut = {FragShards.ChangeSurfFrag}({inStructName});"
+                $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
             };
 
             fragMainBody.AddRange(
@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>
             {
-                $"{outStructType} surfOut = {FragShards.ChangeSurfFrag}({inStructName});"
+                $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
             };
 
             var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();

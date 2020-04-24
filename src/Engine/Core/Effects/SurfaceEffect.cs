@@ -34,59 +34,84 @@ namespace Fusee.Engine.Core.Effects
         #region MUST HAVE fields
 
         //================== Surface Shard IN ==========================//
+        /// <summary>
+        /// See <see cref="LightingSetupFlags"/>. 
+        /// These flags are used to gather the appropriate lighting methods and shader parameters.
+        /// </summary>
         public LightingSetupFlags LightingSetup;
 
+        /// <summary>
+        /// User-defined input struct. Must derive from <see cref="ColorInput"/>. 
+        /// Used in the <see cref="SurfOutMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
+        /// </summary>
         public ColorInput SurfaceInput { get; set; }
         //======================================================//
 
-        //================== Surface Shard OUT ==========================//
+        //================== Surface Shard ==========================//
+        /// <summary>
+        /// Struct declaration in the shader code that provides the values for the position calculation
+        /// of the vertex shader and lighting calculation of the fragment shader.
+        /// Values of this struct can be modified by the user using <see cref="SurfOutMethod"/> (fragment shader).
+        /// The value is filled in the constructor using the chosen lighting setup.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public static string SurfaceOutput;
 
+        /// <summary>
+        /// Fragment shader "in" declaration of the <see cref="SurfaceOutput"/>.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string SurfVarying = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public static string SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+
+        /// <summary>
+        /// Vertex shader "out" declaration of the <see cref="SurfaceOutput"/>.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public static string SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+
+        /// <summary>
+        /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Method)]
+        public static string SurfOutMethod;
+
+        //======================================================//
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public static string UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
 
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
-        public static string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, "TBN");
-
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Method)]
-        public static string SurfOutMethod;
-
-        public static List<string> SurfOutMethodBody;
-        //======================================================//
-
-        /// <summary>
-        /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Property)]
-        public static string VertIn;
-
-        [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Property)]
-        public static string VertOut = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
-
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public static string UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
 
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public static string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, "TBN");
+
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, "TBN");
+
+        /// <summary>
+        /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
+        /// The value is filled in the constructor using the chosen lighting setup.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public static string VertIn;
 
         #endregion
 
         /// <summary>
         /// Creates a new Instance of type SurfaceEffect.
         /// </summary>
+        /// <param name="lightingSetup">The <see cref="LightingSetupFlags"/>.</param>
+        /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
         public SurfaceEffect(LightingSetupFlags lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
@@ -94,7 +119,6 @@ namespace Fusee.Engine.Core.Effects
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();
 
             LightingSetup = lightingSetup;
-            var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup);
 
             VertIn = ShaderShards.Vertex.VertProperties.InParams(lightingSetup);
 
@@ -111,6 +135,7 @@ namespace Fusee.Engine.Core.Effects
             }
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
 
+            var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup);
             SurfaceOutput = lightingShards.StructDecl;
 
             if (renderStateSet == null)
@@ -126,6 +151,9 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
+        /// <summary>
+        /// Reads all Fields an Properties from this type and builds <see cref="IFxParamDeclaration"/>s and shader code snippets from them.
+        /// </summary>
         protected void HandleFieldsAndProps()
         {
             Type t = GetType();
@@ -245,7 +273,12 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                         if (field.IsStatic && field.FieldType == typeof(string))
-                            HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)field.GetValue(this));
+                        {
+                            var val = (string)field.GetValue(this);
+                            if (val == null || val == string.Empty)
+                                continue;
+                            HandleShard(shaderAttribute.ShaderCategory, shardAttribute, val);
+                        }
                         else
                             throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
                         continue;
@@ -552,4 +585,3 @@ namespace Fusee.Engine.Core.Effects
         }
     }
 }
-
