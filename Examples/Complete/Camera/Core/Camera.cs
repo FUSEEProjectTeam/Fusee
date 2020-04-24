@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
@@ -34,9 +35,9 @@ namespace Fusee.Examples.Camera.Core
 
         private Transform _mainCamTransform;
         private Transform _guiCamTransform;
-        private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
-        private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
-        private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _mainCam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private Transform _cubeOneTransform;
         private Transform _sndCamTransform;
@@ -68,7 +69,6 @@ namespace Fusee.Examples.Camera.Core
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
             _guiCam.FrustumCullingOn = false;
-
 
             _mainCamTransform = _guiCamTransform = new Transform()
             {

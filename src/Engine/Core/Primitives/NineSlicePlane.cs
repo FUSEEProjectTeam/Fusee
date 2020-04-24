@@ -2,7 +2,7 @@
 using Fusee.Math.Core;
 using System.Linq;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a plane geometry straight from the code that is divided in 9 tiles.
