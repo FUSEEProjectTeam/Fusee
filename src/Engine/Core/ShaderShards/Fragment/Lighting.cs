@@ -147,24 +147,20 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "if (NdotL > 0.0)",
                 "{",
                     "//GeometrySchlickGGX - geometric attenuation",
-                    "float r = (roughness + 1.0);",
+                    "float r = roughness + 1.0;",
                     "float k = (r * r) / 8.0;",
-                    "float numGeom = NdotV;",
-                    "float denomGeom = NdotV * (1.0 - k) + k;",
-                    "float G = numGeom / denomGeom; //float G = GeometricalAttenuation(NdotH, NdotV, VdotH, NdotL);",
+                    "float g1L = NdotL / (NdotL * (1.0 - k) + k);",
+                    "float g1V = NdotV / (NdotV * (1.0 - k) + k);",
+                    "float G = g1L * g1V; //float G = GeometricalAttenuation(NdotH, NdotV, VdotH, NdotL);",
 
                     "//Distribution GGX",
-                    "float a = roughness * roughness;",
-                    "float a2 = a * a;",
-                    "float NdotH2 = NdotH * NdotH;",
-
-                    "float numDist = a2;",
-                    "float denomDist = (NdotH2 * (a2 - 1.0) + 1.0);",
-                    "denomDist = 3.1415926535897932384626433832795 * denomDist * denomDist;",
-                    "float D =  numDist / denomDist; //float D = BeckmannDistribution(roughness, NdotH);",
+                    "float alpha = roughness * roughness;",
+                    "float alphaSqr = alpha * alpha;",
+                    "float denom = NdotH * NdotH * (alphaSqr - 1.0) + 1.0f;",
+                    "float D = alphaSqr / (3.14159265358979323846f * denom * denom);",
 
                     "//Fresnel Schlick",
-                    "float F = F0 + (1.0 - F0) * pow(1.0 - max(dot(H, V), 0.0), 5.0);//Fresnel(F0, VdotH);",
+                    "float F = F0 + (1.0 - F0) * pow(1.0 - max(dot(H, V), 0.0), 5.0);",
 
                     "specular = (D * F * G) / max((NdotV * NdotL * 4.0), 0.01);",
                 "}",
@@ -177,7 +173,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Vec4, "lightCol"), GLSL.CreateVar(GLSL.Type.Float, "F0"),
+                    GLSL.CreateVar(GLSL.Type.Float, "F0"),
                     GLSL.CreateVar(GLSL.Type.Float, "roughness")
                 }, methodBody);
         }
@@ -280,13 +276,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.AddRange(ViewAndLightDir());
                 methodBody.Add($"vec3 N = normalize(surfOut.normal);");
 
-                methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                methodBody.Add($"Idif = diffuseLighting(N, L) * surfOut.albedo.rgb;");
 
                 methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.shininess);");
-                methodBody.Add($"Ispe = surfOut.specularStrength * specularTerm * light.intensities.rgb;");
+                methodBody.Add($"Ispe = vec3(specularTerm) * surfOut.specularStrength;");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return  (Idif + Ispe) * att * lightStrength * surfOut.albedo.rgb;");
+                methodBody.Add("return  (Idif + Ispe) * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
             {
@@ -294,24 +290,24 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.AddRange(ViewAndLightDir());
                 methodBody.Add($"vec3 N = normalize(surfOut.normal);");
 
-                methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                methodBody.Add($"Idif = diffuseLighting(N, L)* surfOut.albedo.rgb;");
 
                 methodBody.Add($"//Note that only the variable 'specular' is calculated using the Cook-Torrance model...");
-                methodBody.Add($"float specular = specularLighting(N, L, V, light.intensities, surfOut.fresnelReflect, surfOut.roughness);");
-                methodBody.Add($"Ispe = vec3(specular) * light.intensities.rgb;");
+                methodBody.Add($"float specular = specularLighting(N, L, V, surfOut.fresnelReflect, surfOut.roughness);");
+                methodBody.Add($"Ispe = vec3(specular);");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return (Idif + Ispe) * att * lightStrength * surfOut.albedo.rgb;");
+                methodBody.Add("return (Idif + Ispe) * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.Diffuse))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
                 methodBody.Add($"vec3 N = normalize(surfOut.normal);");
-                methodBody.Add($"Idif = diffuseLighting(N, L) * light.intensities.xyz;");
+                methodBody.Add($"Idif = diffuseLighting(N, L) * surfOut.albedo.rgb *;");
                 methodBody.AddRange(Attenuation());
 
-                methodBody.Add("return Idif * att * lightStrength * surfOut.albedo.rgb;");
+                methodBody.Add("return Idif * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.Unlit))
                 methodBody.Add("return surfOut.albedo.rgb;");
@@ -454,7 +450,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "{",
                 "float roughness = specularVars.r;",
                 "float fresnel = specularVars.g;",
-                "float specularTerm = specularLighting(normal, lightDir, viewDir, lightColor, fresnel, roughness);",
+                "float specularTerm = specularLighting(normal, lightDir, viewDir, fresnel, roughness);",
                 "specular = vec4(specularTerm, specularTerm, specularTerm, 1.0);",
             "}",
             });

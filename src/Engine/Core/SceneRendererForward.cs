@@ -278,7 +278,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc, true);
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
 
             AccumulateLight();
 

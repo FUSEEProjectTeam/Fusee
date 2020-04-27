@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Effects;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -141,7 +138,6 @@ namespace Fusee.Engine.Core
         private MinMaxRect _parentRect;
         private RenderContext _rc;
         private bool _isCtcInitialized = false;
-        private bool _renderForward;
 
         public PrePassVisitor()
         {
@@ -150,10 +146,9 @@ namespace Fusee.Engine.Core
             CameraPrepassResults = new List<Tuple<SceneNode, CameraResult>>();
         }
 
-        public void PrePassTraverse(SceneContainer sc, RenderContext rc, bool renderForward)
+        public void PrePassTraverse(SceneContainer sc, RenderContext rc)
         {
             _rc = rc;
-            _renderForward = renderForward;
             LightPrepassResuls.Clear();
             CameraPrepassResults.Clear();
             Traverse(sc.Children);

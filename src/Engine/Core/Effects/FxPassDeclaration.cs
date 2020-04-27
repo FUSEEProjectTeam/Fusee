@@ -6,7 +6,7 @@
     public interface IFxPassDeclarationBase
     {
         /// <summary>
-        /// The  <see cref="RenderStateSet"/>.  
+        /// The  <see cref="RenderStateSet"/>.
         /// </summary>
         RenderStateSet StateSet { get; set; }
         /// <summary>

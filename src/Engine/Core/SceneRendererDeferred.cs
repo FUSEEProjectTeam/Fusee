@@ -402,7 +402,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc, false);
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
             AccumulateLight();
 
             _rc.EnableDepthClamp();

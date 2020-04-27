@@ -1046,7 +1046,6 @@ namespace Fusee.Engine.Core
                 }
 
                 compiledEffect.GpuHandle = shaderOnGpu;
-
             }
             catch (Exception ex)
             {

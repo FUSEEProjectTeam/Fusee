@@ -42,7 +42,7 @@ namespace Fusee.Engine.Core.Effects
 
         /// <summary>
         /// User-defined input struct. Must derive from <see cref="ColorInput"/>. 
-        /// Used in the <see cref="SurfOutMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
+        /// Used in the <see cref="SurfOutFragMethod"/> to modify the parameters of the chosen <see cref="SurfaceOutput"/>.
         /// </summary>
         public ColorInput SurfaceInput { get; set; }
         //======================================================//
@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Struct declaration in the shader code that provides the values for the position calculation
         /// of the vertex shader and lighting calculation of the fragment shader.
-        /// Values of this struct can be modified by the user using <see cref="SurfOutMethod"/> (fragment shader).
+        /// Values of this struct can be modified by the user using <see cref="SurfOutFragMethod"/> (fragment shader).
         /// The value is filled in the constructor using the chosen lighting setup.
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Method)]
-        public static string SurfOutMethod;
+        public static string SurfOutFragMethod;
 
         //======================================================//
 
@@ -91,11 +91,11 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, "TBN");
+        public static string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, "TBN");
+        public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
         /// <summary>
         /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.

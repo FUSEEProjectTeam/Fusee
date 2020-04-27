@@ -3,10 +3,14 @@
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
     /// <summary>
-    /// Contains pre-defined Shader Shards (= content of the Fragment Shader's method that lets us change values of the "out"-struct). 
+    /// Contains pre-defined Shader Shards = 
+    /// content of the Fragment Shader's method that lets us change values of the "out"-struct that is used for the lighting calculation. 
     /// </summary>
     public static class FragShards
     {
+        /// <summary>
+        /// Returns a default method body for a diffuse-specular lighting calculation.
+        /// </summary>
         public static readonly List<string> SurfOutBody_SpecularStd = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
@@ -14,6 +18,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "OUT.shininess = IN.Shininess;",
         };
 
+        /// <summary>
+        /// Returns a default method body for rendering into a G-Buffer.
+        /// </summary>
         public static readonly List<string> SurfOutBody_GBuffer = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
@@ -22,6 +29,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "return OUT;"
         };
 
+        /// <summary>
+        /// Returns a default method body for a physically based diffuse-specular lighting calculation.
+        /// </summary>
         public static readonly List<string> SurfOutBody_SpecularPbr = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
@@ -31,6 +41,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "return OUT;"
         };
 
+        /// <summary>
+        /// Returns a default method body for a diffuse-specular lighting calculation that uses textures (albedo and normal).
+        /// <param name="lightingSetup">The lighting setup on which basis the appropriate lighting parameters are chosen.</param>
+        /// </summary>
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();

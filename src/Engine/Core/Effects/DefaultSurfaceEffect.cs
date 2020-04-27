@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core.Effects
         public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null)
             : base(lightingSetup, input, rendererStates)
         {
-            SurfOutMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutBody, input.GetType());
+            SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutBody, input.GetType());
             HandleFieldsAndProps();
         }
     }

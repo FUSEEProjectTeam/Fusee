@@ -60,7 +60,8 @@ namespace Fusee.Engine.Core.Effects
 
     /// <summary>
     /// Used to describe the type of shader shard. A shard is a piece of shader code, usually in form of a static string.
-    /// The category is used to sort the shards into the correct order in order to build the complete shader source code from them.
+    /// The category is used to sort the shards in order to build the complete shader source code from them.
+    /// Furthermore this it can be used to describe special behavior of a shader shard in the <see cref="SurfaceEffect"/>.
     /// The order is given by the values of the enumeration.
     /// </summary>
     [Flags]

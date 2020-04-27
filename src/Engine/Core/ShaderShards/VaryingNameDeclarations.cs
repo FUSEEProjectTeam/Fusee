@@ -8,6 +8,11 @@ namespace Fusee.Engine.Core.ShaderShards
     public static class VaryingNameDeclarations
     {
         /// <summary>
+        /// The variable name of the TBN (Tangent, Bitangent, Normal) matrix.
+        /// </summary>
+        public static readonly string TBN = "TBN";
+
+        /// <summary>
         /// The texture coordinates variable name.
         /// </summary>
         public static readonly string TextureCoordinates = "vUV";
