@@ -11,27 +11,31 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Lighting Main method for forward rendering.
         /// </summary>
-        public static string ForwardLighting(string inStructName, string outStructType)
+        public static string ForwardLighting(LightingSetupFlags setup, string inStructName, string outStructType)
         {
             var fragMainBody = new List<string>
             {
                 $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
             };
 
-            fragMainBody.AddRange(
-            new List<string>()
+            if (!setup.HasFlag(LightingSetupFlags.Unlit))
             {
-                $"float ambientCo = 0.1;",
-                $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
-                $"vec3 result = vec3(0.0);",
-                $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
-                "{",
-                    "if(allLights[i].isActive == 0) continue;",
-                    "result += ApplyLight(allLights[i], surfOut, ambientCo);",
-                "}",
-                $"oFragmentColor = vec4(result.rgb + ambient, surfOut.albedo.a);"
-
-            });
+                fragMainBody.AddRange(
+                new List<string>()
+                {
+                    $"float ambientCo = 0.1;",
+                    $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
+                    $"vec3 result = vec3(0.0);",
+                    $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
+                    "{",
+                        "if(allLights[i].isActive == 0) continue;",
+                        "result += ApplyLight(allLights[i], surfOut, ambientCo);",
+                    "}",
+                    $"oFragmentColor = vec4(result.rgb + ambient, surfOut.albedo.a);"
+                });
+            }
+            else
+                fragMainBody.Add("oFragmentColor = surfOut.albedo;");
 
             return GLSL.MainMethod(fragMainBody);
         }
@@ -48,7 +52,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
 
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            for (var i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
                 if (texName == ssaoString) continue;

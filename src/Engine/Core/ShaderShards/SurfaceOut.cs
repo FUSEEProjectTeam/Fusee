@@ -87,7 +87,8 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
 
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec3(0), vec4(0))";
+        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
+        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0))";
         private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
         private static readonly string DerfafultSpecPbrOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 1.0, 1.0, 0.0)";
 
@@ -121,12 +122,21 @@ namespace Fusee.Engine.Core.ShaderShards
                 };
                 return _lightingSetupCache[setup];
             }
-            else if (setup.HasFlag(LightingSetupFlags.Unlit) || setup.HasFlag(LightingSetupFlags.Diffuse))
+            else if (setup.HasFlag(LightingSetupFlags.Diffuse))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
                     StructDecl = structDcl,
                     DefaultInstance = DefaultDiffuseOut
+                };
+                return _lightingSetupCache[setup];
+            }
+            else if (setup.HasFlag(LightingSetupFlags.Unlit))
+            {
+                _lightingSetupCache[setup] = new LightingSetupShards()
+                {
+                    StructDecl = structDcl,
+                    DefaultInstance = DefaultUnlitOut
                 };
                 return _lightingSetupCache[setup];
             }

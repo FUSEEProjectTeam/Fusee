@@ -1012,7 +1012,7 @@ namespace Fusee.Engine.Core
                             surfEffect.ParamDecl.Add(dcl.Name, dcl);
 
                         surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                         surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
                         surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
                         surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));

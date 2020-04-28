@@ -16,5 +16,13 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             "OUT.position = vec4(fuVertex, 1.0);",
             "OUT.normal = fuNormal;",
         };
+
+        /// <summary>
+        /// Standard shard for storing position information.
+        /// </summary>
+        public static List<string> SufOutBody_Pos = new List<string>()
+        {
+            "OUT.position = vec4(fuVertex, 1.0);"
+        };
     }
 }

@@ -34,7 +34,6 @@ namespace Fusee.Engine.Core
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
         public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
         {
-            //TODO: #define constants to uniforms
             return new ShaderEffect(
 
             new FxPassDeclaration
@@ -52,7 +51,6 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
                 new FxParamDeclaration<float2> { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
             });
-
         }
 
         /// <summary>

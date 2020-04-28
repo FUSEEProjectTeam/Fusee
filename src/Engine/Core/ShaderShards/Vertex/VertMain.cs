@@ -56,9 +56,14 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             var vertMainBody = new List<string>
             {
                 $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.ChangeSurfVert}();",
-                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));",
+
                 $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * {SurfaceOut.SurfOutVaryingName}.position);",
             };
+
+            if(!setup.HasFlag(LightingSetupFlags.Unlit))
+            {
+                vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
+            }
 
             if (setup.HasFlag(LightingSetupFlags.AlbedoTex) || setup.HasFlag(LightingSetupFlags.NormalMap))
                 vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");

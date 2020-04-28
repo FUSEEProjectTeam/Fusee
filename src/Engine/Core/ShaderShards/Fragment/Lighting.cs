@@ -304,7 +304,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
                 methodBody.Add($"vec3 N = normalize(surfOut.normal);");
-                methodBody.Add($"Idif = diffuseLighting(N, L) * surfOut.albedo.rgb *;");
+                methodBody.Add($"Idif = diffuseLighting(N, L) * surfOut.albedo.rgb;");
                 methodBody.AddRange(Attenuation());
 
                 methodBody.Add("return Idif * att * lightStrength * light.intensities.rgb;");
