@@ -5,6 +5,7 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
+using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -376,7 +377,7 @@ namespace Fusee.Engine.Core
                 Shininess = shininess,
                 SpecularStrength = specularStrength
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.SpecularStd, input, FragShards.SurfOutBody_SpecularStd);
+            return new DefaultSurfaceEffect(LightingSetupFlags.SpecularStd, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -396,7 +397,7 @@ namespace Fusee.Engine.Core
                 FresnelReflectance = fresnel,
                 DiffuseFraction = diffuseFract
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.SpecularPbr, input, FragShards.SurfOutBody_SpecularPbr);
+            return new DefaultSurfaceEffect(LightingSetupFlags.SpecularPbr, input, FragShards.SurfOutBody_SpecularPbr, VertShards.SufOutBody_PosNorm);
         }
         
 
@@ -422,7 +423,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.SpecularStd | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -447,7 +448,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.SpecularStd | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -476,7 +477,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.SpecularStd | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -501,7 +502,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.SpecularPbr | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -510,7 +511,7 @@ namespace Fusee.Engine.Core
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
-        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>        
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         public static SurfaceEffect FromDiffuseSpecularPbrNormalTexture(float4 albedoColor, float roughness, float fresnel, float diffuseFraction, Texture normalTex, float normalMapStrength, float2 texTiles)
         {
             var input = new TextureInputPbr()
@@ -525,7 +526,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.SpecularPbr | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -553,7 +554,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.SpecularPbr | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup));
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
         #endregion

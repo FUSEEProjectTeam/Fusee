@@ -40,12 +40,14 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="lightingSetup">See <see cref="SurfaceEffect.LightingSetup"/>.</param>
         /// <param name="input">See <see cref="SurfaceEffect.SurfaceInput"/>.</param>
-        /// <param name="surfOutBody"></param>
-        /// <param name="rendererStates"></param>
-        public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutBody, RenderStateSet rendererStates = null)
+        /// <param name="surfOutFragBody">The method body for the <see cref="SurfaceEffect.SurfOutFragMethod"/></param>
+        /// <param name="surfOutVertBody">The method body for the <see cref="SurfaceEffect.SurfOutVertMethod"/></param>
+        /// <param name="rendererStates">The renderer state set for this effect.</param>
+        public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutFragBody, List<string> surfOutVertBody, RenderStateSet rendererStates = null)
             : base(lightingSetup, input, rendererStates)
         {
-            SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutBody, input.GetType());
+            SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
+            SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, lightingSetup);
             HandleFieldsAndProps();
         }
     }

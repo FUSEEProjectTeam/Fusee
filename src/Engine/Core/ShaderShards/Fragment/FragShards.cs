@@ -80,7 +80,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     "OUT.normal = normalize(TBN * N);"
                 });
             }
-
             res.Add("return OUT;");
 
             return res;

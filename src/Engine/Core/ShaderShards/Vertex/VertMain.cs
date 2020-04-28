@@ -47,7 +47,6 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             return GLSL.CreateMethod(GLSL.Type.Vec4, "TransformNormalByBone", new string[] { GLSL.CreateVar(GLSL.Type.Vec3, "normal") }, methodBody);
         }
 
-        //TODO: rewrite to work with shard struct
         /// <summary>
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
@@ -56,9 +55,9 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         {
             var vertMainBody = new List<string>
             {
-                $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.GetLightingSetupShards(setup).DefaultInstance};",
-                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({ UniformNameDeclarations.Normal}, 0.0)));",
-                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({UniformNameDeclarations.Vertex}, 1.0));",
+                $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.ChangeSurfVert}();",
+                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));",
+                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * {SurfaceOut.SurfOutVaryingName}.position);",
             };
 
             if (setup.HasFlag(LightingSetupFlags.AlbedoTex) || setup.HasFlag(LightingSetupFlags.NormalMap))

@@ -72,6 +72,7 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string SurfOutVaryingName = "surfOut";
 
         internal static readonly string ChangeSurfFrag = "ChangeSurfFrag";
+        internal static readonly string ChangeSurfVert = "ChangeSurfVert";
 
         #region Variables that can be changed in a Shader Shard
         internal static readonly Tuple<GLSL.Type, string> Pos = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "position");
@@ -150,6 +151,23 @@ namespace Fusee.Engine.Core.ShaderShards
             bodyCompl.AddRange(methodBody);
             bodyCompl.Add("return OUT;");
             return GLSL.CreateMethod(StructName, ChangeSurfFrag, new string[] { $"{inputType.Name} IN" }, bodyCompl);
+        }
+
+        /// <summary>
+        /// Returns the GLSL method that modifies the values of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
+        /// </summary>
+        /// <param name="methodBody">User-written shader code for modifying.</param>
+        /// <param name="setup">The lighting setup.</param>
+        /// <returns></returns>
+        public static string GetChangeSurfVertMethod(List<string> methodBody, LightingSetupFlags setup)
+        {
+            var bodyCompl = new List<string>()
+            {
+                $"{StructName} OUT = {_lightingSetupCache[setup].DefaultInstance};"
+            };
+            bodyCompl.AddRange(methodBody);
+            bodyCompl.Add("return OUT;");
+            return GLSL.CreateMethod(StructName, ChangeSurfVert, new string[] {}, bodyCompl);
         }
 
         private static string BuildStructDecl(LightingSetupFlags setup)

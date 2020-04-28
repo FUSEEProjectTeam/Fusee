@@ -361,18 +361,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "// then calculate lighting as usual",
             "vec4 lighting = vec4(0);",
             "",
-             "float ambientCo = 0.1;",
-             "vec4 ambient = vec4(0,0,0,1);",
-             "vec4 diffuse = vec4(0,0,0,1);",
+            "float ambientCo = 0.1;",
+            "vec4 ambient = vec4(0,0,0,1);",
+            "vec4 diffuse = vec4(0,0,0,1);",
             "vec4 specular = vec4(0,0,0,1);",
+            "vec4 lightColor = vec4(0,0,0,1);",
             $"if({UniformNameDeclarations.RenderPassNo} == 0)",
             "{",
-                "ambient = vec4(ambientCo, ambientCo, ambientCo, 1.0);",
-                "",
+                "ambient = vec4(albedo.rgb * ambientCo, albedo.a);",
+
                 $"if({UniformNameDeclarations.SsaoOn} == 1)",
                 "{",
                     $"vec4 occlusion = vec4(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb, 1.0);",
-                    "ambient *= occlusion;",
+                    "ambient.rgb *= vec3(occlusion);",
                 "}",
             "}",
             ""
@@ -390,7 +391,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "float shadow = 0.0;",
             "if(light.isActive == 1)",
             "{",
-                "vec4 lightColor = light.intensities;",
+                "lightColor = light.intensities;",
                 "vec3 lightPosition = light.position;",
                 "vec3 lightDir = normalize(lightPosition - fragPos.xyz);",
             });
@@ -422,13 +423,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add(GetShadow(lc, isCascaded, numberOfCascades));
             }
 
-            methodBody.Add($"float strength = (1.0 - ambientCo) * light.strength;");
-
             // diffuse 
             methodBody.AddRange(
             new List<string>() {
-            "diffuse = vec4(diffuseLighting(normal, lightDir) * lightColor.rgb, 1.0);",
-            "diffuse = diffuse * attenuation * strength;"
+            "diffuse = vec4(vec3(diffuseLighting(normal, lightDir)), 1.0);",
+            "diffuse = diffuse * albedo;"
             });
 
             // specular
@@ -443,8 +442,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "",
                 "float specularTerm = specularLighting(normal, lightDir, viewDir, shininess);",
                 "",
-                "specular = vec4(specularStrength * specularTerm * lightColor.rgb, 1.0);",
-                "specular = specular * attenuation * strength;",
+                "specular = vec4(specularTerm, specularTerm, specularTerm, 1.0);",
+
             "}",
             "else if(specularVars.a == 1.0)",
             "{",
@@ -461,10 +460,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
 
             methodBody.Add("}");
-
-
-
-            methodBody.Add($"lighting =(ambient + (1.0 - shadow) * (diffuse + specular)) * albedo;");
+            methodBody.Add($"float strength = (1.0 - ambientCo) * light.strength;");
+            methodBody.Add($"lighting = ambient + ((1.0 - shadow) * (diffuse + specular) * attenuation * strength * lightColor);");
 
             methodBody.Add($"{FragProperties.OutColorName} = lighting;");
 

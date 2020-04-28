@@ -79,6 +79,12 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Method)]
         public static string SurfOutFragMethod;
 
+        /// <summary>
+        /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Method)]
+        public static string SurfOutVertMethod;
         //======================================================//
 
         [FxShader(ShaderCategory.Fragment)]
