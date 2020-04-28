@@ -65,9 +65,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");
-
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
