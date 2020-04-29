@@ -494,6 +494,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
                 if (_movement)
                 {
+                    Diagnostics.Debug(_head.Rotation);
                     //get old positions for the head
                     _oldX = _head.Translation.x;
                     _oldY = _head.Translation.z;
@@ -975,19 +976,19 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 for (int i = 5; i < img.Width; i += x)
                 {
-                    if (GetPixel(img, j, i).Equals(ColorUint.FromRgba(0x000000FF)))
+                    if (GetPixel(img, j, i).Equals(new ColorUint(0,0,0,255)))
                     {
                         image[posY, posX] = 1;
                     }
-                    else if (GetPixel(img, j, i).Equals(ColorUint.FromRgba(0x00FF00FF)))
-                    {
-                        image[posY, posX] = -1;
-                    }
-                    else if (GetPixel(img, j, i).Equals(ColorUint.FromRgba(0xFF0000FF)))
+                    else if (GetPixel(img, j, i).Equals(new ColorUint(255, 0, 0, 255)))
                     {
                         image[posY, posX] = 2;
                     }
-                    else if (GetPixel(img, j, i).Equals(ColorUint.FromRgba(0x0000FFFF)))
+                    else if (GetPixel(img, j, i).Equals(new ColorUint(0, 255, 0, 255)))
+                    {
+                        image[posY, posX] = -1;
+                    }
+                    else if (GetPixel(img, j, i).Equals(new ColorUint(0, 0, 255, 255)))
                     {
                         image[posY, posX] = 3;
                     }
@@ -1023,12 +1024,23 @@ namespace Fusee.Examples.Labyrinth.Core
 
         public static ColorUint GetPixel(ImageData img, int x, int y)
         {
-            ColorUint image = new ColorUint();
-            string a = img.PixelData[4 * (img.Width * y + x) + 2].ToString("X2") + img.PixelData[4 * (img.Width * y + x) + 1].ToString("X2") + img.PixelData[4 * (img.Width * y + x)].ToString("X2") + img.PixelData[4 * (img.Width * y + x) + 3].ToString("X2");
-            uint value = uint.Parse(a, System.Globalization.NumberStyles.HexNumber);
-            image = ColorUint.FromRgba(value);
+            int bpp = img.PixelFormat.BytesPerPixel;
+            switch (bpp)
+            {
+                case 4:
+                    return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], img.PixelData[bpp * (img.Width * y + x) + 3]);
 
-            return image;
-        }
+                case 3:
+                    return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], 255);
+
+                case 1:
+                    return new ColorUint(0, 0, 0, img.PixelData[bpp * (img.Width * y + x) + 3]);
+
+                default:
+                    return new ColorUint(0, 0, 0, 0);
+
+            }
+
+        }   
     }
 }
