@@ -24,6 +24,10 @@ namespace Fusee.Base.Imp.WebAsm
         private bool _useKerning;
         private uint _pixelHeight;
 
+        /// <summary>
+        /// Font implementation for WebAsm
+        /// </summary>
+        /// <param name="stream"></param>
         public FontImp(Stream stream)
         {
             _face = new FontFace(stream);
@@ -31,6 +35,9 @@ namespace Fusee.Base.Imp.WebAsm
             UseKerning = false;
         }
 
+        /// <summary>
+        /// Use kerning
+        /// </summary>
         public bool UseKerning
         {
             get { return _useKerning; }
@@ -53,7 +60,11 @@ namespace Fusee.Base.Imp.WebAsm
             }
         }
 
-
+        /// <summary>
+        /// Returns the glyph curve from a given char
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
         public Curve GetGlyphCurve(uint c)
         {
 
@@ -141,12 +152,24 @@ namespace Fusee.Base.Imp.WebAsm
             return ret;
         }
 
+
+        /// <summary>
+        /// Returns the kerning between two chars
+        /// </summary>
+        /// <param name="leftC"></param>
+        /// <param name="rightC"></param>
+        /// <returns></returns>
         public float GetKerning(uint leftC, uint rightC)
         {
             var kern = _face.GetKerning(new CodePoint((char)leftC), new CodePoint((char)rightC), PixelHeight);
             return kern;
         }
 
+        /// <summary>
+        /// Returns the unscaled advance of one glyph
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
             var unscaledGlyph = _face.GetGlyphUnscaled(new CodePoint((char)c));
@@ -155,12 +178,25 @@ namespace Fusee.Base.Imp.WebAsm
             return unscaledAdv;
         }
 
+        /// <summary>
+        /// Returns the unscaled kerning, currently TODO
+        /// </summary>
+        /// <param name="leftC"></param>
+        /// <param name="rightC"></param>
+        /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC)
         {
             // TODO: Implement unscaled kerning
             return _face.GetKerning(new CodePoint((char)leftC), new CodePoint((char)rightC), PixelHeight);
         }
 
+        /// <summary>
+        /// Renders a glpyh to an IImageData for further use
+        /// </summary>
+        /// <param name="c"></param>
+        /// <param name="bitmapLeft"></param>
+        /// <param name="bitmapTop"></param>
+        /// <returns></returns>
         public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
         {
             var surface = RenderGlyph(_face, (char)c);

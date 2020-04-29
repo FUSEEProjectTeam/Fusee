@@ -24,8 +24,17 @@ namespace Fusee.Base.Imp.WebAsm
         }
     }
 
+    /// <summary>
+    /// EmbeddedResourceHelper
+    /// </summary>
     public static class EmbeddedResourceHelper
     {
+        /// <summary>
+        /// Tries to load an embedded resource from given assembly as a stream
+        /// </summary>
+        /// <param name="resourceName"></param>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
         public static Stream Load(string resourceName, Assembly assembly = null)
         {
             if (assembly == null)

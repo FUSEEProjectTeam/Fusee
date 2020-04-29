@@ -12,8 +12,15 @@ using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Base.Imp.WebAsm
 {
+    /// <summary>
+    /// Loading ressources, helper class
+    /// </summary>
     public static class WasmResourceLoader
     {
+        /// <summary>
+        /// returns the local http adress
+        /// </summary>
+        /// <returns></returns>
         public static string GetLocalAddress()
         {
             using (var window = (JSObject)Runtime.GetGlobalObject("window"))

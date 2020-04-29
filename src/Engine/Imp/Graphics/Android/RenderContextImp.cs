@@ -534,8 +534,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
-            StringBuilder sbParamName = new StringBuilder(paramName);
-            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName);
+            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 

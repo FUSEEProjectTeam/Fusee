@@ -6,8 +6,16 @@ using System.Threading.Tasks;
 
 namespace Fusee.Base.Imp.WebAsm
 {
+    /// <summary>
+    /// Provides assets 
+    /// </summary>
     public static class FileAssetProvider
     {
+        /// <summary>
+        /// Loads a file from given path using an async stream
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <returns></returns>
         public static async Task<string> LoadMe(string uri)
         {
             var httpClient = new HttpClient { BaseAddress = new Uri(WasmResourceLoader.GetLocalAddress()) };
