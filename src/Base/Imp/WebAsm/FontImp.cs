@@ -47,7 +47,9 @@ namespace Fusee.Base.Imp.WebAsm
             }
         }
 
-
+        /// <summary>
+        /// Gets and sets the currently used pixel height
+        /// </summary>
         public uint PixelHeight
         {
             get

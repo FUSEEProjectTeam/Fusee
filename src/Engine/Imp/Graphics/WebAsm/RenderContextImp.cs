@@ -132,7 +132,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     return (int)CLAMP_TO_EDGE;
                 case TextureWrapMode.CLAMP_TO_BORDER:
                     {
-#warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. CLAMP_TO_EDGE is set instead.
                         return (int)CLAMP_TO_EDGE;
                     }
             }
@@ -2334,21 +2333,42 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             return depth[0];
         }
 
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="renderTarget"></param>
+        /// <param name="type"></param>
         public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="renderTarget"></param>
+        /// <param name="type"></param>
+        /// <param name="texHandle"></param>
         public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="val"></param>
         public void SetShaderParam(IShaderParam param, float2[] val)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="texIds"></param>
         public void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
         {
             throw new NotImplementedException();
