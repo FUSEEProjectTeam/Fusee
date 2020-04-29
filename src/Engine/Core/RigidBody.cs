@@ -10,8 +10,11 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class RigidBody
     {
-
+        /// <summary>
+        /// This event is called while 2 RBs collide
+        /// </summary>
         public event EventHandler WhileCollidingEvent = delegate { };
+
         internal IRigidBodyImp _iRigidBodyImp;
 
        // public Mesh Mesh { get; set; }
@@ -61,6 +64,9 @@ namespace Fusee.Engine.Core
             }
         }   
 
+        /// <summary>
+        /// Get and sets the world transform
+        /// </summary>
         public float4x4 WorldTransform
         {
             get
@@ -254,6 +260,7 @@ namespace Fusee.Engine.Core
             var o = (RigidBody) _iRigidBodyImp.UserObject;
             o._iRigidBodyImp.SetDrag(linearDrag, anglularDrag);
         }
+
         /// <summary>
         /// Returns the linear drag of a rigid body
         /// </summary>
@@ -271,7 +278,9 @@ namespace Fusee.Engine.Core
         }
 
 
-
+        /// <summary>
+        /// TBD
+        /// </summary>
         public CollisionShape CollisionShape
         {
             get

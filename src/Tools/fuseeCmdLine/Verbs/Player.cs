@@ -268,7 +268,8 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(" - FAILD");
+                    Console.WriteLine(" - FAILED");
+                    Console.WriteLine(e.Message);
                     status = false;
                 }
             }

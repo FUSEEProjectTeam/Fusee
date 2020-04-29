@@ -18,7 +18,6 @@ namespace Fusee.Examples.Camera.Core
     public class CameraExample : RenderCanvas
     {
         // angle variables
-        private readonly float _rotAngle = M.PiOver4;
         private float3 _rotAxis;
         private float3 _rotPivot;
 

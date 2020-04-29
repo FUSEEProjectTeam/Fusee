@@ -288,7 +288,7 @@ namespace Fusee.Examples.UI.Core
             Debug.WriteLine("Canvas: Btn up!");
         }
 
-        public async void OnBtnCanvasEnter(CodeComponent sender)
+        public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
             var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0.4f, 0.1f, 1));         
@@ -296,7 +296,7 @@ namespace Fusee.Examples.UI.Core
             n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0.4f, 0.1f, 1));
         }
 
-        public async void OnBtnCanvasExit(CodeComponent sender)
+        public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
             var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0, 0, 1));           
@@ -395,7 +395,7 @@ namespace Fusee.Examples.UI.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
 
-            return true;
+            return await Task.FromResult(true);
         }
 
         // RenderAFrame is called once a frame

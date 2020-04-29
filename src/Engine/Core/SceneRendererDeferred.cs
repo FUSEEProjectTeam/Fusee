@@ -151,7 +151,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
+        /// If a Mesh is visited and it has a <see cref="Scene.Weight"/> the BoneIndices and  BoneWeights get set, 
         /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
         /// </summary>
         /// <param name="mesh">The Mesh.</param>

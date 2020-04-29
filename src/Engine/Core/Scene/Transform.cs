@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Transformation (position, orientation and size) of the node.
     /// </summary>
-    /// <seealso cref="Fusee.Engine.Common.SceneComponent" />
+    /// <seealso cref="SceneComponent" />
     public class Transform : SceneComponent
     {
         /// <summary>

@@ -49,14 +49,25 @@ namespace Fusee.Engine.Core
             _IG6DofConstraintImp.CalcAnchorPos();
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public void CalculateTransforms()
         {
             _IG6DofConstraintImp.CalculateTransforms();
         }
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public void CalculateTransforms(float4x4 transA, float4x4 transB)
         {
             _IG6DofConstraintImp.CalculateTransforms(transA, transB);
         }
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float4x4 CalculatedTransformA
         {
             get
@@ -65,6 +76,10 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float4x4 CalculatedTransformB
         {
             get
@@ -74,6 +89,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float4x4 FrameOffsetA
         {
             get
@@ -87,6 +105,10 @@ namespace Fusee.Engine.Core
                 o._IG6DofConstraintImp.FrameOffsetA = value;
             }
         }
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float4x4 FrameOffsetB
         {
             get
@@ -122,6 +144,9 @@ namespace Fusee.Engine.Core
             return retval;
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float GetRelativePivotPosition(int axisIndex)
         {
             var retval = _IG6DofConstraintImp.GetRelativePivotPosition(axisIndex);
@@ -138,6 +163,9 @@ namespace Fusee.Engine.Core
             var retval = _IG6DofConstraintImp.IsLimited(limitIndex);
             return retval;
         }
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float3 LinearLowerLimit
         {
             get
@@ -151,6 +179,10 @@ namespace Fusee.Engine.Core
                 o._IG6DofConstraintImp.LinearLowerLimit = value;
             }
         }
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public float3 LinearUpperLimit
         {
             get
@@ -165,10 +197,18 @@ namespace Fusee.Engine.Core
             }
         }
 
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public void SetAxis(float3 axis1, float3 axis2)
         {
             _IG6DofConstraintImp.SetAxis(axis1, axis2);
         }
+
+        /// <summary>
+        /// TBD
+        /// </summary>
         public void SetFrames(float4x4 frameA, float4x4 frameB)
         {
             _IG6DofConstraintImp.SetFrames(frameA, frameB);
@@ -185,12 +225,18 @@ namespace Fusee.Engine.Core
             _IG6DofConstraintImp.SetLimit(axis, lo, hi);
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public bool TestAngularLimitMotor(int axisIndex)
         {
             var retval = _IG6DofConstraintImp.TestAngularLimitMotor(axisIndex);
             return retval;
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public bool UseFrameOffset
         {
             get
@@ -205,10 +251,14 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public void UpdateRhs(float timeStep)
         {
             _IG6DofConstraintImp.UpdateRhs(timeStep);
         }
+
         /// <summary>
         /// Returns the rigid body a.
         /// </summary>

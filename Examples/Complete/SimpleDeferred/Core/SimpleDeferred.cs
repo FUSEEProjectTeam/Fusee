@@ -182,7 +182,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
 
-            return true;
+            return await Task.FromResult(true);
         }
 
         // RenderAFrame is called once a frame

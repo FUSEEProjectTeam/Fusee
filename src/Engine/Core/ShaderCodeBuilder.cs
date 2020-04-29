@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
     public static class ShaderCodeBuilder
     {
         /// <summary>
-        /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
+        /// The default ShaderEffect, that is used if a <see cref="Scene.SceneContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
         /// </summary>
         public static ShaderEffect Default { get; private set; }
 

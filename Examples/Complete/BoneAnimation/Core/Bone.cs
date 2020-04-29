@@ -26,7 +26,6 @@ namespace Fusee.Examples.Bone.Core
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
-        private float4x4 _projection;
         private bool _twoTouchRepeated;
 
         private bool _keys;

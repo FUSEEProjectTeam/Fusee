@@ -217,7 +217,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public virtual async Task<bool> Init()
         {
-            return false;
+            return await Task.FromResult(false);
         }
 
         /// <summary>
