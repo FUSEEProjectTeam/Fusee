@@ -4,6 +4,9 @@ using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
+
+#pragma warning disable CS0067 // Unused event 
+
     /// <summary>
     /// Null implementation for the <see cref="DeviceCategory.Keyboard"/> device category. This implementation is one
     /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typcally used
@@ -317,7 +320,7 @@ namespace Fusee.Engine.Core
     {
         private Dictionary<int, AxisImpDescription> _tpAxisDescs;
         private Dictionary<int, ButtonImpDescription> _tpButtonDescs;
-        private int _nTouchPointsSupported = 5;
+        private readonly int _nTouchPointsSupported = 5;
     
 
         /// <summary>
@@ -563,4 +566,5 @@ namespace Fusee.Engine.Core
         {
         }
     }
+#pragma warning restore CS0067 // Unused event 
 }

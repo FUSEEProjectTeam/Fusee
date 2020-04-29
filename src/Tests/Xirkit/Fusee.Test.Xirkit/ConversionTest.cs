@@ -7,7 +7,8 @@ using static Fusee.Test.Xirkit.HelperClasses;
 
 namespace Fusee.Test.Xirkit
 {
-#pragma warning disable IDE0060 // Remove not used params
+
+#pragma warning disable xUnit1026 // Remove not used params
 
     public class ConversionTest
     {
@@ -864,6 +865,6 @@ namespace Fusee.Test.Xirkit
             };
         }
     }
-#pragma warning restore IDE0060 // Remove not used params
+#pragma warning restore xUnit1026 // Remove not used params
 
 }
