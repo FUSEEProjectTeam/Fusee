@@ -29,7 +29,7 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
 
-    <PackageReference Include="Mono.WebAssembly.Runtime" Version="0.2.2" />
-    <PackageReference Include="WebAssembly.Bindings" Version="0.2.2" />
+    <PackageReference Include="Mono.WebAssembly.Runtime" Version="0.2.3" />
+    <PackageReference Include="WebAssembly.Bindings" Version="0.2.3" />
   </ItemGroup>
 </Project>
