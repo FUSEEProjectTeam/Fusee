@@ -12,8 +12,7 @@
         <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="System.Memory" Version="4.5.3" />       
+    <ItemGroup>       
         <Reference Include="protobuf-net.Core">
             <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
         </Reference>
