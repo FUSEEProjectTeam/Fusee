@@ -12,9 +12,13 @@
     </PropertyGroup>
 
     <PropertyGroup>
-                <OutputPath>$(BaseOutputPath)\Examples\Materials\WebAsm\</OutputPath>             
+        <OutputPath>$(BaseOutputPath)\Examples\Materials\WebAsm\</OutputPath>             
     </PropertyGroup>
 
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+    
     <ItemGroup>
         <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="server.py" CopyToOutputDirectory="PreserveNewest" />

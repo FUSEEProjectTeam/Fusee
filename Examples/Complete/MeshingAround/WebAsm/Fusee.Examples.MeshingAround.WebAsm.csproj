@@ -12,7 +12,11 @@
     </PropertyGroup>
 
     <PropertyGroup>
-                <OutputPath>$(BaseOutputPath)\Examples\MeshingAround\WebAsm\</OutputPath>             
+        <OutputPath>$(BaseOutputPath)\Examples\MeshingAround\WebAsm\</OutputPath>             
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>none</DebugType>
     </PropertyGroup>
 
     <ItemGroup>
