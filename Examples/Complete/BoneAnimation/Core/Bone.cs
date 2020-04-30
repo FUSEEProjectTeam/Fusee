@@ -26,7 +26,6 @@ namespace Fusee.Examples.Bone.Core
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
-        private float4x4 _projection;
         private bool _twoTouchRepeated;
 
         private bool _keys;
@@ -79,7 +78,7 @@ namespace Fusee.Examples.Bone.Core
                                     },
                                     new Engine.Core.Scene.Bone(),
                                     new Weight(),
-                                    ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
+                                    await ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
                                     CreateCuboid(float3.One)
                                 }
                             }
@@ -87,7 +86,7 @@ namespace Fusee.Examples.Bone.Core
                     }
                 }
             };
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+            _scene = await AssetStorage.GetAsync<SceneContainer>("BoneAnim.fus");
             // convert scene graph is not called in this project, so we can add a bone animation
 
             // then add a weightcomponent with weight matrices etc:

@@ -7,7 +7,7 @@ namespace Fusee.Math.Core
 {
     /// <summary>
     ///     Represents an axis aligned bounding box.
-    /// </summary>
+    /// </summary>    
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct AABBf

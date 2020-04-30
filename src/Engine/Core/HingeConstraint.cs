@@ -3,6 +3,7 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+#pragma warning disable CS1591 // Missing XML comment
     public class HingeConstraint
     {
         internal IHingeConstraintImp _iHConstraintImp;
@@ -170,4 +171,6 @@ namespace Fusee.Engine.Core
             return retval;
         }
     }
+#pragma warning restore CS1591 // Missing XML comment
+
 }

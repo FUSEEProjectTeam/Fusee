@@ -1,22 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Fusee.Base.Core</RootNamespace>
-    <PackageId>Fusee.Base.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <Description>Fusee Base Core</Description>
-  </PropertyGroup>
+    <PropertyGroup>
+        <RootNamespace>Fusee.Base.Core</RootNamespace>
+        <PackageId>Fusee.Base.Core</PackageId>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Description>Fusee Base Core</Description>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+        <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Reference Include="protobuf-net.Core">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
+        </Reference>
+    </ItemGroup>
     
     <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+    </ItemGroup>
+    
 </Project>

@@ -7,17 +7,17 @@ namespace Fusee.Serialization.V1
     public enum VerticalTextAlignment
     {
         /// <summary>
-        /// The text will be aligned to the top border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the top border of the enclosing />.
         /// </summary>
         TOP,
 
         /// <summary>
-        /// The text will be aligned to the middle of vertical axis of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the middle of vertical axis of the enclosing />.
         /// </summary>
         CENTER,
 
         /// <summary>
-        /// The text will be aligned to the bottom border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the bottom border of the enclosing />.
         /// </summary>
         BOTTOM
     }
@@ -28,17 +28,17 @@ namespace Fusee.Serialization.V1
     public enum HorizontalTextAlignment
     {
         /// <summary>
-        /// The text will be aligned to the left border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the left border of the enclosing />.
         /// </summary>
         LEFT,
 
         /// <summary>
-        /// The text will be aligned to the center of vertical axis of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the center of vertical axis of the enclosing />.
         /// </summary>
         CENTER,
 
         /// <summary>
-        /// The text will be aligned to right border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to right border of the enclosing />.
         /// </summary>
         RIGHT
     }

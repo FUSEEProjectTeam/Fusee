@@ -17,7 +17,7 @@ namespace Fusee.Serialization.V1
         /// The vertices.
         /// </value>
         [ProtoMember(1)]
-        public float3[] Vertices;
+        public float3[]? Vertices;
 
         /// <summary>
         /// Gets and sets the color of a single vertex.
@@ -26,7 +26,7 @@ namespace Fusee.Serialization.V1
         /// The color.
         /// </value>
         [ProtoMember(2)]
-        public uint[] Colors;
+        public uint[]? Colors;
 
         /// <summary>
         /// Gets and sets the normals.
@@ -35,7 +35,7 @@ namespace Fusee.Serialization.V1
         /// The normals..
         /// </value>
         [ProtoMember(3)]
-        public float3[] Normals;
+        public float3[]? Normals;
 
         /// <summary>
         /// Gets and sets the UV-coordinates.
@@ -44,7 +44,7 @@ namespace Fusee.Serialization.V1
         /// The UV-coordinates.
         /// </value>
         [ProtoMember(4)]
-        public float2[] UVs;
+        public float2[]? UVs;
 
         /// <summary>
         /// Gets and sets the boneweights.
@@ -53,7 +53,7 @@ namespace Fusee.Serialization.V1
         /// The boneweights.
         /// </value>
         [ProtoMember(5)]
-        public float4[] BoneWeights;
+        public float4[]? BoneWeights;
 
         /// <summary>
         /// Gets and sets the boneindices.
@@ -62,7 +62,7 @@ namespace Fusee.Serialization.V1
         /// The boneindices.
         /// </value>
         [ProtoMember(6)]
-        public float4[] BoneIndices;
+        public float4[]? BoneIndices;
 
         /// <summary>
         /// Gets and sets the triangles.
@@ -71,7 +71,7 @@ namespace Fusee.Serialization.V1
         /// The triangles.
         /// </value>
         [ProtoMember(7)]
-        public ushort[] Triangles;
+        public ushort[]? Triangles;
 
         /// <summary>
         /// The bounding box of this geometry chunk.
@@ -84,13 +84,13 @@ namespace Fusee.Serialization.V1
         /// w-component is handedness
         /// </summary>
         [ProtoMember(9)]
-        public float4[] Tangents;
+        public float4[]? Tangents;
 
         /// <summary>
         /// The bitangent of each triangle for bump mapping.
         /// </summary>
         [ProtoMember(10)]
-        public float3[] BiTangents;
+        public float3[]? BiTangents;
 
         /// <summary>
         /// The type of the mesh ???

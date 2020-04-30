@@ -172,7 +172,7 @@ namespace Fusee.Examples.MeshingAround.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
 
-            return true;
+            return await Task.FromResult(true);
         }
 
         // RenderAFrame is called once a frame

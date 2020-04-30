@@ -29,9 +29,9 @@ namespace Fusee.Examples.ThreeDFont.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
-            var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
+            var vladimir = await AssetStorage.GetAsync<Font>("VLADIMIR.TTF");
+            var gnuSerif = await AssetStorage.GetAsync<Font>("GNU-FreeSerif.ttf");
 
             _text = "FUSEE ThreeDFont Example";
 
@@ -134,27 +134,9 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };           
+            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
             _renderer = new SceneRendererForward(sc);
-
-            var shaderFx = new ShaderEffect(new[] {
-                new EffectPassDeclaration
-                {
-                    PS = AssetStorage.Get<string>("FragShader.frag"),
-                    VS = AssetStorage.Get<string>("VertShader.vert"),
-                    StateSet = new RenderStateSet
-                    {
-                        ZEnable = true
-                    }
-                }
-            },
-            new List<EffectParameterDeclaration>
-            {
-                new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
-            });
-
-            RC.SetShaderEffect(shaderFx);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);

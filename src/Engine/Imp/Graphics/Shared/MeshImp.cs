@@ -13,6 +13,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class AttributeImp : IAttribImp
     {
+        /// <summary>
+        /// AttributeBufferObject
+        /// </summary>
         internal int AttributeBufferObject;
     }
 

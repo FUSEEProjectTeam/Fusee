@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Enables or disables Frustum Culling.
-        /// If we render with one or more cameras this value will be overwritten by <see cref="CameraComponent.FrustumCullingOn"/>.
+        /// If we render with one or more cameras this value will be overwritten by <see cref="Scene.Camera.FrustumCullingOn"/>.
         /// </summary>
         public bool DoFrumstumCulling = true;
 
@@ -697,6 +697,11 @@ namespace Fusee.Engine.Core
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
         }
 
+        /// <summary>
+        /// Adds weight to a given mesh
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="wc"></param>
         protected void AddWeightToMesh(Mesh mesh, Weight wc)
         {
             var boneWeights = new float4[wc.WeightMap.Count];

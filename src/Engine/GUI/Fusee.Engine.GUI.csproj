@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.GUI</RootNamespace>
     <PackageId>Fusee.Engine.GUI</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee Engine GUI</Description>
   </PropertyGroup>
 

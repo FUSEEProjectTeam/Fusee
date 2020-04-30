@@ -2,11 +2,17 @@
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// TBD
+    /// </summary>
     public class GImpactMeshShape : CollisionShape
     {
 
         internal IGImpactMeshShapeImp _gImpactMeshShapeImp;
 
+        /// <summary>
+        /// TBD
+        /// </summary>
         public override float Margin
         {
             get

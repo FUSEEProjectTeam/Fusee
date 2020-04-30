@@ -53,9 +53,14 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
-
+        /// <summary>
+        /// Position in hierarchy texture
+        /// </summary>
         public int PosInHierarchyTex;
 
+        /// <summary>
+        /// Visible child indices
+        /// </summary>
         public byte VisibleChildIndices;
 
         /// <summary>

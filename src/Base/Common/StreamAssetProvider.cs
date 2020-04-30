@@ -96,18 +96,20 @@ namespace Fusee.Base.Common
         /// <exception cref="System.ArgumentNullException"></exception>
         public async Task<object> GetAssetAsync(string id, Type type)
         {
-            var stream = await GetStreamAsync(id).ConfigureAwait(false);
-            
+            using (var stream = await GetStreamAsync(id).ConfigureAwait(false))
+            {
                 if (stream == null)
                 {
                     return null;
                 }
 
-            if (_assetHandlers.TryGetValue(type, out var handler))
-            {
-                // Return in using will dispose the used object, which is what we want...
-                return await handler.DecoderAsync(id, stream).ConfigureAwait(false);
+                if (_assetHandlers.TryGetValue(type, out var handler))
+                {
+                    // Return in using will dispose the used object, which is what we want...
+                    return await handler.DecoderAsync(id, stream).ConfigureAwait(false);
+                }
             }
+
 
             return null;
         }

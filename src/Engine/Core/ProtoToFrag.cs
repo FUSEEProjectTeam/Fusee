@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Core.Scene;
 using Fusee.Xene;
+using System;
 
 namespace Fusee.Engine.Core
 {
@@ -18,7 +19,7 @@ namespace Fusee.Engine.Core
             _renderForward = renderForward;
         }
 
-        public void BuildFragmentShaders()
+        internal void BuildFragmentShaders()
         {
             Traverse(_sc.Children);
         }

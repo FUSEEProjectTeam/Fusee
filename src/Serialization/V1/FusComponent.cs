@@ -24,7 +24,7 @@ namespace Fusee.Serialization.V1
         /// The name of this component.
         /// </summary>
         [ProtoMember(1)]
-        public string Name;
+        public string? Name;
     }
 
 }

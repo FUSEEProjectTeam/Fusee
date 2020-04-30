@@ -10,7 +10,6 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -33,7 +32,6 @@ namespace Fusee.Examples.GeometryEditing.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
         private readonly float4x4 _sceneScale = float4x4.CreateScale(1);
-        private float4x4 _projection;
         private float _keyTimeout = 1;
 
         private bool _twoTouchRepeated;
@@ -94,7 +92,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             //Geometry cuboid = CreateGeometry.CreateCuboidGeometry(5, 2, 5);
             //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));
 
-            return true;
+            return await Task.FromResult(true);
         }
 
         // RenderAFrame is called once a frame

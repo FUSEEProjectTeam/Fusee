@@ -60,7 +60,7 @@ namespace Fusee.Serialization.V1
         /// List of bones controlling the vertex.
         /// </summary>
         [ProtoMember(1)]
-        public List<VertexWeight> VertexWeights { get; set; }
+        public List<VertexWeight>? VertexWeights { get; set; }
     }
 
 
@@ -78,6 +78,6 @@ namespace Fusee.Serialization.V1
         /// The joint weights.
         /// </value>
         [ProtoMember(1)]
-        public List<double> JointWeights { get; set; }
+        public List<double>? JointWeights { get; set; }
     }
 }

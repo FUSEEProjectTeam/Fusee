@@ -41,17 +41,35 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// TBD
+        /// </summary>
+        /// <param name="timeStep"></param>
         public void UpdateRhS(float timeStep)
         {
             var o = (Point2PointConstraint)_iP2PConstraintImp.UserObject;
             o._iP2PConstraintImp.UpdateRhs(timeStep);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="value"></param>
+        /// <param name="axis"></param>
+
         public void SetParam(PointToPointFlags param, float value, int axis = -1)
         {
             var o = (Point2PointConstraint) _iP2PConstraintImp.UserObject;
             o._iP2PConstraintImp.SetParam(param, value, axis);
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="axis"></param>
+        /// <returns></returns>
         public float GetParam(PointToPointFlags param, int axis = -1)
         {
             var retval = _iP2PConstraintImp.GetParam(param, axis);

@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// The building block to create hierarchies.
     /// </summary>
-    [DebuggerDisplay("{Name,nq}, {(Components==null)? \"No\" : Components.Count.ToString(),nq} components, {(Children==null)? \"No\" : Children.Count.ToString(),nq} children")]
+    //[DebuggerDisplay("{Name,nq}, {(Components==null)? \"No\" : Components.Count.ToString(),nq} components, {(Children==null)? \"No\" : Children.Count.ToString(),nq} children")]
     public class SceneNode : Xene.INode
     {
         private ChildList _children;

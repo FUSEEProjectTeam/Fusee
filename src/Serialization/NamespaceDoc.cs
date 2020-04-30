@@ -25,23 +25,23 @@
     /// main building block types for scenegraphs are 
     /// <list type="bullet">
     ///   <item>
-    ///     <term><see cref="SceneContainer"/></term>
+    ///     <term><see cref="FusFile"/></term>
     ///     <description>
     ///       Root object of each .fus file. Contains a file header
     ///       and a list of root nodes.</description>
     ///   </item>
     ///   <item>
-    ///     <term><see cref="SceneNodeContainer"/></term>
+    ///     <term><see cref="Serialization.V1.FusNode"/></term>
     ///     <description>
     ///       Instances of this type (called nodes) make up the hierarchy of objects.
     ///       Each node contains a list of child nodes and a list of components.
     ///     </description>
     ///   </item>
     ///   <item>
-    ///     <term><see cref="SceneComponentContainer"/></term>
+    ///     <term><see cref="Serialization.V1.FusComponent"/></term>
     ///     <description>
     ///       Instances of this type (called components) store the scene's payload. 
-    ///       Various component types (inherited from <see cref="SceneComponentContainer"/>)
+    ///       Various component types (inherited from <see cref="Serialization.V1.FusComponent"/>)
     ///       exist to keep the different components a scene is made of.
     ///     </description>
     ///   </item>

@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using Fusee.Engine.Imp.WebAsm;
 using System.Linq;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
@@ -50,19 +51,18 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             _textureCountPerShader = 0;
             _shaderParam2TexUnit = new Dictionary<WebGLUniformLocation, int>();
 
-            gl = ((RenderCanvasImp)renderCanvasImp)._gl;
+            gl2 = ((RenderCanvasImp)renderCanvasImp)._gl;
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
-            gl.CullFace(BACK);
-
-            _blendSrcAlpha = (uint)gl.GetParameter(BLEND_SRC_ALPHA);
-            _blendDstAlpha = (uint)gl.GetParameter(BLEND_DST_ALPHA);
-            _blendDstRgb = (uint)gl.GetParameter(BLEND_DST_RGB);
-            _blendSrcRgb = (uint)gl.GetParameter(BLEND_SRC_RGB);
-            _blendEquationAlpha = (uint)gl.GetParameter(BLEND_EQUATION_ALPHA);
-            _blendEquationRgb = (uint)gl.GetParameter(BLEND_EQUATION_RGB);
+            //_blendSrcAlpha = (uint)gl2.GetParameter(BLEND_SRC_ALPHA);
+            //_blendDstAlpha = (uint)gl2.GetParameter(BLEND_DST_ALPHA);
+            //_blendDstRgb = (uint)gl2.GetParameter(BLEND_DST_RGB);
+            //_blendSrcRgb = (uint)gl2.GetParameter(BLEND_SRC_RGB);
+            //_blendEquationAlpha = (uint)gl2.GetParameter(BLEND_EQUATION_ALPHA);
+            //_blendEquationRgb = (uint)gl2.GetParameter(BLEND_EQUATION_RGB);
+           
         }
 
         #region Image data related Members
@@ -100,19 +100,19 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     break;
                 case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
                     minFilter = (int)NEAREST_MIPMAP_NEAREST;
-                    magFilter = (int)NEAREST_MIPMAP_NEAREST;
+                    magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
                     minFilter = (int)LINEAR_MIPMAP_NEAREST;
-                    magFilter = (int)LINEAR_MIPMAP_NEAREST;
+                    magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
-                    magFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)LINEAR;
                     break;
                 case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
-                    magFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)LINEAR;
                     break;
             }
 
@@ -132,7 +132,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     return (int)CLAMP_TO_EDGE;
                 case TextureWrapMode.CLAMP_TO_BORDER:
                     {
-#warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. CLAMP_TO_EDGE is set instead.
                         return (int)CLAMP_TO_EDGE;
                     }
             }
@@ -236,6 +235,34 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             };
         }
 
+        private ITypedArray GetEmptyArray(ITextureBase tex)
+        {
+
+            Diagnostics.Warn("GetEmptyArray", null, new object[] {tex});
+
+            switch (tex.PixelFormat.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    return new Uint8Array(tex.Width * tex.Height * 4);
+                case ColorFormat.RGB:
+                    return new Uint8Array(tex.Width * tex.Height * 3);
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case ColorFormat.Intensity:
+                    return new Uint8Array(tex.Width * tex.Height);
+                case ColorFormat.Depth24:
+                case ColorFormat.Depth16:
+                    return new Float32Array(tex.Width * tex.Height);
+                case ColorFormat.uiRgb8:
+                    return new Uint8Array(tex.Width * tex.Height * 4);
+                case ColorFormat.fRGB32:
+                case ColorFormat.fRGB16:
+                  return new Float32Array(tex.Width * tex.Height * 3);
+                default:
+                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
+            }
+
+        }
+
         /// <summary>
         /// Creates a new CubeMap and binds it to the shader.
         /// </summary>
@@ -276,8 +303,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
+
             WebGLTexture id = gl2.CreateTexture();
-            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
+            gl2.BindTexture(TEXTURE_2D, id);
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = glMinMagFilter.Item1;
@@ -286,11 +314,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
 
-            var imageData = gl.CastNativeArray(img.PixelData);
-            gl.TexImage2D(TEXTURE_2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, imageData);
+            var imageData = gl2.CastNativeArray(img.PixelData);
+            gl2.TexImage2D(TEXTURE_2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, imageData);
 
             if (img.DoGenerateMipMaps)
-                gl.GenerateMipmap(TEXTURE_2D);
+                gl2.GenerateMipmap(TEXTURE_2D);
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)magFilter);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)minFilter);
@@ -311,7 +339,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
             WebGLTexture id = gl2.CreateTexture();
-            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
+            gl2.BindTexture(TEXTURE_2D, id);
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = glMinMagFilter.Item1;
@@ -320,11 +348,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
 
-            var imgData = gl.CastNativeArray(new byte[0]); //TODO: how to create an empty(?) ITypedArray?
-            gl.TexImage2D(TEXTURE_2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, imgData);
+            var imgData = GetEmptyArray(img);        
+
+            gl2.TexImage2D(TEXTURE_2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, imgData);
 
             if (img.DoGenerateMipMaps)
-                gl.GenerateMipmap(TEXTURE_2D);
+                gl2.GenerateMipmap(TEXTURE_2D);
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
@@ -370,14 +399,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             } while (scanlines.MoveNext());
 
-            gl.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
-            var imageData = gl.CastNativeArray(bytes);
-            gl.TexSubImage2D(TEXTURE_2D, 0, startX, startY, width, height, pixelFormat, UNSIGNED_BYTE, imageData);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            var imageData = gl2.CastNativeArray(bytes);
+            gl2.TexSubImage2D(TEXTURE_2D, 0, startX, startY, width, height, pixelFormat, UNSIGNED_BYTE, imageData);
 
-            gl.GenerateMipmap(TEXTURE_2D);
+            gl2.GenerateMipmap(TEXTURE_2D);
 
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)LINEAR_MIPMAP_LINEAR);
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)LINEAR_MIPMAP_LINEAR);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)LINEAR_MIPMAP_LINEAR);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)LINEAR_MIPMAP_LINEAR);
         }
 
         /// <summary>
@@ -408,17 +437,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             if (texHandle.FrameBufferHandle != null)
             {
-                gl.DeleteFramebuffer(texHandle.FrameBufferHandle);
+                gl2.DeleteFramebuffer(texHandle.FrameBufferHandle);
             }
 
             if (texHandle.DepthRenderBufferHandle != null)
             {
-                gl.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
+                gl2.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
             }
 
             if (texHandle.TexHandle != null)
             {
-                gl.DeleteTexture(texHandle.TexHandle);
+                gl2.DeleteTexture(texHandle.TexHandle);
             }
         }
 
@@ -439,48 +468,54 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             if (gs != null)
-                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+                Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");
+
+            if (vs == null || ps == null)
+            {
+                Diagnostics.Error("Pixel or vertex shader empty");
+                throw new ArgumentException("Pixel or vertex shader empty");
+            }
 
             bool statusCode;
             string info;
 
-            WebGLShader vertexObject = gl.CreateShader(VERTEX_SHADER);
-            WebGLShader fragmentObject = gl.CreateShader(FRAGMENT_SHADER);
+            WebGLShader vertexObject = gl2.CreateShader(VERTEX_SHADER);
+            WebGLShader fragmentObject = gl2.CreateShader(FRAGMENT_SHADER);
 
             // Compile vertex shader
-            gl.ShaderSource(vertexObject, vs);
-            gl.CompileShader(vertexObject);
-            info = gl.GetShaderInfoLog(vertexObject);
-            var statusCodeOb = gl.GetShaderParameter(vertexObject, COMPILE_STATUS);
+            gl2.ShaderSource(vertexObject, vs);
+            gl2.CompileShader(vertexObject);
+            info = gl2.GetShaderInfoLog(vertexObject);
+            var statusCodeOb = gl2.GetShaderParameter(vertexObject, COMPILE_STATUS);
             statusCode = (bool)statusCodeOb;
 
             if (!statusCode)
                 throw new ApplicationException(info);
 
             // Compile pixel shader
-            gl.ShaderSource(fragmentObject, ps);
-            gl.CompileShader(fragmentObject);
-            info = gl.GetShaderInfoLog(fragmentObject);
-            statusCode = (bool)gl.GetShaderParameter(fragmentObject, COMPILE_STATUS);
+            gl2.ShaderSource(fragmentObject, ps);
+            gl2.CompileShader(fragmentObject);
+            info = gl2.GetShaderInfoLog(fragmentObject);
+            statusCode = (bool)gl2.GetShaderParameter(fragmentObject, COMPILE_STATUS);
 
             if (!statusCode)
                 throw new ApplicationException(info);
 
-            WebGLProgram program = gl.CreateProgram();
-            gl.AttachShader(program, fragmentObject);
-            gl.AttachShader(program, vertexObject);
+            WebGLProgram program = gl2.CreateProgram();
+            gl2.AttachShader(program, fragmentObject);
+            gl2.AttachShader(program, vertexObject);
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
-            gl.BindAttribLocation(program, (uint)AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.ColorAttribLocation, UniformNameDeclarations.Color);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.TangentAttribLocation, UniformNameDeclarations.TangentAttribName);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
-            gl.BindAttribLocation(program, (uint)AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.ColorAttribLocation, UniformNameDeclarations.Color);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.TangentAttribLocation, UniformNameDeclarations.TangentAttribName);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
+            gl2.BindAttribLocation(program, (uint)AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
 
-            gl.LinkProgram(program);
+            gl2.LinkProgram(program);
 
             return new ShaderHandleImp { Handle = program };
         }
@@ -497,12 +532,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var program = ((ShaderHandleImp)sp).Handle;
 
             // wait for all threads to be finished
-            gl.Finish();
-            gl.Flush();
+            gl2.Finish();
+            gl2.Flush();
 
             // cleanup
-            // gl.DeleteShader(program);
-            gl.DeleteProgram(program);
+            // gl2.DeleteShader(program);
+            gl2.DeleteProgram(program);
         }
 
         /// <summary>
@@ -514,7 +549,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
-            gl.UseProgram(((ShaderHandleImp)program).Handle);
+            gl2.UseProgram(((ShaderHandleImp)program).Handle);
         }
 
         /// <summary>
@@ -523,7 +558,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="width"></param>
         public void SetLineWidth(float width)
         {
-            gl.LineWidth(width);
+            gl2.LineWidth(width);
         }
 
         /// <summary>
@@ -536,7 +571,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
-            WebGLUniformLocation h = gl.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
+            WebGLUniformLocation h = gl2.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
             return (h == null) ? null : new ShaderParam { handle = h };
         }
 
@@ -549,7 +584,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>The current parameter's value.</returns>
         public float GetParamValue(IShaderHandle program, IShaderParam param)
         {
-            float f = (float)gl.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle);
+            float f = (float)gl2.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle);
             return f;
         }
 
@@ -566,19 +601,20 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var paramList = new List<ShaderParamInfo>();
 
             int nParams;
-            nParams = (int)gl.GetProgramParameter(sProg.Handle, ACTIVE_UNIFORMS);
+            nParams = (int)gl2.GetProgramParameter(sProg.Handle, ACTIVE_UNIFORMS);
 
             for (uint i = 0; i < nParams; i++)
             {
-                WebGLActiveInfo activeInfo = gl.GetActiveUniform(sProg.Handle, i);
+                WebGLActiveInfo activeInfo = gl2.GetActiveUniform(sProg.Handle, i);
 
-                var paramInfo = new ShaderParamInfo();
-                paramInfo.Name = activeInfo.Name;
-                paramInfo.Size = activeInfo.Size;
+                var paramInfo = new ShaderParamInfo
+                {
+                    Name = activeInfo.Name,
+                    Size = activeInfo.Size
+                };
                 uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
-                //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
                 switch (uType)
                 {
@@ -614,7 +650,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         break;
                     case SAMPLER_CUBE_SHADOW:
                     case SAMPLER_CUBE:
-                        paramInfo.Type = typeof(ITextureBase);
+                        paramInfo.Type = typeof(IWritableCubeMap);
                         break;
 
                     default:
@@ -633,7 +669,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float val)
         {
-            gl.Uniform1f(((ShaderParam)param).handle, val);
+            gl2.Uniform1f(((ShaderParam)param).handle, val);
         }
 
         /// <summary>
@@ -643,18 +679,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float2 val)
         {
-            gl.Uniform2f(((ShaderParam)param).handle, val.x, val.y);
-        }
-
-        /// <summary>
-        /// Sets a <see cref="float2" /> array shader parameter.
-        /// </summary>
-        /// <param name="param">The parameter.</param>
-        /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float2[] val)
-        {
-            fixed (float2* pFlt = &val[0])
-                gl.Uniform2fv(((ShaderParam)param).handle, new Span<float>((float*)pFlt, val.Length * 2));
+            gl2.Uniform2f(((ShaderParam)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -664,7 +689,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float3 val)
         {
-            gl.Uniform3f(((ShaderParam)param).handle, val.x, val.y, val.z);
+            gl2.Uniform3f(((ShaderParam)param).handle, val.x, val.y, val.z);
         }
 
         /// <summary>
@@ -675,7 +700,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public unsafe void SetShaderParam(IShaderParam param, float3[] val)
         {
             fixed (float3* pFlt = &val[0])
-                gl.Uniform3fv(((ShaderParam)param).handle, new Span<float>((float*)pFlt, val.Length * 3));
+                gl2.Uniform3fv(((ShaderParam)param).handle, new Span<float>((float*)pFlt, val.Length * 3));
         }
 
         /// <summary>
@@ -685,7 +710,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4 val)
         {
-            gl.Uniform4f(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
+            gl2.Uniform4f(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
         }
 
 
@@ -696,7 +721,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
-            gl.UniformMatrix4fv(((ShaderParam)param).handle, true, val.ToArray());
+            gl2.UniformMatrix4fv(((ShaderParam)param).handle, true, val.ToArray());
 
         }
 
@@ -708,7 +733,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public unsafe void SetShaderParam(IShaderParam param, float4[] val)
         {
             fixed (float4* pFlt = &val[0])
-                gl.Uniform4fv(((ShaderParam)param).handle, new Span<float>((float*)pFlt, val.Length * 4));
+                gl2.Uniform4fv(((ShaderParam)param).handle, new Span<float>((float*)pFlt, val.Length * 4));
         }
 
         /// <summary>
@@ -729,7 +754,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
 
             fixed (float4* pMtx = &tmpArray[0])
-                gl.UniformMatrix4fv(((ShaderParam)param).handle, true, new Span<float>((float*)pMtx, val.Length * 16));
+                gl2.UniformMatrix4fv(((ShaderParam)param).handle, true, new Span<float>((float*)pMtx, val.Length * 16));
         }
 
         /// <summary>
@@ -739,7 +764,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, int val)
         {
-            gl.Uniform1i(((ShaderParam)param).handle, val);
+            gl2.Uniform1i(((ShaderParam)param).handle, val);
         }
 
         private void BindTextureByTarget(ITextureHandle texId, TextureType texTarget)
@@ -750,13 +775,13 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     Diagnostics.Error("OpenTK ES31 does not support Texture1D.");
                     break;
                 case TextureType.TEXTURE2D:
-                    gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
                     break;
                 case TextureType.TEXTURE3D:
-                    gl.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexHandle);
                     break;
                 case TextureType.TEXTURE_CUBE_MAP:
-                    gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
+                    gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
                     break;
                 default:
                     break;
@@ -779,7 +804,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
 
-            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
+            gl2.ActiveTexture((uint)(TEXTURE0 + texUnit));
             BindTextureByTarget(texId, texTarget);
         }
 
@@ -800,7 +825,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
 
-            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
+            gl2.ActiveTexture((uint)(TEXTURE0 + texUnit));
             BindTextureByTarget(texId, texTarget);
         }
 
@@ -827,7 +852,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             {
                 texUnitArray[i] = firstTexUnit + i;
 
-                gl.ActiveTexture((uint)(TEXTURE0 + firstTexUnit + i));
+                gl2.ActiveTexture((uint)(TEXTURE0 + firstTexUnit + i));
                 BindTextureByTarget(texIds[i], texTarget);
             }
         }
@@ -856,7 +881,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             {
                 texUnitArray[i] = firstTexUnit + i;
 
-                gl.ActiveTexture((uint)(TEXTURE0 + firstTexUnit + i));
+                gl2.ActiveTexture((uint)(TEXTURE0 + firstTexUnit + i));
                 BindTextureByTarget(texIds[i], texTarget);
             }
         }
@@ -870,7 +895,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
         {
             SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
-            gl.Uniform1i(((ShaderParam)param).handle, texUnit);
+            gl2.Uniform1i(((ShaderParam)param).handle, texUnit);
         }
 
         /// <summary>
@@ -882,7 +907,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
         {
             SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);            
-            gl.Uniform1i(((ShaderParam)param).handle, texUnitArray[0]);
+            gl2.Uniform1i(((ShaderParam)param).handle, texUnitArray[0]);
         }
 
         #endregion
@@ -899,10 +924,16 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             get
             {
-                float[] ret = (float[])gl.GetParameter(COLOR_CLEAR_VALUE);
-                return new float4(ret[0], ret[1], ret[2], ret[3]);
+                var ret =(Float32Array)gl2.GetParameter(COLOR_CLEAR_VALUE);
+                //var ret = new float[4];
+                //ret[0] = (c & 0xff000000) >> 32;
+                //ret[1] = (c & 0x00ff0000) >> 16;
+                //ret[2] = (c & 0x0000ff00) >> 8;
+                //ret[3] = (c & 0x000000ff) >> 0;
+                var retArr = ret.ToArray();
+                return new float4(retArr[0], retArr[1], retArr[2], retArr[3]);
             }
-            set { gl.ClearColor(value.x, value.y, value.z, value.w); }
+            set { gl2.ClearColor(value.x, value.y, value.z, value.w); }
         }
 
         /// <summary>
@@ -915,9 +946,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             get
             {
-                return (float)gl.GetParameter(DEPTH_CLEAR_VALUE);
+                return (float)gl2.GetParameter(DEPTH_CLEAR_VALUE);
             }
-            set { gl.ClearDepth(value); }
+            set { gl2.ClearDepth(value); }
         }
 
         /// <summary>
@@ -926,12 +957,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="flags">The flags.</param>
         public void Clear(ClearFlags flags)
         {
-            // ACCUM is ignored in WebGL...
+            // ACCUM is ignored in Webgl2...
             var wglFlags =
                   ((flags & ClearFlags.Depth) != 0 ? DEPTH_BUFFER_BIT : 0)
                 | ((flags & ClearFlags.Stencil) != 0 ? STENCIL_BUFFER_BIT : 0)
                 | ((flags & ClearFlags.Color) != 0 ? COLOR_BUFFER_BIT : 0);
-            gl.Clear(wglFlags);
+            gl2.Clear(wglFlags);
         }
 
         #endregion
@@ -948,7 +979,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="height">Height of the scissor box.</param>
         public void Scissor(int x, int y, int width, int height)
         {
-            gl.Scissor(x, y, width, height);
+            gl2.Scissor(x, y, width, height);
         }
 
         /// <summary>
@@ -958,7 +989,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </summary>
         public void EnableDepthClamp()
         {
-            throw new NotImplementedException("Depth clamping isn't implemented yet!");
+            //gl2.Enable(DEPTH_RANGE)
+            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
         }
 
         /// <summary>
@@ -984,16 +1016,16 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             int vboBytes;
             int vertsBytes = attributes.Length * 3 * sizeof(float);
-            var handle = gl.CreateBuffer();
+            var handle = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, handle);
-            gl.BufferData(ARRAY_BUFFER, attributes, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BindBuffer(ARRAY_BUFFER, handle);
+            gl2.BufferData(ARRAY_BUFFER, attributes, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading attribute buffer to VBO ('{2}'). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes, attributeName));
-            gl.BindBuffer(ARRAY_BUFFER, null);
+            gl2.BindBuffer(ARRAY_BUFFER, null);
 
             return new AttributeImp { AttributeBufferObject = handle };
         }
@@ -1010,7 +1042,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 var handle = ((AttributeImp)attribHandle).AttributeBufferObject;
                 if (handle != null)
                 {
-                    gl.DeleteBuffer(handle);
+                    gl2.DeleteBuffer(handle);
                     ((AttributeImp)attribHandle).AttributeBufferObject = null;
                 }
             }
@@ -1025,7 +1057,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <exception cref="ApplicationException"></exception>
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
-            Diagnostics.Debug("[SetVertices]");
             if (vertices == null || vertices.Length == 0)
             {
                 throw new ArgumentException("Vertices must not be null or empty");
@@ -1034,10 +1065,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == null)
-                ((MeshImp)mr).VertexBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).VertexBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
-            Diagnostics.Debug("[Before gl.BufferData]");
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);           
 
             var verticesFlat = new float[vertices.Length * 3];
             unsafe
@@ -1047,10 +1077,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     Marshal.Copy((IntPtr)(pBytes), verticesFlat, 0, verticesFlat.Length);
                 }
             }
-            gl.BufferData(ARRAY_BUFFER, verticesFlat, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, verticesFlat, STATIC_DRAW);
 
-            Diagnostics.Debug("[After gl.BufferData]");
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
 
@@ -1073,9 +1102,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int tangentBytes = tangents.Length * 4 * sizeof(float);
             if (((MeshImp)mr).TangentBufferObject == null)
-                ((MeshImp)mr).TangentBufferObject = gl.CreateBuffer(); ;
+                ((MeshImp)mr).TangentBufferObject = gl2.CreateBuffer(); ;
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
 
             var tangentsFlat = new float[tangents.Length * 4];
             unsafe
@@ -1086,8 +1115,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
             }
 
-            gl.BufferData(ARRAY_BUFFER, tangentsFlat, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BufferData(ARRAY_BUFFER, tangentsFlat, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != tangentBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
 
@@ -1110,9 +1139,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int bitangentBytes = bitangents.Length * 3 * sizeof(float);
             if (((MeshImp)mr).BitangentBufferObject == null)
-                ((MeshImp)mr).BitangentBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).BitangentBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
 
             var bitangentsFlat = new float[bitangents.Length * 3];
             unsafe
@@ -1123,8 +1152,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
             }
 
-            gl.BufferData(ARRAY_BUFFER, bitangentsFlat, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BufferData(ARRAY_BUFFER, bitangentsFlat, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != bitangentBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
         }
@@ -1146,9 +1175,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int normsBytes = normals.Length * 3 * sizeof(float);
             if (((MeshImp)mr).NormalBufferObject == null)
-                ((MeshImp)mr).NormalBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).NormalBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
 
             var normalsFlat = new float[normals.Length * 3];
             unsafe
@@ -1159,9 +1188,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
             }
 
-            gl.BufferData(ARRAY_BUFFER, normalsFlat, STATIC_DRAW);
+            gl2.BufferData(ARRAY_BUFFER, normalsFlat, STATIC_DRAW);
 
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != normsBytes)
                 throw new ApplicationException(String.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
         }
@@ -1183,9 +1212,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int indicesBytes = boneIndices.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneIndexBufferObject == null)
-                ((MeshImp)mr).BoneIndexBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).BoneIndexBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
 
             var boneIndicesFlat = new float[boneIndices.Length * 4];
             unsafe
@@ -1196,8 +1225,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
             }
 
-            gl.BufferData(ARRAY_BUFFER, boneIndicesFlat, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BufferData(ARRAY_BUFFER, boneIndicesFlat, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != indicesBytes)
                 throw new ApplicationException(String.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
         }
@@ -1219,9 +1248,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int weightsBytes = boneWeights.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneWeightBufferObject == null)
-                ((MeshImp)mr).BoneWeightBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).BoneWeightBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
 
             var boneWeightsFlat = new float[boneWeights.Length * 4];
             unsafe
@@ -1232,8 +1261,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
             }
 
-            gl.BufferData(ARRAY_BUFFER, boneWeightsFlat, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BufferData(ARRAY_BUFFER, boneWeightsFlat, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(String.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
 
@@ -1256,9 +1285,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int uvsBytes = uvs.Length * 2 * sizeof(float);
             if (((MeshImp)mr).UVBufferObject == null)
-                ((MeshImp)mr).UVBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).UVBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
 
             var uvsFlat = new float[uvs.Length * 2];
             unsafe
@@ -1269,8 +1298,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
             }
 
-            gl.BufferData(ARRAY_BUFFER, uvsFlat, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BufferData(ARRAY_BUFFER, uvsFlat, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(String.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
 
@@ -1293,11 +1322,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int vboBytes;
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject == null)
-                ((MeshImp)mr).ColorBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).ColorBufferObject = gl2.CreateBuffer();
 
-            gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
-            gl.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
+            gl2.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
         }
@@ -1320,11 +1349,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             int trisBytes = triangleIndices.Length * sizeof(short);
 
             if (((MeshImp)mr).ElementBufferObject == null)
-                ((MeshImp)mr).ElementBufferObject = gl.CreateBuffer();
+                ((MeshImp)mr).ElementBufferObject = gl2.CreateBuffer();
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
-            gl.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
-            gl.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices, STATIC_DRAW);
-            vboBytes = (int)gl.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
+            gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
+            gl2.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices, STATIC_DRAW);
+            vboBytes = (int)gl2.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
 
@@ -1336,7 +1365,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
             ((MeshImp)mr).InvalidateVertices();
         }
 
@@ -1346,7 +1375,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
             ((MeshImp)mr).InvalidateNormals();
         }
 
@@ -1356,7 +1385,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
             ((MeshImp)mr).InvalidateColors();
         }
 
@@ -1366,7 +1395,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).UVBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).UVBufferObject);
             ((MeshImp)mr).InvalidateUVs();
         }
 
@@ -1376,7 +1405,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).ElementBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).ElementBufferObject);
             ((MeshImp)mr).InvalidateTriangles();
         }
 
@@ -1386,7 +1415,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).BoneWeightBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).BoneWeightBufferObject);
             ((MeshImp)mr).InvalidateBoneWeights();
         }
 
@@ -1396,7 +1425,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).BoneIndexBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).BoneIndexBufferObject);
             ((MeshImp)mr).InvalidateBoneIndices();
         }
 
@@ -1406,7 +1435,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTangents(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).TangentBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).TangentBufferObject);
             ((MeshImp)mr).InvalidateTangents();
         }
 
@@ -1416,7 +1445,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBiTangents(IMeshImp mr)
         {
-            gl.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
+            gl2.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
             ((MeshImp)mr).InvalidateBiTangents();
         }
         /// <summary>
@@ -1427,94 +1456,94 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             if (((MeshImp)mr).VertexBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, 3, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).ColorBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).ColorBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.ColorAttribLocation, 4, UNSIGNED_BYTE, true, 0, 0);
             }
 
             if (((MeshImp)mr).UVBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.UvAttribLocation, 2, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).UVBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.UvAttribLocation, 2, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).NormalBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.NormalAttribLocation, 3, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).NormalBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.NormalAttribLocation, 3, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).TangentBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.TangentAttribLocation, 3, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).TangentBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.TangentAttribLocation, 3, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).BitangentBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.BitangentAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.BitangentAttribLocation, 3, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.BitangentAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BitangentBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.BitangentAttribLocation, 3, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).BoneIndexBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.BoneIndexAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.BoneIndexAttribLocation, 4, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneIndexAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneIndexBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.BoneIndexAttribLocation, 4, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).BoneWeightBufferObject != null)
             {
-                gl.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
-                gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
-                gl.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
+                gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
+                gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
             }
             if (((MeshImp)mr).ElementBufferObject != null)
             {
-                gl.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
-                gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                //gl.DrawArrays(gl.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
+                gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
+                gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                //gl2.DrawArrays(gl2.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
             }
             if (((MeshImp)mr).ElementBufferObject != null)
             {
-                gl.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
+                gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
 
                 switch (((MeshImp)mr).MeshType)
                 {
                     case OpenGLPrimitiveType.TRIANGLES:
                     default:
-                        gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.POINT:                        
-                        gl.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.LINES:                       
-                        gl.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.LINE_LOOP:                        
-                        gl.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.LINE_STRIP:                        
-                        gl.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.PATCHES:
-                        gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
                         break;
                     case OpenGLPrimitiveType.QUAD_STRIP:
-                        gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
                         break;
                     case OpenGLPrimitiveType.TRIANGLE_FAN:
-                        gl.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                     case OpenGLPrimitiveType.TRIANGLE_STRIP:
-                        gl.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        gl2.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                 }
             }
@@ -1522,33 +1551,33 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             if (((MeshImp)mr).VertexBufferObject != null)
             {
-                gl.BindBuffer(ARRAY_BUFFER, null);
-                gl.DisableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, null);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
             }
             if (((MeshImp)mr).ColorBufferObject != null)
             {
-                gl.BindBuffer(ARRAY_BUFFER, null);
-                gl.DisableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, null);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.ColorAttribLocation);
             }
             if (((MeshImp)mr).NormalBufferObject != null)
             {
-                gl.BindBuffer(ARRAY_BUFFER, null);
-                gl.DisableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, null);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.NormalAttribLocation);
             }
             if (((MeshImp)mr).UVBufferObject != null)
             {
-                gl.BindBuffer(ARRAY_BUFFER, null);
-                gl.DisableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, null);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.UvAttribLocation);
             }
             if (((MeshImp)mr).TangentBufferObject != null)
             {
-                gl.BindBuffer(ARRAY_BUFFER, null);
-                gl.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, null);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
             }
             if (((MeshImp)mr).BitangentBufferObject != null)
             {
-                gl.BindBuffer(ARRAY_BUFFER, null);
-                gl.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
+                gl2.BindBuffer(ARRAY_BUFFER, null);
+                gl2.DisableVertexAttribArray((uint)AttributeLocations.TangentAttribLocation);
             }
         }
 
@@ -1559,8 +1588,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
-            gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
-            gl.CopyTexImage2D(TEXTURE_2D, 0, RGBA, quad.Left, quad.Top, quad.Width, quad.Height, 0);
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
+            gl2.CopyTexImage2D(TEXTURE_2D, 0, RGBA, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
         /// <summary>
@@ -1611,29 +1640,29 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             switch (blend)
             {
                 case Blend.Zero:
-                    return (uint)ZERO;
+                    return (uint)(int)ZERO;
                 case Blend.One:
-                    return (uint)ONE;
+                    return (uint)(int)ONE;
                 case Blend.SourceColor:
-                    return (uint)SRC_COLOR;
+                    return (uint)(int)SRC_COLOR;
                 case Blend.InverseSourceColor:
-                    return (uint)ONE_MINUS_SRC_COLOR;
+                    return (uint)(int)ONE_MINUS_SRC_COLOR;
                 case Blend.SourceAlpha:
-                    return (uint)SRC_ALPHA;
+                    return (uint)(int)SRC_ALPHA;
                 case Blend.InverseSourceAlpha:
-                    return (uint)ONE_MINUS_SRC_ALPHA;
+                    return (uint)(int)ONE_MINUS_SRC_ALPHA;
                 case Blend.DestinationAlpha:
-                    return (uint)DST_ALPHA;
+                    return (uint)(int)DST_ALPHA;
                 case Blend.InverseDestinationAlpha:
-                    return (uint)ONE_MINUS_DST_ALPHA;
+                    return (uint)(int)ONE_MINUS_DST_ALPHA;
                 case Blend.DestinationColor:
-                    return (uint)DST_COLOR;
+                    return (uint)(int)DST_COLOR;
                 case Blend.InverseDestinationColor:
-                    return (uint)ONE_MINUS_DST_COLOR;
+                    return (uint)(int)ONE_MINUS_DST_COLOR;
                 case Blend.BlendFactor:
-                    return (uint)((isForAlpha) ? CONSTANT_ALPHA : CONSTANT_COLOR);
+                    return (uint)(int)((isForAlpha) ? CONSTANT_ALPHA : CONSTANT_COLOR);
                 case Blend.InverseBlendFactor:
-                    return (uint)((isForAlpha) ? ONE_MINUS_CONSTANT_ALPHA : ONE_MINUS_CONSTANT_COLOR);
+                    return (uint)(int)((isForAlpha) ? ONE_MINUS_CONSTANT_ALPHA : ONE_MINUS_CONSTANT_COLOR);
                 // Ignored...
                 // case Blend.SourceAlphaSaturated:
                 //     break;
@@ -1701,7 +1730,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </exception>
         public void SetRenderState(RenderState renderState, uint value)
         {
-            gl.Enable(SCISSOR_TEST);
+            gl2.Enable(SCISSOR_TEST);
 
             switch (renderState)
             {
@@ -1716,28 +1745,33 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         switch ((Cull)value)
                         {
                             case Cull.None:
+                                gl2.FrontFace(NONE);
+                                    gl2.Disable(CULL_FACE);
                                 if (_isCullEnabled)
                                 {
                                     _isCullEnabled = false;
-                                    gl.Disable(CULL_FACE);
+                                    gl2.Disable(CULL_FACE);
                                 }
-                                gl.FrontFace(NONE);
+                                gl2.FrontFace(NONE);
                                 break;
                             case Cull.Clockwise:
+                                gl2.FrontFace(CW);
                                 if (!_isCullEnabled)
                                 {
                                     _isCullEnabled = true;
-                                    gl.Enable(CULL_FACE);
+                                    gl2.Enable(CULL_FACE);
                                 }
-                                gl.FrontFace(CW);
+                                gl2.FrontFace(CW);
                                 break;
                             case Cull.Counterclockwise:
+                                gl2.Enable(CULL_FACE);
+                                gl2.FrontFace(CCW);
                                 if (!_isCullEnabled)
                                 {
                                     _isCullEnabled = true;
-                                    gl.Enable(CULL_FACE);
+                                    gl2.Enable(CULL_FACE);
                                 }
-                                gl.FrontFace(CCW);
+                                gl2.FrontFace(CCW);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException("value");
@@ -1750,59 +1784,61 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case RenderState.ZFunc:
                     {
                         uint df = GetDepthCompareFunc((Compare)value);
-                        gl.DepthFunc(df);
+                        gl2.DepthFunc(df);
                     }
                     break;
                 case RenderState.ZEnable:
                     if (value == 0)
-                        gl.Disable(DEPTH_TEST);
+                        gl2.Disable(DEPTH_TEST);
                     else
-                        gl.Enable(DEPTH_TEST);
+                        gl2.Enable(DEPTH_TEST);
                     break;
                 case RenderState.ZWriteEnable:
-                    gl.DepthMask(value != 0);
+                    gl2.DepthMask(value != 0);
                     break;
                 case RenderState.AlphaBlendEnable:
                     if (value == 0)
-                        gl.Disable(BLEND);
+                        gl2.Disable(BLEND);
                     else
-                        gl.Enable(BLEND);
+                        gl2.Enable(BLEND);
                     break;
                 case RenderState.BlendOperation:
                     _blendEquationRgb = BlendOperationToOgl((BlendOperation)value);
-                    gl.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    // TODO (mr): find error
+                    //gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.BlendOperationAlpha:
                     _blendEquationAlpha = BlendOperationToOgl((BlendOperation)value);
-                    gl.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    // TODO (mr): find error
+                    //gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.SourceBlend:
                     {
                         _blendSrcRgb = BlendToOgl((Blend)value);
-                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
+                        gl2.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlend:
                     {
                         _blendDstRgb = BlendToOgl((Blend)value);
-                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
+                        gl2.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.SourceBlendAlpha:
                     {
                         _blendSrcAlpha = BlendToOgl((Blend)value);
-                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
+                        gl2.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlendAlpha:
                     {
                         _blendDstAlpha = BlendToOgl((Blend)value);
-                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
+                        gl2.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.BlendFactor:
                     var blendcolor = ColorUint.Tofloat4((ColorUint)value);
-                    gl.BlendColor(blendcolor.r, blendcolor.g, blendcolor.b, blendcolor.a);
+                    gl2.BlendColor(blendcolor.r, blendcolor.g, blendcolor.b, blendcolor.a);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("renderState");
@@ -1833,11 +1869,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case RenderState.CullMode:
                     {
                         uint cullFace;
-                        cullFace = (uint)gl.GetParameter(CULL_FACE);
+                        cullFace = (uint)(int)gl2.GetParameter(CULL_FACE);
                         if (cullFace == 0)
-                            return (uint)Cull.None;
+                            return (uint)(int)Cull.None;
                         uint frontFace;
-                        frontFace = (uint)gl.GetParameter(FRONT_FACE);
+                        frontFace = (uint)(int)gl2.GetParameter(FRONT_FACE);
                         if (frontFace == CW)
                             return (uint)Cull.Clockwise;
                         return (uint)Cull.Counterclockwise;
@@ -1848,7 +1884,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case RenderState.ZFunc:
                     {
                         uint depFunc;
-                        depFunc = (uint)gl.GetParameter(DEPTH_FUNC);
+                        depFunc = (uint)(int)gl2.GetParameter(DEPTH_FUNC);
                         Compare ret;
                         switch (depFunc)
                         {
@@ -1884,62 +1920,62 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case RenderState.ZEnable:
                     {
                         uint depTest;
-                        depTest = (uint)gl.GetParameter(DEPTH_TEST);
+                        depTest = (uint)(int)gl2.GetParameter(DEPTH_TEST);
                         return (uint)(depTest);
                     }
                 case RenderState.ZWriteEnable:
                     {
                         uint depWriteMask;
-                        depWriteMask = (uint)gl.GetParameter(DEPTH_WRITEMASK);
+                        depWriteMask = (uint)(int)gl2.GetParameter(DEPTH_WRITEMASK);
                         return (uint)(depWriteMask);
                     }
                 case RenderState.AlphaBlendEnable:
                     {
                         uint blendEnable;
-                        blendEnable = (uint)gl.GetParameter(BLEND);
+                        blendEnable = (uint)(int)gl2.GetParameter(BLEND);
                         return (uint)(blendEnable);
                     }
                 case RenderState.BlendOperation:
                     {
                         uint rgbMode;
-                        rgbMode = (uint)gl.GetParameter(BLEND_EQUATION_RGB);
+                        rgbMode = (uint)(int)gl2.GetParameter(BLEND_EQUATION_RGB);
                         return (uint)BlendOperationFromOgl(rgbMode);
                     }
                 case RenderState.BlendOperationAlpha:
                     {
                         uint alphaMode;
-                        alphaMode = (uint)gl.GetParameter(BLEND_EQUATION_ALPHA);
+                        alphaMode = (uint)(int)gl2.GetParameter(BLEND_EQUATION_ALPHA);
                         return (uint)BlendOperationFromOgl(alphaMode);
                     }
                 case RenderState.SourceBlend:
                     {
                         uint rgbSrc;
-                        rgbSrc = (uint)gl.GetParameter(BLEND_SRC_RGB);
+                        rgbSrc = (uint)(int)gl2.GetParameter(BLEND_SRC_RGB);
                         return (uint)BlendFromOgl(rgbSrc);
                     }
                 case RenderState.DestinationBlend:
                     {
                         uint rgbDst;
-                        rgbDst = (uint)gl.GetParameter(BLEND_DST_RGB);
+                        rgbDst = (uint)(int)gl2.GetParameter(BLEND_DST_RGB);
                         return (uint)BlendFromOgl(rgbDst);
                     }
                 case RenderState.SourceBlendAlpha:
                     {
                         uint alphaSrc;
-                        alphaSrc = (uint)gl.GetParameter(BLEND_SRC_ALPHA);
+                        alphaSrc = (uint)(int)gl2.GetParameter(BLEND_SRC_ALPHA);
                         return (uint)BlendFromOgl(alphaSrc);
                     }
                 case RenderState.DestinationBlendAlpha:
                     {
                         uint alphaDst;
-                        alphaDst = (uint)gl.GetParameter(BLEND_DST_ALPHA);
+                        alphaDst = (uint)(int)gl2.GetParameter(BLEND_DST_ALPHA);
                         return (uint)BlendFromOgl(alphaDst);
                     }
                 case RenderState.BlendFactor:
                     {
-                        var col = (float[])gl.GetParameter(BLEND_COLOR);
+                        var col = (float[])gl2.GetParameter(BLEND_COLOR);
                         var uintCol = new ColorUint(col);
-                        return (uint)uintCol.ToRgba();
+                        return (uint)(int)uintCol.ToRgba();
                     }
                 default:
                     throw new ArgumentOutOfRangeException("renderState");
@@ -1978,7 +2014,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Pixelformat: {tex.PixelFormat}");
 
             gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
         }
@@ -2015,7 +2051,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Pixelformat: {tex.PixelFormat}");
 
 
             gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
@@ -2067,7 +2103,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+                throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
+                    $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
 
             gl2.Clear(DEPTH_CLEAR_VALUE | COLOR_CLEAR_VALUE);
@@ -2079,7 +2116,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             var gDepthRenderbuffer = gl2.CreateRenderbuffer();
             gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbuffer);
-            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT24, width, height);
+            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT32F, width, height);
             gl2.FramebufferRenderbuffer(FRAMEBUFFER, DEPTH_ATTACHMENT, RENDERBUFFER, gDepthRenderbuffer);
             return gDepthRenderbuffer;
         }
@@ -2090,7 +2127,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
 
             int depthCnt = 0;
-
             var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
             if (!renderTarget.IsDepthOnly)
@@ -2100,7 +2136,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
                 {
-                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
 
                     var texHandle = texHandles[i];
                     if (texHandle == null) continue;
@@ -2112,6 +2147,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     }
                     else
                         gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+
+                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
+
                 }
                 gl2.DrawBuffers(attachments.ToArray());
             }
@@ -2190,7 +2228,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="height">The height.</param>
         public void Viewport(int x, int y, int width, int height)
         {
-            gl.Viewport(x, y, width, height);
+            gl2.Viewport(x, y, width, height);
         }
 
         /// <summary>
@@ -2203,7 +2241,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="alpha">if set to <c>true</c> [alpha].</param>
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
-            gl.ColorMask(red, green, blue, alpha);
+            gl2.ColorMask(red, green, blue, alpha);
         }
 
         /// <summary>
@@ -2218,7 +2256,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case HardwareCapability.CAN_RENDER_DEFFERED:
                     return 0U;
                 case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
-                    return 0U; //WASM uses OpenGL es, where no geometry shaders can be used.
+                    return 0;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
@@ -2249,15 +2287,15 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             var itemSize = 3;
             var numItems = 2;
-            var posBuffer = gl.CreateBuffer();
+            var posBuffer = gl2.CreateBuffer();
 
-            gl.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
-            gl.BindBuffer(ARRAY_BUFFER, posBuffer);
-            gl.BufferData(ARRAY_BUFFER, vertices, STATIC_DRAW);
-            gl.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, itemSize, FLOAT, false, 0, 0);
+            gl2.EnableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
+            gl2.BindBuffer(ARRAY_BUFFER, posBuffer);
+            gl2.BufferData(ARRAY_BUFFER, vertices, STATIC_DRAW);
+            gl2.VertexAttribPointer((uint)AttributeLocations.VertexAttribLocation, itemSize, FLOAT, false, 0, 0);
 
-            gl.DrawArrays(LINE_STRIP, 0, numItems);
-            gl.DisableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
+            gl2.DrawArrays(LINE_STRIP, 0, numItems);
+            gl2.DisableVertexAttribArray((uint)AttributeLocations.VertexAttribLocation);
         }
 
         #endregion
@@ -2276,7 +2314,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             Fusee.Base.Core.ImageData image = Fusee.Base.Core.ImageData.CreateImage(w, h, ColorUint.Black);
             var pixelDataTA = Uint8Array.From(image.PixelData);
-            gl.ReadPixels(x, y, w, h, RGB /* yuk, yuk ??? */, UNSIGNED_BYTE, pixelDataTA);
+            gl2.ReadPixels(x, y, w, h, RGB /* yuk, yuk ??? */, UNSIGNED_BYTE, pixelDataTA);
             return image;
         }
 
@@ -2290,9 +2328,50 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             float[] depth = new float[1];
             var depthTA = Float32Array.From(depth);
-            gl.ReadPixels(x, y, 1, 1, DEPTH_COMPONENT, UNSIGNED_BYTE, depthTA);
+            gl2.ReadPixels(x, y, 1, 1, DEPTH_COMPONENT, UNSIGNED_BYTE, depthTA);
 
             return depth[0];
+        }
+
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="renderTarget"></param>
+        /// <param name="type"></param>
+        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="renderTarget"></param>
+        /// <param name="type"></param>
+        /// <param name="texHandle"></param>
+        public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="val"></param>
+        public void SetShaderParam(IShaderParam param, float2[] val)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// TODO: IMPLEMENT
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="texIds"></param>
+        public void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

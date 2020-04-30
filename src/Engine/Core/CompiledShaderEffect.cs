@@ -3,7 +3,7 @@
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// All compiled information of one <see cref="ShaderEffect"/>.
+    /// All compiled information of one <see cref="Scene.ShaderEffect"/>.
     /// A <see cref="CompiledShaderEffect"/> can have more than one Pass where each pass contains another shader program.
     /// Those are saved as a <see cref="ShaderProgram"/>s.
     /// </summary>

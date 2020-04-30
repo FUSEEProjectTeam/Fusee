@@ -18,7 +18,7 @@ namespace Fusee.Examples.Materials.Core
     [FuseeApplication(Name = "FUSEE Materials Example", Description = "Showcase of our materials")]
     public class Materials : RenderCanvas
     {
-        private SceneRendererDeferred _renderer;
+        private SceneRendererForward _renderer;
         private SceneRendererForward _guiDescRenderer;
 
         private float _alpha, _beta;
@@ -31,11 +31,11 @@ namespace Fusee.Examples.Materials.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var fontLatoMap = new FontMap(fontLato, 32);
 
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
+            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
+            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
 
             var icosphereWithTangents = new Icosphere(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
@@ -308,6 +308,8 @@ namespace Fusee.Examples.Materials.Core
                 }
             };
 
+
+
             _scene = new SceneContainer
             {
                 Header = new SceneHeader
@@ -331,7 +333,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "complete",
                                         Translation = new float3(-15, 0, 0)
                                     },
-                                       ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                       await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                         {
                                             MatProbs =
                                             {
@@ -373,7 +375,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo and specular",
                                         Translation = new float3(-10, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    await ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
                                     specularColor: new float4(.5f, .5f, .5f, 1),
                                     shininess: 25.0f,
                                     specularIntensity: 2.5f),
@@ -389,7 +391,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, specular, albedo texture",
                                         Translation = new float3(-5, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    await ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
                                     specularColor: new float4(.5f, .5f, .5f, 1),
                                     albedoTexture: "albedoTex.jpg",
                                     albedoTextureMix: 1f,
@@ -407,12 +409,11 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "specular texture",
                                         Translation = new float3(0, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
                                             HasAlbedo = true,
-                                            HasAlbedoTexture = true,
                                             HasSpecular = true,
                                             HasSpecularTexture = true
                                         },
@@ -439,7 +440,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "normal map",
                                         Translation = new float3(5, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -473,7 +474,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, emissive",
                                         Translation = new float3(10, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -502,7 +503,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, emissive, emissive texture",
                                         Translation = new float3(15, 0, 0)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -531,7 +532,7 @@ namespace Fusee.Examples.Materials.Core
             };
 
             _guiDescRenderer = new SceneRendererForward(guiDescriptionScene);
-            _renderer = new SceneRendererDeferred(_scene);
+            _renderer = new SceneRendererForward(_scene);
 
             return true;
         }

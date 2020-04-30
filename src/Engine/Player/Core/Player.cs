@@ -80,7 +80,7 @@ namespace Fusee.Engine.Player.Core
             _gui = await CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
-           
+
             // Register the input devices that are not already given.
             _gamePad = GetDevice<GamePadDevice>(0);
 
@@ -109,8 +109,8 @@ namespace Fusee.Engine.Player.Core
                     _sceneScale = float4x4.CreateScale(200.0f / maxScale);
                 else
                     _sceneScale = float4x4.Identity;
-            }            
-            
+            }
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -135,7 +135,7 @@ namespace Fusee.Engine.Player.Core
             {
                 _keys = true;
             }
-            
+
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
             // Zoom & Roll
             if (Touch.TwoPoint)
@@ -161,9 +161,10 @@ namespace Fusee.Engine.Player.Core
                 _offset *= curDamp * 0.8f;
             }
 
-            
+
             // UpDown / LeftRight rotation
-            if (Mouse.LeftButton) {
+            if (Mouse.LeftButton)
+            {
 
                 _keys = false;
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
@@ -231,7 +232,7 @@ namespace Fusee.Engine.Player.Core
             // Tick any animations and Render the scene loaded in Init()
             RC.View = view;
             RC.Projection = perspective;
-            _sceneRenderer.Animate();
+            //_sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
             RC.View = view;
@@ -250,7 +251,7 @@ namespace Fusee.Engine.Player.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            
+   
         }
 
         private async Task<SceneContainer> CreateGui()
@@ -332,11 +333,13 @@ namespace Fusee.Engine.Player.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            SetCursor(CursorType.Hand);
+           _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
+            SetCursor(CursorType.Standard);
             _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 

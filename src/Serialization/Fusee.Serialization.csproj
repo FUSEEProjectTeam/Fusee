@@ -1,25 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Fusee.Serialization</RootNamespace>
-    <PackageId>Fusee.Serialization</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-      <MonoWasmLinkSkip>protobuf-net</MonoWasmLinkSkip>
+    <PropertyGroup>
+        <RootNamespace>Fusee.Serialization</RootNamespace>
+        <PackageId>Fusee.Serialization</PackageId>
+        <Description>Fusee Serialization</Description>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+        <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
+    <ItemGroup>       
+        <Reference Include="protobuf-net.Core">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
+        </Reference>
+    </ItemGroup>
 
-  <ItemGroup>
-      <Reference Include="protobuf-net.Core">
-          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
-      </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="..\Xene\Fusee.Xene.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+    </ItemGroup>
 </Project>

@@ -64,7 +64,9 @@ namespace Fusee.Base.Imp.Desktop
                         case ".jpeg":
                         case ".png":
                         case ".bmp":
-                            return FileDecoder.LoadImage((Stream)storage);
+                            var img = FileDecoder.LoadImage((Stream)storage);
+                            //((Stream)storage).Close();
+                            return img;
                     }
                     return null;
                 },
@@ -77,7 +79,12 @@ namespace Fusee.Base.Imp.Desktop
                         case ".jpeg":
                         case ".png":
                         case ".bmp":
-                            return await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false);
+                            {
+                                var img = await FileDecoder.LoadImageAsync((Stream)storage);
+                                //((Stream)storage).Close();
+                                return img;
+                            }
+                            
                     }
                     return null;
                 },

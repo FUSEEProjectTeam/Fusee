@@ -1,0 +1,65 @@
+﻿<Project Sdk="Mono.WebAssembly.Sdk">
+    <PropertyGroup>
+        <RootNamespace>Fusee.Examples.AdvancedUI.WebAsm</RootNamespace>
+        <PackageId>Fusee.Examples.AdvancedUI.WebAsm</PackageId>
+        <TargetFramework>netstandard2.1</TargetFramework>
+        <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+        
+         <!-- Needed for mono linker, otherwise some empty base classes or serialization attributes are removed -->
+        <MonoWasmLinkSkip>Fusee.Engine.Core;Fusee.Serialization;Fusee.Math.Core;protobuf-net.Core</MonoWasmLinkSkip>
+    
+        <IsPackable>true</IsPackable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\WebAsm\</OutputPath>       
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="server.py" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="canvaskit.wasm" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="canvaskit.js" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="index.html" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="..\Core\Fusee.Examples.AdvancedUI.Core.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+
+        <Reference Include="Uno.SkiaSharp">
+            <HintPath>$(FuseeEngineRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
+        </Reference>
+
+        <Reference Include="protobuf-net">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+        </Reference>
+
+        <PackageReference Include="WebAssembly.Bindings" Version="0.2.3" />
+        <PackageReference Include="System.Net.Http.WebAssemblyHttpHandler" Version="0.2.3" />
+        <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.3" />
+        <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+        
+        <!-- Needed for mono linker, otherwise DLL not found exception -->
+        <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
+    </ItemGroup>
+
+    <Target Name="FuseeWasmCopyInheritedAssets" BeforeTargets="MonoWasmCopyOutput">
+        <ItemGroup>
+            <InheritedAssets Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)\Assets\*.*" />
+        </ItemGroup>
+        <Copy SourceFiles="%(InheritedAssets.FullPath)" DestinationFolder="$(OutputPath)\Assets" ContinueOnError="true" />
+    </Target>
+</Project>

@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a new Instance of TextureManager. Th instance is handling the memory allocation and deallocation on the GPU by observing Texture.cs objects.
         /// </summary>
-        /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See <see cref="RegisterNewTexture"/>.</param>
+        /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See <see cref="RegisterNewTexture(Texture)"/>.</param>
         public TextureManager(IRenderContextImp renderContextImp)
         {
             _renderContextImp = renderContextImp;

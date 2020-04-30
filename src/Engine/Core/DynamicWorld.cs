@@ -7,6 +7,7 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+#pragma warning disable CS1591 // Missing XML comment
     public class DynamicWorld
     {
         internal /*readonly*/ IDynamicWorldImp _dwi;
@@ -443,4 +444,6 @@ namespace Fusee.Engine.Core
             _dwi.Dispose();
         }
     }
+#pragma warning restore CS1591 // Missing XML comment
+
 }

@@ -2,6 +2,7 @@
 
 namespace Fusee.Engine.Core
 {
+#pragma warning disable CS1591 // Missing XML-comment
     public class GearConstraint
     {
         internal IGearConstraintImp _iGearConstraintImp;
@@ -30,4 +31,6 @@ namespace Fusee.Engine.Core
             return retval;
         }
     }
+#pragma warning restore CS1591 // Missing XML-comment
+
 }

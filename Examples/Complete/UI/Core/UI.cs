@@ -53,12 +53,12 @@ namespace Fusee.Examples.UI.Core
         private GUIText _fpsText;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
-        private SceneContainer CreateNineSliceScene()
+        private async Task<SceneContainer> CreateNineSliceScene()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
-            var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
+            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
+            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
+            var vsNineSlice = await AssetStorage.GetAsync<string>("nineSlice.vert");
+            var psNineSlice = await AssetStorage.GetAsync<string>("nineSliceTile.frag");
 
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
             
@@ -108,10 +108,10 @@ namespace Fusee.Examples.UI.Core
 
             var catTextureNode = new TextureNode(
                 "Cat",
-                AssetStorage.Get<string>("nineSlice.vert"),
-                AssetStorage.Get<string>("nineSliceTile.frag"),
+                await AssetStorage.GetAsync<string>("nineSlice.vert"),
+                await AssetStorage.GetAsync<string>("nineSliceTile.frag"),
                 //Set the albedo texture you want to use.
-                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
+                new Texture(await AssetStorage.GetAsync<ImageData>("Kitti.jpg")),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -152,7 +152,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
@@ -167,7 +167,7 @@ namespace Fusee.Examples.UI.Core
                 "testImage",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
+                new Texture(await AssetStorage.GetAsync<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_RIGHT),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 
@@ -184,7 +184,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -198,7 +198,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -212,7 +212,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_VERTICAL), //Anchor is in the lower right corner. Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_VERTICAL, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -245,7 +245,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
+            var canvasMat = await ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
 
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
@@ -354,7 +354,7 @@ namespace Fusee.Examples.UI.Core
             _canvasHeight = _initCanvasHeight;
             _canvasWidth = _initCanvasWidth;
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
 
             _fontMap1 = new FontMap(fontLato, 8);
             _fontMap = new FontMap(fontLato, 24);
@@ -362,8 +362,8 @@ namespace Fusee.Examples.UI.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians.jpg"));
-            var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
+            _bltDestinationTex = new Texture(await AssetStorage.GetAsync<ImageData>("townmusicians.jpg"));
+            var bltScrTex = new Texture(await AssetStorage.GetAsync<ImageData>("censored_79_16.png"));
             _bltDestinationTex.Blt(180, 225, bltScrTex);
 
             _btnCanvas = new GUIButton
@@ -387,7 +387,7 @@ namespace Fusee.Examples.UI.Core
             _btnCat.OnMouseOver += OnMouseOverBtnCat;
 
             // Set the scene by creating a scene graph
-            _scene = CreateNineSliceScene();
+            _scene = await CreateNineSliceScene();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);
@@ -395,7 +395,7 @@ namespace Fusee.Examples.UI.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
 
-            return true;
+            return await Task.FromResult(true);
         }
 
         // RenderAFrame is called once a frame

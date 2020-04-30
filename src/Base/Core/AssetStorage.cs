@@ -140,9 +140,10 @@ namespace Fusee.Base.Core
             // var ser = new ProtoBuf.Serializer<T>();
             var stream = new MemoryStream();
 
-            ProtoBuf.Serializer.Serialize(stream, source);
-            stream.Position = 0;
-            return ProtoBuf.Serializer.Deserialize<T>(stream) as T;
+            //ProtoBuf.Serializer.Serialize(stream, source);
+            //stream.Position = 0;
+            //return ProtoBuf.Serializer.Deserialize<T>(stream) as T;
+            return source;
         }
     }
 }
