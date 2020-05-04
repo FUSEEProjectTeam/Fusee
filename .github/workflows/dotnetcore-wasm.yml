@@ -34,3 +34,9 @@ jobs:
 
     - name: Math tests
       run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
+      
+    - name: Upload Example-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: examples
+        path: bin/Release/Examples/**/WebAsm/
