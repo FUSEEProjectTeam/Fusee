@@ -3,17 +3,20 @@
         <RootNamespace>Fusee.Engine.Player.WebAsm</RootNamespace>
         <PackageId>Fusee.Engine.Player.WebAsm</PackageId>
         <TargetFramework>netstandard2.1</TargetFramework>
-        <MonoWasmLinkMode>Full</MonoWasmLinkMode>
-        
+        <MonoWasmLinkMode>Full</MonoWasmLinkMode>        
          <!-- Needed for mono linker, otherwise some empty base classes or serialization attributes are removed -->
         <MonoWasmLinkSkip>Fusee.Engine.Core;Fusee.Serialization;Fusee.Math.Core;protobuf-net.Core</MonoWasmLinkSkip>
-    
         <IsPackable>true</IsPackable>
     </PropertyGroup>
 
     <PropertyGroup>
         <OutputPath>$(BaseOutputPath)\Player\WebAsm\</OutputPath>       
     </PropertyGroup>
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>none</DebugType>
+    </PropertyGroup>
+
 
     <ItemGroup>
         <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
