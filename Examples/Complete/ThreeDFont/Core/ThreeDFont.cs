@@ -138,24 +138,6 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             _renderer = new SceneRendererForward(sc);
 
-            var shaderFx = new ShaderEffect(
-            new FxPassDeclaration
-            {
-                PS = AssetStorage.Get<string>("FragShader.frag"),
-                VS = AssetStorage.Get<string>("VertShader.vert"),
-                StateSet = new RenderStateSet
-                {
-                    ZEnable = true
-                }
-            },
-            new List<IFxParamDeclaration>
-            {
-                new FxParamDeclaration<float4x4> { Name = "xform", Value = float4x4.Identity}
-            });
-
-            RC.CreateShaderProgram(true, shaderFx);
-            RC.SetEffect(shaderFx);
-
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
 
