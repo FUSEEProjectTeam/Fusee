@@ -1,4 +1,4 @@
-﻿#version 440 core
+﻿#version 300 es
 precision highp float;
                 
 uniform mat4 LightSpaceMatrix;

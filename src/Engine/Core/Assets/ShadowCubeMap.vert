@@ -1,4 +1,4 @@
-﻿#version 440 core            
+﻿#version 300 es        
             
 uniform mat4 FUSEE_M;              
 in vec3 fuVertex; 

@@ -1,4 +1,4 @@
-﻿#version 440 core
+﻿#version 300 es
 #define ITERATIONS 14
 #define LIGHTED_SCENE_TEX G_ALBEDO
 #define EDGE_THRESHOLD_MIN 0.0625
