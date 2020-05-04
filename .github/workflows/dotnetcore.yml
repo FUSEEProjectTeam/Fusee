@@ -34,3 +34,21 @@ jobs:
 
     - name: Math tests
       run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
+    
+    - name: Upload Player-Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: player
+        path: bin/Release/Player/Desktop/
+
+    - name: Upload Tool-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: tools
+        path: bin/Release/Tools/
+
+    - name: Upload Example-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: examples
+        path: bin/Release/Examples/**/Desktop/
