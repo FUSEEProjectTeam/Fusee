@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.ShaderShards
 {
     /// <summary>
-    /// Container for a GLSL "surface out struct" declaration and default constructor.
+    /// Container for a "surface out struct" declaration and the suitable default constructor, written in shader language.
     /// </summary>
     public struct LightingSetupShards
     {
@@ -36,19 +36,21 @@ namespace Fusee.Engine.Core.ShaderShards
         NormalMap = 16,
 
         /// <summary>
-        /// Does this Effect use the standard (= non pbr) specular calculation?
+        /// A Effect uses the standard (= non pbr) specular calculation.
+        /// Includes diffuse calculation.
         /// </summary>
         SpecularStd = 8,
 
         /// <summary>
-        /// Does this Effect use the pbr specular calculation?
+        /// A Effect uses the pbr specular calculation.
+        /// Includes diffuse calculation.
         /// </summary>
         SpecularPbr = 4,
 
         /// <summary>
-        /// Does this effect perform diffuse lighting calculation?
+        /// Does this effect perform only a diffuse lighting calculation?
         /// </summary>
-        Diffuse = 2,
+        DiffuseOnly = 2,
 
         /// <summary>
         /// Does this effect perform no lighting calculation at all?
@@ -122,7 +124,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 };
                 return _lightingSetupCache[setup];
             }
-            else if (setup.HasFlag(LightingSetupFlags.Diffuse))
+            else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {

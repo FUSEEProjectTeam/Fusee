@@ -68,7 +68,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 lighting.Add(DiffuseComponent());
                 lighting.Add(PbrSpecularComponent());
             }
-            else if (setup.HasFlag(LightingSetupFlags.Diffuse))
+            else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
@@ -299,7 +299,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.AddRange(Attenuation());
                 methodBody.Add("return (Idif + Ispe) * att * lightStrength * light.intensities.rgb;");
             }
-            else if (setup.HasFlag(LightingSetupFlags.Diffuse))
+            else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());

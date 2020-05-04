@@ -486,7 +486,7 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.SpecularStd : LightingSetupFlags.Diffuse;
+            var lightingSetup = m.HasSpecular ? LightingSetupFlags.SpecularStd : LightingSetupFlags.DiffuseOnly;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
@@ -527,7 +527,7 @@ namespace Fusee.Engine.Core
             }
             else if (lightingSetup == LightingSetupFlags.SpecularStd)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, m.Specular.Shininess, m.Specular.Strength);
-            else if (lightingSetup == LightingSetupFlags.Diffuse)
+            else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
@@ -540,7 +540,7 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.SpecularPbr : LightingSetupFlags.Diffuse;
+            var lightingSetup = m.HasSpecular ? LightingSetupFlags.SpecularPbr : LightingSetupFlags.DiffuseOnly;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
@@ -581,7 +581,7 @@ namespace Fusee.Engine.Core
             }
             else if (lightingSetup == LightingSetupFlags.SpecularPbr)
                 sfx = MakeEffect.FromDiffuseSpecularPbr(m.Albedo.Color, m.RoughnessValue, m.FresnelReflectance, m.DiffuseFraction);
-            else if (lightingSetup == LightingSetupFlags.Diffuse)
+            else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
