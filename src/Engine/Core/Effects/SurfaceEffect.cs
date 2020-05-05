@@ -500,7 +500,8 @@ namespace Fusee.Engine.Core.Effects
             return (IFxParamDeclaration)ob;
         }
 
-        internal static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
+        //TODO: make internal again
+        public static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
         {
             for (int i = 0; i < numberOfLights; i++)
             {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// The default <see cref="ShaderEffect"/>, that is used if no other ShaderEffect is found.
+    /// The default <see cref="Effect"/>, that is used if no other Effect is found.
     /// Provides properties to change the Diffuse Color, Specular Color, Specular Intensity and Specular Shininess.
     /// </summary>
     public class DefaultSurfaceEffect : SurfaceEffect

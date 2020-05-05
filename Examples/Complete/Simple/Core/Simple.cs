@@ -13,6 +13,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
+using Fusee.Engine.Core.ShaderShards;
+using System.Numerics;
 
 namespace Fusee.Examples.Simple.Core
 {
@@ -55,10 +57,42 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
+            var brdfFx = new ShaderEffect
+            (
+                new FxPassDeclaration()
+                {
+                    VS = AssetStorage.Get<string>("BRDF.vert"),
+                    PS = AssetStorage.Get<string>("BRDF.frag"),
+                    StateSet = RenderStateSet.Default
+                },
+                new List<IFxParamDeclaration>() 
+                {
+                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity },
+                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.IView, Value = float4x4.Identity },
+                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
+                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
+                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
+
+                    new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(1.0f, 0.0f, 0.0f, 1.0f) },
+                    new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
+                    new FxParamDeclaration<float>() { Name = "IOR", Value = 0.47f },
+                    new FxParamDeclaration<float>() { Name = "Roughness", Value = 0.1f },
+                    new FxParamDeclaration<float>() { Name = "Subsurface", Value = 0.0f },
+                    new FxParamDeclaration<float>() { Name = "Specular", Value = 1.0f },
+                    new FxParamDeclaration<float>() { Name = "Ambient", Value = 0.1f },
+                }
+            );
+
+            foreach (var item in SurfaceEffect.CreateForwardLightingParamDecls(8))
+            {
+                brdfFx.ParamDecl.Add(item.Name, item);
+            }
+
             _sufEffect = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecular(new float4(1f, 0f, 0f, 1f), 22f, 1f);
 
             _rocketScene.Children[0].Children[1].RemoveComponent<DefaultSurfaceEffect>();
-            _rocketScene.Children[0].Children[1].Components.Insert(0, _sufEffect);
+            //_rocketScene.Children[0].Children[1].Components.Insert(0, _sufEffect);
+            _rocketScene.Children[0].Children[1].Components.Insert(0, brdfFx);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
