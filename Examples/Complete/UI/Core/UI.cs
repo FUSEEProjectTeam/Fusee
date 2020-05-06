@@ -245,7 +245,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
+            var canvasMat = await ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
 
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());

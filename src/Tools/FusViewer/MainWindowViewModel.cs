@@ -30,7 +30,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
         {
             _caller = caller;
         }
-        public async void Execute(object parameter)
+        public void Execute(object parameter)
         {
             var openFileDialog = new OpenFileDialog()
             {
@@ -40,7 +40,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             {
                 _caller.PathToFile = openFileDialog.FileName;
                 using var stream = File.OpenRead(openFileDialog.FileName);
-                _caller.CurrentContainer = await FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>(stream));
+                _caller.CurrentContainer = FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>(stream));
             }
         }
 

@@ -78,7 +78,7 @@ namespace Fusee.Examples.Bone.Core
                                     },
                                     new Engine.Core.Scene.Bone(),
                                     new Weight(),
-                                    ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
+                                    await ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
                                     CreateCuboid(float3.One)
                                 }
                             }

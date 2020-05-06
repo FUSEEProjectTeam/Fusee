@@ -1,5 +1,4 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
@@ -51,7 +50,7 @@ namespace Fusee.Examples.NormalMap.Core
             plane.Tangents = plane.CalculateTangents();
             plane.BiTangents = plane.CalculateBiTangents();
 
-            var sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto
+            var sfx = await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto
             (
                 new Engine.Core.ShaderShards.ShaderEffectProps
                 {
@@ -66,16 +65,16 @@ namespace Fusee.Examples.NormalMap.Core
                     MatValues =
                     {
                         AlbedoColor = float4.One * 0.5f,
-                        AlbedoTexture = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png")),
+                        AlbedoTexture = "Bricks_1K_Color.png",
                         AlbedoMix = 1.0f,
                         SpecularColor = float4.One,
                         SpecularIntensity = .8f,
                         SpecularShininess = 128f,
-                        NormalMap = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png")),
+                        NormalMap = "Bricks_1K_Normal.png",
                         NormalMapIntensity = 1.0f
                     }
                 }
-            ) ;
+            );
 
 
             _scene = new SceneContainer

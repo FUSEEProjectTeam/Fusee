@@ -482,7 +482,7 @@ namespace Fusee.Test.Serialization.V1
             }
 
             // now we are sure our created fus file is correct, so we can deserialize it and test those methods
-            var FusFileConvertedToGT = await FusSceneConverter.ConvertFrom(GTConvertedToFusFile);
+            var FusFileConvertedToGT = FusSceneConverter.ConvertFrom(GTConvertedToFusFile);
             var sceneFileFlattenedAgain = new List<Xene.IComponent>();
             FlattenScene(sceneFileFlattenedAgain, (FusFileConvertedToGT.Children[0]));
 
@@ -767,7 +767,7 @@ namespace Fusee.Test.Serialization.V1
                                }
                            }
                        },
-                       ShaderCodeBuilder.MakeShaderEffectProto(
+                       await ShaderCodeBuilder.MakeShaderEffectProto(
                            albedoColor: ColorUint.Tofloat4(ColorUint.Red),
                            specularColor: ColorUint.Tofloat4(ColorUint.White),
                            shininess: 4.0f,
@@ -802,7 +802,7 @@ namespace Fusee.Test.Serialization.V1
                            WasLoaded = true
                        },
                        new Camera(Engine.Core.Scene.ProjectionMethod.Orthographic, 0, 500, 2000),
-                       ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new Engine.Core.ShaderShards.ShaderEffectProps
+                       await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new Engine.Core.ShaderShards.ShaderEffectProps
                        {
                            MatValues =
                            {
@@ -821,7 +821,7 @@ namespace Fusee.Test.Serialization.V1
                             Components = new List<SceneComponent>
                             {
                                 new Transform {Translation=new float3(0, 60, 0),  Scale = new float3(20, 100, 20) },
-                                ShaderCodeBuilder.MakeShaderEffectProto(
+                                await ShaderCodeBuilder.MakeShaderEffectProto(
                                     albedoColor: ColorUint.Tofloat4(ColorUint.Green),
                                     specularColor: ColorUint.Tofloat4(ColorUint.White),
                                     specularIntensity: 1.0f,
@@ -849,7 +849,7 @@ namespace Fusee.Test.Serialization.V1
                                             Components = new List<SceneComponent>
                                             {
                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
-                                                ShaderCodeBuilder.MakeShaderEffectProto(
+                                                await ShaderCodeBuilder.MakeShaderEffectProto(
                                                     albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
                                                     specularColor: ColorUint.Tofloat4(ColorUint.White),
                                                     specularIntensity: 1.0f,
@@ -873,7 +873,7 @@ namespace Fusee.Test.Serialization.V1
                                                             Components = new List<SceneComponent>
                                                             {
                                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
-                                                                ShaderCodeBuilder.MakeShaderEffectProto(
+                                                                await ShaderCodeBuilder.MakeShaderEffectProto(
                                                                                     albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
                                                                                     specularColor: ColorUint.Tofloat4(ColorUint.White),
                                                                                     specularIntensity: 1.0f,

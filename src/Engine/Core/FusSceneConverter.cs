@@ -5,7 +5,6 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -22,7 +21,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static async Task<SceneContainer> ConvertFrom(FusFile fus)
+        public static SceneContainer ConvertFrom(FusFile fus)
         {
             if (fus == null)
             {
@@ -37,51 +36,8 @@ namespace Fusee.Engine.Core
                 return new SceneContainer();
             }
 
-
+            var instance = new FusFileToSceneConvertV1();
             var payload = (FusScene)fus.Contents;
-
-            // gather all FusMaterials
-            // load and cache them
-            var texCache = new Dictionary<string, Texture>();
-            var allMats = payload.ComponentList.Where(x => x is FusMaterial).ToList();
-
-            foreach (FusMaterial mat in allMats)
-            {
-                if (mat.Albedo?.Texture != null)
-                {
-                    if (texCache.ContainsKey(mat.Albedo.Texture)) continue;
-                    texCache.Add(mat.Albedo.Texture,
-                          new Texture(await AssetStorage.GetAsync<ImageData>(mat.Albedo.Texture)));
-                }
-
-
-                if (mat.Specular?.Texture != null)
-                {
-                    if (texCache.ContainsKey(mat.Specular.Texture)) continue;
-                    texCache.Add(mat.Specular.Texture,
-                          new Texture(await AssetStorage.GetAsync<ImageData>(mat.Specular.Texture)));
-                }
-
-
-                if (mat.Emissive?.Texture != null)
-                {
-                    if (texCache.ContainsKey(mat.Emissive.Texture)) continue;
-
-                    texCache.Add(mat.Emissive.Texture,
-                               new Texture(await AssetStorage.GetAsync<ImageData>(mat.Emissive.Texture)));
-                }
-
-                if (mat.NormalMap?.Texture != null)
-                {
-                    if (texCache.ContainsKey(mat.NormalMap.Texture)) continue;
-                    texCache.Add(mat.NormalMap?.Texture,
-                           new Texture(await AssetStorage.GetAsync<ImageData>(mat.NormalMap?.Texture)));
-                }
-
-            }
-
-
-            var instance = new FusFileToSceneConvertV1(texCache);
             var converted = instance.Convert(payload);
 
             converted.Header = new SceneHeader
@@ -131,7 +87,6 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<FusMaterial, ShaderEffect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Stack<SceneNode> _boneContainers;
-        private readonly Dictionary<string, Texture> _textureCache;
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -141,7 +96,7 @@ namespace Fusee.Engine.Core
             _predecessors.Pop();
         }
 
-        internal FusFileToSceneConvertV1(Dictionary<string, Texture> textureCache)
+        internal FusFileToSceneConvertV1()
         {
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new SceneContainer();
@@ -149,7 +104,6 @@ namespace Fusee.Engine.Core
             _matMap = new Dictionary<FusMaterial, ShaderEffect>();
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _boneContainers = new Stack<SceneNode>();
-            _textureCache = textureCache;
         }
 
         internal SceneContainer Convert(FusScene sc)
@@ -167,7 +121,7 @@ namespace Fusee.Engine.Core
         /// <param name="snc"></param>
         [VisitMethod]
         public void ConvFusNode(FusNode snc)
-        {
+        {   
             snc.Scene = _fusScene;
 
             if (_predecessors.Count != 0)
@@ -312,12 +266,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(FusMaterial matComp)
+        public async void ConvMaterial(FusMaterial matComp)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var effect = LookupMaterial(matComp);
+            var effect = await LookupMaterial(matComp);
             _currentNode.Components.Add(effect);
         }
 
@@ -326,12 +280,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(FusMaterialPBR matComp)
+        public async void ConvMaterial(FusMaterialPBR matComp)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var effect = LookupMaterial(matComp);
+            var effect = await LookupMaterial(matComp);
             _currentNode.Components.Add(effect);
         }
 
@@ -372,7 +326,7 @@ namespace Fusee.Engine.Core
             {
                 _currentNode.Components.Add(mesh);
                 return;
-            }
+            }          
 
             // convert mesh
             mesh = new Mesh
@@ -527,64 +481,40 @@ namespace Fusee.Engine.Core
 
         #region Make ShaderEffect
 
-        private MaterialValues MakeMatVals(FusMaterial m)
+        private async Task<ShaderEffect> LookupMaterial(FusMaterial m)
         {
+            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+
             var vals = new MaterialValues();
 
             if (m.HasNormalMap)
             {
-                _textureCache.TryGetValue(m.NormalMap.Texture, out var tex);
-                vals.NormalMap = tex ?? null;
+                vals.NormalMap = m.NormalMap.Texture ?? null;
                 vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
             }
             if (m.HasAlbedo)
             {
                 vals.AlbedoColor = m.Albedo.Color;
-
-                if (m.Albedo.Texture != null)
-                {
-                    vals.AlbedoMix = m.Albedo.Mix;
-                    _textureCache.TryGetValue(m.Albedo.Texture, out var tex);
-                    vals.AlbedoTexture = tex ?? null;
-                }
-
+                vals.AlbedoMix = m.Albedo.Mix;
+                vals.AlbedoTexture = m.Albedo.Texture ?? null;
             }
             if (m.HasEmissive)
             {
                 vals.EmissiveColor = m.Emissive.Color;
-
-                if (m.Emissive.Texture != null)
-                {
-                    vals.EmissiveMix = m.Emissive.Mix;
-                    _textureCache.TryGetValue(m.Emissive.Texture, out var tex);
-                    vals.EmissiveTexture = tex ?? null;
-                }
-
+                vals.EmissiveMix = m.Emissive.Mix;
+                vals.EmissiveTexture = m.Emissive.Texture ?? null;
             }
 
             if (m.HasSpecular)
             {
                 vals.SpecularColor = m.Specular.Color;
+                vals.SpecularMix = m.Specular.Mix;
+                vals.SpecularTexture = m.Specular.Texture ?? null;
                 vals.SpecularIntensity = m.Specular.Intensity;
                 vals.SpecularShininess = m.Specular.Shininess;
-                if (m.Specular.Texture != null)
-                {
-                    vals.SpecularMix = m.Specular.Mix;
-                    _textureCache.TryGetValue(m.Specular.Texture, out var tex);
-                    vals.SpecularTexture = tex ?? null;
-                }
             }
 
-            return vals;
-        }
-
-        private ShaderEffect LookupMaterial(FusMaterial m)
-        {
-            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
-
-            var vals = MakeMatVals(m);
-
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+            sfx = await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
                 new ShaderEffectProps
                 {
                     MatProbs =
@@ -607,17 +537,44 @@ namespace Fusee.Engine.Core
             return sfx;
         }
 
-        private ShaderEffect LookupMaterial(FusMaterialPBR m)
+        private async Task<ShaderEffect> LookupMaterial(FusMaterialPBR m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var vals = MakeMatVals(m);
+            var vals = new MaterialValues();
+
+            if (m.HasNormalMap)
+            {
+                vals.NormalMap = m.NormalMap.Texture ?? null;
+                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
+            }
+            if (m.HasAlbedo)
+            {
+                vals.AlbedoColor = m.Albedo.Color;
+                vals.AlbedoMix = m.Albedo.Mix;
+                vals.AlbedoTexture = m.Albedo.Texture ?? null;
+            }
+            if (m.HasEmissive)
+            {
+                vals.EmissiveColor = m.Emissive.Color;
+                vals.EmissiveMix = m.Emissive.Mix;
+                vals.EmissiveTexture = m.Emissive.Texture ?? null;
+            }
+
+            if (m.HasSpecular)
+            {
+                vals.SpecularColor = m.Specular.Color;
+                vals.SpecularMix = m.Specular.Mix;
+                vals.SpecularTexture = m.Specular.Texture ?? null;
+                vals.SpecularIntensity = m.Specular.Intensity;
+                vals.SpecularShininess = m.Specular.Shininess;
+            }
 
             vals.DiffuseFraction = m.DiffuseFraction;
             vals.FresnelReflectance = m.FresnelReflectance;
             vals.RoughnessValue = m.RoughnessValue;
 
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+            sfx = await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
                 new ShaderEffectProps
                 {
                     MatProbs =
@@ -1051,5 +1008,4 @@ namespace Fusee.Engine.Core
         }
         #endregion
     }
-
 }

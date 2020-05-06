@@ -285,7 +285,7 @@ namespace Fusee.Examples.Picking.Core
                         Components = new List<SceneComponent>
                         {
                             new Transform { Scale = float3.One },
-                            ShaderCodeBuilder.MakeShaderEffect(
+                            await ShaderCodeBuilder.MakeShaderEffect(
                                                         albedoColor: ColorUint.Tofloat4(ColorUint.Red),
                                                         specularColor: ColorUint.Tofloat4(ColorUint.White),
                                                         shininess: 4.0f,
@@ -301,7 +301,7 @@ namespace Fusee.Examples.Picking.Core
                                 Components = new List<SceneComponent>
                                 {
                                     new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                     ShaderCodeBuilder.MakeShaderEffect(
+                                     await ShaderCodeBuilder.MakeShaderEffect(
                                                         albedoColor: ColorUint.Tofloat4(ColorUint.Green),
                                                         specularColor: ColorUint.Tofloat4(ColorUint.White),
                                                         shininess: 4.0f,
@@ -326,7 +326,7 @@ namespace Fusee.Examples.Picking.Core
                                                 Components = new List<SceneComponent>
                                                 {
                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    ShaderCodeBuilder.MakeShaderEffect(
+                                                    await ShaderCodeBuilder.MakeShaderEffect(
                                                         albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
                                                         specularColor: ColorUint.Tofloat4(ColorUint.White),
                                                         shininess: 4.0f,
@@ -351,7 +351,7 @@ namespace Fusee.Examples.Picking.Core
                                                                 Components = new List<SceneComponent>
                                                                 {
                                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                     ShaderCodeBuilder.MakeShaderEffect(
+                                                                     await ShaderCodeBuilder.MakeShaderEffect(
                                                                         albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
                                                                         specularColor: ColorUint.Tofloat4(ColorUint.White),
                                                                         shininess: 4.0f,
