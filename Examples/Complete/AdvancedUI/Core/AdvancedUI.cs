@@ -63,6 +63,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
             var line = new Line(lineControlPoints, 0.2f);
 
+            var tex = new Texture(await AssetStorage.GetAsync<ImageData>("crumpled-paper-free.jpg"));
+
             return new SceneContainer()
             {
                 Children = new List<SceneNode>()
@@ -78,7 +80,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            await ShaderCodeBuilder.MakeShaderEffect(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)                            
+                            ShaderCodeBuilder.MakeShaderEffect(
+                                albedoColor: new float4(0.90980f, 0.35686f, 0.35686f,1),
+                                specularColor: new float4(1,1,1,1), 
+                                shininess: 20, 
+                                albedoTexture: tex,
+                                albedoTextureMix: 0.5f)
                             //sphere
                         }
                     },
@@ -93,7 +100,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            await ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20),
+                            ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20),
                             line
                         }
                     }
@@ -104,6 +111,10 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
+
+
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 UIHelper.CanvasWidthInit = Width / 100f;
@@ -134,7 +145,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Check if rnd was injected (render tests inject a seeded random)
             if (rnd == null)
                 rnd = new Random();
-
 
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
@@ -177,9 +187,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             //Create a scene picker for performing visibility tests
             _scenePicker = new ScenePicker(_scene);
-
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);

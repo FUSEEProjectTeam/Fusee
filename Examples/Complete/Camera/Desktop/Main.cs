@@ -55,7 +55,7 @@ namespace Fusee.Examples.Camera.Desktop
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
+                            return await FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage));
                         }
                         return null;
                     },

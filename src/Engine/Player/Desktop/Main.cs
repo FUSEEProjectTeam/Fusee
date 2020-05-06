@@ -151,7 +151,7 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage))).ConfigureAwait(false);
+                        return await FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage)).ConfigureAwait(false);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });

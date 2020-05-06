@@ -78,7 +78,7 @@ namespace Fusee.Examples.Simple.Main
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
+                            return await Task.Factory.StartNew(async () => await FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
                         }
                         return null;
                     },

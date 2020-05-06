@@ -94,10 +94,10 @@ namespace Fusee.Examples.AdvancedUI.Core
             VsNineSlice = await AssetStorage.GetAsync<string>("nineSlice.vert");
             PsNineSlice = await AssetStorage.GetAsync<string>("nineSliceTile.frag");
 
-            GreenEffect = await ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
-            YellowEffect = await ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
-            GrayEffect = await ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
-            OccludedDummyEffect = await ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+            GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
+            YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
+            GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
+            OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
 
             FontRaleway = await AssetStorage.GetAsync<Font>("Raleway-Regular.ttf");
             RalewayFontMap = new FontMap(FontRaleway, 24);
@@ -141,7 +141,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal async void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
+        internal void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
 
             var container = new SceneNode
@@ -152,27 +152,27 @@ namespace Fusee.Examples.AdvancedUI.Core
             switch (annotationKind)
             {
                 case AnnotationKind.TO_CHECK:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.YELLOW));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconToCheck, _frameToCheck));
-                    container.Children.Add(await CreateLine(MatColor.YELLOW));
+                    container.Children.Add(CreateLine(MatColor.YELLOW));
                     break;
 
                 case AnnotationKind.DISCARDED:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GRAY));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconDiscarded, _frameDiscarded));
-                    container.Children.Add(await CreateLine(MatColor.GRAY));
+                    container.Children.Add(CreateLine(MatColor.GRAY));
                     break;
 
                 case AnnotationKind.RECOGNIZED_ML:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed));
-                    container.Children.Add(await CreateLine(MatColor.GREEN));
+                    container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
 
                 case AnnotationKind.CONFIRMED:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed));
-                    container.Children.Add(await CreateLine(MatColor.GREEN));
+                    container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
             }
             parentUiElement.Children.Add(container);
@@ -234,7 +234,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             return annotation;
         }
 
-        private async Task<SceneNode> CreateCircle(float2 circleDim, MatColor color)
+        private SceneNode CreateCircle(float2 circleDim, MatColor color)
         {
             float4 col;
 
@@ -283,13 +283,13 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "circle" + "_XForm",
                     },
-                    await ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0),
+                    ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
         }
 
-        private async Task<SceneNode> CreateLine(MatColor color)
+        private SceneNode CreateLine(MatColor color)
         {
             var col = color switch
             {
@@ -317,7 +317,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    await ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
+                    ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
                 }
             };
         }

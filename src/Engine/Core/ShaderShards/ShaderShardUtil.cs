@@ -37,14 +37,14 @@ namespace Fusee.Engine.Core.ShaderShards
     {
 #pragma warning disable CS1591 // missing XML-comment for public type
         public float4 AlbedoColor;
-        public string AlbedoTexture;
+        public Texture AlbedoTexture;
         public float AlbedoMix;
 
         public float4 SpecularColor;
         public float SpecularShininess;
         public float SpecularIntensity;
         public float SpecularMix;
-        public string SpecularTexture;
+        public Texture SpecularTexture;
 
         public float RoughnessValue;
         public float FresnelReflectance;
@@ -52,10 +52,10 @@ namespace Fusee.Engine.Core.ShaderShards
 
         public float4 EmissiveColor;
         public float EmissiveMix;
-        public string EmissiveTexture;
+        public Texture EmissiveTexture;
 
         public float NormalMapIntensity;
-        public string NormalMap;
+        public Texture NormalMap;
 #pragma warning restore CS1591 // missing XML-comment for public type
     }
 

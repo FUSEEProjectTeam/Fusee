@@ -28,9 +28,9 @@ namespace Fusee.Engine.Core
             CreateDefaultEffectCtor();
         }
 
-        static async void CreateDefaultEffectCtor()
+        static void CreateDefaultEffectCtor()
         {
-            Default = await CreateDefaultEffect();
+            Default = CreateDefaultEffect();
         }
 
         #region Deferred
@@ -364,20 +364,20 @@ namespace Fusee.Engine.Core
         /// <param name="albedoTexture">The (optional) albedo texture to use.</param>   
         /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>   
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static async Task<ShaderEffect> MakeShaderEffect(float4 albedoColor, string albedoTexture = "", float albedoTextureMix = 0.5f)
+        public static ShaderEffect MakeShaderEffect(float4 albedoColor, Texture albedoTexture = null, float albedoTextureMix = 0.5f)
         {
-            return await MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
                 MatProbs =
                 {
                     HasAlbedo = true,
-                    HasAlbedoTexture = albedoTexture != string.Empty
+                    HasAlbedoTexture = albedoTexture != null
                 },
                 MatType = MaterialType.Standard,
                 MatValues =
                 {
                     AlbedoColor = albedoColor,
-                    AlbedoTexture = albedoTexture != string.Empty ? albedoTexture : null,
+                    AlbedoTexture = albedoTexture != null ? albedoTexture : null,
                     AlbedoMix = albedoTextureMix
                 }
             });
@@ -390,20 +390,20 @@ namespace Fusee.Engine.Core
         /// <param name="albedoTexture">The (optional) albedo texture to use.</param>   
         /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>   
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectProto(float4 albedoColor, string albedoTexture = "", float albedoTextureMix = 0.5f)
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, Texture albedoTexture = null, float albedoTextureMix = 0.5f)
         {
-            return await MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
             {
                 MatProbs =
                 {
                     HasAlbedo = true,
-                    HasAlbedoTexture = albedoTexture != string.Empty
+                    HasAlbedoTexture = albedoTexture != null
                 },
                 MatType = MaterialType.Standard,
                 MatValues =
                 {
                     AlbedoColor = albedoColor,
-                    AlbedoTexture = albedoTexture != string.Empty ? albedoTexture : null,
+                    AlbedoTexture = albedoTexture != null ? albedoTexture : null,
                     AlbedoMix = albedoTextureMix
                 }
             });
@@ -417,9 +417,9 @@ namespace Fusee.Engine.Core
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static async Task<ShaderEffect> MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static ShaderEffect  MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
-            return await MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
                 MatProbs =
                 {
@@ -445,9 +445,9 @@ namespace Fusee.Engine.Core
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectProto(float4 albedoColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
-            return await MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
             {
                 MatProbs =
                 {
@@ -475,9 +475,9 @@ namespace Fusee.Engine.Core
         /// <param name="albedoTextureMix">Determines how much the albedo color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static async Task<ShaderEffect> MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, string albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
+        public static ShaderEffect MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, Texture albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
         {
-            return await MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
                 MatProbs =
                 {
@@ -508,9 +508,9 @@ namespace Fusee.Engine.Core
         /// <param name="albedoTextureMix">Determines how much the albedo color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectProto(float4 albedoColor, float4 specularColor, float shininess, string albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, float4 specularColor, float shininess, Texture albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
         {
-            return await MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
             {
                 MatProbs =
                 {
@@ -536,9 +536,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fxProps">The ShaderEffectProps to use (including values)</param>
         /// <returns>a new ShaderEffectProtoPixel</returns>
-        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectProto(ShaderEffectProps fxProps)
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(ShaderEffectProps fxProps)
         {
-            return await MakeShaderEffectFromShaderEffectPropsProto(fxProps);
+            return MakeShaderEffectFromShaderEffectPropsProto(fxProps);
         }
 
         /// <summary>
@@ -546,9 +546,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fxProps">The ShaderEffectProps to use (including values)</param>
         /// <returns></returns>
-        public static async Task<ShaderEffect> MakeShaderEffect(ShaderEffectProps fxProps)
+        public static ShaderEffect MakeShaderEffect(ShaderEffectProps fxProps)
         {
-            return await MakeShaderEffectFromShaderEffectProps(fxProps);
+            return MakeShaderEffectFromShaderEffectProps(fxProps);
         }
 
         /// <summary> 
@@ -558,13 +558,13 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static async Task<ShaderEffect> MakeShaderEffectFromShaderEffectProps(ShaderEffectProps fxProps, Weight wc = null)
+        public static ShaderEffect MakeShaderEffectFromShaderEffectProps(ShaderEffectProps fxProps, Weight wc = null)
         {
             fxProps.MeshProbs = AnalyzeMesh(null);
 
             var vs = CreateVertexShader(wc, fxProps);
             var ps = CreatePixelShader(fxProps);
-            var effectParameters = await AssembleEffectParamers(fxProps);
+            var effectParameters = AssembleEffectParamers(fxProps);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
@@ -597,13 +597,13 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectFromShaderEffectPropsProto(ShaderEffectProps fxProps, Weight wc = null)
+        public static ShaderEffectProtoPixel MakeShaderEffectFromShaderEffectPropsProto(ShaderEffectProps fxProps, Weight wc = null)
         {
             fxProps.MeshProbs = AnalyzeMesh(null);
 
             var vs = CreateVertexShader(wc, fxProps);
             var ps = CreateProtoPixelShader(fxProps);
-            var effectParameters = await AssembleEffectParamers(fxProps);
+            var effectParameters = AssembleEffectParamers(fxProps);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
@@ -731,7 +731,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private static async Task<IEnumerable<EffectParameterDeclaration>> AssembleEffectParamers(ShaderEffectProps fxProps)
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(ShaderEffectProps fxProps)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -752,7 +752,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = UniformNameDeclarations.AlbedoTexture,
-                        Value = await LoadTexture(fxProps.MatValues.AlbedoTexture)
+                        Value = fxProps.MatValues.AlbedoTexture
                     });
                 }
             }
@@ -787,7 +787,7 @@ namespace Fusee.Engine.Core
                         effectParameters.Add(new EffectParameterDeclaration
                         {
                             Name = UniformNameDeclarations.SpecularTexture,
-                            Value = await LoadTexture(fxProps.MatValues.SpecularTexture)
+                            Value = fxProps.MatValues.SpecularTexture
                         });
                     }
                 }
@@ -838,7 +838,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = UniformNameDeclarations.EmissiveTexture,
-                        Value = await LoadTexture(fxProps.MatValues.EmissiveTexture)
+                        Value = fxProps.MatValues.EmissiveTexture
                     });
                 }
             }
@@ -853,7 +853,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = UniformNameDeclarations.NormalMap,
-                    Value = await LoadTexture(fxProps.MatValues.NormalMap)
+                    Value = fxProps.MatValues.NormalMap
                 });
             }
 
@@ -972,21 +972,10 @@ namespace Fusee.Engine.Core
 
             return effectParameters;
         }
-
-        private static async Task<Texture> LoadTexture(string path)
+      
+        private static ShaderEffect CreateDefaultEffect()
         {
-            var image = await AssetStorage.GetAsync<ImageData>(path);
-            if (image != null)
-                return new Texture(image);
-
-            Diagnostics.Warn("Texture not found:", null, new[] { path });
-
-            return new Texture(new ImageData());
-        }
-
-        private async static Task<ShaderEffect> CreateDefaultEffect()
-        {
-            return await MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
                 MatProbs =
                 {

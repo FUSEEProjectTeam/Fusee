@@ -37,6 +37,11 @@ namespace Fusee.Examples.Materials.Core
             var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
             var psTex = await AssetStorage.GetAsync<string>("texture.frag");
 
+            var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("albedoTex.jpg"));
+            var emissiveTex = new Texture(await AssetStorage.GetAsync<ImageData>("emissiveTex.jpg"));
+            var specularTex = new Texture(await AssetStorage.GetAsync<ImageData>("specularTex.jpg"));
+            var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("normalTex.jpg"));
+
             var icosphereWithTangents = new Icosphere(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
             icosphereWithTangents.BiTangents = icosphereWithTangents.CalculateBiTangents();
@@ -333,7 +338,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "complete",
                                         Translation = new float3(-15, 0, 0)
                                     },
-                                       await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                       ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                         {
                                             MatProbs =
                                             {
@@ -350,17 +355,17 @@ namespace Fusee.Examples.Materials.Core
                                             {
                                                 AlbedoColor = float4.One * 0.25f,
                                                 AlbedoMix = 1f,
-                                                AlbedoTexture = "albedoTex.jpg",
+                                                AlbedoTexture = albedoTex,
                                                 SpecularColor = float4.One,
                                                 SpecularIntensity = 2f,
                                                 SpecularShininess = 25f,
                                                 SpecularMix = 1f,
-                                                SpecularTexture = "specularTex.jpg",
-                                                NormalMap = "normalTex.jpg",
+                                                SpecularTexture = specularTex,
+                                                NormalMap = normalTex,
                                                 NormalMapIntensity = 1f,
                                                 EmissiveColor = new float4(0, 1, 1, 1),
                                                 EmissiveMix = 0.5f,
-                                                EmissiveTexture = "emissiveTex.jpg"
+                                                EmissiveTexture = emissiveTex
                                             }
                                         }),
                                     icosphereWithTangents,
@@ -375,7 +380,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo and specular",
                                         Translation = new float3(-10, 0, 0)
                                     },
-                                    await ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
                                     specularColor: new float4(.5f, .5f, .5f, 1),
                                     shininess: 25.0f,
                                     specularIntensity: 2.5f),
@@ -391,9 +396,9 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, specular, albedo texture",
                                         Translation = new float3(-5, 0, 0)
                                     },
-                                    await ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    ShaderCodeBuilder.MakeShaderEffectProto(albedoColor: new float4(0.39f, 0.19f, 0, 1),
                                     specularColor: new float4(.5f, .5f, .5f, 1),
-                                    albedoTexture: "albedoTex.jpg",
+                                    albedoTexture: albedoTex,
                                     albedoTextureMix: 1f,
                                     shininess: 256.0f,
                                     specularIntensity: 20.0f),
@@ -409,7 +414,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "specular texture",
                                         Translation = new float3(0, 0, 0)
                                     },
-                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -425,7 +430,7 @@ namespace Fusee.Examples.Materials.Core
                                             SpecularIntensity = 2f,
                                             SpecularShininess = 25f,
                                             SpecularMix = 1f, // TODO: Implement in ShaderShards
-                                            SpecularTexture = "specularTex.jpg" // TODO: Implement in ShaderShards
+                                            SpecularTexture = specularTex // TODO: Implement in ShaderShards
                                         }
                                     }),
                                     icosphereWithTangents
@@ -440,7 +445,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "normal map",
                                         Translation = new float3(5, 0, 0)
                                     },
-                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -454,11 +459,11 @@ namespace Fusee.Examples.Materials.Core
                                         {
                                             AlbedoColor = float4.One * 0.25f,
                                             AlbedoMix = 1f,
-                                            AlbedoTexture = "albedoTex.jpg",
+                                            AlbedoTexture = albedoTex,
                                             SpecularColor = float4.One,
                                             SpecularIntensity = 5f,
                                             SpecularShininess = 200f,
-                                            NormalMap = "normalTex.jpg",
+                                            NormalMap = normalTex,
                                             NormalMapIntensity = 1f
                                         }
                                     }),
@@ -474,7 +479,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, emissive",
                                         Translation = new float3(10, 0, 0)
                                     },
-                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -487,7 +492,7 @@ namespace Fusee.Examples.Materials.Core
                                         {
                                             AlbedoColor = float4.One * 0.25f,
                                             AlbedoMix = 1f,
-                                            AlbedoTexture = "albedoTex.jpg",
+                                            AlbedoTexture = albedoTex,
                                             EmissiveColor = new float4(1, 0, 0, 1) // TODO: Implement in ShaderShards
                                         }
                                     }),
@@ -503,7 +508,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, emissive, emissive texture",
                                         Translation = new float3(15, 0, 0)
                                     },
-                                    await ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
                                     {
                                         MatProbs =
                                         {
@@ -517,10 +522,10 @@ namespace Fusee.Examples.Materials.Core
                                         {
                                             AlbedoColor = float4.One * 0.25f,
                                             AlbedoMix = 1f,
-                                            AlbedoTexture = "albedoTex.jpg",
+                                            AlbedoTexture = albedoTex,
                                             EmissiveColor = new float4(0, 1, 1, 1), // TODO: Implement in ShaderShards
                                             EmissiveMix = 0.5f, // TODO: Implement in ShaderShards
-                                            EmissiveTexture = "emissiveTex.jpg" // TODO: Implement in ShaderShards
+                                            EmissiveTexture = emissiveTex // TODO: Implement in ShaderShards
                                         }
                                     }),
                                     icosphereWithTangents
