@@ -55,7 +55,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GetInteger(GetPName.BlendEquationAlpha, out int blendEqA);
             GL.GetInteger(GetPName.BlendEquationRgb, out int blendEqRgb);
 
-
             _blendDstRgb = (BlendingFactorDest)blendDstRgb;
             _blendSrcRgb = (BlendingFactorSrc)blendSrcRgb;
             _blendSrcAlpha = (BlendingFactorSrc)blendSrcAlpha;
