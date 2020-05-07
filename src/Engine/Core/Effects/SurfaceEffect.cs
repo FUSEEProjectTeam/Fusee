@@ -25,6 +25,13 @@ namespace Fusee.Engine.Core.Effects
         public static string Version = Header.Version300Es;
 
         /// <summary>
+        /// The shader shard containing the definition of PI.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Header)]
+        public static string Pi = Header.DefinePi;
+
+        /// <summary>
         /// The shader shard containing the float precision.
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]

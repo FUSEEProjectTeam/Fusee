@@ -36,16 +36,16 @@ namespace Fusee.Engine.Core.ShaderShards
         NormalMap = 16,
 
         /// <summary>
-        /// A Effect uses the standard (= non pbr) specular calculation.
+        /// A Effect uses the standard (= non pbr) lighting calculation.
         /// Includes diffuse calculation.
         /// </summary>
-        SpecularStd = 8,
+        Lambert = 8,
 
         /// <summary>
-        /// A Effect uses the pbr specular calculation.
+        /// A Effect uses a pbr specular calculation (BRDF).
         /// Includes diffuse calculation.
         /// </summary>
-        SpecularPbr = 4,
+        BRDF = 4,
 
         /// <summary>
         /// Does this effect perform only a diffuse lighting calculation?
@@ -82,9 +82,13 @@ namespace Fusee.Engine.Core.ShaderShards
         internal static readonly Tuple<GLSL.Type, string> Albedo = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "albedo");
         internal static readonly Tuple<GLSL.Type, string> Shininess = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "shininess");
         internal static readonly Tuple<GLSL.Type, string> SpecularStrength = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specularStrength");
+
+        //BRDF only
         internal static readonly Tuple<GLSL.Type, string> Roughness = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "roughness");
-        internal static readonly Tuple<GLSL.Type, string> Fresnel = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "fresnelReflect");
-        internal static readonly Tuple<GLSL.Type, string> DiffuseFraction = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "diffuseFract");
+        internal static readonly Tuple<GLSL.Type, string> Metallic = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "metallic");
+        internal static readonly Tuple<GLSL.Type, string> Specular = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specular");
+        internal static readonly Tuple<GLSL.Type, string> IOR = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "ior");
+        internal static readonly Tuple<GLSL.Type, string> Subsurface = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "subsurface");
         #endregion
 
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
@@ -92,7 +96,7 @@ namespace Fusee.Engine.Core.ShaderShards
         private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
         private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0))";
         private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
-        private static readonly string DerfafultSpecPbrOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 1.0, 1.0, 0.0)";
+        private static readonly string DerfafultSpecBRDFOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0)";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
@@ -106,7 +110,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
             var structDcl = BuildStructDecl(setup);
 
-            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
+            if (setup.HasFlag(LightingSetupFlags.Lambert))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
@@ -115,12 +119,12 @@ namespace Fusee.Engine.Core.ShaderShards
                 };
                 return _lightingSetupCache[setup];
             }
-            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
+            else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
                     StructDecl = structDcl,
-                    DefaultInstance = DerfafultSpecPbrOut
+                    DefaultInstance = DerfafultSpecBRDFOut
                 };
                 return _lightingSetupCache[setup];
             }
@@ -188,25 +192,27 @@ namespace Fusee.Engine.Core.ShaderShards
             {
                 $"struct {StructName}",
                 "{",
-                $"{GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
-                $"{GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
+                $"  {GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
+                $"  {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
             };
 
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
-                dcl.Add($"{GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
 
-            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
+            if (setup.HasFlag(LightingSetupFlags.Lambert))
             {
-                dcl.Add($"{GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
-                dcl.Add($"{GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
             }
-            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
+            else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
-                dcl.Add($"{GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
-                dcl.Add($"{GLSL.DecodeType(Fresnel.Item1)} {Fresnel.Item2};");
-                dcl.Add($"{GLSL.DecodeType(DiffuseFraction.Item1)} {DiffuseFraction.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Metallic.Item1)} {Metallic.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Specular.Item1)} {Specular.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(IOR.Item1)} {IOR.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Subsurface.Item1)} {Subsurface.Item2};");
             }
-            dcl.Add("};");
+            dcl.Add("};\n");
             return string.Join("\n", dcl);
         }
     }

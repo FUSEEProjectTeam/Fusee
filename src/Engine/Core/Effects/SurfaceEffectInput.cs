@@ -67,13 +67,11 @@ namespace Fusee.Engine.Core.Effects
 
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// In this case for a BRDF lighting calculation.
     /// </summary>
-    public class SpecularPbrInput : ColorInput
+    public class BRDFInput : ColorInput
     {
-        /// <summary>
-        /// The roughness of the specular lighting.
-        /// </summary>
+        
         public float Roughness
         {
             get => _roughness;
@@ -87,40 +85,62 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _roughness;
-
-        /// <summary>
-        /// The diffuse fraction of the specular lighting.
-        /// </summary>
-        public float DiffuseFraction
+        
+        public float Metallic
         {
-            get => _diffuseFraction;
+            get => _metallic;
             set
             {
-                if (value != _diffuseFraction)
+                if (value != _metallic)
                 {
-                    _diffuseFraction = value;
-                    NotifyPropertyChanged(_diffuseFraction.GetType(), nameof(DiffuseFraction), _diffuseFraction);
+                    _metallic = value;
+                    NotifyPropertyChanged(_metallic.GetType(), nameof(Metallic), _metallic);
                 }
             }
         }
-        private float _diffuseFraction;
-
-        /// <summary>
-        /// The diffuse fraction of the specular lighting.
-        /// </summary>
-        public float FresnelReflectance
+        private float _metallic;
+        
+        public float Specular
         {
-            get => _fresnelReflectance;
+            get => _specular;
             set
             {
-                if (value != _fresnelReflectance)
+                if (value != _specular)
                 {
-                    _fresnelReflectance = value;
-                    NotifyPropertyChanged(_fresnelReflectance.GetType(), nameof(FresnelReflectance), _fresnelReflectance);
+                    _specular = value;
+                    NotifyPropertyChanged(_specular.GetType(), nameof(Specular), _specular);
                 }
             }
         }
-        private float _fresnelReflectance;
+        private float _specular;
+
+        public float IOR
+        {
+            get => _ior;
+            set
+            {
+                if (value != _ior)
+                {
+                    _ior = value;
+                    NotifyPropertyChanged(_ior.GetType(), nameof(IOR), _ior);
+                }
+            }
+        }
+        private float _ior;
+
+        public float Subsurface
+        {
+            get => _subsurface;
+            set
+            {
+                if (value != _subsurface)
+                {
+                    _subsurface = value;
+                    NotifyPropertyChanged(_ior.GetType(), nameof(Subsurface), _subsurface);
+                }
+            }
+        }
+        private float _subsurface;
     }
 
     /// <summary>
@@ -260,7 +280,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
-    public class TextureInputPbr : SpecularPbrInput
+    public class TextureInputBRDF : BRDFInput
     {
         /// <summary>
         /// The mix between albedo texture and albedo color.

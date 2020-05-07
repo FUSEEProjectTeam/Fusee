@@ -23,6 +23,11 @@ namespace Fusee.Engine.Core.ShaderShards
         public static string Version300Es = "#version 300 es\n";
 
         /// <summary>
+        /// Adds PI as preprocessor directive (#define).
+        /// </summary>
+        public static string DefinePi = "#define PI 3.14159265358979323846f\n";
+
+        /// <summary>
         /// Sets preprocessor that defines the bone count.
         /// </summary>
         public static string DefineBones(Weight wc)

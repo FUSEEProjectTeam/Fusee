@@ -54,19 +54,22 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var lighting = new List<string>();
 
             //Adds methods to the PS that calculate the single light components (diffuse, specular)
-            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
+            if (setup.HasFlag(LightingSetupFlags.Lambert))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
                 lighting.Add(DiffuseComponent());
                 lighting.Add(SpecularComponent());
             }
-            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
+            else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
-                lighting.Add(DiffuseComponent());
-                lighting.Add(PbrSpecularComponent());
+                lighting.Add(SchlickFresnel());
+                lighting.Add(G1());
+                lighting.Add(GetF0());
+                lighting.Add(BRDFDiffuseComponent());
+                lighting.Add(BRDFSpecularComponent());
             }
             else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
@@ -101,6 +104,42 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
+        /// Method for calculation the diffuse lighting component.
+        /// Replaces the standard diffuse calculation with the one introduced in [Burley 2012, "Physically-Based Shading at Disney"].
+        /// </summary>
+        public static string BRDFDiffuseComponent()
+        {
+            var methodBody = new List<string>
+            {
+                "// [Burley 2012, Physically-Based Shading at Disney]",
+                "float FD90 = 0.5 + 2.0 * LdotH * LdotH * roughness;",
+                "float FV = 1.0 + (FD90 - 1.0) * pow(1.0 - NdotV, 5.0);",
+                "float FL = 1.0 + (FD90 - 1.0) * pow(1.0 - NdotL, 5.0);",
+                "float Fd = FV * FL;",
+
+                "// Based on Hanrahan-Krueger brdf approximation of isotropic bssrdf",
+                "// 1.25 scale is used to (roughly) preserve albedo",
+                "// Fss90 used to 'flatten' retroreflection based on roughness",
+                "float Fss90 = LdotH * LdotH * roughness;",
+                "float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);",
+                "float ss = 1.25 * (Fss * (1.0 / max((NdotL + NdotV), 0.001) - 0.5) + 0.5);",
+
+                "return (albedo / PI) * mix(Fd * NdotL, ss, subsurface);"
+
+            };
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "diffuseLighting",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "albedo"),
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotL"),
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotV"),
+                    GLSL.CreateVar(GLSL.Type.Float, "LdotH"),
+                    GLSL.CreateVar(GLSL.Type.Float, "roughness"),
+                    GLSL.CreateVar(GLSL.Type.Float, "subsurface")
+                }, methodBody);
+        }
+
+        /// <summary>
         /// Method for calculation the specular lighting component.
         /// </summary>
         public static string SpecularComponent()
@@ -126,55 +165,50 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         }
 
-        //TODO: At the moment Blender's Principled BSDF material gets translated into a MaterialPBR and internally.
-        //Those two do not use the same lighting method and the lighting result will therefore differ from the one in Blender.
         /// <summary>
         /// Method for calculation the specular lighting component.
         /// Replaces the standard specular calculation with the Cook-Torrance calculation.
         /// </summary>
-        public static string PbrSpecularComponent()
+        public static string BRDFSpecularComponent()
         {
             var methodBody = new List<string>
             {
-                // Calculate intermediary values
-                "vec3 H = normalize(L + V);",
-                "float NdotL = max(dot(N, L), 0.0);",
-                "float NdotH = max(dot(N, H), 0.0);",
-                "float NdotV = max(dot(N, V), 0.0); // Note: this could also be NdotL, which is the same value",
-                "float VdotH = max(dot(V, H), 0.0);",
+                "float alpha = roughness * roughness;",
+                "float D, G;",
+                "//vec3 F;",
                 "",
-                "float specular = 0.0;",
-                "if (NdotL > 0.0)",
-                "{",
-                    "//GeometrySchlickGGX - geometric attenuation",
-                    "float r = roughness + 1.0;",
-                    "float k = (r * r) / 8.0;",
-                    "float g1L = NdotL / (NdotL * (1.0 - k) + k);",
-                    "float g1V = NdotV / (NdotV * (1.0 - k) + k);",
-                    "float G = g1L * g1V; //float G = GeometricalAttenuation(NdotH, NdotV, VdotH, NdotL);",
-
-                    "//Distribution GGX",
-                    "float alpha = roughness * roughness;",
-                    "float alphaSqr = alpha * alpha;",
-                    "float denom = NdotH * NdotH * (alphaSqr - 1.0) + 1.0f;",
-                    "float D = alphaSqr / (3.14159265358979323846f * denom * denom);",
-
-                    "//Fresnel Schlick",
-                    "float F = F0 + (1.0 - F0) * pow(1.0 - max(dot(H, V), 0.0), 5.0);",
-
-                    "specular = (D * F * G) / max((NdotV * NdotL * 4.0), 0.01);",
-                "}",
-
+                "// D (stribution GGX)",
+                "float alphaSqr = alpha * alpha;",
+                "float denom = (NdotH * NdotH) * (alphaSqr - 1.0) + 1.0f;",
+                "D = alphaSqr / (PI * (denom * denom));",
+                "",
+                "// G (ometry - Schlick’s Approximation of Smith)",
+                "float r = roughness + 1.0;",
+                "float k = (r * r) / 8.0;",
+                "",
+                "float ggx1 = G1(k, NdotV);",
+                "float ggx2 = G1(k, NdotL);",
+                "G = ggx1 * ggx2;",
+                "",
+                "// F (resnel)",
+                "//float LdotH5 = SchlickFresnel(NdotV);",
+                "//F = F0 + (1.0 - F0) * LdotH5;",
+                "",
+                "// GGX BRDF specular",
+                "float resDenom = 4.0 * NdotV * NdotL;",
+                "vec3 specular = (D * F * G) / max(resDenom, 0.1);",
                 "return specular;"
 
-        };
-
-            return GLSL.CreateMethod(GLSL.Type.Float, "specularLighting",
+            };
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "specularLighting",
                 new[]
                 {
-                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Float, "F0"),
-                    GLSL.CreateVar(GLSL.Type.Float, "roughness")
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotL"),
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotV"),
+                    GLSL.CreateVar(GLSL.Type.Float, "LdotH"),
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotH"),
+                    GLSL.CreateVar(GLSL.Type.Float, "roughness"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "F")
                 }, methodBody);
         }
 
@@ -215,6 +249,50 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[] { GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"), GLSL.CreateVar(GLSL.Type.Vec3, "fragToLightDir"), GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle") }, methodBody));
         }
 
+        private static string GetF0()
+        {
+            var methodBody = new List<string>
+            {
+                "float F0 = abs((1.0 - ior) / (1.0 + ior));",
+                "F0 = F0 * F0;",
+                $"return mix(vec3(F0, F0, F0), albedo.rgb, surfOut.{SurfaceOut.Metallic.Item2});",
+            };
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "GetF0",
+                 new[]
+                 {
+                     GLSL.CreateVar(GLSL.Type.Vec3, "albedo"),
+                     GLSL.CreateVar(GLSL.Type.Float, "ior")
+                 }, methodBody);
+        }
+
+        private static string SchlickFresnel()
+        {
+            var methodBody = new List<string>
+            {
+                "float m = clamp(1.0 - value, 0.0, 1.0);",
+                "return pow(m, 5.0);",
+            };
+            return GLSL.CreateMethod(GLSL.Type.Float, "SchlickFresnel",
+                 new[]
+                 {
+                     GLSL.CreateVar(GLSL.Type.Float, "value")
+                 }, methodBody);
+        }
+
+        private static string G1()
+        {
+            var methodBody = new List<string>
+            {
+                "return x / (x * (1.0 - k) + k);"
+            };
+            return GLSL.CreateMethod(GLSL.Type.Float, "G1",
+                 new[]
+                 {
+                     GLSL.CreateVar(GLSL.Type.Float, "k"),
+                     GLSL.CreateVar(GLSL.Type.Float, "x")
+                 }, methodBody);
+        }
+
         private static List<string> ViewAndLightDir()
         {
             return new List<string>
@@ -236,7 +314,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "",
                 "vec3 Idif = vec3(0);",
                 "vec3 Ispe = vec3(0);",
-
+                "vec3 res = vec3(0);"
             };
         }
 
@@ -270,7 +348,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>();
 
-            if (setup.HasFlag(LightingSetupFlags.SpecularStd))
+            if (setup.HasFlag(LightingSetupFlags.Lambert))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
@@ -284,20 +362,42 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.AddRange(Attenuation());
                 methodBody.Add("return  (Idif + Ispe) * att * lightStrength * light.intensities.rgb;");
             }
-            else if (setup.HasFlag(LightingSetupFlags.SpecularPbr))
+            else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
                 methodBody.Add($"vec3 N = normalize(surfOut.normal);");
 
-                methodBody.Add($"Idif = diffuseLighting(N, L)* surfOut.albedo.rgb;");
+                methodBody.Add($"vec3 halfV = normalize(L + V);");
+                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
+                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
+                methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
 
-                methodBody.Add($"//Note that only the variable 'specular' is calculated using the Cook-Torrance model...");
-                methodBody.Add($"float specular = specularLighting(N, L, V, surfOut.fresnelReflect, surfOut.roughness);");
-                methodBody.Add($"Ispe = vec3(specular);");
+                methodBody.Add($"vec3 F0 = GetF0(surfOut.albedo.rgb, surfOut.ior);");
+
+                methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
+                methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
+               
+                methodBody.Add($"Idif = diffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2});");
+                methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
+
+                methodBody.Add($"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.");
+                methodBody.Add($"vec3 diffLayer = (1.0 - surfOut.{SurfaceOut.Metallic.Item2}) /** (1-_Transmission)*/ * Idif;");
+
+                methodBody.Add($"//Specular color, combining metallic and dielectric specular reflection.");
+                methodBody.Add($"//Metallic specular is affected by alebdo color, dielectric isn't!");
+                methodBody.Add($"vec3 specLayerDielectric = surfOut.{SurfaceOut.Specular.Item2} * Ispe;");
+                methodBody.Add($"vec3 specLayerMetallic = surfOut.{SurfaceOut.Metallic.Item2} * Ispe * surfOut.albedo.rgb;");
+                methodBody.Add($"vec3 specLayer = clamp(specLayerDielectric + specLayerMetallic, 0.0, 1.0);");
+
+                methodBody.Add($"//Combining the layers...");
+                methodBody.Add($"res += (1.0 - F) * diffLayer;       // diffuse layer, affected by reflectivity");
+                methodBody.Add($"res += specLayer;					// direct specular, not affected by reflectivity");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return (Idif + Ispe) * att * lightStrength * light.intensities.rgb;");
+                methodBody.Add("return res * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {

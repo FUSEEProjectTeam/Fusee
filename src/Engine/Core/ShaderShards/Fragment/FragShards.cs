@@ -40,12 +40,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a physically based diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_SpecularPbr = new List<string>()
+        public static readonly List<string> SurfOutBody_BRDF = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.roughness = IN.Roughness;",
-            "OUT.fresnelReflect = IN.FresnelReflectance;",
-            "OUT.diffuseFract = IN.DiffuseFraction;",
+            "OUT.metallic = IN.Metallic;",
+            "OUT.ior = IN.IOR;",
+            "OUT.specular = IN.Specular;",
+            "OUT.subsurface = IN.Subsurface;",
             "return OUT;"
         };
 
@@ -56,16 +58,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetupFlags.SpecularStd))
+            if (lightingSetup.HasFlag(LightingSetupFlags.Lambert))
             {
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
             }
-            else if (lightingSetup.HasFlag(LightingSetupFlags.SpecularPbr))
+            else if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
             {
                 res.Add("OUT.roughness = IN.Roughness;");
-                res.Add("OUT.fresnelReflect = IN.FresnelReflectance;");
-                res.Add("OUT.diffuseFract = IN.DiffuseFraction;");
+                res.Add("OUT.metallic = IN.Metallic;");
+                res.Add("OUT.ior = IN.IOR;");
+                res.Add("OUT.specular = IN.Specular;");
+                res.Add("OUT.subsurface = IN.Subsurface;");
             }
 
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))

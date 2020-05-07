@@ -40,7 +40,11 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
-        private DefaultSurfaceEffect _sufEffect;
+        private readonly DefaultSurfaceEffect _sufEffect;
+        private DefaultSurfaceEffect _gold_brdfFx;
+        private DefaultSurfaceEffect _paint_brdfFx;
+        private DefaultSurfaceEffect _rubber_brdfFx;
+        private DefaultSurfaceEffect _subsurf_brdfFx;
 
         // Init is called on startup.
         public override async Task<bool> Init()
@@ -60,148 +64,57 @@ namespace Fusee.Examples.Simple.Core
 
             var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
             var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
-            var defaultTex = new Texture(new ImageData(new byte[3] { 255, 255, 255 }, 1, 1, new ImagePixelFormat(ColorFormat.RGB)), false, TextureFilterMode.NEAREST);
-            
 
-            var gold_brdfFx = new ShaderEffect
+            _gold_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDFTexture
             (
-                new FxPassDeclaration()
-                {
-                    VS = AssetStorage.Get<string>("BRDF.vert"),
-                    PS = AssetStorage.Get<string>("BRDF.frag"),
-                    StateSet = RenderStateSet.Default
-                },
-                new List<IFxParamDeclaration>() 
-                {
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.IView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
-
-                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
-                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
-                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
-                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 1f },
-
-                    new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(1.0f, 227f/256f, 157f/256, 1.0f) },
-                    new FxParamDeclaration<float>() { Name = "Metallic", Value = 1f },
-                    new FxParamDeclaration<float>() { Name = "IOR", Value = 0.47f },
-                    new FxParamDeclaration<float>() { Name = "Roughness", Value = 0.2f },
-                    new FxParamDeclaration<float>() { Name = "Subsurface", Value = 0.0f },
-                    new FxParamDeclaration<float>() { Name = "Specular", Value = 0.0f },
-                    new FxParamDeclaration<float>() { Name = "Ambient", Value = 0.1f },
-                }
-            );
-            
-            var paint_brdfFx = new ShaderEffect
-            (
-                new FxPassDeclaration()
-                {
-                    VS = AssetStorage.Get<string>("BRDF.vert"),
-                    PS = AssetStorage.Get<string>("BRDF.frag"),
-                    StateSet = RenderStateSet.Default
-                },
-                new List<IFxParamDeclaration>()
-                {
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.IView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
-
-                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
-                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
-                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
-                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 1f },
-
-                    new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(0.0f, 231f/256f, 1f, 1.0f) },
-                    new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
-                    new FxParamDeclaration<float>() { Name = "IOR", Value = 1.46f },
-                    new FxParamDeclaration<float>() { Name = "Roughness", Value = 0.05f },
-                    new FxParamDeclaration<float>() { Name = "Subsurface", Value = 0.0f },
-                    new FxParamDeclaration<float>() { Name = "Specular", Value = 1.0f },
-                    new FxParamDeclaration<float>() { Name = "Ambient", Value = 0.1f },
-                }
+                albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
+                roughness: 0.2f,
+                metallic: 1,
+                specular: 0,
+                ior: 0.47f,
+                subsurface: 0,
+                albedoTex: albedoTex,
+                normalTex: normalTex,
+                albedoMix: 0.5f,
+                texTiles: new float2(3, 3)
             );
 
-            var rubber_brdfFx = new ShaderEffect
+            _paint_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDF
             (
-                new FxPassDeclaration()
-                {
-                    VS = AssetStorage.Get<string>("BRDF.vert"),
-                    PS = AssetStorage.Get<string>("BRDF.frag"),
-                    StateSet = RenderStateSet.Default
-                },
-                new List<IFxParamDeclaration>()
-                {
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.IView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
-
-                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
-                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
-                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
-                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 1f },
-
-                    new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(214f/256f, 84f/256f, 68f/256f, 1.0f) },
-                    new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
-                    new FxParamDeclaration<float>() { Name = "IOR", Value = 1.519f },
-                    new FxParamDeclaration<float>() { Name = "Roughness", Value = 1.0f },
-                    new FxParamDeclaration<float>() { Name = "Subsurface", Value = 0.0f },
-                    new FxParamDeclaration<float>() { Name = "Specular", Value = 0.1f },
-                    new FxParamDeclaration<float>() { Name = "Ambient", Value = 0.1f },
-                }
+                albedoColor: new float4(0.0f, 231f / 256f, 1f, 1.0f),
+                roughness: 0.05f,
+                metallic: 0,
+                specular: 1f,
+                ior: 1.46f,
+                subsurface: 0
             );
 
-            var subsurf_brdfFx = new ShaderEffect
+            _rubber_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDF
             (
-                new FxPassDeclaration()
-                {
-                    VS = AssetStorage.Get<string>("BRDF.vert"),
-                    PS = AssetStorage.Get<string>("BRDF.frag"),
-                    StateSet = RenderStateSet.Default
-                },
-                new List<IFxParamDeclaration>()
-                {
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.IView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
-                    new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
-
-                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
-                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
-                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
-                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 0.5f },
-
-                    new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(255f/256f, 234f/256f, 215f/256f, 1.0f) },
-                    new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
-                    new FxParamDeclaration<float>() { Name = "IOR", Value = 1.4f },
-                    new FxParamDeclaration<float>() { Name = "Roughness", Value = 0.508f },
-                    new FxParamDeclaration<float>() { Name = "Subsurface", Value = 1.0f },
-                    new FxParamDeclaration<float>() { Name = "Specular", Value = 0.079f },
-                    new FxParamDeclaration<float>() { Name = "Ambient", Value = 0.1f },
-                }
+                albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f),
+                roughness: 1.0f,
+                metallic: 0,
+                specular: 0.1f,
+                ior: 1.519f,
+                subsurface: 0
             );
 
-            foreach (var item in SurfaceEffect.CreateForwardLightingParamDecls(8))
-            {
-                subsurf_brdfFx.ParamDecl.Add(item.Name, item);
-                gold_brdfFx.ParamDecl.Add(item.Name, item);
-                paint_brdfFx.ParamDecl.Add(item.Name, item);
-                rubber_brdfFx.ParamDecl.Add(item.Name, item);
-            }
+            _subsurf_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDF
+            (
+                albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f),
+                roughness: 0.508f,
+                metallic: 0,
+                specular: 0.079f,
+                ior: 1.4f,
+                subsurface: 1.0f
+            );
 
-            _sufEffect = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecular(new float4(1f, 0f, 0f, 1f), 22f, 1f);
+            //_sufEffect = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecular(new float4(1f, 0f, 0f, 1f), 22f, 1f);
 
-            _rocketScene.Children[0].Components[1] = subsurf_brdfFx;
-            _rocketScene.Children[1].Components[1] = rubber_brdfFx;
-            _rocketScene.Children[2].Components[1] = paint_brdfFx;
-            _rocketScene.Children[3].Components[1] = gold_brdfFx;
-
+            _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
+            _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
+            _rocketScene.Children[2].Components[1] = _paint_brdfFx;
+            _rocketScene.Children[3].Components[1] = _gold_brdfFx;
 
             var monkeyOne = (Mesh)_rocketScene.Children[0].Components[2];
             monkeyOne.Tangents = monkeyOne.CalculateTangents();

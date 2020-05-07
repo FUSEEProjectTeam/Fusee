@@ -302,16 +302,6 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string RoughnessValue = "RoughnessValue";
 
         /// <summary>
-        /// [PBR (Cook-Torrance) only] This float describes the fresnel reflectance of the material.
-        /// </summary>
-        public const string FresnelReflectance = "FresnelReflectance";
-
-        /// <summary>
-        /// [PBR (Cook-Torrance) only] This float describes the diffuse fraction of the material.
-        /// </summary>
-        public const string DiffuseFraction = "DiffuseFraction";
-
-        /// <summary>
         /// The var name for the uniform NormalMapIntensity variable within the pixel shaders.
         /// </summary>
         public const string NormalMapIntensity = "NormalMapIntensity";
