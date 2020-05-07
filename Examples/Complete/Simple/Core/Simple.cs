@@ -56,6 +56,13 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("monkeys.fus");
 
+            //var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
+
+            var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
+            var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
+            var defaultTex = new Texture(new ImageData(new byte[3] { 255, 255, 255 }, 1, 1, new ImagePixelFormat(ColorFormat.RGB)), false, TextureFilterMode.NEAREST);
+            
+
             var gold_brdfFx = new ShaderEffect
             (
                 new FxPassDeclaration()
@@ -71,6 +78,11 @@ namespace Fusee.Examples.Simple.Core
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
+
+                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
+                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
+                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
+                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 1f },
 
                     new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(1.0f, 227f/256f, 157f/256, 1.0f) },
                     new FxParamDeclaration<float>() { Name = "Metallic", Value = 1f },
@@ -98,6 +110,11 @@ namespace Fusee.Examples.Simple.Core
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
 
+                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
+                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
+                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
+                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 1f },
+
                     new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(0.0f, 231f/256f, 1f, 1.0f) },
                     new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
                     new FxParamDeclaration<float>() { Name = "IOR", Value = 1.46f },
@@ -123,6 +140,11 @@ namespace Fusee.Examples.Simple.Core
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity },
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
+
+                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
+                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
+                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
+                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 1f },
 
                     new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(214f/256f, 84f/256f, 68f/256f, 1.0f) },
                     new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
@@ -150,6 +172,11 @@ namespace Fusee.Examples.Simple.Core
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity },
                     new FxParamDeclaration<float4x4>() { Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity },
 
+                    new FxParamDeclaration<Texture>() { Name = "AlbedoTexture", Value = albedoTex},
+                    new FxParamDeclaration<Texture>() { Name = "NormalTexture", Value = normalTex},
+                    new FxParamDeclaration<float2>() { Name = "TexTiles", Value = float2.One},
+                    new FxParamDeclaration<float>() { Name = "AlbedoTexMix", Value = 0.5f },
+
                     new FxParamDeclaration<float4>() { Name = "BaseColor", Value = new float4(255f/256f, 234f/256f, 215f/256f, 1.0f) },
                     new FxParamDeclaration<float>() { Name = "Metallic", Value = 0f },
                     new FxParamDeclaration<float>() { Name = "IOR", Value = 1.4f },
@@ -174,6 +201,24 @@ namespace Fusee.Examples.Simple.Core
             _rocketScene.Children[1].Components[1] = rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = paint_brdfFx;
             _rocketScene.Children[3].Components[1] = gold_brdfFx;
+
+
+            var monkeyOne = (Mesh)_rocketScene.Children[0].Components[2];
+            monkeyOne.Tangents = monkeyOne.CalculateTangents();
+            monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
+
+            var monkeyTwo = (Mesh)_rocketScene.Children[1].Components[2];
+            monkeyTwo.Tangents = monkeyOne.Tangents;
+            monkeyTwo.BiTangents = monkeyOne.BiTangents;
+
+            var monkeyThree = (Mesh)_rocketScene.Children[2].Components[2];
+            monkeyThree.Tangents = monkeyOne.Tangents;
+            monkeyThree.BiTangents = monkeyOne.BiTangents;
+
+            var monkeyFour = (Mesh)_rocketScene.Children[2].Components[2];
+            monkeyFour.Tangents = monkeyOne.Tangents;
+            monkeyFour.BiTangents = monkeyOne.BiTangents;
+
             //_rocketScene.Children[0].Components[1] = _surfEffect;
 
             // Wrap a SceneRenderer around the model.
@@ -262,7 +307,7 @@ namespace Fusee.Examples.Simple.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

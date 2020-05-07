@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using System;

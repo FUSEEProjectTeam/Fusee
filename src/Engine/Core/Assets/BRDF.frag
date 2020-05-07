@@ -1,4 +1,4 @@
-﻿#version 300 es
+﻿#version 440 core
 
 #define PI 3.14159265358979323846f
 
@@ -22,6 +22,11 @@ struct Light
 uniform Light allLights[8];
 
 uniform vec4 BaseColor;
+
+uniform sampler2D AlbedoTexture;
+uniform sampler2D NormalTexture;
+uniform vec2 TexTiles;
+
 uniform float Metallic;
 uniform float IOR;
 uniform float Roughness;
@@ -32,6 +37,8 @@ uniform float Ambient;
 
 in vec3 oNormal;
 in vec3 oViewDir;
+in vec2 oUV;
+in mat3 TBN;
 
 out vec4 oColor;
 
@@ -105,10 +112,10 @@ vec3 GetF0(vec3 albedo, float ior)
 	return mix(vec3(F0,F0,F0), albedo.rgb, Metallic);
 }
 
-vec3 LightingCookTorrance()
+vec3 LightingCookTorrance(vec3 albedo, vec3 normal)
 {
 	//Ambient
-	vec3 ambientLayer = Ambient * /*((1 - F) * Irradiance(s)) * */ BaseColor.rgb;
+	vec3 ambientLayer = Ambient * /*((1 - F) * Irradiance(s)) * */ albedo.rgb;
 	vec3 res = vec3(0,0,0);
 
 	for(int i = 0; i < 8; i++)
@@ -118,7 +125,7 @@ vec3 LightingCookTorrance()
 		//Needed values	
 		vec3 viewDir = normalize(oViewDir);
 		vec3 lightDir = normalize(-allLights[i].direction);
-		vec3 normal = normalize(oNormal);
+		vec3 normal = normalize(normal);
 		vec3 halfV = normalize(lightDir + viewDir);
 		float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);
 		float NdotH = clamp(dot(normal, halfV), 0.0, 1.0);
@@ -126,12 +133,12 @@ vec3 LightingCookTorrance()
 		float VdotH = clamp(dot(viewDir, halfV), 0.0, 1.0);
 		float LdotH = clamp(dot(lightDir, halfV), 0.0, 1.0);
 
-		vec3 F0 = GetF0(BaseColor.rgb, IOR);
+		vec3 F0 = GetF0(albedo.rgb, IOR);
 		float LdotH5 = SchlickFresnel(NdotV);
 		vec3 F = F0 + (1.0 - F0) * LdotH5;
 
 		//Direct diffuse
-		vec3 diff =  DisneyDiff(BaseColor.rgb, NdotL, NdotV, LdotH, VdotH, Roughness);
+		vec3 diff =  DisneyDiff(albedo.rgb, NdotL, NdotV, LdotH, VdotH, Roughness);
 			
 		//Direct specular
 		vec3 spec = CookTorranceSpec(NdotL, LdotH, NdotH, NdotV, Roughness, F0);		
@@ -142,7 +149,7 @@ vec3 LightingCookTorrance()
 		//Specular color, combining metallic and dielectric specular reflection.
 		//Metallic specular is affected by alebdo color, dielectric isn't!
 		vec3 specLayerDielectric = Specular * spec;
-		vec3 specLayerMetallic = Metallic * spec * BaseColor.rgb;
+		vec3 specLayerMetallic = Metallic * spec * albedo.rgb;
 		vec3 specLayer = clamp(specLayerDielectric + specLayerMetallic, 0.0, 1.0);
 
 	//	//Indirect specular (IBL Reflection)
@@ -172,6 +179,19 @@ vec3 LightingCookTorrance()
 
 void main()
 {
-	vec3 result = LightingCookTorrance();
-	oColor = vec4(result, BaseColor.a);
+	//Albedo from texture
+	vec4 albedo = vec4(0, 0, 0, 1);
+	vec4 texCol = texture(AlbedoTexture, oUV * TexTiles);	
+	float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);
+	albedo = vec4(luma * texCol.rgb * BaseColor.rgb, texCol.a);
+
+	//Normal from texture
+	float normalMapStrength = 1.0;
+	vec3 N = texture(NormalTexture, oUV * TexTiles).rgb;
+    N = N * 2.0 - 1.0;
+    N.xy *= normalMapStrength;
+    N = normalize(TBN * N);
+
+	vec3 result = LightingCookTorrance(albedo.rgb, N);
+	oColor = vec4(result, albedo.a);	
 }
