@@ -394,7 +394,7 @@ namespace Fusee.Engine.Core
                 IOR = ior,
                 Subsurface = subsurface
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.BRDFMetallic, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
         }
         
 
@@ -500,7 +500,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.BRDFMetallic | LightingSetupFlags.AlbedoTex;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -526,7 +526,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.BRDFMetallic | LightingSetupFlags.AlbedoTex;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -556,7 +556,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.BRDFMetallic | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -568,6 +568,7 @@ namespace Fusee.Engine.Core
         {
             var frag = new StringBuilder();
             frag.Append(Header.Version300Es);
+            frag.Append(Header.DefinePi);
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append("#extension GL_ARB_gpu_shader5 : enable\n");
             frag.Append(Header.EsPrecisionHighpFloat);
@@ -594,9 +595,13 @@ namespace Fusee.Engine.Core
 
             //Lighting methods
             //------------------------------------------
+            frag.Append(Lighting.SchlickFresnel());
+            frag.Append(Lighting.G1());
+            //frag.Append(Lighting.GetF0());
+            frag.Append(Lighting.DiffuseComponent());
+            frag.Append(Lighting.BRDFDiffuseComponent());
             frag.Append(Lighting.SpecularComponent());
             frag.Append(Lighting.BRDFSpecularComponent());
-            frag.Append(Lighting.DiffuseComponent());
             frag.Append(Lighting.AttenuationPointComponent());
             frag.Append(Lighting.AttenuationConeComponent());
 

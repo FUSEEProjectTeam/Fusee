@@ -76,9 +76,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_SPECULAR:
                         {
-                            if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
+                            if (lightingSetup.HasFlag(LightingSetupFlags.BRDFMetallic))
                             {
-                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.fresnelReflect, surfOut.diffuseFract, 1.0);");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, 1.0);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.Lambert))
                             {

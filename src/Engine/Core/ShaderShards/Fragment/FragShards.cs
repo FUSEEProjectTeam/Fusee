@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
             }
-            else if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
+            else if (lightingSetup.HasFlag(LightingSetupFlags.BRDFMetallic))
             {
                 res.Add("OUT.roughness = IN.Roughness;");
                 res.Add("OUT.metallic = IN.Metallic;");

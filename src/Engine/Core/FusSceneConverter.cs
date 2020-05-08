@@ -540,7 +540,7 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.BRDF : LightingSetupFlags.DiffuseOnly;
+            var lightingSetup = m.HasSpecular ? LightingSetupFlags.BRDFMetallic : LightingSetupFlags.DiffuseOnly;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
@@ -580,7 +580,7 @@ namespace Fusee.Engine.Core
                 }
                 sfx = MakeEffect.FromDiffuseSpecularBRDFTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
             }
-            else if (lightingSetup == LightingSetupFlags.BRDF)
+            else if (lightingSetup == LightingSetupFlags.BRDFMetallic)
                 sfx = MakeEffect.FromDiffuseSpecularBRDF(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);

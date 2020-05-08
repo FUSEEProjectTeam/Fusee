@@ -28,27 +28,35 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Does this Effect have an albedo texture?
         /// </summary>
-        AlbedoTex = 32,
+        AlbedoTex = 64,
 
         /// <summary>
         /// Does this Effect have a normal map?
         /// </summary>
-        NormalMap = 16,
+        NormalMap = 32,
 
         /// <summary>
         /// A Effect uses the standard (= non pbr) lighting calculation.
         /// Includes diffuse calculation.
         /// </summary>
-        Lambert = 8,
+        Lambert = 16,
 
         /// <summary>
-        /// A Effect uses a pbr specular calculation (BRDF).
+        /// A Effect uses a pbr specular calculation (BRDF - metallic setup).
         /// Includes diffuse calculation.
         /// </summary>
-        BRDF = 4,
+        BRDFMetallic = 8,
 
         /// <summary>
-        /// Does this effect perform only a diffuse lighting calculation?
+        /// A Effect uses a pbr specular calculation (BRDF - subsurface setup).
+        /// Includes diffuse calculation.
+        /// TODO: subsurface shading model is not properly supported yet. 
+        /// The differentiation into Metallic in Subsurface is mainly caused be wish to store the BRDF values in only one texture.
+        /// </summary>
+        BRDFSubsurface = 4,
+
+        /// <summary>
+        /// Perform only a simple diffuse calculation.
         /// </summary>
         DiffuseOnly = 2,
 
@@ -119,7 +127,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 };
                 return _lightingSetupCache[setup];
             }
-            else if (setup.HasFlag(LightingSetupFlags.BRDF))
+            else if (setup.HasFlag(LightingSetupFlags.BRDFMetallic))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
@@ -204,7 +212,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 dcl.Add($"  {GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
             }
-            else if (setup.HasFlag(LightingSetupFlags.BRDF))
+            else if (setup.HasFlag(LightingSetupFlags.BRDFMetallic))
             {
                 dcl.Add($"  {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Metallic.Item1)} {Metallic.Item2};");

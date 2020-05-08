@@ -13,7 +13,6 @@
   
   <ItemGroup>
     <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-    <None Remove="Assets\BRDF.frag" />
     <None Remove="Assets\Shader\BRDF.vert" />
     <Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
   </ItemGroup>

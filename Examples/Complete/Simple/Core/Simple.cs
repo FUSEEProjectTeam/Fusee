@@ -40,7 +40,6 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
-        private readonly DefaultSurfaceEffect _sufEffect;
         private DefaultSurfaceEffect _gold_brdfFx;
         private DefaultSurfaceEffect _paint_brdfFx;
         private DefaultSurfaceEffect _rubber_brdfFx;
@@ -109,8 +108,6 @@ namespace Fusee.Examples.Simple.Core
                 subsurface: 1.0f
             );
 
-            //_sufEffect = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecular(new float4(1f, 0f, 0f, 1f), 22f, 1f);
-
             _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = _paint_brdfFx;
@@ -120,19 +117,17 @@ namespace Fusee.Examples.Simple.Core
             monkeyOne.Tangents = monkeyOne.CalculateTangents();
             monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
 
-            var monkeyTwo = (Mesh)_rocketScene.Children[1].Components[2];
-            monkeyTwo.Tangents = monkeyOne.Tangents;
-            monkeyTwo.BiTangents = monkeyOne.BiTangents;
+            //var monkeyTwo = (Mesh)_rocketScene.Children[1].Components[2];
+            //monkeyTwo.Tangents = monkeyOne.Tangents;
+            //monkeyTwo.BiTangents = monkeyOne.BiTangents;
 
-            var monkeyThree = (Mesh)_rocketScene.Children[2].Components[2];
-            monkeyThree.Tangents = monkeyOne.Tangents;
-            monkeyThree.BiTangents = monkeyOne.BiTangents;
+            //var monkeyThree = (Mesh)_rocketScene.Children[2].Components[2];
+            //monkeyThree.Tangents = monkeyOne.Tangents;
+            //monkeyThree.BiTangents = monkeyOne.BiTangents;
 
-            var monkeyFour = (Mesh)_rocketScene.Children[2].Components[2];
-            monkeyFour.Tangents = monkeyOne.Tangents;
-            monkeyFour.BiTangents = monkeyOne.BiTangents;
-
-            //_rocketScene.Children[0].Components[1] = _surfEffect;
+            //var monkeyFour = (Mesh)_rocketScene.Children[2].Components[2];
+            //monkeyFour.Tangents = monkeyOne.Tangents;
+            //monkeyFour.BiTangents = monkeyOne.BiTangents;
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -151,13 +146,13 @@ namespace Fusee.Examples.Simple.Core
 
             if (Keyboard.IsKeyDown(KeyCodes.W))
             {
-                if (_sufEffect.SurfaceInput.Albedo.g <= 1.0f)
-                    _sufEffect.SurfaceInput.Albedo += new float4(0, 0.2f, 0, 0);
+                if (_paint_brdfFx.SurfaceInput.Albedo.g <= 1.0f)
+                    _paint_brdfFx.SurfaceInput.Albedo += new float4(0, 0.2f, 0, 0);
             }
             if (Keyboard.IsKeyDown(KeyCodes.S))
             {
-                if (_sufEffect.SurfaceInput.Albedo.g >= 0.0f)
-                    _sufEffect.SurfaceInput.Albedo -= new float4(0, 0.2f, 0, 0);
+                if (_paint_brdfFx.SurfaceInput.Albedo.g >= 0.0f)
+                    _paint_brdfFx.SurfaceInput.Albedo -= new float4(0, 0.2f, 0, 0);
             }
 
             // Mouse and keyboard movement
@@ -220,7 +215,7 @@ namespace Fusee.Examples.Simple.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
