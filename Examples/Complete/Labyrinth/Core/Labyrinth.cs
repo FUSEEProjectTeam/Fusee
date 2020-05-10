@@ -494,7 +494,6 @@ namespace Fusee.Examples.Labyrinth.Core
 
                 if (_movement)
                 {
-                    Diagnostics.Debug(_head.Rotation);
                     //get old positions for the head
                     _oldX = _head.Translation.x;
                     _oldY = _head.Translation.z;
@@ -529,24 +528,25 @@ namespace Fusee.Examples.Labyrinth.Core
                         _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(_angle), 0, M.Sin(_angle)), -_moveZ)), 0);
                     }
 
+
                     if (Keyboard.GetKey(KeyCodes.A) || Keyboard.GetKey(KeyCodes.D))
                     {
-                        if (_head.Rotation.z > -30 * M.Pi / 180 && _moveX < 0)
+                        if (_head.Rotation.z > -15 * M.Pi / 180 && _moveX < 0)
                         {
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
                         }
-                        if (_head.Rotation.z < 30 * M.Pi / 180 && _moveX > 0)
+                        if (_head.Rotation.z < 15 * M.Pi / 180 && _moveX > 0)
                         {
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
                         }
                     }
                     else if (Keyboard.GetKey(KeyCodes.W) || Keyboard.GetKey(KeyCodes.S))
                     {
-                        if (_head.Rotation.x > -30 * M.Pi / 180 && _moveZ > 0)
+                        if (_head.Rotation.x > -15 * M.Pi / 180 && _moveZ > 0)
                         {
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
                         }
-                        if (_head.Rotation.x < 30 * M.Pi / 180 && _moveZ < 0)
+                        if (_head.Rotation.x < 15 * M.Pi / 180 && _moveZ < 0)
                         {
                             _head.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
                         }
@@ -726,6 +726,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 {
                     if (_head.Translation.x > _oldX)
                     {
+                        Diagnostics.Debug(_translation[_ballbmp[0] + 1, _ballbmp[1] + 1].x + " " + (_translation[_ballbmp[0] + 1, _ballbmp[1] + 1].x - _head.Translation.x));
                         _head.Translation.z = _translation[_ballbmp[0] + 1, _ballbmp[1] + 1].y - System.MathF.Sqrt((((_ballradius + 0.01f) * (_ballradius + 0.01f)) - (_translation[_ballbmp[0] + 1, _ballbmp[1] + 1].x - _head.Translation.x) * (_translation[_ballbmp[0] + 1, _ballbmp[1] + 1].x - _head.Translation.x)));
                     }
 
@@ -1024,22 +1025,31 @@ namespace Fusee.Examples.Labyrinth.Core
 
         public static ColorUint GetPixel(ImageData img, int x, int y)
         {
-            int bpp = img.PixelFormat.BytesPerPixel;
-            switch (bpp)
+            return img.PixelFormat switch
             {
-                case 4:
-                    return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], img.PixelData[bpp * (img.Width * y + x) + 3]);
+                { BytesPerPixel: 4, ColorFormat: ColorFormat.RGBA } => new ColorUint(img.PixelData[4 * (img.Width * y + x) + 2], img.PixelData[4 * (img.Width * y + x) + 1], img.PixelData[4 * (img.Width * y + x)], img.PixelData[4 * (img.Width * y + x) + 3]),
+                { BytesPerPixel: 3, ColorFormat: ColorFormat.RGB } => new ColorUint(img.PixelData[3 * (img.Width * y + x) + 2], img.PixelData[3 * (img.Width * y + x) + 1], img.PixelData[3 * (img.Width * y + x)], 255),
+                { BytesPerPixel: 1, ColorFormat: ColorFormat.Intensity } => new ColorUint(0, 0, 0, img.PixelData[1 * (img.Width * y + x) + 3]),
+                _ => new ColorUint(0, 0, 0, 0)
+            };
 
-                case 3:
-                    return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], 255);
 
-                case 1:
-                    return new ColorUint(0, 0, 0, img.PixelData[bpp * (img.Width * y + x) + 3]);
+            //int bpp = img.PixelFormat.BytesPerPixel;
+            //switch (bpp)
+            //{
+            //    case 4:
+            //        return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], img.PixelData[bpp * (img.Width * y + x) + 3]);
 
-                default:
-                    return new ColorUint(0, 0, 0, 0);
+            //    case 3:
+            //        return new ColorUint(img.PixelData[bpp * (img.Width * y + x) + 2], img.PixelData[bpp * (img.Width * y + x) + 1], img.PixelData[bpp * (img.Width * y + x)], 255);
 
-            }
+            //    case 1:
+            //        return new ColorUint(0, 0, 0, img.PixelData[bpp * (img.Width * y + x) + 3]);
+
+            //    default:
+            //        return new ColorUint(0, 0, 0, 0);
+
+            //}
 
         }   
     }
