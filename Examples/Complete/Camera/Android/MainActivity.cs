@@ -15,6 +15,8 @@ using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
+using System.Threading.Tasks;
+using ProtoBuf;
 
 namespace Fusee.Examples.Camera.Android
 {
@@ -43,20 +45,15 @@ namespace Fusee.Examples.Camera.Android
                         ReturnedType = typeof(Font),
                         Decoder = (string id, object storage) =>
                         {
-                            if (Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
-                            {
-                                return new Font
-                                {
-                                    _fontImp = new FontImp((Stream)storage)
-                                };
-                            }
-
-                            return null;
+                            if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                            return new Font { _fontImp = new FontImp((Stream)storage) };
                         },
-                        Checker = (string id) =>
+                        DecoderAsync = async (string id, object storage) =>
                         {
-                            return Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase);
-                        }
+                            if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                            return await Task.Factory.StartNew(() => new Font { _fontImp = new FontImp((Stream)storage) });
+                        },
+                        Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                     });
                 fap.RegisterTypeHandler(
                     new AssetHandler
@@ -64,16 +61,18 @@ namespace Fusee.Examples.Camera.Android
                         ReturnedType = typeof(SceneContainer),
                         Decoder = (string id, object storage) =>
                         {
-                            if (Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase))
+                            if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                            return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        },
+                        DecoderAsync = async (string id, object storage) =>
+                        {
+                            if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                             {
-                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
                             }
                             return null;
                         },
-                        Checker = delegate (string id)
-                        {
-                            return Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase);
-                        }
+                        Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                     });
                 AssetStorage.RegisterProvider(fap);
 
