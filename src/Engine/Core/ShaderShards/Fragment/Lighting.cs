@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var lighting = new List<string>();
 
             //Adds methods to the PS that calculate the single light components (diffuse, specular)
-            if (setup.HasFlag(LightingSetupFlags.LambertPhong))
+            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
@@ -349,7 +349,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>();
 
-            if (setup.HasFlag(LightingSetupFlags.LambertPhong))
+            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
@@ -583,6 +583,17 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"res.rgb += specLayer;                  // direct specular, not affected by reflectivity",
 
             "}",
+            "else if(specularVars.a == 3.0)",
+            "{",
+                // diffuse 
+                "diffuse = vec4(vec3(diffuseLighting(normal, lightDir)), 1.0);",
+                "res = diffuse * albedo;",
+            "}",
+            "else if(specularVars.a == 4.0)",
+            "{",
+                // unlit
+                "res = albedo;",
+            "}",
             });
 
             if (isCascaded && debugCascades)
@@ -591,8 +602,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
 
             methodBody.Add("}");
-            methodBody.Add($"float strength = (1.0 - ambientCo) * light.strength;");
-            methodBody.Add($"lighting = ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);");
+            methodBody.AddRange(
+            new List<string>()
+            {
+                "if(specularVars.a != 4.0) //4.0 == unlit",
+                "{",
+                    $"float strength = (1.0 - ambientCo) * light.strength;",
+                    $"lighting = ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);",
+                "}",
+                "else",
+                "{",
+                    "lighting = albedo;",
+                "}",
+            });
 
             methodBody.Add($"{FragProperties.OutColorName} = lighting;");
 

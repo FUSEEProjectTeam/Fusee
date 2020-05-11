@@ -67,7 +67,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_NORMAL:
                         {
-                            fragMainBody.Add($"{texName} = vec4(normalize(surfOut.normal.xyz), 1.0);");
+                            if (!lightingSetup.HasFlag(LightingSetupFlags.Unlit))
+                                fragMainBody.Add($"{texName} = vec4(normalize(surfOut.normal.xyz), 1.0);");
+                            else
+                                fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 1.0, 1.0);");
                         }
 
                         break;
@@ -80,10 +83,20 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                             {
                                 fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, 1.0);");
                             }
-                            else if (lightingSetup.HasFlag(LightingSetupFlags.LambertPhong))
+                            else if (lightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
                             {
                                 fragMainBody.Add("//reason for multiplying by 0.5: keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
                                 fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength * 0.5, surfOut.shininess * 0.5, 0.0, 2.0);");
+                            }
+                            else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
+                            {
+                                fragMainBody.Add("//Shading model is 'diffuse only' - store just that.");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, 3.0);");
+                            }
+                            else if (lightingSetup.HasFlag(LightingSetupFlags.Unlit))
+                            {
+                                fragMainBody.Add("//Shading model is 'unlit' - store just that.");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, 4.0);");
                             }
                             break;
                         }

@@ -45,6 +45,9 @@ namespace Fusee.Examples.Simple.Core
         private DefaultSurfaceEffect _rubber_brdfFx;
         private DefaultSurfaceEffect _subsurf_brdfFx;
 
+
+        private DefaultSurfaceEffect _testFx;
+
         // Init is called on startup.
         public override async Task<bool> Init()
         {
@@ -61,6 +64,19 @@ namespace Fusee.Examples.Simple.Core
 
             var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
             var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
+
+            var lightingFlags = LightingSetupFlags.BlinnPhong ;
+            _testFx = new DefaultSurfaceEffect(
+                lightingFlags, new SpecularInput(), 
+                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd, 
+                Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
+
+            _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
+            //((TextureInput)_testFx.SurfaceInput).AlbedoTex = albedoTex;
+            //((TextureInput)_testFx.SurfaceInput).NormalTex = normalTex;
+            //((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
+            ((SpecularInput)_testFx.SurfaceInput).Shininess = 5f;
+            ((SpecularInput)_testFx.SurfaceInput).SpecularStrength = 1f;
 
             _gold_brdfFx = MakeEffect.FromBRDFTexture
             (
@@ -106,7 +122,7 @@ namespace Fusee.Examples.Simple.Core
                 subsurface: 1.0f
             );
 
-            _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
+            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = _paint_brdfFx;
             _rocketScene.Children[3].Components[1] = _gold_brdfFx;

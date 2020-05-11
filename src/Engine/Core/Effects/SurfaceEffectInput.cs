@@ -288,7 +288,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private float _normalMappingStrength;
+        private float _normalMappingStrength = 1f;
 
         /// <summary>
         /// The normal texture.
@@ -305,7 +305,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private float2 _texTiles;
+        private float2 _texTiles = float2.One;
     }
 
     /// <summary>

@@ -375,7 +375,7 @@ namespace Fusee.Engine.Core
                 Shininess = shininess,
                 SpecularStrength = specularStrength
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.LambertPhong, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.BlinnPhong, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -424,7 +424,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.LambertPhong | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -449,7 +449,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.LambertPhong | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.BlinnPhong | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -478,7 +478,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.LambertPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 

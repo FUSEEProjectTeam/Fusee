@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// A Effect uses the standard (= non pbr) lighting calculation.
         /// </summary>
-        LambertPhong = 8,
+        BlinnPhong = 8,
 
         /// <summary>
         /// A Effect uses a pbr specular calculation (BRDF).
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
             var structDcl = BuildStructDecl(setup);
 
-            if (setup.HasFlag(LightingSetupFlags.LambertPhong))
+            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
@@ -199,7 +199,7 @@ namespace Fusee.Engine.Core.ShaderShards
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
 
-            if (setup.HasFlag(LightingSetupFlags.LambertPhong))
+            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
             {
                 dcl.Add($"  {GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");

@@ -33,8 +33,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.depth = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);",
-            $"OUT.specular =  vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);",
-            "return OUT;"
+            $"OUT.specular =  vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);"
         };
 
         /// <summary>
@@ -47,8 +46,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "OUT.metallic = IN.Metallic;",
             "OUT.ior = IN.IOR;",
             "OUT.specular = IN.Specular;",
-            "OUT.subsurface = IN.Subsurface;",
-            "return OUT;"
+            "OUT.subsurface = IN.Subsurface;"
         };
 
         /// <summary>
@@ -58,7 +56,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetupFlags.LambertPhong))
+            if (lightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
             {
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
@@ -93,8 +91,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     "OUT.normal = normalize(TBN * N);"
                 });
             }
-            res.Add("return OUT;");
-
             return res;
         }
     }
