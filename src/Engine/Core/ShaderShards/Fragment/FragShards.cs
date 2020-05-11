@@ -58,18 +58,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetupFlags.Lambert))
+            if (lightingSetup.HasFlag(LightingSetupFlags.LambertPhong))
             {
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
             }
-            else if (lightingSetup.HasFlag(LightingSetupFlags.BRDFMetallic))
+            else if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
             {
                 res.Add("OUT.roughness = IN.Roughness;");
                 res.Add("OUT.metallic = IN.Metallic;");
                 res.Add("OUT.ior = IN.IOR;");
                 res.Add("OUT.specular = IN.Specular;");
                 res.Add("OUT.subsurface = IN.Subsurface;");
+                res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
             }
 
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))

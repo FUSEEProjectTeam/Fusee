@@ -76,11 +76,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_SPECULAR:
                         {
-                            if (lightingSetup.HasFlag(LightingSetupFlags.BRDFMetallic))
+                            if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
                             {
                                 fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, 1.0);");
                             }
-                            else if (lightingSetup.HasFlag(LightingSetupFlags.Lambert))
+                            else if (lightingSetup.HasFlag(LightingSetupFlags.LambertPhong))
                             {
                                 fragMainBody.Add("//reason for multiplying by 0.5: keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
                                 fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength * 0.5, surfOut.shininess * 0.5, 0.0, 2.0);");

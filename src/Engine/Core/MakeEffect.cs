@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
         /// If rendered with FXAA we'll need an additional (final) pass, that takes the lighted scene, rendered to a texture, as input.
         /// </summary>
         /// <param name="srcTex">RenderTarget, that contains a single texture in the Albedo/Specular channel, that contains the lighted scene.</param>
-        /// <param name="screenParams">The width and height of the screen.</param>       
+        /// <param name="screenParams">The width and height of the screen.</param>
         // see: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
         public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Shader effect for the ssao pass.
-        /// </summary>        
+        /// </summary>
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
@@ -105,7 +105,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>        
+        /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
@@ -204,7 +204,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The cascaded shadow maps.</param>
         /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
@@ -367,7 +367,7 @@ namespace Fusee.Engine.Core
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float shininess, float specularStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float shininess, float specularStrength = 0.5f)
         {
             var input = new SpecularInput()
             {
@@ -375,15 +375,20 @@ namespace Fusee.Engine.Core
                 Shininess = shininess,
                 SpecularStrength = specularStrength
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.Lambert, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.LambertPhong, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
         /// Builds a simple shader effect with diffuse and specular components.
         /// </summary>
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
+        /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
+        /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
+        /// <param name="specular">Amount of dielectric specular reflection. </param>
+        /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
+        /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static SurfaceEffect FromDiffuseSpecularBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface)
+        public static DefaultSurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface)
         {
             var input = new BRDFInput()
             {
@@ -394,9 +399,9 @@ namespace Fusee.Engine.Core
                 IOR = ior,
                 Subsurface = subsurface
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.BRDFMetallic, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
         }
-        
+
 
         /// <summary>
         /// Builds a simple shader effect with diffuse and specular color.
@@ -406,8 +411,8 @@ namespace Fusee.Engine.Core
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
-        /// <param name="specularStrength">The resulting effects specular intensity.</param>       
-        public static SurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float shininess, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
+        /// <param name="specularStrength">The resulting effects specular intensity.</param>
+        public static DefaultSurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float shininess, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
         {
             var input = new TextureInput()
             {
@@ -419,7 +424,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.Lambert | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.LambertPhong | LightingSetupFlags.AlbedoTex;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -431,8 +436,8 @@ namespace Fusee.Engine.Core
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
-        /// <param name="specularStrength">The resulting effects specular intensity.</param>        
-        public static SurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float shininess, Texture normalTex, float normalMapStrength, float2 texTiles, float specularStrength = 0.5f)
+        /// <param name="specularStrength">The resulting effects specular intensity.</param>
+        public static DefaultSurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float shininess, Texture normalTex, float normalMapStrength, float2 texTiles, float specularStrength = 0.5f)
         {
             var input = new TextureInput()
             {
@@ -444,7 +449,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.Lambert | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.LambertPhong | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -453,13 +458,13 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="albedoTex">The albedo texture.</param>        
+        /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static SurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float shininess, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f, float normalMapStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float shininess, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f, float normalMapStrength = 0.5f)
         {
             var input = new TextureInput()
             {
@@ -473,7 +478,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.Lambert | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.LambertPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -484,8 +489,12 @@ namespace Fusee.Engine.Core
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
-        /// <param name="specularStrength">The resulting effects specular intensity.</param>       
-        public static SurfaceEffect FromDiffuseSpecularBRDFAlbedoTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
+        /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
+        /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
+        /// <param name="specular">Amount of dielectric specular reflection. </param>
+        /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
+        /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
+        public static DefaultSurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
@@ -500,7 +509,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDFMetallic | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -511,7 +520,12 @@ namespace Fusee.Engine.Core
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
-        public static SurfaceEffect FromDiffuseSpecularBRDFNormalTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
+        /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
+        /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
+        /// <param name="specular">Amount of dielectric specular reflection. </param>
+        /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
+        /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
+        public static DefaultSurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
@@ -526,7 +540,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDFMetallic | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -539,7 +553,12 @@ namespace Fusee.Engine.Core
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
-        public static SurfaceEffect FromDiffuseSpecularBRDFTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
+        /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
+        /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
+        /// <param name="specular">Amount of dielectric specular reflection. </param>
+        /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
+        /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
+        public static DefaultSurfaceEffect FromBRDFTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
         {
             var input = new TextureInputBRDF()
             {
@@ -556,7 +575,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDFMetallic | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 

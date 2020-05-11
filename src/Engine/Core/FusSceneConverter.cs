@@ -486,13 +486,12 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.Lambert : LightingSetupFlags.DiffuseOnly;
+            var lightingSetup = m.HasSpecular ? LightingSetupFlags.LambertPhong : LightingSetupFlags.DiffuseOnly;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
-
-            //TODO: test what happens if there is a albedo texture but no normal texture and vice versa.
+            
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
@@ -525,7 +524,7 @@ namespace Fusee.Engine.Core
                 }
                 sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
             }
-            else if (lightingSetup == LightingSetupFlags.Lambert)
+            else if (lightingSetup == LightingSetupFlags.LambertPhong)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, m.Specular.Shininess, m.Specular.Strength);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
@@ -540,14 +539,13 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.BRDFMetallic : LightingSetupFlags.DiffuseOnly;
+            var lightingSetup = m.HasSpecular ? LightingSetupFlags.BRDF : LightingSetupFlags.DiffuseOnly;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
-
-            //TODO: test what happens if there is a albedo texture but no normal texture and vice versa
-            //TODO: get BRDF values from new FusMaterial and replace arbitrary values in MakeEffect methods
+            
+            //TODO: get BRDF values from new FusMaterial and replace arbitrary parameter values in MakeEffect methods
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
@@ -555,7 +553,7 @@ namespace Fusee.Engine.Core
                     albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularBRDFAlbedoTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
+                sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
             }
             else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -564,7 +562,7 @@ namespace Fusee.Engine.Core
                     normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularBRDFNormalTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
+                sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -578,10 +576,10 @@ namespace Fusee.Engine.Core
                     normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularBRDFTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
+                sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
             }
-            else if (lightingSetup == LightingSetupFlags.BRDFMetallic)
-                sfx = MakeEffect.FromDiffuseSpecularBRDF(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0);
+            else if (lightingSetup == LightingSetupFlags.BRDF)
+                sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
             else
@@ -655,7 +653,7 @@ namespace Fusee.Engine.Core
         /// Converts the animation component.
         ///</summary>
         [VisitMethod]
-        public void ConvAnimation(Core.Scene.Animation a)
+        public void ConvAnimation(Animation a)
         {
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }

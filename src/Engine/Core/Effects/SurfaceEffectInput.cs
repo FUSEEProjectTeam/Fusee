@@ -71,7 +71,9 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class BRDFInput : ColorInput
     {
-        
+        /// <summary>
+        /// The roughness of the specular and diffuse reflection.
+        /// </summary>
         public float Roughness
         {
             get => _roughness;
@@ -85,7 +87,10 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _roughness;
-        
+
+        /// <summary>
+        /// Value used to blend between the metallic and the dielectric model.
+        /// </summary>
         public float Metallic
         {
             get => _metallic;
@@ -99,7 +104,10 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _metallic;
-        
+
+        /// <summary>
+        /// Amount of dielectric specular reflection.
+        /// </summary>
         public float Specular
         {
             get => _specular;
@@ -114,6 +122,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float _specular;
 
+        /// <summary>
+        /// The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.
+        /// </summary>
         public float IOR
         {
             get => _ior;
@@ -128,6 +139,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float _ior;
 
+        /// <summary>
+        /// Mix between diffuse and subsurface scattering.
+        /// </summary>
         public float Subsurface
         {
             get => _subsurface;
@@ -141,6 +155,24 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _subsurface;
+
+        /// <summary>
+        /// The color of the subsurface scattering.
+        /// </summary>
+        public float3 SubsurfaceColor
+        {
+            get => _subsurfaceColor;
+
+            set
+            {
+                if (value != _subsurfaceColor)
+                {
+                    _subsurfaceColor = value;
+                    NotifyPropertyChanged(_subsurfaceColor.GetType(), nameof(SubsurfaceColor), _subsurfaceColor);
+                }
+            }
+        }
+        private float3 _subsurfaceColor;
     }
 
     /// <summary>

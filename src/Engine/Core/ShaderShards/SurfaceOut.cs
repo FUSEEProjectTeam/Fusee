@@ -28,32 +28,23 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Does this Effect have an albedo texture?
         /// </summary>
-        AlbedoTex = 64,
+        AlbedoTex = 32,
 
         /// <summary>
         /// Does this Effect have a normal map?
         /// </summary>
-        NormalMap = 32,
+        NormalMap = 16,
 
         /// <summary>
         /// A Effect uses the standard (= non pbr) lighting calculation.
-        /// Includes diffuse calculation.
         /// </summary>
-        Lambert = 16,
+        LambertPhong = 8,
 
         /// <summary>
-        /// A Effect uses a pbr specular calculation (BRDF - metallic setup).
+        /// A Effect uses a pbr specular calculation (BRDF).
         /// Includes diffuse calculation.
         /// </summary>
-        BRDFMetallic = 8,
-
-        /// <summary>
-        /// A Effect uses a pbr specular calculation (BRDF - subsurface setup).
-        /// Includes diffuse calculation.
-        /// TODO: subsurface shading model is not properly supported yet. 
-        /// The differentiation into Metallic in Subsurface is mainly caused be wish to store the BRDF values in only one texture.
-        /// </summary>
-        BRDFSubsurface = 4,
+        BRDF = 4,
 
         /// <summary>
         /// Perform only a simple diffuse calculation.
@@ -97,6 +88,7 @@ namespace Fusee.Engine.Core.ShaderShards
         internal static readonly Tuple<GLSL.Type, string> Specular = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specular");
         internal static readonly Tuple<GLSL.Type, string> IOR = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "ior");
         internal static readonly Tuple<GLSL.Type, string> Subsurface = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "subsurface");
+        internal static readonly Tuple<GLSL.Type, string> SubsurfaceColor = new Tuple<GLSL.Type, string>(GLSL.Type.Vec3, "subsurfaceColor");
         #endregion
 
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
@@ -104,7 +96,7 @@ namespace Fusee.Engine.Core.ShaderShards
         private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
         private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0))";
         private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
-        private static readonly string DerfafultSpecBRDFOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0)";
+        private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
@@ -118,7 +110,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
             var structDcl = BuildStructDecl(setup);
 
-            if (setup.HasFlag(LightingSetupFlags.Lambert))
+            if (setup.HasFlag(LightingSetupFlags.LambertPhong))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
@@ -127,12 +119,12 @@ namespace Fusee.Engine.Core.ShaderShards
                 };
                 return _lightingSetupCache[setup];
             }
-            else if (setup.HasFlag(LightingSetupFlags.BRDFMetallic))
+            else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
                     StructDecl = structDcl,
-                    DefaultInstance = DerfafultSpecBRDFOut
+                    DefaultInstance = DerfafultBRDFOut
                 };
                 return _lightingSetupCache[setup];
             }
@@ -207,18 +199,19 @@ namespace Fusee.Engine.Core.ShaderShards
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
 
-            if (setup.HasFlag(LightingSetupFlags.Lambert))
+            if (setup.HasFlag(LightingSetupFlags.LambertPhong))
             {
                 dcl.Add($"  {GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
             }
-            else if (setup.HasFlag(LightingSetupFlags.BRDFMetallic))
+            else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
                 dcl.Add($"  {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Metallic.Item1)} {Metallic.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Specular.Item1)} {Specular.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(IOR.Item1)} {IOR.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Subsurface.Item1)} {Subsurface.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(SubsurfaceColor.Item1)} {SubsurfaceColor.Item2};");
             }
             dcl.Add("};\n");
             return string.Join("\n", dcl);

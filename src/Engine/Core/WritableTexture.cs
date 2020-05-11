@@ -165,7 +165,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateNormalTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_NORMAL, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.G_NORMAL, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
         }
 
         /// <summary>

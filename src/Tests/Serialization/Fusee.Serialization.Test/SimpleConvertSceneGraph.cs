@@ -803,7 +803,7 @@ namespace Fusee.Test.Serialization.V1
                            WasLoaded = true
                        },
                        new Camera(Engine.Core.Scene.ProjectionMethod.Orthographic, 0, 500, 2000),
-                       MakeEffect.FromDiffuseSpecularBRDF(ColorUint.Tofloat4(ColorUint.Green), 0.2f, 0, 0.5f, 1.46f, 0),
+                       MakeEffect.FromBRDF(ColorUint.Tofloat4(ColorUint.Green), 0.2f, 0, 0.5f, 1.46f, 0),
                        new Cube()
                     },
                     Children = new ChildList

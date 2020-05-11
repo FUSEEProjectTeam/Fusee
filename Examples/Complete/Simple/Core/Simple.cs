@@ -27,7 +27,7 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -59,12 +59,10 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("monkeys.fus");
 
-            //var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
-
             var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
             var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
 
-            _gold_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDFTexture
+            _gold_brdfFx = MakeEffect.FromBRDFTexture
             (
                 albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
                 roughness: 0.2f,
@@ -78,7 +76,7 @@ namespace Fusee.Examples.Simple.Core
                 texTiles: new float2(3, 3)
             );
 
-            _paint_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDF
+            _paint_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(0.0f, 231f / 256f, 1f, 1.0f),
                 roughness: 0.05f,
@@ -88,7 +86,7 @@ namespace Fusee.Examples.Simple.Core
                 subsurface: 0
             );
 
-            _rubber_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDF
+            _rubber_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f),
                 roughness: 1.0f,
@@ -98,7 +96,7 @@ namespace Fusee.Examples.Simple.Core
                 subsurface: 0
             );
 
-            _subsurf_brdfFx = (DefaultSurfaceEffect)MakeEffect.FromDiffuseSpecularBRDF
+            _subsurf_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f),
                 roughness: 0.508f,
@@ -117,20 +115,8 @@ namespace Fusee.Examples.Simple.Core
             monkeyOne.Tangents = monkeyOne.CalculateTangents();
             monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
 
-            //var monkeyTwo = (Mesh)_rocketScene.Children[1].Components[2];
-            //monkeyTwo.Tangents = monkeyOne.Tangents;
-            //monkeyTwo.BiTangents = monkeyOne.BiTangents;
-
-            //var monkeyThree = (Mesh)_rocketScene.Children[2].Components[2];
-            //monkeyThree.Tangents = monkeyOne.Tangents;
-            //monkeyThree.BiTangents = monkeyOne.BiTangents;
-
-            //var monkeyFour = (Mesh)_rocketScene.Children[2].Components[2];
-            //monkeyFour.Tangents = monkeyOne.Tangents;
-            //monkeyFour.BiTangents = monkeyOne.BiTangents;
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             return true;
