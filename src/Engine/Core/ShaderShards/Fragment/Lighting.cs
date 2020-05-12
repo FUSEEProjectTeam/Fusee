@@ -123,8 +123,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float Fss90 = LdotH * LdotH * roughness;",
                 "float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);",
                 "float ss = 1.25 * (Fss * (1.0 / max((NdotL + NdotV), 0.001) - 0.5) + 0.5);",
-
-                "return mix((albedo / PI) * Fd * NdotL, (subsurfaceColor / PI) * ss, subsurface);"
+                "return mix((albedo / PI) * (Fd * NdotL), (subsurfaceColor / PI) * ss, subsurface);"
 
             };
             return GLSL.CreateMethod(GLSL.Type.Vec3, "diffuseLighting",
@@ -528,7 +527,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.AddRange(
             new List<string>() {
             "vec3 viewDir = normalize(-fragPos.xyz);",
-            "if(specularVars.a == 2.0)",
+            "uint decodedShadingModel = uint(round(specularVars.a * float(0xFF))) & uint(0xF);",
+
+            "if(decodedShadingModel == uint(2))",
             "{",
                 // diffuse 
                 "diffuse = vec4(vec3(diffuseLighting(normal, lightDir)), 1.0);",
@@ -544,7 +545,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "res = diffuse + specular;",
 
             "}",
-            "else if(specularVars.a == 1.0)",
+            "else if(decodedShadingModel == uint(1))",
             "{",
 
                 "float roughness = specularVars.r;",
@@ -583,13 +584,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"res.rgb += specLayer;                  // direct specular, not affected by reflectivity",
 
             "}",
-            "else if(specularVars.a == 3.0)",
+            "else if(decodedShadingModel == uint(3))",
             "{",
                 // diffuse 
                 "diffuse = vec4(vec3(diffuseLighting(normal, lightDir)), 1.0);",
                 "res = diffuse * albedo;",
             "}",
-            "else if(specularVars.a == 4.0)",
+            "else if(decodedShadingModel == uint(4))",
             "{",
                 // unlit
                 "res = albedo;",

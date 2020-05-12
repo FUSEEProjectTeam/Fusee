@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System;
@@ -506,9 +506,8 @@ namespace Fusee.Engine.Core.Effects
             concreteParamDecl.GetField("Value").SetValue(ob, val);
             return (IFxParamDeclaration)ob;
         }
-
-        //TODO: make internal again
-        public static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
+        
+        internal static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
         {
             for (int i = 0; i < numberOfLights; i++)
             {

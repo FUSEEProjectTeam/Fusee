@@ -496,7 +496,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
@@ -514,7 +514,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
@@ -550,7 +550,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
@@ -568,7 +568,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture));
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))

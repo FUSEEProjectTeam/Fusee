@@ -106,9 +106,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
         /// <param name="texRes">The g-buffer texture resolution.</param>
-        /// <param name="shadowMapRes">The shadow map resolution.</param>       
+        /// <param name="shadowMapRes">The shadow map resolution.</param>
         public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
         {
+            Diagnostics.Warn($"Alpha blend is disabled for deferred rendering for now - {RenderState.AlphaBlendEnable} is locked (see SceneRendererDeferred.RenderAllPasses()).");
+
             TexRes = texRes;
             ShadowMapRes = shadowMapRes;
             _gBufferRenderTarget = new RenderTarget(TexRes);
@@ -457,8 +459,9 @@ namespace Fusee.Engine.Core
 
         private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex = null)
         {
-            var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.
+            var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.            
             var preRenderLockedStates = new Dictionary<RenderState, KeyValuePair<bool, uint>>(_rc.LockedStates);
+            _rc.SetRenderState(RenderState.AlphaBlendEnable, 0, true);
 
             if (_rc.ClearColor != _texClearColor)
                 BackgroundColor = _rc.ClearColor;

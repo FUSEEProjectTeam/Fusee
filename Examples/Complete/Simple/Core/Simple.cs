@@ -45,7 +45,6 @@ namespace Fusee.Examples.Simple.Core
         private DefaultSurfaceEffect _rubber_brdfFx;
         private DefaultSurfaceEffect _subsurf_brdfFx;
 
-
         private DefaultSurfaceEffect _testFx;
 
         // Init is called on startup.
@@ -65,31 +64,29 @@ namespace Fusee.Examples.Simple.Core
             var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
             var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
 
-            var lightingFlags = LightingSetupFlags.BlinnPhong ;
+            var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap ;
             _testFx = new DefaultSurfaceEffect(
-                lightingFlags, new SpecularInput(), 
-                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_SpecularStd, 
+                lightingFlags, new TextureInput(), 
+                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags), 
                 Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
 
             _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
-            //((TextureInput)_testFx.SurfaceInput).AlbedoTex = albedoTex;
-            //((TextureInput)_testFx.SurfaceInput).NormalTex = normalTex;
-            //((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
-            ((SpecularInput)_testFx.SurfaceInput).Shininess = 5f;
-            ((SpecularInput)_testFx.SurfaceInput).SpecularStrength = 1f;
 
-            _gold_brdfFx = MakeEffect.FromBRDFTexture
+            ((TextureInput)_testFx.SurfaceInput).AlbedoTex = albedoTex;
+            ((TextureInput)_testFx.SurfaceInput).NormalTex = normalTex;
+            ((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
+            ((TextureInput)_testFx.SurfaceInput).Shininess = 5f;
+            ((TextureInput)_testFx.SurfaceInput).SpecularStrength = 1f;
+            ((TextureInput)_testFx.SurfaceInput).TexTiles = new float2(3,3);
+
+            _gold_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
                 roughness: 0.2f,
                 metallic: 1,
                 specular: 0,
                 ior: 0.47f,
-                subsurface: 0,
-                albedoTex: albedoTex,
-                normalTex: normalTex,
-                albedoMix: 0.5f,
-                texTiles: new float2(3, 3)
+                subsurface: 0
             );
 
             _paint_brdfFx = MakeEffect.FromBRDF

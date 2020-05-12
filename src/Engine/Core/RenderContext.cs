@@ -1375,11 +1375,11 @@ namespace Fusee.Engine.Core
                     {
                         CurrentRenderState.SetRenderState(renderState, value);
                         _rci.SetRenderState(renderState, value);
-                        Diagnostics.Warn("PREVIOUSLY LOCKED STATE WAS OVERWRITTEN: Render state " + renderState + " was locked and will remain its old value.\n Call UnlockRenderState(renderState) to undo it.");
+                        //Diagnostics.Warn("PREVIOUSLY LOCKED STATE WAS OVERWRITTEN: Render state " + renderState + " was locked and will remain its old value.\n Call UnlockRenderState(renderState) to undo it.");
                     }
                     else
                     {
-                        Diagnostics.Warn("Render state " + renderState + " was locked and will remain its old value.\n Call UndoLockRenderState(renderState) to undo it.");
+                        //Diagnostics.Warn("Render state " + renderState + " was locked and will remain its old value.\n Call UndoLockRenderState(renderState) to undo it.");
                     }
 
                     return;
@@ -1387,19 +1387,19 @@ namespace Fusee.Engine.Core
             }
 
             var currentVal = CurrentRenderState.GetRenderState(renderState);
+            if (doLockState)
+            {
+                if (currentVal != null)
+                    LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
+                else
+                    LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)RenderStateSet.Default.GetRenderState(renderState));
+            }
             if (currentVal != value)
             {
-                if (doLockState)
-                {
-                    if (currentVal != null)
-                        LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
-                    else
-                        LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)RenderStateSet.Default.GetRenderState(renderState));
-                }
-
                 CurrentRenderState.SetRenderState(renderState, value);
                 _rci.SetRenderState(renderState, value);
             }
+            
         }
 
         /// <summary>

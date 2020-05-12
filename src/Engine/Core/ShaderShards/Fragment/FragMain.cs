@@ -72,7 +72,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                             else
                                 fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 1.0, 1.0);");
                         }
-
                         break;
                     case (int)RenderTargetTextureTypes.G_DEPTH:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
@@ -81,28 +80,34 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         {
                             if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
                             {
-                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, 1.0);");
+                                fragMainBody.Add("float encodedShadingModel = float((1 & 0xF) | 0) / float(0xFF);");
+                                fragMainBody.Add("float invShadingModel = 1.0 / encodedShadingModel;");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, encodedShadingModel);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
                             {
-                                fragMainBody.Add("//reason for multiplying by 0.5: keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
-                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength * 0.5, surfOut.shininess * 0.5, 0.0, 2.0);");
+                                fragMainBody.Add("float encodedShadingModel = float((2 & 0xF) | 0) / float(0xFF);");
+                                fragMainBody.Add("float invShadingModel = 1.0 / encodedShadingModel;");
+                                fragMainBody.Add("//reason for multiplying by 'invShadingModel': keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
+                                fragMainBody.Add("//this is only needed if alpha blending is enabled");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength, surfOut.shininess, 0.0, encodedShadingModel);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
                             {
+                                fragMainBody.Add("float encodedShadingModel = float((3 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'diffuse only' - store just that.");
-                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, 3.0);");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, encodedShadingModel);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.Unlit))
                             {
+                                fragMainBody.Add("float encodedShadingModel = float((4 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'unlit' - store just that.");
-                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, 4.0);");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, encodedShadingModel);");
                             }
                             break;
                         }
                 }
             }
-
             return GLSL.MainMethod(fragMainBody);
         }
     }
