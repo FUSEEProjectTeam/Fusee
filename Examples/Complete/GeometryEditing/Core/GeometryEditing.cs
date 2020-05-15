@@ -57,7 +57,7 @@ namespace Fusee.Examples.GeometryEditing.Core
         private bool _isScaling;
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             _parentNode = new SceneNode
@@ -93,8 +93,6 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             //Geometry cuboid = CreateGeometry.CreateCuboidGeometry(5, 2, 5);
             //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));
-
-            return true;
         }
 
         // RenderAFrame is called once a frame

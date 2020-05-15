@@ -54,7 +54,7 @@ namespace Fusee.Engine.Player.Core
         private GamePadDevice _gamePad;
 
         // Init is called on startup. 
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -114,8 +114,6 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            return true;
         }
 
         

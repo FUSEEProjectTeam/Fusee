@@ -29,7 +29,7 @@ namespace Fusee.Examples.Materials.Core
 
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var fontLatoMap = new FontMap(fontLato, 32);
@@ -532,8 +532,6 @@ namespace Fusee.Examples.Materials.Core
 
             _guiDescRenderer = new SceneRendererForward(guiDescriptionScene);
             _renderer = new SceneRendererDeferred(_scene);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame

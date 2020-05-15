@@ -39,7 +39,7 @@ namespace Fusee.Examples.Simple.Core
         private bool _keys;
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _gui = CreateGui();
 
@@ -55,8 +55,6 @@ namespace Fusee.Examples.Simple.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame
