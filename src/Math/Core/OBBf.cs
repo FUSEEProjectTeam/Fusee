@@ -7,14 +7,14 @@ using System.Runtime.InteropServices.ComTypes;
 namespace Fusee.Math.Core
 {
     /// <summary>
-    ///     Represents an oriented bounding box.
+    /// Represents an oriented bounding box.
     /// </summary>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct OBBf
     {
         /// <summary>
-        ///     The minimum values of the oriented bounding box in x, y and z direction
+        /// The minimum values of the oriented bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(1)] public float3 Min;
 
@@ -24,34 +24,34 @@ namespace Fusee.Math.Core
         [ProtoMember(2)] public float3 Max;
 
         /// <summary>
-        ///     The rotation of the oriented bounding box
+        /// The rotation of the oriented bounding box
         /// </summary>
         [ProtoMember(3)] public float4x4 Rotation;
 
         /// <summary>
-        ///     The translation of the oriented bounding box
+        /// The translation of the oriented bounding box
         /// </summary>
         [ProtoMember(4)] public float3 Translation;
 
         /// <summary>
-        ///     Returns the with, height and depth of the box in x, y and z
+        /// Returns the with, height and depth of the box in x, y and z
         /// </summary>
         [ProtoMember(5)] public float3 Size;
 
         /// <summary>
-        ///     Returns the center of the bounding box
+        /// Returns the center of the bounding box
         /// </summary>
         public float3 Center => (Max + Min) * 0.5f;
 
         /// <summary>
-        ///     Returns the rotation as euler angles
+        /// Returns the rotation as euler angles
         /// </summary>
         public float3 EulerRotation => float4x4.RotMatToEuler(Rotation);
 
         /// <summary>
         ///     Generates a new  oriented bounding box from a given set of vertices or points
         /// </summary>
-        /// <param name="vertices"></param>
+        /// <param name="vertices">The vertices, e.g. from a mesh.</param>
         public OBBf(float3[] vertices)
         {
             var verticesList = vertices.ToList();
