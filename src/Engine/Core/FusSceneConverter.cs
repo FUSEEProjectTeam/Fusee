@@ -11,7 +11,7 @@ using System.Linq;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use <see cref="ConvertFrom(FusFile)"/> and <see cref="ConvertTo(Scene)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
+    /// Use <see cref="ConvertFrom(FusFile)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
     /// in order to have each visited element converted and/or split into its high/low level, render-ready/serialization-ready components.
     /// </summary>
     public static class FusSceneConverter
@@ -454,7 +454,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Converts the octant.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="cc"></param>
         [VisitMethod]
         public void ConvOctant(FusOctant cc)
         {
@@ -500,9 +500,9 @@ namespace Fusee.Engine.Core
             }
             if (m.HasEmissive)
             {
-                vals.EmissiveColor = m.Albedo.Color;
-                vals.EmissiveMix = m.Albedo.Mix;
-                vals.EmissiveTexture = m.Albedo.Texture ?? null;
+                vals.EmissiveColor = m.Emissive.Color;
+                vals.EmissiveMix = m.Emissive.Mix;
+                vals.EmissiveTexture = m.Emissive.Texture ?? null;
             }
 
             if (m.HasSpecular)
@@ -556,9 +556,9 @@ namespace Fusee.Engine.Core
             }
             if (m.HasEmissive)
             {
-                vals.EmissiveColor = m.Albedo.Color;
-                vals.EmissiveMix = m.Albedo.Mix;
-                vals.EmissiveTexture = m.Albedo.Texture ?? null;
+                vals.EmissiveColor = m.Emissive.Color;
+                vals.EmissiveMix = m.Emissive.Mix;
+                vals.EmissiveTexture = m.Emissive.Texture ?? null;
             }
 
             if (m.HasSpecular)
@@ -835,6 +835,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Converts the shader.
         /// </summary>
+        /// <param name="cc">The camera to convert.</param>
         [VisitMethod]
         public void ConvCamComp(Camera cc)
         {
@@ -906,44 +907,44 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Converts the camera.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="cam"></param>
         [VisitMethod]
-        public void ConvCamera(Camera cc)
+        public void ConvCamera(Camera cam)
         {
             _currentNode.AddComponent(new FusCamera
             {
-                Active = cc.Active,
-                BackgroundColor = cc.BackgroundColor,
-                ClearColor = cc.ClearColor,
-                ClearDepth = cc.ClearDepth,
-                Layer = cc.Layer,
-                Name = cc.Name,
-                ClippingPlanes = cc.ClippingPlanes,
-                Fov = cc.Fov,
-                ProjectionMethod = cc.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
+                Active = cam.Active,
+                BackgroundColor = cam.BackgroundColor,
+                ClearColor = cam.ClearColor,
+                ClearDepth = cam.ClearDepth,
+                Layer = cam.Layer,
+                Name = cam.Name,
+                ClippingPlanes = cam.ClippingPlanes,
+                Fov = cam.Fov,
+                ProjectionMethod = cam.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 
         /// <summary>
         /// Converts the octant.
         /// </summary>
-        /// <param name="c"></param>
+        /// <param name="oct"></param>
         [VisitMethod]
-        public void ConvOctant(Octant cc)
+        public void ConvOctant(Octant oct)
         {
             _currentNode.AddComponent(new FusOctant
             {
-                Center = cc.Center,
-                Guid = cc.Guid,
-                IsLeaf = cc.IsLeaf,
-                Level = cc.Level,
-                Name = cc.Name,
-                NumberOfPointsInNode = cc.NumberOfPointsInNode,
-                PosInHierarchyTex = cc.PosInHierarchyTex,
-                PosInParent = cc.PosInParent,
-                Size = cc.Size,
-                VisibleChildIndices = cc.VisibleChildIndices,
-                WasLoaded = cc.WasLoaded
+                Center = oct.Center,
+                Guid = oct.Guid,
+                IsLeaf = oct.IsLeaf,
+                Level = oct.Level,
+                Name = oct.Name,
+                NumberOfPointsInNode = oct.NumberOfPointsInNode,
+                PosInHierarchyTex = oct.PosInHierarchyTex,
+                PosInParent = oct.PosInParent,
+                Size = oct.Size,
+                VisibleChildIndices = oct.VisibleChildIndices,
+                WasLoaded = oct.WasLoaded
             });
         }
 

@@ -305,7 +305,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public const string NormalMapIntensity = "NormalMapIntensityName";
+        public const string NormalMapIntensity = "NormalMapIntensity";
 
         /// <summary>
         /// List of all possible render texture names.

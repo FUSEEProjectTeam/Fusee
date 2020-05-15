@@ -54,9 +54,9 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Constructs a new node
+        /// Constructs a new node.
         /// </summary>
-        /// <param name="o">The object to be hoste</param>
+        /// <param name="o">The object to be hosted.</param>
         public Node(object o)
         {
             _o = o;
@@ -85,20 +85,20 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Attaches this Node's object's member (speceified by thisMember) to the the specified member of the object hosted by the other node. 
+        /// Attaches this Node's object's member (specified by thisMember) as outgoing pin to the specified member of the object hosted by the other node. 
         /// A member can be any field or property.
         /// </summary>
-        /// <param name="thisMember">The member of this node to attach.</param>
+        /// <param name="thisMemberOut">The member of this node emitting values.</param>
         /// <param name="other">The other node.</param>
-        /// <param name="otherMember">The other node's object's member.</param>
+        /// <param name="otherMemberIn">The other node's object's member receiving values.</param>
         /// <remarks>
         /// This is a high-level method users can call to do the wiring inside a <see cref="Circuit"/>. It creates all the necessary in- and out-pins
-        /// togegher with their respective member accessors.
+        /// together with their respective member accessors.
         /// </remarks>
-        public void Attach(string thisMember, Node other, string otherMember)
+        public void Attach(string thisMemberOut, Node other, string otherMemberIn)
         {
-            IOutPin outPin = GetOutPin(thisMember);
-            IInPin inPin = other.GetInPin(otherMember, outPin.GetPinType());
+            IOutPin outPin = GetOutPin(thisMemberOut);
+            IInPin inPin = other.GetInPin(otherMemberIn, outPin.GetPinType());
             outPin.Attach(inPin);
         }
 
@@ -110,11 +110,13 @@ namespace Fusee.Xirkit
         /// <returns>A newly created or already existing out-pin</returns>
         private IOutPin GetOutPin(string member)
         {
-            // See if the outpin pinning thisProperty already exists. If not create one.
+            // See if the outpin pinning the given member already exists. If not create one.
             IOutPin outPin = _outPinList.Find(p => p.Member == member);
-            if (outPin ==  null)
+            if (outPin == null)
+            {
                 outPin = PinFactory.CreateOutPin(this, member);
-            _outPinList.Add(outPin);
+                _outPinList.Add(outPin);
+            }
             return outPin;
         }
 
@@ -127,7 +129,7 @@ namespace Fusee.Xirkit
         /// <param name="member">The member.</param>
         /// <param name="targetType">Type of the target.</param>
         /// <returns></returns>
-        /// <exception cref="System.Exception">Member  + member +  already connected as InPin!</exception>
+        /// <exception cref="System.Exception">A member is already connected as InPin.</exception>
         internal IInPin GetInPin(string member, Type targetType)
         {
             // See if the inpin already exists. If so, throw - because a property

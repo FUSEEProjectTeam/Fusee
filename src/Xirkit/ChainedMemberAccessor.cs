@@ -5,7 +5,7 @@ using Fusee.Math.Core;
 namespace Fusee.Xirkit
 {
     /// <summary>
-    /// Class used inside Xirkit to accces (read and write) nested members that are referenced
+    /// Class used inside Xirkit to access (read and write) nested members that are referenced
     /// by a chain of properties/fields separated by the object-access operator '.' (dot).
     /// </summary>
     /// <typeparam name="TPin">The type of the pin (the type to the outside world).</typeparam>
@@ -58,7 +58,7 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Assigns the value given in val to the object acessed by this member accessor.
+        /// Assigns the value given in val to the object accessed by this member accessor.
         /// </summary>
         /// <param name="o">The object to which the access chain belongs to.</param>
         /// <param name="val">The value to be written to the end of the access chain starting in o.</param>

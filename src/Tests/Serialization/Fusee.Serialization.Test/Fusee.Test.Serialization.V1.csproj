@@ -1,12 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Test.Math.Core</RootNamespace>
-    <PackageId>Fusee.Test.Math.Core</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Tests\Math</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Tests\Serialization\V1\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,9 +16,13 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup> 
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
+
+    <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
+      <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>
