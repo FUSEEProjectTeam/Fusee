@@ -172,7 +172,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public bool TrianglesSet { get { return ElementBufferObject != 0; } }
 
         /// <summary>
-        ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
+        /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
         public OpenGLPrimitiveType MeshType { get; set; }
 

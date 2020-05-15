@@ -444,23 +444,21 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Rotates this node around a given point.
+        /// Rotates this node around a given point. Uses axis-angle representation to describe the desired rotation.
         /// </summary>
         /// <param name="tc">The node to rotate.</param>
         /// <param name="center">The point we want to rotate around.</param>
-        /// <param name="angles">The x, y and z angles.</param>
-        public static void RotateAround(this TransformComponent tc, float3 center, float3 angles)
+        /// <param name="upVector">The axis we want to rotate around.</param>
+        /// <param name="angle">The angle with which we want to rotate.</param>
+        public static void RotateAround(this TransformComponent tc, float3 center, float3 upVector,  float angle)
         {
-            var pos = tc.Translation;
-            var addRotationMtx = float4x4.CreateRotationYXZ(angles); // get the desired rotation
-            var dir = pos - center; // find current direction relative to center
-            dir = addRotationMtx * dir; // rotate the direction
+            var dir = tc.Translation - center; // find current direction relative to center
+            dir = float4x4.CreateFromAxisAngle(upVector, angle) * dir; // rotate the direction
             tc.Translation = center + dir; // define new position
-            
+
             // rotate object to keep looking at the center:
-            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
-            var euler = float4x4.RotMatToEuler(currentRotationMtx);
-            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            var addRotationMtx = float4x4.CreateFromAxisAngle(upVector, angle); // get the desired rotation
+            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float3.UnitY, tc.Rotation.y) * float4x4.CreateFromAxisAngle(float3.UnitX, tc.Rotation.x) * float4x4.CreateFromAxisAngle(float3.UnitZ, tc.Rotation.z));
         }
 
         /// <summary>

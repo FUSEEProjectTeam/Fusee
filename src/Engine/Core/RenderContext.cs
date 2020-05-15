@@ -53,7 +53,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportYStart { get; private set; }
 
-
         // ReSharper disable once InconsistentNaming
         /// <summary>
         /// All global FX Params
@@ -741,11 +740,6 @@ namespace Fusee.Engine.Core
         #region Constructors
 
         /// <summary>
-        /// The color value.
-        /// </summary>
-        protected float3 _col;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
         /// </summary>
         /// <param name="rci">The <see cref="IRenderContextImp"/>.</param>
@@ -765,10 +759,6 @@ namespace Fusee.Engine.Core
             _textureManager = new TextureManager(_rci);
 
             _shaderEffectManager = new ShaderEffectManager(this);
-
-            // Make JSIL run through this one time. 
-            _col = ColorUint.White.Tofloat3();
-
 
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
@@ -1189,15 +1179,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        /// <summary>
-        /// Specifies the rasterized width of both aliased and antialiased lines.
-        /// </summary>
-        /// <param name="width">The width in px.</param>
-        public void SetLineWidth(float width)
-        {
-            _rci.SetLineWidth(width);
-        }
-
         internal void CreateAllShaderEffectVariables(ShaderEffect ef)
         {
             int nPasses = ef.VertexShaderSrc.Length;
@@ -1338,6 +1319,80 @@ namespace Fusee.Engine.Core
         public float GetParamValue(ShaderProgram program, IShaderParam handle)
         {
             return _rci.GetParamValue(program._spi, handle);
+        }
+
+        /// <summary>
+        /// Sets the shaderParam, works with every type.
+        /// </summary>
+        /// <param name="param"></param>
+        internal void SetShaderParamT(EffectParam param)
+        {
+            if (param.Info.Type == typeof(int))
+            {
+                SetShaderParam(param.Info.Handle, (int)param.Value);
+            }
+            else if (param.Info.Type == typeof(float))
+            {
+                SetShaderParam(param.Info.Handle, (float)param.Value);
+            }
+            else if (param.Info.Type == typeof(float2))
+            {
+                if (param.Info.Size > 1)
+                {
+                    // param is an array
+                    var paramArray = (float2[])param.Value;
+                    SetShaderParam(param.Info.Handle, paramArray);
+                    return;
+                }
+                SetShaderParam(param.Info.Handle, (float2)param.Value);
+            }
+            else if (param.Info.Type == typeof(float3))
+            {
+                if (param.Info.Size > 1)
+                {
+                    // param is an array
+                    var paramArray = (float3[])param.Value;
+                    SetShaderParam(param.Info.Handle, paramArray);
+                    return;
+                }
+                SetShaderParam(param.Info.Handle, (float3)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4))
+            {
+                SetShaderParam(param.Info.Handle, (float4)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4x4))
+            {
+                if (param.Info.Size > 1)
+                {
+                    // param is an array
+                    var paramArray = (float4x4[])param.Value;
+                    SetShaderParam(param.Info.Handle, paramArray);
+                    return;
+                }
+                SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4x4[]))
+            {
+                SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+            }
+            else if (param.Value is IWritableCubeMap)
+            {
+                SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
+            }
+            else if (param.Value is IWritableTexture[])
+            {
+                SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
+            }
+            else if (param.Value is IWritableTexture)
+            {
+                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
+            }
+            else if (param.Value is ITexture)
+            {
+                SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+            }
+
         }
 
         /// <summary>
@@ -1662,24 +1717,12 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Detaches a texture from the frame buffer object, associated with the given render target.
+        /// Specifies the rasterized width of both aliased and antialiased lines.
         /// </summary>
-        /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        /// <param name="width">The width in px.</param>
+        public void SetLineWidth(float width)
         {
-            _rci.DetachTextureFromFbo(renderTarget, type);
-        }
-
-        /// <summary>
-        /// Reattaches a texture from the frame buffer object, associated with the given render target.
-        /// </summary>
-        /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        public void ReattachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
-        {
-            var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)renderTarget.RenderTextures[(int)type]);
-            _rci.ReatatchTextureFromFbo(renderTarget, type, texHandle);
+            _rci.SetLineWidth(width);
         }
 
         /// <summary>
@@ -1732,80 +1775,6 @@ namespace Fusee.Engine.Core
             {
                 throw new Exception("Error while rendering pass " + i, ex);
             }
-        }
-
-        /// <summary>
-        /// Sets the shaderParam, works with every type.
-        /// </summary>
-        /// <param name="param"></param>
-        internal void SetShaderParamT(EffectParam param)
-        {
-            if (param.Info.Type == typeof(int))
-            {
-                SetShaderParam(param.Info.Handle, (int)param.Value);
-            }
-            else if (param.Info.Type == typeof(float))
-            {
-                SetShaderParam(param.Info.Handle, (float)param.Value);
-            }
-            else if (param.Info.Type == typeof(float2))
-            {
-                if (param.Info.Size > 1)
-                {
-                    // param is an array
-                    var paramArray = (float2[])param.Value;
-                    SetShaderParam(param.Info.Handle, paramArray);
-                    return;
-                }
-                SetShaderParam(param.Info.Handle, (float2)param.Value);
-            }
-            else if (param.Info.Type == typeof(float3))
-            {
-                if (param.Info.Size > 1)
-                {
-                    // param is an array
-                    var paramArray = (float3[])param.Value;
-                    SetShaderParam(param.Info.Handle, paramArray);
-                    return;
-                }
-                SetShaderParam(param.Info.Handle, (float3)param.Value);
-            }
-            else if (param.Info.Type == typeof(float4))
-            {
-                SetShaderParam(param.Info.Handle, (float4)param.Value);
-            }
-            else if (param.Info.Type == typeof(float4x4))
-            {
-                if (param.Info.Size > 1)
-                {
-                    // param is an array
-                    var paramArray = (float4x4[])param.Value;
-                    SetShaderParam(param.Info.Handle, paramArray);
-                    return;
-                }
-                SetShaderParam(param.Info.Handle, (float4x4)param.Value);
-            }
-            else if (param.Info.Type == typeof(float4x4[]))
-            {
-                SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
-            }
-            else if (param.Value is IWritableCubeMap)
-            {
-                SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
-            }
-            else if (param.Value is IWritableTexture[])
-            {
-                SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
-            }
-            else if (param.Value is IWritableTexture)
-            {
-                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
-            }
-            else if (param.Value is ITexture)
-            {
-                SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
-            }
-
         }
 
         /// <summary>
@@ -1914,22 +1883,23 @@ namespace Fusee.Engine.Core
         /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
-        /// <param name="height">vertical size (in pixels) of the output region.</param>
-        /// <param name="renderToScreen">Determines if we render to screen or to a frame buffer object. Is true per default.</param>
+        /// <param name="height">vertical size (in pixels) of the output region.</param>       
         /// <remarks>
         /// Setting the Viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
-        public void Viewport(int x, int y, int width, int height, bool renderToScreen = true)
+        public void Viewport(int x, int y, int width, int height)
         {
+            if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
+                return;
+
             _rci.Scissor(x, y, width, height);
             _rci.Viewport(x, y, width, height);
-
-            if (!renderToScreen) return;
 
             ViewportWidth = width;
             ViewportHeight = height;
             ViewportXStart = x;
             ViewportYStart = y;
+
         }
 
         /// <summary>
