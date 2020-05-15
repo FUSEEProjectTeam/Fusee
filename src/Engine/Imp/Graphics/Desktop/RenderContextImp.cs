@@ -35,6 +35,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // TODO - implement this in render states!!!
 
             GL.CullFace(CullFaceMode.Back);
+
+            Diagnostics.Debug(GetHardwareDescription());
         }
 
         #region Image data related Members
@@ -2049,6 +2051,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
+        }
+
+        /// <summary> 
+        /// Returns a human readable description of the underlying graphics hardware. This implementation reports GL_VENDOR, GL_RENDERER, GL_VERSION and GL_EXTENSIONS.
+        /// </summary> 
+        /// <returns></returns> 
+        public string GetHardwareDescription()
+        {
+            return "Vendor: " + GL.GetString(StringName.Vendor) + "\nRenderer: " + GL.GetString(StringName.Renderer) + "\nVersion: " + GL.GetString(StringName.Version) + "\nExtensions: " + GL.GetString(StringName.Extensions);
         }
 
         /// <summary>
