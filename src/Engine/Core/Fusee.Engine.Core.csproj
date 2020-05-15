@@ -26,9 +26,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
@@ -41,5 +38,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj" />
   </ItemGroup>
 </Project>

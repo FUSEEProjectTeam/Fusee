@@ -189,12 +189,12 @@ namespace Fusee.Tools.fuseeCmdLine
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
-                    ReturnedType = typeof(SceneContainer),
+                    ReturnedType = typeof(FusFile),
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
 
-                        return Serializer.DeserializeSceneContainer((Stream)storage);
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Common;
-using Fusee.Engine.Core;
-using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
 {
@@ -19,18 +18,15 @@ namespace Fusee.Engine.GUI
         /// The text to display.
         /// The Vertices, Triangles, Normals and UV coordinates will be recalculated if this value is set.
         /// </summary>
-        public string Text 
-        { 
-            get 
-            { 
-                return _text; 
-            } 
-            set 
-            { 
-                _text = value; 
+        public string Text
+        {
+            get => _text;
+            set
+            {
+                _text = value;
                 CreateTextMesh();
-                Merge(); 
-            } 
+                Merge();
+            }
         }
         private string _text;
 
@@ -61,7 +57,7 @@ namespace Fusee.Engine.GUI
         /// </summary>
         public HorizontalTextAlignment HorizontalAlignment
         {
-            get { return _horizontalAlignment; }
+            get => _horizontalAlignment;
             set
             {
                 _horizontalAlignment = value;
@@ -107,13 +103,13 @@ namespace Fusee.Engine.GUI
             var allNormals = new List<float3>();
             var allUvs = new List<float2>();
 
-            for (int i = 0; i < LineVertices.Count; i++)
+            for (var i = 0; i < LineVertices.Count; i++)
             {
                 var lineWidth = LineVertices[i].Last().x - LineVertices[i][0].x;
                 switch (HorizontalAlignment)
                 {
                     case HorizontalTextAlignment.LEFT:
-                        for (int j = 0; j < LineVertices[i].Count; j++)
+                        for (var j = 0; j < LineVertices[i].Count; j++)
                         {
                             var vert = LineVertices[i][j];
 
@@ -126,7 +122,7 @@ namespace Fusee.Engine.GUI
                         break;
                     case HorizontalTextAlignment.CENTER:
 
-                        for (int j = 0; j < LineVertices[i].Count; j++)
+                        for (var j = 0; j < LineVertices[i].Count; j++)
                         {
                             var vert = LineVertices[i][j];
 
@@ -140,7 +136,7 @@ namespace Fusee.Engine.GUI
                         break;
                     case HorizontalTextAlignment.RIGHT:
 
-                        for (int j = 0; j < LineVertices[i].Count; j++)
+                        for (var j = 0; j < LineVertices[i].Count; j++)
                         {
                             var vert = LineVertices[i][j];
 
@@ -198,12 +194,12 @@ namespace Fusee.Engine.GUI
             _max = float2.One * float.MinValue;
 
             // now build the mesh
-            for (int j = 0; j <= _text.Length; j++)
+            for (var j = 0; j <= _text.Length; j++)
             {
                 if (j != _text.Length && _text[j] != '\n')
                 {
-                    GlyphOnMap glyphOnMap = _fontMap.GetGlyphOnMap(_text[j]);
-                    GlyphInfo glyphInfo = _fontMap.Font.GetGlyphInfo(_text[j]);
+                    var glyphOnMap = _fontMap.GetGlyphOnMap(_text[j]);
+                    var glyphInfo = _fontMap.Font.GetGlyphInfo(_text[j]);
 
                     var x = advanceX + glyphOnMap.BitmapL;
                     var y = advanceY - glyphOnMap.BitmapT;
@@ -287,7 +283,7 @@ namespace Fusee.Engine.GUI
                     uvs = new List<float2>();
                     tris = new List<ushort>();
                     normals = new List<float3>();
-                    
+
                 }
             }
         }

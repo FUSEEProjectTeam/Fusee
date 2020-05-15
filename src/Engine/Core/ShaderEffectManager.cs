@@ -1,6 +1,7 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
+using System;
 using System.Collections.Generic;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -14,7 +15,7 @@ namespace Fusee.Engine.Core
 
         private void Remove(ShaderEffect ef)
         {
-            _rc.RemoveShader(ef);            
+            _rc.RemoveShader(ef);
         }
 
         private void ShaderEffectChanged(object sender, ShaderEffectEventArgs args)
@@ -31,7 +32,7 @@ namespace Fusee.Engine.Core
                     break;
                 case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
                     _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
-                    break;               
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException($"ShaderEffectChanged event called with unknown arguments: {args}, calling ShaderEffect: {sender as ShaderEffect}");
             }
@@ -59,8 +60,7 @@ namespace Fusee.Engine.Core
 
         public ShaderEffect GetShaderEffect(ShaderEffect ef)
         {
-            ShaderEffect shaderEffect;
-            return _allShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out shaderEffect) ? shaderEffect : null;
+            return _allShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out var shaderEffect) ? shaderEffect : null;
         }
 
         /// <summary>

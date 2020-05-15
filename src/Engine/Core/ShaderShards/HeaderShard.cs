@@ -1,4 +1,5 @@
-﻿using Fusee.Serialization;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -26,7 +27,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Sets preprocessor that defines the bone count.
         /// </summary>
-        public static string DefineBones(ShaderEffectProps effectProps, WeightComponent wc)
+        public static string DefineBones(ShaderEffectProps effectProps, Weight wc)
         {
             if (effectProps.MeshProbs.HasWeightMap)
                 return $"#define {BoneDefineVar} {wc.Joints.Count}";
