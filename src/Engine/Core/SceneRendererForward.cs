@@ -9,6 +9,7 @@ using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderShards.Fragment;
 
 namespace Fusee.Engine.Core
 {
@@ -27,7 +28,7 @@ namespace Fusee.Engine.Core
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
-        {            
+        {
             get
             {
                 return _lightResults;
@@ -38,7 +39,7 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    _lightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+                    LightingShard.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
                     HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
@@ -92,12 +93,12 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup      
 
-        
+
         private LightComponent _legacyLight;
 
         private void SetDefaultLight()
         {
-            if(_legacyLight == null)
+            if (_legacyLight == null)
             {
                 _legacyLight = new LightComponent()
                 {
@@ -287,22 +288,19 @@ namespace Fusee.Engine.Core
             }
         }
         #endregion
-               
+
 
         /// <summary>
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>       
         public void Render(RenderContext rc)
-        { 
+        {
             SetContext(rc);
 
-            var stateSet = _rc.GetRenderStateSet(); 
-
-            PrePassVisitor.PrePassTraverse(_sc, _rc);            
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
 
             AccumulateLight();
-
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
@@ -322,25 +320,23 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
-
-            _rc.SetRenderState(stateSet);
         }
 
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
         {
             var tex = cam.Item2.Camera.RenderTexture;
 
-            if(tex!= null)
+            if (tex != null)
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
             else
                 _rc.SetRenderTarget();
 
-            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);           
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
 
-            if(cam.Item2.Camera.ClearColor)
+            if (cam.Item2.Camera.ClearColor)
                 _rc.Clear(ClearFlags.Color);
 
             if (cam.Item2.Camera.ClearDepth)
@@ -353,12 +349,12 @@ namespace Fusee.Engine.Core
             Traverse(_sc.Children);
         }
 
-        
+
         /// <summary>
         /// Viserates the LightComponent and caches them in a dedicated field.
         /// </summary>
         protected void AccumulateLight()
-        {            
+        {
             LightViseratorResults = PrePassVisitor.LightPrepassResuls;
 
             if (LightViseratorResults.Count == 0)
@@ -433,7 +429,7 @@ namespace Fusee.Engine.Core
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 var invProj = float4x4.Invert(_rc.Projection);
-               
+
                 var frustumCorners = new float4[4];
 
                 frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
@@ -452,7 +448,7 @@ namespace Fusee.Engine.Core
                 var height = (frustumCorners[0] - frustumCorners[2]).Length;
 
                 var zNear = frustumCorners[0].z;
-                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);                
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {
@@ -601,8 +597,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
-        /// the shader parameters for all lights in the scene are updated according to the <see cref="LightViserator"/>
-        /// and the geometry is passed to be pushed through the rendering pipeline.        
+        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
@@ -614,7 +609,11 @@ namespace Fusee.Engine.Core
             if (wc != null)
                 AddWeightComponentToMesh(mesh, wc);
 
+            var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh);
+            var renderStatesAfter = _rc.CurrentRenderState.Copy();
+
+            _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
         }
 
         protected void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
@@ -682,6 +681,7 @@ namespace Fusee.Engine.Core
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _defaultEffect;
+            _state.RenderUndoStates = new RenderStateSet();
         }
 
         /// <summary>
@@ -697,21 +697,24 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected override void PopState()
         {
+            _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
+            _rc.SetShaderEffect(_state.Effect);
+
         }
 
         #endregion
 
-        private Dictionary<int, LightParamStrings> _lightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+        
 
         private void UpdateShaderParamsForAllLights()
         {
             for (var i = 0; i < _lightResults.Count; i++)
             {
-                if (!_lightPararamStringsAllLights.ContainsKey(i))
+                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
                 {
-                    _lightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
                 }
 
                 UpdateShaderParamForLight(i, _lightResults[i].Item2);
@@ -732,7 +735,7 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = _lightPararamStringsAllLights[position];
+            var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
             _rc.SetFXParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
@@ -802,40 +805,5 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-    }
-
-    internal struct LightParamStrings
-    {
-        public string PositionViewSpace;
-        public string PositionWorldSpace;
-        public string Intensities;
-        public string MaxDistance;
-        public string Strength;
-        public string OuterAngle;
-        public string InnerAngle;
-        public string Direction;
-        public string DirectionWorldSpace;
-        public string LightType;
-        public string IsActive;
-        public string IsCastingShadows;
-        public string Bias;
-
-        public LightParamStrings(int arrayPos)
-        {
-            PositionViewSpace = $"allLights[{arrayPos}].position";
-            PositionWorldSpace = $"allLights[{arrayPos}].positionWorldSpace";
-            Intensities = $"allLights[{arrayPos}].intensities";
-            MaxDistance = $"allLights[{arrayPos}].maxDistance";
-            Strength = $"allLights[{arrayPos}].strength";
-            OuterAngle = $"allLights[{arrayPos}].outerConeAngle";
-            InnerAngle = $"allLights[{arrayPos}].innerConeAngle";
-            Direction = $"allLights[{arrayPos}].direction";
-            DirectionWorldSpace = $"allLights[{arrayPos}].directionWorldSpace";
-            LightType = $"allLights[{arrayPos}].lightType";
-            IsActive = $"allLights[{arrayPos}].isActive";
-            IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
-            Bias = $"allLights[{arrayPos}].bias";
-        }
-
-    }
+    }    
 }

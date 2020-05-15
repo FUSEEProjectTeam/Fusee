@@ -36,12 +36,12 @@
         public static readonly int BitangentAttribLocation = 5;
 
         /// <summary>
-        /// The boneweight attribute location index.
+        /// The bone weight attribute location index.
         /// </summary>
         public static readonly int BoneWeightAttribLocation = 6;
 
         /// <summary>
-        /// The boneindex attribute location index.
+        /// The bone index attribute location index.
         /// </summary>
         public static readonly int BoneIndexAttribLocation = 7;
     }
