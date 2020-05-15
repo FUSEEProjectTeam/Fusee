@@ -47,7 +47,6 @@ namespace Fusee.Engine.Common
         /// </summary>
         void DisableDepthClamp();
 
-
         /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
@@ -292,6 +291,20 @@ namespace Fusee.Engine.Common
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height);
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureFilterMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="filterMode">The new filter mode.</param>
+        void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode);
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureWrapMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="wrapMode">The new wrap mode.</param>
+        void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.

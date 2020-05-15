@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
-using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using static Fusee.Engine.Imp.Graphics.WebAsm.WebGLRenderingContextBase;
-using static Fusee.Engine.Imp.Graphics.WebAsm.WebGL2RenderingContextBase;
-using WebAssembly.Core;
-using System.Runtime.InteropServices;
-using Fusee.Engine.Imp.WebAsm;
-using System.Linq;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.WebAsm;
+using Fusee.Math.Core;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using WebAssembly.Core;
+using static Fusee.Engine.Imp.Graphics.WebAsm.WebGL2RenderingContextBase;
+using static Fusee.Engine.Imp.Graphics.WebAsm.WebGLRenderingContextBase;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
@@ -418,6 +418,33 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureFilterMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="filterMode">The new filter mode.</param>
+        public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
+        {
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            var glMinMagFilter = GetMinMagFilter(filterMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, glMinMagFilter.Item1);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, glMinMagFilter.Item2);
+        }
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureWrapMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        ///<param name="wrapMode">The new wrap mode.</param>
+        public void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode)
+        {
+            gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
+            var glWrapMode = GetWrapMode(wrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
+        }
+
+        /// <summary>
         /// Free all allocated gpu memory that belong to a frame-buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
@@ -609,9 +636,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             {
                 WebGLActiveInfo activeInfo = gl.GetActiveUniform(sProg.Handle, i);
 
-                var paramInfo = new ShaderParamInfo();
-                paramInfo.Name = activeInfo.Name;
-                paramInfo.Size = activeInfo.Size;
+                var paramInfo = new ShaderParamInfo
+                {
+                    Name = activeInfo.Name,
+                    Size = activeInfo.Size
+                };
                 uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
@@ -944,7 +973,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 float[] ret = (float[])gl.GetParameter(COLOR_CLEAR_VALUE);
                 return new float4(ret[0], ret[1], ret[2], ret[3]);
             }
-            set { gl.ClearColor(value.x, value.y, value.z, value.w); }
+            set => gl.ClearColor(value.x, value.y, value.z, value.w);
         }
 
         /// <summary>
@@ -955,11 +984,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </value>
         public float ClearDepth
         {
-            get
-            {
-                return (float)gl.GetParameter(DEPTH_CLEAR_VALUE);
-            }
-            set { gl.ClearDepth(value); }
+            get => (float)gl.GetParameter(DEPTH_CLEAR_VALUE);
+            set => gl.ClearDepth(value);
         }
 
         /// <summary>
@@ -1032,7 +1058,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, attributes, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
-                throw new ApplicationException(String.Format(
+                throw new ApplicationException(string.Format(
                     "Problem uploading attribute buffer to VBO ('{2}'). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes, attributeName));
             gl.BindBuffer(ARRAY_BUFFER, null);
@@ -1094,7 +1120,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             Diagnostics.Debug("[After gl.BufferData]");
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
 
         }
 
@@ -1131,7 +1157,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, tangentsFlat, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != tangentBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
 
         }
 
@@ -1168,7 +1194,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, bitangentsFlat, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != bitangentBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
         }
 
         /// <summary>
@@ -1205,7 +1231,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != normsBytes)
-                throw new ApplicationException(String.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1241,7 +1267,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, boneIndicesFlat, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != indicesBytes)
-                throw new ApplicationException(String.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
         }
 
         /// <summary>
@@ -1277,7 +1303,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, boneWeightsFlat, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != weightsBytes)
-                throw new ApplicationException(String.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
 
         }
 
@@ -1314,7 +1340,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, uvsFlat, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != uvsBytes)
-                throw new ApplicationException(String.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
 
         }
 
@@ -1341,7 +1367,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ARRAY_BUFFER, colors, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
-                throw new ApplicationException(String.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1368,7 +1394,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BufferData(ELEMENT_ARRAY_BUFFER, triangleIndices, STATIC_DRAW);
             vboBytes = (int)gl.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
 
         }
 
@@ -1653,29 +1679,29 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             switch (blend)
             {
                 case Blend.Zero:
-                    return (uint)ZERO;
+                    return ZERO;
                 case Blend.One:
-                    return (uint)ONE;
+                    return ONE;
                 case Blend.SourceColor:
-                    return (uint)SRC_COLOR;
+                    return SRC_COLOR;
                 case Blend.InverseSourceColor:
-                    return (uint)ONE_MINUS_SRC_COLOR;
+                    return ONE_MINUS_SRC_COLOR;
                 case Blend.SourceAlpha:
-                    return (uint)SRC_ALPHA;
+                    return SRC_ALPHA;
                 case Blend.InverseSourceAlpha:
-                    return (uint)ONE_MINUS_SRC_ALPHA;
+                    return ONE_MINUS_SRC_ALPHA;
                 case Blend.DestinationAlpha:
-                    return (uint)DST_ALPHA;
+                    return DST_ALPHA;
                 case Blend.InverseDestinationAlpha:
-                    return (uint)ONE_MINUS_DST_ALPHA;
+                    return ONE_MINUS_DST_ALPHA;
                 case Blend.DestinationColor:
-                    return (uint)DST_COLOR;
+                    return DST_COLOR;
                 case Blend.InverseDestinationColor:
-                    return (uint)ONE_MINUS_DST_COLOR;
+                    return ONE_MINUS_DST_COLOR;
                 case Blend.BlendFactor:
-                    return (uint)((isForAlpha) ? CONSTANT_ALPHA : CONSTANT_COLOR);
+                    return (isForAlpha) ? CONSTANT_ALPHA : CONSTANT_COLOR;
                 case Blend.InverseBlendFactor:
-                    return (uint)((isForAlpha) ? ONE_MINUS_CONSTANT_ALPHA : ONE_MINUS_CONSTANT_COLOR);
+                    return (isForAlpha) ? ONE_MINUS_CONSTANT_ALPHA : ONE_MINUS_CONSTANT_COLOR;
                 // Ignored...
                 // case Blend.SourceAlphaSaturated:
                 //     break;
@@ -1927,19 +1953,19 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     {
                         uint depTest;
                         depTest = (uint)gl.GetParameter(DEPTH_TEST);
-                        return (uint)(depTest);
+                        return depTest;
                     }
                 case RenderState.ZWriteEnable:
                     {
                         uint depWriteMask;
                         depWriteMask = (uint)gl.GetParameter(DEPTH_WRITEMASK);
-                        return (uint)(depWriteMask);
+                        return depWriteMask;
                     }
                 case RenderState.AlphaBlendEnable:
                     {
                         uint blendEnable;
                         blendEnable = (uint)gl.GetParameter(BLEND);
-                        return (uint)(blendEnable);
+                        return blendEnable;
                     }
                 case RenderState.BlendOperation:
                     {

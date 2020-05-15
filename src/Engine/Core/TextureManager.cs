@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
@@ -45,6 +46,14 @@ namespace Fusee.Engine.Core
                             textureDataEventArgs.Height);
                     }
                     break;
+                case TextureChangedEnum.FilterModeChanged:
+                    _renderContextImp.SetTextureFilterMode(toBeUpdatedTextureHandle, ((ITextureBase)sender).FilterMode);
+                    break;
+                case TextureChangedEnum.WrapModeChanged:
+                    _renderContextImp.SetTextureWrapMode(toBeUpdatedTextureHandle, ((ITextureBase)sender).WrapMode);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {textureDataEventArgs.ChangedEnum}");
             }
         }
 

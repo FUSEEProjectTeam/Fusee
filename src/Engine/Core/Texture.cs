@@ -82,18 +82,34 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TextureWrapMode WrapMode
         {
-            get;
-            private set;
+            get 
+            {
+                return _wrapMode;
+            }
+            set 
+            {
+                _wrapMode = value;
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.WrapModeChanged)); 
+            }
         }
+        private TextureWrapMode _wrapMode;
 
         /// <summary>
         /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
         /// </summary>
         public TextureFilterMode FilterMode
         {
-            get;
-            private set;
+            get 
+            {
+                return _filterMode;
+            }
+            set
+            {
+                _filterMode = value;
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.FilterModeChanged));
+            }
         }
+        private TextureFilterMode _filterMode;
 
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
@@ -175,7 +191,7 @@ namespace Fusee.Engine.Core
                 return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
-            this.TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
+            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
         }
 
         /// <summary>
