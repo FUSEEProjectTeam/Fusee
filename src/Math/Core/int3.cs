@@ -1,5 +1,6 @@
 ﻿using ProtoBuf;
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -494,7 +495,29 @@ namespace Fusee.Math.Core
         /// </returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2})", x, y, z);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current float3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            return String.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
         }
 
         #endregion public override string ToString()

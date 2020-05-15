@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -517,12 +518,32 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        ///     Returns a System.String that represents the current Matrix44.
+        /// Returns a System.String that represents the current float3x3.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("{0}\n{1}\n{2}", Row0, Row1, Row2);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current float3x3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "{0}\n{1}\n{2}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -584,5 +605,48 @@ namespace Fusee.Math.Core
         }
 
         #endregion IEquatable<Matri3x3> Members
+
+        /// <summary>
+        /// Gets and sets the Converter object. Has the ability to convert a string to a float3x3.
+        /// </summary>
+        /// <value>
+        /// The parse property.
+        /// </value>
+        public static Converter<string, float3x3> ParseConverter { get; set; } = (x => float3x3.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a float3x3.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static float3x3 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 9)
+                throw new FormatException("String parse for float3x3 did not result in exactly 9 items.");
+
+            float[] floats = new float[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    floats[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new float3x3(floats[0], floats[1], floats[2], floats[3], floats[4], floats[5], floats[6], floats[7], floats[8]);
+        }
     }
 }

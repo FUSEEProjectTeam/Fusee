@@ -1,5 +1,6 @@
 using ProtoBuf;
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -1619,12 +1620,32 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current Matrix44.
+        /// Returns a System.String that represents the current double4x4.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current double4x4.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -1697,6 +1718,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, double4x4> Parse { get; set; }
+        public static Converter<string, double4x4> ParseConverter { get; set; } = (x => double4x4.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a double4x4.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static double4x4 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 16)
+                throw new FormatException("String parse for double4x4 did not result in exactly 16 items.");
+
+            double[] doubles = new double[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    doubles[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new double4x4(doubles[0], doubles[1], doubles[2], doubles[3], doubles[4], doubles[5], doubles[6], doubles[7], doubles[8], doubles[9], doubles[10], doubles[11], doubles[12], doubles[13], doubles[14], doubles[15]);
+        }
     }
 }
