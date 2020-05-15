@@ -1,7 +1,6 @@
-using System;
-using System.Collections.Generic;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -78,8 +77,8 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < Vertices.Length; i++)
             {
                 UVs[i] =
-                    new float2(0.5f + ((float) System.Math.Atan2(Vertices[i].z, Vertices[i].x) / (2 * M.Pi)),
-                        0.5f - ((float) System.Math.Asin(Vertices[i].y) / M.Pi));
+                    new float2(0.5f + ((float)System.Math.Atan2(Vertices[i].z, Vertices[i].x) / (2 * M.Pi)),
+                        0.5f - ((float)System.Math.Asin(Vertices[i].y) / M.Pi));
             }
         }
 
@@ -146,7 +145,7 @@ namespace Fusee.Engine.Core
             }
 
             _sphereVertices = new List<float3>();
-            _middlePointIndexCache = new Dictionary<Int64, int>();
+            _middlePointIndexCache = new Dictionary<long, int>();
             var sphere = CreateIcosphere(subdivLevel);
 
             Vertices = sphere.Vertices;
@@ -206,7 +205,7 @@ namespace Fusee.Engine.Core
 
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
-                mesh.UVs[i] = new float2(0.5f+((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2*M.Pi)), 0.5f-((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
+                mesh.UVs[i] = new float2(0.5f + ((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2 * M.Pi)), 0.5f - ((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
             }
 
             return mesh;
@@ -263,9 +262,9 @@ namespace Fusee.Engine.Core
         internal static void CreateVertexNormals(Mesh mesh)
         {
             mesh.Normals = new float3[mesh.Vertices.Length];
-            
+
             var triVerts = new List<float3>();
-            var triIndeices =  new List<ushort>();
+            var triIndeices = new List<ushort>();
             foreach (var tri in mesh.Triangles)
             {
                 triVerts.Add(mesh.Vertices[tri]);
@@ -287,7 +286,9 @@ namespace Fusee.Engine.Core
         private static void CalcAverageNormal(IList<float3> normals, float3 triNormal, ushort triIndex)
         {
             if (normals[triIndex] == float3.Zero)
+            {
                 normals[triIndex] = triNormal;
+            }
             else
             {
                 var averageNormal = (triNormal + normals[triIndex]) / 2;

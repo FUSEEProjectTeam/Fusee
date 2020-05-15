@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {

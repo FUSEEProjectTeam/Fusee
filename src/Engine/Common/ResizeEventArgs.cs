@@ -10,11 +10,11 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The width held for the Resize event.
         /// </summary>
-        public int Width { get; private set; }
+        public int Width { get; }
         /// <summary>
         /// The height held for the Resize event.
         /// </summary>
-        public int Height { get; private set; }
+        public int Height { get; }
 
         /// <summary>
         /// Constructs a new ResizeEventArgs.
@@ -26,6 +26,5 @@ namespace Fusee.Engine.Common
             Width = width;
             Height = height;
         }
-
     }
 }

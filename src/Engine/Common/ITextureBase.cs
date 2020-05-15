@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Common;
-using Fusee.Serialization;
 using System;
 
 namespace Fusee.Engine.Common
