@@ -5,6 +5,7 @@ using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Examples.ThreeDFont.Core
@@ -25,7 +26,7 @@ namespace Fusee.Examples.ThreeDFont.Core
         private ThreeDFontHelper _threeDFontHelper;
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
@@ -159,6 +160,8 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -166,6 +169,8 @@ namespace Fusee.Examples.ThreeDFont.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))

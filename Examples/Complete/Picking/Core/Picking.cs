@@ -9,6 +9,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Core
 {
@@ -46,7 +47,7 @@ namespace Fusee.Examples.Picking.Core
         private float2 _pickPos;
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -68,6 +69,8 @@ namespace Fusee.Examples.Picking.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -75,6 +78,8 @@ namespace Fusee.Examples.Picking.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)

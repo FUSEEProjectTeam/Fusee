@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -51,7 +52,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private LightComponent _sun;
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _cameraPos = new float3(0, 20, -10);
             _gui = CreateGui();
@@ -174,6 +175,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
         private bool rotate = false;
@@ -183,6 +186,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             //if (!rotate)
             //{

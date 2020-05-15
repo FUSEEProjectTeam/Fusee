@@ -8,6 +8,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
@@ -52,7 +53,7 @@ namespace Fusee.Examples.GeometryEditing.Core
         private bool _isScaling;
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             _parentNode = new SceneNodeContainer
@@ -90,6 +91,8 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             //Geometry cuboid = CreateGeometry.CreateCuboidGeometry(5, 2, 5);
             //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -97,6 +100,8 @@ namespace Fusee.Examples.GeometryEditing.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             HandleCameraAndPicking();
             InteractionHandler();

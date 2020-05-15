@@ -4,6 +4,7 @@ using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using System;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Bump.Core
 {
@@ -33,7 +34,7 @@ namespace Fusee.Examples.Bump.Core
         private float _maxPinchSpeed;
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -94,6 +95,8 @@ namespace Fusee.Examples.Bump.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -102,6 +105,8 @@ namespace Fusee.Examples.Bump.Core
             // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)

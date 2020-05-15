@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -37,7 +38,7 @@ namespace Fusee.Examples.Simple.Core
         private bool _keys;
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _gui = CreateGui();
 
@@ -54,6 +55,8 @@ namespace Fusee.Examples.Simple.Core
             _sceneRenderer = new SceneRendererForward(_rocketScene);
 
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -61,6 +64,8 @@ namespace Fusee.Examples.Simple.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)

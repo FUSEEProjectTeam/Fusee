@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -105,7 +106,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         }
 
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
@@ -183,6 +184,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -190,6 +193,8 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             #region Controls
 
