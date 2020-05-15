@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
         /// The number of shadow maps, generated when using cascaded shadow mapping for parallel lights.
         /// If set to 1 standard shadow mapping is used.
         /// </summary>
-        public int NumberOfCascades = 3;
+        public int NumberOfCascades = 2;
 
         private bool _needToSetSSAOTex = false;
 
@@ -581,8 +581,7 @@ namespace Fusee.Engine.Core
                         {
                             for (int i = 0; i < shadowParams.LightSpaceMatrices.Length; i++)
                             {
-                                _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[i]);
-                                _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
+                                _shadowEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[i]);                                
                                 _rc.SetShaderEffect(_shadowEffect);
 
                                 _rc.SetRenderTarget(shadowParams.ShadowMaps[i]);
@@ -593,8 +592,7 @@ namespace Fusee.Engine.Core
                         }
                     case LightType.Spot:
                         {
-                            _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[0]);
-                            _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
+                            _shadowEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);                            
                             _rc.SetShaderEffect(_shadowEffect);
 
                             _rc.SetRenderTarget(shadowParams.ShadowMaps[0]);
@@ -679,15 +677,13 @@ namespace Fusee.Engine.Core
             }
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            effect.SetEffectParam("light.position", _rc.View * lightRes.WorldSpacePos);
-            effect.SetEffectParam("light.positionWorldSpace", lightRes.WorldSpacePos);
+            effect.SetEffectParam("light.position", _rc.View * lightRes.WorldSpacePos);            
             effect.SetEffectParam("light.intensities", light.Color);
             effect.SetEffectParam("light.maxDistance", light.MaxDistance);
             effect.SetEffectParam("light.strength", strength);
             effect.SetEffectParam("light.outerConeAngle", M.DegreesToRadians(light.OuterConeAngle));
             effect.SetEffectParam("light.innerConeAngle", M.DegreesToRadians(light.InnerConeAngle));
-            effect.SetEffectParam("light.direction", dirViewSpace);
-            effect.SetEffectParam("light.directionWorldSpace", dirWorldSpace);
+            effect.SetEffectParam("light.direction", dirViewSpace);            
             effect.SetEffectParam("light.lightType", (int)light.Type);
             effect.SetEffectParam("light.isActive", light.Active ? 1 : 0);
             effect.SetEffectParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
@@ -700,7 +696,7 @@ namespace Fusee.Engine.Core
                 switch (lightVisRes.Item2.Light.Type)
                 {
                     case LightType.Point:
-                        effect.SetEffectParam("ShadowCubeMap", (WritableCubeMap)shadowParams.ShadowMaps[0]);
+                        effect.SetEffectParam(ShaderShards.UniformNameDeclarations.ShadowCubeMap, (WritableCubeMap)shadowParams.ShadowMaps[0]);
                         break;
                     case LightType.Legacy:
                     case LightType.Parallel:
@@ -713,13 +709,13 @@ namespace Fusee.Engine.Core
                         }
                         else
                         {
-                            effect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[0]);
-                            effect.SetEffectParam("ShadowMap", (WritableTexture)shadowParams.ShadowMaps[0]);
+                            effect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);
+                            effect.SetEffectParam(ShaderShards.UniformNameDeclarations.ShadowMap, (WritableTexture)shadowParams.ShadowMaps[0]);
                         }
                         break;
                     case LightType.Spot:
-                        effect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[0]);
-                        effect.SetEffectParam("ShadowMap", (WritableTexture)shadowParams.ShadowMaps[0]);
+                        effect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);
+                        effect.SetEffectParam(ShaderShards.UniformNameDeclarations.ShadowMap, (WritableTexture)shadowParams.ShadowMaps[0]);
                         break;
                     default:
                         break;
