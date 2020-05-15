@@ -9,6 +9,9 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
+    /// <summary>
+    /// Input driver implementation for keyboard and mouse, as well as touch input in the browser.
+    /// </summary>
     public class RenderCanvasInputDriverImp : IInputDriverImp
     {
         /// <summary>
@@ -651,6 +654,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         private int _nTouchPointsSupported = 5;
         private JSObject _canvas;
 
+        /// <summary>
+        /// Converts the value of a touch point to float.
+        /// </summary>
+        /// <param name="o">The value of the point to convert.</param>
+        /// <returns></returns>
         public static float P2F(object o)
         {
             switch (o)
@@ -954,8 +962,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </summary>
         public string Id => GetType().FullName;
 
+        /// <summary>
+        /// Occurs on value changes of axes exhibited by this device.
+        /// Only applies for axes where the <see cref="F:Fusee.Engine.Common.AxisImpDescription.PollAxis" /> is set to false.
+        /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
+        /// <summary>A touchpoints's contact state is communicated by a button.</summary>
+        /// <see cref="F:Fusee.Engine.Common.ButtonImpDescription.PollButton" />
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 
 
