@@ -12,6 +12,4 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         internal WebGLFramebuffer FrameBufferHandle = null;
         internal WebGLRenderbuffer DepthRenderBufferHandle = null;
     }
-
-
 }

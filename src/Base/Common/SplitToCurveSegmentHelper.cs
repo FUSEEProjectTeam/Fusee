@@ -210,7 +210,7 @@ namespace Fusee.Base.Common
                 //Constraint
                 if (i + 1 >= segments.Count) break;
 
-                //Checks whether two successive segments have the same interpolation Methode, if so combine them.
+                //Checks whether two successive segments have the same interpolation method, if so combine them.
                 if (segments[i].GetType() == segments[i + 1].GetType())
                 {
                     foreach (var vertex in segments[i + 1].Vertices)

@@ -24,7 +24,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             _canvas = canvas;
 
-            // TODO: Extract a convenient Gl Context (version 2) ourselves from the given canvas. Then retrieve width and height
+            // TODO: Extract a convenient GL Context (version 2) ourselves from the given canvas. Then retrieve width and height
             _gl = gl;
             _width = width;
             _height = height;
@@ -53,7 +53,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public float DeltaTime { get; set; }
 
         /// <summary>
-        /// Gets and sets a value indicating whether vertical snychronization is used.
+        /// Gets and sets a value indicating whether vertical synchronization is used.
         /// </summary>
         /// <remarks> Currently not implemented.</remarks>
         public bool VerticalSync { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
@@ -108,7 +108,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </summary>
         public void Present()
         {
-            // Nohting to do in WebGL
+            // Nothing to do in WebGL
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
-        /// Set the cursor to one of the pre-defined types.
+        /// Set the cursor to one of the predefined types.
         /// </summary>
         /// <param name="cursorType">THe type of cursor to set.</param>
         /// <remarks>Not needed in WebGL.</remarks>
@@ -153,7 +153,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
-        /// Dpes the initialize of this instance.
+        /// Does initialize this instance.
         /// </summary>
         public void DoInit()
         {

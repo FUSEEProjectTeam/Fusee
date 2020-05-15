@@ -6,7 +6,7 @@
     /// </para>
     /// <para>
     /// Geometry manipulation algorithms need to quickly access information about 
-    /// a geometry's topology including queries such as "Wich edges are connected to a vertex",
+    /// a geometry's topology including queries such as "Which edges are connected to a vertex",
     /// "Retrieve all vertices for a given polygon", "Retrieve all adjacent polygons".
     /// </para>
     /// <para>

@@ -120,7 +120,7 @@ namespace Fusee.Base.Core
             CopyFunc copyLine;
             if (PixelFormat.ColorFormat.Equals(src.PixelFormat.ColorFormat))
             {
-                // Case: same colorspace, just loop over scanlines from src and copy linewise into this ImageData
+                // Case: same color space, just loop over scanlines from src and copy line-wise into this ImageData
                 copyLine = delegate(byte[] srcScanLineBytes, int destinationIndex)
                 {
                     Array.Copy(srcScanLineBytes, 0, PixelData, destinationIndex, srcScanLineBytes.Length);

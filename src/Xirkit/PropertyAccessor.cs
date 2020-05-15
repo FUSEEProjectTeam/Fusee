@@ -51,7 +51,7 @@ namespace Fusee.Xirkit
 
     /// <summary>
     /// Member Accessor implementation specialized on accessing properties (using set and get) where the type of the pin and the actual type of the field are different.
-    /// The accsessor performs the conversion operation specefied when performing its set or get operations.
+    /// The accessor performs the conversion operation specified when performing its set or get operations.
     /// </summary>
     /// <typeparam name="TPin">The type of the pin.</typeparam>
     /// <typeparam name="TObj">The type of the field.</typeparam>

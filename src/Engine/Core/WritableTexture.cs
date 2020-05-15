@@ -182,7 +182,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Create a texture that is intended to save ssao information.
+        /// Create a texture that is intended to save SSAO information.
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>

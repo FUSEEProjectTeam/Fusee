@@ -179,7 +179,7 @@ namespace Fusee.Engine.Core
             }
 
             /// <summary>
-            /// The registered ui rectangle.
+            /// The registered UI rectangle.
             /// </summary>
             public MinMaxRect UiRect
             {
@@ -197,7 +197,7 @@ namespace Fusee.Engine.Core
             }
 
             /// <summary>
-            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, ui rectangle, and canvas transform.
+            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, UI rectangle, and canvas transform.
             /// </summary>
             public PickerState()
             {
@@ -254,7 +254,6 @@ namespace Fusee.Engine.Core
             Projection = _rc.Projection;
             return Viserate();
         }
-
 
         #region Visitors
 

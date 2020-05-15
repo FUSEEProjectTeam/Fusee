@@ -54,7 +54,7 @@ namespace Fusee.Base.Common
                 int bitsPerByte = sizeof(byte) * 8;
                 for (int i = 0; i < bytesPerPixel; i++) // begin at 0 -> firstBit=0
                 {
-                    yield return new ImagePixelChannel(bitsPerByte * i, bitsPerByte, PixelEncoding.Uint); // (dd) currently only uint is relevant, might change
+                    yield return new ImagePixelChannel(bitsPerByte * i, bitsPerByte, PixelEncoding.Uint);
                 }
             }
         }

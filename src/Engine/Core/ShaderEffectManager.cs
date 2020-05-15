@@ -64,7 +64,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {

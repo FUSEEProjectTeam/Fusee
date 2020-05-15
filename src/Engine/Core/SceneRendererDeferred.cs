@@ -151,7 +151,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
+        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set, 
         /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
@@ -344,7 +344,7 @@ namespace Fusee.Engine.Core
                     throw new ArgumentException("No Light Space Matrix created, light type not supported!");
             }
 
-            //2. If we haven't created the shadow params for this light yet, do so,
+            //2. If we haven't created the shadow parameters for this light yet, do so,
             if (!_shadowparams.TryGetValue(key, out var outParams))
             {
                 switch (lr.Light.Type)
@@ -768,7 +768,7 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            // Set params in modelview space since the lightning calculation is in modelview space
+            // Set parameters in modelview space since the lightning calculation is in modelview space
             effect.SetEffectParam("light.position", _rc.View * lightRes.WorldSpacePos);
             effect.SetEffectParam("light.intensities", light.Color);
             effect.SetEffectParam("light.maxDistance", light.MaxDistance);

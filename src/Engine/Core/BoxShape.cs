@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Gets a vector containg half of the values of width, height and depth of the box.
+        /// Gets a vector containing half of the values of width, height and depth of the box.
         /// </summary>
         /// <value>
         /// The half extents.

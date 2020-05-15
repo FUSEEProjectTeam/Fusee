@@ -201,7 +201,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Extracts the directory name from a given path (which is potentially a path to a file).
         /// </summary>
-        /// <param name="path">The path to extrect from.</param>
+        /// <param name="path">The path to extract the directory name from.</param>
         /// <returns>The directory name.</returns>
         /// <exception cref="System.ArgumentException">
         /// Invalid path
@@ -378,7 +378,7 @@ namespace Fusee.Base.Common
         /// Determines whether the specified path has an extension.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <returns>true if the path has an extenstion, otherwise false.</returns>
+        /// <returns>true if the path has an extension, otherwise false.</returns>
         /// <exception cref="System.ArgumentException">Illegal characters in path.</exception>
         public static bool HasExtension(string path)
         {
@@ -534,7 +534,7 @@ namespace Fusee.Base.Common
         }
 
 
-        // required for FileIOPermission (and most proibably reusable elsewhere too)
+        // required for FileIOPermission (and most probably reusable elsewhere too)
         // both path MUST be "full paths"
         internal static bool IsPathSubsetOf(string subset, string path)
         {

@@ -43,7 +43,7 @@ namespace Fusee.Jometri
             }
         }
 
-        #region Triangulate monotone polygone
+        #region Triangulate monotone polygon
 
         private static void TriangulateMonotone(Face face)
         {

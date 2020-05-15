@@ -130,7 +130,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
     /// <summary>
     /// Touch input device implementation for the Windows platform. This implementation directly
-    /// sniffes at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
+    /// sniffles at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
     /// to the constructor) to receive 
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
@@ -302,7 +302,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 POINT winPoint;
                 switch (Msg)
                 {
-                    case (int)WinMessage.WM_CLOSE: // Seems defunkt.
+                    case (int)WinMessage.WM_CLOSE: // Seems to be defect.
                         DisconnectWindowsEvents();
                         break;
                     case (int)WinMessage.WM_POINTERUPDATE:
@@ -334,7 +334,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             OperatingSystem os = Environment.OSVersion;
 
-            // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps NOT targetet for a specific windows version (like 8.1 or 10)
+            // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps, that do NOT target a specific windows version (like 8.1 or 10)
             // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" touch handling is first supported.
             if (os.Platform == PlatformID.Win32NT
                 && (os.Version.Major > 6
@@ -428,7 +428,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsTouchInputDeviceImp" /> class.
         /// </summary>
-        /// <param name="gameWindow">The game window to hook on to reveive 
+        /// <param name="gameWindow">The game window to hook on to receive 
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public WindowsTouchInputDeviceImp(GameWindow gameWindow)
         {
@@ -634,7 +634,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Retrieve a description for each button.
         /// </summary>
         /// <value>
-        /// The button imp desc.
+        /// The button imp description.
         /// </value>
         public IEnumerable<ButtonImpDescription> ButtonImpDesc => _tpButtonDescs.Values;
 

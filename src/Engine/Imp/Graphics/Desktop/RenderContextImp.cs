@@ -488,8 +488,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
-
-            // mr: Detach Shader & delete
+            
             GL.DetachShader(program, fragmentObject);
             GL.DetachShader(program, vertexObject);
             GL.DeleteShader(fragmentObject);
@@ -1457,7 +1456,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
@@ -1488,7 +1487,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case BlendOperation.Maximum:
                     return BlendEquationMode.Max;
                 default:
-                    throw new ArgumentOutOfRangeException("bo");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bo}");
             }
         }
 
@@ -1507,7 +1506,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case BlendEquationMode.FuncReverseSubtract:
                     return BlendOperation.ReverseSubtract;
                 default:
-                    throw new ArgumentOutOfRangeException("bom");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
             }
         }
 

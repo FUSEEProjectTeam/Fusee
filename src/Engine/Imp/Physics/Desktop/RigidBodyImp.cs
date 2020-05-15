@@ -320,7 +320,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// Sets the drag.
         /// </summary>
         /// <param name="linearDrag">The linear drag.</param>
-        /// <param name="anglularDrag">The anglular drag.</param>
+        /// <param name="anglularDrag">The angular drag.</param>
         public void SetDrag(float linearDrag, float anglularDrag)
         {
             var o = (RigidBodyImp) _rbi.UserObject;
@@ -542,10 +542,10 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
 
         /// <summary>
-        /// OnCollision is called once per frame for every rigidbody theis rigidbody is colliding.
-        /// Send ffrom here Massage to the Rigidbody.OnCollision(RigidBodyImp other) by an Events
+        /// OnCollision is called once per frame for every rigidbody.
+        /// Send from here Massage to the Rigidbody.OnCollision(RigidBodyImp other) by an Events
         /// </summary>
-        /// <param name="other">the other Rigidbody that is collided </param>
+        /// <param name="other">The other rigidbody that is collided.</param>
         public virtual void OnCollision(IRigidBodyImp other)
         {
             

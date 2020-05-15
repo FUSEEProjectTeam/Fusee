@@ -35,7 +35,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             _touch = new TouchDeviceImp(_canvas);
         }
 
-        // The webgl canvas. Will be set in the c# constructor
+        // The WebGL canvas. Will be set in the c# constructor
         internal JSObject _canvas;
         private KeyboardDeviceImp _keyboard;
         private MouseDeviceImp _mouse;
@@ -142,7 +142,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
         #endregion
 
-        // Javascript callback code
+        // JavaScript callback code
         private void OnCanvasKeyDown(int key)
         {
             ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs
@@ -164,7 +164,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <summary>
         /// Should be called by the driver only.
         /// </summary>
-        /// <param name="canvas">The javascript canvas.</param>
+        /// <param name="canvas">The JavaScript canvas.</param>
         internal KeyboardDeviceImp(JSObject canvas)
         {
             _keyDescriptions = new Dictionary<int, ButtonDescription>();
@@ -263,12 +263,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>No return, always throws.</returns>
         public float GetAxis(int iAxisId)
         {
-            throw new InvalidOperationException($"Unsopported axis {iAxisId}. This device does not support any axes at all.");
+            throw new InvalidOperationException($"Unsupported axis {iAxisId}. This device does not support any axes at all.");
         }
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All keyboard buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to receive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
@@ -328,7 +328,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
         #endregion
 
-        #region Javascript callback code
+        #region JavaScript callback code
         internal void OnCanvasMouseDown(int button)
         {
             switch (button)
@@ -407,7 +407,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <summary>
         /// Initializes a new instance of the <see cref="MouseDeviceImp" /> class.
         /// </summary>
-        /// <param name="canvas">The (javascript) canvas object.</param>
+        /// <param name="canvas">The (JavaScript) canvas object.</param>
         public MouseDeviceImp(JSObject canvas)
         {
             _currentMouseWheel = 0;
@@ -630,14 +630,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All mouse buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to receive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
             throw new InvalidOperationException(
-                $"Unsopported button {iButtonId}. This device does not support any to-be polled buttons at all.");
+                $"Unsupported button {iButtonId}. This device does not support any to-be polled buttons at all.");
         }
     }
 
@@ -974,7 +974,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
 
         /// <summary>
-        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch tevice :-).
+        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch device.
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Touch;
         /// <summary>
@@ -1017,7 +1017,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
-        /// Retrieves the button count. One button for each of the up to five supported touchpoints signalling that the touchpoint currently has contact.
+        /// Retrieves the button count. One button for each of the up to five supported touchpoints signaling that the touchpoint currently has contact.
         /// </summary>
         /// <value>
         /// The button count.
@@ -1028,7 +1028,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Retrieve a description for each button.
         /// </summary>
         /// <value>
-        /// The button imp desc.
+        /// The button imp description.
         /// </value>
         public IEnumerable<ButtonImpDescription> ButtonImpDesc => _tpButtonDescs.Values;
 

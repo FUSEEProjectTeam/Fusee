@@ -106,7 +106,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Generates a ssao texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a SSAO texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>        
         public void SetSSAOTex()
         { 

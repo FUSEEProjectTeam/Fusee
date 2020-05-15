@@ -691,9 +691,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             unsafe
             {
                 var mF = (float*)(&val);
-                // Row order notation
-                // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
-
+                
                 // Column order notation
                 GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
             }
@@ -990,7 +988,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
             if (vboBytes != vertsBytes)
-                throw new ApplicationException(String.Format(
+                throw new ApplicationException(string.Format(
                     "Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
 
@@ -1427,7 +1425,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
@@ -1488,7 +1486,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     return BlendOperation.ReverseSubtract;
 
                 default:
-                    throw new ArgumentOutOfRangeException("bom");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
             }
         }
 

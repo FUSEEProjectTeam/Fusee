@@ -56,7 +56,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Shader effect for the ssao pass.
+        /// Shader effect for the SSAO pass.
         /// </summary>        
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
@@ -104,9 +104,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
+        /// Creates a blurred SSAO texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>        
+        /// <param name="ssaoRenderTex">The non blurred SSAO texture.</param>        
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?

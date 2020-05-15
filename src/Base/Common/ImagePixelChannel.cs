@@ -32,8 +32,5 @@
             NumBits = numBits;
             Encoding = encoding;
         }
-
-        // Convenience stuff such as extracting individual channel data from ushort, uint and ulong pixels
-        // ...
     }
 }

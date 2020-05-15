@@ -819,7 +819,7 @@ namespace Fusee.Engine.Core
 
             var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
-            // Set params in modelview space since the lightning calculation is in modelview space
+            // Set parameters in modelview space since the lightning calculation is in modelview space
             _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
             _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
             _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);

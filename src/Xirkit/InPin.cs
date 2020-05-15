@@ -32,7 +32,7 @@ namespace Fusee.Xirkit
             : base(n, member)
         {
             _memberAccessor = memberAccessor;
-            // TODO: build a set accesssor for the property.
+            // TODO: build a set accessor for the property.
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Retrieves the type discription of the pin.
+        /// Retrieves the type description of the pin.
         /// </summary>
         /// <returns>
         /// The pin's type
@@ -58,7 +58,7 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Occurs when this pin reveived a value.
+        /// Occurs when this pin received a value.
         /// </summary>
         public event ReceivedValueHandler ReceivedValue;
     }

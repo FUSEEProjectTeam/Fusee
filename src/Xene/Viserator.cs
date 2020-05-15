@@ -11,7 +11,7 @@ namespace Fusee.Xene
         // Unfortunate construct, but there seems no other way. What we really needed here is a MixIn to make 
         // a INode or SceneContainer implement IEnumerable (afterwards). All C# offers us is to 
         // define ExtensionMethods returning an IEnumerable<>.
-        // Thus we need some class to implement that. Here it is - tada:
+        // Thus we need some class to implement that:
         internal class ViseratorEnumerable<TViserator, TResult, TNode, TComponent> : IEnumerable<TResult>
             where TViserator : ViseratorBase<TResult, TNode, TComponent>, new()
             where TNode : class, INode
@@ -198,7 +198,7 @@ namespace Fusee.Xene
     {
         /// <summary>
         /// The state to keep track of during traversal. You can use your own implementation (as long as it implements <see cref="IStateStack"/>
-        /// or use one of the pre-defined implementations. See <see cref="VisitorState"/> how to implement your own state type.
+        /// or use one of the predefined implementations. See <see cref="VisitorState"/> how to implement your own state type.
         /// </summary>
         protected TState State;
 

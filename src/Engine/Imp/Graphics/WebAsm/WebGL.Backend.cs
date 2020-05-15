@@ -95,7 +95,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
         public static bool IsVerbosityEnabled { get; set; } =
 #if DEBUG
-            false; //(mr): disabled 
+            false;
 #else
             false;
 #endif
@@ -271,8 +271,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         arg = CastNativeArray(array);
                     else
                     {
-                        // WebAssembly.Core.Array or Runtime should probably provide some type of
-                        // helper functions for doing this.  I will put it on my todo list.
                         var argArray = new WebAssembly.Core.Array();
                         foreach(var item in (System.Array)arg)
                         {

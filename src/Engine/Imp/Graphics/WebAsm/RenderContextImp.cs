@@ -439,7 +439,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             if (gs != null)
-                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+                Diagnostics.Warn("Geometry Shaders are unsupported");
 
             bool statusCode;
             string info;
@@ -1556,7 +1556,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
             gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
@@ -1587,7 +1587,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case BlendOperation.Maximum:
                     throw new NotSupportedException("MAX blending mode not supported in WebGL!");
                 default:
-                    throw new ArgumentOutOfRangeException("bo");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bo}");
             }
         }
 
@@ -1602,7 +1602,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case FUNC_REVERSE_SUBTRACT:
                     return BlendOperation.ReverseSubtract;
                 default:
-                    throw new ArgumentOutOfRangeException("bom");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
             }
         }
 

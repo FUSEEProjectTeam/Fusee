@@ -11,7 +11,7 @@
     /// oriented use cases such as the "Node Editor" in Blender, binding dependency properties
     /// in WPF, etc. In contrast to other libraries, 
     /// Xirkit can take any C# type of object as a node within a circuit and any field or property 
-    /// of such objects may serve as incoming or outgoing connecion pins. 
+    /// of such objects may serve as incoming or outgoing connection pins. 
     /// </para>
     /// <para>
     /// The animation part of FUSEEs <see cref="T:Fusee.Engine.SceneRenderer"/> is implemented

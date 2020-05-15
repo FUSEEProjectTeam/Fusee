@@ -247,7 +247,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Set the cursor (the mouse pointer image) to one of the pre-defined types
+        ///     Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)

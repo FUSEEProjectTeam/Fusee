@@ -496,7 +496,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The different axes a SixDOF device e.g. spacemouse exposes.
+    /// The different axes a SixDOF device e.g. SpaceMouse exposes.
     /// </summary>
     public enum SixDOFAxis
     {
