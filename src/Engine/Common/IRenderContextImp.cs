@@ -607,6 +607,12 @@ namespace Fusee.Engine.Common
         /// <param name="capability">The capability to check against</param> 
         /// <returns>uint</returns> 
         uint GetHardwareCapabilities(HardwareCapability capability);
+        
+        /// <summary> 
+        /// Returns a human readable description of the underlying graphics hardware 
+        /// </summary> 
+        /// <returns>Description</returns> 
+        string GetHardwareDescription();
     }
 
     /// <summary>
