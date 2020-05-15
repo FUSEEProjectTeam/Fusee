@@ -580,7 +580,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 
         /// <summary>
-        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch tevice :-).
+        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch device :-).
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Touch;
         /// <summary>

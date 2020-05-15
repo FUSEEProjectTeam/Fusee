@@ -14,42 +14,42 @@ namespace Fusee.Engine.GUI
         /// <summary>
         /// Anchors to the lower left corner of the parent element.
         /// </summary>
-        DOWN_DOWN_LEFT,     //Min = Max = 0,0
+        DownDownLeft,     //Min = Max = 0,0
 
         /// <summary>
         /// Anchors to the lower right corner of the parent element.
         /// </summary>
-        DOWN_DOWN_RIGHT,    //Min = Max = 1,0
+        DownDownRight,    //Min = Max = 1,0
 
         /// <summary>
         /// Anchors to the upper left corner of the parent element.
         /// </summary>
-        TOP_TOP_LEFT,       //Min = Max = 0,1
+        TopTopLeft,       //Min = Max = 0,1
 
         /// <summary>
         /// Anchors to the upper right corner of the parent element.
         /// </summary>
-        TOP_TOP_RIGHT,      //Min = Max = 1,1
+        TopTopRight,      //Min = Max = 1,1
 
         /// <summary>
         /// Stretches across all of the parent element.
         /// </summary>
-        STRETCH_ALL,        //Min = 0, 0 and Max = 1, 1
+        StretchAll,        //Min = 0, 0 and Max = 1, 1
 
         /// <summary>
         /// Stretches horizontally, but keeps its size vertically.
         /// </summary>
-        STRETCH_HORIZONTAL, //Min = 0,0 and Max = 1,0
+        StretchHorizontal, //Min = 0,0 and Max = 1,0
 
         /// <summary>
         /// Stretches vertically, but keeps its size horizontally.
         /// </summary>
-        STRETCH_VERTICAL,   //Min = 0,0 and Max = 0,1
+        StretchVertical,   //Min = 0,0 and Max = 0,1
 
         /// <summary>
         /// Anchors to the middle of the parent element.
         /// </summary>
-        MIDDLE              //Min = Max = 0.5, 0.5
+        Middle              //Min = Max = 0.5, 0.5
     }
 
     /// <summary>
@@ -66,50 +66,50 @@ namespace Fusee.Engine.GUI
         {
             switch (anchorPos)
             {
-                case AnchorPos.DOWN_DOWN_LEFT:
+                case AnchorPos.DownDownLeft:
                     return new MinMaxRect()
                     {
                         Min = new float2(0, 0),
                         Max = new float2(0, 0)
                     };
-                case AnchorPos.DOWN_DOWN_RIGHT:
+                case AnchorPos.DownDownRight:
                     return new MinMaxRect()
                     {
                         Min = new float2(1, 0),
                         Max = new float2(1, 0)
                     };
-                case AnchorPos.TOP_TOP_LEFT:
+                case AnchorPos.TopTopLeft:
                     return new MinMaxRect()
                     {
                         Min = new float2(0, 1),
                         Max = new float2(0, 1)
                     };
-                case AnchorPos.TOP_TOP_RIGHT:
+                case AnchorPos.TopTopRight:
                     return new MinMaxRect()
                     {
                         Min = new float2(1, 1),
                         Max = new float2(1, 1)
                     };
-                case AnchorPos.STRETCH_ALL:
+                case AnchorPos.StretchAll:
                     return new MinMaxRect()
                     {
                         Min = new float2(0, 0),
                         Max = new float2(1, 1)
                     };
-                case AnchorPos.STRETCH_HORIZONTAL:
+                case AnchorPos.StretchHorizontal:
                     return new MinMaxRect()
                     {
                         Min = new float2(0, 0),
                         Max = new float2(1, 0)
                     };
-                case AnchorPos.STRETCH_VERTICAL:
+                case AnchorPos.StretchVertical:
                     return new MinMaxRect()
                     {
                         Min = new float2(0, 0),
                         Max = new float2(0, 1)
                     };
                 default:
-                case AnchorPos.MIDDLE:
+                case AnchorPos.Middle:
                     return new MinMaxRect()
                     {
                         Min = new float2(0.5f, 0.5f),
@@ -132,7 +132,7 @@ namespace Fusee.Engine.GUI
             switch (anchorPos)
             {
                 default:
-                case AnchorPos.MIDDLE:
+                case AnchorPos.Middle:
                     var middle = new float2(parentWidth / 2f, parentHeight / 2f);
                     return new MinMaxRect
                     {
@@ -140,43 +140,43 @@ namespace Fusee.Engine.GUI
                         Max = posOnParent - middle + guiElementDim
                     };
 
-                case AnchorPos.STRETCH_ALL:
+                case AnchorPos.StretchAll:
                     return new MinMaxRect
                     {
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
                     };
-                case AnchorPos.STRETCH_HORIZONTAL:
+                case AnchorPos.StretchHorizontal:
                     return new MinMaxRect
                     {
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(-(parentWidth - (posOnParent.x + guiElementDim.x)), posOnParent.y + guiElementDim.y)
                     };
-                case AnchorPos.STRETCH_VERTICAL:
+                case AnchorPos.StretchVertical:
                     return new MinMaxRect
                     {
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - (posOnParent.y + guiElementDim.y)))
                     };
-                case AnchorPos.DOWN_DOWN_LEFT:
+                case AnchorPos.DownDownLeft:
                     return new MinMaxRect
                     {
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
                     };
-                case AnchorPos.DOWN_DOWN_RIGHT:
+                case AnchorPos.DownDownRight:
                     return new MinMaxRect
                     {
                         Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
                         Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
                     };
-                case AnchorPos.TOP_TOP_LEFT:
+                case AnchorPos.TopTopLeft:
                     return new MinMaxRect
                     {
                         Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
                         Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
-                case AnchorPos.TOP_TOP_RIGHT:
+                case AnchorPos.TopTopRight:
                     return new MinMaxRect
                     {
                         Min = new float2(-(parentWidth - posOnParent.x), -(parentHeight - posOnParent.y)),
@@ -377,7 +377,7 @@ namespace Fusee.Engine.GUI
         /// <param name="horizontalAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s x-axis.</param>
         /// <param name="verticalTextAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s y-axis.</param>
         public TextNode(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
-            FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.LEFT, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.TOP)
+            FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.Left, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.Top)
         {
             var textMesh = new GUIText(fontMap, text, horizontalAlignment)
             {

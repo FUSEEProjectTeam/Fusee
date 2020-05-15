@@ -71,10 +71,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             switch (compareMode)
             {
-                case TextureCompareMode.NONE:
+                case TextureCompareMode.None:
                     return (int)NONE;
 
-                case TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE:
+                case TextureCompareMode.CompareRefToTexture:
                     return (int)COMPARE_REF_TO_TEXTURE;
 
                 default:
@@ -89,28 +89,28 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             switch (filterMode)
             {
-                case TextureFilterMode.NEAREST:
+                case TextureFilterMode.Nearest:
                     minFilter = (int)NEAREST;
                     magFilter = (int)NEAREST;
                     break;
                 default:
-                case TextureFilterMode.LINEAR:
+                case TextureFilterMode.Linear:
                     minFilter = (int)LINEAR;
                     magFilter = (int)LINEAR;
                     break;
-                case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
+                case TextureFilterMode.NearestMipmapNearest:
                     minFilter = (int)NEAREST_MIPMAP_NEAREST;
                     magFilter = (int)NEAREST_MIPMAP_NEAREST;
                     break;
-                case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
+                case TextureFilterMode.LinearMipmapNearest:
                     minFilter = (int)LINEAR_MIPMAP_NEAREST;
                     magFilter = (int)LINEAR_MIPMAP_NEAREST;
                     break;
-                case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
+                case TextureFilterMode.NearestMipmapLinear:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
                     magFilter = (int)NEAREST_MIPMAP_LINEAR;
                     break;
-                case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
+                case TextureFilterMode.LinearMipmapLinear:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
                     magFilter = (int)NEAREST_MIPMAP_LINEAR;
                     break;
@@ -124,13 +124,13 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             switch (wrapMode)
             {
                 default:
-                case TextureWrapMode.REPEAT:
+                case TextureWrapMode.Repeat:
                     return (int)REPEAT;
-                case TextureWrapMode.MIRRORED_REPEAT:
+                case TextureWrapMode.MirroredRepeat:
                     return (int)MIRRORED_REPEAT;
-                case TextureWrapMode.CLAMP_TO_EDGE:
+                case TextureWrapMode.ClampToEdge:
                     return (int)CLAMP_TO_EDGE;
-                case TextureWrapMode.CLAMP_TO_BORDER:
+                case TextureWrapMode.ClampToBorder:
                     {
 #warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. CLAMP_TO_EDGE is set instead.
                         return (int)CLAMP_TO_EDGE;
@@ -746,16 +746,16 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             switch (texTarget)
             {
-                case TextureType.TEXTURE1D:
+                case TextureType.Texture1D:
                     Diagnostics.Error("OpenTK ES31 does not support Texture1D.");
                     break;
-                case TextureType.TEXTURE2D:
+                case TextureType.Texture2D:
                     gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE3D:
+                case TextureType.Texture3D:
                     gl.BindTexture(TEXTURE_3D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE_CUBE_MAP:
+                case TextureType.TextureCubeMap:
                     gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
                     break;
                 default:
@@ -1486,34 +1486,34 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.TRIANGLES:
+                    case OpenGLPrimitiveType.Triangles:
                     default:
                         gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.POINT:                        
+                    case OpenGLPrimitiveType.Points:                        
                         gl.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LINES:                       
+                    case OpenGLPrimitiveType.Lines:                       
                         gl.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LINE_LOOP:                        
+                    case OpenGLPrimitiveType.LineLoop:                        
                         gl.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.LINE_STRIP:                        
+                    case OpenGLPrimitiveType.LineStrip:                        
                         gl.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.PATCHES:
+                    case OpenGLPrimitiveType.Patches:
                         gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
                         break;
-                    case OpenGLPrimitiveType.QUAD_STRIP:
+                    case OpenGLPrimitiveType.QuadStrip:
                         gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
                         break;
-                    case OpenGLPrimitiveType.TRIANGLE_FAN:
+                    case OpenGLPrimitiveType.TriangleFan:
                         gl.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
-                    case OpenGLPrimitiveType.TRIANGLE_STRIP:
+                    case OpenGLPrimitiveType.TriangleStrip:
                         gl.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                         break;
                 }
@@ -1961,7 +1961,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1998,7 +1998,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
@@ -2048,7 +2048,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
             }
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null && !renderTarget.IsDepthOnly)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth] == null && !renderTarget.IsDepthOnly)
             {
                 WebGLRenderbuffer gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
@@ -2091,7 +2091,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             int depthCnt = 0;
 
-            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
+            var depthTexPos = (int)RenderTargetTextureTypes.Depth;
 
             if (!renderTarget.IsDepthOnly)
             {
@@ -2215,9 +2215,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             switch (capability)
             {
-                case HardwareCapability.CAN_RENDER_DEFFERED:
+                case HardwareCapability.CanRenderDeferred:
                     return 0U;
-                case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
+                case HardwareCapability.CanUseGeometryShaders:
                     return 0U; //WASM uses OpenGL es, where no geometry shaders can be used.
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);

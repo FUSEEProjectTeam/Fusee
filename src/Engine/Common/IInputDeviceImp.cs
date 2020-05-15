@@ -35,7 +35,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         Skeleton,
         /// <summary>
-        /// A six-degrees-of-freedom input device such as a spacemouse.
+        /// A six-degrees-of-freedom input device such as a SpaceMouse.
         /// </summary>
         SixDOF,
         /// <summary>
@@ -46,16 +46,16 @@ namespace Fusee.Engine.Common
 
     /// <summary>
     /// Symbolic value describing the nature of the axis (the typical usage of this axis in applications).
-    /// Use this value to query unkown devices/axes.
+    /// Use this value to query unknown devices/axes.
     /// </summary>
     public enum AxisNature
     {
         /// <summary>
-        /// The axis' values rather describe absolute situations like a positon or a rotation
+        /// The axis' values rather describe absolute situations like a position or a rotation
         /// </summary>
         Position,
         /// <summary>
-        /// The axis' values rather describe velocities to be applied to objects like positional or angualar speed. 
+        /// The axis' values rather describe velocities to be applied to objects like positional or angular speed. 
         /// </summary>
         Speed,
         /// <summary>
@@ -258,7 +258,7 @@ namespace Fusee.Engine.Common
         /// parameter can be used in user dialogs to identify devices.
         /// </summary>
         /// <value>
-        /// The deivce description.
+        /// The device description.
         /// </value>
         string Desc { get; }
 
@@ -397,7 +397,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Implement this to get the device category name.
         /// </summary>
-        /// <returns>The name of the device categroy.</returns>
+        /// <returns>The name of the device category.</returns>
         string GetCategory();
 
     }

@@ -13,9 +13,9 @@ namespace Fusee.Base.Common
     {
         internal enum SegmentType
         {
-            LINEAR,
-            CUBIC,
-            CONIC
+            Linear,
+            Cubic,
+            Conic
         }
         private static SegmentType Type { get; set; }
 
@@ -39,24 +39,24 @@ namespace Fusee.Base.Common
             {
                 if (partTags.Skip(i).Take(linearPattern.Length).SequenceEqual(linearPattern))
                 {
-                    Type = SegmentType.LINEAR;
+                    Type = SegmentType.Linear;
                     segments.Add(CreateCurveSegment(i, linearPattern, partVerts));
                 }
                 else if (partTags.Skip(i).Take(conicPattern.Length).SequenceEqual(conicPattern))
                 {
-                    Type = SegmentType.CONIC;
+                    Type = SegmentType.Conic;
                     segments.Add(CreateCurveSegment(i, conicPattern, partVerts));
                     i += 1;
                 }
                 else if (partTags.Skip(i).Take(cubicPattern.Length).SequenceEqual(cubicPattern))
                 {
-                    Type = SegmentType.CUBIC;
+                    Type = SegmentType.Cubic;
                     segments.Add(CreateCurveSegment(i, cubicPattern, partVerts));
                     i += 2;
                 }
                 else if (partTags.Skip(i).Take(conicVirtualPattern.Length).SequenceEqual(conicVirtualPattern))
                 {
-                    Type = SegmentType.CONIC;
+                    Type = SegmentType.Conic;
                     var count = 0;
                     var cs = CreateCurveSegment(i, conicVirtualPattern, partVerts);
 
@@ -133,21 +133,21 @@ namespace Fusee.Base.Common
             CurveSegment segment;
             switch (Type)
             {
-                case SegmentType.LINEAR:
+                case SegmentType.Linear:
                     segment = new LinearSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CONIC:
+                case SegmentType.Conic:
                     segment = new BezierConicSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CUBIC:
+                case SegmentType.Cubic:
                     segment = new BezierCubicSegment
                     {
                         Vertices = new List<float3>()
@@ -169,21 +169,21 @@ namespace Fusee.Base.Common
             CurveSegment segment;
             switch (Type)
             {
-                case SegmentType.LINEAR:
+                case SegmentType.Linear:
                     segment = new LinearSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CONIC:
+                case SegmentType.Conic:
                     segment = new BezierConicSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CUBIC:
+                case SegmentType.Cubic:
                     segment = new BezierCubicSegment
                     {
                         Vertices = new List<float3>()
