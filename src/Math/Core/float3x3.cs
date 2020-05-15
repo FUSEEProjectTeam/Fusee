@@ -115,6 +115,7 @@ namespace Fusee.Math.Core
         public float3 Column0
         {
             get { return new float3(Row0.x, Row1.x, Row2.x); }
+            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; }
         }
 
         /// <summary>
@@ -123,6 +124,7 @@ namespace Fusee.Math.Core
         public float3 Column1
         {
             get { return new float3(Row0.y, Row1.y, Row2.y); }
+            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; }
         }
 
         /// <summary>
@@ -131,6 +133,7 @@ namespace Fusee.Math.Core
         public float3 Column2
         {
             get { return new float3(Row0.z, Row1.z, Row2.z); }
+            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; }
         }
 
         /// <summary>
@@ -276,12 +279,12 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Substracts the right instance from the left instance.
+        ///     Subtracts the right instance from the left instance.
         /// </summary>
-        /// <param name="left">The left operand of the substraction.</param>
-        /// <param name="right">The right operand of the substraction.</param>
-        /// <returns>A new instance that is the result of the substraction.</returns>
-        public static float3x3 Substract(float3x3 left, float3x3 right)
+        /// <param name="left">The left operand of the subtraction.</param>
+        /// <param name="right">The right operand of the subtraction.</param>
+        /// <returns>A new instance that is the result of the subtraction.</returns>
+        public static float3x3 Subtract(float3x3 left, float3x3 right)
         {
             return new float3x3(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13,
                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23,
@@ -337,7 +340,7 @@ namespace Fusee.Math.Core
         #region Transform
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -354,7 +357,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        ///     Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -371,7 +374,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -387,7 +390,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -420,14 +423,14 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Matrix substraction
+        ///     Matrix subtraction
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
         /// <returns>A new float2x2 which holds the result of the multiplication</returns>
         public static float3x3 operator -(float3x3 left, float3x3 right)
         {
-            return Substract(left, right);
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -442,7 +445,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -453,7 +456,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        ///     Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -464,7 +467,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -475,7 +478,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>

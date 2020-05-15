@@ -192,7 +192,7 @@ namespace Fusee.Engine.Core
                 }
 
                 var thisCascadesClipPlanes = new float2(cascadeNear, cascadeFar);                
-                var aspect = width / height;
+                var aspect = (float)width / height;
                 yield return new Tuple<float4x4, float2>(float4x4.CreatePerspectiveFieldOfView(fov * 2, aspect, cascadeNear, cascadeFar), thisCascadesClipPlanes);
             }
         }

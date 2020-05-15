@@ -5,6 +5,9 @@ using Fusee.Xene;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// This class contains information about the scene of the picked point.
+    /// </summary>
     public class PickResult
     {
         // Data
@@ -12,23 +15,32 @@ namespace Fusee.Engine.Core
         /// The scene code container.
         /// </summary>
         public SceneNodeContainer Node;
+
         /// <summary>
         /// The mesh.
         /// </summary>
         public Mesh Mesh;
+
+        /// <summary>
+        /// The index of the triangle that was picked.
+        /// </summary>
         public int Triangle;
+
         /// <summary>
         /// The u, v coordinates.
         /// </summary>
         public float U, V;
+
         /// <summary>
         /// The model matrix.
         /// </summary>
         public float4x4 Model;
+
         /// <summary>
         /// The view matrix
         /// </summary>
         public float4x4 View;
+
         /// <summary>
         /// The projection matrix.
         /// </summary>
@@ -157,34 +169,51 @@ namespace Fusee.Engine.Core
     public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState>
     {
         private CanvasTransformComponent _ctc;
+        private RenderContext _rc;
+
+        private bool isCtcInitialized = false;
+        private MinMaxRect _parentRect;
 
         #region State
+        /// <summary>
+        /// The picker state upon scene traversal.
+        /// </summary>
         public class PickerState : VisitorState
         {
             private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
 
+            /// <summary>
+            /// The registered model.
+            /// </summary>
             public float4x4 Model
             {
                 set { _model.Tos = value; }
                 get { return _model.Tos; }
             }
 
-
+            /// <summary>
+            /// The registered ui rectangle.
+            /// </summary>
             public MinMaxRect UiRect
             {
                 set { _uiRect.Tos = value; }
                 get { return _uiRect.Tos; }
             }
 
+            /// <summary>
+            /// The registered canvas transform.
+            /// </summary>
             public float4x4 CanvasXForm
             {
                 get => _canvasXForm.Tos;
                 set => _canvasXForm.Tos = value;
             }
 
-
+            /// <summary>
+            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, ui rectangle, and canvas transform.
+            /// </summary>
             public PickerState()
             {
                 RegisterState(_model);
@@ -193,9 +222,22 @@ namespace Fusee.Engine.Core
             }
         };
 
-        public float4x4 View, Projection;
+        /// <summary>
+        /// The current view matrix.
+        /// </summary>
+        public float4x4 View { get; private set; }
+
+        /// <summary>
+        /// The current projection matrix.
+        /// </summary>
+        public float4x4 Projection { get; private set; }
+
         #endregion
 
+        /// <summary>
+        /// The constructor to initialize a new ScenePicker.
+        /// </summary>
+        /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
         public ScenePicker(SceneContainer scene)
             : base(scene.Children.GetEnumerator())
         {
@@ -203,6 +245,9 @@ namespace Fusee.Engine.Core
             Projection = float4x4.Identity;
         }
 
+        /// <summary>
+        /// This method is called when traversal starts to initialize the traversal state.
+        /// </summary>
         protected override void InitState()
         {
             base.InitState();
@@ -210,41 +255,30 @@ namespace Fusee.Engine.Core
             State.CanvasXForm = float4x4.Identity;
         }
 
-
-        public IEnumerable<PickResult> Pick(float2 pickPos)
+        /// <summary>
+        /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="pickPos">The pick position.</param>
+        /// <returns></returns>
+        public IEnumerable<PickResult> Pick(RenderContext rc, float2 pickPos)
         {
+            _rc = rc;
             PickPosClip = pickPos;
-            return Viserate();
+            View = _rc.View;
+            Projection = _rc.Projection;
+            return Viserate();            
         }
 
 
         #region Visitors
-
-
+        
+        /// <summary>
+        /// Sets the state of the model matrices and UiRects.
+        /// </summary>
+        /// <param name="ctc">The CanvasTransformComponent.</param>
         [VisitMethod]
-        public void PickProjection(ProjectionComponent pc)
-        {
-            switch (pc.ProjectionMethod)
-            {
-                case ProjectionMethod.PERSPECTIVE:
-                    var aspect = pc.Width / (float)pc.Height;
-                    Projection = float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);                    
-                    break;
-                case ProjectionMethod.ORTHOGRAPHIC:
-                    Projection = float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);                    
-                    break;
-            }
-        }
-
-        [VisitMethod]
-        public void PickTransform(TransformComponent transform)
-        {
-            State.Model *= transform.Matrix();
-        }
-
-        private bool isCtcInitialized = false;
-        [VisitMethod]
-        public void PickCanvasTransform(CanvasTransformComponent ctc)
+        public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
             _ctc = ctc;
 
@@ -256,24 +290,36 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
+                State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
                 State.Model *= State.CanvasXForm;
+
+                _parentRect = newRect;
                 State.UiRect = newRect;
             }
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var projection = Projection;
-                var zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
+                var invProj = float4x4.Invert(_rc.Projection);
 
-                var fov = 2f * System.Math.Atan(1f / projection.M22);
-                var aspect = projection.M22 / projection.M11;
+                var frustumCorners = new float4[4];
 
-                var invView = float4x4.Invert(View);
-                var canvasPos = new float3(invView.M14, invView.M24, invView.M34 + zNear);
+                frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
+                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
+                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
+                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
 
-                var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
-                var width = height * aspect;
+                for (int i = 0; i < frustumCorners.Length; i++)
+                {
+                    var corner = frustumCorners[i];
+                    corner /= corner.w; //world space frustum corners               
+                    frustumCorners[i] = corner;
+                }
+
+                var width = (frustumCorners[0] - frustumCorners[1]).Length;
+                var height = (frustumCorners[0] - frustumCorners[2]).Length;
+
+                var zNear = frustumCorners[0].z;
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {
@@ -296,14 +342,20 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
+                State.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 State.Model *= State.CanvasXForm;
+
+                _parentRect = newRect;
                 State.UiRect = newRect;
             }
         }
 
+        /// <summary>
+        /// If a RectTransformComponent is visited the model matrix and MinMaxRect get updated in the <see cref="RendererState"/>.
+        /// </summary>
+        /// <param name="rtc">The XFormComponent.</param>
         [VisitMethod]
-        public void PickRectTransform(RectTransformComponent rtc)
+        public void RenderRectTransform(RectTransformComponent rtc)
         {
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -328,13 +380,68 @@ namespace Fusee.Engine.Core
             var translationDelta = newRect.Center - State.UiRect.Center;
             var translationX = translationDelta.x / State.UiRect.Size.x;
             var translationY = translationDelta.y / State.UiRect.Size.y;
-            var scaleX = newRect.Size.x / State.UiRect.Size.x;
-            var scaleY = newRect.Size.y / State.UiRect.Size.y;
 
+            _parentRect = State.UiRect;
             State.UiRect = newRect;
-            State.Model *= float4x4.CreateTranslation(translationX, translationY, 0) * float4x4.CreateScale(scaleX, scaleY, 1);
+
+            State.Model *= float4x4.CreateTranslation(translationX, translationY, 0);
         }
 
+        /// <summary>
+        /// If a XFormComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="xfc">The XFormComponent.</param>
+        [VisitMethod]
+        public void RenderXForm(XFormComponent xfc)
+        {
+            float4x4 scale;
+
+            if (State.UiRect.Size != _parentRect.Size)
+            {
+                var scaleX = State.UiRect.Size.x / _parentRect.Size.x;
+                var scaleY = State.UiRect.Size.y / _parentRect.Size.y;
+                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+            }
+            else if (State.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
+                scale = float4x4.CreateScale(State.UiRect.Size.x, State.UiRect.Size.y, 1);
+            else
+                scale = float4x4.CreateScale(1, 1, 1);
+
+            State.Model *= scale;
+            _rc.Model = State.Model;
+        }
+
+        /// <summary>
+        /// If a XFormTextComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="xfc">The XFormTextComponent.</param>
+        [VisitMethod]
+        public void RenderXFormText(XFormTextComponent xfc)
+        {
+            var scaleX = 1 / State.UiRect.Size.x * xfc.TextScaleFactor;
+            var scaleY = 1 / State.UiRect.Size.y * xfc.TextScaleFactor;
+            var scale = float4x4.CreateScale(scaleX, scaleY, 1);
+
+            State.Model *= scale;
+            _rc.Model = State.Model;
+        }
+
+        /// <summary>
+        /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
+        /// It additionally updates the view matrix of the RenderContext.
+        /// </summary> 
+        /// <param name="transform">The TransformComponent.</param>
+        [VisitMethod]
+        public void RenderTransform(TransformComponent transform)
+        {
+            State.Model *= transform.Matrix();
+            _rc.Model = State.Model;
+        }
+
+        /// <summary>
+        /// Creates pick results from a given mesh if it is within the pick position.
+        /// </summary>
+        /// <param name="mesh">The given Mesh.</param>
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
@@ -372,6 +479,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// The pick position on the screen.
+        /// </summary>
         public float2 PickPosClip { get; set; }
 
         #endregion
@@ -379,81 +489,3 @@ namespace Fusee.Engine.Core
     }
 }
 
-
-
-//public class ScenePicker : Viserator<PickResult, ScenePicker.PickingState>
-//{
-//    public class PickingState : VisitorState
-//    {
-//        private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-//        private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
-//        private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
-
-//        public float4x4 Model
-//        {
-//            set { _model.Tos = value; }
-//            get { return _model.Tos; }
-//        }
-//        public float4x4 View
-//        {
-//            set { _view.Tos = value; }
-//            get { return _view.Tos; }
-//        }
-
-//        public float4x4 Projection
-//        {
-//            set { _projection.Tos =  value; }
-//            get { return _projection.Tos; }
-//        }
-
-//        public PickingState()
-//        {
-//            RegisterState(_model);
-//            RegisterState(_view);
-//            RegisterState(_projection);
-//        }
-//    }
-
-
-//    #region Visitors
-//    [VisitMethod]
-//    public void PickTransform(TransformComponent transform)
-//    {
-//        State.Model *= transform.Matrix();
-//    }
-
-//    [VisitMethod]
-//    public void PickMesh(MeshComponent mesh)
-//    {
-//        float4x4 mvp = State.Projection * State.View * State.Model;
-//        for (int i = 0; i < mesh.Triangles.Length; i += 3)
-//        {
-//            // a, b c: current triangle's vertices in clip coordinates
-//            float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
-//            float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
-//            float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
-
-//            float u, v;
-//            // Point-in-Triangle-Test
-//            if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
-//            {
-//                YieldItem(new PickResult
-//                     {
-//                         Mesh = mesh,
-//                         Node = CurrentNode,
-//                         Triangle = i,
-//                         Model = State.Model,
-//                         View = State.View,
-//                         Projection = State.Projection,
-//                         U = u,
-//                         V = v
-//                     });
-//            }
-//        }
-//    }
-
-//    public float2 PickPosClip { get; set; }
-
-//    #endregion
-
-//}

@@ -147,6 +147,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         internal readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
 
+        /// <summary>
+        /// The default (nullary) constructor to create a shader effect.
+        /// </summary>
         protected ShaderEffect() { }
 
         /// <summary>

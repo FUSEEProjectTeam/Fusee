@@ -6,6 +6,7 @@ using Array = System.Array;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
+#pragma warning disable 1591
     public abstract class JSHandler : IDisposable
     {
         internal JSObject Handle { get; set; }
@@ -398,4 +399,5 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
     }
 
+#pragma warning restore 1591
 }

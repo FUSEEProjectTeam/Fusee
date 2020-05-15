@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
@@ -139,6 +139,9 @@ namespace Fusee.Engine.Core
             return -1;
         }
 
+        /// <summary>
+        /// Whether or not the app is initialized.
+        /// </summary>
         protected bool _appInitialized;
 
         /// <summary>
@@ -177,12 +180,21 @@ namespace Fusee.Engine.Core
                 // rendering
                 RenderAFrame();
 
+                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
+                RC.ResetToDefaultState();
+                RC.SetRenderState(RenderStateSet.Default);
+
                 // post-rendering
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
-        }
+            CanvasImplementor.Resize += delegate 
+            {                
+                RC.DefaultState.CanvasWidth = Width;
+                RC.DefaultState.CanvasHeight = Height;
+                Resize(new ResizeEventArgs(Width, Height)); 
+            };
+        }        
 
         /// <summary>
         ///     Callback method to invoke user code for rendering a frame.
