@@ -75,9 +75,9 @@ namespace Fusee.Engine.Player.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile).ConfigureAwait(false);
+            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
             
-            _gui = await CreateGui();
+            _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
            
@@ -253,10 +253,10 @@ namespace Fusee.Engine.Player.Core
             
         }
 
-        private async Task<SceneContainer> CreateGui()
+        private SceneContainer CreateGui()
         {
-            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
-            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
 
             var btnFuseeLogo = new GUIButton
             {
@@ -266,7 +266,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode (
                 "fuseeLogo",
                 vsTex,
@@ -293,7 +293,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " on " + _scene.Header.CreationDate;
             }
 
-            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
