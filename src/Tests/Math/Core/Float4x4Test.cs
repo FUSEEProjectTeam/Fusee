@@ -92,40 +92,44 @@ namespace Fusee.Test.Math.Core
         public void Column0_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column0 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column0;
 
-            Assert.Equal(new float4(1, 0, 0, 0), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column1_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column1 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column1;
 
-            Assert.Equal(new float4(0, 1, 0, 0), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column2_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column2 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column2;
 
-            Assert.Equal(new float4(0, 0, 1, 0), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
         public void Column3_IsColumn()
         {
             var matrix = float4x4.Identity;
+            matrix.Column3 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column3;
 
-            Assert.Equal(new float4(0, 0, 0, 1), actual);
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
 
         [Fact]
@@ -623,9 +627,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetSubtraction))]
-        public void Substract_Static(float4x4 left, float4x4 right, float4x4 expected)
+        public void Subtract_Static(float4x4 left, float4x4 right, float4x4 expected)
         {
-            var actual = float4x4.Substract(left, right);
+            var actual = float4x4.Subtract(left, right);
 
             Assert.Equal(expected, actual);
         }
@@ -647,6 +651,16 @@ namespace Fusee.Test.Math.Core
             var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.Invert();
+
+            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
+        }
+
+        [Fact]
+        public void InvertAffine_Static()
+        {
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.InvertAffine();
 
             Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }

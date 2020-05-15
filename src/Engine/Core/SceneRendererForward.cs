@@ -8,7 +8,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
-using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
@@ -16,15 +16,15 @@ namespace Fusee.Engine.Core
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
-    public partial class SceneRendererForward : SceneVisitor
+    public class SceneRendererForward : SceneVisitor
     {
-        private int _numberOfLights;
-
+        /// <summary>
         ///Is set to true if a light was added or removed from the scene.
+        /// /// </summary>
         protected bool HasNumberOfLightsChanged;
 
         /// <summary>
-        /// Light results, collected from the scene in the Viserator.
+        /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
         {            
@@ -45,10 +45,13 @@ namespace Fusee.Engine.Core
             }
         }
 
+        #region Traversal information
+
         private CanvasTransformComponent _ctc;
         private MinMaxRect _parentRect;
+        private int _numberOfLights;
 
-        #region Traversal information
+        internal PrePassVisitor PrePassVisitor { get; private set; }
 
         /// <summary>
         /// Caches SceneNodeContainers and their model matrices. Used when visiting a <see cref="BoneComponent"/>.
@@ -81,7 +84,7 @@ namespace Fusee.Engine.Core
         protected RendererState _state;
 
         /// <summary>
-        /// List of <see cref="LightResult"/>, created by the <see cref="LightViserator"/>.
+        /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         protected List<Tuple<SceneNodeContainer, LightResult>> _lightResults = new List<Tuple<SceneNodeContainer, LightResult>>();
 
@@ -130,7 +133,7 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-
+            PrePassVisitor = new PrePassVisitor();
             var buildFrag = new ProtoToFrag(_sc, true);
             buildFrag.BuildFragmentShaders();
 
@@ -284,65 +287,85 @@ namespace Fusee.Engine.Core
             }
         }
         #endregion
-
-
-        /// <summary>
-        /// Renders the scene.
-        /// </summary>
-        /// <param name="rc"></param>
-        /// <param name="renderTarget">Optional parameter: set this if you want to render to a g-buffer.</param>
-        public void Render(RenderContext rc, RenderTarget renderTarget = null)
-        {
-            SetContext(rc);
-            AccumulateLight();
-            UpdateShaderParamsForAllLights();
-            rc.SetRenderTarget(renderTarget);
-
-            Traverse(_sc.Children);
-        }
-
-        /// <summary>
-        /// Renders the scene.
-        /// </summary>
-        /// <param name="rc"></param>
-        /// <param name="renderTexture">Optional parameter: set this if you want to render to a texture.</param>
-        public void Render(RenderContext rc, WritableTexture renderTexture = null)
-        {
-            SetContext(rc);
-            AccumulateLight();
-            UpdateShaderParamsForAllLights();
-            rc.SetRenderTarget(renderTexture);
-
-            Traverse(_sc.Children);
-        }
+               
 
         /// <summary>
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>       
         public void Render(RenderContext rc)
-        {
+        { 
             SetContext(rc);
+
+            var stateSet = _rc.GetRenderStateSet(); 
+
+            PrePassVisitor.PrePassTraverse(_sc, _rc);            
+
             AccumulateLight();
+
+
+            if (PrePassVisitor.CameraPrepassResults.Count != 0)
+            {
+                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+                foreach (var cam in cams)
+                {
+                    if (cam.Item2.Camera.Active)
+                    {
+                        PerCamRender(cam);
+                        //Reset Viewport                        
+                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                    }
+                }
+            }
+            else
+            {
+                UpdateShaderParamsForAllLights();
+                Traverse(_sc.Children);
+            }
+
+            _rc.SetRenderState(stateSet);
+        }
+
+        private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
+        {
+            var tex = cam.Item2.Camera.RenderTexture;
+
+            if(tex!= null)
+                _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
+            else
+                _rc.SetRenderTarget();
+
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);           
+            _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+
+            _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
+
+            if(cam.Item2.Camera.ClearColor)
+                _rc.Clear(ClearFlags.Color);
+
+            if (cam.Item2.Camera.ClearDepth)
+                _rc.Clear(ClearFlags.Depth);
+
+            _rc.View = cam.Item2.View;
+
             UpdateShaderParamsForAllLights();
-            rc.SetRenderTarget();
 
             Traverse(_sc.Children);
         }
 
-        #region Visitors
-
+        
         /// <summary>
-        /// If a Projection Component is visited, the projection matrix is set.
+        /// Viserates the LightComponent and caches them in a dedicated field.
         /// </summary>
-        /// <param name="pc">The visited ProjectionComponent.</param>
-        [VisitMethod]
-        public void RenderProjection(ProjectionComponent pc)
-        {
-            pc.Width = _rc.ViewportWidth;
-            pc.Height = _rc.ViewportHeight;
-            _rc.Projection = pc.Matrix();
+        protected void AccumulateLight()
+        {            
+            LightViseratorResults = PrePassVisitor.LightPrepassResuls;
+
+            if (LightViseratorResults.Count == 0)
+                SetDefaultLight();
         }
+
+        #region Visitors
 
         /// <summary>
         /// Renders the Bone.
@@ -409,16 +432,27 @@ namespace Fusee.Engine.Core
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var projection = _rc.Projection;
-                var zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
+                var invProj = float4x4.Invert(_rc.Projection);
+               
+                var frustumCorners = new float4[4];
 
-                var fov = 2f * System.Math.Atan(1f / projection.M22);
-                var aspect = projection.M22 / projection.M11;
+                frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
+                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
+                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
+                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
 
-                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
+                for (int i = 0; i < frustumCorners.Length; i++)
+                {
+                    var corner = frustumCorners[i];
+                    corner /= corner.w; //world space frustum corners               
+                    frustumCorners[i] = corner;
+                }
 
-                var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
-                var width = height * aspect;
+                var width = (frustumCorners[0] - frustumCorners[1]).Length;
+                var height = (frustumCorners[0] - frustumCorners[2]).Length;
+
+                var zNear = frustumCorners[0].z;
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);                
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {
@@ -583,22 +617,6 @@ namespace Fusee.Engine.Core
             _rc.Render(mesh);
         }
 
-        /// <summary>
-        /// Viserates the LightComponent and caches them in a dedicated field.
-        /// </summary>
-        protected void AccumulateLight()
-        {
-           LightViseratorResults = _sc.Children.Viserate<LightViserator, Tuple<SceneNodeContainer, LightResult>>().ToList();
-            
-            if (LightViseratorResults.Count == 0)
-                SetDefaultLight();
-        }
-
-        /// <summary>
-        /// Adds a WeightComponent to a Mesh.
-        /// </summary>
-        /// <param name="mesh">The Mesh to ad a WieghtComponent to.</param>
-        /// <param name="wc">The Weight Component in question.</param>
         protected void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
         {
             float4[] boneWeights = new float4[wc.WeightMap.Count];

@@ -108,8 +108,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Column0_IsColumn()
         {
-            var expected = new float3(1, 0, 0);
-            var matrix = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            var expected = new float3(3, 3, 3);
+            var matrix = float3x3.Identity;
+
+            matrix.Column0 = expected;
 
             var actual = matrix.Column0;
 
@@ -119,8 +121,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Column1_IsColumn()
         {
-            var expected = new float3(0, 1, 0);
-            var matrix = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            var expected = new float3(3, 3, 3);
+            var matrix = float3x3.Identity;
+
+            matrix.Column1 = expected;
 
             var actual = matrix.Column1;
 
@@ -130,8 +134,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Column2_IsColumn()
         {
-            var expected = new float3(0, 0, 1);
-            var matrix = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+            var expected = new float3(3, 3, 3);
+            var matrix = float3x3.Identity;
+
+            matrix.Column2 = expected;
 
             var actual = matrix.Column2;
 
@@ -177,9 +183,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetSubtraction))]
-        public void Substract_Static(float3x3 left, float3x3 right, float3x3 expected)
+        public void Subtract_Static(float3x3 left, float3x3 right, float3x3 expected)
         {
-            var actual = float3x3.Substract(left, right);
+            var actual = float3x3.Subtract(left, right);
 
             Assert.Equal(expected, actual);
         }

@@ -33,7 +33,7 @@ namespace Fusee.Engine.Common
         /// <remarks>
         /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
         /// </remarks>
-        float ClearDepth { set; get; }
+        float ClearDepth { set; get; }        
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -481,6 +481,16 @@ namespace Fusee.Engine.Common
         void Viewport(int x, int y, int width, int height);
 
         /// <summary>
+        /// Only pixels that lie within the scissor box can be modified by drawing commands.
+        /// Note that the Scissor test must be enabled for this to work.
+        /// </summary>
+        /// <param name="x">X Coordinate of the lower left point of the scissor box.</param>
+        /// <param name="y">Y Coordinate of the lower left point of the scissor box.</param>
+        /// <param name="width">Width of the scissor box.</param>
+        /// <param name="height">Height of the scissor box.</param>
+        void Scissor(int x, int y, int width, int height);
+
+        /// <summary>
         /// Enable or disable Color channels to be written to the frame buffer (final image).
         /// Use this function as a color channel filter for the final image.
         /// </summary>
@@ -597,6 +607,12 @@ namespace Fusee.Engine.Common
         /// <param name="capability">The capability to check against</param> 
         /// <returns>uint</returns> 
         uint GetHardwareCapabilities(HardwareCapability capability);
+        
+        /// <summary> 
+        /// Returns a human readable description of the underlying graphics hardware 
+        /// </summary> 
+        /// <returns>Description</returns> 
+        string GetHardwareDescription();
     }
 
     /// <summary>
