@@ -86,8 +86,8 @@ namespace Fusee.Test.Serialization.V1
             {
                 Name = "XFormText",
                 Height = 10,
-                HorizontalAlignment = Fusee.Serialization.V1.HorizontalTextAlignment.Center,
-                VerticalAlignment = Fusee.Serialization.V1.VerticalTextAlignment.Top,
+                HorizontalAlignment = FusHorizontalTextAlignment.Center,
+                VerticalAlignment = FusVerticalTextAlignment.Top,
                 Width = 200
             });
 
@@ -717,8 +717,8 @@ namespace Fusee.Test.Serialization.V1
                         {
                             Name = "XFormText",
                             Height = 10,
-                            HorizontalAlignment = Engine.Core.Scene.HorizontalTextAlignment.Center,
-                            VerticalAlignment = Engine.Core.Scene.VerticalTextAlignment.Top,
+                            HorizontalAlignment = Engine.Common.HorizontalTextAlignment.Center,
+                            VerticalAlignment = Engine.Common.VerticalTextAlignment.Top,
                             Width = 200
                         },
                        new XForm

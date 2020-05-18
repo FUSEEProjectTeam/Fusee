@@ -107,7 +107,7 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
         /// <param name="texRes">The g-buffer texture resolution.</param>
         /// <param name="shadowMapRes">The shadow map resolution.</param>
-        public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
+        public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.Middle, TexRes shadowMapRes = TexRes.Middle) : base(sc)
         {
             Diagnostics.Warn($"Alpha blend is disabled for deferred rendering for now - {RenderState.AlphaBlendEnable} is locked (see SceneRendererDeferred.RenderAllPasses()).");
 
@@ -201,7 +201,7 @@ namespace Fusee.Engine.Core
             _rc.Model = _state.Model;
 
             //If we render the shadow pass: ignore ShaderEffects of the SceneNodes and use the ones that are needed to render the shadow maps.
-            if (_currentPass != RenderPasses.SHADOW)
+            if (_currentPass != RenderPasses.Shadow)
                 _rc.SetEffect(_state.Effect);
 
         }
@@ -350,7 +350,7 @@ namespace Fusee.Engine.Core
                 {
                     case LightType.Point:
                         {
-                            var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
+                            var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMap = shadowMap, Frustums = frustums };
                             break;
                         }
@@ -359,9 +359,9 @@ namespace Fusee.Engine.Core
                         {
                             IWritableTexture shadowMap;
                             if (NumberOfCascades == 1)
-                                shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
+                                shadowMap = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             else if (NumberOfCascades > 1)
-                                shadowMap = new WritableArrayTexture(NumberOfCascades, RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
+                                shadowMap = new WritableArrayTexture(NumberOfCascades, RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             else
                                 throw new ArgumentException($"Number of shadow cascades is {NumberOfCascades} but must be greater or equal 1.");
 
@@ -370,7 +370,7 @@ namespace Fusee.Engine.Core
                         }
                     case LightType.Spot:
                         {
-                            var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
+                            var shadowMap = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMap = shadowMap, Frustums = frustums };
                             break;
                         }
@@ -643,7 +643,7 @@ namespace Fusee.Engine.Core
 
         private void RenderShadowMaps()
         {
-            _currentPass = RenderPasses.SHADOW;
+            _currentPass = RenderPasses.Shadow;
             if (_shadowEffect == null)
             {
                 _shadowEffect = MakeEffect.ShadowMapEffect();

@@ -883,7 +883,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
         }
 
         /// <summary>
@@ -894,7 +894,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
         }
 
         /// <summary>
@@ -922,7 +922,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamTexture(IShaderParam param, WritableCubeMap texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE_CUBE_MAP);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TextureCubeMap);
         }
 
         /// <summary>
@@ -933,7 +933,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamTexture(IShaderParam param, WritableArrayTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.ARRAY_TEXTURE);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.ArrayTexture);
         }
 
         #endregion
@@ -1249,29 +1249,29 @@ namespace Fusee.Engine.Core
                     if (param.Value is IWritableArrayTexture)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableArrayTexture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.ARRAY_TEXTURE);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.ArrayTexture);
                     }
                     else if (param.Value is IWritableCubeMap)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableCubeMap)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE_CUBE_MAP);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TextureCubeMap);
                     }
                     else if (param.Value is IWritableTexture)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((WritableTexture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                     }
                     else if (param.Value is ITexture)
                     {
                         ITextureHandle textureHandle = _textureManager.GetTextureHandle((Texture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                     }
                     else if (param.Value is IWritableTexture[])
                     {
                         foreach (var tex in (WritableTexture[])param.Value)
                         {
                             ITextureHandle textureHandle = _textureManager.GetTextureHandle(tex);
-                            _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                            _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                         }
                     }
                 }

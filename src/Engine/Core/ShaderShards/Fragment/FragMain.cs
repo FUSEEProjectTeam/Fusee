@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
             };
 
-            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+            var ssaoString = RenderTargetTextureTypes.Ssao.ToString();
 
             for (var i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
@@ -58,14 +58,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (texName == ssaoString) continue;
                 switch (i)
                 {
-                    case (int)RenderTargetTextureTypes.G_POSITION:
+                    case (int)RenderTargetTextureTypes.Position:
                         fragMainBody.Add($"{texName} = vec4(surfOut.position);");
                         break;
-                    case (int)RenderTargetTextureTypes.G_ALBEDO:
+                    case (int)RenderTargetTextureTypes.Albedo:
                         fragMainBody.Add($"{texName} = surfOut.albedo;");
 
                         break;
-                    case (int)RenderTargetTextureTypes.G_NORMAL:
+                    case (int)RenderTargetTextureTypes.Normal:
                         {
                             if (!lightingSetup.HasFlag(LightingSetupFlags.Unlit))
                                 fragMainBody.Add($"{texName} = vec4(normalize(surfOut.normal.xyz), 1.0);");
@@ -73,10 +73,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                                 fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 1.0, 1.0);");
                         }
                         break;
-                    case (int)RenderTargetTextureTypes.G_DEPTH:
+                    case (int)RenderTargetTextureTypes.Depth:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
-                    case (int)RenderTargetTextureTypes.G_SPECULAR:
+                    case (int)RenderTargetTextureTypes.Specular:
                         {
                             if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
                             {

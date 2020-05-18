@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var outs = new List<string>();
             var texCount = 0;
 
-            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+            var ssaoString = RenderTargetTextureTypes.Ssao.ToString();
             outs.Add("\n");
             for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {

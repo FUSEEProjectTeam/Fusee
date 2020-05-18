@@ -419,7 +419,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 UIHelper.PsTex,
                 guiFuseeLogo,
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)), float2.One);
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             SceneNode markModelContainer = new SceneNode

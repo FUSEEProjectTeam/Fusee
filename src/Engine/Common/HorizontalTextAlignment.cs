@@ -11,16 +11,16 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The text will be aligned to the left border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        LEFT,
+        Left,
 
         /// <summary>
         /// The text will be aligned to the middle of the horizontal axis of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        CENTER,
+        Center,
 
         /// <summary>
         /// The text will be aligned to the right border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        RIGHT
+        Right
     }
 }

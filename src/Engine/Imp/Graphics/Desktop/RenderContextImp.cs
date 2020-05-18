@@ -831,7 +831,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case TextureType.TextureCubeMap:
                     GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.ARRAY_TEXTURE:
+                case TextureType.ArrayTexture:
                     GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
                 default:
@@ -2027,7 +2027,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0, layer);

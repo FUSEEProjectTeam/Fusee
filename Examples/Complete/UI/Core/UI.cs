@@ -39,7 +39,7 @@ namespace Fusee.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initWindowWidth;
         private float _initWindowHeight;
         private float _initCanvasWidth;
@@ -78,7 +78,7 @@ namespace Fusee.Examples.UI.Core
                 "FPSText",
                 vsTex,
                 psText,
-                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT),
+                UIElementPosition.GetAnchors(AnchorPos.DownDownRight),
                 new MinMaxRect
                 {
                     Min = new float2(-2, 0),
@@ -100,7 +100,7 @@ namespace Fusee.Examples.UI.Core
                 "ButtonText",
                 vsTex,
                 psText,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
+                UIElementPosition.GetAnchors(AnchorPos.StretchAll),
                 new MinMaxRect
                 {
                     Min = new float2(1f, 0.5f),
@@ -116,7 +116,7 @@ namespace Fusee.Examples.UI.Core
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
                 //Set the albedo texture you want to use.
-                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.LINEAR),
+                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.Linear),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -151,14 +151,14 @@ namespace Fusee.Examples.UI.Core
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
+                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
                 float2.One);
 
             var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
@@ -190,7 +190,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -204,7 +204,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -218,7 +218,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.LINEAR),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.StretchVertical), //Anchor is in the lower right corner. Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.StretchVertical, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -446,7 +446,7 @@ namespace Fusee.Examples.UI.Core
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             var view = mtxCam * mtxRot;
-            var projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
+            var projection = _canvasRenderMode == CanvasRenderMode.Screen ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
 
             RC.Projection = projection;
             RC.View = view;

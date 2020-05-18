@@ -195,16 +195,16 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == FusHorizontalTextAlignment.CENTER
-                ? HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == FusHorizontalTextAlignment.LEFT
-                ? HorizontalTextAlignment.LEFT
-                : HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == FusVerticalTextAlignment.CENTER
-                ? VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == FusVerticalTextAlignment.BOTTOM
-                ? VerticalTextAlignment.BOTTOM
-                : VerticalTextAlignment.TOP
+                xft.HorizontalAlignment == FusHorizontalTextAlignment.Center
+                ? HorizontalTextAlignment.Center
+                : xft.HorizontalAlignment == FusHorizontalTextAlignment.Left
+                ? HorizontalTextAlignment.Left
+                : HorizontalTextAlignment.Right,
+                VerticalAlignment = xft.VerticalAlignment == FusVerticalTextAlignment.Center
+                ? VerticalTextAlignment.Center
+                : xft.VerticalAlignment == FusVerticalTextAlignment.Bottom
+                ? VerticalTextAlignment.Bottom
+                : VerticalTextAlignment.Top
             });
         }
 
@@ -496,7 +496,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
@@ -505,7 +505,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
@@ -514,12 +514,12 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
@@ -550,7 +550,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
@@ -559,7 +559,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
@@ -568,12 +568,12 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.LINEAR);
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear);
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.LINEAR);
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear);
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
@@ -683,17 +683,17 @@ namespace Fusee.Engine.Core
                 Name = xft.Name,
 
                 HorizontalAlignment =
-                xft.HorizontalAlignment == HorizontalTextAlignment.CENTER
-                ? FusHorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == HorizontalTextAlignment.LEFT
-                ? FusHorizontalTextAlignment.LEFT
-                : FusHorizontalTextAlignment.RIGHT,
+                xft.HorizontalAlignment == HorizontalTextAlignment.Center
+                ? FusHorizontalTextAlignment.Center
+                : xft.HorizontalAlignment == HorizontalTextAlignment.Left
+                ? FusHorizontalTextAlignment.Left
+                : FusHorizontalTextAlignment.Right,
 
-                VerticalAlignment = xft.VerticalAlignment == VerticalTextAlignment.CENTER
-                ? FusVerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == VerticalTextAlignment.BOTTOM
-                ? FusVerticalTextAlignment.BOTTOM
-                : FusVerticalTextAlignment.TOP
+                VerticalAlignment = xft.VerticalAlignment == VerticalTextAlignment.Center
+                ? FusVerticalTextAlignment.Center
+                : xft.VerticalAlignment == VerticalTextAlignment.Bottom
+                ? FusVerticalTextAlignment.Bottom
+                : FusVerticalTextAlignment.Top
             });
         }
 
