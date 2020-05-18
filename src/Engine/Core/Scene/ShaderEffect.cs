@@ -199,7 +199,7 @@ namespace Fusee.Engine.Core.Scene
                 }
             }
 
-            EffectEventArgs = new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNCHANGED);
+            EffectEventArgs = new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.Unchanged);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Fusee.Engine.Core.Scene
 
                     ParamDecl[name] = value;
 
-                    EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED;
+                    EffectEventArgs.Changed = ShaderEffectChangedEnum.UniformUpdated;
                     EffectEventArgs.ChangedEffectVarName = name;
                     EffectEventArgs.ChangedEffectVarValue = value;
 
@@ -286,7 +286,7 @@ namespace Fusee.Engine.Core.Scene
             {
                 if (disposing)
                 {
-                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.Dispose));
                 }
 
                 disposedValue = true;
@@ -357,7 +357,7 @@ namespace Fusee.Engine.Core.Scene
                 //PixelShaderSrc is not set here because it gets built in a pre-pass, depending on whether we render deferred or forward.
             }
 
-            EffectEventArgs = new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNCHANGED);
+            EffectEventArgs = new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.Unchanged);
         }
 
         /// <summary>
@@ -421,12 +421,12 @@ namespace Fusee.Engine.Core.Scene
 
     internal enum ShaderEffectChangedEnum
     {
-        DISPOSE = 0,
-        UNIFORM_VAR_UPDATED = 1,
+        Dispose = 0,
+        UniformUpdated = 1,
 
         //Not needed at the moment, because a ShaderEffect must declare all it's parameter declarations at creation.
         //UNIFORM_VAR_ADDED = 2,
 
-        UNCHANGED = 3
+        Unchanged = 3
     }
 }

@@ -11,17 +11,17 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The text will be aligned to the left border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        LEFT,
+        Left,
 
         /// <summary>
         /// The text will be aligned to the middle of the horizontal axis of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        CENTER,
+        Center,
 
         /// <summary>
         /// The text will be aligned to the right border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        RIGHT
+        Right
     }
 
     /// <summary>
@@ -32,17 +32,17 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The text will be aligned to the top border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        TOP,
+        Top,
 
         /// <summary>
         /// The text will be aligned to the middle of vertical axis of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        CENTER,
+        Center,
 
         /// <summary>
         /// The text will be aligned to the bottom border of the enclosing <see cref="MinMaxRect"/>.
         /// </summary>
-        BOTTOM,
+        Bottom,
 
     }
 

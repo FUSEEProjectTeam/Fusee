@@ -38,7 +38,7 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Constructor for creating a new Vertex fromn an old one, changing its coordinate.
+        /// Constructor for creating a new Vertex from an old one, changing its coordinate.
         /// </summary>
         /// <param name="vert">The old vertex.</param>
         /// <param name="newPos">The new coordinate of the vertex.</param>
@@ -268,9 +268,9 @@ namespace Fusee.Jometri
     /// <summary>
     /// Each face belonging to a 2D geometry contains:
     /// a handle to assign a abstract reference to it.
-    /// a referance to one of the half edges that belongs to the faces outer boundary.
+    /// a reference to one of the half edges that belongs to the faces outer boundary.
     /// a List that contains handles to one half edge for each hole in a face.
-    /// attribute information, e.g. the face nromal.
+    /// attribute information, e.g. the face normal.
     /// Note that unbounded faces can't have a OuterHalfEdge but must have at least one InnerHalfEdge - bounded faces must have a OuterComponent.
     /// </summary>
     public struct Face
@@ -286,7 +286,7 @@ namespace Fusee.Jometri
         public int OuterHalfEdge;
 
         /// <summary>
-        /// Attribute information, e.g. the face nromal.
+        /// Attribute information, e.g. the face normals.
         /// </summary>
         public FaceData FaceData;
 

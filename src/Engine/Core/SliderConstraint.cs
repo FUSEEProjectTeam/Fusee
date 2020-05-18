@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Calcualtes the transform for A and B.
+        /// Calculates the transform for A and B.
         /// </summary>
         /// <param name="transA"></param>
         /// <param name="transB"></param>
@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core
             _iSliderConstraintImp.CalculateTransforms(transA, transB);
         } 
         /// <summary>
-        /// Returns the calcualted transforms of a.
+        /// Returns the calculated transforms of a.
         /// </summary>
         public float4x4 CalculatedTransformA
         {

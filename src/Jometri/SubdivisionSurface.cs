@@ -4,18 +4,18 @@ using System.Linq;
 namespace Fusee.Jometri
 {
     /// <summary>
-    ///  Provides functionallity to perform a Catmull-Clark Subdivision-Surface algorithm on a Geometry.
+    ///  Provides functionality to perform a Catmull-Clark Subdivision-Surface algorithm on a Geometry.
     /// </summary>
     public class SubdivisionSurface
     {
         /// <summary>
         /// Performs a Catmull-Clark Subdivision-Surface algorithm on a given geometry which is stored as DCEL.
         /// </summary>
-        /// <param name="geometry">The goemetry to perform the SD on.</param>
-        /// <returns>A smoother geoemtry with </returns>
+        /// <param name="geometry">The geometry to perform the SD on.</param>
+        /// <returns>A smoother geometry with </returns>
         public static Geometry CatmullClarkSubdivision(Geometry geometry)
         {
-            //initialising
+            //initializing
             var newGeometry = geometry.CloneGeometry();
 
             //computes all Face Vertices and all Edge Vertices       
@@ -161,7 +161,7 @@ namespace Fusee.Jometri
                         newGeometry.DictFaces.Add(newFace.Handle, newFace);
                     }
 
-                    //sotres Vertices to get the face normal
+                    //Stores Vertices to get the face normal
                     List<Vertex> faceVertices = new List<Vertex>
                     {
                         newGeometry.GetVertexByHandle(h1.OriginVertex),
@@ -192,7 +192,7 @@ namespace Fusee.Jometri
                     nextEdge = geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
                 } while (startEdge != nextEdge);
 
-                //set Twin of firts and lasts of each new Face
+                //set Twin of firsts and lasts of each new Face
                 var h2Firts = halfEdges2[0];
                 var h1Last = halfEdges1[i - 1];
 

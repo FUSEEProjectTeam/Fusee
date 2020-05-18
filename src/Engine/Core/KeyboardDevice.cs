@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core
         public bool GetKey(KeyCodes key) => GetButton((int)key);
 
         /// <summary>
-        /// Determines whether the the specified key was pressed during the current frame.
+        /// Determines whether the specified key was pressed during the current frame.
         /// The result is true only for one single frame even if the key is still pressed 
         /// in subsequent frames.
         /// </summary>
@@ -46,7 +46,7 @@ namespace Fusee.Engine.Core
         public bool IsKeyDown(KeyCodes key) => IsButtonDown((int)key);
 
         /// <summary>
-        /// Determines whether the the specified key was released during the current frame.
+        /// Determines whether the specified key was released during the current frame.
         /// The result is true only for one single frame even if the key is still up
         /// in subsequent frames.
         /// </summary>

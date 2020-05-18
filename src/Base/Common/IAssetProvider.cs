@@ -4,20 +4,20 @@ using System.Threading.Tasks;
 namespace Fusee.Base.Common
 {
     /// <summary>
-    /// The state of the asset akquisition process.
+    /// The state of the asset acquisition process.
     /// </summary>
     public enum GetCallbackState
     {
         /// <summary>
-        /// Asset akquisition is in progress. o (<see cref="GetCallbackState"/>)contains an integer specifying the progress in percent (100 == done).
+        /// Asset acquisition is in progress. o (<see cref="GetCallbackState"/>)contains an integer specifying the progress in percent (100 == done).
         /// </summary>
         Progress,
         /// <summary>
-        /// An error occured while akquiring the asset. o (<see cref="GetCallbackState"/>) contains a string containting the message.
+        /// An error occurred while acquiring the asset. o (<see cref="GetCallbackState"/>) contains a string containing the message.
         /// </summary>
         Error,
         /// <summary>
-        /// Akquisition ended successfully. o contains the object of the type passed to <see cref="GetCallback"/>.
+        /// Acquisition ended successfully. o contains the object of the type passed to <see cref="GetCallback"/>.
         /// </summary>
         Done,
     }
@@ -85,15 +85,15 @@ namespace Fusee.Base.Common
     }
 
     /// <summary>
-    /// An AssetProvider knows how to akquire assets of certain types from a certain kind of storage.
+    /// An AssetProvider knows how to acquire assets of certain types from a certain kind of storage.
     /// </summary>
     /// <remarks>
-    /// In a normal world, a good design would separate the many aspects of asset akquisition (storage,
+    /// In a normal world, a good design would separate the many aspects of asset acquisition (storage,
     /// serialization, codec, asynchronicity). Unfortunately, in JavaScript-Land, it's all mixed (or should I say messed) up.
     /// You tell the JavaScript API "get me an image" and JavaScript magically loads the raw image 
     /// data, converts it to a two-dimensional pixel array and calls a user-provided callback when its all done. 
     /// No way to replace a single step by something self-provided. 
-    /// So this is FUSEE's pitiful approach for an asset akquisition abstraction which is capable of 
+    /// So this is FUSEE's pitiful approach for an asset acquisition abstraction which is capable of 
     /// being implemented by poorly designed JavaScript APIs.
     /// </remarks>
     public interface IAssetProvider

@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
             return _videoManagerImp.CreateVideoStreamImpFromFile(filename, loopVideo, useAudio);
         }
         /// <summary>
-        /// Loads video directliy of a camera.
+        /// Loads video directly of a camera.
         /// </summary>
         /// <param name="cameraIndex"></param>
         /// <param name="useAudio"></param>

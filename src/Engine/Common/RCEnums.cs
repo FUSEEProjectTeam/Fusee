@@ -496,7 +496,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The different axes a SixDOF device e.g. spacemouse exposes.
+    /// The different axes a SixDOF device e.g. SpaceMouse exposes.
     /// </summary>
     public enum SixDOFAxis
     {
@@ -528,7 +528,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The buttons and axes a gamecontroller exposes.
+    /// The buttons and axes a game controller exposes.
     /// </summary>
     public enum Gamepad : int
     {
@@ -627,7 +627,7 @@ namespace Fusee.Engine.Common
         Touchpoint_3,
         Touchpoint_4,
         Touchpoint_5,
-        // More touchpoints (if supported) can be reached by 
+        // More touch points (if supported) can be reached by 
         // (int) Touchpoint0 + i)
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming

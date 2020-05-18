@@ -216,10 +216,10 @@ namespace Fusee.Engine.Imp.Network.Desktop
         }
 
         /// <summary>
-        /// Gets the local ip. Do not use this often due to performance reasons.
+        /// Gets the local IP. Do not use this often due to performance reasons.
         /// </summary>
         /// <returns>
-        /// The local ip as a string.
+        /// The local IP as a string.
         /// </returns>
         public string GetLocalIp()
         {
@@ -261,8 +261,8 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// Opens the connection.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <param name="ip">The ip.</param>
-        /// <returns>True if connection was succesfully opened.</returns>
+        /// <param name="ip">The IP.</param>
+        /// <returns>True if connection was successfully opened.</returns>
         public bool OpenConnection(SysType type, IPEndPoint ip)
         {
             return OpenConnection(type, ip.Address.ToString(), ip.Port);
@@ -274,7 +274,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// <param name="type">The type of the system (only peer or client are supported).</param>
         /// <param name="host">The host. Example: 129.12.12.12</param>
         /// <param name="port">The port.</param>
-        /// <returns>True if connection was succesfully opened.</returns>
+        /// <returns>True if connection was successfully opened.</returns>
         public bool OpenConnection(SysType type, string host, int port)
         {
             NetConnection connection = null;
@@ -375,7 +375,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// <param name="msg">The Message in byte[].</param>
         /// <param name="msgDelivery">The <see cref="MessageDelivery" />.</param>
         /// <param name="msgChannel">The message channel.</param>
-        /// <returns>True if the message was sent succesfully.</returns>
+        /// <returns>True if the message was sent successfully.</returns>
         public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
@@ -417,7 +417,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// <param name="connection">The connection.</param>
         /// <param name="msgDelivery">The  <see cref="MessageDelivery"/>.</param>
         /// <param name="msgChannel">The message channel.</param>
-        /// <returns>True if the message was sent succesfully.</returns>
+        /// <returns>True if the message was sent successfully.</returns>
         public bool SendMessage(byte[] msg, NetConnection connection, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;

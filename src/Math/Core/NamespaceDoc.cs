@@ -3,7 +3,7 @@
     /// <summary>
     /// Contains math-related types used in other FUSEE modules.
     ///
-    /// Among the most important classses are
+    /// Among the most important classes are
     /// <list type="bullet">
     ///   <item>
     ///     <term><see cref="float2"/>, <see cref="float3"/>, <see cref="float4"/></term>

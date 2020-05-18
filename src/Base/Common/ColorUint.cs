@@ -8,7 +8,7 @@ namespace Fusee.Base.Common
     /// <summary>
     /// Represents a 32-bit color (4 bytes) in the form of RGBA (in byte order: R, G, B, A).
     /// Seen as a 32 bit unsigned integer, each color is in the form AARRGGBB - so the 
-    /// most signifcant byte is Alpha and the least significatn byte is the blue channel
+    /// most significant byte is Alpha and the least significant byte is the blue channel
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Size = 4)]
     public struct ColorUint : IEquatable<ColorUint>, IFormattable
@@ -290,7 +290,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Initializes a new instance of the <see cref="T:Fusee.Engine.ColorUint"/> struct.
         /// </summary>
-        /// <param name="value">The red, green, and blue compoennts of the color.</param>
+        /// <param name="value">The red, green, and blue components of the color.</param>
         /// <param name="alpha">The alpha component of the color.</param>
         public ColorUint(float3 value, float alpha)
         {
@@ -496,7 +496,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Assert a color (return it unchanged).
         /// </summary>
-        /// <param name="value">The color to assert (unchange).</param>
+        /// <param name="value">The color to assert (unchanged).</param>
         /// <returns>
         /// The asserted (unchanged) color.
         /// </returns>
@@ -677,9 +677,9 @@ namespace Fusee.Base.Common
         }
 
         /// <summary>
-        /// Converts the color to a string capbable of being used in html/css declarations, like #FF0000 for red or #0000FF for blue.
+        /// Converts the color to a string capable of being used in html/css declarations, like #FF0000 for red or #0000FF for blue.
         /// </summary>
-        /// <returns>A seven charcacter string (# followed by two hex digits for each color channel, red, green and blue).</returns>
+        /// <returns>A seven characters string (# followed by two hex digits for each color channel, red, green and blue).</returns>
         public string ToCss()
         {
             return $"#{R:X2}{G:X2}{B:X2}";
@@ -1050,10 +1050,10 @@ namespace Fusee.Base.Common
         }
 
         /// <summary>
-        /// Returns a color containing the smallest components of the specified colorss.
+        /// Returns a color containing the smallest components of the specified colors.
         /// 
         /// </summary>
-        /// <param name="left">The first source color.</param><param name="right">The second source color.</param><param name="result">When the method completes, contains an new color composed of the largest components of the source colorss.</param>
+        /// <param name="left">The first source color.</param><param name="right">The second source color.</param><param name="result">When the method completes, contains an new color composed of the largest components of the source colors.</param>
         public static void Max(ref ColorUint left, ref ColorUint right, out ColorUint result)
         {
             result.A = (int) left.A > (int) right.A ? left.A : right.A;
@@ -1063,7 +1063,7 @@ namespace Fusee.Base.Common
         }
 
         /// <summary>
-        /// Returns a color containing the largest components of the specified colorss.
+        /// Returns a color containing the largest components of the specified colors.
         /// 
         /// </summary>
         /// <param name="left">The first source color.</param><param name="right">The second source color.</param>

@@ -78,7 +78,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void SetPositionTex()
         {          
-            RenderTextures[(int)RenderTargetTextureTypes.G_POSITION] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Core
         /// </summary>       
         public void SetAlbedoSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -94,23 +94,23 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void SetNormalTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
         /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
+        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
+            RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
         }
 
         /// <summary>
-        /// Generates a ssao texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a SSAO texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>        
         public void SetSSAOTex()
         { 
-            RenderTextures[(int)RenderTargetTextureTypes.G_SSAO] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -118,7 +118,7 @@ namespace Fusee.Engine.Core
         /// </summary>        
         public void SetSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>

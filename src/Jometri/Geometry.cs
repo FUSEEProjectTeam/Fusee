@@ -226,7 +226,7 @@ namespace Fusee.Jometri
         #region circulators 
 
         /// <summary>
-        /// This collection contains all vertices neighbouring a given Vertex.
+        /// This collection contains all vertices neighboring a given Vertex.
         /// </summary>
         /// <param name="vHandle">The reference of the Vertex.</param>
         /// <returns></returns>
@@ -377,7 +377,7 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// This collection contains all Faces neighbouring a given Face.
+        /// This collection contains all Faces neighboring a given Face.
         /// </summary>
         /// <param name="fHandle">The reference of the Face.</param>
         /// <returns></returns>

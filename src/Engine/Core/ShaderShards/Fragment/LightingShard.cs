@@ -370,7 +370,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
+                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
             };
 
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
@@ -385,10 +385,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add(@"    return;");
             methodBody.Add("}");
 
-            methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION]}, {VaryingNameDeclarations.TextureCoordinates});");
-            methodBody.Add($"vec4 diffuseColor = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
-            methodBody.Add($"vec3 occlusion = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
-            methodBody.Add($"vec3 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position]}, {VaryingNameDeclarations.TextureCoordinates});");
+            methodBody.Add($"vec4 diffuseColor = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec3 occlusion = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec3 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
 
             //Lighting calculation
             //-------------------------            

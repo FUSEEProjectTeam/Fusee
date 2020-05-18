@@ -27,10 +27,10 @@ namespace Fusee.Engine.Core
 
             switch (args.Changed)
             {
-                case ShaderEffectChangedEnum.DISPOSE:
+                case ShaderEffectChangedEnum.Dispose:
                     Remove(senderSF);
                     break;
-                case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
+                case ShaderEffectChangedEnum.UniformUpdated:
                     _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;
                 default:
@@ -64,7 +64,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {

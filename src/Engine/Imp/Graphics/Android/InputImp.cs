@@ -194,7 +194,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         args.Handled = true;
                         break;
 
-                    case MotionEventActions.Cancel: // Not sure if Android doesn't mean: "Cancel ALL touchpoints" here. Hmmm.
+                    case MotionEventActions.Cancel: // Not sure if Android doesn't mean: "Cancel ALL touchpoints" here.
                         OnViewTouchCancel(pointerId, evt.GetX(pointerIndex), evt.GetY(pointerIndex));
                         args.Handled = true;
                         break;
@@ -474,7 +474,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
-        /// <summary>A touchpoints's contact state is communicated by a button.</summary>
+        /// <summary>A touchpoint's contact state is communicated by a button.</summary>
         /// <see cref="F:Fusee.Engine.Common.ButtonImpDescription.PollButton" />
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 
@@ -539,7 +539,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Retrieve a description for each button.
         /// </summary>
         /// <value>
-        /// The button imp desc.
+        /// The button imp description.
         /// </value>
         public IEnumerable<ButtonImpDescription> ButtonImpDesc => _tpButtonDescs.Values;
 
@@ -727,7 +727,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
-            throw new InvalidOperationException($"Button {iButtonId} does not exist or is no pollable. Listen to the ButtonValueChanged event to receive keyboard notifications from this device.");
+            throw new InvalidOperationException($"Button {iButtonId} does not exist or is not pollable. Listen to the ButtonValueChanged event to receive keyboard notifications from this device.");
         }
     }
 

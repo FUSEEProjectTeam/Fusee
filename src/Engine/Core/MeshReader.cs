@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (line.StartsWith("vt"))
                 {
-                    // Vertext texcoord.
+                    // Vertex texcoord.
                     string tmp = line.Substring(3);
 
                     string[] values = FilteredSplit(tmp, null);
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
 
                     g.AddNormal(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            -Double_Parse(values[2]))); // convert to lefthanded
+                                            -Double_Parse(values[2]))); // convert to left-handed
                 }
                 else if (line.StartsWith("v"))
                 {
@@ -82,7 +82,7 @@ namespace Fusee.Engine.Core
 
                     g.AddVertex(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            -Double_Parse(values[2]))); // convert to lefthanded
+                                            -Double_Parse(values[2]))); // convert to left-handed
                 }
                 else if (line.StartsWith("f"))
                 {

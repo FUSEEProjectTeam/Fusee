@@ -64,7 +64,7 @@ namespace Fusee.Base.Imp.Android
                 Buffer.BlockCopy(pxls, (bmp.Height - 1 - iLine) * bmp.Width * 4, ret.PixelData, iLine * bmp.Width * 4, bmp.Width * 4);
             }
 
-            // As a whole... Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
+            // As a whole... Buffer.BlockCopy(pixels, 0, ret.PixelData, 0, nBytes);
             return ret;
         }
     }

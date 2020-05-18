@@ -192,16 +192,16 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.CENTER
-                ? Scene.HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.LEFT
-                ? Scene.HorizontalTextAlignment.LEFT
-                : Scene.HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.CENTER
-                ? Scene.VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.BOTTOM
-                ? Scene.VerticalTextAlignment.BOTTOM
-                : Scene.VerticalTextAlignment.TOP
+                xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.Center
+                ? Scene.HorizontalTextAlignment.Center
+                : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.Left
+                ? Scene.HorizontalTextAlignment.Left
+                : Scene.HorizontalTextAlignment.Right,
+                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.Center
+                ? Scene.VerticalTextAlignment.Center
+                : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.Bottom
+                ? Scene.VerticalTextAlignment.Bottom
+                : Scene.VerticalTextAlignment.Top
             });
         }
 
@@ -214,9 +214,9 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.SCREEN
-                ? Scene.CanvasRenderMode.SCREEN
-                : Scene.CanvasRenderMode.WORLD)
+            _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.Screen
+                ? Scene.CanvasRenderMode.Screen
+                : Scene.CanvasRenderMode.World)
             {
                 Name = ct.Name,
                 Scale = ct.Scale,
@@ -693,16 +693,16 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Scene.HorizontalTextAlignment.CENTER
-                ? Serialization.V1.HorizontalTextAlignment.CENTER
-                : xft.HorizontalAlignment == Scene.HorizontalTextAlignment.LEFT
-                ? Serialization.V1.HorizontalTextAlignment.LEFT
-                : Serialization.V1.HorizontalTextAlignment.RIGHT,
-                VerticalAlignment = xft.VerticalAlignment == Scene.VerticalTextAlignment.CENTER
-                ? Serialization.V1.VerticalTextAlignment.CENTER
-                : xft.VerticalAlignment == Scene.VerticalTextAlignment.BOTTOM
-                ? Serialization.V1.VerticalTextAlignment.BOTTOM
-                : Serialization.V1.VerticalTextAlignment.TOP
+                xft.HorizontalAlignment == Scene.HorizontalTextAlignment.Center
+                ? Serialization.V1.HorizontalTextAlignment.Center
+                : xft.HorizontalAlignment == Scene.HorizontalTextAlignment.Left
+                ? Serialization.V1.HorizontalTextAlignment.Left
+                : Serialization.V1.HorizontalTextAlignment.Right,
+                VerticalAlignment = xft.VerticalAlignment == Scene.VerticalTextAlignment.Center
+                ? Serialization.V1.VerticalTextAlignment.Center
+                : xft.VerticalAlignment == Scene.VerticalTextAlignment.Bottom
+                ? Serialization.V1.VerticalTextAlignment.Bottom
+                : Serialization.V1.VerticalTextAlignment.Top
             });
         }
 
@@ -712,9 +712,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCanvasTransform(CanvasTransform ct)
         {
-            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Scene.CanvasRenderMode.SCREEN
-                ? Serialization.V1.CanvasRenderMode.SCREEN
-                : Serialization.V1.CanvasRenderMode.WORLD)
+            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Scene.CanvasRenderMode.Screen
+                ? Serialization.V1.CanvasRenderMode.Screen
+                : Serialization.V1.CanvasRenderMode.World)
             {
                 Name = ct.Name,
                 Scale = ct.Scale,

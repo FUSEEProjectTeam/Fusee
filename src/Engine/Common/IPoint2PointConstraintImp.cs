@@ -3,7 +3,7 @@
 namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Flags specifing point-to-point constraint details.
+    /// Flags specifying point-to-point constraint details.
     /// </summary>
     public enum PointToPointFlags
     {
@@ -16,7 +16,7 @@ namespace Fusee.Engine.Common
     };
 
     /// <summary>
-    /// Implmentation agnostic representation of a point-to-point constraint.
+    /// Implementation agnostic representation of a point-to-point constraint.
     /// </summary>
     public interface IPoint2PointConstraintImp : IConstraintImp
     {
