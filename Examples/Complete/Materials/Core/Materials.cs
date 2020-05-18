@@ -51,7 +51,7 @@ namespace Fusee.Examples.Materials.Core
             {
                 Children = new List<SceneNode>
                 {
-                    new CanvasNode("Canvas", CanvasRenderMode.WORLD, new MinMaxRect
+                    new CanvasNode("Canvas", CanvasRenderMode.World, new MinMaxRect
                     {
                         Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
                         Max = new float2(canvasWidth / 2, canvasHeight / 2f)
@@ -64,12 +64,12 @@ namespace Fusee.Examples.Materials.Core
                             "howTo",
                             vsTex,
                             psTex,
-                            UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT),
-                            UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
+                            UIElementPosition.GetAnchors(AnchorPos.DownDownLeft),
+                            UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
                             fontLatoMap,
                             new float4(1,1,0,1),
-                            HorizontalTextAlignment.LEFT,
-                            VerticalTextAlignment.CENTER)
+                            HorizontalTextAlignment.Left,
+                            VerticalTextAlignment.Center)
                         }
                     },
                     new CanvasNode("Complete", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
@@ -247,8 +247,8 @@ namespace Fusee.Examples.Materials.Core
                                         new MinMaxRect(),
                                         fontLatoMap,
                                         new float4(0,0,0,1),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER),
+                                        HorizontalTextAlignment.Left,
+                                        VerticalTextAlignment.Center),
                                       new TextNode(
                                         "NOT YET IMPLEMENTED",
                                         "desc",
@@ -262,11 +262,11 @@ namespace Fusee.Examples.Materials.Core
                                         },
                                         fontLatoMap,
                                         new float4(1,0,0,0.75f),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER)
+                                        HorizontalTextAlignment.Left,
+                                        VerticalTextAlignment.Center)
                                 }
                             },
-                    new CanvasNode("Albedo and emissive with texture", CanvasRenderMode.WORLD, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
+                    new CanvasNode("Albedo and emissive with texture", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
                             {
                                 Components = new List<SceneComponent>
                                 {
@@ -287,8 +287,8 @@ namespace Fusee.Examples.Materials.Core
                                         new MinMaxRect(),
                                         fontLatoMap,
                                         new float4(0,0,0,1),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER),
+                                        HorizontalTextAlignment.Left,
+                                        VerticalTextAlignment.Center),
                                      new TextNode(
                                         "NOT YET IMPLEMENTED",
                                         "desc",
@@ -302,8 +302,8 @@ namespace Fusee.Examples.Materials.Core
                                         },
                                         fontLatoMap,
                                         new float4(1,0,0,0.75f),
-                                        HorizontalTextAlignment.LEFT,
-                                        VerticalTextAlignment.CENTER)
+                                        HorizontalTextAlignment.Left,
+                                        VerticalTextAlignment.Center)
                                 }
                             }
                 }

@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Core
+﻿using Fusee.Engine.Core.Scene;
+
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Propagates Mesh properties changed status inside <see cref="MeshDataEventArgs"/> 

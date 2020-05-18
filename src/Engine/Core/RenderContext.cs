@@ -911,7 +911,7 @@ namespace Fusee.Engine.Core
                 texHandles.Add(textureHandle);
             }
             var handlesAsArray = texHandles.ToArray();
-            _rci.SetShaderParamTextureArray(param, handlesAsArray, TextureType.TEXTURE2D);
+            _rci.SetShaderParamTextureArray(param, handlesAsArray, TextureType.Texture2D);
         }
 
         /// <summary>

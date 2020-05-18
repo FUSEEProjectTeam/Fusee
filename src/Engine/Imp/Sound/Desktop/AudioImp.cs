@@ -62,7 +62,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         ///// <summary>
         ///// Loads a sound file from hard drive.
         ///// </summary>
-        ///// <param name="fileName">Full path name of the file with datatype ending, e.g. "C\:sound.ogg". A path can be absolute or relative.</param>
+        ///// <param name="fileName">Full path name of the file with data type ending, e.g. "C\:sound.ogg". A path can be absolute or relative.</param>
         ///// <param name="streaming">if set to <c>true</c> [streaming].</param>
         ///// <returns>An IAudioStreamImp instance is returned if the file path was correctly resolved.</returns>
         //public IAudioStreamImp LoadFile(string fileName, bool streaming)

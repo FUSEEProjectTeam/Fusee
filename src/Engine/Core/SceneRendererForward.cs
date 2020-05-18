@@ -392,7 +392,7 @@ namespace Fusee.Engine.Core
         {
             _ctc = ctc;
 
-            if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
+            if (ctc.CanvasRenderMode == CanvasRenderMode.World)
             {
                 var newRect = new MinMaxRect
                 {
@@ -407,7 +407,7 @@ namespace Fusee.Engine.Core
                 _state.UiRect = newRect;
             }
 
-            if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 var frustumCorners = new float4[4];
 
@@ -466,7 +466,7 @@ namespace Fusee.Engine.Core
         public void RenderRectTransform(RectTransform rtc)
         {
             MinMaxRect newRect;
-            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 newRect = new MinMaxRect
                 {
@@ -540,7 +540,7 @@ namespace Fusee.Engine.Core
             float scaleX;
             float scaleY;
 
-            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 //Undo parent scale
                 scaleX = 1 / _state.UiRect.Size.x;
@@ -549,13 +549,13 @@ namespace Fusee.Engine.Core
                 //Calculate translation according to alignment
                 switch (xfc.HorizontalAlignment)
                 {
-                    case HorizontalTextAlignment.LEFT:
+                    case HorizontalTextAlignment.Left:
                         translationX = -_state.UiRect.Size.x / 2;
                         break;
-                    case HorizontalTextAlignment.CENTER:
+                    case HorizontalTextAlignment.Center:
                         translationX = -xfc.Width / 2;
                         break;
-                    case HorizontalTextAlignment.RIGHT:
+                    case HorizontalTextAlignment.Right:
                         translationX = _state.UiRect.Size.x / 2 - xfc.Width;
                         break;
                     default:
@@ -564,13 +564,13 @@ namespace Fusee.Engine.Core
 
                 switch (xfc.VerticalAlignment)
                 {
-                    case VerticalTextAlignment.TOP:
+                    case VerticalTextAlignment.Top:
                         translationY = _state.UiRect.Size.y / 2;
                         break;
-                    case VerticalTextAlignment.CENTER:
+                    case VerticalTextAlignment.Center:
                         translationY = xfc.Height / 2;
                         break;
-                    case VerticalTextAlignment.BOTTOM:
+                    case VerticalTextAlignment.Bottom:
                         translationY = xfc.Height - (_state.UiRect.Size.y / 2);
                         break;
                     default:
@@ -586,13 +586,13 @@ namespace Fusee.Engine.Core
                 //Calculate translation according to alignment by scaling the rectangle size
                 switch (xfc.HorizontalAlignment)
                 {
-                    case HorizontalTextAlignment.LEFT:
+                    case HorizontalTextAlignment.Left:
                         translationX = -_state.UiRect.Size.x * invScaleFactor / 2;
                         break;
-                    case HorizontalTextAlignment.CENTER:
+                    case HorizontalTextAlignment.Center:
                         translationX = -xfc.Width / 2;
                         break;
-                    case HorizontalTextAlignment.RIGHT:
+                    case HorizontalTextAlignment.Right:
                         translationX = _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
                         break;
                     default:
@@ -601,13 +601,13 @@ namespace Fusee.Engine.Core
 
                 switch (xfc.VerticalAlignment)
                 {
-                    case VerticalTextAlignment.TOP:
+                    case VerticalTextAlignment.Top:
                         translationY = _state.UiRect.Size.y * invScaleFactor / 2;
                         break;
-                    case VerticalTextAlignment.CENTER:
+                    case VerticalTextAlignment.Center:
                         translationY = xfc.Height / 2;
                         break;
-                    case VerticalTextAlignment.BOTTOM:
+                    case VerticalTextAlignment.Bottom:
                         translationY = xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2);
                         break;
                     default:
@@ -830,7 +830,7 @@ namespace Fusee.Engine.Core
 
             var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
-            // Set params in modelview space since the lightning calculation is in modelview space
+            // Set parameters in modelview space since the lightning calculation is in modelview space
             _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
             _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
             _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);

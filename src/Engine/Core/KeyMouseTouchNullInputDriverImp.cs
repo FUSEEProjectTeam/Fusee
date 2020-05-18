@@ -6,7 +6,7 @@ namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Null implementation for the <see cref="DeviceCategory.Keyboard"/> device category. This implementation is one
-    /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typcally used
+    /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typically used
     /// in situations where the calls to <see cref="Input.Keyboard"/> should not result in a <see cref="NullReferenceException"/>
     /// when there's actually no physical keyboard present, such as headless (windowless) renderers, image generators etc.
     /// This device implements a keyboard never generating any input.
@@ -24,7 +24,7 @@ namespace Fusee.Engine.Core
         public string Desc => "This device is intended for headless operation. It implements a keyboard never generating any input.";
 
         /// <summary>
-        /// The categery for this device. Always returns <see cref="DeviceCategory.Keyboard"/>.
+        /// The category for this device. Always returns <see cref="DeviceCategory.Keyboard"/>.
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Keyboard;
 
@@ -97,7 +97,7 @@ namespace Fusee.Engine.Core
 
     /// <summary>
     /// Null implementation for the <see cref="DeviceCategory.Mouse"/> device category. This implementation is one
-    /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typcally used
+    /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typically used
     /// in situations where the calls to <see cref="Input.Mouse"/> should not result in a <see cref="NullReferenceException"/>
     /// when there's actually no physical keyboard present, such as headless (windowless) renderers, image generators etc.
     /// This device implements a keyboard never generating any input.
@@ -116,7 +116,7 @@ namespace Fusee.Engine.Core
         public string Desc => "This device is intended for headless operation. It implements a mouse never generating any input.";
 
         /// <summary>
-        /// The categery for this device. Always returns <see cref="DeviceCategory.Mouse"/>.
+        /// The category for this device. Always returns <see cref="DeviceCategory.Mouse"/>.
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Mouse;
 
@@ -308,7 +308,7 @@ namespace Fusee.Engine.Core
 
     /// <summary>
     /// Null implementation for the <see cref="DeviceCategory.Touch"/> device category. This implementation is one
-    /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typcally used
+    /// of three dummy implementations provided by the <see cref="KeyMouseTouchNullInputDriverImp"/>. Typically used
     /// in situations where the calls to <see cref="Input.Touch"/> should not result in a <see cref="NullReferenceException"/>
     /// when there's actually no physical keyboard present, such as headless (windowless) renderers, image generators etc.
     /// This device implements a keyboard never generating any input.
@@ -488,7 +488,7 @@ namespace Fusee.Engine.Core
         public string Desc => "This device is intended for headless operation. It implements a touch device never generating any input.";
 
         /// <summary>
-        /// The categery for this device. Always returns <see cref="DeviceCategory.Touch"/>.
+        /// The category for this device. Always returns <see cref="DeviceCategory.Touch"/>.
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Touch;
 

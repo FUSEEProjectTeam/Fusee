@@ -284,7 +284,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Updates the given region of a texture with the passed image data.
         /// </summary>
-        /// <param name="tex">The tex.</param>
+        /// <param name="tex">The texture.</param>
         /// <param name="img">The image.</param>
         /// <param name="startX">The start x.</param>
         /// <param name="startY">The start y.</param>
@@ -383,7 +383,7 @@ namespace Fusee.Engine.Common
         /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name = "bitangents">THe bitangents.</param>
+        /// <param name = "bitangents">The bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
         void SetBiTangents(IMeshImp mr, float3[] bitangents);
@@ -506,7 +506,7 @@ namespace Fusee.Engine.Common
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
         /// <param name="height">vertical size (in pixels) of the output region.</param>
         /// <remarks>
-        /// Setting the Viewport limits the rendering output to the specified rectangular region.
+        /// Setting the viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
         void Viewport(int x, int y, int width, int height);
 
@@ -552,7 +552,7 @@ namespace Fusee.Engine.Common
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The quad.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         void GetBufferContent(Rectangle quad, ITextureHandle texId);
 
         /// <summary>
@@ -645,12 +645,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Checks if deferred rendering with frame buffer objects is possible
         /// </summary>
-        CAN_RENDER_DEFFERED,
+        CanRenderDeferred,
 
         /// <summary>
         /// Checks if geometry shaders can be used.
         /// </summary>
-        CAN_USE_GEOMETRY_SHADERS
+        CanUseGeometryShaders
     }
 
     /// <summary>
@@ -661,51 +661,51 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES.
         /// </summary>
-        TRIANGLES = 0,
+        Triangles = 0,
 
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES_STRIP.
         /// </summary>
-        TRIANGLE_STRIP,
+        TriangleStrip,
 
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES_FAN.
         /// </summary>
-        TRIANGLE_FAN,
+        TriangleFan,
 
         /// <summary>
         /// Relates to OpenGl GL_QUADS.
         /// </summary>
-        QUADS,
+        Quads,
 
         /// <summary>
         /// Relates to OpenGl GL_QUADS_STRIP.
         /// </summary>
-        QUAD_STRIP,
+        QuadStrip,
 
         /// <summary>
         /// Relates to OpenGl GL_POINTS.
         /// </summary>
-        POINT,
+        Points,
 
         /// <summary>
         /// Relates to OpenGl GL_LINES.
         /// </summary>
-        LINES,
+        Lines,
 
         /// <summary>
         /// Relates to OpenGl GL_LINE_STRIP.
         /// </summary>
-        LINE_STRIP,
+        LineStrip,
 
         /// <summary>
         /// Relates to OpenGl GL_LINE_LOOP.
         /// </summary>
-        LINE_LOOP,
+        LineLoop,
 
         /// <summary>
         /// Relates to OpenGl GL_PATCHES.
         /// </summary>
-        PATCHES
+        Patches
     }
 }

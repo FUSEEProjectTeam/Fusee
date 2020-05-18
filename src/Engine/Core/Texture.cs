@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// The raw Pixeldata byte buffer. This byte buffer will be uploaded to the GPU inside <see cref="RenderContext"/>
+        /// The raw pixel data byte buffer. This byte buffer will be uploaded to the GPU inside <see cref="RenderContext"/>
         /// </summary>
         public byte[] PixelData
         {

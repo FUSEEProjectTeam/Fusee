@@ -36,7 +36,7 @@ namespace Fusee.Examples.Simple.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private bool _keys;
 
@@ -244,7 +244,7 @@ namespace Fusee.Examples.Simple.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
                 float2.One
@@ -263,8 +263,8 @@ namespace Fusee.Examples.Simple.Core
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             var canvas = new CanvasNode(
                 "Canvas",

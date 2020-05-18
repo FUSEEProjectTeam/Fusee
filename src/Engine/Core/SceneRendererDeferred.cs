@@ -27,12 +27,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Sets the Shadow Map resolution.
         /// </summary>
-        public TexRes ShadowMapRes { get; private set; } = TexRes.MID_RES;
+        public TexRes ShadowMapRes { get; private set; } = TexRes.Middle;
 
         /// <summary>
         /// Sets the G-Buffer texture resolution.
         /// </summary>
-        public TexRes TexRes { get; private set; } = TexRes.MID_RES;
+        public TexRes TexRes { get; private set; } = TexRes.Middle;
 
         /// <summary>
         /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
@@ -117,12 +117,12 @@ namespace Fusee.Engine.Core
             _gBufferRenderTarget.SetPositionTex();
             _gBufferRenderTarget.SetAlbedoSpecularTex();
             _gBufferRenderTarget.SetNormalTex();
-            _gBufferRenderTarget.SetDepthTex(TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.LessEqual);
+            _gBufferRenderTarget.SetDepthTex(TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
             _gBufferRenderTarget.SetSpecularTex();
 
-            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.NEAREST);
-            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.NEAREST);
-            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.LINEAR);
+            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
+            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
+            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
 
             _shadowparams = new Dictionary<Tuple<SceneNode, Light>, ShadowParams>();
 
@@ -141,7 +141,7 @@ namespace Fusee.Engine.Core
             if (HasNumberOfLightsChanged)
                 HasNumberOfLightsChanged = false;
 
-            if (_currentPass != RenderPasses.SHADOW)
+            if (_currentPass != RenderPasses.Shadow)
             {
                 _rc.CreateShaderProgram(false, effect);
                 _rc.SetEffect(effect);
@@ -162,7 +162,7 @@ namespace Fusee.Engine.Core
             if (DoFrumstumCulling)
             {
                 Frustum frustum;
-                if (_currentPass == RenderPasses.SHADOW)
+                if (_currentPass == RenderPasses.Shadow)
                     frustum = _lightFrustum;
                 else
                     frustum = _rc.RenderFrustum;
@@ -343,7 +343,7 @@ namespace Fusee.Engine.Core
                     throw new ArgumentException("No Light Space Matrix created, light type not supported!");
             }
 
-            //2. If we haven't created the shadow params for this light yet, do so,
+            //2. If we haven't created the shadow parameters for this light yet, do so,
             if (!_shadowparams.TryGetValue(key, out var outParams))
             {
                 switch (lr.Light.Type)
@@ -409,7 +409,7 @@ namespace Fusee.Engine.Core
 
             _rc.EnableDepthClamp();
 
-            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CAN_USE_GEOMETRY_SHADERS) == 1U ? true : false;
+            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U ? true : false;
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
@@ -488,7 +488,7 @@ namespace Fusee.Engine.Core
                 RenderSSAO();
 
             //Pass 4 & 5: FXAA and Lighting
-            _currentPass = RenderPasses.LIGHTING;
+            _currentPass = RenderPasses.Lighting;
 
             var width = renderTex == null ? (int)lightingPassViewport.z : renderTex.Width;
             var height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
@@ -734,7 +734,7 @@ namespace Fusee.Engine.Core
 
         private void RenderGeometryPass()
         {
-            _currentPass = RenderPasses.GEOMETRY;
+            _currentPass = RenderPasses.Geometry;
             _rc.SetRenderTarget(_gBufferRenderTarget);
             Traverse(_sc.Children);
         }
@@ -742,7 +742,7 @@ namespace Fusee.Engine.Core
         private void RenderSSAO()
         {
             //Pass 2: SSAO
-            _currentPass = RenderPasses.SSAO;
+            _currentPass = RenderPasses.Ssao;
             if (_ssaoTexEffect == null)
             {
                 _ssaoTexEffect = MakeEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes), 4);
@@ -753,7 +753,7 @@ namespace Fusee.Engine.Core
             _rc.Render(_quad);
 
             //Pass 3: Blur SSAO Texture
-            _currentPass = RenderPasses.SSAO_BLUR;
+            _currentPass = RenderPasses.SsaoBlur;
             if (_blurEffect == null)
             {
                 _blurEffect = MakeEffect.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
@@ -764,12 +764,12 @@ namespace Fusee.Engine.Core
             _rc.Render(_quad);
 
             //Set blurred SSAO Texture as SSAO Texture in gBuffer
-            _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.G_SSAO);
+            _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.Ssao);
         }
 
         private void RenderFXAA(WritableTexture renderTex = null)
         {
-            _currentPass = RenderPasses.FXAA;
+            _currentPass = RenderPasses.Fxaa;
             if (_fxaaEffect == null)
             {
                 _fxaaEffect = MakeEffect.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));

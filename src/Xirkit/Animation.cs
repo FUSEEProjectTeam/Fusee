@@ -28,11 +28,11 @@ namespace Fusee.Xirkit
         /// </summary>
         private float _maxDuration;
         /// <summary>
-        /// The _anim mode detrminds wheater the animation runs in PingPong or Loop mode.
+        /// The _anim mode determines whether the animation runs in PingPong or Loop mode.
         /// </summary>
         private int _animMode;
         /// <summary>
-        /// The _direction is the actual direction the animation is playing (forward and backward ist possible)
+        /// The _direction is the actual direction the animation is playing (forward and backward is possible)
         /// </summary>
         private bool _direction;
 
@@ -76,7 +76,7 @@ namespace Fusee.Xirkit
         /// <typeparam name="TValue">The Type of the channel.</typeparam>
         /// <param name="channel">The channel that will be added.</param>
         /// <param name="channelObject">The Object that will be wired with the channel.</param>
-        /// <param name="field">The full name of the Field or Property of the Objekt that will be handled by this Animation.</param>
+        /// <param name="field">The full name of the Field or Property of the Object that will be handled by this Animation.</param>
         public void AddAnimation<TValue>(Channel<TValue> channel, object channelObject, string field)
         {
             // Adjust overall animation duration so that the newly added channel's duration is not shortened
@@ -170,7 +170,7 @@ namespace Fusee.Xirkit
         /// <param name="pos">The position.</param>
         public void DeleteAnimation(int pos)
         {
-            throw new NotImplementedException("This method is defunkt since a user has no idea of what to specify at pos");
+            throw new NotImplementedException("This method is defunct since a user has no idea of what to specify at pos");
             //_animHandler.DeleteRoot(pos);
             //_animHandler.DeleteNode(pos);
             //_channels.RemoveAt(pos);

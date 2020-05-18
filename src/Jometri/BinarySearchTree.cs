@@ -95,7 +95,7 @@ namespace Fusee.Jometri
 
         /// <summary>
         /// Preorder traversal of the tree. Visits the root, then visits the left sub-tree, after that visits the right sub-tree.
-        /// Retruns the keys.
+        /// Returns the keys.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<TK> PreorderTraverseTreeKeys()
@@ -108,7 +108,7 @@ namespace Fusee.Jometri
 
         /// <summary>
         /// Preorder traversal of the tree. Visits the root, then visits the left sub-tree, after that visits the right sub-tree.
-        /// Retruns the values.
+        /// Returns the values.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<TV> PreorderTraverseTreeValues()
@@ -291,7 +291,7 @@ namespace Fusee.Jometri
         /// Finds the value of a node whose key is the largest, smaller than the given.
         /// Only works with a balanced tree. It may be necessary to call BalanceTree before this method.
         /// </summary>
-        /// <param name="key">The key that is uesed as search parameter.</param>
+        /// <param name="key">The key that is used as search parameter.</param>
         /// <returns></returns>
         public TV FindLargestSmallerThanInBalanced(TK key)
         {

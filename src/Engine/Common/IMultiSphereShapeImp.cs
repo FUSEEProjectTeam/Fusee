@@ -14,12 +14,14 @@ namespace Fusee.Engine.Common
         /// <param name="index">The index.</param>
         /// <returns></returns>
         float3 GetSpherePosition(int index);
+
         /// <summary>
         /// Gets the sphere radius.
         /// </summary>
         /// <param name="index">The index.</param>
         /// <returns></returns>
         float GetSphereRadius(int index);
+
         /// <summary>
         /// Gets the sphere count.
         /// </summary>

@@ -20,7 +20,7 @@ namespace Fusee.Base.Common
         void Blt(int xDst, int yDst, IImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0);
 
         /// <summary>
-        /// Expose a set of pixel lines (enables IImageData to be used as src in other instances' Blt)
+        /// Expose a set of pixel lines (enables IImageData to be used as source in other instances' Blt)
         /// </summary>
         /// <param name="xSrc">x offset (pixels) of source.</param>
         /// <param name="ySrc">y offset (pixels) of source.</param>

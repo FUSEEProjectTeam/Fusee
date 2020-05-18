@@ -211,7 +211,7 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="obb">The axis aligned bounding box.</param> 
+        /// <param name="obb">The object oriented bounding box.</param>
         /// </summary>
         private float BoxExtendInNormalDirection(OBBf obb)
         {

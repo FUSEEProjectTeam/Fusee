@@ -28,7 +28,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             {
                 var o = (BoxShapeImp) BtBoxShape.UserObject;
                 o.BtBoxShape.LocalScaling = Translator.Float3ToBtVector3(value);
-                //Todo: Update RigidBody Inertia refering to the CollisionPbject
+                //ToDo: Update RigidBody Inertia referring to the CollisionPbject
             }
         }
 

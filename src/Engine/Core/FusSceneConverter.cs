@@ -217,9 +217,9 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.SCREEN
-                ? Scene.CanvasRenderMode.SCREEN
-                : Scene.CanvasRenderMode.WORLD)
+            _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.Screen
+                ? Scene.CanvasRenderMode.Screen
+                : Scene.CanvasRenderMode.World)
             {
                 Name = ct.Name,
                 Scale = ct.Scale,
@@ -703,9 +703,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvCanvasTransform(CanvasTransform ct)
         {
-            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Scene.CanvasRenderMode.SCREEN
-                ? Serialization.V1.CanvasRenderMode.SCREEN
-                : Serialization.V1.CanvasRenderMode.WORLD)
+            _currentNode.AddComponent(new FusCanvasTransform(ct.CanvasRenderMode == Scene.CanvasRenderMode.Screen
+                ? Serialization.V1.CanvasRenderMode.Screen
+                : Serialization.V1.CanvasRenderMode.World)
             {
                 Name = ct.Name,
                 Scale = ct.Scale,

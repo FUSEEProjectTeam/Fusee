@@ -11,8 +11,6 @@ namespace Fusee.Engine.Imp.Physics.Desktop
     {
         internal Point2PointConstraint _p2pci;
 
-
-
         /// <summary>
         /// Gets and sets the pivot in a.
         /// </summary>

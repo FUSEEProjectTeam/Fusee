@@ -66,7 +66,7 @@ namespace Fusee.Engine.Core
                 pxData.AddRange(bytesZ);
             }
 
-            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)), true, Common.TextureFilterMode.NEAREST);
+            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)), true, Common.TextureFilterMode.Nearest);
         }
 
         private static float3[] SSAONoise(int noiseSize) //should be a multiple of 4...

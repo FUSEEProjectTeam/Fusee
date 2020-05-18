@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core
 {
     public class DynamicWorld
     {
-        internal /*readonly*/ IDynamicWorldImp _dwi;
+        internal IDynamicWorldImp _dwi;
         
         public DynamicWorld([InjectMe] IDynamicWorldImp dynamicWorld)
         {

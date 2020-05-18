@@ -109,7 +109,7 @@ namespace Fusee.Engine.GUI
                 var lineWidth = LineVertices[i].Last().x - LineVertices[i][0].x;
                 switch (HorizontalAlignment)
                 {
-                    case HorizontalTextAlignment.LEFT:
+                    case HorizontalTextAlignment.Left:
                         for (var j = 0; j < LineVertices[i].Count; j++)
                         {
                             var vert = LineVertices[i][j];
@@ -121,7 +121,7 @@ namespace Fusee.Engine.GUI
                             allVerts.Add(vert);
                         }
                         break;
-                    case HorizontalTextAlignment.CENTER:
+                    case HorizontalTextAlignment.Center:
 
                         for (var j = 0; j < LineVertices[i].Count; j++)
                         {
@@ -135,7 +135,7 @@ namespace Fusee.Engine.GUI
                             allVerts.Add(vert);
                         }
                         break;
-                    case HorizontalTextAlignment.RIGHT:
+                    case HorizontalTextAlignment.Right:
 
                         for (var j = 0; j < LineVertices[i].Count; j++)
                         {

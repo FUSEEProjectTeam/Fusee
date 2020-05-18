@@ -200,10 +200,10 @@ namespace Fusee.Engine.Core
 
 
         /// <summary>
-        /// Returns a value signalling if the given touchpoint is currently active (if something hits the screen).
+        /// Returns a value signaling if the given touchpoint is currently active (if something hits the screen).
         /// </summary>
         /// <param name="touch">The touchpoint to check.</param>
-        /// <returns>true if this touch is acitve (a finger is on the screen), otherwise false.</returns>
+        /// <returns>true if this touch is active (a finger is on the screen), otherwise false.</returns>
         public bool GetTouchActive(TouchPoints touch)
         {
             return GetButton((int) touch);
@@ -214,7 +214,7 @@ namespace Fusee.Engine.Core
         /// The returned values are only valid if <see cref="GetTouchActive"/> holds true for the same touchpoint.
         /// </summary>
         /// <param name="touch">The touchpoint.</param>
-        /// <returns>The X/Y postion of the given touchpoint.</returns>
+        /// <returns>The X/Y position of the given touchpoint.</returns>
         public float2 GetPosition(TouchPoints touch)
         {
             return new float2(
@@ -224,11 +224,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Retrieves the current velocity (in pixels per second) of the giben touch point. 
+        /// Retrieves the current velocity (in pixels per second) of the given touch point. 
         /// The returned values are only valid if <see cref="GetTouchActive"/> holds true for the same touchpoint.
         /// </summary>
         /// <param name="touch">The touchpoint.</param>
-        /// <returns>The two-dimensional velocitiy of the touchpoint.</returns>
+        /// <returns>The two-dimensional velocity of the touchpoint.</returns>
         public float2 GetVelocity(TouchPoints touch)
         {
             return new float2(
@@ -270,7 +270,7 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// Two moving touchpoints on the screen can be interpreted in various ways. It's up to the application to interpret the two individual changes in position
         /// as <see cref="TwoPointAction.Move"/> , as a <see cref="TwoPointAction.Rotate"/> or as a <see cref="TwoPointAction.Pinch"/> . Use this method to retrieve
-        /// a symbolic value which of these three possibilites is currently performed with the highest intensity. Applications should sensibly decide whether to 
+        /// a symbolic value which of these three possibilities is currently performed with the highest intensity. Applications should sensibly decide whether to 
         /// allow to change their behavior during a two-point-gesture (as long as <see cref="TwoPoint"/> holds true) or to check this value only initially whenever
         /// a two-point gesture starts, or do something in-between. As a practice: Investigate how the 
         /// <a href="https://play.google.com/store/apps/details?id=com.google.earth">Google Earth mobile app</a> handles this question!
@@ -347,7 +347,7 @@ namespace Fusee.Engine.Core
         /// averaged speed of the first two touchpoints.
         /// </summary>
         /// <value>
-        /// The two-dimenstional speed vector of the midpoint between touchpoint 0 and touchpoint 1.
+        /// The two-dimensional speed vector of the midpoint between touchpoint 0 and touchpoint 1.
         /// </value>
         public float2 TwoPointMidPointVel => new float2(GetAxis(_tpMidPointVelX), GetAxis(_tpMidPointVelY));
     }

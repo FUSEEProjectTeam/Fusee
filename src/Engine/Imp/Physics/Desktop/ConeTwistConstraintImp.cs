@@ -53,8 +53,8 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// </summary>
         /// <param name="transA">The trans a.</param>
         /// <param name="transB">The trans b.</param>
-        /// <param name="invInertiaWorldA">The inv inertia world a.</param>
-        /// <param name="invInertiaWorldB">The inv inertia world b.</param>
+        /// <param name="invInertiaWorldA">The invert inertia world a.</param>
+        /// <param name="invInertiaWorldB">The invert inertia world b.</param>
         public void CalcAngleInfo2(float4x4 transA, float4x4 transB, float4x4 invInertiaWorldA, float4x4 invInertiaWorldB)
         {
             _cti.CalcAngleInfo2(Translator.Float4X4ToBtMatrix(transA), Translator.Float4X4ToBtMatrix(transB), Translator.Float4X4ToBtMatrix(invInertiaWorldA), Translator.Float4X4ToBtMatrix(invInertiaWorldB));

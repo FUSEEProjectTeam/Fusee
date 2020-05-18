@@ -33,10 +33,10 @@ namespace Fusee.Engine.Common
         IPEndpointData RemoteEndPoint { get; }
 
         /// <summary>
-        /// Gets the roundtrip time of a packet. This is the time in milliseconds that a packet requires to be send to the remote end point and back.
+        /// Gets the round-trip time of a packet. This is the time in milliseconds that a packet requires to be send to the remote end point and back.
         /// </summary>
         /// <value>
-        /// The roundtrip time.
+        /// The round-trip time.
         /// </value>
         float RoundtripTime { get; }
 
