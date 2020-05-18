@@ -44,8 +44,8 @@ namespace Fusee.Examples.Materials.Core
             float canvasWidth = Width / 100f;
             float canvasHeight = Height / 100f;
 
-            var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("albedoTex.jpg"));
-            var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("normalTex.jpg"));
+            var albedoTex = new Texture(AssetStorage.Get<ImageData>("albedoTex.jpg"));
+            var normalTex = new Texture(AssetStorage.Get<ImageData>("normalTex.jpg"));
 
             SceneContainer guiDescriptionScene = new SceneContainer
             {

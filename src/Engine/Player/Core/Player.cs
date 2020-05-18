@@ -255,9 +255,9 @@ namespace Fusee.Engine.Player.Core
 
         private SceneContainer CreateGui()
         {
-            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
-            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
-            var psText = await AssetStorage.GetAsync<string>("text.frag");
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
 
             var btnFuseeLogo = new GUIButton
             {
