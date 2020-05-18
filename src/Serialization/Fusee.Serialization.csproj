@@ -3,8 +3,6 @@
     <RootNamespace>Fusee.Serialization</RootNamespace>
     <PackageId>Fusee.Serialization</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-      <MonoWasmLinkSkip>protobuf-net</MonoWasmLinkSkip>
-
   </PropertyGroup>
 
   <PropertyGroup>
@@ -13,10 +11,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <Reference Include="protobuf-net.Core">
-          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
-      </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />

@@ -1,4 +1,4 @@
-name: Release-Desktop - .NET Core
+name: Build
 
 on:
   push:
@@ -11,26 +11,87 @@ on:
     - develop
 
 jobs:
-  build:
+  tests:
+    name: Tests
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
     strategy:
       fail-fast: false
       matrix:
-        dotnet: [ '3.1.201' ]
-        os: [ 'windows-latest', 'ubuntu-latest' ]
+        os: [ 'windows-latest' ]
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
 
+    - name: Math
+      run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
+      
+    - name: Serialization V1
+      run: dotnet test -c Release src/Tests/Serialization/Fusee.Serialization.Test/Fusee.Test.Serialization.V1.csproj
+      
+    - name: Xene
+      run: dotnet test -c Release src/Tests/Xene/Fusee.Xene.Test/Fusee.Test.Xene.csproj
+
+    - name: Xirkit
+      run: dotnet test -c Release src/Tests/Xirkit/Fusee.Test.Xirkit/Fusee.Test.Xirkit.csproj
+
+    - name: Xirkit Nested Access
+      run: dotnet test -c Release src/Tests/Xirkit/Fusee.Xirkit.NestedAccess.Test/Fusee.Test.Xirkit.NestedAccess.csproj
+
+  builddesktop:
+    needs: [tests]
+    name: Desktop
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-latest', 'ubuntu-latest' ]
     runs-on: ${{ matrix.os }}
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: ${{ matrix.dotnet }}
-
-    - name: Build
+    - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
 
-    - name: Math tests
-      run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
+    - name: Upload Player-Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-desktop-${{ matrix.os }}-player
+        path: bin/Release/Player/Desktop/
+
+    - name: Upload Tool-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-desktop-${{ matrix.os }}-tools
+        path: bin/Release/Tools/
+
+    - name: Upload Example-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-desktop-${{ matrix.os }}-examples
+        path: bin/Release/Examples/**/Desktop/
+
+  buildandroid:
+    name: Android
+    needs: [tests]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1
+      
+    - name: Build with MSBuild
+      run: msbuild Fusee.sln -r -p:Configuration=Release-Android

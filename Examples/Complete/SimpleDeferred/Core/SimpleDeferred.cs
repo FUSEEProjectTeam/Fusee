@@ -46,7 +46,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private readonly Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 3000, M.PiOver4);
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _camTransform = new Transform()
             {
@@ -178,8 +178,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame

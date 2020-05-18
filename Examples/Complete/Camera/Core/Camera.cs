@@ -54,7 +54,7 @@ namespace Fusee.Examples.Camera.Core
         private float _valVertMain;
 
         // Init is called on startup. 
-        public override async Task<bool> Init()
+        public override void Init()
         {
             VSync = false;
 
@@ -160,8 +160,6 @@ namespace Fusee.Examples.Camera.Core
 
             _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
             _rotPivot = _rocketScene.Children[1].GetComponent<Transform>().Translation;
-
-            return true;
         }
 
         // RenderAFrame is called once a frame

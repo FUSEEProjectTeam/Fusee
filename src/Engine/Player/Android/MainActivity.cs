@@ -48,11 +48,6 @@ namespace Fusee.Engine.Player.Android
                             if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
                             return new Font { _fontImp = new FontImp((Stream)storage) };
                         },
-                        DecoderAsync = async (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
-                            return await Task.Factory.StartNew(() => new Font { _fontImp = new FontImp((Stream)storage) });
-                        },
                         Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
                     });
                 fap.RegisterTypeHandler(
@@ -64,12 +59,6 @@ namespace Fusee.Engine.Player.Android
                             if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
                             return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
-                        },
-                        DecoderAsync = async (string id, object storage) =>
-                        {
-                            if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
-
-                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage)));
                         },
                         Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                     });

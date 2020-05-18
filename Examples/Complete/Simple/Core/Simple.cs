@@ -48,7 +48,7 @@ namespace Fusee.Examples.Simple.Core
         private DefaultSurfaceEffect _testFx;
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _gui = CreateGui();
 
@@ -61,8 +61,8 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("monkeys.fus");
 
-            var albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
-            var normalTex = new Texture(await AssetStorage.GetAsync<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
+            var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
+            var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LINEAR_MIPMAP_LINEAR);
 
             var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap ;
             _testFx = new DefaultSurfaceEffect(
@@ -131,8 +131,6 @@ namespace Fusee.Examples.Simple.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererDeferred(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame
