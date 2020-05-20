@@ -101,11 +101,11 @@ namespace Fusee.Engine.Imp.WebAsm
         /// </value>
         public bool BoneIndicesSet { get { return BoneIndexBufferObject != null; } }
         /// <summary>
-        /// Returns wether the tangents have been set.
+        /// Returns whether the tangents have been set.
         /// </summary>
         public bool TangentsSet { get; }
         /// <summary>
-        /// Returns wether be bitangents have been set.
+        /// Returns whether be bitangents have been set.
         /// </summary>
         public bool BiTangentsSet { get; }
 

@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>();
 
-            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+            var ssaoString = RenderTargetTextureTypes.Ssao.ToString();
 
             for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
@@ -60,22 +60,22 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
                 switch (i)
                 {
-                    case (int)RenderTargetTextureTypes.G_POSITION:
+                    case (int)RenderTargetTextureTypes.Position:
                         fragMainBody.Add($"{texName} = vec4({VaryingNameDeclarations.Position});");
                         break;
-                    case (int)RenderTargetTextureTypes.G_ALBEDO:
+                    case (int)RenderTargetTextureTypes.Albedo:
                         if (effectProps.MatProbs.HasAlbedoTexture)
                             fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.AlbedoColor}.xyz, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.AlbedoMix}), 1.0);");
                         else
                             fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.AlbedoColor}.xyz, 1.0);");
                         break;
-                    case (int)RenderTargetTextureTypes.G_NORMAL:
+                    case (int)RenderTargetTextureTypes.Normal:
                         fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
                         break;
-                    case (int)RenderTargetTextureTypes.G_DEPTH:
+                    case (int)RenderTargetTextureTypes.Depth:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
-                    case (int)RenderTargetTextureTypes.G_SPECULAR:
+                    case (int)RenderTargetTextureTypes.Specular:
                         {
                             if(effectProps.MatProbs.HasSpecular)
                             {

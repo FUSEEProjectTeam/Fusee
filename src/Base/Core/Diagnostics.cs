@@ -15,7 +15,7 @@ namespace Fusee.Base.Core
         private static Stopwatch _daWatch;
         private static bool _useFile;
         private static string _fileName = "Fusee.Log.txt";
-        private static SeverityLevel _minLogLevelFile = SeverityLevel.NONE;
+        private static SeverityLevel _minLogLevelFile = SeverityLevel.None;
         private static SeverityLevel _minLogLevelConsole;
         private static SeverityLevel _minLogLevelDebug;
 
@@ -25,7 +25,7 @@ namespace Fusee.Base.Core
 
                         string f;
 
-                        if (lvl == SeverityLevel.DEBUG)
+                        if (lvl == SeverityLevel.Debug)
                         {
                             f = $"[{caller}(){(lineNumber != 0 ? ":" + lineNumber : "")}] {msg}";
                         }
@@ -92,11 +92,11 @@ namespace Fusee.Base.Core
         public enum SeverityLevel
         {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-            DEBUG = 0,
-            INFO,
-            WARN,
-            ERROR,
-            NONE = 42
+            Debug = 0,
+            Info,
+            Warn,
+            Error,
+            None = 42
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         }
 
@@ -104,15 +104,15 @@ namespace Fusee.Base.Core
         {
             switch (lvl)
             {
-                case SeverityLevel.DEBUG:
+                case SeverityLevel.Debug:
                     return "Debug";
-                case SeverityLevel.INFO:
+                case SeverityLevel.Info:
                     return "Info";
-                case SeverityLevel.WARN:
+                case SeverityLevel.Warn:
                     return "Warning";
-                case SeverityLevel.ERROR:
+                case SeverityLevel.Error:
                     return "Error";
-                case SeverityLevel.NONE:
+                case SeverityLevel.None:
                     return "None";
             }
 
@@ -123,16 +123,16 @@ namespace Fusee.Base.Core
         {
             switch (lvl)
             {
-                case SeverityLevel.DEBUG:
+                case SeverityLevel.Debug:
                     Console.ForegroundColor = ConsoleColor.Green;
                     break;
-                case SeverityLevel.INFO:
+                case SeverityLevel.Info:
                     Console.ForegroundColor = ConsoleColor.White;
                     break;
-                case SeverityLevel.WARN:
+                case SeverityLevel.Warn:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     break;
-                case SeverityLevel.ERROR:
+                case SeverityLevel.Error:
                     Console.ForegroundColor = ConsoleColor.Red;
                     break;
             }
@@ -226,7 +226,7 @@ namespace Fusee.Base.Core
         /// <param name="sourceFilePath">The file path, optional.</param>
         [Obsolete("Please use the new logging methods (Debug, Warn, Error) instead")]
         [Conditional("DEBUG")]
-        public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
+        public static void Log(object o, SeverityLevel logLevel = SeverityLevel.Debug, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
         }
@@ -244,7 +244,7 @@ namespace Fusee.Base.Core
         [Conditional("DEBUG")]
         public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-            Writer(o, SeverityLevel.DEBUG, ex, args, callerName, sourceLineNumber, sourceFilePath);
+            Writer(o, SeverityLevel.Debug, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
         /// <summary>
@@ -259,7 +259,7 @@ namespace Fusee.Base.Core
         /// <param name="sourceFilePath">The file path, optional.</param>
         public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-            Writer(o, SeverityLevel.INFO, ex, args, callerName, sourceLineNumber, sourceFilePath);
+            Writer(o, SeverityLevel.Info, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace Fusee.Base.Core
         /// <param name="sourceFilePath">The file path, optional.</param>
         public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-            Writer(o, SeverityLevel.WARN, ex, args, callerName, sourceLineNumber, sourceFilePath);
+            Writer(o, SeverityLevel.Warn, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Fusee.Base.Core
         /// <param name="sourceFilePath">The file path, optional.</param>
         public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-            Writer(o, SeverityLevel.ERROR, ex, args, callerName, sourceLineNumber, sourceFilePath);
+            Writer(o, SeverityLevel.Error, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
 #endregion

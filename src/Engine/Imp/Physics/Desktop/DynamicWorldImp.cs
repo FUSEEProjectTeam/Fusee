@@ -122,7 +122,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <summary>
         /// Called when [contact destroyed].
         /// </summary>
-        /// <param name="userPersistantData">The user persistant data.</param>
+        /// <param name="userPersistantData">The user persistent data.</param>
         void OnContactDestroyed(object userPersistantData)
         {
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
@@ -1023,14 +1023,14 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             return BtWorld.NumConstraints;
         }
 
-        /*This Funcion is called at:
+        /*This Function is called at:
          * public static void Main()
            {
                var app = new BulletTest();
                 app.Run();
                 _physic.World.Dispose();
            }
-         * definetly the wrong place!!!!!!!!
+         * definitely the wrong place!!!!!!!!
          * TODO: call it at the right place
          */
         /// <summary>
@@ -1059,7 +1059,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 }
                
 
-                //remove the rigidbodies from the dynamics world and delete them
+                //remove the rigid bodies from the dynamics world and delete them
                 for (i = BtWorld.NumCollisionObjects - 1; i >= 0; i--)
                 {
                     CollisionObject obj = BtWorld.CollisionObjectArray[i];

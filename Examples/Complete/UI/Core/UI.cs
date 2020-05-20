@@ -38,7 +38,7 @@ namespace Fusee.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initWindowWidth;
         private float _initWindowHeight;
         private float _initCanvasWidth;
@@ -63,7 +63,7 @@ namespace Fusee.Examples.UI.Core
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
             
             float borderScaleFactor = 1;
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
                 borderScaleFactor = canvasScaleFactor;
             }
@@ -73,7 +73,7 @@ namespace Fusee.Examples.UI.Core
                 "FPSText",
                 vsTex,
                 psTex,
-                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT),
+                UIElementPosition.GetAnchors(AnchorPos.DownDownRight),
                 new MinMaxRect
                 {
                     Min = new float2(-2, 0),
@@ -81,8 +81,8 @@ namespace Fusee.Examples.UI.Core
                 },
                  _fontMap,
                 ColorUint.Tofloat4(ColorUint.White),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center
             );
 
             _fpsText = fps.GetComponentsInChildren<GUIText>().FirstOrDefault();
@@ -95,7 +95,7 @@ namespace Fusee.Examples.UI.Core
                 "ButtonText",
                 vsTex,
                 psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
+                UIElementPosition.GetAnchors(AnchorPos.StretchAll),
                 new MinMaxRect
                 {
                     Min = new float2(1f, 0.5f),
@@ -103,8 +103,8 @@ namespace Fusee.Examples.UI.Core
                 },
                 _fontMap,
                 ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             var catTextureNode = new TextureNode(
                 "Cat",
@@ -115,12 +115,12 @@ namespace Fusee.Examples.UI.Core
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
 
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 2.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 2.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
                 //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
@@ -141,12 +141,12 @@ namespace Fusee.Examples.UI.Core
                 //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
+                UIElementPosition.GetAnchors(AnchorPos.DownDownLeft),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
 
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
+                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
 
             var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
@@ -154,8 +154,8 @@ namespace Fusee.Examples.UI.Core
                 psNineSlice,
                 new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
 
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
@@ -169,9 +169,9 @@ namespace Fusee.Examples.UI.Core
                 psNineSlice,
                 new Texture(await AssetStorage.GetAsync<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_RIGHT),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
+                UIElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_RIGHT, new float2(_initCanvasWidth - 6, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 3)),
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopRight, new float2(_initCanvasWidth - 6, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 3)),
 
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
@@ -186,8 +186,8 @@ namespace Fusee.Examples.UI.Core
                 psNineSlice,
                 new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
                 1, 1, 1, 1,
@@ -200,8 +200,8 @@ namespace Fusee.Examples.UI.Core
                 psNineSlice,
                 new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
                 1, 1, 1, 1,
@@ -214,8 +214,8 @@ namespace Fusee.Examples.UI.Core
                 psNineSlice,
                 new Texture(await AssetStorage.GetAsync<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_VERTICAL), //Anchor is in the lower right corner. Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_VERTICAL, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                UIElementPosition.GetAnchors(AnchorPos.StretchVertical), //Anchor is in the lower right corner. Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.StretchVertical, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
                 1, 1, 1, 1,
@@ -341,7 +341,7 @@ namespace Fusee.Examples.UI.Core
         {
             _initWindowWidth = Width;
             _initWindowHeight = Height;
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
                 _initCanvasWidth = Width / 100f;
                 _initCanvasHeight = Height / 100f;
@@ -448,7 +448,7 @@ namespace Fusee.Examples.UI.Core
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);            
             var view = mtxCam * mtxRot;
-            var projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
+            var projection = _canvasRenderMode == CanvasRenderMode.Screen ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
             
             RC.Projection = projection;
             RC.View = view;

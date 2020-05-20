@@ -882,7 +882,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
             var textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
         }
 
         /// <summary>
@@ -893,7 +893,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
         {
             var textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
         }
 
         /// <summary>
@@ -910,7 +910,7 @@ namespace Fusee.Engine.Core
                 texHandles.Add(textureHandle);
             }
             var handlesAsArray = texHandles.ToArray();
-            _rci.SetShaderParamTextureArray(param, handlesAsArray, TextureType.TEXTURE2D);
+            _rci.SetShaderParamTextureArray(param, handlesAsArray, TextureType.Texture2D);
         }
 
         /// <summary>
@@ -921,7 +921,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
         {
             var textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
-            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE_CUBE_MAP);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TextureCubeMap);
         }
 
         #endregion
@@ -1193,24 +1193,24 @@ namespace Fusee.Engine.Core
                     if (param.Value is IWritableCubeMap)
                     {
                         var textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE_CUBE_MAP);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TextureCubeMap);
                     }
                     else if (param.Value is IWritableTexture)
                     {
                         var textureHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                     }
                     else if (param.Value is ITexture)
                     {
                         var textureHandle = _textureManager.GetTextureHandleFromTexture((Texture)param.Value);
-                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                     }
                     else if (param.Value is IWritableTexture[])
                     {
                         foreach (var tex in (WritableTexture[])param.Value)
                         {
                             var textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
-                            _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                            _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.Texture2D);
                         }
                     }
                 }

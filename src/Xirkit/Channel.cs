@@ -42,7 +42,7 @@ namespace Fusee.Xirkit
         private TValue _value;
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="Channel{TValue}"/> class. Adds one defaul Keyframe and the right Lerpfunction.
+        /// Initializes a new instance of the <see cref="Channel{TValue}"/> class. Adds one default Keyframe and the right Lerpfunction.
         /// </summary>
         /// <param name="timeChanged">The time changed.</param>
         /// <param name="lerpFunc">The lerp function.</param>
@@ -134,7 +134,7 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Removes a keyframe at a speciffic time (time = key).
+        /// Removes a keyframe at a specific time (time = key).
         /// </summary>
         /// <param name="time">The time of the keyframe that has to be removed.</param>
         public void RemoveKeyframe(float time)

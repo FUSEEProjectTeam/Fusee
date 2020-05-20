@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
     }
 
     /// <summary>
-    /// Stores threedimensional, polygonal geometry and provides methods for manipulation.
+    /// Stores three dimensional, polygonal geometry and provides methods for manipulation.
     /// To actually render the geometry in the engine, convert Geometry to <see cref="Mesh"/> objects.
     /// </summary>
     public class Geometry
@@ -233,7 +233,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets a value indicating whether this instance has tex coords.
+        /// Gets a value indicating whether this instance has texture coordinates.
         /// </summary>
         /// <value>
         /// <c>true</c> if this instance has texture coordinates; otherwise, <c>false</c>.
@@ -251,7 +251,7 @@ namespace Fusee.Engine.Core
         /// Gets all faces containing a certain vertex.
         /// </summary>
         /// <param name="iV">The index of the vertex.</param>
-        /// <param name="vertInFace">Out parameter: A list of indices of the vertex in each respecitve face.</param>
+        /// <param name="vertInFace">Out parameter: A list of indices of the vertex in each respective face.</param>
         /// <returns>A list of indices containing the vertex.</returns>
         public IList<int> GetAllFacesContainingVertex(int iV, out IList<int> vertInFace)
         {
@@ -279,7 +279,7 @@ namespace Fusee.Engine.Core
         /// Calculates the normal vector for a given face.
         /// </summary>
         /// <param name="f">The face to calculate the normal for.</param>
-        /// <returns>The nomal vector for the face.</returns>
+        /// <returns>The normal vector for the face.</returns>
         /// <exception cref="System.Exception">The face doesn't consist of 3 or more vertices.</exception>
         public double3 CalcFaceNormal(Face f)
         {
@@ -313,7 +313,7 @@ namespace Fusee.Engine.Core
                 }
                 // Quick and dirty solution: if the smoothing angle holds for all combinations we create a shared normal,
                 // otherwise we create individual normals for each face. 
-                // TODO: Build groups of shared normmals where faces are connected by edges (need edges to do this)
+                // TODO: Build groups of shared normals where faces are connected by edges (need edges to do this)
                 bool smoothit = true;
                 for (int i = 0; i < normals.Count; i++)
                 {
@@ -387,7 +387,7 @@ namespace Fusee.Engine.Core
 
 
         /// <summary>
-        /// Converts the whole geomentry to a <see cref="Mesh"/>.
+        /// Converts the whole geometry to a <see cref="Mesh"/>.
         /// </summary>
         /// <returns>An equivalent instance of <see cref="Mesh"/>.</returns>
         public Mesh ToMesh()

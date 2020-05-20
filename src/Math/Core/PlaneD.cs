@@ -200,9 +200,8 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// </summary>
         /// <param name="aabb">The axis aligned bounding box.</param>
-        /// <returns></returns>
+        /// </summary>
         private double BoxExtendInNormalDirection(AABBd aabb)
         {
             var boxExtend = aabb.Size * 0.5f;
@@ -211,9 +210,8 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// </summary>
         /// <param name="obb">The object oriented bounding box.</param>
-        /// <returns></returns>
+        ///</summary>
         private double BoxExtendInNormalDirection(OBBd obb)
         {
             var transformationMat = obb.Rotation * double4x4.CreateTranslation(obb.Translation); //without scale!

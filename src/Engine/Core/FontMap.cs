@@ -183,7 +183,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Fixes the kerning of a text (if possible). Todo: Instead of fixing existing geometry provide methods to create kerned geometry.
+        /// Fixes the kerning of a text (if possible). ToDo: Instead of fixing existing geometry provide methods to create kerned geometry.
         /// </summary>
         /// <param name="vertices">The vertices.</param>
         /// <param name="text">The text.</param>

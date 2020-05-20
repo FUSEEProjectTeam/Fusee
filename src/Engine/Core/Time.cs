@@ -10,7 +10,7 @@
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Time</code> to
     /// directly access <see cref="FramePerSecond"/>, <see cref="DeltaTime"/> etc.
-    /// without even typing a namespace or classname.
+    /// without even typing a namespace or class name.
     /// </remarks>
     public class Time
     {
@@ -63,11 +63,11 @@
         public static int FramesPerSecondAverage => Instance.TimeFramesPerSecondAverage;
 
         /// <summary>
-        /// Provides the passed time since start of the application uneffected by TimeScale (read only).
+        /// Provides the passed time since start of the application unaffected by TimeScale (read only).
         /// </summary>
         public float TimeRealTimeSinceStart => _realTime;
         /// <summary>
-        /// Provides the passed time since start of the application uneffected by TimeScale (read only).
+        /// Provides the passed time since start of the application unaffected by TimeScale (read only).
         /// </summary>
         public static float RealTimeSinceStart => Instance.TimeRealTimeSinceStart;
 
@@ -99,11 +99,11 @@
         public static float DeltaTime => Instance.TimeDeltaTime;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in milliseconds that is uneffected by the TimeScale (read only).
+        /// Provides the DeltaTime since the last frame in milliseconds that is unaffected by the TimeScale (read only).
         /// </summary>
         public float TimeRealDeltaTimeMs => _realDeltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in milliseconds that is uneffected by the TimeScale (read only).
+        /// Provides the DeltaTime since the last frame in milliseconds that is unaffected by the TimeScale (read only).
         /// </summary>
         public static float RealDeltaTimeMs => Instance.TimeRealDeltaTimeMs;
 

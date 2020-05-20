@@ -10,7 +10,7 @@ namespace Fusee.Engine.Common
     public interface IRenderTarget
     {
         /// <summary>
-        /// The gpu handle that represents the gbuffer object.
+        /// The gpu handle that represents the G-buffer object.
         /// </summary>
         IBufferHandle GBufferHandle { get; set; }
 
@@ -20,9 +20,9 @@ namespace Fusee.Engine.Common
         IBufferHandle DepthBufferHandle { get; set; }
 
         /// <summary>
-        /// The array that holds all textures of the gbuffer.
+        /// The array that holds all textures of the G-buffer.
         /// </summary>
-        IWritableTexture[] RenderTextures { get; }       
+        IWritableTexture[] RenderTextures { get; }
 
         /// <summary>
         /// The resolution of the render textures in px.

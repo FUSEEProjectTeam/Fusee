@@ -31,8 +31,8 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="transA">The trans a.</param>
         /// <param name="transB">The trans b.</param>
-        /// <param name="invInertiaWorldA">The inv inertia world a.</param>
-        /// <param name="invInertiaWorldB">The inv inertia world b.</param>
+        /// <param name="invInertiaWorldA">The inverted inertia world a.</param>
+        /// <param name="invInertiaWorldB">The derived inertia world b.</param>
         void CalcAngleInfo2(float4x4 transA, float4x4 transB, float4x4 invInertiaWorldA, float4x4 invInertiaWorldB);
         /// <summary>
         /// Enables the motor.

@@ -121,24 +121,18 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal enum MatColor
         {
-            GREEN,
-            YELLOW,
-            GRAY,
-            WHITE
-        }
-
-        internal enum AnnotationPos
-        {
-            LEFT,
-            RIGHT
+            Green,
+            Yellow,
+            Gray,
+            White
         }
 
         internal enum AnnotationKind
         {
-            TO_CHECK,
-            DISCARDED,
-            RECOGNIZED_ML,
-            CONFIRMED
+            ToCheck,
+            Discarded,
+            RecognizedML,
+            Confirmed
         }
 
         internal async void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
@@ -151,28 +145,28 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             switch (annotationKind)
             {
-                case AnnotationKind.TO_CHECK:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.YELLOW));
+                case AnnotationKind.ToCheck:
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.Yellow));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconToCheck, _frameToCheck));
-                    container.Children.Add(await CreateLine(MatColor.YELLOW));
+                    container.Children.Add(await CreateLine(MatColor.Yellow));
                     break;
 
-                case AnnotationKind.DISCARDED:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GRAY));
+                case AnnotationKind.Discarded:
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.Gray));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconDiscarded, _frameDiscarded));
-                    container.Children.Add(await CreateLine(MatColor.GRAY));
+                    container.Children.Add(await CreateLine(MatColor.Gray));
                     break;
 
-                case AnnotationKind.RECOGNIZED_ML:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
+                case AnnotationKind.RecognizedML:
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.Green));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed));
-                    container.Children.Add(await CreateLine(MatColor.GREEN));
+                    container.Children.Add(await CreateLine(MatColor.Green));
                     break;
 
-                case AnnotationKind.CONFIRMED:
-                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
+                case AnnotationKind.Confirmed:
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.Green));
                     container.Children.Add(CreateAnnotation(annotationPos, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed));
-                    container.Children.Add(await CreateLine(MatColor.GREEN));
+                    container.Children.Add(await CreateLine(MatColor.Green));
                     break;
             }
             parentUiElement.Children.Add(container);
@@ -190,7 +184,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f))
+                UIElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f))
             );
 
             var annotationText = new TextNode(
@@ -203,11 +197,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
                 RalewayFontMap,
                 ColorUint.Tofloat4(ColorUint.Black),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             var annotation = new TextureNode(
                 "Annotation",
@@ -219,7 +213,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, pos, CanvasHeightInit, CanvasWidthInit,
+                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, pos, CanvasHeightInit, CanvasWidthInit,
                     AnnotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
@@ -243,22 +237,22 @@ namespace Fusee.Examples.AdvancedUI.Core
             switch (color)
             {
                 default:
-                case MatColor.WHITE:
+                case MatColor.White:
                     col = White;
                     nameSuffix = "white";
                     break;
 
-                case MatColor.GREEN:
+                case MatColor.Green:
                     col = Green;
                     nameSuffix = "green";
                     break;
 
-                case MatColor.YELLOW:
+                case MatColor.Yellow:
                     col = Yellow;
                     nameSuffix = "yellow";
                     break;
 
-                case MatColor.GRAY:
+                case MatColor.Gray:
                     col = Gray;
                     nameSuffix = "gray";
                     break;
@@ -277,7 +271,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                             Min = new float2(0.5f, 0.5f),
                             Max = new float2(0.5f, 0.5f)
                         },
-                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
+                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
                     },
                     new XForm
                     {
@@ -293,9 +287,9 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             var col = color switch
             {
-                MatColor.GREEN => Green,
-                MatColor.YELLOW => Yellow,
-                MatColor.GRAY => Gray,
+                MatColor.Green => Green,
+                MatColor.Yellow => Yellow,
+                MatColor.Gray => Gray,
                 _ => White,
             };
             return new SceneNode()
@@ -311,7 +305,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                             Min = new float2(0.5f, 0.5f),
                             Max = new float2(0.5f, 0.5f)
                         },
-                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
+                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
                     },
                     new XForm
                     {
@@ -326,9 +320,9 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             return col switch
             {
-                MatColor.GREEN => GreenEffect,
-                MatColor.YELLOW => YellowEffect,
-                MatColor.GRAY => GrayEffect,
+                MatColor.Green => GreenEffect,
+                MatColor.Yellow => YellowEffect,
+                MatColor.Gray => GrayEffect,
                 _ => OccludedDummyEffect,
             };
         }

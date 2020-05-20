@@ -60,14 +60,14 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
             });
 
         }
 
         /// <summary>
-        /// Shader effect for the ssao pass.
+        /// Shader effect for the SSAO pass.
         /// </summary>        
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
@@ -102,9 +102,9 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
 
                 new EffectParameterDeclaration {Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
                 new EffectParameterDeclaration {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
@@ -115,9 +115,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
+        /// Creates a blurred SSAO texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>        
+        /// <param name="ssaoRenderTex">The non blurred SSAO texture.</param>        
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
@@ -125,14 +125,14 @@ namespace Fusee.Engine.Core
             float blurKernelSize;
             switch (ssaoRenderTex.Width)
             {
-                case (int)TexRes.LOW_RES:
+                case (int)TexRes.Low:
                     blurKernelSize = 2.0f;
                     break;
                 default:
-                case (int)TexRes.MID_RES:
+                case (int)TexRes.Middle:
                     blurKernelSize = 4.0f;
                     break;
-                case (int)TexRes.HIGH_RES:
+                case (int)TexRes.High:
                     blurKernelSize = 8.0f;
                     break;
             }
@@ -314,11 +314,11 @@ namespace Fusee.Engine.Core
         {
             return new List<EffectParameterDeclaration>()
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},

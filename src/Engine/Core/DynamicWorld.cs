@@ -10,7 +10,7 @@ namespace Fusee.Engine.Core
 #pragma warning disable CS1591 // Missing XML comment
     public class DynamicWorld
     {
-        internal /*readonly*/ IDynamicWorldImp _dwi;
+        internal IDynamicWorldImp _dwi;
         
         public DynamicWorld([InjectMe] IDynamicWorldImp dynamicWorld)
         {

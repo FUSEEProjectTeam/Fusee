@@ -16,7 +16,7 @@
         RGB,
 
         /// <summary>
-        /// Used for Images containing a single grey-scale value per-pixel. Each pixel consists of one byte.
+        /// Used for Images containing a single grayscale value per-pixel. Each pixel consists of one byte.
         /// </summary>
         Intensity,
 

@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core
         /// Gets the shader parameter.
         /// </summary>
         /// <param name="paramName">Name of the parameter.</param>
-        /// <returns>A <see cref="ShaderParamInfo"/> object if paramName is declared and used as a uniform parameter within the shader program. Otherwise the Handle field of the returndes struct is null</returns>
+        /// <returns>A <see cref="ShaderParamInfo"/> object if paramName is declared and used as a uniform parameter within the shader program. Otherwise the Handle of the returned struct is null</returns>
         public ShaderParamInfo GetShaderParamInfo(string paramName)
         {
             ParamsByName.TryGetValue(paramName, out ShaderParamInfo ret);

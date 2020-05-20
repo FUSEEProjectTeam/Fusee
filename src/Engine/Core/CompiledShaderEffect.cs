@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Engine.Core.Scene;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {

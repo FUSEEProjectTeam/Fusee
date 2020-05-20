@@ -122,7 +122,7 @@ namespace Fusee.Base.Imp.Desktop
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
 
-            //Writes points of a freetyp contour into a CurvePart,
+            //Writes points of a freetype contour into a CurvePart,
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
@@ -225,7 +225,7 @@ namespace Fusee.Base.Imp.Desktop
 
     internal class SplitToCurvePartHelper
     {
-        #region Methodes
+        #region Methods
         public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);

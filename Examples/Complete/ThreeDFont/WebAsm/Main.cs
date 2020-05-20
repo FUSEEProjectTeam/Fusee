@@ -36,7 +36,7 @@ namespace Fusee.Examples.ThreeDFont.Main
 
             // disable the debug output as the console output and debug output are the same for web
             // this prevents that every message is printed twice!
-            Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.NONE);
+            Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.None);
 
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.WebAsm.IOImp();

@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// The raw Pixeldata byte buffer. This byte buffer will be uploaded to the GPU inside <see cref="RenderContext"/>
+        /// The raw pixel data byte buffer. This byte buffer will be uploaded to the GPU inside <see cref="RenderContext"/>
         /// </summary>
         public byte[] PixelData
         {
@@ -117,7 +117,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.Linear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(pixelData, width, height, colorFormat);
@@ -133,7 +133,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.Linear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(

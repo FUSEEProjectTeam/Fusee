@@ -60,7 +60,7 @@ namespace Fusee.Test.Serialization.V1
                 Name = "Base"
             });
 
-            ((FusScene)scene.Contents).Children[0].AddComponent(new FusCanvasTransform(Fusee.Serialization.V1.CanvasRenderMode.SCREEN)
+            ((FusScene)scene.Contents).Children[0].AddComponent(new FusCanvasTransform(Fusee.Serialization.V1.CanvasRenderMode.Screen)
             {
                 Name = "CanvasTransform",
                 Scale = float2.One * 2,
@@ -83,8 +83,8 @@ namespace Fusee.Test.Serialization.V1
             {
                 Name = "XFormText",
                 Height = 10,
-                HorizontalAlignment = Fusee.Serialization.V1.HorizontalTextAlignment.CENTER,
-                VerticalAlignment = Fusee.Serialization.V1.VerticalTextAlignment.TOP,
+                HorizontalAlignment = Fusee.Serialization.V1.HorizontalTextAlignment.Center,
+                VerticalAlignment = Fusee.Serialization.V1.VerticalTextAlignment.Top,
                 Width = 200
             });
 
@@ -694,7 +694,7 @@ namespace Fusee.Test.Serialization.V1
                     Name = "Base",
                     Components = new List<SceneComponent>
                     {
-                       new CanvasTransform(Engine.Core.Scene.CanvasRenderMode.SCREEN)
+                       new CanvasTransform(Engine.Core.Scene.CanvasRenderMode.Screen)
                        {
                            Name = "CanvasTransform",
                            Scale = float2.One * 2,
@@ -715,8 +715,8 @@ namespace Fusee.Test.Serialization.V1
                         {
                             Name = "XFormText",
                             Height = 10,
-                            HorizontalAlignment = Engine.Core.Scene.HorizontalTextAlignment.CENTER,
-                            VerticalAlignment = Engine.Core.Scene.VerticalTextAlignment.TOP,
+                            HorizontalAlignment = Engine.Core.Scene.HorizontalTextAlignment.Center,
+                            VerticalAlignment = Engine.Core.Scene.VerticalTextAlignment.Top,
                             Width = 200
                         },
                        new XForm

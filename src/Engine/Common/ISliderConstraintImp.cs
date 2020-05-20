@@ -42,6 +42,7 @@ namespace Fusee.Engine.Common
         /// <param name="transA">The trans a.</param>
         /// <param name="transB">The trans b.</param>
         void CalculateTransforms(float4x4 transA, float4x4 transB);
+
         /// <summary>
         /// Gets the calculated transform a.
         /// </summary>
@@ -49,6 +50,7 @@ namespace Fusee.Engine.Common
         /// The calculated transform a.
         /// </value>
         float4x4 CalculatedTransformA { get; }
+
         /// <summary>
         /// Gets the calculated transform b.
         /// </summary>
@@ -137,6 +139,7 @@ namespace Fusee.Engine.Common
         /// The lower angular limit.
         /// </value>
         float LowerAngularLimit { get; set; }
+
         /// <summary>
         /// Gets and sets the lower lin limit.
         /// </summary>

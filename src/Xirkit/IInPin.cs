@@ -3,7 +3,7 @@
 namespace Fusee.Xirkit
 {
     /// <summary>
-    /// Event handler type. Methods whith this signature can be registered on the <see cref="IInPin.ReceivedValue"/> event.
+    /// Event handler type. Methods with this signature can be registered on the <see cref="IInPin.ReceivedValue"/> event.
     /// </summary>
     /// <param name="inPin">The in-pin receiving a value.</param>
     /// <param name="args">The <see cref="EventArgs"/> instance containing the event data.</param>
@@ -28,11 +28,11 @@ namespace Fusee.Xirkit
         /// </value>
         string Member { get; }
         /// <summary>
-        /// Occurs when this pin reveived a value.
+        /// Occurs when this pin received a value.
         /// </summary>
         event ReceivedValueHandler ReceivedValue;
         /// <summary>
-        /// Retrieves the type discription of the pin.
+        /// Retrieves the type description of the pin.
         /// </summary>
         /// <returns>The pin's type</returns>
         Type GetPinType();

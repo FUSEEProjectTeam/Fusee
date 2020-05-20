@@ -37,7 +37,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         private float _initWidth;
         private float _initHeight;
         private float2 _resizeScaleFactor;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private float _canvasWidth;
         private float _canvasHeight;
@@ -104,7 +104,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
                 UIHelper.CanvasWidthInit = Width / 100f;
                 UIHelper.CanvasHeightInit = Height / 100f;
@@ -245,7 +245,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
 
             RC.View = view;
-            RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
+            RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
@@ -291,7 +291,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     uiInput.CircleCanvasPos = canvasPosCircle;
 
                     var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
-                    circle.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
+                    circle.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
 
@@ -382,7 +382,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _sceneRenderer.Render(RC);
 
-            RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
+            RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
             _guiRenderer.Render(RC);
 
             Present();
@@ -404,7 +404,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             var canvasScaleFactor = _initWidth / _canvasWidth;
             float borderScaleFactor = 1;
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
                 borderScaleFactor = canvasScaleFactor;
             }
@@ -423,8 +423,8 @@ namespace Fusee.Examples.AdvancedUI.Core
                 _uiHelper.VsTex,
                 _uiHelper.PsTex,
                 guiFuseeLogo,
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var markModelContainer = new SceneNode
@@ -446,7 +446,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             for (var i = 0; i < _uiInput.Count; i++)
             {
                 var item = _uiInput[i];
-                if (item.AnnotationKind != UIHelper.AnnotationKind.CONFIRMED)
+                if (item.AnnotationKind != UIHelper.AnnotationKind.Confirmed)
                 {
                     _uiHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                     "#" + i + " " + item.SegmentationClass + ", " + item.Probability.ToString(CultureInfo.GetCultureInfo("en-gb")));
@@ -488,19 +488,19 @@ namespace Fusee.Examples.AdvancedUI.Core
             if (input.CircleCanvasPos.x <= _canvasWidth / 2)
             {
                 //LEFT
-                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT);
+                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DownDownLeft);
 
                 sncAnnotation.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(
-                    AnchorPos.DOWN_DOWN_LEFT, input.AnnotationCanvasPos,
+                    AnchorPos.DownDownLeft, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
             else
             {
                 //RIGHT
-                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT);
+                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DownDownRight);
 
                 sncAnnotation.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(
-                    AnchorPos.DOWN_DOWN_RIGHT, input.AnnotationCanvasPos,
+                    AnchorPos.DownDownRight, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
         }
@@ -533,7 +533,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     };
                 }
 
-                sncLine.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
+                sncLine.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
 
                 var mesh = sncLine.GetComponent<Line>();
 

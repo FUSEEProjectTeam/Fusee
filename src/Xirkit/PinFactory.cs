@@ -7,7 +7,7 @@ namespace Fusee.Xirkit
 {
     /// <summary>
     /// This class' static member function creates Pins depending on the type of the member (int, double, string, ...) and also 
-    /// depending on whether the memeber is a propery (with a setter and getter) or a simple field.
+    /// depending on whether the member is a property (with a setter and getter) or a simple field.
     /// </summary>
 
     static class PinFactory
@@ -128,7 +128,7 @@ namespace Fusee.Xirkit
                     fieldInfo = t.GetField(member);
                     if (fieldInfo == null)
                     {
-                        //TODO: change Exception to an apropriate exception type
+                        //TODO: change Exception to an appropriate exception type
                         throw new Exception(
                             "Neither a field nor a property named " + member + " exists");
                     }
@@ -146,7 +146,7 @@ namespace Fusee.Xirkit
 
                     if (!propertyInfo.CanRead)
                     {
-                        //TODO: change Exception to an apropriate exception type
+                        //TODO: change Exception to an appropriate exception type
                         throw new Exception(
                             "A property named " + member + " exists but we cannot read from it");
                     }

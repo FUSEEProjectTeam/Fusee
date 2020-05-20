@@ -136,7 +136,7 @@ namespace Fusee.Engine.Core
             o._iRigidBodyImp.ApplyImpulse(impulse, relPos);
         }
         /// <summary>
-        /// Applies a torgue impulse to a rigid body.
+        /// Applies a torque impulse to a rigid body.
         /// </summary>
         /// <param name="torqueImpulse"></param>
         public void ApplyTorqueImpulse(float3 torqueImpulse)
@@ -178,7 +178,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Gets and sets the angualr velocity for a rigid body.
+        /// Gets and sets the angular velocity for a rigid body.
         /// </summary>
         public float3 AngularVelocity
         {
@@ -251,7 +251,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Sets the drag of a rigd body.
+        /// Sets the drag of a rigidbody.
         /// </summary>
         /// <param name="linearDrag"></param>
         /// <param name="anglularDrag"></param>
@@ -410,7 +410,7 @@ namespace Fusee.Engine.Core
                        
                     //Default
                     default:
-                        //TODO: Exeption
+                        
                         var defaultShape = new EmptyShape();
                         Debug.WriteLine("default");
                         //rbi = _dwi.AddRigidBody(mass, worldTransform, defaultShape._emtyShapeImp, inertia);
