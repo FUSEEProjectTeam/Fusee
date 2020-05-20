@@ -29,6 +29,11 @@ namespace Fusee.Engine.Core
         #region Properties
 
         /// <summary>
+        /// Reference to the original image. Should save  path/file name. 
+        /// </summary>
+        public string PathAndName;
+
+        /// <summary>
         /// Width in pixels.
         /// </summary>
         public int Width
@@ -116,12 +121,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public RenderTargetTextureTypes TextureType { get; private set; }
 
-        #endregion
-
-        /// <summary>
-        /// Creates a new instance of type Texture.
-        /// </summary>
-        protected Texture() { }
+        #endregion        
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
