@@ -18,7 +18,6 @@
 
     <ItemGroup>
         <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="server.py" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="canvaskit.wasm" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="canvaskit.js" CopyToOutputDirectory="PreserveNewest" />
         <Content Include="index.html" CopyToOutputDirectory="PreserveNewest" />

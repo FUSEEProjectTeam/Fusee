@@ -2,11 +2,8 @@
   "profiles": {
     "WebLaunch": {
       "commandName": "Executable",
-      "executablePath": "python",
-      "commandLineArgs": "server.py",
-      "workingDirectory": "$(OutputPath)",
-      "launchBrowser": true,
-      "launchUrl": "http://localhost:8000/"
+      "executablePath": "cmd",
+      "commandLineArgs": "/K \"cd /D $(SolutionDir) && dotnet tool run dotnet-serve -o -d $(OutDir) --headers \"Cache-Control: no-cache\"\""
     }
   }
 }
