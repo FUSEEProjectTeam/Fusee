@@ -344,7 +344,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.SimpleDeferr
 		{10DA02FC-109F-4D71-864A-9F5B1E9A0D70} = {10DA02FC-109F-4D71-864A-9F5B1E9A0D70}
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.CmdLine", "src\Tools\fuseeCmdLine\Fusee.Tools.CmdLine.csproj", "{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.CmdLine", "src\Tools\CmdLine\Fusee.Tools.CmdLine.csproj", "{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Render", "Render", "{58433A65-35DC-4C22-A795-2443C72F7428}"
 EndProject
