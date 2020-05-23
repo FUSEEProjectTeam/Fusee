@@ -60,7 +60,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Graphics.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Android", "src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj", "{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Android", "src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj", "{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Base.Imp.Android", "src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj", "{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Base.Imp.Desktop", "src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj", "{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}"
 EndProject
