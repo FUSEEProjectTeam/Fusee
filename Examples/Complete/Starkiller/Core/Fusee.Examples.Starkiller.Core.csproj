@@ -15,11 +15,15 @@
 
   <ItemGroup>
     <None Remove="Assets\Farbpalette.png" />
-    <None Remove="Assets\Gold-Bross-Foil-Leafing-Metal-Texture.jpg" />
-    <None Remove="Assets\Large_214836.jpg" />
-    <None Remove="Assets\NormalMapMetroid.png" />
+    <None Remove="Assets\normal map.png" />
+    <None Remove="Assets\NormalMap.png" />
+    <None Remove="Assets\normalMap4.png" />
+    <None Remove="Assets\normalMap5.png" />
+    <None Remove="Assets\normalMap6.png" />
+    <None Remove="Assets\normMap2.png" />
+    <None Remove="Assets\NormMap3.png" />
+    <None Remove="Assets\pixil-frame-0.png" />
     <None Remove="Assets\StarkillerAssets.fus" />
-    <None Remove="Assets\stone-meteorite-seamless-texture.jpg" />
   </ItemGroup>
 
   <ItemGroup>
