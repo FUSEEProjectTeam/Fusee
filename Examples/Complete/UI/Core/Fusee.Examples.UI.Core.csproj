@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.UI.Core</RootNamespace>
-    <PackageId>Fusee.Examples.UI.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\UI\Core\</OutputPath>
   </PropertyGroup>
 

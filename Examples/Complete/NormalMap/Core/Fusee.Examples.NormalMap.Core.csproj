@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.Bump.Core</RootNamespace>
-    <PackageId>Fusee.Examples.Bump.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\Bump\Core\</OutputPath>
   </PropertyGroup>
 

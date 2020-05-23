@@ -1,16 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.GUI</RootNamespace>
-    <PackageId>Fusee.Engine.GUI</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Fusee Engine GUI</Description>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
     <Content Include="NuGet\Fusee.Engine.GUI.targets" PackagePath="build\Fusee.Engine.GUI.targets" />

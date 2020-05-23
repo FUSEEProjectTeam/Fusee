@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.ThreeDFont.Core</RootNamespace>
-    <PackageId>Fusee.Examples.ThreeDFont.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\ThreeDFont\Core\</OutputPath>
   </PropertyGroup>
 

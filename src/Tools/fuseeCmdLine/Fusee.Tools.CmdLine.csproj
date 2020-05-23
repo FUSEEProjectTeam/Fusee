@@ -1,16 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <AssemblyName>fusee</AssemblyName>
     <PackageId>Fusee.Tools.CmdLine</PackageId>
-    <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
+    <AssemblyName>fusee</AssemblyName>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fusee</ToolCommandName>
     <PackageTags>dotnet;tools;fusee</PackageTags>
-  </PropertyGroup>
-  
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Tools\CmdLine</OutputPath>
   </PropertyGroup>
 
@@ -43,14 +39,12 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Google.Protobuf.Tools" Version="3.12.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
-  </ItemGroup>  
-  
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+  </ItemGroup>
+
   <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
 	 This code should be part of the respective .pyproj project file. Unforntunately .pyprojects
 	 don't do anything during "Build". Thus Post-Build steps are non functional. -->
@@ -59,7 +53,6 @@
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
     <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
@@ -84,7 +77,7 @@
     <!-- Copy the python files to the bin output folder -->
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
-    
+
     <!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
     <!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
     <!-- install from https://github.com/loresoft/msbuildtasks/releases -->
