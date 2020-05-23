@@ -629,7 +629,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         //}
 
         #region IDisposable Member
-            
+
         /// <summary>
         /// Disposes of the device.
         /// </summary>

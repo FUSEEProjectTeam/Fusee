@@ -269,7 +269,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Returns a double3 which contains negative infinity values
         /// </summary>
-        public static double3 NegativeInfinity => One * double.NegativeInfinity;       
+        public static double3 NegativeInfinity => One * double.NegativeInfinity;
 
         #endregion
 

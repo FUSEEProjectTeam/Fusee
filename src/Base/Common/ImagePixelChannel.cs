@@ -18,7 +18,7 @@
         /// <summary>
         /// How the bits are to be interpreted, probably something like "int", "uint", "float"
         /// </summary>
-        public PixelEncoding Encoding { get; }  
+        public PixelEncoding Encoding { get; }
 
         /// <summary>
         /// Initializes an Instance of ImagePixelChannel

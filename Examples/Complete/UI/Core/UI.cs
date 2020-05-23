@@ -61,7 +61,7 @@ namespace Fusee.Examples.UI.Core
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
-            
+
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
@@ -245,7 +245,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));         
+            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));
 
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
@@ -264,14 +264,14 @@ namespace Fusee.Examples.UI.Core
                             new Transform()
                             {
                                 Translation = new float3(0,0,0)
-                            } 
+                            }
                         },
                         Children = new ChildList()
                         {
                             canvas
                         }
                     },
-                    
+
                 }
             };
         }
@@ -291,7 +291,7 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0.4f, 0.1f, 1));         
+            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0.4f, 0.1f, 1));
             var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
             n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0.4f, 0.1f, 1));
         }
@@ -299,7 +299,7 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0, 0, 1));           
+            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0, 0, 1));
             var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
             n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0, 0, 1));
         }
@@ -441,17 +441,17 @@ namespace Fusee.Examples.UI.Core
             }
 
             _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;           
+            _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);            
+            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             var view = mtxCam * mtxRot;
             var projection = _canvasRenderMode == CanvasRenderMode.Screen ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
-            
+
             RC.Projection = projection;
             RC.View = view;
             _sceneRenderer.Render(RC);
-            
+
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);

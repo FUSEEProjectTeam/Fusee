@@ -92,8 +92,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public readonly SixDOFDevice SpaceMouseInput;
 
-        private readonly Dictionary<string, InputDevice> _inputDevices; 
-        private readonly List<SpecialDeviceCreator> _specialDeviceCreators;       
+        private readonly Dictionary<string, InputDevice> _inputDevices;
+        private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
 
         /// <summary>
         /// Gets the input devices of a certain type. Shortcut for
@@ -128,7 +128,7 @@ namespace Fusee.Engine.Core
         /// This is an instance method. Use <see cref="GetDevice{TDevice}"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-        public TDevice GetInputDevice<TDevice>(int id = 0) where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().ElementAtOrDefault(id) ;
+        public TDevice GetInputDevice<TDevice>(int id = 0) where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().ElementAtOrDefault(id);
         /// <summary>
         /// Gets the first input device of a certain type. Shortcut for
         /// <code>InputDevices.OfType&lt;TDevice&gt;().FirstOrDefault()</code>
@@ -309,12 +309,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="match"></param>
         /// <param name="creator"></param>
-        public void RegisterInputDeviceType(MatchFunc match, CreatorFunc creator) 
+        public void RegisterInputDeviceType(MatchFunc match, CreatorFunc creator)
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
             if (creator == null) throw new ArgumentNullException(nameof(creator));
 
-            _specialDeviceCreators.Add(new SpecialDeviceCreator {Match = match, Creator = creator});
+            _specialDeviceCreators.Add(new SpecialDeviceCreator { Match = match, Creator = creator });
 
             // Reconnect any existing devices matching the predicate
             // List<string> matchingDevices = (from device in _inputDevices.Values where device.DeviceImp != null && match(device.DeviceImp) select device.Id).ToList();
@@ -483,7 +483,7 @@ namespace Fusee.Engine.Core
         {
             foreach (var device in _inputDevices.Values)
             {
-                InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs {InputDevice = device});
+                InputDeviceDisconnected?.Invoke(this, new DeviceConnectionArgs { InputDevice = device });
                 device.Disconnect();
             }
             _inputDevices.Clear();
@@ -495,4 +495,3 @@ namespace Fusee.Engine.Core
         }
     }
 }
-

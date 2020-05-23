@@ -45,7 +45,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (ConeShape) _coneShapeImp.UserObject;
+                var o = (ConeShape)_coneShapeImp.UserObject;
                 o._coneShapeImp.LocalScaling = value;
             }
         }
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (ConeShape) _coneShapeImp.UserObject;
+                var o = (ConeShape)_coneShapeImp.UserObject;
                 o._coneShapeImp.ConeUpIndex = value;
             }
         }

@@ -146,7 +146,7 @@ namespace Fusee.Engine.Common
         /// <value>
         /// The lower lin limit.
         /// </value>
-        float LowerLinLimit { get; set;}
+        float LowerLinLimit { get; set; }
 
         /// <summary>
         /// Gets and sets the maximum angular motor force.
@@ -277,7 +277,7 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if [solve angular limit]; otherwise, <c>false</c>.
         /// </value>
-        bool SolveAngularLimit { get;}
+        bool SolveAngularLimit { get; }
         /// <summary>
         /// Gets a value indicating whether [solve lin limit].
         /// </summary>

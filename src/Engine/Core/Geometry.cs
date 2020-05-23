@@ -163,13 +163,13 @@ namespace Fusee.Engine.Core
         {
             int i;
             Face f = new Face();
-            
+
             // Plausibility checks interleaved...
             if (vertInx == null)
                 throw new ArgumentNullException("vertInx");
 
             f.InxVert = new int[vertInx.Length];
-            for(i = 0; i < vertInx.Length; i++)
+            for (i = 0; i < vertInx.Length; i++)
             {
                 var vInx = vertInx[i];
                 if (!(0 <= vInx && vInx < _vertices.Count))
@@ -309,7 +309,7 @@ namespace Fusee.Engine.Core
                 List<double3> normals = new List<double3>();
                 foreach (int i in facesWithIV)
                 {
-                        normals.Add(CalcFaceNormal(_faces[i]));
+                    normals.Add(CalcFaceNormal(_faces[i]));
                 }
                 // Quick and dirty solution: if the smoothing angle holds for all combinations we create a shared normal,
                 // otherwise we create individual normals for each face. 
@@ -317,7 +317,7 @@ namespace Fusee.Engine.Core
                 bool smoothit = true;
                 for (int i = 0; i < normals.Count; i++)
                 {
-                    for (int j = i+1; j < normals.Count; j++)
+                    for (int j = i + 1; j < normals.Count; j++)
                     {
                         if (double3.Dot(normals[i], normals[j]) < cSmoothingAngle)
                         {
@@ -331,14 +331,14 @@ namespace Fusee.Engine.Core
                 if (smoothit)
                 {
                     // create a single normal and set each face to it
-                    double3 daNormal = new double3(){x=0,y=0,z=0};
+                    double3 daNormal = new double3() { x = 0, y = 0, z = 0 };
                     foreach (var n in normals)
                     {
                         daNormal += n;
                     }
-                    daNormal /= (double) normals.Count;
+                    daNormal /= (double)normals.Count;
                     int iN = AddNormal(daNormal);
-                    for(int i = 0; i < facesWithIV.Count; i++)
+                    for (int i = 0; i < facesWithIV.Count; i++)
                     {
                         if (_faces[facesWithIV[i]].InxNormal == null)
                             _faces[facesWithIV[i]].InxNormal = new int[_faces[facesWithIV[i]].InxVert.Length];
@@ -354,14 +354,14 @@ namespace Fusee.Engine.Core
 
                         if (_faces[facesWithIV[i]].InxNormal == null)
                             _faces[facesWithIV[i]].InxNormal = new int[_faces[facesWithIV[i]].InxVert.Length];
-                        
+
                         _faces[facesWithIV[i]].InxNormal[vertInFace[i]] = iN;
                     }
                 }
             }
         }
 
-        
+
 
         #region Structs
 
@@ -407,28 +407,28 @@ namespace Fusee.Engine.Core
                 for (int i = 0; i < f.InxVert.Length; i++)
                 {
                     TripleInx ti = new TripleInx()
-                                       {
-                                           iV = f.InxVert[i],
-                                           iT = (HasTexCoords) ? f.InxTexCoord[i] : 0,
-                                           iN = (HasNormals) ? f.InxNormal[i] : 0
-                                       };
+                    {
+                        iV = f.InxVert[i],
+                        iT = (HasTexCoords) ? f.InxTexCoord[i] : 0,
+                        iN = (HasNormals) ? f.InxNormal[i] : 0
+                    };
                     int inx;
                     if (!_vDict.TryGetValue(ti, out inx))
                     {
                         // Create a new vertex triplet combination
                         int vInx = f.InxVert[i];
-                        mVerts.Add(new float3((float) _vertices[vInx].x, (float) _vertices[vInx].y,
-                                              (float) _vertices[vInx].z));
+                        mVerts.Add(new float3((float)_vertices[vInx].x, (float)_vertices[vInx].y,
+                                              (float)_vertices[vInx].z));
                         if (HasTexCoords)
                         {
                             int tInx = f.InxTexCoord[i];
-                            mTexCoords.Add(new float2((float) _texCoords[tInx].x, (float) _texCoords[tInx].y));
+                            mTexCoords.Add(new float2((float)_texCoords[tInx].x, (float)_texCoords[tInx].y));
                         }
                         if (HasNormals)
                         {
                             int nInx = f.InxNormal[i];
-                            mNormals.Add(new float3((float) _normals[nInx].x, (float) _normals[nInx].y,
-                                                    (float) _normals[nInx].z));
+                            mNormals.Add(new float3((float)_normals[nInx].x, (float)_normals[nInx].y,
+                                                    (float)_normals[nInx].z));
                         }
                         inx = mVerts.Count - 1;
                         _vDict.Add(ti, inx);
@@ -457,13 +457,13 @@ namespace Fusee.Engine.Core
             if (indices == null)
                 indices = f.InxVert;
 
-            ushort[] ret = new ushort[3 * (f.InxVert.Length-2)];
+            ushort[] ret = new ushort[3 * (f.InxVert.Length - 2)];
             // Perform a fan triangulation
-            for (int i = 2; i < f.InxVert.Length; i++ )
+            for (int i = 2; i < f.InxVert.Length; i++)
             {
-                ret[(i - 2)*3 + 0] = (ushort)indices[0];
-                ret[(i - 2)*3 + 1] = (ushort)indices[i - 1];
-                ret[(i - 2)*3 + 2] = (ushort)indices[i];
+                ret[(i - 2) * 3 + 0] = (ushort)indices[0];
+                ret[(i - 2) * 3 + 1] = (ushort)indices[i - 1];
+                ret[(i - 2) * 3 + 2] = (ushort)indices[i];
             }
             return ret;
         }

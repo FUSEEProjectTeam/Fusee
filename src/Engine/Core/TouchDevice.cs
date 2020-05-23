@@ -67,10 +67,10 @@ namespace Fusee.Engine.Core
         public TouchDevice(IInputDeviceImp inpDeviceImp) : base(inpDeviceImp)
         {
             int nTouchpoints = ButtonCount;
-            int nVelAxes = nTouchpoints*2;
+            int nVelAxes = nTouchpoints * 2;
             _velocityIDs = new int[nVelAxes];
-            int axisId = (int) TouchAxes.Touchpoint_0_X;
-            int buttonId = (int) TouchPoints.Touchpoint_0;
+            int axisId = (int)TouchAxes.Touchpoint_0_X;
+            int buttonId = (int)TouchPoints.Touchpoint_0;
             for (int i = 0; i < nVelAxes; i++)
             {
                 _velocityIDs[i] = RegisterVelocityAxis(axisId++, buttonId).Id;
@@ -78,7 +78,7 @@ namespace Fusee.Engine.Core
                 _velocityIDs[i] = RegisterVelocityAxis(axisId++, buttonId).Id;
             }
             _tpDistance = RegisterTtpDistanceAxis();
-            _tpDistanceVel = RegisterVelocityAxis(_tpDistance, (int) TouchPoints.Touchpoint_1).Id;
+            _tpDistanceVel = RegisterVelocityAxis(_tpDistance, (int)TouchPoints.Touchpoint_1).Id;
             _tpAngle = RegisterTtpAngleAxis();
             _tpAngleVel = RegisterVelocityAxis(_tpAngle, (int)TouchPoints.Touchpoint_1).Id;
             _tpMidPointX = RegisterTtpMidpointAxis((int)TouchAxes.Touchpoint_0_X, (int)TouchAxes.Touchpoint_1_X, (int)TouchAxes.MinX, (int)TouchAxes.MaxX, AxisDirection.X, "Double-Touch Midpoint X");
@@ -115,7 +115,7 @@ namespace Fusee.Engine.Core
                 Direction = AxisDirection.Unknown,
                 Nature = AxisNature.Position,
                 Bounded = AxisBoundedType.Constant,
-                MaxValueOrAxis =  (float)System.Math.PI,
+                MaxValueOrAxis = (float)System.Math.PI,
                 MinValueOrAxis = -(float)System.Math.PI
             };
 
@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
         /// <returns>true if this touch is active (a finger is on the screen), otherwise false.</returns>
         public bool GetTouchActive(TouchPoints touch)
         {
-            return GetButton((int) touch);
+            return GetButton((int)touch);
         }
 
         /// <summary>
@@ -218,8 +218,8 @@ namespace Fusee.Engine.Core
         public float2 GetPosition(TouchPoints touch)
         {
             return new float2(
-                GetAxis(2*(touch - TouchPoints.Touchpoint_0) + (int)TouchAxes.Touchpoint_0_X),
-                GetAxis(2*(touch - TouchPoints.Touchpoint_0) + (int)TouchAxes.Touchpoint_0_Y)
+                GetAxis(2 * (touch - TouchPoints.Touchpoint_0) + (int)TouchAxes.Touchpoint_0_X),
+                GetAxis(2 * (touch - TouchPoints.Touchpoint_0) + (int)TouchAxes.Touchpoint_0_Y)
                 );
         }
 
@@ -232,8 +232,8 @@ namespace Fusee.Engine.Core
         public float2 GetVelocity(TouchPoints touch)
         {
             return new float2(
-                GetAxis(_velocityIDs[2*(touch - TouchPoints.Touchpoint_0)]),
-                GetAxis(_velocityIDs[2*(touch - TouchPoints.Touchpoint_0) + 1])
+                GetAxis(_velocityIDs[2 * (touch - TouchPoints.Touchpoint_0)]),
+                GetAxis(_velocityIDs[2 * (touch - TouchPoints.Touchpoint_0) + 1])
                 );
         }
 
@@ -282,12 +282,12 @@ namespace Fusee.Engine.Core
                 if (!TwoPoint)
                     return TwoPointAction.None;
 
-                float angleNormalized    = System.Math.Abs(TwoPointAngleVel *_angleVelNormalFactor);
+                float angleNormalized = System.Math.Abs(TwoPointAngleVel * _angleVelNormalFactor);
                 float midpointNormalized = TwoPointMidPointVel.Length * _midpointVelNormalFactor;
                 float distanceNormalized = System.Math.Abs(TwoPointDistanceVel * _distanceVelNormalFactor);
 
-                if (angleNormalized < _doubleTouchMovementThreshold && 
-                    midpointNormalized < _doubleTouchMovementThreshold && 
+                if (angleNormalized < _doubleTouchMovementThreshold &&
+                    midpointNormalized < _doubleTouchMovementThreshold &&
                     distanceNormalized < _doubleTouchMovementThreshold)
                     return TwoPointAction.None;
 
@@ -310,14 +310,14 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The distance between the first two active touchpoints, or zero, if no two touchpoints are active.
         /// </value>
-        public float  TwoPointDistance => GetAxis(_tpDistance);
+        public float TwoPointDistance => GetAxis(_tpDistance);
         /// <summary>
         /// Gets velocity of the distance between the first two touchpoints. Use this value if you want to implement pinch-like actions based on the current speed of the distance.
         /// </summary>
         /// <value>
         /// The distance velocity. Positive values mean fingers move away from each others (Zoom-In), negative values mean fingers approach each others (Zoom-Out).
         /// </value>
-        public float  TwoPointDistanceVel => GetAxis(_tpDistanceVel);
+        public float TwoPointDistanceVel => GetAxis(_tpDistanceVel);
         /// <summary>
         /// Gets the angle of a line between the first two active touchpoints measured from the positive screen x-axis. Use this value if you want to implement rotation-like actions 
         /// based on the current absolute angle.
@@ -325,7 +325,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The angle value in radians. Ranges between -PI and PI. An angle of zero denotes the positive x-axis.
         /// </value>
-        public float  TwoPointAngle => GetAxis(_tpAngle);
+        public float TwoPointAngle => GetAxis(_tpAngle);
         /// <summary>
         /// Gets the angular velocity of a line between the first two active touchpoints measured from the positive screen x-axis. Use this value if you want to implement rotation-like actions 
         /// based on the current rotation speed of the first two touchpoints.
@@ -333,7 +333,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The angular velocity of the rotation movement of the first two touchpoints. Positive values mean counter-clockwise rotation, negative values mean clockwise rotation.
         /// </value>
-        public float  TwoPointAngleVel => GetAxis(_tpAngleVel);
+        public float TwoPointAngleVel => GetAxis(_tpAngleVel);
         /// <summary>
         /// Gets midpoint between the first two active touch points. Use this value if you want to implement two-finger movement-like actions based on the current averaged
         /// absolute position of the first two touchpoints

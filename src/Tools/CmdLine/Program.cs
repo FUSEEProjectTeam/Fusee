@@ -62,4 +62,3 @@ namespace Fusee.Tools.CmdLine
         InternalError = -42
     }
 }
-

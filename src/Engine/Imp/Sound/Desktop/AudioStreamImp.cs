@@ -196,7 +196,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
 
         internal float GetVolume()
         {
-            return (float) System.Math.Round(IsStream ? _outputStream.Volume : _outputSound.Volume, 2);
+            return (float)System.Math.Round(IsStream ? _outputStream.Volume : _outputSound.Volume, 2);
         }
 
         internal void SetPanning(float val)
@@ -214,7 +214,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
 
         internal float GetPanning()
         {
-            return (float) System.Math.Round(IsStream ? _outputStream.Position.X : _outputSound.Position.X, 2);
+            return (float)System.Math.Round(IsStream ? _outputStream.Position.X : _outputSound.Position.X, 2);
         }
         #endregion
     }

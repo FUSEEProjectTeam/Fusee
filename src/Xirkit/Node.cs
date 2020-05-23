@@ -20,7 +20,7 @@ namespace Fusee.Xirkit
     public class Node
     {
         private readonly List<IOutPin> _outPinList;
-        private readonly List<IInPin>  _inPinList;
+        private readonly List<IInPin> _inPinList;
         private readonly Dictionary<IInPin, bool> _inPinActualList;
 
         private object _o;
@@ -34,7 +34,7 @@ namespace Fusee.Xirkit
         public object O
         {
             get { return _o; }
-            
+
             // re-setting the object is allowed (and works)
             set
             {
@@ -202,8 +202,8 @@ namespace Fusee.Xirkit
         /// <value>
         ///   <c>true</c> if all pins are actual; otherwise, <c>false</c>.
         /// </value>
-        public bool AllPinsActual 
-        { 
+        public bool AllPinsActual
+        {
             get
             {
                 bool ret = true;
@@ -228,4 +228,3 @@ namespace Fusee.Xirkit
         }
     }
 }
-

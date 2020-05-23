@@ -31,7 +31,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (RigidBodyImp) _rbi.UserObject;
+                var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.Gravity = Translator.Float3ToBtVector3(value);
             }
         }
@@ -42,7 +42,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <value>
         /// The mass.
         /// </value>
-        public float Mass 
+        public float Mass
         {
             get
             {
@@ -54,7 +54,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 var btInertia = o._rbi.CollisionShape.CalculateLocalInertia(value);
                 o._rbi.SetMassProps(value, btInertia);
                 _mass = value;
-            } 
+            }
         }
 
         private float3 _inertia;
@@ -64,7 +64,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <value>
         /// The inertia.
         /// </value>
-        public float3 Inertia 
+        public float3 Inertia
         {
             get
             {
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.SetMassProps(_mass, Translator.Float3ToBtVector3(value));
                 _inertia = value;
-            } 
+            }
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         {
             get
             {
-                var retval = Translator.BtMatrixToFloat4X4(_rbi.WorldTransform);           
+                var retval = Translator.BtMatrixToFloat4X4(_rbi.WorldTransform);
                 return retval;
             }
             set
@@ -163,8 +163,8 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         public void ApplyImpulse(float3 impulse, float3 relPos)
         {
             var o = (RigidBodyImp)_rbi.UserObject;
-           // impulse *= 10;
-            o._rbi.ApplyImpulse(Translator.Float3ToBtVector3(impulse)*10, Translator.Float3ToBtVector3(relPos));
+            // impulse *= 10;
+            o._rbi.ApplyImpulse(Translator.Float3ToBtVector3(impulse) * 10, Translator.Float3ToBtVector3(relPos));
         }
 
         /// <summary>
@@ -204,17 +204,17 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <value>
         /// The linear velocity.
         /// </value>
-        public float3 LinearVelocity 
+        public float3 LinearVelocity
         {
             get
             {
                 var retval = Translator.BtVector3ToFloat3(_rbi.LinearVelocity);
                 return retval;
-            } 
+            }
             set
             {
                 var linVel = Translator.Float3ToBtVector3(value);
-                var o = (RigidBodyImp) _rbi.UserObject;
+                var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.LinearVelocity = linVel;
             }
         }
@@ -295,7 +295,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (RigidBodyImp) _rbi.UserObject;
+                var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.Restitution = value;
             }
         }
@@ -311,7 +311,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             get { return _rbi.Friction; }
             set
             {
-                var o = (RigidBodyImp) _rbi.UserObject;
+                var o = (RigidBodyImp)_rbi.UserObject;
                 o._rbi.Friction = value;
             }
         }
@@ -323,7 +323,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="anglularDrag">The angular drag.</param>
         public void SetDrag(float linearDrag, float anglularDrag)
         {
-            var o = (RigidBodyImp) _rbi.UserObject;
+            var o = (RigidBodyImp)_rbi.UserObject;
             o._rbi.SetDamping(linearDrag, anglularDrag);
         }
 
@@ -336,7 +336,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         public float LinearDrag
         {
             get { return _rbi.LinearDamping; }
-            
+
         }
 
         /// <summary>
@@ -371,44 +371,44 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 {
                     //Primitives
                     case "BulletSharp.BoxShape":
-                        var btBox = (BoxShape) btShape;
+                        var btBox = (BoxShape)btShape;
                         var box = new BoxShapeImp();
                         box.BtBoxShape = btBox;
                         btBox.UserObject = box;
                         return box;
                     case "BulletSharp.SphereShape":
-                        var btSphere = (SphereShape) btShape;
+                        var btSphere = (SphereShape)btShape;
                         var sphere = new SphereShapeImp();
                         sphere.BtSphereShape = btSphere;
                         btSphere.UserObject = sphere;
                         return sphere;
                     case "BulletSharp.CapsuleShape":
-                        var btCapsule = (CapsuleShape) btShape;
+                        var btCapsule = (CapsuleShape)btShape;
                         var capsule = new CapsuleShapeImp();
                         capsule.BtCapsuleShape = btCapsule;
                         btCapsule.UserObject = capsule;
                         return capsule;
                     case "BulletSharp.CylinderShape":
-                        var btCylinder = (CylinderShape) btShape;
+                        var btCylinder = (CylinderShape)btShape;
                         var cylinder = new CylinderShapeImp();
                         cylinder.BtCylinderShape = btCylinder;
                         btCylinder.UserObject = cylinder;
                         return cylinder;
                     case "BulletSharp.ConeShape":
-                        var btCone = (ConeShape) btShape;
+                        var btCone = (ConeShape)btShape;
                         var cone = new ConeShapeImp();
                         cone.BtConeShape = btCone;
                         btCone.UserObject = cone;
                         return cone;
                     case "BulletSharp.MultiSphereShape":
-                        var btMulti = (MultiSphereShape) btShape;
+                        var btMulti = (MultiSphereShape)btShape;
                         var multi = new MultiSphereShapeImp();
                         multi.BtMultiSphereShape = btMulti;
                         btMulti.UserObject = multi;
                         return multi;
                     //Meshes
                     case "BulletSharp.ConvexHullShape":
-                        var btConvHull = (ConvexHullShape) btShape;
+                        var btConvHull = (ConvexHullShape)btShape;
                         var convHull = new ConvexHullShapeImp();
                         convHull.BtConvexHullShape = btConvHull;
                         btConvHull.UserObject = convHull;
@@ -428,7 +428,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     //Misc
                     case "BulletSharp.CompoundShape":
                         //Debug.WriteLine("BulletSharp.CompoundShape");
-                        var btComp = (CompoundShape) btShape;
+                        var btComp = (CompoundShape)btShape;
                         var comp = new CompoundShapeImp();
                         comp.BtCompoundShape = btComp;
                         btComp.UserObject = comp;
@@ -526,7 +526,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
 
-      
+
         private object _userObject;
         /// <summary>
         /// Gets and sets the user object.
@@ -548,7 +548,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="other">The other rigidbody that is collided.</param>
         public virtual void OnCollision(IRigidBodyImp other)
         {
-            
+
             //Debug.WriteLine("RigidBodyImp.OnCollision");
             //TODO: Event to the RigidBody.cs class 
             //var otherRb = (RigidBodyImp)other;

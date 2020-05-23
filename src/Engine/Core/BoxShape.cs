@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (BoxShape) _boxShapeImp.UserObject;
+                var o = (BoxShape)_boxShapeImp.UserObject;
                 o._boxShapeImp.Margin = value;
             }
         }

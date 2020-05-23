@@ -89,10 +89,10 @@ namespace Fusee.Base.Imp.Android
             _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
 
             ret.CharCode = c;
-            ret.AdvanceX = (float) _face.Glyph.Advance.X;
-            ret.AdvanceY = (float) _face.Glyph.Advance.Y;
+            ret.AdvanceX = (float)_face.Glyph.Advance.X;
+            ret.AdvanceY = (float)_face.Glyph.Advance.Y;
 
-            ret.Width = (float) _face.Glyph.Metrics.Width;
+            ret.Width = (float)_face.Glyph.Metrics.Width;
             ret.Height = (float)_face.Glyph.Metrics.Height;
 
             return ret;
@@ -203,7 +203,7 @@ namespace Fusee.Base.Imp.Android
             var leftInx = _face.GetCharIndex(leftC);
             var rightInx = _face.GetCharIndex(rightC);
 
-            return (float) _face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
+            return (float)_face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
         }
 
         /// <summary>

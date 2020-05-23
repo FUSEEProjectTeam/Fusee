@@ -292,7 +292,7 @@ namespace Fusee.Engine.Core.Scene
                 disposedValue = true;
             }
         }
-    
+
         /// <summary>
         /// Invoke deletion of shaders on GPU
         /// </summary>

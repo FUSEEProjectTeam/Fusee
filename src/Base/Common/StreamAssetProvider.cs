@@ -9,7 +9,7 @@ namespace Fusee.Base.Common
     /// Asset provider base class for implementing asset providers based on streams. 
     /// Used to implement FileAssetProvider and Android ApkAssetProviders.
     /// </summary>
-    public abstract class StreamAssetProvider: IAssetProvider
+    public abstract class StreamAssetProvider : IAssetProvider
     {
         private readonly Dictionary<Type, AssetHandler> _assetHandlers;
 
@@ -97,11 +97,11 @@ namespace Fusee.Base.Common
         public async Task<object> GetAssetAsync(string id, Type type)
         {
             var stream = await GetStreamAsync(id).ConfigureAwait(false);
-            
-                if (stream == null)
-                {
-                    return null;
-                }
+
+            if (stream == null)
+            {
+                return null;
+            }
 
             if (_assetHandlers.TryGetValue(type, out var handler))
             {
@@ -216,6 +216,6 @@ namespace Fusee.Base.Common
         {
             _assetHandlers.Add(handler.ReturnedType, handler);
         }
-      
+
     }
 }

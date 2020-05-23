@@ -33,21 +33,21 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             BtDispatcher = new CollisionDispatcher(BtCollisionConf);
             BtBroadphase = new DbvtBroadphase();
             BtSolver = new SequentialImpulseConstraintSolver();
-           // BtCollisionShapes = new AlignedCollisionShapeArray();
-            
+            // BtCollisionShapes = new AlignedCollisionShapeArray();
 
-           
+
+
             BtWorld = new DiscreteDynamicsWorld(BtDispatcher, BtBroadphase, BtSolver, BtCollisionConf)
             {
                 Gravity = new Vector3(0, -9.81f, 0)
             };
-            
+
             BtWorld.SolverInfo.NumIterations = 5;
 
             BtWorld.PerformDiscreteCollisionDetection();
-            
+
             //GImpactCollisionAlgorithm.RegisterAlgorithm(BtDispatcher);
-           // BtWorld.SetInternalTickCallback(MyTickCallBack);
+            // BtWorld.SetInternalTickCallback(MyTickCallBack);
             //BtWorld.SetInternalTickCallback(TickTack);
 
             //ManifoldPoint.ContactAdded += OnContactAdded;
@@ -93,10 +93,10 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 if (numContacts > 0)
                 {
                     cp.UserPersistentData = 1;
-                    
-                    CollisionObject obA = (CollisionObject) contactManifold.Body0;
-                    CollisionObject obB = (CollisionObject) contactManifold.Body1;
-                    RigidBody btRigidBodyA = (RigidBody) obA;
+
+                    CollisionObject obA = (CollisionObject)contactManifold.Body0;
+                    CollisionObject obB = (CollisionObject)contactManifold.Body1;
+                    RigidBody btRigidBodyA = (RigidBody)obA;
                     RigidBody btRigidBodyB = (RigidBody)obB;
                     RigidBodyImp rigidBodyA = new RigidBodyImp();
                     RigidBodyImp rigidBodyB = new RigidBodyImp();
@@ -115,7 +115,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="body1">The body1.</param>
         void OnContactProcessed(ManifoldPoint cp, CollisionObject body0, CollisionObject body1)
         {
-           // Debug.WriteLine("OnContactProcessed");
+            // Debug.WriteLine("OnContactProcessed");
             cp.UserPersistentData = 1;
         }
 
@@ -126,7 +126,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         void OnContactDestroyed(object userPersistantData)
         {
             int numManifolds = BtWorld.Dispatcher.NumManifolds;
-            
+
             for (int i = 0; i < numManifolds; i++)
             {
                 PersistentManifold contactManifold = BtWorld.Dispatcher.GetManifoldByIndexInternal(i);
@@ -139,7 +139,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     obB.CollisionFlags = CollisionFlags.CustomMaterialCallback;
                 }
             }
-           // Debug.WriteLine("OnContactDestroyed");
+            // Debug.WriteLine("OnContactDestroyed");
         }
 
         /*private void MyTickCallBack(ManifoldPoint cp, CollisionObjectWrapper colobj0wrap, int partid0, int index0, CollisionObjectWrapper colobj1wrap, int partid1, int index1)
@@ -183,16 +183,16 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             // Use bullet to do what needs to be done:
 
 
-             var btMatrix = Matrix.RotationX(orientation.x) 
-                                    * Matrix.RotationY(orientation.y) 
-                                    * Matrix.RotationZ(orientation.z) 
-                                    * Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
-            
-             var btMotionState = new DefaultMotionState(btMatrix);
-          
-            
+            var btMatrix = Matrix.RotationX(orientation.x)
+                                   * Matrix.RotationY(orientation.y)
+                                   * Matrix.RotationZ(orientation.z)
+                                   * Matrix.Translation(worldTransform.x, worldTransform.y, worldTransform.z);
+
+            var btMotionState = new DefaultMotionState(btMatrix);
+
+
             var shapeType = colShape.GetType().ToString();
-            
+
             CollisionShape btColShape;
 
             // var isStatic = false;
@@ -200,25 +200,25 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             {
                 //Primitives
                 case "Fusee.Engine.BoxShapeImp":
-                    var box = (BoxShapeImp) colShape;
+                    var box = (BoxShapeImp)colShape;
                     var btBoxHalfExtents = Translator.Float3ToBtVector3(box.HalfExtents);
                     btColShape = new BoxShape(btBoxHalfExtents);
                     break;
                 case "Fusee.Engine.CapsuleShapeImp":
-                    var capsule = (CapsuleShapeImp) colShape;
+                    var capsule = (CapsuleShapeImp)colShape;
                     btColShape = new CapsuleShape(capsule.Radius, capsule.HalfHeight);
                     break;
                 case "Fusee.Engine.ConeShapeImp":
-                    var cone = (ConeShapeImp) colShape;
+                    var cone = (ConeShapeImp)colShape;
                     btColShape = new ConeShape(cone.Radius, cone.Height);
                     break;
                 case "Fusee.Engine.CylinderShapeImp":
-                    var cylinider = (CylinderShapeImp) colShape;
+                    var cylinider = (CylinderShapeImp)colShape;
                     var btCylinderHalfExtents = Translator.Float3ToBtVector3(cylinider.HalfExtents);
                     btColShape = new CylinderShape(btCylinderHalfExtents);
                     break;
                 case "Fusee.Engine.MultiSphereShapeImp":
-                    var multiSphere = (MultiSphereShapeImp) colShape;
+                    var multiSphere = (MultiSphereShapeImp)colShape;
                     var btPositions = new Vector3[multiSphere.SphereCount];
                     var btRadi = new float[multiSphere.SphereCount];
                     for (int i = 0; i < multiSphere.SphereCount; i++)
@@ -230,14 +230,14 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     btColShape = new MultiSphereShape(btPositions, btRadi);
                     break;
                 case "Fusee.Engine.SphereShapeImp":
-                    var sphere = (SphereShapeImp) colShape;
+                    var sphere = (SphereShapeImp)colShape;
                     var btRadius = sphere.Radius;
                     btColShape = new SphereShape(btRadius);
                     break;
-                
+
                 //Misc
                 case "Fusee.Engine.CompoundShapeImp":
-                    var compShape = (CompoundShapeImp) colShape;
+                    var compShape = (CompoundShapeImp)colShape;
                     btColShape = new CompoundShape(true);
                     btColShape = compShape.BtCompoundShape;
                     break;
@@ -247,8 +247,8 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
                 //Meshes
                 case "Fusee.Engine.ConvexHullShapeImp":
-                    var convHull = (ConvexHullShapeImp) colShape;
-                    var btPoints= new Vector3[convHull.GetNumPoints()];
+                    var convHull = (ConvexHullShapeImp)colShape;
+                    var btPoints = new Vector3[convHull.GetNumPoints()];
                     for (int i = 0; i < convHull.GetNumPoints(); i++)
                     {
                         var point = convHull.GetScaledPoint(i);
@@ -257,23 +257,23 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     btColShape = new ConvexHullShape(btPoints);
                     //btColShape.LocalScaling = new Vector3(3,3,3);
                     break;
-                case "Fusee.Engine.StaticPlaneShapeImp":  
-                    var staticPlane = (StaticPlaneShapeImp) colShape;
+                case "Fusee.Engine.StaticPlaneShapeImp":
+                    var staticPlane = (StaticPlaneShapeImp)colShape;
                     Debug.WriteLine("staticplane: " + staticPlane.Margin);
                     var btNormal = Translator.Float3ToBtVector3(staticPlane.PlaneNormal);
                     btColShape = new StaticPlaneShape(btNormal, staticPlane.PlaneConstant);
                     // isStatic = true;
                     //btColShape.Margin = 0.04f;
                     //Debug.WriteLine("btColshape" + btColShape.Margin);
-                    break;               
+                    break;
                 case "Fusee.Engine.GImpactMeshShapeImp":
                     var gImpMesh = (GImpactMeshShapeImp)colShape;
                     gImpMesh.BtGImpactMeshShape.UpdateBound();
                     var btGimp = new GImpactMeshShape(gImpMesh.BtGImpactMeshShape.MeshInterface);
-                    
+
                     btGimp.UpdateBound();
                     btColShape = btGimp;
-                    
+
                     break;
                 //Default
                 default:
@@ -281,9 +281,9 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     btColShape = new EmptyShape();
                     break;
             }
-            
+
             var btLocalInertia = btColShape.CalculateLocalInertia(mass);
-           // btLocalInertia *= (10.0f*10);
+            // btLocalInertia *= (10.0f*10);
             RigidBodyConstructionInfo btRbcInfo = new RigidBodyConstructionInfo(mass, btMotionState, btColShape,
                 btLocalInertia);
 
@@ -291,7 +291,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             btRigidBody.Restitution = 0.2f;
             btRigidBody.Friction = 0.2f;
             btRigidBody.CollisionFlags = CollisionFlags.CustomMaterialCallback;
-            
+
             BtWorld.AddRigidBody(btRigidBody);
             btRbcInfo.Dispose();
             var retval = new RigidBodyImp();
@@ -338,7 +338,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     }
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -349,8 +349,8 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         public IRigidBodyImp GetRigidBody(int i)
         {
             var colisionObject = BtWorld.CollisionObjectArray[i];
-            var btRigidBody = (RigidBody) colisionObject;
-            return (RigidBodyImp) btRigidBody.UserObject;
+            var btRigidBody = (RigidBody)colisionObject;
+            return (RigidBodyImp)btRigidBody.UserObject;
         }
 
         /// <summary>
@@ -392,12 +392,12 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="pivotInA">The pivot in a.</param>
         /// <param name="pivotInB">The pivot in b.</param>
         /// <returns></returns>
-        public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA,float3 pivotInB)
+        public IPoint2PointConstraintImp AddPoint2PointConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float3 pivotInA, float3 pivotInB)
         {
-            var rigidBodyAImp = (RigidBodyImp) rigidBodyA;
+            var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
             var btRigidBodyA = rigidBodyAImp._rbi;
 
-            var rigidBodyBImp = (RigidBodyImp) rigidBodyB;
+            var rigidBodyBImp = (RigidBodyImp)rigidBodyB;
             var btRigidBodyB = rigidBodyBImp._rbi;
 
             var btP2PConstraint = new Point2PointConstraint(btRigidBodyA, btRigidBodyB,
@@ -505,7 +505,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             var btRbAFrame = Translator.Float4X4ToBtMatrix(brAFrame);
             var btRbBFrame = Translator.Float4X4ToBtMatrix(brBFrame);
 
-            var btHingeConstraint = new HingeConstraint(btRigidBodyA, btRigidBodyB,btRbAFrame, btRbBFrame, useReferenceFrameA);
+            var btHingeConstraint = new HingeConstraint(btRigidBodyA, btRigidBodyB, btRbAFrame, btRbBFrame, useReferenceFrameA);
             BtWorld.AddConstraint(btHingeConstraint);
 
             var retval = new HingeConstraintImp();
@@ -611,7 +611,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             var btRbAFrame = Translator.Float4X4ToBtMatrix(rbAFrame);
 
             var btCTConstraint = new ConeTwistConstraint(btRigidBodyA, btRbAFrame);
-            
+
             BtWorld.AddConstraint(btCTConstraint);
 
             var retval = new ConeTwistConstraintImp();
@@ -627,7 +627,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="rbAFrame">The rb a frame.</param>
         /// <param name="rbBFrame">The rb b frame.</param>
         /// <returns></returns>
-        public IConeTwistConstraintImp AddConeTwistConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 rbAFrame,float4x4 rbBFrame)
+        public IConeTwistConstraintImp AddConeTwistConstraint(IRigidBodyImp rigidBodyA, IRigidBodyImp rigidBodyB, float4x4 rbAFrame, float4x4 rbBFrame)
         {
             var rigidBodyAImp = (RigidBodyImp)rigidBodyA;
             var btRigidBodyA = rigidBodyAImp._rbi;
@@ -713,7 +713,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         {
             var btBoxShape = new BoxShape(boxHalfExtents);
             BtCollisionShapes.Add(btBoxShape);
-            
+
             var retval = new BoxShapeImp();
             retval.BtBoxShape = btBoxShape;
             btBoxShape.UserObject = retval;
@@ -762,7 +762,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         {
             var btSphereShape = new SphereShape(radius);
             BtCollisionShapes.Add(btSphereShape);
-            
+
             var retval = new SphereShapeImp();
             retval.BtSphereShape = btSphereShape;
             btSphereShape.UserObject = retval;
@@ -948,9 +948,9 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 var margin = btConvexHullShape.Margin;
                 btShapeHull.BuildHull(margin);
                 ConvexHullShape simplifiedConvexShape = new ConvexHullShape(btShapeHull.Vertices);
-               
+
                 BtCollisionShapes.Add(simplifiedConvexShape);
-                
+
                 var retval = new ConvexHullShapeImp();
                 retval.BtConvexHullShape = simplifiedConvexShape;
                 simplifiedConvexShape.UserObject = retval;
@@ -963,9 +963,9 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 var retval = new ConvexHullShapeImp();
                 retval.BtConvexHullShape = btConvexHullShape;
                 btConvexHullShape.UserObject = retval;
-                return retval;    
+                return retval;
             }
-            
+
         }
 
         /// <summary>
@@ -1040,14 +1040,14 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         {
             if (BtWorld != null)
             {
-                
+
                 /* for (int d = 0; d < BtWorld.Dispatcher.NumManifolds; d++)
                 {
                     var m = BtWorld.Dispatcher.GetManifoldByIndexInternal(d);
                     BtWorld.Dispatcher.ReleaseManifold(m);
                     ;
                 }*/
-                
+
 
                 //remove/dispose constraints
                 int i;
@@ -1055,9 +1055,9 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 {
                     TypedConstraint constraint = BtWorld.GetConstraint(i);
                     BtWorld.RemoveConstraint(constraint);
-                    constraint.Dispose(); 
+                    constraint.Dispose();
                 }
-               
+
 
                 //remove the rigid bodies from the dynamics world and delete them
                 for (i = BtWorld.NumCollisionObjects - 1; i >= 0; i--)
@@ -1077,7 +1077,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     shape.Dispose();
                 BtCollisionShapes.Clear();
 
-                
+
 
                 BtWorld.Dispose();
                 BtBroadphase.Dispose();

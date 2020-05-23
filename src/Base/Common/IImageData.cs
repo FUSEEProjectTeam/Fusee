@@ -5,7 +5,7 @@ namespace Fusee.Base.Common
     /// <summary>
     /// Interface describing operations that are possible on arbitrary image data types.
     /// </summary>
-    public interface IImageData: IImageBase
+    public interface IImageData : IImageBase
     {
         /// <summary>
         /// Block Image Transfer. Write a block of pixels to this instance from some other IImageData

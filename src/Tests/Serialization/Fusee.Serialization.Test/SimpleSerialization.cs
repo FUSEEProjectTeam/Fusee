@@ -188,4 +188,3 @@ namespace Fusee.Test.Serialization.V1
     }
 
 }
-

@@ -96,7 +96,7 @@ namespace Fusee.Tools.CmdLine
             http_url = tokens[1];
             http_protocol_versionstring = tokens[2];
 
-           // Console.WriteLine("starting: " + request);
+            // Console.WriteLine("starting: " + request);
         }
 
         public void readHeaders()

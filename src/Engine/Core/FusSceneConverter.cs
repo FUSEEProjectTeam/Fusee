@@ -326,7 +326,7 @@ namespace Fusee.Engine.Core
             {
                 _currentNode.Components.Add(mesh);
                 return;
-            }          
+            }
 
             // convert mesh
             mesh = new Mesh

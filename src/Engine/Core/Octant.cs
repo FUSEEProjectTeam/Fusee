@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core
                 Children = new Octant<T>[8];
             else
                 Children = children;
-            
+
             Payload = payload;
         }
 
@@ -68,13 +68,13 @@ namespace Fusee.Engine.Core
             if (children == null)
                 Children = new Octant<T>[8];
             else
-                Children = children;            
+                Children = children;
         }
 
         /// <summary>
         /// Create a new instance of type Octant.
         /// </summary>
-        protected Octant(){}
+        protected Octant() { }
 
 
         ////TODO: duplicate code, clean up! The original is found in AABB.
@@ -154,5 +154,5 @@ namespace Fusee.Engine.Core
         //    return d - r;
         //}
 
-    }    
+    }
 }

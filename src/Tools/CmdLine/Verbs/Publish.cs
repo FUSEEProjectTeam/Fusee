@@ -158,7 +158,7 @@ namespace Fusee.Tools.CmdLine.Verbs
             {
                 case Platform.Desktop:
                     try
-                    { 
+                    {
                         Directory.CreateDirectory(outPath);
 
                         // Copy the player

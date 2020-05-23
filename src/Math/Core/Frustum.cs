@@ -143,7 +143,7 @@ namespace Fusee.Math.Core
             var invViewProjection = float4x4.Invert(mat);
 
             var frustumCorners = new float4[8];
-          
+
             frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
             frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr
             frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl

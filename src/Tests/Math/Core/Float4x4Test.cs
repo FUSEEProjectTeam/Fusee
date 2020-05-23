@@ -203,9 +203,9 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Round_Instance()
         {
-            var mat = new float4x4( 1.23456789f, 0, 0, 1.23456712f, 
-                                    0, 1.23456789f, 0, 1.23456712f, 
-                                    0, 0, 1.23456789f, 1.23456712f, 
+            var mat = new float4x4(1.23456789f, 0, 0, 1.23456712f,
+                                    0, 1.23456789f, 0, 1.23456712f,
+                                    0, 0, 1.23456789f, 1.23456712f,
                                     0, 0, 0, 1.23456712f);
 
             var expected = new float4x4(1.234568f, 0, 0, 1.234567f,
@@ -524,7 +524,7 @@ namespace Fusee.Test.Math.Core
         public void CreatePerspectiveOffCenter_Exceptions(float zNear, float zFar, string expected)
         {
             var actual = Assert.Throws<ArgumentOutOfRangeException>(() =>
-                float4x4.CreatePerspectiveOffCenter(-1, 1, -1, 1,  zNear, zFar));
+                float4x4.CreatePerspectiveOffCenter(-1, 1, -1, 1, zNear, zFar));
 
             Assert.Equal(expected, actual.ParamName);
         }
@@ -568,7 +568,7 @@ namespace Fusee.Test.Math.Core
         {
             var expected = new float4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
 
-            var actual = float4x4.Scale(1,2,3);
+            var actual = float4x4.Scale(1, 2, 3);
 
             Assert.Equal(expected, actual);
         }
@@ -925,7 +925,7 @@ namespace Fusee.Test.Math.Core
         {
             var mat = new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            var actual = (float4x4) mat;
+            var actual = (float4x4)mat;
 
             Assert.Equal(new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), actual);
         }
@@ -1019,10 +1019,10 @@ namespace Fusee.Test.Math.Core
             var zero = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             var one = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            yield return new object[] {zero, one, one};
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, zero, zero};
-            yield return new object[] {one, one, new float4x4(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)};
+            yield return new object[] { zero, one, one };
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, zero, zero };
+            yield return new object[] { one, one, new float4x4(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2) };
         }
 
         public static IEnumerable<object[]> GetSubtraction()
@@ -1030,9 +1030,9 @@ namespace Fusee.Test.Math.Core
             var zero = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
             var one = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, zero, zero};
-            yield return new object[] {one, one, zero};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, zero, zero };
+            yield return new object[] { one, one, zero };
         }
 
         public static IEnumerable<object[]> GetMultiply()
@@ -1041,11 +1041,11 @@ namespace Fusee.Test.Math.Core
             var one = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
             var id = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {zero, one, zero};
-            yield return new object[] {one, one, new float4x4(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4)};
-            yield return new object[] {one, id, one};
-            yield return new object[] {id, one, one};
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { zero, one, zero };
+            yield return new object[] { one, one, new float4x4(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4) };
+            yield return new object[] { one, id, one };
+            yield return new object[] { id, one, one };
         }
 
         public static IEnumerable<object[]> GetTransform4D()
@@ -1058,9 +1058,9 @@ namespace Fusee.Test.Math.Core
             var yRot = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
             var zRot = new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
-            yield return new object[] {xRot, y, z};
-            yield return new object[] {yRot, z, x};
-            yield return new object[] {zRot, x, y};
+            yield return new object[] { xRot, y, z };
+            yield return new object[] { yRot, z, x };
+            yield return new object[] { zRot, x, y };
         }
 
         public static IEnumerable<object[]> GetTransform3D()

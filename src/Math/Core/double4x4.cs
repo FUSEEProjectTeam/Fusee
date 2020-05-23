@@ -1697,9 +1697,9 @@ namespace Fusee.Math.Core
 
         #region IEquatable<Matrix4> Members       
 
-         /// <summary>
-         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
-         /// </summary>       
+        /// <summary>
+        /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
+        /// </summary>       
         public bool IsAffine
         {
             get

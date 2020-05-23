@@ -13,7 +13,7 @@ namespace Fusee.Test.Xene
         public void SingleNodeEnumeratorThrowsOnReset()
         {
             TestNode node = new TestNode();
-           
+
             var singleNodeEnumerator = VisitorHelpers.SingleRootEnumerator(node);
 
             // See https://docs.microsoft.com/en-us/dotnet/api/system.collections.ienumerator.reset?view=netcore-3.1:
@@ -145,7 +145,7 @@ namespace Fusee.Test.Xene
             TestNode tree = CreateSimpleTestTree();
 
             IEnumerable<TestNode> findNodesResult = tree.FindNodesWhereComponent<TestNode, TestComponent>(comp => comp.Num == 3);
-            Assert.Collection(findNodesResult, node  =>  Assert.Equal("ChildNode", node.Name));
+            Assert.Collection(findNodesResult, node => Assert.Equal("ChildNode", node.Name));
 
             IEnumerable<TestNode> findNodesResult2 = tree.FindNodesWhereComponent<TestNode, TestComponent>(comp => comp.Num == 6);
             Assert.Collection(findNodesResult2, node => Assert.Equal("RootNode", node.Name));
@@ -169,13 +169,13 @@ namespace Fusee.Test.Xene
             TestNode tree = CreateSimpleTestTree();
 
             IEnumerable<TestNode> findNodesResult = tree.FindNodesWhereComponent<SpecialTestComponent, TestNode, TestComponent>(comp => comp.SpecialId.Contains("special"));
-            Assert.Collection(findNodesResult, 
+            Assert.Collection(findNodesResult,
                 node => Assert.Equal("RootNode", node.Name),
                 node => Assert.Equal("ChildNode", node.Name)
             );
 
             IEnumerable<TestNode> findNodesResult2 = tree.FindNodesWhereComponent<SomeOtherTestComponent, TestNode, TestComponent>(comp => comp.SomeOtherValue == 3.1415f);
-            Assert.Collection(findNodesResult2, 
+            Assert.Collection(findNodesResult2,
                 node => Assert.Equal("RootNode", node.Name)
             );
         }
@@ -202,7 +202,7 @@ namespace Fusee.Test.Xene
         {
             TestNode tree = CreateSimpleTestTree();
 
-            var resultSet  = tree.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
+            var resultSet = tree.Viserate<TestViserator, TestResult, TestNode, TestComponent>();
             Assert.Collection(resultSet,
                 resultItem => Assert.Equal(new TestResult { Depth = 1, Path = "/RootNode/[2]" }, resultItem),
                 resultItem => Assert.Equal(new TestResult { Depth = 1, Path = "/RootNode/[6]" }, resultItem),
@@ -373,4 +373,3 @@ namespace Fusee.Test.Xene
         }
     }
 }
-

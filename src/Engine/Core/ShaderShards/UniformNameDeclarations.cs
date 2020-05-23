@@ -158,7 +158,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The bones array.
         /// </summary>
-        public const string Bones = "FUSEE_BONES";        
+        public const string Bones = "FUSEE_BONES";
 
         /// <summary>
         /// The bones array including the postfix.
@@ -192,7 +192,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public const string LightSpaceMatrix = "LightSpaceMatrix"; 
+        public const string LightSpaceMatrix = "LightSpaceMatrix";
 
         /// <summary>
         /// The var name for the uniform ShadowMap.
@@ -318,6 +318,6 @@ namespace Fusee.Engine.Core.ShaderShards
             Enum.GetName(typeof(RenderTargetTextureTypes), 3),
             Enum.GetName(typeof(RenderTargetTextureTypes), 4),
             Enum.GetName(typeof(RenderTargetTextureTypes), 5),
-        };        
+        };
     }
 }

@@ -341,7 +341,7 @@ namespace Fusee.Jometri
 
             var alpha = tNumerator / denominator;
 
-            intersectionPoint = p1 + alpha*(p2-p1);
+            intersectionPoint = p1 + alpha * (p2 - p1);
             return true;
         }
 

@@ -12,6 +12,6 @@ namespace Fusee.Engine.Common
         /// The byte buffer that makes up the <see cref="ITexture"/> instance.
         /// </summary>
         byte[] PixelData { get; }
-        
+
     }
 }

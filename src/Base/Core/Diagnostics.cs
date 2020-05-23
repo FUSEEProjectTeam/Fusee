@@ -46,7 +46,7 @@ namespace Fusee.Base.Core
                                 var argMsg = a == null ? "<null>" : a.ToString();
                                 f += $"{argMsg}\n";
                             }
-                                
+
                         }
 
                         return f + "\n";
@@ -292,6 +292,6 @@ namespace Fusee.Base.Core
             Writer(o, SeverityLevel.Error, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
-#endregion
+        #endregion
     }
 }

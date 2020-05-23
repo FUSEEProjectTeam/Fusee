@@ -130,7 +130,7 @@ namespace Fusee.Engine.Common
         /// <param name="softness">The softness.</param>
         /// <param name="biasFactor">The bias factor.</param>
         /// <param name="relaxationFactor">The relaxation factor.</param>
-        void SetLimit(float low, float high, float softness = 0.9f, float biasFactor=0.3f, float relaxationFactor=1.0f);
+        void SetLimit(float low, float high, float softness = 0.9f, float biasFactor = 0.3f, float relaxationFactor = 1.0f);
         /// <summary>
         /// Gets the solver limit.
         /// </summary>

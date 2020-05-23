@@ -25,5 +25,5 @@
         /// Simple infinite Softbox at CameraPosition
         /// </summary>
         Legacy
-    }    
+    }
 }

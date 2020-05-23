@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         /// <param name="inpDeviceImp">The platform dependent connector to the underlying physical device.</param>
         public KeyboardDevice(IInputDeviceImp inpDeviceImp) : base(inpDeviceImp)
         {
-            _leftRightAxis = RegisterTwoButtonAxis((int) KeyCodes.Left, (int) KeyCodes.Right, AxisDirection.X).Id;
+            _leftRightAxis = RegisterTwoButtonAxis((int)KeyCodes.Left, (int)KeyCodes.Right, AxisDirection.X).Id;
             _upDownAxis = RegisterTwoButtonAxis((int)KeyCodes.Down, (int)KeyCodes.Up, AxisDirection.Y).Id;
             _adAxis = RegisterTwoButtonAxis((int)KeyCodes.A, (int)KeyCodes.D, AxisDirection.X).Id;
             _wsAxis = RegisterTwoButtonAxis((int)KeyCodes.S, (int)KeyCodes.W, AxisDirection.Y).Id;
