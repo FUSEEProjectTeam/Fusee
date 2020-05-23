@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine.Verbs
 {
     [Verb("pack", HelpText = "Packs a compiled Fusee-App into one .fuz-File.")]
     internal class Pack

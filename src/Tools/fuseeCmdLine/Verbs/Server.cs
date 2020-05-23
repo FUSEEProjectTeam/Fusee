@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine.Verbs
 {
     [Verb("server", HelpText = "Launch a minimalistic local webserver and start the default browser.")]
     internal class Server

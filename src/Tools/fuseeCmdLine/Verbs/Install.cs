@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine.Verbs
 {
     [Verb("install", HelpText = "Install the blender add-on. The -u option undoes the respective step.")]
     internal class Install

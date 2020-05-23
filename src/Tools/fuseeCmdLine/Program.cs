@@ -1,7 +1,8 @@
 ﻿using System;
 using CommandLine;
+using Fusee.Tools.CmdLine.Verbs;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine
 {
     class Program
     {

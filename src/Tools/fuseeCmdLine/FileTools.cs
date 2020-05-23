@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine
 {
     public class FileTools
     {

@@ -12,7 +12,7 @@ using System.Threading;
 // simple HTTP explanation
 // http://www.jmarshall.com/easy/http/
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine
 {
 
     public class HttpProcessor

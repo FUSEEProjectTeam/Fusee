@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine.Verbs
 {
     [Verb("player", HelpText = "Output the protobuf schema for the .fus file format.")]
     internal class Player

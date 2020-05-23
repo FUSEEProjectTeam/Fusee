@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine.Verbs
 {
     [Verb("publish", HelpText = "Packs a FUSEE app together with its dependencies and a player into a folder for deployment to a specific platform.")]
     internal class Publish

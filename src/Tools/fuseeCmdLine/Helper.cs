@@ -2,7 +2,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace Fusee.Tools.fuseeCmdLine
+namespace Fusee.Tools.CmdLine
 {
     internal static class Helper
     {
