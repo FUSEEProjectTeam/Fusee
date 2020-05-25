@@ -2,7 +2,7 @@
   <PropertyGroup>
     <PackageId>Fusee.Tools.CmdLine</PackageId>
     <AssemblyName>fusee</AssemblyName>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fusee</ToolCommandName>

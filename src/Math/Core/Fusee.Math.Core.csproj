@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Core Math implementation for the Fusee Project</Description>
     <LangVersion>8</LangVersion>
     <Nullable>enable</Nullable>
