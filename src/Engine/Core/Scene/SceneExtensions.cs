@@ -545,6 +545,24 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
+        /// This creates a shallow copy of this SceneNode with the abillity to be copied into a derived class. It does not connect the resullting copy with this SceneNodes parent.
+        /// </summary>
+        /// <typeparam name="TOut">Target type</typeparam>
+        /// <param name="sn"></param>
+        /// <returns></returns>
+        public static TOut ShallowCopy<TOut>(this SceneNode sn)
+            where TOut : SceneNode, new()
+        {
+            TOut tout = new TOut();
+
+            tout.Name = sn.Name;
+            tout.Components = sn.Components;
+            tout.Children = sn.Children;
+
+            return tout;
+        }
+
+        /// <summary>
         /// Reference space for rotation.
         /// </summary>
         public enum Space
