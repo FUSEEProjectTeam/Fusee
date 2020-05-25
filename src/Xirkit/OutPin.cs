@@ -22,7 +22,7 @@ namespace Fusee.Xirkit
         public IMemberAccessor<T> MemberAccessor
         {
             get { return _memberAccessor; }
-            set { _memberAccessor = value; } 
+            set { _memberAccessor = value; }
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Fusee.Xirkit
         /// </summary>
         public void Propagate()
         {
-            foreach(InPin<T> inPin in _links)
+            foreach (InPin<T> inPin in _links)
             {
                 inPin.SetValue(GetValue());
             }
@@ -83,7 +83,7 @@ namespace Fusee.Xirkit
         /// </value>
         public IEnumerable<IInPin> InPins
         {
-            get { return _links;}
+            get { return _links; }
         }
 
         /// <summary>

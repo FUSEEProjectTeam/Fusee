@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (Generic6DofConstraint) _IG6DofConstraintImp.UserObject;
+                var o = (Generic6DofConstraint)_IG6DofConstraintImp.UserObject;
                 o._IG6DofConstraintImp.AngularUpperLimit = value;
             }
         }

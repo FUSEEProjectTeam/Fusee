@@ -23,6 +23,8 @@
 
     <TieredCompilation>false</TieredCompilation>
 
+    <ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
+    
     <!--
     Suppress warnings
     1701 and 1702 is standard.

@@ -21,7 +21,7 @@ namespace Fusee.Engine.Core
         /// <param name="loopVideo"></param>
         /// <param name="useAudio"></param>
         /// <returns></returns>
-        public IVideoStreamImp LoadVideoFromFile (string filename, bool loopVideo, bool useAudio = true)
+        public IVideoStreamImp LoadVideoFromFile(string filename, bool loopVideo, bool useAudio = true)
         {
             return _videoManagerImp.CreateVideoStreamImpFromFile(filename, loopVideo, useAudio);
         }

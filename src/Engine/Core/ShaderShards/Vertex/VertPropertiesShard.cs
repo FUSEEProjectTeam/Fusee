@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.CameraPosition),
                 GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Position)
             };
-           
+
             vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
 
             if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
@@ -60,7 +60,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             return string.Join("\n", vertProps);
         }
-        
+
         /// <summary>
         /// Returns the pre defined Fusee uniform parameters of a vertex shader, depending on the given ShaderEffectProps.
         /// </summary>
@@ -68,7 +68,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// <returns></returns>
         public static string FuseeUniforms(ShaderEffectProps effectProps)
         {
-            var uniforms = new List<string> 
+            var uniforms = new List<string>
             {
                 GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelView),
                 GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelViewProjection)
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View));
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Projection));
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones +"["+ HeaderShard.BoneDefineVar+"]"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones + "[" + HeaderShard.BoneDefineVar + "]"));
             }
 
             return string.Join("\n", uniforms);

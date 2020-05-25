@@ -75,7 +75,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             _parentNode.Components.Add(parentTrans);
 
 
-            _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };           
+            _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -358,8 +358,8 @@ namespace Fusee.Examples.GeometryEditing.Core
                 _pickPos = Mouse.Position;
                 Diagnostics.Debug(_pickPos);
                 var pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-                
-                var newPick = _scenePicker.Pick(RC,pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+
+                var newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -396,7 +396,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var shaderEffect = ShaderCodeBuilder.Default;           
+            var shaderEffect = ShaderCodeBuilder.Default;
             shaderEffect.SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
             sceneNodeContainer.Components.Add(translationComponent);
             sceneNodeContainer.Components.Add(shaderEffect);

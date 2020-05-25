@@ -1,12 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <PackageId>Fusee.Tools.FusViewer</PackageId>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <OutputPath>$(BaseOutputPath)\Tools\FusViewer\</OutputPath>
-    <StartupObject>Fusee.Tools.FusViewer.App</StartupObject>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>

@@ -559,4 +559,3 @@ namespace Fusee.Engine.Core
 
     }
 }
-

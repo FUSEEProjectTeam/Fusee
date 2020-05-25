@@ -46,7 +46,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         public void CloseDevice()
         {
             foreach (var audioStream in _allStreams)
-               audioStream.Dispose();
+                audioStream.Dispose();
         }
         /// <summary>
         /// Loads an audio file.
@@ -146,7 +146,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         /// <returns>The volume as float with 2 digit precision.</returns>
         public float GetVolume()
         {
-            return (float) System.Math.Round(Listener.GlobalVolume, 2);
+            return (float)System.Math.Round(Listener.GlobalVolume, 2);
         }
 
         /// <summary>

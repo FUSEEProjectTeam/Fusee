@@ -1135,7 +1135,7 @@ namespace Fusee.Math.Core
 
             if (strings.Length != 3)
                 throw new FormatException("String parse for float3 did not result in exactly 3 items.");
-            
+
             float[] floats = new float[strings.Length];
 
             for (int i = 0; i < strings.Length; i++)

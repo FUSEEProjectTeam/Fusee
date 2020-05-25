@@ -1,101 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
   <PropertyGroup>
-    <RootNamespace>Fusee.Base.Imp.Android</RootNamespace>
-    <AssemblyName>Fusee.Base.Imp.Android</AssemblyName>
-    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
-    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\..</FuseeEngineRoot>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}</ProjectGuid>
-    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <FileAlignment>512</FileAlignment>
-    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <TargetFramework>MonoAndroid81</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <Description>Fusee Base Imp Android</Description>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="Mono.Android" />
-    <Reference Include="mscorlib" />
-    <Reference Include="SharpFont, Version=3.1.0.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ApkAssetProvider.cs" />
-    <Compile Include="FileDecoder.cs" />
-    <Compile Include="FontImp.cs" />
-    <Compile Include="IOImp.cs" />
-    <Compile Include="Resources\Resource.Designer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
+
   <ItemGroup>
     <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\ARM64\libfreetype262d.so">
-      <Link>lib\arm64\libfreetype.so.6</Link>
+      <Link>lib\arm64\libfreetype.so</Link>
       <Abi>arm64-v8a</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\ARM\libfreetype262d.so">
-      <Link>lib\arm\libfreetype.so.6</Link>
+      <Link>lib\arm\libfreetype.so</Link>
       <Abi>armeabi-v7a</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\x64\libfreetype262d.so">
-      <Link>lib\x64\libfreetype.so.6</Link>
+      <Link>lib\x64\libfreetype.so</Link>
       <Abi>x86_64</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Android\x86\libfreetype262d.so">
-      <Link>lib\x86\libfreetype.so.6</Link>
+      <Link>lib\x86\libfreetype.so</Link>
       <Abi>x86</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="Fusee.Base.Imp.Android.nuspec" />
-    <None Include="Resources\AboutResources.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\Values\Strings.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
-      <Name>Fusee.Base.Common</Name>
+      <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
-      <Name>Fusee.Base.Core</Name>
+      <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <Reference Include="SharpFont">
+      <HintPath>$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
 </Project>

@@ -274,7 +274,7 @@ namespace Fusee.Test.Xirkit
             root.Attach("text", node, "d2");
             circuit.Execute();
 
-            Assert.True(expected.d2 == new double2(1,1), "Error when parsing to double2: Should be " + source.text + " but is " + expected.d2 + ".");
+            Assert.True(expected.d2 == new double2(1, 1), "Error when parsing to double2: Should be " + source.text + " but is " + expected.d2 + ".");
         }
 
         [Fact]

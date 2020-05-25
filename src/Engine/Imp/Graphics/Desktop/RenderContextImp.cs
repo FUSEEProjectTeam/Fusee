@@ -325,7 +325,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));            
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -488,7 +488,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
-            
+
             GL.DetachShader(program, fragmentObject);
             GL.DetachShader(program, vertexObject);
             GL.DeleteShader(fragmentObject);
@@ -509,7 +509,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // wait for all threads to be finished
             GL.Finish();
             GL.Flush();
-           
+
             GL.DeleteProgram(program);
         }
 
@@ -850,7 +850,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
         {
             int iParam = ((ShaderParam)param).handle;
-           texUnitArray = new int[texIds.Length];
+            texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
             {
@@ -877,7 +877,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
         {
-            SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);            
+            SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
             GL.Uniform1(((ShaderParam)param).handle, texUnit);
         }
 
@@ -894,7 +894,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             fixed (int* pFlt = &texUnitArray[0])
                 GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
         }
-        
+
         #endregion
 
         #region Clear

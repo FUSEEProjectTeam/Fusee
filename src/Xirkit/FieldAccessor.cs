@@ -45,7 +45,7 @@ namespace Fusee.Xirkit
         public T Get(object o)
         {
             // NOTE: no checking done here.
-            return (T) _fieldInfo.GetValue(o);
+            return (T)_fieldInfo.GetValue(o);
         }
     }
 

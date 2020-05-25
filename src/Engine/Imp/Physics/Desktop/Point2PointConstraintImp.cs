@@ -50,7 +50,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                 var o = (Point2PointConstraintImp)_p2pci.UserObject;
                 o._p2pci.PivotInB = pivoB;
             }
-            
+
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
                     break;
                 default:
                     constraintParam = 3;
-                    break; 
+                    break;
             }
             var retval = _p2pci.GetParam(constraintParam, axis);
             return retval;

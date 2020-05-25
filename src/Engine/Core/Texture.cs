@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core
     public class Texture : ITexture
     {
         #region RenderContext Asset Management
-        
+
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
@@ -123,7 +123,7 @@ namespace Fusee.Engine.Core
             _imageData = new ImageData(pixelData, width, height, colorFormat);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
-            WrapMode = wrapMode;            
+            WrapMode = wrapMode;
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace Fusee.Engine.Core
             _imageData = new ImageData(
                 new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
                 imageData.Width, imageData.Height, imageData.PixelFormat);
-            _imageData.Blt(0,0, imageData);
+            _imageData.Blt(0, 0, imageData);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;

@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.Specular:
                         {
-                            if(effectProps.MatProbs.HasSpecular)
+                            if (effectProps.MatProbs.HasSpecular)
                             {
                                 if (effectProps.MatType == MaterialType.MaterialPbr)
                                 {

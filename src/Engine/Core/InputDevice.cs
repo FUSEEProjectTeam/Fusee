@@ -128,7 +128,7 @@ namespace Fusee.Engine.Core
 
         internal void Reconnect(IInputDeviceImp deviceImp)
         {
-            if (_isConnected) throw  new InvalidOperationException($"Cannot reconnect already connected input device (connected to {_inpDevImp.Desc}). Disconnect first.");
+            if (_isConnected) throw new InvalidOperationException($"Cannot reconnect already connected input device (connected to {_inpDevImp.Desc}). Disconnect first.");
             if (deviceImp == null) throw new ArgumentNullException(nameof(deviceImp));
 
             _inpDevImp = deviceImp;
@@ -147,7 +147,7 @@ namespace Fusee.Engine.Core
                 {
                     // Inform axes-to-listen about the new value (the disconnected device won't do it)...
                     // Do NOT inform axes-to-poll here since they will be informed in PreRender anyway.
-                    AxisValueChanged(this, new AxisValueChangedArgs {Axis = _axes[axisId], Value = 0});
+                    AxisValueChanged(this, new AxisValueChangedArgs { Axis = _axes[axisId], Value = 0 });
                 }
                 _axesToListen[axisId] = 0;
             }
@@ -163,7 +163,7 @@ namespace Fusee.Engine.Core
                 {
                     // Inform buttons-to-listen about the new value (the disconnected device won't do it)...
                     // Do NOT inform buttons-to-poll here since they will be informed in PreRender anyway.
-                    ButtonValueChanged(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed  = false });
+                    ButtonValueChanged(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed = false });
                 }
                 _buttonsToListen[buttonId] = false;
             }
@@ -274,8 +274,8 @@ namespace Fusee.Engine.Core
             }
 
             return value;
-        }        
-        
+        }
+
         /// <summary>
         ///     Gets the value currently present at the given axis. Without considering the deadzone.
         /// </summary>
@@ -638,14 +638,14 @@ namespace Fusee.Engine.Core
 
             // Ramp cannot be 90° as this would require special case handling
             if (rampUpTime <= float.MinValue)
-                rampUpTime = 2*float.MinValue;
+                rampUpTime = 2 * float.MinValue;
             if (rampDownTime <= float.MinValue)
-                rampDownTime = 2*float.MinValue;
+                rampDownTime = 2 * float.MinValue;
 
             bool closureLastBtnState = GetButton(origButtonId);
             float closureLastAxisValue = 0;
             float closureAnimDirection = 0;
-            AxisValueCalculator calculator = delegate(float deltaTime)
+            AxisValueCalculator calculator = delegate (float deltaTime)
             {
                 float ret;
                 bool newBtnState = GetButton(origButtonId);
@@ -658,7 +658,7 @@ namespace Fusee.Engine.Core
 
                 if (closureAnimDirection > 0)
                 {
-                    ret = closureLastAxisValue + deltaTime/rampUpTime;
+                    ret = closureLastAxisValue + deltaTime / rampUpTime;
                     if (ret >= 1)
                     {
                         closureAnimDirection = 0;
@@ -667,7 +667,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (closureAnimDirection < 0)
                 {
-                    ret = closureLastAxisValue - deltaTime/rampDownTime;
+                    ret = closureLastAxisValue - deltaTime / rampDownTime;
                     if (ret < 0)
                     {
                         closureAnimDirection = 0;
@@ -689,7 +689,13 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id, Name = name ?? $"{origButtonDesc.Name} Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = 0.0f
+                Id = id,
+                Name = name ?? $"{origButtonDesc.Name} Axis",
+                Bounded = AxisBoundedType.Constant,
+                Direction = direction,
+                Nature = AxisNature.Speed,
+                MaxValueOrAxis = 1.0f,
+                MinValueOrAxis = 0.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -735,16 +741,16 @@ namespace Fusee.Engine.Core
 
             // Ramp cannot be 90° as this would require special case handling
             if (rampUpTime <= float.MinValue)
-                rampUpTime = 2*float.MinValue;
+                rampUpTime = 2 * float.MinValue;
             if (rampDownTime <= float.MinValue)
-                rampDownTime = 2*float.MinValue;
+                rampDownTime = 2 * float.MinValue;
 
 
             bool closureLastBtnStatePos = GetButton(origButtonIdPositive);
             bool closureLastBtnStateNeg = GetButton(origButtonIdNegative);
             float closureLastAxisValue = 0;
             float closureAnimDirection = 0;
-            AxisValueCalculator calculator = delegate(float deltaTime)
+            AxisValueCalculator calculator = delegate (float deltaTime)
             {
                 float ret;
                 bool newBtnStatePos = GetButton(origButtonIdPositive);
@@ -759,7 +765,7 @@ namespace Fusee.Engine.Core
                 if (newBtnStateNeg != closureLastBtnStateNeg)
                 {
                     // The state of the button has changed
-                    closureAnimDirection = - ((newBtnStateNeg ? 1 : 0) - (closureLastBtnStateNeg ? 1 : 0));
+                    closureAnimDirection = -((newBtnStateNeg ? 1 : 0) - (closureLastBtnStateNeg ? 1 : 0));
                     closureLastBtnStateNeg = newBtnStateNeg;
                 }
 
@@ -775,7 +781,7 @@ namespace Fusee.Engine.Core
 
                 if (closureAnimDirection > 0)
                 {
-                    ret = closureLastAxisValue + deltaTime/animTime;
+                    ret = closureLastAxisValue + deltaTime / animTime;
                     if (ret >= animGoal)
                     {
                         closureAnimDirection = 0;
@@ -784,7 +790,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (closureAnimDirection < 0)
                 {
-                    ret = closureLastAxisValue - deltaTime/animTime;
+                    ret = closureLastAxisValue - deltaTime / animTime;
                     if (ret <= animGoal)
                     {
                         closureAnimDirection = 0;
@@ -806,7 +812,13 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id, Name = name ?? $"{origButtonDescPos.Name} {origButtonDescNeg.Name} Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = -1.0f
+                Id = id,
+                Name = name ?? $"{origButtonDescPos.Name} {origButtonDescNeg.Name} Axis",
+                Bounded = AxisBoundedType.Constant,
+                Direction = direction,
+                Nature = AxisNature.Speed,
+                MaxValueOrAxis = 1.0f,
+                MinValueOrAxis = -1.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -837,7 +849,7 @@ namespace Fusee.Engine.Core
 
                     if (_axesToPoll[axisId] != curVal)
                     {
-                        AxisValueChanged(this, new AxisValueChangedArgs {Axis = _axes[axisId], Value = curVal});
+                        AxisValueChanged(this, new AxisValueChangedArgs { Axis = _axes[axisId], Value = curVal });
                         _axesToPoll[axisId] = curVal;
                     }
                 }
@@ -854,7 +866,7 @@ namespace Fusee.Engine.Core
                     else
                         _buttonsUp.Add(buttonId);
 
-                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs {Button = _buttons[buttonId], Pressed = curVal});
+                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed = curVal });
                     _buttonsToPoll[buttonId] = curVal;
                 }
             }
@@ -871,7 +883,7 @@ namespace Fusee.Engine.Core
                 }
 
                 _buttonsToListen[b.Key] = b.Value;
-                ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs {Button = _buttons[b.Key], Pressed = b.Value});
+                ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[b.Key], Pressed = b.Value });
             }
             _buttonsToListenJustChanged.Clear();
         }

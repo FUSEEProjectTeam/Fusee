@@ -283,7 +283,7 @@ namespace Fusee.Engine.Common
         /// <param name="meshTriangles">The mesh triangles.</param>
         /// <param name="meshVertecies">The mesh vertices.</param>
         /// <returns></returns>
-        IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[]meshVertecies);
+        IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[] meshVertecies);
 
         /// <summary>
         /// Numbers the constraints.

@@ -86,6 +86,3 @@ namespace Fusee.Serialization.V1
         public bool Active = true;
     }
 }
-
-
-    

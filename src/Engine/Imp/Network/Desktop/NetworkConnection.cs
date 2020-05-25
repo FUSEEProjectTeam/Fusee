@@ -39,7 +39,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         {
             get
             {
-                return new IPEndpointData { Address = IPToLong(_remoteEndPoint.Address.ToString()), Port = _remoteEndPoint.Port};
+                return new IPEndpointData { Address = IPToLong(_remoteEndPoint.Address.ToString()), Port = _remoteEndPoint.Port };
             }
         }
 
@@ -82,7 +82,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// </value>
         public float RoundtripTime
         {
-            get { return Connection.AverageRoundtripTime;}
+            get { return Connection.AverageRoundtripTime; }
         }
         #endregion
 

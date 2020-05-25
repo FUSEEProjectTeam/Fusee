@@ -371,7 +371,7 @@ namespace Fusee.Test.Serialization.V1
                         Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.AlbedoTexture), ((FusMaterial)fusFileComp).Albedo.Texture);
                     }
 
-                  
+
                     if (fx.GetEffectParam(UniformNameDeclarations.SpecularMix) != null)
                     {
                         Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularMix), ((FusMaterial)fusFileComp).Specular.Mix);
@@ -533,7 +533,7 @@ namespace Fusee.Test.Serialization.V1
                 }
 
                 if (gtComp is ShaderEffect fx)
-                {     
+                {
                     // HACK (mr): Problem with null vs string comparison. Should be re-enabled after <nullable> is enabled for F.E.Core & Serialization
                     //Assert.Equal(fx.Name, ((ShaderEffect)sceneFileComp).Name);
 
@@ -565,7 +565,7 @@ namespace Fusee.Test.Serialization.V1
                         Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.SpecularTexture), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.SpecularTexture));
                     }
 
-              
+
                     if (fx.GetEffectParam(UniformNameDeclarations.EmissiveColor) != null)
                     {
                         Assert.Equal(fx.GetEffectParam(UniformNameDeclarations.EmissiveColor), ((ShaderEffect)sceneFileComp).GetEffectParam(UniformNameDeclarations.EmissiveColor));

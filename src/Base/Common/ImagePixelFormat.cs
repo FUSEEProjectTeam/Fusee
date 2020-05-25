@@ -30,14 +30,14 @@ namespace Fusee.Base.Common
             {
                 return ColorFormat == ColorFormat.RGBA || ColorFormat == ColorFormat.uiRgb8
                     ? 4
-                    : ColorFormat == ColorFormat.RGB 
+                    : ColorFormat == ColorFormat.RGB
                         ? 3
                         : ColorFormat == ColorFormat.Depth24 || ColorFormat == ColorFormat.Depth16
                             ? 3
                             : ColorFormat == ColorFormat.Intensity
                                 ? 1
                                 : ColorFormat == ColorFormat.fRGB16 || ColorFormat == ColorFormat.fRGB32 //GL_FLOAT: 4byte per component
-                                    ? 12                                    
+                                    ? 12
                                         : 0;
             }
         }

@@ -175,7 +175,7 @@ namespace Fusee.Engine.Common
         Counterclockwise = 3,
 #pragma warning restore 1591
     }
-    
+
     /// <summary>
     /// Used to define the source and destination blending factors. Together, these specify the blend operation to be used when writing a pixel color value onto the render canvas.
     /// </summary>
@@ -192,7 +192,7 @@ namespace Fusee.Engine.Common
         InverseDestinationAlpha = 8,
         DestinationColor = 9,
         InverseDestinationColor = 10,
- 
+
         BlendFactor = 14,
         InverseBlendFactor = 15,
         // Ignored by FUSEE
@@ -204,9 +204,9 @@ namespace Fusee.Engine.Common
 #pragma warning restore 1591
     }
 
-        /// <summary>
-        /// Specifies the fill mode to use by the rasterizer. Options are Point (renders vertices as single pixels), Wireframe (renders only triangles' edges as lines), or Solid (fills all pixels covered by triangles).
-        /// </summary>
+    /// <summary>
+    /// Specifies the fill mode to use by the rasterizer. Options are Point (renders vertices as single pixels), Wireframe (renders only triangles' edges as lines), or Solid (fills all pixels covered by triangles).
+    /// </summary>
     public enum FillMode
     {
 #pragma warning disable 1591
@@ -268,7 +268,7 @@ namespace Fusee.Engine.Common
         KanjiMode = 25,
         Escape = 27,
         IMEConvert = 28,
-        IMENonconvert = 29| LButton,
+        IMENonconvert = 29 | LButton,
         IMEAccept = 30,
         IMEModeChange = 31,
         Space = 32,
