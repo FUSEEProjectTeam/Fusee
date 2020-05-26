@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
-        private readonly Dictionary<FusMaterial, Effect> _matMap;
+        private readonly Dictionary<FusMaterialBase, Effect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Dictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
@@ -103,7 +103,7 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new SceneContainer();
 
-            _matMap = new Dictionary<FusMaterial, Effect>();
+            _matMap = new Dictionary<FusMaterialBase, Effect>();
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _texMap = new Dictionary<string, Texture>();
             _boneContainers = new Stack<SceneNode>();
@@ -269,7 +269,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(FusMaterial matComp)
+        public void ConvMaterial(FusMaterialStandard matComp)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
@@ -283,7 +283,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(FusMaterialPBR matComp)
+        public void ConvMaterial(FusMaterialBRDF matComp)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
@@ -482,11 +482,11 @@ namespace Fusee.Engine.Core
 
         #region Make Effect
 
-        private Effect LookupMaterial(FusMaterial m)
+        private Effect LookupMaterial(FusMaterialStandard m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.BlinnPhong : LightingSetupFlags.DiffuseOnly;
+            var lightingSetup = m.HasSpecularChannel ? LightingSetupFlags.BlinnPhong : LightingSetupFlags.DiffuseOnly;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
@@ -502,7 +502,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
+                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, m.Albedo.Mix, float2.One);
             }
             else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -514,7 +514,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
+                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, float2.One);
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -534,7 +534,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
+                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BlinnPhong)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, m.Specular.Shininess, m.Specular.Strength);
@@ -547,17 +547,18 @@ namespace Fusee.Engine.Core
             return sfx;
         }
 
-        private Effect LookupMaterial(FusMaterialPBR m)
+        private Effect LookupMaterial(FusMaterialBRDF m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecular ? LightingSetupFlags.BRDF : LightingSetupFlags.DiffuseOnly;
+            var lightingSetup = LightingSetupFlags.BRDF;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
             
-            //TODO: get BRDF values from new FusMaterial and replace arbitrary parameter values in MakeEffect methods
+            //TODO: Texture Tiles instead of float2.One - can they be exported?
+            //TODO: Subsurface color is exported but not used in the MakeEffect Methods
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
@@ -568,7 +569,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
-                sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, m.Albedo.Mix, m.Albedo.Tiles);
+                sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, m.Albedo.Mix, float2.One);
             }
             else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -580,7 +581,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, normalTex, m.NormalMap.Intensity, m.NormalMap.Tiles);
+                sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, normalTex, m.NormalMap.Intensity, float2.One);
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -600,10 +601,10 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0, albedoTex, normalTex, m.Albedo.Mix, m.Albedo.Tiles, m.NormalMap.Intensity);
+                sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BRDF)
-                sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.RoughnessValue, 0, 0.5f, 1.46f, 0);
+                sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
             else
@@ -777,7 +778,7 @@ namespace Fusee.Engine.Core
             // TODO: SurfaceEffect to FusMaterial and SurfaceEffect to FusMaterialPBR
             // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
 
-            var mat = new FusMaterial();
+            var mat = new FusMaterialStandard();
 
             if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.Albedo))
                 mat.Albedo = new AlbedoChannel();
