@@ -1,77 +1,139 @@
-syntax = "proto2";
-import "protobuf-net/bcl.proto"; // schema for protobuf-net's handling of core .NET types
-import "protobuf-net/protogen.proto"; // custom protobuf-net options
+syntax = "proto3";
 
 message AABBf {
-   optional float3 min = 1;
-   optional float3 max = 2;
+   float3 min = 1;
+   float3 max = 2;
 }
-message AnimationComponent {
-   repeated .bcl.NetObjectProxy AnimationTracks = 3 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked AnimationTrackContainer
+message FusAnimation {
+   repeated FusAnimationTrack AnimationTracks = 3;
 }
-message AnimationKeyContainerBase {
-   optional float Time = 1 [default = 0];
+message FusAnimationKeyBase {
+   float Time = 1;
    oneof subtype {
-      AnimationKeyContainerDouble AnimationKeyContainerDouble = 100;
-      AnimationKeyContainerInt AnimationKeyContainerInt = 101;
-      AnimationKeyContainerFloat AnimationKeyContainerFloat = 102;
-      AnimationKeyContainerFloat2 AnimationKeyContainerFloat2 = 103;
-      AnimationKeyContainerFloat3 AnimationKeyContainerFloat3 = 104;
-      AnimationKeyContainerFloat4 AnimationKeyContainerFloat4 = 105;
+      FusAnimationKeyDouble FusAnimationKeyDouble = 100;
+      FusAnimationKeyInt FusAnimationKeyInt = 101;
+      FusAnimationKeyFloat FusAnimationKeyFloat = 102;
+      FusAnimationKeyFloat2 FusAnimationKeyFloat2 = 103;
+      FusAnimationKeyFloat3 FusAnimationKeyFloat3 = 104;
+      FusAnimationKeyFloat4 FusAnimationKeyFloat4 = 105;
    }
 }
-message AnimationKeyContainerDouble {
-   optional double Value = 1 [default = 0];
+message FusAnimationKeyDouble {
+   double Value = 1;
 }
-message AnimationKeyContainerFloat {
-   optional float Value = 1 [default = 0];
+message FusAnimationKeyFloat {
+   float Value = 1;
 }
-message AnimationKeyContainerFloat2 {
-   optional float2 Value = 1;
+message FusAnimationKeyFloat2 {
+   float2 Value = 1;
 }
-message AnimationKeyContainerFloat3 {
-   optional float3 Value = 1;
+message FusAnimationKeyFloat3 {
+   float3 Value = 1;
 }
-message AnimationKeyContainerFloat4 {
-   optional float4 Value = 1;
+message FusAnimationKeyFloat4 {
+   float4 Value = 1;
 }
-message AnimationKeyContainerInt {
-   optional int32 Value = 1 [default = 0];
+message FusAnimationKeyInt {
+   int32 Value = 1;
 }
-message AnimationTrackContainer {
-   optional .bcl.NetObjectProxy SceneComponent = 1 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneComponentContainer
-   optional string Property = 2;
-   optional TypeId TypeId = 3 [default = Double];
-   repeated .bcl.NetObjectProxy KeyFrames = 4 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked AnimationKeyContainerBase
-   optional LerpType LerpType = 5 [default = Lerp];
+message FusAnimationTrack {
+   FusComponent SceneComponent = 1;
+   string Property = 2;
+   TypeId TypeId = 3;
+   repeated FusAnimationKeyBase KeyFrames = 4;
+   LerpType LerpType = 5;
 }
-message BoneComponent {
-   optional string Name = 1;
+message FusBone {
+   string Name = 1;
 }
-message BumpChannelContainer {
-   optional string Texture = 1;
-   optional float Intensity = 2 [default = 0];
+message FusCamera {
 }
-message DiffuseChannelContainer {
-   optional float4 Color = 1;
-   optional string Texture = 2;
-   optional float Mix = 3 [default = 0];
+message FusComponent {
+   string Name = 1;
    oneof subtype {
-      SpecularChannelContainer SpecularChannelContainer = 100;
+      FusTransform FusTransform = 100;
+      FusMesh FusMesh = 101;
+      FusMaterial FusMaterial = 102;
+      FusLight FusLight = 103;
+      FusWeight FusWeight = 104;
+      FusAnimation FusAnimation = 105;
+      FusBone FusBone = 106;
+      FusCamera FusCamera = 107;
    }
+}
+message FusContents {
+   oneof subtype {
+      FusScene FusScene = 201;
+   }
+}
+message FusFile {
+   FusHeader Header = 1;
+   FusContents Contents = 2;
+}
+message FusHeader {
+   int32 FileVersion = 1;
+   string Generator = 2;
+   string CreatedBy = 3;
+   string CreationDate = 4;
+}
+message FusLight {
+   bool Active = 1;
+   float4 Color = 2;
+   float MaxDistance = 3;
+   float Strength = 4;
+   LightType Type = 5;
+   float OuterConeAngle = 6;
+   float InnerConeAngle = 7;
+}
+message FusMaterial {
+   MatChannelContainer Albedo = 1;
+   MatChannelContainer Specular = 2;
+   MatChannelContainer Emissive = 3;
+   NormapMapChannelContainer NormalMap = 4;
+   oneof subtype {
+      FusMaterialPBR FusMaterialPBR = 200;
+   }
+}
+message FusMaterialPBR {
+   float RoughnessValue = 1;
+   float FresnelReflectance = 2;
+   float DiffuseFraction = 3;
+}
+message FusMesh {
+   repeated float3 Vertices = 1;
+   repeated uint32 Colors = 2 [packed = false];
+   repeated float3 Normals = 3;
+   repeated float2 UVs = 4;
+   repeated float4 BoneWeights = 5;
+   repeated float4 BoneIndices = 6;
+   repeated uint32 Triangles = 7 [packed = false];
+   AABBf BoundingBox = 8;
+   repeated float4 Tangents = 9;
+   repeated float3 BiTangents = 10;
+   int32 MeshType = 11;
+}
+message FusNode {
+   string Name = 1;
+   repeated int32 Components = 2 [packed = false];
+   repeated FusNode Children = 3;
+}
+message FusScene {
+   repeated FusComponent ComponentList = 1;
+   repeated FusNode Children = 2;
+}
+message FusTransform {
+   float3 Translation = 1;
+   float3 Rotation = 2;
+   float3 Scale = 3;
+}
+message FusWeight {
+   repeated VertexWeightList WeightMap = 1;
+   repeated FusComponent Joints = 2;
+   repeated float4x4 BindingMatrices = 3;
 }
 enum LerpType {
    Lerp = 0;
    Slerp = 1;
-}
-message LightComponent {
-   optional bool Active = 1 [default = false];
-   optional float4 Color = 2;
-   optional float MaxDistance = 3 [default = 0];
-   optional float Strength = 4 [default = 0];
-   optional LightType Type = 5 [default = Point];
-   optional float OuterConeAngle = 6 [default = 0];
-   optional float InnerConeAngle = 7 [default = 0];
 }
 enum LightType {
    Point = 0;
@@ -79,68 +141,21 @@ enum LightType {
    Spot = 2;
    Legacy = 3;
 }
-message MaterialComponent {
-   optional DiffuseChannelContainer Diffuse = 1;
-   optional DiffuseChannelContainer Specular = 2;
-   optional DiffuseChannelContainer Emissive = 3;
-   optional BumpChannelContainer Bump = 4;
+message MatChannelContainer {
+   float4 Color = 1;
+   string Texture = 2;
+   float Mix = 3;
    oneof subtype {
-      MaterialPBRComponent MaterialPBRComponent = 201;
+      SpecularChannelContainer SpecularChannelContainer = 100;
    }
 }
-message MaterialPBRComponent {
-   optional float RoughnessValue = 1 [default = 0];
-   optional float FresnelReflectance = 2 [default = 0];
-   optional float DiffuseFraction = 3 [default = 0];
-}
-message Mesh {
-   repeated float3 Vertices = 1;
-   repeated uint32 Colors = 2;
-   repeated float3 Normals = 3;
-   repeated float2 UVs = 4;
-   repeated float4 BoneWeights = 5;
-   repeated float4 BoneIndices = 6;
-   repeated uint32 Triangles = 7;
-   optional AABBf BoundingBox = 8;
-   repeated float4 Tangents = 9;
-   repeated float3 BiTangents = 10;
-   optional int32 MeshType = 11 [default = 0];
-}
-message SceneComponentContainer {
-   optional string Name = 1;
-   oneof subtype {
-      TransformComponent TransformComponent = 100;
-      Mesh Mesh = 101;
-      MaterialComponent MaterialComponent = 102;
-      LightComponent LightComponent = 103;
-      WeightComponent WeightComponent = 104;
-      AnimationComponent AnimationComponent = 105;
-      BoneComponent BoneComponent = 106;
-   }
-}
-message SceneContainer {
-   optional SceneHeader Header = 1;
-   repeated .bcl.NetObjectProxy Children = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneNodeContainer
-}
-message SceneHeader {
-   optional int32 Version = 1 [default = 0];
-   optional string Generator = 2;
-   optional string CreatedBy = 3;
-   optional string CreationDate = 4;
-}
-message SceneNodeContainer {
-   optional string Name = 1;
-   repeated .bcl.NetObjectProxy Components = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneComponentContainer
-   repeated .bcl.NetObjectProxy Children = 3 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneNodeContainer
+message NormapMapChannelContainer {
+   string Texture = 1;
+   float Intensity = 2;
 }
 message SpecularChannelContainer {
-   optional float Shininess = 1 [default = 0];
-   optional float Strength = 2 [default = 0];
-}
-message TransformComponent {
-   optional float3 Translation = 1;
-   optional float3 Rotation = 2;
-   optional float3 Scale = 3;
+   float Shininess = 1;
+   float Intensity = 2;
 }
 enum TypeId {
    Double = 0;
@@ -152,35 +167,30 @@ enum TypeId {
    Bool = 6;
 }
 message VertexWeight {
-   optional int32 JointIndex = 1 [default = 0];
-   optional float Weight = 2 [default = 0];
+   int32 JointIndex = 1;
+   float Weight = 2;
 }
 message VertexWeightList {
    repeated VertexWeight VertexWeights = 1;
 }
-message WeightComponent {
-   repeated VertexWeightList WeightMap = 1;
-   repeated .bcl.NetObjectProxy Joints = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneNodeContainer
-   repeated float4x4 BindingMatrices = 3;
-}
 message float2 {
-   optional float x = 1 [default = 0];
-   optional float y = 2 [default = 0];
+   float x = 1;
+   float y = 2;
 }
 message float3 {
-   optional float x = 1 [default = 0];
-   optional float y = 2 [default = 0];
-   optional float z = 3 [default = 0];
+   float x = 1;
+   float y = 2;
+   float z = 3;
 }
 message float4 {
-   optional float x = 1 [default = 0];
-   optional float y = 2 [default = 0];
-   optional float z = 3 [default = 0];
-   optional float w = 4 [default = 0];
+   float x = 1;
+   float y = 2;
+   float z = 3;
+   float w = 4;
 }
 message float4x4 {
-   optional float4 Row0 = 1;
-   optional float4 Row1 = 2;
-   optional float4 Row2 = 3;
-   optional float4 Row3 = 4;
+   float4 Row0 = 1;
+   float4 Row1 = 2;
+   float4 Row2 = 3;
+   float4 Row3 = 4;
 }

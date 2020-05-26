@@ -224,7 +224,7 @@ class BlenderVisitor:
         hasEmissive = False
         hasMix = False
         hasBump = False
-        hasPBR = False
+        hasBRDF = False
 
         diffColor = None
         diffTexture = None
@@ -243,9 +243,12 @@ class BlenderVisitor:
         bumpTexture = None
         bumpIntensity = 1
 
-        pbrRoughnessValue = 0.2
-        pbrFresnelReflectance = 0.2
-        pbrDiffuseFraction = 0.2
+        roughnessVal = 0.3
+        metallicVal = 0.0
+        specularVal = 0.5
+        iorVal = 1.46
+        subsurfaceVal = 0.0
+        subsurfaceColorVal = None
 
         # Iterate over nodes of the material node tree
         for node in nodes:                    
@@ -342,20 +345,34 @@ class BlenderVisitor:
                             node.inputs['Base Color'].links[0].from_node.image.filepath)
                         diffTexture = basename
                         self.__textures.append(fullpath)
-
-                hasSpecular = True
-                specMix = 1
+                
+                # BSDF has no shininess-based specular calculation!
+              # hasSpecular = True
+              # specMix = 1
                 # get material color
-                specColor = subsurfaceColor
-                specShininess = (1 - roughness) * 200 # multiply with factor 100 for tight specular light
-                specIntensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit
+              # specColor = subsurfaceColor
+              # specShininess = (1 - roughness) * 200 # multiply with factor 100 for tight specular light
+              # specIntensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit               
 
-                # TODO: Bump and Emissive from BSDF_PRINCIPLED
+                linksNorm = node.inputs['Normal'].links
+                if len(linksNorm) > 0:
+                    if linksNorm[0].from_node.type == 'TEX_IMAGE':
+                        hasBump = True
+                        fullpath, basename = GetPaths(node.inputs['Normal'].links[0].from_node.image.filepath)
+                        bumpTexture = basename
+                        self.__textures.append(fullpath)
 
-                hasPBR = True
-                pbrRoughnessValue = roughness
-                pbrFresnelReflectance = specular
-                pbrDiffuseFraction = metallic
+                # TODO: Emissive from BSDF_PRINCIPLED
+
+                hasBRDF = True
+                roughnessVal = roughness
+                metallicVal = metallic
+                specularVal = specular
+                iorVal = IOR
+                subsurfaceVal = subsurface
+                subsurfaceColorVal = subsurfaceColor
+                #print("Roughness: " + str(roughness))
+                #print("Metallic: " + str(metallic))
 
         if hasDiffuse:
             self.__fusWriter.BeginMaterial(matName)
@@ -366,8 +383,8 @@ class BlenderVisitor:
                 self.__fusWriter.AddEmissive(emissColor, emissTexture, emissMix)
             if hasBump:
                 self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
-            if hasPBR:
-                self.__fusWriter.AddPBRMaterialSettings(pbrRoughnessValue, pbrFresnelReflectance, pbrDiffuseFraction)
+            if hasBRDF:
+                self.__fusWriter.AddBRDFMaterialSettings(roughnessVal, metallicVal, specularVal, iorVal, subsurfaceVal, subsurfaceColorVal)
             self.__fusWriter.EndMaterial()
         else:
             self.__AddDefaultMaterial()
