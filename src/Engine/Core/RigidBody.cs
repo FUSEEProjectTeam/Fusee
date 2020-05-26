@@ -14,10 +14,10 @@ namespace Fusee.Engine.Core
         public event EventHandler WhileCollidingEvent = delegate { };
         internal IRigidBodyImp _iRigidBodyImp;
 
-       // public Mesh Mesh { get; set; }
-       /// <summary>
-       /// Gets and sets the gravity for a rigid body.
-       /// </summary>
+        // public Mesh Mesh { get; set; }
+        /// <summary>
+        /// Gets and sets the gravity for a rigid body.
+        /// </summary>
         public float3 Gravity
         {
             get
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core
                 var o = (RigidBody)_iRigidBodyImp.UserObject;
                 o._iRigidBodyImp.Inertia = value;
             }
-        }   
+        }
 
         public float4x4 WorldTransform
         {
@@ -69,9 +69,9 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (RigidBody) _iRigidBodyImp.UserObject;
+                var o = (RigidBody)_iRigidBodyImp.UserObject;
                 o._iRigidBodyImp.WorldTransform = value;
-                
+
             }
         }
         /// <summary>
@@ -87,7 +87,7 @@ namespace Fusee.Engine.Core
             {
                 var o = (RigidBody)_iRigidBodyImp.UserObject;
                 o._iRigidBodyImp.Position = value;
-                
+
 
             }
         }
@@ -151,7 +151,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Adds an impulse 
         /// </summary>
-        public void ApplyCentralImpulse(float3  centralImpulse)
+        public void ApplyCentralImpulse(float3 centralImpulse)
         {
             var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.ApplyCentralImpulse(centralImpulse);
@@ -198,7 +198,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (RigidBody) _iRigidBodyImp.UserObject;
+                var o = (RigidBody)_iRigidBodyImp.UserObject;
                 o._iRigidBodyImp.LinearFactor = value;
             }
         }
@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core
             get { return _iRigidBodyImp.Friction; }
             set
             {
-                var o = (RigidBody) _iRigidBodyImp.UserObject;
+                var o = (RigidBody)_iRigidBodyImp.UserObject;
                 o._iRigidBodyImp.Friction = value;
             }
         }
@@ -251,7 +251,7 @@ namespace Fusee.Engine.Core
         /// <param name="anglularDrag"></param>
         public void SetDrag(float linearDrag, float anglularDrag)
         {
-            var o = (RigidBody) _iRigidBodyImp.UserObject;
+            var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.SetDrag(linearDrag, anglularDrag);
         }
         /// <summary>
@@ -278,10 +278,10 @@ namespace Fusee.Engine.Core
             {
                 var shape = _iRigidBodyImp.CollisionShape;
                 var shapeType = shape.GetType().ToString();
-               /* var colShape = new CollisionShape();
-                colShape._collisionShapeImp = (_collisionShapeImp)shape;
-                shape.UserObject = colShape;
-                return colShape;*/
+                /* var colShape = new CollisionShape();
+                 colShape._collisionShapeImp = (_collisionShapeImp)shape;
+                 shape.UserObject = colShape;
+                 return colShape;*/
                 //Debug.WriteLine("shapeType" + shapeType);
                 switch (shapeType)
                 {
@@ -319,7 +319,7 @@ namespace Fusee.Engine.Core
                     //Meshes
                     case "Fusee.Engine._convexHullShapeImp":
                         var convHull = new ConvexHullShape();
-                        convHull._convexHullShapeImp = (IConvexHullShapeImp) shape;
+                        convHull._convexHullShapeImp = (IConvexHullShapeImp)shape;
                         shape.UserObject = convHull;
                         return convHull;
                     case "Fusee.Engine._gImpactMeshShapeImp":
@@ -398,10 +398,10 @@ namespace Fusee.Engine.Core
                         var empty = (EmptyShape)value;
                         o._iRigidBodyImp.CollisionShape = empty._emtyShapeImp;
                         break;
-                       
+
                     //Default
                     default:
-                        
+
                         var defaultShape = new EmptyShape();
                         Debug.WriteLine("default");
                         //rbi = _dwi.AddRigidBody(mass, worldTransform, defaultShape._emtyShapeImp, inertia);

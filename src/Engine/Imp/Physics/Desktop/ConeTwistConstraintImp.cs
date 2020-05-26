@@ -84,7 +84,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (ConeTwistConstraintImp) _cti.UserObject;
+                var o = (ConeTwistConstraintImp)_cti.UserObject;
                 o._cti.FixThresh = value;
             }
         }
@@ -198,7 +198,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="maxMotorImpulse">The maximum motor impulse.</param>
         public void SetMaxMotorImpulseNormalized(float maxMotorImpulse)
         {
-           _cti.SetMaxMotorImpulseNormalized(maxMotorImpulse);
+            _cti.SetMaxMotorImpulseNormalized(maxMotorImpulse);
         }
 
         /// <summary>
@@ -381,6 +381,6 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
         #endregion IConstraintImp 
 
-        
+
     }
 }

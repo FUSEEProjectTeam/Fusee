@@ -15,22 +15,22 @@ namespace Fusee.Base.Common
         /// The alternative directory separator character ('/' on windows).
         /// </summary>
         public static readonly char AltDirectorySeparatorChar;
-        
+
         /// <summary>
         /// The directory separator character ('\' on windows, '/' on most other platforms).
         /// </summary>
         public static readonly char DirectorySeparatorChar;
-        
+
         /// <summary>
         /// The path separator character (';' on most platforms)
         /// </summary>
         public static readonly char PathSeparator;
-        
+
         /// <summary>
         /// The directory separator as a string.
         /// </summary>
         internal static readonly string DirectorySeparatorStr;
-        
+
         /// <summary>
         /// The volume separator character (':' on windows).
         /// </summary>
@@ -646,7 +646,7 @@ namespace Fusee.Base.Common
             if (path3 == null)
                 throw new ArgumentNullException("path3");
 
-            return Combine(new[] {path1, path2, path3});
+            return Combine(new[] { path1, path2, path3 });
         }
 
         /// <summary>
@@ -680,7 +680,7 @@ namespace Fusee.Base.Common
             if (path4 == null)
                 throw new ArgumentNullException("path4");
 
-            return Combine(new[] {path1, path2, path3, path4});
+            return Combine(new[] { path1, path2, path3, path4 });
         }
 
         internal static void Validate(string path)

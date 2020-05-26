@@ -560,4 +560,3 @@ namespace Fusee.Engine.Core
 
     }
 }
-

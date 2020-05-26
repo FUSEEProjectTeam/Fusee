@@ -8,7 +8,7 @@ namespace Fusee.Engine.Common
     /// </summary>
     public interface IAttribImp
     {
-        
+
     }
 
     /// <summary>

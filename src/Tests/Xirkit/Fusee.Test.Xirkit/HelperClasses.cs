@@ -75,7 +75,7 @@ namespace Fusee.Test.Xirkit
             public float4 f4;
             public float4x4 f4x4;
 
-            public ConverterClass(){}
+            public ConverterClass() { }
         }
     }
 }

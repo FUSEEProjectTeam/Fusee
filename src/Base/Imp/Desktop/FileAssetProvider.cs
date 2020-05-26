@@ -188,7 +188,8 @@ namespace Fusee.Base.Imp.Desktop
         /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a file stream to the asset.</returns>
         protected override async Task<Stream> GetStreamAsync(string id)
         {
-            return await Task<Stream>.Factory.StartNew(() => { 
+            return await Task<Stream>.Factory.StartNew(() =>
+            {
                 if (id == null) throw new ArgumentNullException(nameof(id));
 
                 // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly

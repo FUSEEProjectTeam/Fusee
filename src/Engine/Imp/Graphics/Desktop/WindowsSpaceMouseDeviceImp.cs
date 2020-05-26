@@ -145,7 +145,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
-        
+
         #region Windows handling
         // This helper static method is required because the 32-bit version of user32.dll does not contain this API
         // (on any versions of Windows), so linking the method will fail at run-time. The bridge dispatches the request
@@ -237,7 +237,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return _gameWindow.Height;
         }
         #endregion
-               
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDeviceImp" /> class.
         /// </summary>

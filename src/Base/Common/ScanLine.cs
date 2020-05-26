@@ -59,12 +59,12 @@ namespace Fusee.Base.Common
                 switch (PixelFormat.ColorFormat)
                 {
                     case ColorFormat.RGBA:
-                    
-                        return 4;                    
+
+                        return 4;
                     case ColorFormat.RGB:
                     case ColorFormat.uiRgb8:
                         return 3;
-                    case ColorFormat.Intensity:                    
+                    case ColorFormat.Intensity:
                         return 1;
                     case ColorFormat.fRGB32:
                     case ColorFormat.fRGB16:

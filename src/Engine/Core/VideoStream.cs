@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
         /// Returns the current frame.
         /// </summary>
         /// <returns></returns>
-        public IImageData GetCurrentFrame ()
+        public IImageData GetCurrentFrame()
         {
             return _imp.GetCurrentFrame();
         }
@@ -30,7 +30,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Stops the video stream.
         /// </summary>
-        public void Stop ()
+        public void Stop()
         {
             _imp.Stop();
         }

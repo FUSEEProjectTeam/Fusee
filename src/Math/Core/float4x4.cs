@@ -1014,7 +1014,7 @@ namespace Fusee.Math.Core
             result = CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
             return result;
-        }        
+        }
 
         #endregion CreatePerspectiveFieldOfView
 

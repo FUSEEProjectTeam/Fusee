@@ -28,7 +28,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private BlendingFactorSrc _blendSrcAlpha;
         private BlendingFactorDest _blendDstAlpha;
 
-        private bool _isCullEnabled;        
+        private bool _isCullEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
@@ -504,7 +504,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 GL.DeleteFramebuffers(1, ref texHandle.FrameBufferHandle);
             }
-            
+
             if (texHandle.DepthRenderBufferHandle != -1)
             {
                 GL.DeleteRenderbuffers(1, ref texHandle.DepthRenderBufferHandle);
@@ -788,7 +788,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             unsafe
             {
                 var mF = (float*)(&val);
-                
+
                 // Column order notation
                 GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
             }

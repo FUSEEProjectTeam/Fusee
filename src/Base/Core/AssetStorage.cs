@@ -101,7 +101,7 @@ namespace Fusee.Base.Core
 
             return default;
         }
-    
+
         /// <summary>
         /// Staticton implementation of <see cref="RegisterAssetProvider"/>.
         /// </summary>
@@ -137,7 +137,7 @@ namespace Fusee.Base.Core
             {
                 throw new InvalidOperationException($"DeepCopy: ProtoBuf.ProtoContractAttribute is not defined on '{source.GetType().Name}'!");
             }
-            
+
             var stream = new MemoryStream();
 
             ProtoBuf.Serializer.Serialize(stream, source);

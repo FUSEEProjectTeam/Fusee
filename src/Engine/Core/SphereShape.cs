@@ -53,10 +53,10 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (SphereShape) _sphereShapeImp.UserObject;
+                var o = (SphereShape)_sphereShapeImp.UserObject;
                 o._sphereShapeImp.Radius = value;
             }
         }
-        
+
     }
 }

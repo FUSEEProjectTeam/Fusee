@@ -10,14 +10,14 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SixDOFDevice : InputDevice
     {
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SixDOFDevice"/> class.
         /// </summary>
         /// <param name="inpDeviceImp">The platform dependent connector to the underlying physical device.</param>
         public SixDOFDevice(IInputDeviceImp inpDeviceImp) : base(inpDeviceImp)
         {
-            
+
         }
         /// <summary>
         /// Gets the deflection values.
@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core
                 return T;
             }
         }
-        
+
         /// <summary>
         /// Gets the rotation values.
         /// </summary>

@@ -92,7 +92,7 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
-        
+
         #region Properties
 
         [Fact]
@@ -359,7 +359,7 @@ namespace Fusee.Test.Math.Core
 
             var actual = Quaternion.LookRotation(lookAt, upDirection);
 
-            Assert.Equal(new Quaternion(0, (float) System.Math.Sqrt(0.5f), 0, (float) System.Math.Sqrt(0.5f)), actual);
+            Assert.Equal(new Quaternion(0, (float)System.Math.Sqrt(0.5f), 0, (float)System.Math.Sqrt(0.5f)), actual);
         }
 
         [Theory]
@@ -393,7 +393,7 @@ namespace Fusee.Test.Math.Core
             var actual = Quaternion.FromToRotation(from, to);
 
             Assert.Equal(expected, actual);
-        }       
+        }
 
         #endregion
 
@@ -573,10 +573,10 @@ namespace Fusee.Test.Math.Core
             var zero = new Quaternion(0, 0, 0, 0);
             var one = new Quaternion(1, 1, 1, 1);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
-            yield return new object[] {zero, zero, zero};
-            yield return new object[] {one, one, new Quaternion(2, 2, 2, 2)};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
+            yield return new object[] { zero, zero, zero };
+            yield return new object[] { one, one, new Quaternion(2, 2, 2, 2) };
         }
 
         public static IEnumerable<object[]> GetSubtraction()
@@ -584,9 +584,9 @@ namespace Fusee.Test.Math.Core
             var zero = new Quaternion(0, 0, 0, 0);
             var one = new Quaternion(1, 1, 1, 1);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, zero, zero};
-            yield return new object[] {one, one, zero};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, zero, zero };
+            yield return new object[] { one, one, zero };
         }
 
         public static IEnumerable<object[]> GetQuaternionMultiplication()
@@ -595,20 +595,20 @@ namespace Fusee.Test.Math.Core
             var one = new Quaternion(1, 1, 1, 1);
             var id = new Quaternion(0, 0, 0, 1);
 
-            yield return new object[] {one, id, one};
-            yield return new object[] {id, one, one};
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {zero, one, zero};
-            yield return new object[] {one, one, new Quaternion(2, 2, 2, -2)};
+            yield return new object[] { one, id, one };
+            yield return new object[] { id, one, one };
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { zero, one, zero };
+            yield return new object[] { one, one, new Quaternion(2, 2, 2, -2) };
         }
 
         public static IEnumerable<object[]> GetScalarMultiplication()
         {
             var one = new Quaternion(1, 1, 1, 1);
 
-            yield return new object[] {one, 1, one};
-            yield return new object[] {one, 2, new Quaternion(2, 2, 2, 2)};
-            yield return new object[] {one, 0, new Quaternion(0, 0, 0, 0)};
+            yield return new object[] { one, 1, one };
+            yield return new object[] { one, 2, new Quaternion(2, 2, 2, 2) };
+            yield return new object[] { one, 0, new Quaternion(0, 0, 0, 0) };
         }
 
         public static IEnumerable<object[]> GetSlerp()
@@ -618,10 +618,10 @@ namespace Fusee.Test.Math.Core
             var x = new Quaternion(0.5f, 0, 0, 0.5f);
             var y = new Quaternion(0, 0.5f, 0, 0.5f);
 
-            yield return new object[] {zero, zero, 0.5f, id};
-            yield return new object[] {x, zero, 0.5f, x};
-            yield return new object[] {zero, x, 0.5f, x};
-            yield return new object[] {x, y, 0.5f, new Quaternion(0.4082483f, 0.4082483f, 0, 0.8164967f)};
+            yield return new object[] { zero, zero, 0.5f, id };
+            yield return new object[] { x, zero, 0.5f, x };
+            yield return new object[] { zero, x, 0.5f, x };
+            yield return new object[] { x, y, 0.5f, new Quaternion(0.4082483f, 0.4082483f, 0, 0.8164967f) };
         }
 
         public static IEnumerable<object[]> GetEuler()

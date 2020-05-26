@@ -97,4 +97,3 @@ namespace Fusee.Engine.Core.Primitives
         #endregion
     }
 }
-

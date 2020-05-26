@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
         public FontMap(Font font, uint pixelHeight, string alphabet = null)
         {
-            if (pixelHeight <= 0) throw new ArgumentOutOfRangeException(nameof(pixelHeight));          
+            if (pixelHeight <= 0) throw new ArgumentOutOfRangeException(nameof(pixelHeight));
 
             _font = font ?? throw new ArgumentNullException(nameof(font));
             _pixelHeight = pixelHeight;

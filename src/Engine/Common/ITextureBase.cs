@@ -72,8 +72,8 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Enables the compare mode.
         /// </summary>
-        CompareRefToTexture 
-    }    
+        CompareRefToTexture
+    }
 
     /// <summary>
     /// Defines how to map texels to uv coordinates.

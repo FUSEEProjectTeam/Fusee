@@ -45,13 +45,13 @@ namespace Fusee.Xirkit
                 MemberInfo m = _miList[i];
                 if (m is FieldInfo)
                 {
-                    _pre[i] = delegate(int ii) { _oList[ii + 1] = ((FieldInfo)_miList[ii]).GetValue(_oList[ii]); };
-                    _post[i] = delegate(int ii) { ((FieldInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1]); };
+                    _pre[i] = delegate (int ii) { _oList[ii + 1] = ((FieldInfo)_miList[ii]).GetValue(_oList[ii]); };
+                    _post[i] = delegate (int ii) { ((FieldInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1]); };
                 }
                 else
                 {
-                    _pre[i] = delegate(int ii) { _oList[ii + 1] = ((PropertyInfo)_miList[ii]).GetValue(_oList[ii], null); };
-                    _post[i] = delegate(int ii) { ((PropertyInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1], null); };
+                    _pre[i] = delegate (int ii) { _oList[ii + 1] = ((PropertyInfo)_miList[ii]).GetValue(_oList[ii], null); };
+                    _post[i] = delegate (int ii) { ((PropertyInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1], null); };
                 }
             }
 

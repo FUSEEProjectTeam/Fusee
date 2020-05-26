@@ -164,7 +164,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
-            SceneContainer sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
+            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
             _renderer = new SceneRendererForward(sc);
 

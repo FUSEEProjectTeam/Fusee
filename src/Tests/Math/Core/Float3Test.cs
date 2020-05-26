@@ -143,7 +143,7 @@ namespace Fusee.Test.Math.Core
 
             var actual = vec.ToArray();
 
-            Assert.Equal(new float[] {1, 2, 3}, actual);
+            Assert.Equal(new float[] { 1, 2, 3 }, actual);
         }
 
         #endregion
@@ -720,9 +720,9 @@ namespace Fusee.Test.Math.Core
 
         public static IEnumerable<object[]> GetNormalize()
         {
-            yield return new object[] {new float3(4, 0, 0), new float3(1, 0, 0)};
-            yield return new object[] {new float3(0, 4, 0), new float3(0, 1, 0)};
-            yield return new object[] {new float3(0, 0, 4), new float3(0, 0, 1)};
+            yield return new object[] { new float3(4, 0, 0), new float3(1, 0, 0) };
+            yield return new object[] { new float3(0, 4, 0), new float3(0, 1, 0) };
+            yield return new object[] { new float3(0, 0, 4), new float3(0, 0, 1) };
             yield return new object[]
             {
                 new float3(1, 1, 1),
@@ -732,12 +732,12 @@ namespace Fusee.Test.Math.Core
 
         public static IEnumerable<object[]> GetAddition()
         {
-            var zero = new float3(0, 0,0);
+            var zero = new float3(0, 0, 0);
             var one = new float3(1, 1, 1);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
-            yield return new object[] {one, one, new float3(2, 2, 2)};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
+            yield return new object[] { one, one, new float3(2, 2, 2) };
         }
 
         public static IEnumerable<object[]> GetSubtraction()
@@ -745,26 +745,26 @@ namespace Fusee.Test.Math.Core
             var zero = new float3(0, 0, 0);
             var one = new float3(1, 1, 1);
 
-            yield return new object[] {one, one, zero};
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, -one};
+            yield return new object[] { one, one, zero };
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, -one };
         }
 
         public static IEnumerable<object[]> GetMultiply()
         {
             var one = new float3(1, 1, 1);
 
-            yield return new object[] {one, 1, one};
-            yield return new object[] {one, 2, new float3(2, 2, 2)};
-            yield return new object[] {one, 0, new float3(0, 0, 0)};
+            yield return new object[] { one, 1, one };
+            yield return new object[] { one, 2, new float3(2, 2, 2) };
+            yield return new object[] { one, 0, new float3(0, 0, 0) };
         }
 
         public static IEnumerable<object[]> GetDivide()
         {
             var one = new float3(1, 1, 1);
 
-            yield return new object[] {new float3(2, 2, 2), 2, one};
-            yield return new object[] {one, 1, one};
+            yield return new object[] { new float3(2, 2, 2), 2, one };
+            yield return new object[] { one, 1, one };
         }
 
         public static IEnumerable<object[]> GetComponentMin()
@@ -772,9 +772,9 @@ namespace Fusee.Test.Math.Core
             var one = new float3(1, 1, 1);
             var zero = new float3(0, 0, 0);
 
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {zero, one, zero};
-            yield return new object[] {new float3(1, 0, 1), new float3(0, 1, 0), zero};
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { zero, one, zero };
+            yield return new object[] { new float3(1, 0, 1), new float3(0, 1, 0), zero };
         }
 
         public static IEnumerable<object[]> GetComponentMax()
@@ -782,9 +782,9 @@ namespace Fusee.Test.Math.Core
             var one = new float3(1, 1, 1);
             var zero = new float3(0, 0, 0);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
-            yield return new object[] {new float3(1, 0, 1), new float3(0, 1, 0), one};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
+            yield return new object[] { new float3(1, 0, 1), new float3(0, 1, 0), one };
         }
 
         public static IEnumerable<object[]> GetMin()
@@ -792,8 +792,8 @@ namespace Fusee.Test.Math.Core
             var one = new float3(1, 1, 1);
             var zero = new float3(0, 0, 0);
 
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {zero, one, zero};
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { zero, one, zero };
         }
 
         public static IEnumerable<object[]> GetMax()
@@ -801,8 +801,8 @@ namespace Fusee.Test.Math.Core
             var one = new float3(1, 1, 1);
             var zero = new float3(0, 0, 0);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
         }
 
         public static IEnumerable<object[]> GetClamp()
@@ -810,9 +810,9 @@ namespace Fusee.Test.Math.Core
             var one = new float3(1, 1, 1);
             var zero = new float3(0, 0, 0);
 
-            yield return new object[] {new float3(2, 2, 2), zero, one, one};
-            yield return new object[] {new float3(-1, -1, -1), zero, one, zero};
-            yield return new object[] {new float3(0.5f, 0.5f, 0.5f), zero, one, new float3(0.5f, 0.5f, 0.5f)};
+            yield return new object[] { new float3(2, 2, 2), zero, one, one };
+            yield return new object[] { new float3(-1, -1, -1), zero, one, zero };
+            yield return new object[] { new float3(0.5f, 0.5f, 0.5f), zero, one, new float3(0.5f, 0.5f, 0.5f) };
         }
 
         public static IEnumerable<object[]> GetLerp()
@@ -820,9 +820,9 @@ namespace Fusee.Test.Math.Core
             var one = new float3(1, 1, 1);
             var zero = new float3(0, 0, 0);
 
-            yield return new object[] {zero, one, 0.5f, new float3(0.5f, 0.5f, 0.5f)};
-            yield return new object[] {zero, one, 0, zero};
-            yield return new object[] {zero, one, 1, one};
+            yield return new object[] { zero, one, 0.5f, new float3(0.5f, 0.5f, 0.5f) };
+            yield return new object[] { zero, one, 0, zero };
+            yield return new object[] { zero, one, 1, one };
         }
 
         public static IEnumerable<object[]> GetBarycentric()
@@ -831,9 +831,9 @@ namespace Fusee.Test.Math.Core
             var y = new float3(0, 1, 0);
             var z = new float3(0, 0, 1);
 
-            yield return new object[] {x, y, z, 0, 0, z};
-            yield return new object[] {x, y, z, 1, 0, x};
-            yield return new object[] {x, y, z, 0, 1, y};
+            yield return new object[] { x, y, z, 0, 0, z };
+            yield return new object[] { x, y, z, 1, 0, x };
+            yield return new object[] { x, y, z, 0, 1, y };
         }
 
         public static IEnumerable<object[]> GetEuler()
@@ -842,9 +842,9 @@ namespace Fusee.Test.Math.Core
             var y = new float3(0, 1, 0);
             var z = new float3(0, 0, 1);
 
-            yield return new object[] {new float3(90, 0, 0), y, z};
-            yield return new object[] {new float3(0, 90, 0), z, x};
-            yield return new object[] {new float3(0, 0, 90), x, y};
+            yield return new object[] { new float3(90, 0, 0), y, z };
+            yield return new object[] { new float3(0, 90, 0), z, x };
+            yield return new object[] { new float3(0, 0, 90), x, y };
         }
 
         public static IEnumerable<object[]> GetQuaternion()
@@ -853,13 +853,13 @@ namespace Fusee.Test.Math.Core
             var y = new float3(0, 1, 0);
             var z = new float3(0, 0, 1);
 
-            var xRot = new Quaternion((float) System.Math.Sqrt(0.5), 0, 0, (float) System.Math.Sqrt(0.5));
-            var yRot = new Quaternion(0, (float) System.Math.Sqrt(0.5), 0, (float) System.Math.Sqrt(0.5));
-            var zRot = new Quaternion(0, 0, (float) System.Math.Sqrt(0.5), (float) System.Math.Sqrt(0.5));
+            var xRot = new Quaternion((float)System.Math.Sqrt(0.5), 0, 0, (float)System.Math.Sqrt(0.5));
+            var yRot = new Quaternion(0, (float)System.Math.Sqrt(0.5), 0, (float)System.Math.Sqrt(0.5));
+            var zRot = new Quaternion(0, 0, (float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5));
 
-            yield return new object[] {xRot, y, z};
-            yield return new object[] {yRot, z, x};
-            yield return new object[] {zRot, x, y};
+            yield return new object[] { xRot, y, z };
+            yield return new object[] { yRot, z, x };
+            yield return new object[] { zRot, x, y };
         }
 
         #endregion

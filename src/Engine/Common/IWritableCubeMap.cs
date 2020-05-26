@@ -9,6 +9,6 @@ namespace Fusee.Engine.Common
     /// </summary>
     public interface IWritableCubeMap : IWritableTexture
     {
-        
+
     }
 }

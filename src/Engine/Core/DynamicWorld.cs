@@ -10,7 +10,7 @@ namespace Fusee.Engine.Core
     public class DynamicWorld
     {
         internal IDynamicWorldImp _dwi;
-        
+
         public DynamicWorld([InjectMe] IDynamicWorldImp dynamicWorld)
         {
             _dwi = dynamicWorld;
@@ -27,24 +27,24 @@ namespace Fusee.Engine.Core
         public RigidBody AddRigidBody(float mass, float3 position, float3 orientation, CollisionShape colShape/*, float3 inertia*/)
         {
 
-           /* var meshTrianglesCount = mesh.Triangles.Length;
-            int [] meshTrianglesArray = new int[meshTrianglesCount];
-            for (int c = 0; c < meshTrianglesCount; c++)
-            {
-                meshTrianglesArray[c] = Convert.ToInt32(mesh.Triangles[c]);
-            }
+            /* var meshTrianglesCount = mesh.Triangles.Length;
+             int [] meshTrianglesArray = new int[meshTrianglesCount];
+             for (int c = 0; c < meshTrianglesCount; c++)
+             {
+                 meshTrianglesArray[c] = Convert.ToInt32(mesh.Triangles[c]);
+             }
 
-            int meshVerteciesCount = mesh.Vertices.Length;
-            float3[] meshVerteciesArray = new float3[meshVerteciesCount];
-            meshVerteciesArray = mesh.Vertices;
-            */
+             int meshVerteciesCount = mesh.Vertices.Length;
+             float3[] meshVerteciesArray = new float3[meshVerteciesCount];
+             meshVerteciesArray = mesh.Vertices;
+             */
             var shapeType = colShape.GetType().ToString();
             IRigidBodyImp rbi;
             switch (shapeType)
             {
                 //Primitives
                 case "Fusee.Engine.BoxShape":
-                    var box =(BoxShape) colShape;
+                    var box = (BoxShape)colShape;
                     rbi = _dwi.AddRigidBody(mass, position, orientation, box._boxShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.CapsuleShape":
@@ -80,11 +80,11 @@ namespace Fusee.Engine.Core
 
                 //Meshes
                 case "Fusee.Engine.ConvexHullShape":
-                    var convHullShape = (ConvexHullShape) colShape;
+                    var convHullShape = (ConvexHullShape)colShape;
                     rbi = _dwi.AddRigidBody(mass, position, orientation, convHullShape._convexHullShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.GImpactMeshShape":
-                    var gImpMeshShape = (GImpactMeshShape) colShape;
+                    var gImpMeshShape = (GImpactMeshShape)colShape;
                     rbi = _dwi.AddRigidBody(mass, position, orientation, gImpMeshShape._gImpactMeshShapeImp/*, inertia*/);
                     break;
                 case "Fusee.Engine.StaticPlaneShape": //static Shape
@@ -99,8 +99,8 @@ namespace Fusee.Engine.Core
                     break;
             }
 
-           // IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform, /* shape, */inertia);
-       
+            // IRigidBodyImp rbi = _dwi.AddRigidBody(mass, worldTransform, /* shape, */inertia);
+
             var retval = new RigidBody();
             //retval.Mesh = mesh;
             retval._iRigidBodyImp = rbi;
@@ -115,7 +115,7 @@ namespace Fusee.Engine.Core
         /// <param name="maxSubSteps"></param>
         /// <param name="fixedTimeSteps"></param>
         /// <returns></returns>
-        public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps = 1/60)
+        public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps = 1 / 60)
         {
             return _dwi.StepSimulation(timeSteps, maxSubSteps, fixedTimeSteps);
         }
@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core
         public RigidBody GetRigidBody(int i)
         {
             var rbi = _dwi.GetRigidBody(i);
-            var retval = (RigidBody) rbi.UserObject;
+            var retval = (RigidBody)rbi.UserObject;
             return retval;
         }
         /// <summary>
@@ -159,12 +159,12 @@ namespace Fusee.Engine.Core
             ip2pci.UserObject = retval;
             return retval;
         }
-      /*  public Point2PointConstraint GetConstraint(int i)
-        {
-            //Point2PointConstraint tp2pci = _dwi.GetConstraint(i).UserObject;
-            var retval = (Point2PointConstraint)_dwi.GetConstraint(i).UserObject;
-            return retval;
-        }*/
+        /*  public Point2PointConstraint GetConstraint(int i)
+          {
+              //Point2PointConstraint tp2pci = _dwi.GetConstraint(i).UserObject;
+              var retval = (Point2PointConstraint)_dwi.GetConstraint(i).UserObject;
+              return retval;
+          }*/
 
         //HingeConstraint
         public HingeConstraint AddHingeConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useReferenceFrameA = false)
@@ -211,7 +211,7 @@ namespace Fusee.Engine.Core
         }
         public SliderConstraint AddSliderConstraint(RigidBody rigidBodyA, float4x4 frameInA, bool useLinearReferenceFrameA = false)
         {
-            ISliderConstraintImp isci = _dwi.AddSliderConstraint(rigidBodyA._iRigidBodyImp,frameInA, useLinearReferenceFrameA);
+            ISliderConstraintImp isci = _dwi.AddSliderConstraint(rigidBodyA._iRigidBodyImp, frameInA, useLinearReferenceFrameA);
             var retval = new SliderConstraint();
             retval._iSliderConstraintImp = isci;
             isci.UserObject = retval;
@@ -265,7 +265,7 @@ namespace Fusee.Engine.Core
             return retval;
         }
         #endregion Constraints
-        
+
         #region CollisionShapes
         //CollisionShapes
 

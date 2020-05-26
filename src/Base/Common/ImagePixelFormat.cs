@@ -30,7 +30,7 @@ namespace Fusee.Base.Common
             {
                 return ColorFormat == ColorFormat.RGBA || ColorFormat == ColorFormat.uiRgb8
                     ? 4
-                    : ColorFormat == ColorFormat.RGB 
+                    : ColorFormat == ColorFormat.RGB
                         ? 3
                         : ColorFormat == ColorFormat.Depth24 || ColorFormat == ColorFormat.Depth16
                             ? 3

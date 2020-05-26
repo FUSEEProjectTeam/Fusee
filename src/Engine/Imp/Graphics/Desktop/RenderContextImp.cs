@@ -551,7 +551,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
-            
+
             GL.DetachShader(program, fragmentObject);
             GL.DetachShader(program, vertexObject);
             GL.DeleteShader(fragmentObject);
@@ -572,7 +572,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // wait for all threads to be finished
             GL.Finish();
             GL.Flush();
-           
+
             GL.DeleteProgram(program);
         }
 

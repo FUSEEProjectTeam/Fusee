@@ -128,7 +128,7 @@
         public float InstTimeScale
         {
             set { _timeScale = value; }
-            get { return _timeScale ; }
+            get { return _timeScale; }
         }
 
         /// <summary>

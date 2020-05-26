@@ -123,7 +123,7 @@ namespace Fusee.Engine.Common
         /// The angular factor.
         /// </value>
         float3 AngularFactor { get; set; }
-        
+
         /// <summary>
         /// Gets and sets the restitution.
         /// </summary>

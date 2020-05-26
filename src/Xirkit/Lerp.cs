@@ -13,8 +13,8 @@ namespace Fusee.Xirkit
         /// </summary>
         public static double DoubleLerp(double val1, double val2, float time1, float time2)
         {
-            
-            return (val1 + ((val2 - val1)/time1)*time2);
+
+            return (val1 + ((val2 - val1) / time1) * time2);
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace Fusee.Xirkit
         public static float2 Float2Lerp(float2 val1, float2 val2, float time1, float time2)
         {
             float2 values = new float2();
-            values.x = val1.x + ((val2.x - val1.x)/time1)*time2;
+            values.x = val1.x + ((val2.x - val1.x) / time1) * time2;
             values.y = val1.y + ((val2.y - val1.y) / time1) * time2;
             return values;
         }
