@@ -40,7 +40,8 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.3" />
+    <!-- Do NOT update Google.Protobuf.Tools past 3.11.* without testing a clean build of the Blender plugin -->
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
