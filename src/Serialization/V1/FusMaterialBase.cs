@@ -139,4 +139,3 @@ namespace Fusee.Serialization.V1
         #endregion
     }
 }
-

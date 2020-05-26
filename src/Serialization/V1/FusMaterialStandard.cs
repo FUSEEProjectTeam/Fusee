@@ -75,8 +75,8 @@ namespace Fusee.Serialization.V1
         {
             if (other is null)
                 return false;
-            return other.Albedo == Albedo 
-                && other.Emissive == Emissive 
+            return other.Albedo == Albedo
+                && other.Emissive == Emissive
                 && other.NormalMap == NormalMap
                 && other.Specular == Specular;
         }

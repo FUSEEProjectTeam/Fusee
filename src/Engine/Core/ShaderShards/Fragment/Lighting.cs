@@ -182,7 +182,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float denom = (NdotH * NdotH) * (alphaSqr - 1.0) + 1.0f;",
                 "D = alphaSqr / (PI * (denom * denom));",
                 "",
-                "// G (ometry - Schlick’s Approximation of Smith)",
+                "// G (ometry - Schlickï¿½s Approximation of Smith)",
                 "float r = roughness + 1.0;",
                 "float k = (r * r) / 8.0;",
                 "",
@@ -523,7 +523,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 methodBody.Add(GetShadow(lc, isCascaded, numberOfCascades));
             }
-            
+
             methodBody.AddRange(
             new List<string>() {
             "vec3 viewDir = normalize(-fragPos.xyz);",

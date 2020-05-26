@@ -491,7 +491,7 @@ namespace Fusee.Engine.Core
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
-            
+
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
@@ -556,7 +556,7 @@ namespace Fusee.Engine.Core
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
-            
+
             //TODO: Texture Tiles instead of float2.One - can they be exported?
             //TODO: Subsurface color is exported but not used in the MakeEffect Methods
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))

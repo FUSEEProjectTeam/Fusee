@@ -307,7 +307,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             var magFilter = glMinMagFilter.Item2;
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
-            
+
             GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             if (img.DoGenerateMipMaps)

@@ -796,9 +796,9 @@ namespace Fusee.Engine.Core
 
         private void UpdateShaderParamsForAllLights()
         {
-            if(_lightResults.Count > Lighting.NumberOfLightsForward)
+            if (_lightResults.Count > Lighting.NumberOfLightsForward)
                 Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.NumberOfLightsForward} will be ignored!");
-            
+
             for (var i = 0; i < Lighting.NumberOfLightsForward; i++)
             {
                 if (i < _lightResults.Count)

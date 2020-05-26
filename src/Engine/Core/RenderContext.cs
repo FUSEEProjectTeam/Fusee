@@ -1399,7 +1399,7 @@ namespace Fusee.Engine.Core
                 CurrentRenderState.SetRenderState(renderState, value);
                 _rci.SetRenderState(renderState, value);
             }
-            
+
         }
 
         /// <summary>

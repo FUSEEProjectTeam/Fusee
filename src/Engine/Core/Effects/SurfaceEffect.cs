@@ -506,7 +506,7 @@ namespace Fusee.Engine.Core.Effects
             concreteParamDecl.GetField("Value").SetValue(ob, val);
             return (IFxParamDeclaration)ob;
         }
-        
+
         internal static IEnumerable<IFxParamDeclaration> CreateForwardLightingParamDecls(int numberOfLights)
         {
             for (int i = 0; i < numberOfLights; i++)

@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core.Effects
                     var type = ParamDecl[name].GetType();
                     var valueFieldInfo = type.GetField("Value");
                     var val = valueFieldInfo.GetValue(ParamDecl[name]);
-                    
+
                     //Implemented using reflections and not "(FxParamDeclaration<T>)ParamDecl[name]" because 
                     //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.
                     type.GetField("Value").SetValue(ParamDecl[name], value);

@@ -87,14 +87,14 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TextureWrapMode WrapMode
         {
-            get 
+            get
             {
                 return _wrapMode;
             }
-            set 
+            set
             {
                 _wrapMode = value;
-                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.WrapModeChanged)); 
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.WrapModeChanged));
             }
         }
         private TextureWrapMode _wrapMode;
@@ -104,7 +104,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TextureFilterMode FilterMode
         {
-            get 
+            get
             {
                 return _filterMode;
             }

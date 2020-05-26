@@ -64,10 +64,10 @@ namespace Fusee.Examples.Simple.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
 
-            var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap ;
+            var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             _testFx = new DefaultSurfaceEffect(
-                lightingFlags, new TextureInput(), 
-                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags), 
+                lightingFlags, new TextureInput(),
+                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags),
                 Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
 
             _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
@@ -77,7 +77,7 @@ namespace Fusee.Examples.Simple.Core
             ((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
             ((TextureInput)_testFx.SurfaceInput).Shininess = 5f;
             ((TextureInput)_testFx.SurfaceInput).SpecularStrength = 1f;
-            ((TextureInput)_testFx.SurfaceInput).TexTiles = new float2(3,3);
+            ((TextureInput)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (
