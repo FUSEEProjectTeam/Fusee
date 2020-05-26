@@ -10,6 +10,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Model.fus" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>

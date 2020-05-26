@@ -10,7 +10,6 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 

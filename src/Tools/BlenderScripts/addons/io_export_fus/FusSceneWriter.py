@@ -184,8 +184,8 @@ class FusSceneWriter:
         if texture != None:
             self.__curMaterial.FusMaterialStandard.Specular.Texture = texture
         self.__curMaterial.FusMaterialStandard.Specular.Mix = mix
-        self.__curMaterial.FusMaterialStandard.Specular.Shininess = shininess
-        self.__curMaterial.FusMaterialStandard.Specular.Intensity = intensity
+        self.__curMaterial.FusMaterialStandard.Specular.SpecularChannel.Shininess = shininess
+        self.__curMaterial.FusMaterialStandard.Specular.SpecularChannel.Strength = intensity
 
     def AddEmissive(self, color, texture, mix):
         self.__checkMaterialOpen()
