@@ -3,9 +3,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Fusee.Examples.Bone.Core
 {
@@ -26,7 +23,6 @@ namespace Fusee.Examples.Bone.Core
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
-        private float4x4 _projection;
         private bool _twoTouchRepeated;
 
         private bool _keys;
@@ -36,6 +32,8 @@ namespace Fusee.Examples.Bone.Core
         // Init is called on startup.
         public override void Init()
         {
+            Diagnostics.Warn("[05/2020] Bone animation is disabled for now due to the Blender exporter not be able to export bones!");
+
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
 
@@ -49,58 +47,23 @@ namespace Fusee.Examples.Bone.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    new SceneNode
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Rotation = float3.Zero,
-                                Translation = new float3(0, 0, 0),
-                                Scale = float3.One
-                            },
-                            new Engine.Core.Scene.Bone()
-                        },
-                        Children = new ChildList()
-                        {
-                            new SceneNode
-                            {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Rotation = float3.Zero,
-                                        Translation = new float3(0, 0.5f, 0),
-                                        Scale = float3.One
-                                    },
-                                    new Engine.Core.Scene.Bone(),
-                                    new Weight(),
-                                    MakeEffect.FromDiffuseSpecular(new float4(1.0f, 0.4f, 0.2f,1.0f),0,0),
-                                    CreateCuboid(float3.One)
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-            // convert scene graph is not called in this project, so we can add a bone animation
 
+            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+
+            #region LEGACY CODE - REFERENCE ONLY!
+            /*
+            =====================================================================================
             // then add a weightcomponent with weight matrices etc:
             // binding matrices is the start point of every transformation
             // as many entries as vertices are present in current model
-            //var cube = _scene.Children[0].GetComponent<Mesh>();
-            //var vertexCount = cube.Vertices.Length;
+            var cube = _scene.Children[0].GetComponent<Mesh>();
+            var vertexCount = cube.Vertices.Length;
 
-            //var bindingMatrices = new List<float4x4>();
-            //for (var i = 0; i < vertexCount; i++)
-            //{
-            //    bindingMatrices.Add(float4x4.Identity);
-            //}
+            var bindingMatrices = new List<float4x4>();
+            for (var i = 0; i < vertexCount; i++)
+            {
+                bindingMatrices.Add(float4x4.Identity);
+            }
             Mesh mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
             Weight wm = _scene.Children[1].Children[2].GetComponent<Weight>();
             List<VertexWeightList> WeightMap = new List<VertexWeightList>();
@@ -126,79 +89,78 @@ namespace Fusee.Examples.Bone.Core
             wm.WeightMap = WeightMap;
             SceneComponent weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
-            //_scene.Children.Insert(0, new SceneNode()
-            //{
-            //    Name = "BoneContainer1",
-            //    Components = new List<SceneComponentContainer>()
-            //    {
-            //        new TransformComponent()
-            //        {
-            //            Translation = new float3(0, 2, 0),
-            //            Scale = new float3(1, 1, 1)
-            //        },
+            _scene.Children.Insert(0, new SceneNode()
+            {
+                Name = "BoneContainer1",
+                Components = new List<SceneComponentContainer>()
+                {
+                    new TransformComponent()
+                    {
+                        Translation = new float3(0, 2, 0),
+                        Scale = new float3(1, 1, 1)
+                    },
 
-            //    },
-            //    Children = new ChildList
-            //    {
-            //        new SceneNode()
-            //        {
-            //            Components = new List<SceneComponentContainer>
-            //            {
-            //                new TransformComponent
-            //                {
-            //                    Translation = new float3(0, -1f, 0),
-            //                    Scale = new float3(1, 2, 1)
-            //                },
-            //                new BoneComponent(),
-            //                new Cube()
-            //            }
-            //        },
+                },
+                Children = new ChildList
+                {
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponentContainer>
+                        {
+                            new TransformComponent
+                            {
+                                Translation = new float3(0, -1f, 0),
+                                Scale = new float3(1, 2, 1)
+                            },
+                            new BoneComponent(),
+                            new Cube()
+                        }
+                    },
 
-            //        new SceneNode()
-            //        {
-            //            Name = "BoneContainer2",
-            //            Components = new List<SceneComponentContainer>
-            //            {
-            //                new TransformComponent
-            //                {
-            //                    Translation = new float3(0, -2, 0),
-            //                    Scale = new float3(1, 2, 1)
-            //                },
+                    new SceneNode()
+                    {
+                        Name = "BoneContainer2",
+                        Components = new List<SceneComponentContainer>
+                        {
+                            new TransformComponent
+                            {
+                                Translation = new float3(0, -2, 0),
+                                Scale = new float3(1, 2, 1)
+                            },
 
-            //            },
+                        },
 
-            //            Children = new ChildList
-            //            {
-            //                new SceneNode
-            //                {
-            //                Components = new List<SceneComponentContainer>()
-            //                {
-            //                    new TransformComponent()
-            //                    {
-            //                        Translation = new float3(0, -0.5f, 0),
-            //                        Scale = new float3(1,1,1)
-            //                    },
-            //                    new BoneComponent(),
-            //                    new Cube()
-            //                }
-            //                }
-            //            }
+                        Children = new ChildList
+                        {
+                            new SceneNode
+                            {
+                            Components = new List<SceneComponentContainer>()
+                            {
+                                new TransformComponent()
+                                {
+                                    Translation = new float3(0, -0.5f, 0),
+                                    Scale = new float3(1,1,1)
+                                },
+                                new BoneComponent(),
+                                new Cube()
+                            }
+                            }
+                        }
 
-            //        }
-            //    }
+                    }
+                }
 
-            //});
+            });
 
-            //_scene.Children[1].Components.Insert(1, new WeightComponent
-            //{
-            //    BindingMatrices = bindingMatrices,
-            //    WeightMap = WeightMap
-            //    // Joints are added automatically during scene conversion (ConvertSceneGraph)
-            //});
+            _scene.Children[1].Components.Insert(1, new WeightComponent
+            {
+                BindingMatrices = bindingMatrices,
+                WeightMap = WeightMap
+                // Joints are added automatically during scene conversion (ConvertSceneGraph)
+            });
 
-            ////_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-            //// now we can convert the scene
-            //_scene = new ConvertSceneGraph().Convert(_scene);
+            */
+            #endregion
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             AABBf? bbox = aabbc.GetBox();
@@ -234,7 +196,6 @@ namespace Fusee.Examples.Bone.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -326,10 +287,10 @@ namespace Fusee.Examples.Bone.Core
             float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
 
-            // move one bone
-            Transform translation = _scene.Children[1].Children[1].GetComponent<Transform>();
-            translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
-            translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
+            // TODO: rewrite for new scene when BONES are exported from Blender again
+            //Transform translation = _scene.Children[1].Children[1].GetComponent<Transform>();
+            //translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
+            //translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
             //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
 
@@ -339,128 +300,6 @@ namespace Fusee.Examples.Bone.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
-        }
-
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-        }
-
-        public static Mesh CreateCuboid(float3 size)
-        {
-            return new Mesh
-            {
-                Vertices = new[]
-                {
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
-
-                Triangles = new ushort[]
-                {
-                    // front face
-                    0, 2, 1, 0, 3, 2,
-
-                    // right face
-                    4, 6, 5, 4, 7, 6,
-
-                    // back face
-                    8, 10, 9, 8, 11, 10,
-
-                    // left face
-                    12, 14, 13, 12, 15, 14,
-
-                    // top face
-                    16, 18, 17, 16, 19, 18,
-
-                    // bottom face
-                    20, 22, 21, 20, 23, 22
-                },
-
-                Normals = new[]
-                {
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0)
-                },
-
-                UVs = new[]
-                {
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0)
-                },
-                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
-            };
         }
     }
 }
