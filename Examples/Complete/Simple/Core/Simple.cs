@@ -13,7 +13,6 @@ using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
-
 namespace Fusee.Examples.Simple.Core
 {
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
@@ -26,7 +25,7 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -38,13 +37,6 @@ namespace Fusee.Examples.Simple.Core
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private bool _keys;
-
-        private DefaultSurfaceEffect _gold_brdfFx;
-        private DefaultSurfaceEffect _paint_brdfFx;
-        private DefaultSurfaceEffect _rubber_brdfFx;
-        private DefaultSurfaceEffect _subsurf_brdfFx;
-
-        private DefaultSurfaceEffect _testFx;
 
         // Init is called on startup.
         public override void Init()
@@ -58,77 +50,10 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("monkeys.fus");
-
-            var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
-            var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
-
-            var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            _testFx = new DefaultSurfaceEffect(
-                lightingFlags, new TextureInput(),
-                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags),
-                Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
-
-            _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
-
-            ((TextureInput)_testFx.SurfaceInput).AlbedoTex = albedoTex;
-            ((TextureInput)_testFx.SurfaceInput).NormalTex = normalTex;
-            ((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
-            ((TextureInput)_testFx.SurfaceInput).Shininess = 5f;
-            ((TextureInput)_testFx.SurfaceInput).SpecularStrength = 1f;
-            ((TextureInput)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
-
-            _gold_brdfFx = MakeEffect.FromBRDF
-            (
-                albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
-                roughness: 0.2f,
-                metallic: 1,
-                specular: 0,
-                ior: 0.47f,
-                subsurface: 0
-            );
-
-            _paint_brdfFx = MakeEffect.FromBRDF
-            (
-                albedoColor: new float4(0.0f, 231f / 256f, 1f, 1.0f),
-                roughness: 0.05f,
-                metallic: 0,
-                specular: 1f,
-                ior: 1.46f,
-                subsurface: 0
-            );
-
-            _rubber_brdfFx = MakeEffect.FromBRDF
-            (
-                albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f),
-                roughness: 1.0f,
-                metallic: 0,
-                specular: 0.1f,
-                ior: 1.519f,
-                subsurface: 0
-            );
-
-            _subsurf_brdfFx = MakeEffect.FromBRDF
-            (
-                albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f),
-                roughness: 0.508f,
-                metallic: 0,
-                specular: 0.079f,
-                ior: 1.4f,
-                subsurface: 1.0f
-            );
-
-            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
-            _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
-            _rocketScene.Children[2].Components[1] = _paint_brdfFx;
-            _rocketScene.Children[3].Components[1] = _gold_brdfFx;
-
-            var monkeyOne = (Mesh)_rocketScene.Children[0].Components[2];
-            monkeyOne.Tangents = monkeyOne.CalculateTangents();
-            monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
+            _rocketScene = AssetStorage.Get<SceneContainer>("RocketFus.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
@@ -139,17 +64,6 @@ namespace Fusee.Examples.Simple.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
-
-            if (Keyboard.IsKeyDown(KeyCodes.W))
-            {
-                if (_paint_brdfFx.SurfaceInput.Albedo.g <= 1.0f)
-                    _paint_brdfFx.SurfaceInput.Albedo += new float4(0, 0.2f, 0, 0);
-            }
-            if (Keyboard.IsKeyDown(KeyCodes.S))
-            {
-                if (_paint_brdfFx.SurfaceInput.Albedo.g >= 0.0f)
-                    _paint_brdfFx.SurfaceInput.Albedo -= new float4(0, 0.2f, 0, 0);
-            }
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -190,7 +104,7 @@ namespace Fusee.Examples.Simple.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -7, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
             var view = mtxCam * mtxRot;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
