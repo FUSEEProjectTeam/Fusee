@@ -461,7 +461,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "// then calculate lighting as usual",
             "vec4 lighting = vec4(0);",
             "",
-            "float ambientCo = 0.1;",
+            "float ambientCo = 0.2;",
             "vec4 ambient = vec4(0,0,0,1);",
             "vec4 diffuse = vec4(0,0,0,1);",
             "vec4 specular = vec4(0,0,0,1);",
@@ -859,7 +859,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (light.isCastingShadows == 1)
                     {
                     ");
-                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, ({UniformNameDeclarations.IView} * vec4(light.position,1.0)).xyz, light.maxDistance, normal, lightDir, light.bias, 2.0);");
+                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, ({UniformNameDeclarations.IView} * vec4(light.position,1.0)).xyz, light.maxDistance, normal, lightDir, light.bias, 1.0);");
                     frag.AppendLine("}");
                 }
             }

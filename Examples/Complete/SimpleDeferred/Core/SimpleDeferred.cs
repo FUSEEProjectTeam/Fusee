@@ -42,7 +42,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Light _sun;
 
         private Transform _camTransform;
-        private readonly Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 3000, M.PiOver4);
+        private readonly Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         // Init is called on startup.
         public override void Init()
@@ -67,11 +67,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
-            var redLight = new Light() { Type = LightType.Point, Color = new float4(1, 0.56f, 0.1f, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
-            var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0.6f, 0.8f, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
-            var greenLight = new Light() { Type = LightType.Point, Color = new float4(0.8f, 1.0f, 0.6f, 1), Strength = 0.7f, MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
+            var redLight = new Light() { Type = LightType.Point, Color = new float4(1, 0.56f, 0.1f, 1), MaxDistance = 15, Active = true, IsCastingShadows = false, Bias = 0.015f };
+            var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0.6f, 0.8f, 1, 1), MaxDistance = 180, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.0000001f };
+            var greenLight = new Light() { Type = LightType.Point, Color = new float4(0.8f, 1.0f, 0.6f, 1), Strength = 1f, MaxDistance = 50, Active = true, IsCastingShadows = true, Bias = 0.1f };
 
-            _sunTransform = new Transform() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
+            _sunTransform = new Transform() { Translation = new float3(0, 100, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(100, 100, 100) };
 
             var aLotOfLights = new ChildList
             {
@@ -83,74 +83,60 @@ namespace Fusee.Examples.SimpleDeferred.Core
                         _sunTransform,
                         _sun,
                     },
-                    //Children = new ChildList()
-                    //{
-                    //    new SceneNode()
-                    //    {
-                    //        s = new List<Scene>()
-                    //        {
-                    //            new Transform
-                    //            {
-                    //                Scale = float3.One/2f
-                    //            },
-                    //            new Cube()
-                    //        }
-                    //    }
-                    //}
                 },
                 new SceneNode()
                 {
                     Name = "blueLight",
                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(-600, 180, 180), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
-                    blueLight,
-                }
+                    {
+                        new Transform(){ Translation = new float3(-100, 25, 36), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
+                        blueLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight1",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(-600, 180, 180)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(-49, 15, 15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight2",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(-600, 180, -140)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(-49, 15, -15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight3",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(500, 180, 180)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(54, 15, 15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight4",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(500, 180, -140)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(54, 15, -15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "greenLight",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(0, 100, 150)},
-                    greenLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(0, 25, 0)},
+                        greenLight,
+                    }
                 },
             };
 
@@ -256,7 +242,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 200);
 
             _sceneRenderer.Render(RC);
             //_guiRenderer.Render(RC);

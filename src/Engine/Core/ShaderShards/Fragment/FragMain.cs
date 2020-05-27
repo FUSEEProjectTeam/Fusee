@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 fragMainBody.AddRange(
                 new List<string>()
                 {
-                    $"float ambientCo = 0.1;",
+                    $"float ambientCo = 0.2;",
                     $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
                     $"vec3 result = vec3(0.0);",
                     $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
