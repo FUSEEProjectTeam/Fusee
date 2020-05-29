@@ -10,7 +10,6 @@ using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
 using Fusee.Xene;
-using System.Threading.Tasks;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.Effects;
