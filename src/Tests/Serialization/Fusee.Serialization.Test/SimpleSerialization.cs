@@ -41,7 +41,7 @@ namespace Fusee.Test.Serialization.V1
                 Translation = new float3(0, 0, 0)
             });
 
-            ((FusScene)file.Contents).Children[0].AddComponent(new FusMaterial
+            ((FusScene)file.Contents).Children[0].AddComponent(new FusMaterialStandard
             {
                 Albedo = new AlbedoChannel { Color = new float4(0.1f, 0.2f, 0.3f, 1) },
                 Specular = new SpecularChannel { Color = new float4(0.1f, 0.2f, 0.3f, 1), Shininess = 1 },

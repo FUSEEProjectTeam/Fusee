@@ -148,11 +148,13 @@ namespace Fusee.Test.Serialization.V1
                            }
             });
 
-            ((FusScene)scene.Contents).Children[0].AddComponent(new FusMaterial
-            {
-                Albedo = new Fusee.Serialization.V1.AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Red) },
-                Specular = new Fusee.Serialization.V1.SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
-            });
+            ((FusScene)scene.Contents).Children[0].AddComponent(
+                new FusMaterialStandard
+                {
+                    Albedo = new AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Red) },
+                    Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
+                }
+            );
 
             ((FusScene)scene.Contents).Children[0].AddComponent(new FusLight
             {
@@ -190,12 +192,20 @@ namespace Fusee.Test.Serialization.V1
                 ClippingPlanes = new float2(0, 500)
             });
 
-            ((FusScene)scene.Contents).Children[0].AddComponent(new FusMaterialPBR
-            {
-                FresnelReflectance = 100,
-                DiffuseFraction = 200,
-                RoughnessValue = 1
-            });
+            ((FusScene)scene.Contents).Children[0].AddComponent(
+                new FusMaterialBRDF()
+                {
+                    BRDF = new BRDFChannel()
+                    {
+                        IOR = 1.46f,
+                        Metallic = 0f,
+                        Roughness = 0.5f,
+                        Specular = 1f,
+                        Subsurface = 0f,
+                        SubsurfaceColor = float3.One
+                    }
+                }
+            );
 
             ((FusScene)scene.Contents).Children[0].AddComponent(daMesh);
 
@@ -214,10 +224,10 @@ namespace Fusee.Test.Serialization.V1
                 Scale = new float3(20, 100, 20)
             });
 
-            ((FusScene)scene.Contents).Children[0].Children[0].AddComponent(new FusMaterial
+            ((FusScene)scene.Contents).Children[0].Children[0].AddComponent(new FusMaterialStandard
             {
-                Albedo = new Fusee.Serialization.V1.AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Green) },
-                Specular = new Fusee.Serialization.V1.SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
+                Albedo = new AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Green) },
+                Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
             });
 
             ((FusScene)scene.Contents).Children[0].Children[0].AddComponent(daMesh);
@@ -255,7 +265,7 @@ namespace Fusee.Test.Serialization.V1
             });
 
 
-            ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterial
+            ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterialStandard
             {
                 Albedo = new AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
                 Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
@@ -292,7 +302,7 @@ namespace Fusee.Test.Serialization.V1
                 Scale = new float3(20, 100, 20)
             });
 
-            ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterial
+            ((FusScene)scene.Contents).Children[0].Children[0].Children[0].Children[0].Children[0].Children[0].AddComponent(new FusMaterialStandard
             {
                 Albedo = new AlbedoChannel { Color = ColorUint.Tofloat4(ColorUint.Blue) },
                 Specular = new SpecularChannel { Color = ColorUint.Tofloat4(ColorUint.White), Strength = 1.0f, Shininess = 4.0f }
@@ -357,45 +367,46 @@ namespace Fusee.Test.Serialization.V1
                     Assert.Equal(light.Type.ToString(), ((FusLight)fusFileComp).Type.ToString());
                 }
 
-                if (gtComp is ShaderEffect fx)
+                if (gtComp is Effect fx)
                 {
-                    Assert.Equal(fx.Name, ((FusMaterial)fusFileComp).Name);
+
+                    Assert.Equal(fx.Name, ((FusMaterialStandard)fusFileComp).Name);
                     if (fx.GetFxParam<float>(UniformNameDeclarations.NormalMapIntensity) != null)
                     {
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.NormalMapIntensity), ((FusMaterial)fusFileComp).NormalMap.Intensity);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.NormalMapIntensity), ((FusMaterialStandard)fusFileComp).NormalMap.Intensity);
                         //Assert.Equal(fx.GetFxParam<Texture>(UniformNameDeclarations.NormalMap), ((FusMaterial)fusFileComp).NormalMap.Texture); //TODO: broken --> compares a texture to the path to a texture.
                     }
 
                     if (fx.GetFxParam<float4>(UniformNameDeclarations.Albedo) != null)
-                        Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.Albedo), ((FusMaterial)fusFileComp).Albedo.Color);
+                        Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.Albedo), ((FusMaterialStandard)fusFileComp).Albedo.Color);
 
                     if (fx.GetFxParam<float>(UniformNameDeclarations.AlbedoMix) != null)
                     {
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.AlbedoMix), ((FusMaterial)fusFileComp).Albedo.Mix);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.AlbedoMix), ((FusMaterialStandard)fusFileComp).Albedo.Mix);
                         //Assert.Equal(fx.GetFxParam<Texture>(UniformNameDeclarations.AlbedoTexture), ((FusMaterial)fusFileComp).Albedo.Texture); //TODO: broken --> compares a texture to the path to a texture.
                     }
 
                     if (fx.GetFxParam<float>(UniformNameDeclarations.SpecularMix) != null)
                     {
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularMix), ((FusMaterial)fusFileComp).Specular.Mix);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularMix), ((FusMaterialStandard)fusFileComp).Specular.Mix);
                         //Assert.Equal(fx.GetFxParam<Texture>(UniformNameDeclarations.SpecularTexture), ((FusMaterial)fusFileComp).Specular.Texture); //TODO: broken --> compares a texture to the path to a texture.
                     }
 
                     if (fx.GetFxParam<float4>(UniformNameDeclarations.SpecularColor) != null)
                     {
-                        Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.SpecularColor), ((FusMaterial)fusFileComp).Specular.Color);
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularShininess), ((FusMaterial)fusFileComp).Specular.Shininess);
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularStrength), ((FusMaterial)fusFileComp).Specular.Strength);
+                        Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.SpecularColor), ((FusMaterialStandard)fusFileComp).Specular.Color);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularShininess), ((FusMaterialStandard)fusFileComp).Specular.Shininess);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.SpecularStrength), ((FusMaterialStandard)fusFileComp).Specular.Strength);
                     }
 
                     if (fx.GetFxParam<float4>(UniformNameDeclarations.EmissiveColor) != null)
                     {
-                        Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.EmissiveColor), ((FusMaterial)fusFileComp).Emissive.Color);
+                        Assert.Equal(fx.GetFxParam<float4>(UniformNameDeclarations.EmissiveColor), ((FusMaterialStandard)fusFileComp).Emissive.Color);
                     }
 
                     if (fx.GetFxParam<float>(UniformNameDeclarations.EmissiveMix) != null)
                     {
-                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.EmissiveMix), ((FusMaterial)fusFileComp).Emissive.Mix);
+                        Assert.Equal(fx.GetFxParam<float>(UniformNameDeclarations.EmissiveMix), ((FusMaterialStandard)fusFileComp).Emissive.Mix);
                         //Assert.Equal(fx.GetFxParam<Texture>(UniformNameDeclarations.EmissiveTexture), ((FusMaterial)fusFileComp).Emissive.Texture);//TODO: broken --> compares a texture to the path to a texture.
                     }
                 }
@@ -535,7 +546,7 @@ namespace Fusee.Test.Serialization.V1
                     Assert.Equal(light.Type.ToString(), ((Light)sceneFileComp).Type.ToString());
                 }
 
-                if (gtComp is ShaderEffect fx)
+                if (gtComp is Effect fx)
                 {
                     // HACK (mr): Problem with null vs string comparison. Should be re-enabled after <nullable> is enabled for F.E.Core & Serialization
                     //Assert.Equal(fx.Name, ((ShaderEffect)sceneFileComp).Name);

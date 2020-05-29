@@ -769,81 +769,201 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Converts the shader effect.
+        /// Converts an effect.
         /// </summary>
-        /// <param name="fx"></param>
+        /// <param name="effect"></param>
         [VisitMethod]
-        public void ConvShaderEffect(ShaderEffect fx)
+        public void ConvEffect(DefaultSurfaceEffect effect)
         {
-            // TODO: SurfaceEffect to FusMaterial and SurfaceEffect to FusMaterialPBR
-            // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
-
-            var mat = new FusMaterialStandard();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.Albedo))
-                mat.Albedo = new AlbedoChannel();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
-                mat.Specular = new SpecularChannel();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
-                mat.NormalMap = new NormapMapChannel();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
-                mat.Emissive = new AlbedoChannel();
-
-            foreach (var decl in fx.ParamDecl)
+            if (effect.LightingSetup.HasFlag(LightingSetupFlags.BRDF))
             {
-                switch (decl.Key)
+                var mat = new FusMaterialBRDF() { Albedo = new AlbedoChannel() };
+                if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    case UniformNameDeclarations.Albedo:
-                        mat.Albedo.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
-                        break;
-                    case UniformNameDeclarations.AlbedoTexture:
-                        //mat.Albedo.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-                        break;
-                    case UniformNameDeclarations.AlbedoMix:
-                        mat.Albedo.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
-                        break;
+                    var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
 
-                    case UniformNameDeclarations.EmissiveColor:
-                        mat.Emissive.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
-                        break;
-                    case UniformNameDeclarations.EmissiveTexture:
-                        //mat.Emissive.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-                        break;
-                    case UniformNameDeclarations.EmissiveMix:
-                        mat.Emissive.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
-                        break;
+                    if (surfaceInput.AlbedoTex != null)
+                    {
+                        mat.Albedo.Mix = surfaceInput.AlbedoMix;
+                        mat.Albedo.Texture = surfaceInput.AlbedoTex?.PathAndName;
+                    }
 
+                    if (surfaceInput.NormalTex != null)
+                    {
+                        mat.NormalMap = new NormapMapChannel()
+                        {
+                            Texture = surfaceInput.NormalTex.PathAndName,
+                            Intensity = surfaceInput.NormalMappingStrength
+                        };
+                    }
 
-                    case UniformNameDeclarations.SpecularColor:
-                        mat.Specular.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
-                        break;
-                    case UniformNameDeclarations.SpecularTexture:
-                        //mat.Specular.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-                        break;
-                    case UniformNameDeclarations.SpecularMix:
-                        mat.Specular.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
-                        break;
-                    case UniformNameDeclarations.SpecularShininess:
-                        mat.Specular.Shininess = ((FxParamDeclaration<float>)decl.Value).Value;
-                        break;
-                    case UniformNameDeclarations.SpecularStrength:
-                        mat.Specular.Strength = ((FxParamDeclaration<float>)decl.Value).Value;
-                        break;
+                    mat.BRDF = new BRDFChannel()
+                    {
+                        IOR = surfaceInput.IOR,
+                        Metallic = surfaceInput.Metallic,
+                        Roughness = surfaceInput.Roughness,
+                        Specular = surfaceInput.Specular,
+                        Subsurface = surfaceInput.Subsurface,
+                        SubsurfaceColor = surfaceInput.SubsurfaceColor
+                    };
 
-                    case UniformNameDeclarations.NormalMap:
-                        //mat.NormalMap.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-                        break;
-                    case UniformNameDeclarations.NormalMapIntensity:
-                        mat.NormalMap.Intensity = ((FxParamDeclaration<float>)decl.Value).Value;
-                        break;
                 }
-            }
+                else
+                {
+                    var surfaceInput = (BRDFInput)effect.SurfaceInput;
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
+                    mat.BRDF = new BRDFChannel()
+                    {
+                        IOR = surfaceInput.IOR,
+                        Metallic = surfaceInput.Metallic,
+                        Roughness = surfaceInput.Roughness,
+                        Specular = surfaceInput.Specular,
+                        Subsurface = surfaceInput.Subsurface,
+                        SubsurfaceColor = surfaceInput.SubsurfaceColor
+                    };
+                }
 
-            _currentNode.AddComponent(mat);
+                _currentNode.AddComponent(mat);
+
+            }
+            else if (effect.LightingSetup.HasFlag(LightingSetupFlags.BlinnPhong) ||
+                    effect.LightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly) ||
+                    effect.LightingSetup.HasFlag(LightingSetupFlags.Unlit))
+            {
+                var mat = new FusMaterialStandard();
+                if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    var surfaceInput = (TextureInput)effect.SurfaceInput;
+
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
+
+                    if (surfaceInput.AlbedoTex != null)
+                    {
+                        mat.Albedo.Mix = surfaceInput.AlbedoMix;
+                        mat.Albedo.Texture = surfaceInput.AlbedoTex?.PathAndName;
+                    }
+
+                    if (surfaceInput.NormalTex != null)
+                    {
+                        mat.NormalMap = new NormapMapChannel()
+                        {
+                            Texture = surfaceInput.NormalTex.PathAndName,
+                            Intensity = surfaceInput.NormalMappingStrength
+                        };
+                    }
+
+                    mat.Specular = new SpecularChannel()
+                    {
+                        Shininess = surfaceInput.Shininess,
+                        Strength = surfaceInput.SpecularStrength
+                    };
+
+                }
+                else
+                {
+                    var surfaceInput = (SpecularInput)effect.SurfaceInput;
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
+
+                    mat.Specular = new SpecularChannel()
+                    {
+                        Shininess = surfaceInput.Shininess,
+                        Strength = surfaceInput.SpecularStrength
+                    };
+                }
+
+                _currentNode.AddComponent(mat);
+            }
         }
+
+        ///// <summary>
+        ///// Converts the shader effect.
+        ///// </summary>
+        ///// <param name="fx"></param>
+        //[VisitMethod]
+        //public void ConvShaderEffect(ShaderEffect fx)
+        //{
+        //    // TODO: SurfaceEffect to FusMaterial and SurfaceEffect to FusMaterialPBR
+        //    // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
+
+        //    var mat = new FusMaterialStandard();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.Albedo))
+        //        mat.Albedo = new AlbedoChannel();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
+        //        mat.Specular = new SpecularChannel();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
+        //        mat.NormalMap = new NormapMapChannel();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
+        //        mat.Emissive = new AlbedoChannel();
+
+        //    foreach (var decl in fx.ParamDecl)
+        //    {
+        //        switch (decl.Key)
+        //        {
+        //            case UniformNameDeclarations.Albedo:
+        //                mat.Albedo.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.AlbedoTexture:
+        //                //mat.Albedo.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.AlbedoMix:
+        //                mat.Albedo.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+
+        //            case UniformNameDeclarations.EmissiveColor:
+        //                mat.Emissive.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.EmissiveTexture:
+        //                //mat.Emissive.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.EmissiveMix:
+        //                mat.Emissive.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+
+
+        //            case UniformNameDeclarations.SpecularColor:
+        //                mat.Specular.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.SpecularTexture:
+        //                //mat.Specular.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.SpecularMix:
+        //                mat.Specular.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.SpecularShininess:
+        //                mat.Specular.Shininess = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.SpecularStrength:
+        //                mat.Specular.Strength = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+
+        //            case UniformNameDeclarations.NormalMap:
+        //                //mat.NormalMap.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.NormalMapIntensity:
+        //                mat.NormalMap.Intensity = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+        //        }
+        //    }
+
+        //    _currentNode.AddComponent(mat);
+        //}
 
         /// <summary>
         /// Converts the shader.
