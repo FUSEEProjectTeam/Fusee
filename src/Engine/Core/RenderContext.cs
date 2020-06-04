@@ -986,12 +986,12 @@ namespace Fusee.Engine.Core
             var compiledEffect = new CompiledEffect();
             var shaderParams = new Dictionary<string, ShaderParamInfo>();
 
-            
+
             RenderIndependendEffect riFx;
             try // to compile all the shaders
             {
                 var efType = ef.GetType();
-                
+
                 if (efType == typeof(ShaderEffect))
                 {
                     var shaderEffect = (ShaderEffect)ef;

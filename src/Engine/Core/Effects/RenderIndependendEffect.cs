@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core.Effects
                     surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
                     surfEffect.FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
                 }
-                else if(effectUsage == CompiledEffectUsage.Deferred)
+                else if (effectUsage == CompiledEffectUsage.Deferred)
                 {
                     surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
                     surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
