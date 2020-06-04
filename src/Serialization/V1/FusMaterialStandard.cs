@@ -102,7 +102,7 @@ namespace Fusee.Serialization.V1
         /// </summary>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Albedo, Emissive, NormalMap);
+            return HashCode.Combine(Albedo, Emissive, NormalMap, Specular);
         }
 
         #endregion
