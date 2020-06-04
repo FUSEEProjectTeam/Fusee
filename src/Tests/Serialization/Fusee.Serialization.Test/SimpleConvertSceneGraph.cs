@@ -281,7 +281,7 @@ namespace Fusee.Test.Serialization.V1
                     Assert.Equal(light.Strength, ((Light)sceneFileComp).Strength);
                     Assert.Equal(light.Type.ToString(), ((Light)sceneFileComp).Type.ToString());
                 }
-                
+
                 if (gtComp is DefaultSurfaceEffect fx)
                 {
                     if (fx.LightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
