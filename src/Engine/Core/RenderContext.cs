@@ -986,56 +986,30 @@ namespace Fusee.Engine.Core
             var compiledEffect = new CompiledEffect();
             var shaderParams = new Dictionary<string, ShaderParamInfo>();
 
-            string vert = string.Empty;
-            string geom = string.Empty;
-            string frag = string.Empty;
-
+            
+            RenderIndependendEffect riFx;
             try // to compile all the shaders
             {
                 var efType = ef.GetType();
+                
                 if (efType == typeof(ShaderEffect))
                 {
                     var shaderEffect = (ShaderEffect)ef;
-                    vert = shaderEffect.VertexShaderSrc;
-                    geom = shaderEffect.GeometryShaderSrc;
-                    frag = shaderEffect.PixelShaderSrc;
+                    riFx = new RenderIndependendEffect(CompiledEffectUsage.Unknown, shaderEffect);
                 }
                 else
                 {
                     var surfEffect = (SurfaceEffect)ef;
-
-                    surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
-
-                    if (renderForward)
-                    {
-                        foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
-                            surfEffect.ParamDecl.Add(dcl.Name, dcl);
-
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
-                        surfEffect.FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    }
-                    else
-                    {
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
-                        surfEffect.FragmentShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
-                        surfEffect.FragmentShaderSrc.Sort((x, y) => (x.Key.CompareTo(y.Key)));
-                    }
-
-                    vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
-                    geom = SurfaceEffect.JoinShards(surfEffect.GeometryShaderSrc);
-                    frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc);
+                    riFx = new RenderIndependendEffect(CompiledEffectUsage.Unknown, surfEffect);
                 }
-                var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
+
+                var shaderOnGpu = _rci.CreateShaderProgram(riFx.VS, riFx.PS, riFx.GS);
                 var activeUniforms = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
 
                 if (activeUniforms.Count == 0)
                 {
                     var ex = new Exception();
-                    Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { vert, geom, frag }); ;
+                    Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { riFx.VS, riFx.PS, riFx.GS }); ;
                     throw new Exception("Error while compiling shader for pass.", ex);
                 }
 
@@ -1049,7 +1023,7 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
+                Diagnostics.Error("Error while compiling shader ", ex, new string[] { riFx.VS, riFx.PS, riFx.GS });
                 throw new Exception("Error while compiling shader ", ex);
             }
 
