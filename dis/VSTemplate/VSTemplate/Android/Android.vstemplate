@@ -1,0 +1,41 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+	<TemplateData>
+		<Name>FUSEE Android Project</Name>
+		<Description>This is a template for a FUSEE Android project</Description>
+		<ProjectType>CSharp</ProjectType>
+		<CreateNewFolder>true</CreateNewFolder>
+		<DefaultName>Android</DefaultName>
+		<ProvideDefaultName>true</ProvideDefaultName>
+		<LocationField>Enabled</LocationField>
+		<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+		<CreateInPlace>true</CreateInPlace>
+		<Icon>__TemplateIcon.ico</Icon>
+		<PreviewImage>__PreviewImage.png</PreviewImage>
+	</TemplateData>
+	<TemplateContent>
+		<Project File="Android.csproj" ReplaceParameters="true">
+			<Folder Name="Assets" />
+			<ProjectItem ReplaceParameters="false">FuseeLogo.ico</ProjectItem>
+			<ProjectItem ReplaceParameters="true" >Android.cs</ProjectItem>
+			<ProjectItem ReplaceParameters="false">NuGet.config</ProjectItem>
+			<Folder Name="Properties" />
+			<ProjectItem ReplaceParameters="true" >Properties\AndroidManifest.xml</ProjectItem>
+			<ProjectItem ReplaceParameters="false">Properties\AssemblyInfo.cs</ProjectItem>
+			<Folder Name="Resources" />
+			<Folder Name="Resources\drawable" />
+			<ProjectItem ReplaceParameters="false">Resources\drawable\Icon.png</ProjectItem>
+			<Folder Name="Resources\drawable-hdpi" />
+			<ProjectItem ReplaceParameters="false">Resources\drawable-hdpi\Icon.png</ProjectItem>
+			<Folder Name="Resources\drawable-ldpi" />
+			<ProjectItem ReplaceParameters="false">Resources\drawable-ldpi\Icon.png</ProjectItem>
+			<Folder Name="Resources\drawable-mdpi" />
+			<ProjectItem ReplaceParameters="false">Resources\drawable-mdpi\Icon.png</ProjectItem>
+			<Folder Name="Resources\drawable-xhdpi" />
+			<ProjectItem ReplaceParameters="false">Resources\drawable-xhdpi\Icon.png</ProjectItem>
+			<Folder Name="Resources\drawable-xxhdpi" />
+			<ProjectItem ReplaceParameters="false">Resources\drawable-xxhdpi\Icon.png</ProjectItem>
+			<Folder Name="Resources\values" />
+			<ProjectItem ReplaceParameters="false">Resources\values\strings.xml</ProjectItem>
+		</Project>
+	</TemplateContent>
+</VSTemplate>
