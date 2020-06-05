@@ -1,4 +1,4 @@
-﻿<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
   <PropertyGroup>
     <TargetFramework>MonoAndroid81</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
@@ -28,6 +28,17 @@
       <Abi>x86</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
+  </ItemGroup>
+
+    <ItemGroup>
+	    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll" Link="Natives\SharpFont.dll" PackagePath="lib/monoandroid81" />
+    </ItemGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
