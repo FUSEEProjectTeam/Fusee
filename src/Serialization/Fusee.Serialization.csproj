@@ -16,6 +16,10 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
 </Project>
