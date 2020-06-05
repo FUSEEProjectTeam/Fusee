@@ -28,13 +28,17 @@ namespace Fusee.Base.Common
         {
             get
             {
-                return ColorFormat == ColorFormat.RGBA
+                return ColorFormat == ColorFormat.RGBA || ColorFormat == ColorFormat.uiRgb8
                     ? 4
                     : ColorFormat == ColorFormat.RGB
                         ? 3
-                        : ColorFormat == ColorFormat.Intensity
-                            ? 1
-                            : 0;
+                        : ColorFormat == ColorFormat.Depth24 || ColorFormat == ColorFormat.Depth16
+                            ? 3
+                            : ColorFormat == ColorFormat.Intensity
+                                ? 1
+                                : ColorFormat == ColorFormat.fRGB16 || ColorFormat == ColorFormat.fRGB32 //GL_FLOAT: 4byte per component
+                                    ? 12
+                                        : 0;
             }
         }
 
@@ -50,7 +54,7 @@ namespace Fusee.Base.Common
                 int bitsPerByte = sizeof(byte) * 8;
                 for (int i = 0; i < bytesPerPixel; i++) // begin at 0 -> firstBit=0
                 {
-                    yield return new ImagePixelChannel(bitsPerByte * i, bitsPerByte, PixelEncoding.Uint); // (dd) currently only uint is relevant, might change
+                    yield return new ImagePixelChannel(bitsPerByte * i, bitsPerByte, PixelEncoding.Uint);
                 }
             }
         }

@@ -1,45 +1,22 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.MeshingAround.Core</RootNamespace>
-    <PackageId>Fusee.Examples.MeshingAround.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
-  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Examples\MeshingAround\Core\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="Fusee.Base.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Base.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.GUI">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Serialization">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Xene">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Jometri">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Jometri.dll</HintPath>
-    </Reference>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
+  </ItemGroup>
 </Project>

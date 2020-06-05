@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 
 namespace Fusee.Math.Core
 {
@@ -8,9 +8,7 @@ namespace Fusee.Math.Core
     ///     Represents a 3x3 Matrix
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    // ReSharper disable InconsistentNaming
     public struct float3x3 : IEquatable<float3x3>
-        // ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -39,7 +37,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static float3x3 Zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -89,7 +87,7 @@ namespace Fusee.Math.Core
             Row2 = new float3(mat4.Row2.x, mat4.Row2.y, mat4.Row2.z);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -103,12 +101,12 @@ namespace Fusee.Math.Core
             get
             {
                 return
-                    Row0.x*Row1.y*Row2.z
-                    + Row0.y*Row1.z*Row2.x
-                    + Row0.z*Row1.x*Row2.y
-                    - Row0.z*Row1.y*Row2.x
-                    - Row0.y*Row1.x*Row2.z
-                    - Row0.x*Row1.z*Row2.y;
+                    Row0.x * Row1.y * Row2.z
+                    + Row0.y * Row1.z * Row2.x
+                    + Row0.z * Row1.x * Row2.y
+                    - Row0.z * Row1.y * Row2.x
+                    - Row0.y * Row1.x * Row2.z
+                    - Row0.x * Row1.z * Row2.y;
             }
         }
 
@@ -118,6 +116,7 @@ namespace Fusee.Math.Core
         public float3 Column0
         {
             get { return new float3(Row0.x, Row1.x, Row2.x); }
+            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; }
         }
 
         /// <summary>
@@ -126,6 +125,7 @@ namespace Fusee.Math.Core
         public float3 Column1
         {
             get { return new float3(Row0.y, Row1.y, Row2.y); }
+            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; }
         }
 
         /// <summary>
@@ -134,6 +134,7 @@ namespace Fusee.Math.Core
         public float3 Column2
         {
             get { return new float3(Row0.z, Row1.z, Row2.z); }
+            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; }
         }
 
         /// <summary>
@@ -217,7 +218,9 @@ namespace Fusee.Math.Core
             set { Row2.z = value; }
         }
 
-        #endregion
+        #endregion Properties
+
+
 
         #region Instance
 
@@ -231,22 +234,9 @@ namespace Fusee.Math.Core
             return Transpose(this);
         }
 
-        #region float[] ToArray()
+        #endregion public Transpose()
 
-        // ReSharper disable UnusedMember.Local
-        private float[] ToArray()
-        {
-            return new[] {M11, M12, M13, M21, M22, M23, M31, M32, M33};
-            // return new float[] { M11, M21, M31, M12, M22, M32, M13, M23, M33 };
-        }
-
-        // ReSharper restore UnusedMember.Local
-
-        #endregion
-
-        #endregion
-
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -266,19 +256,19 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Substracts the right instance from the left instance.
+        ///     Subtracts the right instance from the left instance.
         /// </summary>
-        /// <param name="left">The left operand of the substraction.</param>
-        /// <param name="right">The right operand of the substraction.</param>
-        /// <returns>A new instance that is the result of the substraction.</returns>
-        public static float3x3 Substract(float3x3 left, float3x3 right)
+        /// <param name="left">The left operand of the subtraction.</param>
+        /// <param name="right">The right operand of the subtraction.</param>
+        /// <returns>A new instance that is the result of the subtraction.</returns>
+        public static float3x3 Subtract(float3x3 left, float3x3 right)
         {
             return new float3x3(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13,
                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23,
                 left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33);
         }
 
-        #endregion
+        #endregion Elementary Arithmetic Functions
 
         #region Multiply Functions
 
@@ -308,7 +298,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply Functions
 
         #region Transpose
 
@@ -322,12 +312,12 @@ namespace Fusee.Math.Core
             return new float3x3(mat.Column0, mat.Column1, mat.Column2);
         }
 
-        #endregion
+        #endregion Transpose
 
         #region Transform
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -344,7 +334,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        ///     Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -361,7 +351,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -377,7 +367,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -392,9 +382,9 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Transform
 
-        #endregion
+        #endregion Static
 
         #region Operators
 
@@ -410,14 +400,14 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Matrix substraction
+        ///     Matrix subtraction
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
         /// <returns>A new float2x2 which holds the result of the multiplication</returns>
         public static float3x3 operator -(float3x3 left, float3x3 right)
         {
-            return Substract(left, right);
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -432,7 +422,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -443,7 +433,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        ///     Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float3" /> instance.</param>
@@ -454,7 +444,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -465,7 +455,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        ///     Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
         /// <param name="vector">A <see cref="float2" /> instance.</param>
@@ -497,22 +487,42 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
         #region public override string ToString()
 
         /// <summary>
-        ///     Returns a System.String that represents the current Matrix44.
+        /// Returns a System.String that represents the current float3x3.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("{0}\n{1}\n{2}", Row0, Row1, Row2);
+            return ConvertToString(null);
         }
 
-        #endregion
+        /// <summary>
+        /// Returns a System.String that represents the current float3x3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "{0}\n{1}\n{2}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider));
+        }
+
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -522,12 +532,10 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -541,12 +549,24 @@ namespace Fusee.Math.Core
             if (!(obj is float3x3))
                 return false;
 
-            return Equals((float3x3) obj);
+            return Equals((float3x3)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
+
+        #endregion Public Members
+
+        #region ToArray()
+
+        /// <summary>
+        ///     Returns this matrix as an array
+        /// </summary>
+        public float[] ToArray()
+        {
+            return new[] { M11, M12, M13, M21, M22, M23, M31, M32, M33 };
+        }
 
         #endregion
 
@@ -572,6 +592,49 @@ namespace Fusee.Math.Core
                 Row2 == other.Row2;
         }
 
-        #endregion
+        #endregion IEquatable<Matri3x3> Members
+
+        /// <summary>
+        /// Gets and sets the Converter object. Has the ability to convert a string to a float3x3.
+        /// </summary>
+        /// <value>
+        /// The parse property.
+        /// </value>
+        public static Converter<string, float3x3> ParseConverter { get; set; } = (x => float3x3.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a float3x3.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static float3x3 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 9)
+                throw new FormatException("String parse for float3x3 did not result in exactly 9 items.");
+
+            float[] floats = new float[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    floats[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new float3x3(floats[0], floats[1], floats[2], floats[3], floats[4], floats[5], floats[6], floats[7], floats[8]);
+        }
     }
 }

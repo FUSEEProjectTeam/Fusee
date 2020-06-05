@@ -50,6 +50,9 @@ namespace Fusee.Jometri
     /// <typeparam name="TV">The type of the tree's value.</typeparam>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
+        /// <summary>
+        /// The root node of the tree.
+        /// </summary>
         protected Node<TK, TV> _globalRoot;
 
         /// <summary>
@@ -92,7 +95,7 @@ namespace Fusee.Jometri
 
         /// <summary>
         /// Preorder traversal of the tree. Visits the root, then visits the left sub-tree, after that visits the right sub-tree.
-        /// Retruns the keys.
+        /// Returns the keys.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<TK> PreorderTraverseTreeKeys()
@@ -105,7 +108,7 @@ namespace Fusee.Jometri
 
         /// <summary>
         /// Preorder traversal of the tree. Visits the root, then visits the left sub-tree, after that visits the right sub-tree.
-        /// Retruns the values.
+        /// Returns the values.
         /// </summary>
         /// <returns></returns>
         public IEnumerable<TV> PreorderTraverseTreeValues()
@@ -242,6 +245,11 @@ namespace Fusee.Jometri
             return FindMin(_globalRoot).Value;
         }
 
+        /// <summary>
+        /// Returns the minimum value in the tree, starting at the given node.
+        /// </summary>
+        /// <param name="root">The node at which to start the search.</param>
+        /// <returns>The node containing the minimum value.</returns>
         protected static Node<TK, TV> FindMin(Node<TK, TV> root)
         {
             var current = root;
@@ -283,7 +291,7 @@ namespace Fusee.Jometri
         /// Finds the value of a node whose key is the largest, smaller than the given.
         /// Only works with a balanced tree. It may be necessary to call BalanceTree before this method.
         /// </summary>
-        /// <param name="key">The key that is uesed as search parameter.</param>
+        /// <param name="key">The key that is used as search parameter.</param>
         /// <returns></returns>
         public TV FindLargestSmallerThanInBalanced(TK key)
         {

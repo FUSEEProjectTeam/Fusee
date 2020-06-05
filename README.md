@@ -11,6 +11,6 @@ don't support C#, like Content-Creation-Software C++ Plug-In-APIs
 and native HTML5/WebGL Javascript code.
 
 
- * Desktop Build: [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=4)
- * Web Build: [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Web)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=6)
- * Android Build: [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Android)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=8)
+| develop | master |
+| ------- | ------ |
+| [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=develop)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) | [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=master)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) |

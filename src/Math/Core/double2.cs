@@ -1,7 +1,5 @@
-#pragma warning disable 1591
-
 using System;
-using System.Runtime.CompilerServices;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -27,7 +25,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double y;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -42,9 +40,52 @@ namespace Fusee.Math.Core
             this.y = y;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
+
+        #region this
+
+        /// <summary>
+        /// Gets or sets the individual components x and y, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 1).</param>
+        /// <returns>The x or y component of the double2.</returns>
+        public double this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+
+                    case 1:
+                        return y;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+
+                    case 1:
+                        y = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
+                }
+            }
+        }
+
+        #endregion this
 
         #region Instance
 
@@ -56,8 +97,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length.
         /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// <seealso cref="LengthSquared" />
         public double Length
         {
             get
@@ -66,7 +106,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public double Length
 
         #region public double LengthSquared
 
@@ -77,7 +117,6 @@ namespace Fusee.Math.Core
         /// The length squared.
         /// </value>
         /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -90,7 +129,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public double LengthSquared
 
         #region public double2 PerpendicularRight
 
@@ -108,7 +147,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public double2 PerpendicularRight
 
         #region public double2 PerpendicularLeft
 
@@ -126,7 +165,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public double2 PerpendicularLeft
 
         #region public Normalize()
 
@@ -138,7 +177,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public NormalizeFast()
 
@@ -150,7 +189,7 @@ namespace Fusee.Math.Core
             return NormalizeFast(this);
         }
 
-        #endregion
+        #endregion public NormalizeFast()
 
         /// <summary>
         /// Returns an array of doubles with the two components of the vector.
@@ -161,8 +200,7 @@ namespace Fusee.Math.Core
             return new double[] { x, y };
         }
 
-
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -193,7 +231,7 @@ namespace Fusee.Math.Core
         // </summary>
         // public static readonly int SizeInBytes = Marshal.SizeOf(new double2());
 
-        #endregion
+        #endregion Fields
 
         #region Add
 
@@ -210,7 +248,7 @@ namespace Fusee.Math.Core
             return new double2(a.x + b.x, a.y + b.y);
         }
 
-        #endregion
+        #endregion Add
 
         #region Subtract
 
@@ -227,7 +265,7 @@ namespace Fusee.Math.Core
             return new double2(a.x - b.x, a.y - b.y);
         }
 
-        #endregion
+        #endregion Subtract
 
         #region Multiply
 
@@ -244,7 +282,6 @@ namespace Fusee.Math.Core
             return new double2(vector.x * scale, vector.y * scale);
         }
 
-
         /// <summary>
         /// Multiplies a vector by the components of a vector (scale).
         /// </summary>
@@ -258,7 +295,7 @@ namespace Fusee.Math.Core
             return new double2(vector.x * scale.x, vector.y * scale.y);
         }
 
-        #endregion
+        #endregion Multiply
 
         #region Divide
 
@@ -288,7 +325,7 @@ namespace Fusee.Math.Core
             return new double2(vector.x / scale.x, vector.y / scale.y);
         }
 
-        #endregion
+        #endregion Divide
 
         #region ComponentMin
 
@@ -307,7 +344,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion ComponentMin
 
         #region ComponentMax
 
@@ -326,7 +363,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion ComponentMax
 
         #region Min
 
@@ -343,7 +380,7 @@ namespace Fusee.Math.Core
             return left.LengthSquared < right.LengthSquared ? left : right;
         }
 
-        #endregion
+        #endregion Min
 
         #region Max
 
@@ -360,7 +397,7 @@ namespace Fusee.Math.Core
             return left.LengthSquared >= right.LengthSquared ? left : right;
         }
 
-        #endregion
+        #endregion Max
 
         #region Clamp
 
@@ -380,7 +417,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Clamp
 
         #region Normalize
 
@@ -399,7 +436,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region NormalizeFast
 
@@ -418,7 +455,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion NormalizeFast
 
         #region Dot
 
@@ -435,7 +472,7 @@ namespace Fusee.Math.Core
             return left.x * right.x + left.y * right.y;
         }
 
-        #endregion
+        #endregion Dot
 
         #region Lerp
 
@@ -455,7 +492,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Lerp
 
         #region Barycentric
 
@@ -472,7 +509,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Barycentric(double2 a, double2 b, double2 c, double u, double v)
         {
-            return u*a + v*b + (1.0-u-v)*c;
+            return u * a + v * b + (1.0 - u - v) * c;
         }
 
         /// <summary>
@@ -509,9 +546,10 @@ namespace Fusee.Math.Core
             u = (cb.y * cp.x - cb.x * cp.y) / denom;
             v = (ca.x * cp.y - ca.y * cp.x) / denom;
         }
-        #endregion
 
-        #endregion
+        #endregion Barycentric
+
+        #endregion Static
 
         #region Operators
 
@@ -633,24 +671,46 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current double2.
+        /// Returns a System.String that represents the current double3.
         /// </summary>
         /// <returns>
         /// A <see cref="System.String" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1})", x, y);
+            return ConvertToString(null);
         }
 
-        #endregion
+        /// <summary>
+        /// Returns a System.String that represents the current double3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            return String.Format(provider, "({1}{0} {2})", separator, x, y);
+        }
+
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -665,7 +725,7 @@ namespace Fusee.Math.Core
             return x.GetHashCode() ^ y.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -684,11 +744,11 @@ namespace Fusee.Math.Core
             return this.Equals((double2)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<double2> Members
 
@@ -706,7 +766,7 @@ namespace Fusee.Math.Core
                 y == other.y;
         }
 
-        #endregion
+        #endregion IEquatable<double2> Members
 
         /// <summary>
         /// Gets and sets the Converter object. Has the ability to convert a string to a double2.
@@ -714,8 +774,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, double2> Parse { get ; set; }
+        public static Converter<string, double2> ParseConverter { get; set; } = (x => double2.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a double2.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static double2 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 2)
+                throw new FormatException("String parse for double2 did not result in exactly 2 items.");
+
+            double[] doubles = new double[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    doubles[i] = double.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new double2(doubles[0], doubles[1]);
+        }
     }
 }
-
-#pragma warning restore 1591

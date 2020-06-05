@@ -1,20 +1,20 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using static Fusee.Engine.Core.Input;
 using Fusee.Serialization;
-using Fusee.Xene;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Examples.ThreeDFont.Core
 {
-
     [FuseeApplication(Name = "FUSEE ThreeDFont Example", Description = "Create meshes from Font-Files.")]
     public class ThreeDFont : RenderCanvas
     {
-        private SceneRenderer _renderer;
+        private SceneRendererForward _renderer;
 
         private float _alpha;
         private float _beta;
@@ -26,7 +26,7 @@ namespace Fusee.Examples.ThreeDFont.Core
 
         private ThreeDFontHelper _threeDFontHelper;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
@@ -42,14 +42,12 @@ namespace Fusee.Examples.ThreeDFont.Core
             geomLato.Triangulate();
             _textMeshLato = new JometriMesh(geomLato);
 
-
             _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
             var outlinesVlad = _threeDFontHelper.GetTextOutlinesWAngle(7);
             var geomVlad = new Jometri.Geometry(outlinesVlad);
             geomVlad.Extrude2DPolygon(200, false);
             geomVlad.Triangulate();
             _textMeshVlad = new JometriMesh(geomVlad);
-
 
             _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
             var outlinesGnu = _threeDFontHelper.GetTextOutlinesWAngle(40);
@@ -58,14 +56,14 @@ namespace Fusee.Examples.ThreeDFont.Core
             geomGnu.Triangulate();
             _textMeshGnu = new JometriMesh(geomGnu);
 
-            ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            var parentNode = new SceneNodeContainer
+            ////////////////// Fill SceneNode ////////////////////////////////
+            var parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = new float3(0.01f, 0.01f, 0.01f),
@@ -74,9 +72,8 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             parentNode.Components.Add(parentTrans);
 
-
             //Vladimir
-            var sceneNodeCVlad = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCVlad = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCVlad = new Mesh
             {
@@ -85,7 +82,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 Normals = _textMeshVlad.Normals,
             };
 
-            var tranCVlad = new TransformComponent
+            var tranCVlad = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -96,7 +93,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             sceneNodeCVlad.Components.Add(meshCVlad);
 
             //Lato
-            var sceneNodeCLato = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCLato = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCLato = new Mesh
             {
@@ -104,7 +101,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 Triangles = _textMeshLato.Triangles,
                 Normals = _textMeshLato.Normals,
             };
-            var tranCLato = new TransformComponent
+            var tranCLato = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -115,7 +112,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             sceneNodeCLato.Components.Add(meshCLato);
 
             //GNU
-            var sceneNodeCGnu = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCGnu = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCGnu = new Mesh
             {
@@ -123,7 +120,7 @@ namespace Fusee.Examples.ThreeDFont.Core
                 Triangles = _textMeshGnu.Triangles,
                 Normals = _textMeshGnu.Normals,
             };
-            var tranCGnu = new TransformComponent
+            var tranCGnu = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -137,13 +134,9 @@ namespace Fusee.Examples.ThreeDFont.Core
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
+            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-            sc.Children[0].Components.Insert(0, projComp);
-
-            _renderer = new SceneRenderer(sc);
+            _renderer = new SceneRendererForward(sc);
 
             var shaderFx = new ShaderEffect(new[] {
                 new EffectPassDeclaration
@@ -170,9 +163,10 @@ namespace Fusee.Examples.ThreeDFont.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -194,7 +188,6 @@ namespace Fusee.Examples.ThreeDFont.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            
         }
 
         private static float4x4 ModelXForm(float3 pos, float3 pivot)

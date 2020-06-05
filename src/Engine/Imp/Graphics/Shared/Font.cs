@@ -16,9 +16,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         public int Width { get; internal set; }
         public int Height { get; internal set; }
-        
+
         // font settings
-        public uint FontSize {get; internal set; }
+        public uint FontSize { get; internal set; }
         public bool UseKerning { get; set; }
 
         // char info

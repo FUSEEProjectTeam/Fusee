@@ -1,5 +1,4 @@
-﻿using JSIL.Meta;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -11,33 +10,42 @@ namespace Fusee.Base.Core
     /// </summary>
     public class AsyncHttpAsset
     {
-        private static readonly Dictionary<Type, AsyncAssetHandler> _assetHandlers = new Dictionary<Type, AsyncAssetHandler>()
+        private static readonly Dictionary<Type, AsyncAssetDecoder> _assetHandlers = new Dictionary<Type, AsyncAssetDecoder>()
         {
+            // Default callback for byte[]
             {
                 typeof(byte[]),
-                new AsyncAssetHandler
-                {
-                    ReturnedType = typeof(byte[]),
-                    Decoder = (id, data, callback) => {
-                        callback(data);
-                    },
-                }
+                (id, data, callback) => { callback(data); }
+            },
+            // Default callback for string
+            {
+                typeof(string),
+                (id, data, callback) => { callback(System.Text.Encoding.Default.GetString((byte[])data)); }
             }
         };
 
         /// <summary>
         /// The async asset handlers.
         /// </summary>
-        public static Dictionary<Type, AsyncAssetHandler> AssetHandlers { get => _assetHandlers; }
+        public static Dictionary<Type, AsyncAssetDecoder> AssetHandlers { get => _assetHandlers; }
 
         /// <summary>
-        /// Register an AsyncAssetHandler for a certain Type.
+        /// Register an AsyncAssetHandler.
+        /// </summary>
+        /// <param name="assetHandler"></param>
+        public static void RegisterTypeHandler(AsyncAssetHandler assetHandler)
+        {
+            _assetHandlers.Add(assetHandler.ReturnedType, assetHandler.Decoder);
+        }
+
+        /// <summary>
+        /// Register an AsyncAssetDecoder for a certain Type.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="assetHandler"></param>
-        public static void RegisterTypeHandler(Type type, AsyncAssetHandler assetHandler)
+        /// <param name="asyncAssetDecoder"></param>
+        public static void RegisterTypeHandler(Type type, AsyncAssetDecoder asyncAssetDecoder)
         {
-            _assetHandlers.Add(type, assetHandler);
+            _assetHandlers.Add(type, asyncAssetDecoder);
         }
 
         /// <summary>
@@ -89,7 +97,7 @@ namespace Fusee.Base.Core
 
             if (!_assetHandlers.ContainsKey(Type))
             {
-                Diagnostics.Log(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
+                Diagnostics.Warn(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
                 Type = typeof(byte[]);
             }
 
@@ -115,14 +123,17 @@ namespace Fusee.Base.Core
 
         private void AsyncHttpAsset_onDone(object sender, EventArgs e)
         {
-            Diagnostics.Log("Download " + ((AsyncHttpAsset)sender).Id + " Done");
+            Diagnostics.Debug("Download " + ((AsyncHttpAsset)sender).Id + " Done");
         }
 
         private void AsyncHttpAsset_onFail(object sender, EventArgs e)
         {
-            Diagnostics.Log("Download " + ((AsyncHttpAsset)sender).Id + " Failed");
+            Diagnostics.Debug("Download " + ((AsyncHttpAsset)sender).Id + " Failed");
         }
 
+        /// <summary>
+        /// Starts to load the assets.
+        /// </summary>
         public void StartLoad()
         {
             if (State == AsyncAssetState.None)
@@ -138,7 +149,6 @@ namespace Fusee.Base.Core
             DoGetAsset();
         }
 
-        [JSExternal]
         private async void DoGetAsset()
         {
             using (HttpClient client = new HttpClient())
@@ -149,7 +159,7 @@ namespace Fusee.Base.Core
                     //onDownloaded
                     ProcessAsset(bytes);
                 }
-                catch (HttpRequestException e)
+                catch
                 {
                     FailCallback();
                 }
@@ -162,7 +172,7 @@ namespace Fusee.Base.Core
 
             if (_assetHandlers.ContainsKey(Type))
             {
-                _assetHandlers[Type].Decoder(Id, data, this.DoneCallback);
+                _assetHandlers[Type](Id, data, this.DoneCallback);
             }
         }
 
@@ -179,7 +189,9 @@ namespace Fusee.Base.Core
             onFail?.Invoke(this, EventArgs.Empty);
         }
     }
-
+    /// <summary>
+    /// The states an asset can inhibit.
+    /// </summary>
     public enum AsyncAssetState
     {
         /// <summary>
@@ -202,16 +214,40 @@ namespace Fusee.Base.Core
         /// State: failed.
         /// </summary>
         Failed,
+        /// <summary>
+        /// State: defined by User.
+        /// </summary>
         UserState1,
+        /// <summary>
+        /// State: defined by User.
+        /// </summary>
         UserState2,
+        /// <summary>
+        /// State: defined by User.
+        /// </summary>
         UserState3
     }
 
+    /// <summary>
+    /// The asset handler.
+    /// </summary>
     public struct AsyncAssetHandler
     {
+        /// <summary>
+        /// The asset load type.
+        /// </summary>
         public Type ReturnedType;
+        /// <summary>
+        /// The asset decoder.
+        /// </summary>
         public AsyncAssetDecoder Decoder;
     }
 
-    public delegate void AsyncAssetDecoder(string id, object storage, Action<object> returndata);
+    /// <summary>
+    /// The asset decoder
+    /// </summary>
+    /// <param name="id">The asset id.</param>
+    /// <param name="data">The asset data.</param>
+    /// <param name="callback">The decoded asset data.</param>
+    public delegate void AsyncAssetDecoder(string id, object data, Action<object> callback);
 }

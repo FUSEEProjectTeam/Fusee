@@ -5,12 +5,13 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{548ba459-616b-4d04-b0a1-2e19388c4b55}</ProjectGuid>
     <PythonProjectName>io_export_fus</PythonProjectName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\..\..</FuseeEngineRoot>
     <ProjectHome />
     <StartupFile>__init__.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Tools\BlenderScripts\addons</OutputPath>
+    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools\BlenderScripts\addons</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>Global|PythonCore|3.5-32</InterpreterId>
@@ -22,16 +23,28 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="proto\bcl_pb2.py" />
-    <Compile Include="proto\Scene_pb2.py" />
+    <Compile Include="BlenderVisitor.py" />
+    <Compile Include="FusSceneWriter.py" />
+    <Compile Include="proto\FusSerialization_pb2.py" />
+    <Compile Include="proto\protobuf_net\bcl_pb2.py" />
+    <Compile Include="proto\protobuf_net\protogen_pb2.py" />
     <Compile Include="SerializeData.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="proto" />
+    <InterpreterReference Include="Global|PythonCore|3.5-32" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|PythonCore|3.5-32" />
+    <Folder Include="proto\" />
+    <Folder Include="proto\protobuf_net\" />
+    <Folder Include="proto_src\" />
+    <Folder Include="proto_src\protobuf-net\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="proto_src\protobuf-net\bcl.proto" />
+    <Content Include="proto_src\protobuf-net\protogen.proto" />
+    <Content Include="proto_src\Readme.md" />
+    <Content Include="proto_src\Scene.proto" />
   </ItemGroup>
   <!-- Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /-->
   <!-- RE-GENERATING THE PROTBUF SERIALIZATION PYTHON CODE AND ZIPPING THE BLENDER ADDON DOES NOT WORK. PYTHON PROJECTS JUST DONT INVOKE THE BUILD TARGET. 

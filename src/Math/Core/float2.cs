@@ -1,13 +1,10 @@
-#pragma warning disable 1591
-
-using System;
-using System.Runtime.InteropServices;
 using ProtoBuf;
+using System;
+using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
-    // ReSharper disable InconsistentNaming
-
     /// <summary>
     /// Represents a 2D vector using two single-precision floating-point numbers.
     /// </summary>
@@ -32,7 +29,7 @@ namespace Fusee.Math.Core
         [ProtoMember(2)]
         public float y;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -47,9 +44,52 @@ namespace Fusee.Math.Core
             this.y = y;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
+
+        #region this
+
+        /// <summary>
+        /// Gets or sets the individual components x and y, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 1).</param>
+        /// <returns>The x or y component of the float2.</returns>
+        public float this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+
+                    case 1:
+                        return y;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float2 type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+
+                    case 1:
+                        y = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float2 type");
+                }
+            }
+        }
+
+        #endregion this
 
         #region Instance
 
@@ -70,7 +110,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public float Length
 
         #region public float LengthSquared
 
@@ -93,7 +133,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public float LengthSquared
 
         #region public float2 PerpendicularRight
 
@@ -111,7 +151,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public float2 PerpendicularRight
 
         #region public float2 PerpendicularLeft
 
@@ -129,7 +169,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public float2 PerpendicularLeft
 
         #region public Normalize()
 
@@ -141,7 +181,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public NormalizeFast()
 
@@ -153,7 +193,7 @@ namespace Fusee.Math.Core
             return NormalizeFast(this);
         }
 
-        #endregion
+        #endregion public NormalizeFast()
 
         /// <summary>
         /// Returns an array of floats with the two components of the vector.
@@ -161,10 +201,10 @@ namespace Fusee.Math.Core
         /// <returns>Returns an array of floats with the two components of the vector.</returns>
         public float[] ToArray()
         {
-            return new float[] { x, y};
+            return new float[] { x, y };
         }
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -195,7 +235,7 @@ namespace Fusee.Math.Core
         // </summary>
         // public static readonly int SizeInBytes = Marshal.SizeOf(new float2());
 
-        #endregion
+        #endregion Fields
 
         #region Add
 
@@ -214,7 +254,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Add
 
         #region Subtract
 
@@ -233,7 +273,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Subtract
 
         #region Multiply
 
@@ -265,7 +305,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply
 
         #region Divide
 
@@ -299,7 +339,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Divide
 
         #region ComponentMin
 
@@ -318,7 +358,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion ComponentMin
 
         #region ComponentMax
 
@@ -337,7 +377,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion ComponentMax
 
         #region Min
 
@@ -354,7 +394,7 @@ namespace Fusee.Math.Core
             return left.LengthSquared < right.LengthSquared ? left : right;
         }
 
-        #endregion
+        #endregion Min
 
         #region Max
 
@@ -371,7 +411,7 @@ namespace Fusee.Math.Core
             return left.LengthSquared >= right.LengthSquared ? left : right;
         }
 
-        #endregion
+        #endregion Max
 
         #region Clamp
 
@@ -391,7 +431,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Clamp
 
         #region Normalize
 
@@ -410,7 +450,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region NormalizeFast
 
@@ -429,7 +469,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion NormalizeFast
 
         #region Dot
 
@@ -446,7 +486,7 @@ namespace Fusee.Math.Core
             return left.x * right.x + left.y * right.y;
         }
 
-        #endregion
+        #endregion Dot
 
         #region Lerp
 
@@ -466,7 +506,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Lerp
 
         #region Barycentric
 
@@ -483,9 +523,8 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Barycentric(float2 a, float2 b, float2 c, float u, float v)
         {
-            return u*a + v*b + (1.0f-u-v)*c;
+            return u * a + v * b + (1.0f - u - v) * c;
         }
-
 
         /// <summary>
         /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
@@ -498,9 +537,9 @@ namespace Fusee.Math.Core
         /// <param name="v">The resulting barycentric v coordinate (weight for vertex b).</param>
         public static void GetBarycentric(float2 a, float2 b, float2 c, float2 point, out float u, out float v)
         {
-            float2 cb = b-c;
+            float2 cb = b - c;
             float2 cp = point - c;
-            float2 ca = a-c;
+            float2 ca = a - c;
             float denom = (cb.y * ca.x - cb.x * ca.y);
             u = (cb.y * cp.x - cb.x * cp.y) / denom;
             v = (ca.x * cp.y - ca.y * cp.x) / denom;
@@ -520,8 +559,6 @@ namespace Fusee.Math.Core
         //    u = ((b.y - c.y) * (point.x - c.x) + (c.x - b.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
         //    v = ((c.y - a.y) * (point.x - c.x) + (a.x - c.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
         //}
-
-
 
         /// <summary>
         /// Checks if the give point is inside the given triangle (a, b, c). Returns the barycentric coordinates using <see cref="GetBarycentric"/>.
@@ -557,9 +594,9 @@ namespace Fusee.Math.Core
             return z < 0;
         }
 
-        #endregion
+        #endregion Barycentric
 
-        #endregion
+        #endregion Static
 
         #region Swizzle
 
@@ -573,7 +610,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
 
-        #endregion
+        #endregion Swizzle
 
         #region Operators
 
@@ -589,7 +626,6 @@ namespace Fusee.Math.Core
         {
             return Add(left, right);
         }
-
 
         /// <summary>
         /// Adds a scalar to the specified instance.
@@ -726,7 +762,7 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
@@ -740,10 +776,32 @@ namespace Fusee.Math.Core
         /// </returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1})", x, y);
+            return ConvertToString(null);
         }
 
-        #endregion
+        /// <summary>
+        /// Returns a System.String that represents the current float2.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            return String.Format(provider, "({1}{0} {2})", separator, x, y);
+        }
+
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -758,7 +816,7 @@ namespace Fusee.Math.Core
             return x.GetHashCode() ^ y.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -777,9 +835,9 @@ namespace Fusee.Math.Core
             return this.Equals((float2)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
         #region Color
 
@@ -810,9 +868,9 @@ namespace Fusee.Math.Core
             set { xy = value; }
         }
 
-        #endregion
+        #endregion Color
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<float2> Members
 
@@ -830,7 +888,7 @@ namespace Fusee.Math.Core
                 y == other.y;
         }
 
-        #endregion
+        #endregion IEquatable<float2> Members
 
         /// <summary>
         /// Gets and sets the Converter object. Has the ability to convert a string to a float2.
@@ -838,10 +896,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, float2> Parse { get; set; }
+        public static Converter<string, float2> ParseConverter { get; set; } = (x => float2.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a float2.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static float2 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 2)
+                throw new FormatException("String parse for float2 did not result in exactly 2 items.");
+
+            float[] floats = new float[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    floats[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new float2(floats[0], floats[1]);
+        }
     }
-
-    // ReSharper restore InconsistentNaming
 }
-
-#pragma warning restore 1591

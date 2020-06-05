@@ -69,7 +69,7 @@ namespace Fusee.Engine.Common
 
 
         /// <summary>
-        /// Applies the specified torque on this rigigd body instance.
+        /// Applies the specified torque on this rigidbody instance.
         /// </summary>
         /// <param name="torque">The torque.</param>
         void ApplyTorque(float3 torque);
@@ -124,7 +124,6 @@ namespace Fusee.Engine.Common
         /// </value>
         float3 AngularFactor { get; set; }
 
-        //"physic Matrial"
         /// <summary>
         /// Gets and sets the restitution.
         /// </summary>
@@ -132,6 +131,7 @@ namespace Fusee.Engine.Common
         /// The restitution.
         /// </value>
         float Restitution { get; set; }
+
         /// <summary>
         /// Gets and sets the friction.
         /// </summary>
@@ -144,8 +144,9 @@ namespace Fusee.Engine.Common
         /// Sets the drag.
         /// </summary>
         /// <param name="linearDrag">The linear drag.</param>
-        /// <param name="anglularDrag">The anglular drag.</param>
+        /// <param name="anglularDrag">The angular drag.</param>
         void SetDrag(float linearDrag, float anglularDrag);
+
         /// <summary>
         /// Gets the linear drag.
         /// </summary>
@@ -153,6 +154,7 @@ namespace Fusee.Engine.Common
         /// The linear drag.
         /// </value>
         float LinearDrag { get; }
+
         /// <summary>
         /// Gets the angular drag.
         /// </summary>

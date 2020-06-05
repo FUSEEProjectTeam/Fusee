@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core
                 var retval = _iSliderConstraintImp.AngularDepth;
                 return retval;
             }
-        } 
+        }
         /// <summary>
         /// Returns the angular position.
         /// </summary>
@@ -54,16 +54,16 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Calcualtes the transform for A and B.
+        /// Calculates the transform for A and B.
         /// </summary>
         /// <param name="transA"></param>
         /// <param name="transB"></param>
         public void CalculateTransforms(float4x4 transA, float4x4 transB)
         {
             _iSliderConstraintImp.CalculateTransforms(transA, transB);
-        } 
+        }
         /// <summary>
-        /// Returns the calcualted transforms of a.
+        /// Returns the calculated transforms of a.
         /// </summary>
         public float4x4 CalculatedTransformA
         {
@@ -556,7 +556,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (SliderConstraint) _iSliderConstraintImp.UserObject;
+                var o = (SliderConstraint)_iSliderConstraintImp.UserObject;
                 o._iSliderConstraintImp.TargetAngularMotorVelocity = value;
             }
         }
@@ -572,7 +572,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (SliderConstraint) _iSliderConstraintImp.UserObject;
+                var o = (SliderConstraint)_iSliderConstraintImp.UserObject;
                 o._iSliderConstraintImp.TargetLinMotorVelocity = value;
             }
         }

@@ -8,10 +8,8 @@ namespace Fusee.Engine.Core
 
         public RigidBody RigidBodyA
         {
-
             get
             {
-
                 var retval = _iGearConstraintImp.RigidBodyA.UserObject;
                 return (RigidBody)retval;
             }

@@ -3,18 +3,18 @@ namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Interface for implementing handles on attribute arrays stored on GPU memory such as vertices, normals, uvs etc.
-    /// This interface does not require any particular public impmlementation. It is meant as a markup-Interace to identify
+    /// This interface does not require any particular public implementation. It is meant as a markup-Interface to identify
     /// types.
     /// </summary>
     public interface IAttribImp
     {
-        
+
     }
 
     /// <summary>
     /// Interface for Mesh implementations. The implementation should handle typical mesh informations like: vertices, triangles, normals, colors, UV's.
-    /// It is also required to implement a connection to the current Rendercontext in order to apply the Mesh for rendering.
-    /// The Mesh should preferable use handles for its informations in order to communicate with a rendercontext. The handles are refering to so called BufferObjects.
+    /// It is also required to implement a connection to the current RenderContext in order to apply the Mesh for rendering.
+    /// The Mesh should preferable use handles for its informations in order to communicate with a RenderContext. The handles are referring to so called BufferObjects.
     /// </summary>
 
     [ProtoContract]
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Common
         void InvalidateUVs();
 
         /// <summary>
-        /// Implementation Tasks: Invalidates the boneweights of the mesh, e.g. reset the BoneWeightsBufferObject of this instance by setting it to 0.
+        /// Implementation Tasks: Invalidates the bone weights of the mesh, e.g. reset the BoneWeightsBufferObject of this instance by setting it to 0.
         /// </summary>
         void InvalidateBoneWeights();
 
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Common
         bool BoneWeightsSet { get; }
 
         /// <summary>
-        /// Implementation Tasks: Invalidates the boneindices of the mesh, e.g. reset the BoneIndicesBufferObject of this instance by setting it to 0.
+        /// Implementation Tasks: Invalidates the bone indices of the mesh, e.g. reset the BoneIndicesBufferObject of this instance by setting it to 0.
         /// </summary>
         void InvalidateBoneIndices();
 
@@ -111,12 +111,17 @@ namespace Fusee.Engine.Common
         /// </value>
         bool BoneIndicesSet { get; }
         /// <summary>
-        /// Implementation Tasks: Gets a value indicating wether [Tangents Set].
+        /// Implementation Tasks: Gets a value indicating whether [Tangents Set].
         /// </summary>
         bool TangentsSet { get; }
         /// <summary>
-        /// Implementation Tasks: Gets a value indicating wether [BiTangents Set].
+        /// Implementation Tasks: Gets a value indicating whether [BiTangents Set].
         /// </summary>
         bool BiTangentsSet { get; }
+
+        /// <summary>
+        ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
+        /// </summary>
+        OpenGLPrimitiveType MeshType { get; set; }
     }
 }

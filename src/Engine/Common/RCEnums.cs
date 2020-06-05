@@ -145,27 +145,6 @@ namespace Fusee.Engine.Common
 #pragma warning restore 1591
     }
 
-    /* TODO: Implement texture wrapping rather as a texture property than a "global" render state. This is most
-     * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
-    /// <summary>
-    /// Bitwise combinations of these values specify if texure wrapping along the given texture coordinate axes is performed. 
-    /// With two- or three-dimensional textures Coordinate0, Coordinate1, and Coordinate2 are typically called U, V, and W, respectively.
-    /// With four dimensional textures the coordinate axes are commonly called s, t, r, q.
-    /// </summary>
-    [Flags]
-    public enum TextureWrapping
-    {
-        WrapCoordinate0 = 1,
-        WrapU = 1,
-        WrapCoordinate1 = 2,
-        WrapV = 2,
-        WrapCoordinate2 = 4,
-        WrapW = 4,
-        WrapCoordinate3 = 8,
-        None = 0,
-    }
-    */
-
     /// <summary>
     /// Specifies the comparison tests to perform in Z-Buffer and in Stencil tests
     /// </summary>
@@ -196,7 +175,7 @@ namespace Fusee.Engine.Common
         Counterclockwise = 3,
 #pragma warning restore 1591
     }
-    
+
     /// <summary>
     /// Used to define the source and destination blending factors. Together, these specify the blend operation to be used when writing a pixel color value onto the render canvas.
     /// </summary>
@@ -213,7 +192,7 @@ namespace Fusee.Engine.Common
         InverseDestinationAlpha = 8,
         DestinationColor = 9,
         InverseDestinationColor = 10,
- 
+
         BlendFactor = 14,
         InverseBlendFactor = 15,
         // Ignored by FUSEE
@@ -225,9 +204,9 @@ namespace Fusee.Engine.Common
 #pragma warning restore 1591
     }
 
-        /// <summary>
-        /// Specifies the fill mode to use by the rasterizer. Options are Point (renders vertices as single pixels), Wireframe (renders only triangles' edges as lines), or Solid (fills all pixels covered by triangles).
-        /// </summary>
+    /// <summary>
+    /// Specifies the fill mode to use by the rasterizer. Options are Point (renders vertices as single pixels), Wireframe (renders only triangles' edges as lines), or Solid (fills all pixels covered by triangles).
+    /// </summary>
     public enum FillMode
     {
 #pragma warning disable 1591
@@ -289,7 +268,7 @@ namespace Fusee.Engine.Common
         KanjiMode = 25,
         Escape = 27,
         IMEConvert = 28,
-        IMENonconvert = 29| LButton,
+        IMENonconvert = 29 | LButton,
         IMEAccept = 30,
         IMEModeChange = 31,
         Space = 32,
@@ -517,7 +496,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The different axes a SixDOF device e.g. spacemouse exposes.
+    /// The different axes a SixDOF device e.g. SpaceMouse exposes.
     /// </summary>
     public enum SixDOFAxis
     {
@@ -549,7 +528,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The buttons and axes a gamecontroller exposes.
+    /// The buttons and axes a game controller exposes.
     /// </summary>
     public enum Gamepad : int
     {
@@ -648,7 +627,7 @@ namespace Fusee.Engine.Common
         Touchpoint_3,
         Touchpoint_4,
         Touchpoint_5,
-        // More touchpoints (if supported) can be reached by 
+        // More touch points (if supported) can be reached by 
         // (int) Touchpoint0 + i)
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming

@@ -9,7 +9,6 @@ namespace Fusee.Base.Core
     /// </summary>
     public class ImageData : IImageData
     {
-
         /// <summary>
         /// The byte array that makes up this ImageData instance.
         /// </summary>
@@ -32,6 +31,11 @@ namespace Fusee.Base.Core
             PixelFormat = colorFormat;
         }
 
+        /// <summary>
+        /// Creates a new instance of type ImageData.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
         public ImageData(int width = 2048, int height = 2048)
         {
             Width = width;
@@ -50,6 +54,25 @@ namespace Fusee.Base.Core
                 PixelData[i + 2] = 127;
                 PixelData[i + 3] = 255;
             }
+        }
+
+
+        /// <summary>
+        /// Creates a new instance of type ImageData.
+        /// </summary>
+        /// <param name="format">The <see cref="ColorFormat"/>.</param>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        public ImageData(ColorFormat format, int width = 2048, int height = 2048)
+        {
+            Width = width;
+            Height = height;
+
+            PixelFormat = new ImagePixelFormat(format);
+
+            int byteSize = Width * Height * PixelFormat.BytesPerPixel;
+
+            PixelData = new byte[byteSize];
         }
 
         /// <summary>
@@ -97,8 +120,8 @@ namespace Fusee.Base.Core
             CopyFunc copyLine;
             if (PixelFormat.ColorFormat.Equals(src.PixelFormat.ColorFormat))
             {
-                // Case: same colorspace, just loop over scanlines from src and copy linewise into this ImageData
-                copyLine = delegate(byte[] srcScanLineBytes, int destinationIndex)
+                // Case: same color space, just loop over scanlines from src and copy line-wise into this ImageData
+                copyLine = delegate (byte[] srcScanLineBytes, int destinationIndex)
                 {
                     Array.Copy(srcScanLineBytes, 0, PixelData, destinationIndex, srcScanLineBytes.Length);
                 };
@@ -113,7 +136,7 @@ namespace Fusee.Base.Core
                         switch (src.PixelFormat.ColorFormat)
                         {
                             case ColorFormat.RGB:
-                                copyLine = delegate(byte[] srcLineBytes, int destinationIndex)
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
                                     {
@@ -222,7 +245,7 @@ namespace Fusee.Base.Core
                 if (srcScanLine != null)
                 {
                     byte[] srcScanLineBytes = srcScanLine.GetScanLineBytes();
-                    int destinationIndex = yDst * PixelFormat.BytesPerPixel*Width + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
+                    int destinationIndex = yDst * PixelFormat.BytesPerPixel * Width + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
                     copyLine(srcScanLineBytes, destinationIndex);
                     yDst++; // increment yDst == move to the next line
                 }
@@ -242,7 +265,7 @@ namespace Fusee.Base.Core
         {
             if ((xSrc + width) > Width)
             {
-                throw new ArgumentOutOfRangeException("Cannot get ScanLineEnumerator due to exceeding ImageData Width="+Width+". Choose xSrc+width to be smaller than Width of ImageData");
+                throw new ArgumentOutOfRangeException("Cannot get ScanLineEnumerator due to exceeding ImageData Width=" + Width + ". Choose xSrc+width to be smaller than Width of ImageData");
             }
             if ((ySrc + height) > Height)
             {
@@ -253,7 +276,7 @@ namespace Fusee.Base.Core
             {
                 // 1D offsetCoordinate that represents location in PixelData byte array (sizeof PixelData is Width*Height*BytesPerPixel)
                 int srcOffset = ((PixelFormat.BytesPerPixel * Width) * i) + xSrc * PixelFormat.BytesPerPixel; // go down vertical along i by width times BytesPerPixel and then add horizontal width offset times BytesPerPixel
-                yield return new ScanLine(PixelData,srcOffset,width, PixelFormat);
+                yield return new ScanLine(PixelData, srcOffset, width, PixelFormat);
             }
         }
 
@@ -299,134 +322,6 @@ namespace Fusee.Base.Core
 
         private delegate void CopyFunc(byte[] srcScanLineBytes, int dstIndex);
 
-        
-        //private static void Blt(ImageData dst, int xDst, int yDst, ImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
-        //{
-        //    if (width == 0)
-        //        width = src.Width;
-        //    if (height == 0)
-        //        height = src.Height;
-
-        //    ClipBlt(ref xDst, dst.Width, ref xSrc, src.Width, ref width);
-        //    ClipBlt(ref yDst, dst.Height, ref ySrc, src.Height, ref height);
-
-        //    if (width <= 0 || height <= 0)
-        //        return;
-
-        //    CopyFunc CopyLine = null;
-        //    if (dst.ColorFormat.Equals(src.ColorFormat))
-        //    {
-        //        // We can copy an entire line en-bloc
-        //        CopyLine = delegate (int idl, int isl)
-        //        {
-        //            // hier scanline rein
-        //            Array.Copy(src.PixelData, isl + xSrc * src.ColorFormat.BytesPerPixel,
-        //                       dst.PixelData, idl + xDst * dst.ColorFormat.BytesPerPixel,
-        //                       width * dst.ColorFormat.BytesPerPixel);
-        //        };
-        //    }
-        //    else
-        //    {
-        //        // Wee need to perform pixel-conversion while copying.
-        //        CopyFunc CopyPixel = null;
-
-        //        switch (dst.ColorFormat.ColorFormat)
-        //        {
-        //            case ColorFormat.RGBA:
-        //                switch (src.ColorFormat.ColorFormat)
-        //                {
-        //                    case ColorFormat.RGB:
-        //                        CopyPixel = delegate (int idp, int isp)
-        //                        {
-        //                            dst.PixelData[idp + 0] = src.PixelData[isp + 0];
-        //                            dst.PixelData[idp + 1] = src.PixelData[isp + 1];
-        //                            dst.PixelData[idp + 2] = src.PixelData[isp + 2];
-        //                            dst.PixelData[idp + 3] = byte.MaxValue;
-        //                        };
-        //                        break;
-        //                    case ColorFormat.Intensity:
-        //                        CopyPixel = delegate (int idp, int isp)
-        //                        {
-        //                            dst.PixelData[idp + 0] = src.PixelData[isp];
-        //                            dst.PixelData[idp + 1] = src.PixelData[isp];
-        //                            dst.PixelData[idp + 2] = src.PixelData[isp];
-        //                            dst.PixelData[idp + 3] = byte.MaxValue;
-        //                        };
-        //                        break;
-        //                    default:
-        //                        throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGBA");
-        //                }
-        //                break;
-        //            case ColorFormat.RGB:
-        //                switch (src.ColorFormat.ColorFormat)
-        //                {
-        //                    case ColorFormat.RGBA:
-        //                        CopyPixel = delegate (int idp, int isp)
-        //                        {
-        //                            dst.PixelData[idp + 0] = src.PixelData[isp + 0];
-        //                            dst.PixelData[idp + 1] = src.PixelData[isp + 1];
-        //                            dst.PixelData[idp + 2] = src.PixelData[isp + 2];
-        //                            // skip source alpha src.PixelData[isp + 3];
-        //                        };
-        //                        break;
-        //                    case ColorFormat.Intensity:
-        //                        CopyPixel = delegate (int idp, int isp)
-        //                        {
-        //                            dst.PixelData[idp + 0] = src.PixelData[isp];
-        //                            dst.PixelData[idp + 1] = src.PixelData[isp];
-        //                            dst.PixelData[idp + 2] = src.PixelData[isp];
-        //                        };
-        //                        break;
-        //                    default:
-        //                        throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB");
-        //                }
-        //                break;
-        //            case ColorFormat.Intensity:
-        //                switch (src.ColorFormat.ColorFormat)
-        //                {
-        //                    case ColorFormat.RGB:
-        //                    case ColorFormat.RGBA:
-        //                        CopyPixel = delegate (int idp, int isp)
-        //                        {
-        //                            // Quick integer Luma conversion (not accurate)
-        //                            // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-        //                            int R = src.PixelData[isp + 0];
-        //                            int G = src.PixelData[isp + 1];
-        //                            int B = src.PixelData[isp + 2];
-        //                            dst.PixelData[idp] = (byte)((R + R + B + G + G + G) / 6);
-        //                        };
-        //                        break;
-        //                    default:
-        //                        throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB");
-        //                }
-        //                break;
-        //            default:
-        //                throw new ArgumentOutOfRangeException(nameof(dst), "Unknown destination pixel format");
-        //        }
-        //        CopyLine = delegate (int idl, int isl)
-        //        {
-        //            // hier scanline holen
-        //            int iDstPxl = idl + xDst * dst.ColorFormat.BytesPerPixel;
-        //            int iSrcPxl = isl + xSrc * src.ColorFormat.BytesPerPixel;
-        //            for (int x = 0; x < width; x++)
-        //            {
-        //                CopyPixel(iDstPxl, iSrcPxl);
-        //                iDstPxl += dst.ColorFormat.BytesPerPixel;
-        //                iSrcPxl += src.ColorFormat.BytesPerPixel;
-        //            }
-        //        };
-        //    }
-
-        //    int iDstLine = yDst * dst.ColorFormat.BytesPerPixel;
-        //    int iSrcLine = ySrc * src.ColorFormat.BytesPerPixel;
-        //    for (int y = 0; y < height; y++)
-        //    {
-        //        CopyLine(iDstLine, iSrcLine);
-        //        iDstLine += dst.ColorFormat.BytesPerPixel;
-        //        iSrcLine += src.ColorFormat.BytesPerPixel;
-        //    }
-        //}
-
         /// <summary>
         /// Checks if an image contains no data by checking if <see cref="Width"/> or <see cref="Height"/> is 0.
         /// </summary>
@@ -458,14 +353,6 @@ namespace Fusee.Base.Core
 
             Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
             return ret;
-
-
-            /*
-            var ret = new ImageData(new byte[width * height*4], width, height, new ImagePixelFormat(ColorFormat.RGBA));
-
-            MemSet(ret.PixelData, color.ToArray());
-
-            return ret;*/
         }
     }
 }

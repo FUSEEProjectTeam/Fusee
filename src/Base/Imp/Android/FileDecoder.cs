@@ -3,6 +3,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Fusee.Base.Imp.Android
 {
@@ -20,9 +21,23 @@ namespace Fusee.Base.Imp.Android
         /// </summary>
         /// <param name="file">Stream containing the image in a supported format (png, jpg).</param>
         /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
+        public static Task<ImageData> LoadImageAsync(Stream file)
+        {
+            return Task.Factory.StartNew(() => LoadImage(file));
+        }
+
+        /// <summary>
+        /// Creates a new Bitmap-Object from an image file,
+        /// locks the bits in the memory and makes them available
+        /// for further action (e.g. creating a texture).
+        /// Method must be called before creating a texture to get the necessary
+        /// ImageData struct.
+        /// </summary>
+        /// <param name="file">Stream containing the image in a supported format (png, jpg).</param>
+        /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
         public static ImageData LoadImage(Stream file)
         {
-            Bitmap bmp = BitmapFactory.DecodeStream(file, null, new BitmapFactory.Options { InPremultiplied = false, InPreferredConfig = Bitmap.Config.Argb8888 });
+            var bmp = BitmapFactory.DecodeStream(file, null, new BitmapFactory.Options { InPremultiplied = false, InPreferredConfig = Bitmap.Config.Argb8888 });
 
             int nPixels = bmp.Width * bmp.Height;
             int nBytes = nPixels * 4;
@@ -49,7 +64,7 @@ namespace Fusee.Base.Imp.Android
                 Buffer.BlockCopy(pxls, (bmp.Height - 1 - iLine) * bmp.Width * 4, ret.PixelData, iLine * bmp.Width * 4, bmp.Width * 4);
             }
 
-            // As a whole... Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
+            // As a whole... Buffer.BlockCopy(pixels, 0, ret.PixelData, 0, nBytes);
             return ret;
         }
     }

@@ -19,7 +19,7 @@ namespace Fusee.Jometri
         {
             normal = normal.Normalize(); //New z axis
 
-            //If the normal equals the z axis of the world coodrinate system: reflect the point on the y axis.
+            //If the normal equals the z axis of the world coordinate system: reflect the point on the y axis.
             if (normal == float3.UnitZ)
             {
                 var rot = new float3x3(-1, 0, 0,
@@ -28,7 +28,7 @@ namespace Fusee.Jometri
                 return vertPos * rot;
             }
 
-            //If the normal equals the negative z axis of the world coodrinate system: use the original coordinates.
+            //If the normal equals the negative z axis of the world coordinate system: use the original coordinates.
             if (normal == float3.UnitZ * -1)
                 return vertPos;
 
@@ -46,7 +46,7 @@ namespace Fusee.Jometri
             //vector in new basis * changeOfBasisMat = vector in old basis
             var changeOfBasisMat = new float3x3(row1, row2, row3);
 
-            //In an orthonomal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
+            //In an orthonormal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
             var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
             transposeMat = transposeMat.Transpose();
 
@@ -226,11 +226,11 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Tests if a vertex is a direct neighbour of an other vertex. Only use this method if you know the incident half edges of the vertex.
+        /// Tests if a vertex is a direct neighbor of an other vertex. Only use this method if you know the incident half edges of the vertex.
         /// </summary>
         /// <param name="geometry">The geometry the vertex belongs to.</param>
         /// <param name="p">First vertex</param>
-        /// <param name="q">Secound vertex</param>
+        /// <param name="q">Second vertex</param>
         /// <param name="vertPStartHe">p incident half edge. </param>
         /// <param name="vertQStartHe">q incident half edge.</param>
         /// <returns></returns>
@@ -270,7 +270,7 @@ namespace Fusee.Jometri
             }
         }
 
-        //For an explanation of this algorythm see: http://blog.element84.com/polygon-winding.html
+        //For an explanation of this algorithm see: https://www.element84.com/blog/determining-the-winding-of-a-polygon-given-as-a-set-of-ordered-points
         /// <summary>
         /// Checks whether a polygon, parallel to the xy plane, has a ccw winding.
         /// This method does NOT support polygons parallel to the yz or xz plane!
@@ -292,7 +292,7 @@ namespace Fusee.Jometri
             return sum < 0;
         }
 
-        //See: Antionio, Franklin - Faster line intersection (1992)
+        //See: Antonio, Franklin - Faster line intersection (1992)
         //Points need to be reduced to 2D!
         //UNTESTED!!
         /// <summary>
@@ -301,7 +301,7 @@ namespace Fusee.Jometri
         /// <param name="p1">First control point of the first line.</param>
         /// <param name="p2">Second control point of the first line.</param>
         /// <param name="p3">First point of the second line.</param>
-        /// <param name="p4">Second point of the secornd line.</param>
+        /// <param name="p4">Second point of the second line.</param>
         /// <param name="intersectionPoint">The intersection point, if the lines do not intersect this will be float3 Infinity.</param>
         /// <returns></returns>
         public static bool IsLineIntersectingLine(float3 p1, float3 p2, float3 p3, float3 p4, out float3 intersectionPoint)
@@ -341,14 +341,14 @@ namespace Fusee.Jometri
 
             var alpha = tNumerator / denominator;
 
-            intersectionPoint = p1 + alpha*(p2-p1);
+            intersectionPoint = p1 + alpha * (p2 - p1);
             return true;
         }
 
         /// <summary>
         /// Calculates the mean Vertex position of given Vertices.
         /// </summary>
-        /// <param name="vertices">List of all Vertices which are part of the new mean poisiton.</param>
+        /// <param name="vertices">List of all Vertices which are part of the new mean position.</param>
         /// <returns>Returns the position of the mean of all Vertices as a float3.</returns>
         public static float3 GetVerticesMeanPos(List<Vertex> vertices)
         {

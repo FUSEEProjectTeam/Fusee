@@ -1,30 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
-
 namespace Fusee.Examples.MeshingAround.Core
 {
-
     [FuseeApplication(Name = "FUSEE Meshing Example", Description = "Meshing around...")]
     public class MeshingAround : RenderCanvas
     {
         private float _alpha;
         private float _beta;
 
-        private SceneRenderer _renderer;
+        private SceneRendererForward _renderer;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
-
             var outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
@@ -92,14 +90,14 @@ namespace Fusee.Examples.MeshingAround.Core
             geomTri.Triangulate();
             var triangle = new JometriMesh(geomTri);
 
-            ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            var parentNode = new SceneNodeContainer
+            ////////////////// Fill SceneNode ////////////////////////////////
+            var parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -108,8 +106,7 @@ namespace Fusee.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
-
+            var sceneNodeCOne = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCOne = new Mesh
             {
@@ -118,7 +115,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 Normals = meshOne.Normals,
             };
 
-            var tranC = new TransformComponent
+            var tranC = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -128,7 +125,7 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCOne.Components.Add(tranC);
             sceneNodeCOne.Components.Add(meshCOne);
             ///////////////////////////////////////////////////////////
-            var sceneNodeCCube = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCCube = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCCube = new Mesh
             {
@@ -136,7 +133,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 Triangles = cube.Triangles,
                 Normals = cube.Normals,
             };
-            var tranCube = new TransformComponent
+            var tranCube = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -146,7 +143,7 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCCube.Components.Add(tranCube);
             sceneNodeCCube.Components.Add(meshCCube);
             //////////////////////////////////////////////////////////////////
-            var sceneNodeCTri = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCTri = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshCTri = new Mesh
             {
@@ -154,7 +151,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 Triangles = triangle.Triangles,
                 Normals = triangle.Normals,
             };
-            var tranTri = new TransformComponent
+            var tranTri = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -168,25 +165,21 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
-            var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
+            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-            sc.Children[0].Components.Insert(0, projComp);
-
-            _renderer = new SceneRenderer(sc);
+            _renderer = new SceneRendererForward(sc);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
-
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the back buffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -202,7 +195,7 @@ namespace Fusee.Examples.MeshingAround.Core
 
             _renderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
@@ -214,8 +207,6 @@ namespace Fusee.Examples.MeshingAround.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-
         }
-
     }
 }

@@ -7,7 +7,7 @@ namespace Fusee.Xirkit
     /// </summary>
     /// <remarks>
     ///  When an instance of this interface is passed to the constructor of <see cref="Node"/> 
-    /// its calculation performing capability is recognized and triggered when a circuit containting that node is executed.
+    /// its calculation performing capability is recognized and triggered when a circuit containing that node is executed.
     /// </remarks>
     public interface ICalculationPerformer
     {

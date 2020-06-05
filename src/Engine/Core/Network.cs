@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using JSIL.Meta;
 
 namespace Fusee.Engine.Core
 {
@@ -24,7 +23,7 @@ namespace Fusee.Engine.Core
             {
                 if (value == null)
                 {
-                    Diagnostics.Log("WARNING: No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
+                    Diagnostics.Warn("No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
                     _networkImp = new DummyNetworkImp();
                 }
                 else
@@ -70,10 +69,10 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets the local ip. Do not use this often due to performance reasons.
+        /// Gets the local IP. Do not use this often due to performance reasons.
         /// </summary>
         /// <value>
-        /// The local ip as a string, e.g. 127.0.0.1
+        /// The local IP as a string, e.g. 127.0.0.1
         /// </value>
         public string LocalIP
         {
@@ -221,7 +220,7 @@ namespace Fusee.Engine.Core
 
         internal void OnUpdateFrame()
         {
-            _networkImp.OnUpdateFrame();
+            _networkImp?.OnUpdateFrame();
         }
 
         /// <summary>
@@ -255,7 +254,6 @@ namespace Fusee.Engine.Core
         /// Firsts the message.
         /// </summary>
         /// <returns></returns>
-        [JSExternal]
         private INetworkMsg FirstMessage()
         {
             return _networkImp.IncomingMsg.DefaultIfEmpty(null).First();
@@ -265,7 +263,7 @@ namespace Fusee.Engine.Core
     }
 
     /// <summary>
-    /// Dummy implementation without functinoality
+    /// Dummy implementation without functionality
     /// </summary>
     internal class DummyNetworkImp : INetworkImp
     {
@@ -285,7 +283,7 @@ namespace Fusee.Engine.Core
         public NetStatusValues Status { get; set; }
         public List<INetworkConnection> Connections { get; }
         /// <summary>
-        /// Gets the local ip.
+        /// Gets the local IP.
         /// </summary>
         /// <returns></returns>
         /// <exception cref="System.NotImplementedException"></exception>

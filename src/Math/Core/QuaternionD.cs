@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -14,7 +15,7 @@ namespace Fusee.Math.Core
         private double3 _xyz;
         private double _w;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -41,13 +42,11 @@ namespace Fusee.Math.Core
         {
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
         #region Properties
-
-        // ReSharper disable InconsistentNaming
 
         /// <summary>
         ///     Gets and sets an Fusee.Math.double3 with the x, y and z components of this instance.
@@ -94,11 +93,66 @@ namespace Fusee.Math.Core
             set { _w = value; }
         }
 
-        // ReSharper restore InconsistentNaming
-
-        #endregion
+        #endregion Properties
 
         #region Instance
+
+        #region this
+
+        /// <summary>
+        ///     Sets/Gets value from given idx
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
+        public double this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+
+                    case 1:
+                        return y;
+
+                    case 2:
+                        return z;
+
+                    case 3:
+                        return w;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+
+                    case 1:
+                        y = value;
+                        break;
+
+                    case 2:
+                        z = value;
+                        break;
+
+                    case 3:
+                        w = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
+                }
+            }
+        }
+
+        #endregion this
 
         #region ToAxisAngle
 
@@ -111,7 +165,15 @@ namespace Fusee.Math.Core
             return ToAxisAngle(this);
         }
 
-        #endregion
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>
+        public double4x4 ToRotMat()
+        {
+            return ToRotMat(this);
+        }
+
+        #endregion ToAxisAngle
 
         #region public double Length
 
@@ -121,10 +183,10 @@ namespace Fusee.Math.Core
         /// <seealso cref="LengthSquared" />
         public double Length
         {
-            get { return System.Math.Sqrt(w*w + xyz.LengthSquared); }
+            get { return System.Math.Sqrt(w * w + xyz.LengthSquared); }
         }
 
-        #endregion
+        #endregion public double Length
 
         #region public double LengthSquared
 
@@ -133,10 +195,10 @@ namespace Fusee.Math.Core
         /// </summary>
         public double LengthSquared
         {
-            get { return w*w + xyz.LengthSquared; }
+            get { return w * w + xyz.LengthSquared; }
         }
 
-        #endregion
+        #endregion public double LengthSquared
 
         #region public Normalize()
 
@@ -148,7 +210,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public Conjugate()
 
@@ -160,7 +222,7 @@ namespace Fusee.Math.Core
             return Conjugate(this);
         }
 
-        #endregion
+        #endregion public Conjugate()
 
         #region public Invert()
 
@@ -173,9 +235,9 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
-        #endregion
+        #endregion public Invert()
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -186,7 +248,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static QuaternionD Identity = new QuaternionD(0, 0, 0, 1);
 
-        #endregion
+        #endregion Fields
 
         #region Add
 
@@ -203,7 +265,7 @@ namespace Fusee.Math.Core
                 left.w + right.w);
         }
 
-        #endregion
+        #endregion Add
 
         #region Sub
 
@@ -220,7 +282,7 @@ namespace Fusee.Math.Core
                 left.w - right.w);
         }
 
-        #endregion
+        #endregion Sub
 
         #region Mult
 
@@ -249,10 +311,10 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static QuaternionD Multiply(QuaternionD quaternionD, double scale)
         {
-            return new QuaternionD(quaternionD.x*scale, quaternionD.y*scale, quaternionD.z*scale, quaternionD.w*scale);
+            return new QuaternionD(quaternionD.x * scale, quaternionD.y * scale, quaternionD.z * scale, quaternionD.w * scale);
         }
 
-        #endregion
+        #endregion Mult
 
         #region Conjugate
 
@@ -266,7 +328,7 @@ namespace Fusee.Math.Core
             return new QuaternionD(-q.xyz, q.w);
         }
 
-        #endregion
+        #endregion Conjugate
 
         #region Invert
 
@@ -294,7 +356,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Invert
 
         #region Normalize
 
@@ -319,7 +381,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region AxisAngle
 
@@ -333,7 +395,7 @@ namespace Fusee.Math.Core
         {
             if (axis.LengthSquared < M.EpsilonFloat)
                 return Identity;
-                
+
             if (axis.LengthSquared > 1.0)
                 return Identity;
 
@@ -341,10 +403,34 @@ namespace Fusee.Math.Core
 
             angle *= 0.5f;
             axis = axis.Normalize();
-            result.xyz = axis*System.Math.Sin(angle);
+            result.xyz = axis * System.Math.Sin(angle);
             result.w = System.Math.Cos(angle);
 
             return Normalize(result);
+        }
+
+        /// <summary>
+        ///     Constructs a rotation matrix from a given quaternion
+        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
+        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
+        /// </summary>
+        /// <param name="quat">Input quaternion</param>
+        /// <returns></returns>
+        public static double4x4 ToRotMat(QuaternionD quat)
+        {
+            var m1 = new double4x4(
+            quat.w, quat.z, -quat.y, quat.x,
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
+
+            var m2 = new double4x4(
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
+            quat.x, quat.y, quat.z, quat.w).Transpose();
+
+            return m1 * m2;
         }
 
         /// <summary>
@@ -368,7 +454,7 @@ namespace Fusee.Math.Core
             }
             else
             {
-                // This occurs when the angle is zero. 
+                // This occurs when the angle is zero.
                 // Not a problem: just set an arbitrary normalized axis.
                 result.xyz = double3.UnitX;
             }
@@ -376,7 +462,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion AxisAngle
 
         #region Slerp
 
@@ -396,7 +482,7 @@ namespace Fusee.Math.Core
             if ((q2.LengthSquared < M.EpsilonDouble))
                 return q1;
 
-            var cosHalfAngle = q1.w*q2.w + double3.Dot(q1.xyz, q2.xyz);
+            var cosHalfAngle = q1.w * q2.w + double3.Dot(q1.xyz, q2.xyz);
 
             // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
@@ -417,10 +503,10 @@ namespace Fusee.Math.Core
                 // do proper slerp for big angles
                 var halfAngle = System.Math.Acos(cosHalfAngle);
                 var sinHalfAngle = System.Math.Sin(halfAngle);
-                var oneOverSinHalfAngle = 1.0f/sinHalfAngle;
+                var oneOverSinHalfAngle = 1.0f / sinHalfAngle;
 
-                blendA = System.Math.Sin(halfAngle*(1.0f - blend))*oneOverSinHalfAngle;
-                blendB = System.Math.Sin(halfAngle*blend)*oneOverSinHalfAngle;
+                blendA = System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
+                blendB = System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
             else
             {
@@ -429,12 +515,62 @@ namespace Fusee.Math.Core
                 blendB = blend;
             }
 
-            var result = new QuaternionD(blendA*q1.xyz + blendB*q2.xyz, blendA*q1.w + blendB*q2.w);
+            var result = new QuaternionD(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
 
             return result.LengthSquared > M.EpsilonDouble ? Normalize(result) : Identity;
         }
 
-        #endregion
+        #endregion Slerp
+
+        #region Conversion
+
+        /// <summary>
+        ///     Convert Euler angle to Quaternion rotation.
+        /// </summary>
+        /// <param name="e">Euler angle to convert.</param>
+        /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
+        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
+        /// the range of [-PI, PI].
+        ///
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// </remarks>
+        public static QuaternionD EulerToQuaternion(double3 e, bool inDegrees = false)
+        {
+            if (inDegrees)
+            {
+                // Converts all degrees angles to radians.
+                var rX = M.DegreesToRadiansD(e.x);
+                var rY = M.DegreesToRadiansD(e.y);
+                var rZ = M.DegreesToRadiansD(e.z);
+
+                e = new double3(rX, rY, rZ);
+            }
+
+            // Calculating the Sine and Cosine for each half angle.
+            // YAW/HEADING
+            var s1 = System.Math.Sin(e.y * 0.5f);
+            var c1 = System.Math.Cos(e.y * 0.5f);
+
+            // PITCH/ATTITUDE
+            var s2 = System.Math.Sin(e.x * 0.5f);
+            var c2 = System.Math.Cos(e.x * 0.5f);
+
+            // ROLL/BANK
+            var s3 = System.Math.Sin(e.z * 0.5f);
+            var c3 = System.Math.Cos(e.z * 0.5f);
+
+            // Formula to construct a new Quaternion based on Euler Angles.
+            var x = c1 * s2 * c3 - s1 * c2 * s3;
+            var z = s1 * s2 * c3 + c1 * c2 * s3;
+            var y = s1 * c2 * c3 + c1 * s2 * s3;
+            var w = c1 * c2 * c3 - s1 * s2 * s3;
+
+            return new QuaternionD(x, y, z, w);
+        }
+
+        #endregion Conversion
 
         #region Transform
 
@@ -460,9 +596,9 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Transform
 
-        #endregion
+        #endregion Static
 
         #region Operators
 
@@ -543,11 +679,12 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
         #region public override string ToString()
+
 
         /// <summary>
         ///     Returns a System.String that represents the current QuaternionD.
@@ -555,10 +692,30 @@ namespace Fusee.Math.Core
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("V: {0}, w: {1}", xyz, w);
+            return ConvertToString(null);
         }
 
-        #endregion
+        /// <summary>
+        /// Returns a System.String that represents the current QuaternionD.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "V: {0} w: {1}", xyz.ToString(provider), w.ToString(provider));
+        }
+
+        #endregion public override string ToString()
 
         #region public override bool Equals (object o)
 
@@ -570,10 +727,10 @@ namespace Fusee.Math.Core
         public override bool Equals(object other)
         {
             if (other is QuaternionD == false) return false;
-            return this == (QuaternionD) other;
+            return this == (QuaternionD)other;
         }
 
-        #endregion
+        #endregion public override bool Equals (object o)
 
         #region public override int GetHashCode ()
 
@@ -586,11 +743,11 @@ namespace Fusee.Math.Core
             return xyz.GetHashCode() ^ w.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode ()
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<QuaternionD> Members
 
@@ -604,6 +761,6 @@ namespace Fusee.Math.Core
             return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonDouble);
         }
 
-        #endregion
+        #endregion IEquatable<QuaternionD> Members
     }
 }

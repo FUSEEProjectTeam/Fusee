@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Engine.Core;
+﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.GUI
 {
@@ -11,18 +11,13 @@ namespace Fusee.Engine.GUI
     /// Needed for adding interactions/events to objects in the scene graph.
     /// Traverses the scene via a ScenePicker and invokes the necessary events.
     /// </summary>
-    public class SceneInteractionHandler : SceneVisitor
+    public class SceneInteractionHandler : Visitor<SceneNode, SceneComponent>
     {
         //private static List<CodeComponent> _observables;
         private readonly ScenePicker _scenePicker;
 
-        /// <summary>
-        /// The View matrix for calculating the correct pick position.
-        /// </summary>
-        public float4x4 View;        
-
-        private SceneNodeContainer _pickRes;
-        private SceneNodeContainer _pickResCache;
+        private SceneNode _pickRes;
+        private SceneNode _pickResCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
@@ -33,12 +28,12 @@ namespace Fusee.Engine.GUI
             _scenePicker = new ScenePicker(scene);
         }
 
-        private static SceneNodeContainer FindLeafNodeInPickRes(SceneNodeContainer firstPickRes, IList<SceneNodeContainer> pickResults)
+        private static SceneNode FindLeafNodeInPickRes(SceneNode firstPickRes, IList<SceneNode> pickResults)
         {
             if (pickResults.Count == 1)
                 return pickResults[0];
 
-            if (firstPickRes.Children == null)
+            if (firstPickRes.Children == null || firstPickRes.Children.Count == 0)
                 return firstPickRes;
 
             foreach (var child in firstPickRes.Children)
@@ -48,12 +43,12 @@ namespace Fusee.Engine.GUI
                 if (child.Children != null)
                 {
                     var found = FindLeafNodeInPickRes(child, pickResults);
-                    if (found != null)
+                    if (found != null && pickResults.Contains(found))
                         return found;
                 }
             }
 
-            return null; 
+            return null;
         }
 
         /// <summary>
@@ -63,13 +58,11 @@ namespace Fusee.Engine.GUI
         /// <param name="mousePos">The current mouse position.</param>
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
-        public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
+        public void CheckForInteractiveObjects(RenderContext rc, float2 mousePos, int canvasWidth, int canvasHeight)
         {
-            _scenePicker.View = View;
-            
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
 
-            var pickResults = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResults = _scenePicker.Pick(rc, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
             var pickResNodes = pickResults.Select(x => x.Node).ToList();
             var firstPickRes = pickResults.FirstOrDefault();
 
@@ -87,6 +80,10 @@ namespace Fusee.Engine.GUI
                 Traverse(_pickRes);
         }
 
+        /// <summary>
+        /// Invokes an interaction on a given button.
+        /// </summary>
+        /// <param name="btn">The button to invoke an interaction on.</param>
         [VisitMethod]
         public void InvokeInteraction(GUIButton btn)
         {
@@ -100,6 +97,6 @@ namespace Fusee.Engine.GUI
                 btn.IsMouseOver = true;
                 btn.InvokeEvents();
             }
-        }        
+        }
     }
 }

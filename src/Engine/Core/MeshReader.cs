@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using JSIL.Meta;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -22,7 +22,6 @@ namespace Fusee.Engine.Core
         /// <param name="s">string to parse</param>
         /// <returns>A double number</returns>
         // TODO: Get rid of this hack
-        [JSExternal]
         public static double Double_Parse(string s)
         {
             return double.Parse(s, CultureInfo.InvariantCulture);
@@ -55,7 +54,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (line.StartsWith("vt"))
                 {
-                    // Vertext texcoord.
+                    // Vertex texcoord.
                     string tmp = line.Substring(3);
 
                     string[] values = FilteredSplit(tmp, null);
@@ -72,7 +71,7 @@ namespace Fusee.Engine.Core
 
                     g.AddNormal(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            -Double_Parse(values[2]))); // convert to lefthanded
+                                            -Double_Parse(values[2]))); // convert to left-handed
                 }
                 else if (line.StartsWith("v"))
                 {
@@ -83,7 +82,7 @@ namespace Fusee.Engine.Core
 
                     g.AddVertex(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            -Double_Parse(values[2]))); // convert to lefthanded
+                                            -Double_Parse(values[2]))); // convert to left-handed
                 }
                 else if (line.StartsWith("f"))
                 {
@@ -179,7 +178,7 @@ namespace Fusee.Engine.Core
             }
 
             if (!g.HasNormals)
-                g.CreateNormals(80*3.141592/180.0);
+                g.CreateNormals(80 * 3.141592 / 180.0);
             return g;
         }
 
@@ -229,7 +228,6 @@ namespace Fusee.Engine.Core
                 }
             }
             return ret.ToArray();
-            // JSIL crashes with that... sigh.. .return strIn.Split(separator).Where(str => str.Length > 0).ToArray();
         }
 
         #endregion

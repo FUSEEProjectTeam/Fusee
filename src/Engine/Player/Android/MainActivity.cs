@@ -7,10 +7,14 @@ using Android.Widget;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
+using System;
 using System.IO;
+using System.Threading.Tasks;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 
@@ -39,38 +43,24 @@ namespace Fusee.Engine.Player.Android
                     new AssetHandler
                     {
                         ReturnedType = typeof(Font),
-                        Decoder = delegate (string id, object storage)
+                        Decoder = (string id, object storage) =>
                         {
-                            if (Path.GetExtension(id).ToLower().Contains("ttf"))
-                                return new Font
-                                {
-                                    _fontImp = new FontImp((Stream)storage)
-                                };
-                            return null;
+                            if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
+                            return new Font { _fontImp = new FontImp((Stream)storage) };
                         },
-                        Checker = delegate (string id)
-                        {
-                            return Path.GetExtension(id).ToLower().Contains("ttf");
-                        }
+                        Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
                     });
                 fap.RegisterTypeHandler(
                     new AssetHandler
                     {
                         ReturnedType = typeof(SceneContainer),
-                        Decoder = delegate (string id, object storage)
+                        Decoder = (string id, object storage) =>
                         {
-                            if (Path.GetExtension(id).ToLower().Contains("fus"))
-                            {
-                                var ser = new Serializer();
+                            if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                                return new ConvertSceneGraph().Convert((ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer));
-                            }
-                            return null;
+                            return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                         },
-                        Checker = delegate (string id)
-                        {
-                            return Path.GetExtension(id).ToLower().Contains("fus");
-                        }
+                        Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                     });
                 AssetStorage.RegisterProvider(fap);
 

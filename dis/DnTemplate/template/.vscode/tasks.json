@@ -1,0 +1,74 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "build",
+                "/property:GenerateFullPaths=true",
+                "/consoleloggerparameters:NoSummary"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "pack",
+            "detail": "Pack this Fusee app as a fuz file.",
+            "type": "shell",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "pack",
+                "bin/Debug/Fusee_App.dll"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "publish",
+            "detail": "Build this Fusee app to a self contained application.",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "publish",
+                "-i", "bin/Debug/Fusee_App.dll",
+                "-o", "${workspaceFolder}/pub"
+            ],
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        }
+    ]
+}

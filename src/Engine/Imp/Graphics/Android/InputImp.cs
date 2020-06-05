@@ -1,12 +1,9 @@
-﻿using System;
+﻿using Android.Views;
 using Fusee.Engine.Common;
+using OpenTK.Platform.Android;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Android.Util;
-using Android.Views;
-using Fusee.Base.Core;
-using OpenTK.Platform.Android;
-
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -16,7 +13,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     public class RenderCanvasInputDriverImp : IInputDriverImp
     {
         /// <summary>
-        /// Constructor. Use this in platform specific application projects. 
+        /// Constructor. Use this in platform specific application projects.
         /// </summary>
         /// <param name="renderCanvas">The render canvas to provide mouse and keyboard input for.</param>
         public RenderCanvasInputDriverImp(IRenderCanvasImp renderCanvas)
@@ -67,12 +64,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string DriverId => GetType().FullName;
 
 #pragma warning disable 0067
+
         /// <summary>
         /// Not supported on this driver. Devices supported here are considered to be connected all the time.
         /// You can register handlers but they will never get called.
@@ -84,9 +82,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
-        #pragma warning restore 0067
+
+#pragma warning restore 0067
 
         #region IDisposable Support
+
         private bool disposedValue = false; // To detect redundant calls
 
         /// <summary>
@@ -126,7 +126,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             // TODO: uncomment the following line if the finalizer is overridden above.
             // GC.SuppressFinalize(this);
         }
-        #endregion
+
+        #endregion IDisposable Support
     }
 
     /// <summary>
@@ -140,26 +141,23 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private int _nTouchPointsSupported = 5;
         private readonly View _view;
 
-
         #region Android handling
 
         private void DisconnectViewEvents()
         {
-
         }
 
-
-        // Android tries some sense-less smartness in interweaving 
-        // MotionEventActions.Down and MotionEventActions.Up with 
+        // Android tries some sense-less smartness in interweaving
+        // MotionEventActions.Down and MotionEventActions.Up with
         // MotionEventActions.PointerDown and .. PointerUp.
         // So we need to code against this smartness...
-        // Code is taken from 
+        // Code is taken from
         // http://www.vogella.com/tutorials/AndroidTouch/article.html
         // Xamarin Docs are all but helpful here.
         // Its fun to see how HTML5 just works and does the right at this place ...
         private void ConnectViewEvents()
         {
-            _view.Touch += delegate(object sender, View.TouchEventArgs args)
+            _view.Touch += delegate (object sender, View.TouchEventArgs args)
             {
                 var evt = args.Event;
 
@@ -174,12 +172,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 switch (maskedAction)
                 {
-
                     case MotionEventActions.Down:
                     case MotionEventActions.PointerDown:
                         OnViewTouchStart(pointerId, evt.GetX(pointerIndex), evt.GetY(pointerIndex));
                         args.Handled = true;
                         break;
+
                     case MotionEventActions.Move: // A move action can be specified for more than one pointer...
                         for (int i = 0; i < evt.PointerCount; i++)
                         {
@@ -189,12 +187,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         }
                         args.Handled = true;
                         break;
+
                     case MotionEventActions.Up:
                     case MotionEventActions.PointerUp:
                         OnViewTouchEnd(pointerId, evt.GetX(pointerIndex), evt.GetY(pointerIndex));
                         args.Handled = true;
                         break;
-                    case MotionEventActions.Cancel: // Not sure if Android doesn't mean: "Cancel ALL touchpoints" here. Hmmm.
+
+                    case MotionEventActions.Cancel: // Not sure if Android doesn't mean: "Cancel ALL touchpoints" here.
                         OnViewTouchCancel(pointerId, evt.GetX(pointerIndex), evt.GetY(pointerIndex));
                         args.Handled = true;
                         break;
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             return _view.Height;
         }
 
-        #endregion
+        #endregion Android handling
 
         private int NextFreeTouchIndex
         {
@@ -243,19 +243,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ButtonValueChanged?.Invoke(this,
                 new ButtonValueChangedArgs
                 {
-                    Button = _tpButtonDescs[(int) TouchPoints.Touchpoint_0 + inx].ButtonDesc,
+                    Button = _tpButtonDescs[(int)TouchPoints.Touchpoint_0 + inx].ButtonDesc,
                     Pressed = true
                 });
             AxisValueChanged?.Invoke(this,
                 new AxisValueChangedArgs
                 {
-                    Axis = _tpAxisDescs[(int) TouchAxes.Touchpoint_0_X + 2*inx].AxisDesc,
+                    Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_X + 2 * inx].AxisDesc,
                     Value = x
                 });
             AxisValueChanged?.Invoke(this,
                 new AxisValueChangedArgs
                 {
-                    Axis = _tpAxisDescs[(int) TouchAxes.Touchpoint_0_Y + 2*inx].AxisDesc,
+                    Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_Y + 2 * inx].AxisDesc,
                     Value = y
                 });
         }
@@ -270,13 +270,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
             AxisValueChanged?.Invoke(this,
                 new AxisValueChangedArgs
                 {
-                    Axis = _tpAxisDescs[(int) TouchAxes.Touchpoint_0_X + 2*inx].AxisDesc,
+                    Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_X + 2 * inx].AxisDesc,
                     Value = x
                 });
             AxisValueChanged?.Invoke(this,
                 new AxisValueChangedArgs
                 {
-                    Axis = _tpAxisDescs[(int) TouchAxes.Touchpoint_0_Y + 2*inx].AxisDesc,
+                    Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_Y + 2 * inx].AxisDesc,
                     Value = y
                 });
         }
@@ -291,19 +291,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
             AxisValueChanged?.Invoke(this,
                 new AxisValueChangedArgs
                 {
-                    Axis = _tpAxisDescs[(int) TouchAxes.Touchpoint_0_X + 2*inx].AxisDesc,
+                    Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_X + 2 * inx].AxisDesc,
                     Value = x
                 });
             AxisValueChanged?.Invoke(this,
                 new AxisValueChangedArgs
                 {
-                    Axis = _tpAxisDescs[(int) TouchAxes.Touchpoint_0_Y + 2*inx].AxisDesc,
+                    Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_Y + 2 * inx].AxisDesc,
                     Value = y
                 });
             ButtonValueChanged?.Invoke(this,
                 new ButtonValueChangedArgs
                 {
-                    Button = _tpButtonDescs[(int) TouchPoints.Touchpoint_0 + inx].ButtonDesc,
+                    Button = _tpButtonDescs[(int)TouchPoints.Touchpoint_0 + inx].ButtonDesc,
                     Pressed = false
                 });
             _activeTouchpoints.Remove(id);
@@ -318,44 +318,44 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ButtonValueChanged?.Invoke(this,
                 new ButtonValueChangedArgs
                 {
-                    Button = _tpButtonDescs[(int) TouchPoints.Touchpoint_0 + inx].ButtonDesc,
+                    Button = _tpButtonDescs[(int)TouchPoints.Touchpoint_0 + inx].ButtonDesc,
                     Pressed = false
                 });
             _activeTouchpoints.Remove(id);
         }
 
-        #endregion
+        #endregion Android Callbacks
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TouchDeviceImp" /> class.
         /// </summary>
-        /// <param name="view">The game window to hook on to reveive 
+        /// <param name="view">The game window to hook on to revive
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public TouchDeviceImp(View view)
         {
             _view = view;
             ConnectViewEvents();
-            _tpAxisDescs = new Dictionary<int, AxisImpDescription>(_nTouchPointsSupported*2 + 5);
+            _tpAxisDescs = new Dictionary<int, AxisImpDescription>(_nTouchPointsSupported * 2 + 5);
             _activeTouchpoints = new Dictionary<int, int>(_nTouchPointsSupported);
 
-            _tpAxisDescs[(int) TouchAxes.ActiveTouchpoints] = new AxisImpDescription
+            _tpAxisDescs[(int)TouchAxes.ActiveTouchpoints] = new AxisImpDescription
             {
                 AxisDesc = new AxisDescription
                 {
                     Name = $"Active Touchpoints",
-                    Id = (int) TouchAxes.ActiveTouchpoints,
+                    Id = (int)TouchAxes.ActiveTouchpoints,
                     Direction = AxisDirection.Unknown,
                     Nature = AxisNature.Unknown,
                     Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = true
             };
-            _tpAxisDescs[(int) TouchAxes.MinX] = new AxisImpDescription
+            _tpAxisDescs[(int)TouchAxes.MinX] = new AxisImpDescription
             {
                 AxisDesc = new AxisDescription
                 {
                     Name = "MinX",
-                    Id = (int) TouchAxes.MinX,
+                    Id = (int)TouchAxes.MinX,
                     Direction = AxisDirection.X,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Unbound,
@@ -364,12 +364,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 },
                 PollAxis = true
             };
-            _tpAxisDescs[(int) TouchAxes.MaxX] = new AxisImpDescription
+            _tpAxisDescs[(int)TouchAxes.MaxX] = new AxisImpDescription
             {
                 AxisDesc = new AxisDescription
                 {
                     Name = "MaxX",
-                    Id = (int) TouchAxes.MaxX,
+                    Id = (int)TouchAxes.MaxX,
                     Direction = AxisDirection.X,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Unbound,
@@ -378,12 +378,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 },
                 PollAxis = true
             };
-            _tpAxisDescs[(int) TouchAxes.MinY] = new AxisImpDescription
+            _tpAxisDescs[(int)TouchAxes.MinY] = new AxisImpDescription
             {
                 AxisDesc = new AxisDescription
                 {
                     Name = "MinY",
-                    Id = (int) TouchAxes.MinY,
+                    Id = (int)TouchAxes.MinY,
                     Direction = AxisDirection.Y,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Unbound,
@@ -392,12 +392,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 },
                 PollAxis = true
             };
-            _tpAxisDescs[(int) TouchAxes.MaxY] = new AxisImpDescription
+            _tpAxisDescs[(int)TouchAxes.MaxY] = new AxisImpDescription
             {
                 AxisDesc = new AxisDescription
                 {
                     Name = "MaxY",
-                    Id = (int) TouchAxes.MaxY,
+                    Id = (int)TouchAxes.MaxY,
                     Direction = AxisDirection.Y,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Unbound,
@@ -409,7 +409,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             for (var i = 0; i < _nTouchPointsSupported; i++)
             {
-                int id = 2*i + (int) TouchAxes.Touchpoint_0_X;
+                int id = 2 * i + (int)TouchAxes.Touchpoint_0_X;
                 _tpAxisDescs[id] = new AxisImpDescription
                 {
                     AxisDesc = new AxisDescription
@@ -419,8 +419,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         Direction = AxisDirection.X,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.OtherAxis,
-                        MinValueOrAxis = (int) TouchAxes.MinX,
-                        MaxValueOrAxis = (int) TouchAxes.MaxX
+                        MinValueOrAxis = (int)TouchAxes.MinX,
+                        MaxValueOrAxis = (int)TouchAxes.MaxX
                     },
                     PollAxis = false
                 };
@@ -434,8 +434,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         Direction = AxisDirection.Y,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.OtherAxis,
-                        MinValueOrAxis = (int) TouchAxes.MinY,
-                        MaxValueOrAxis = (int) TouchAxes.MaxY
+                        MinValueOrAxis = (int)TouchAxes.MinY,
+                        MaxValueOrAxis = (int)TouchAxes.MaxY
                     },
                     PollAxis = false
                 };
@@ -444,7 +444,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _tpButtonDescs = new Dictionary<int, ButtonImpDescription>(_nTouchPointsSupported);
             for (var i = 0; i < _nTouchPointsSupported; i++)
             {
-                int id = i + (int) TouchPoints.Touchpoint_0;
+                int id = i + (int)TouchPoints.Touchpoint_0;
                 _tpButtonDescs[id] = new ButtonImpDescription
                 {
                     ButtonDesc = new ButtonDescription()
@@ -463,7 +463,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public string Desc => "Android View standard Touch device.";
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id => GetType().FullName;
@@ -474,25 +474,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
-        /// <summary>A touchpoints's contact state is communicated by a button.</summary>
+        /// <summary>A touchpoint's contact state is communicated by a button.</summary>
         /// <see cref="F:Fusee.Engine.Common.ButtonImpDescription.PollButton" />
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 
-
         /// <summary>
-        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch tevice :-).
+        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch device :-).
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Touch;
 
         /// <summary>
-        /// Returns the number of axes. Up to five touchpoints (with two axes (X and Y) per Touchpoint plus 
+        /// Returns the number of axes. Up to five touchpoints (with two axes (X and Y) per Touchpoint plus
         /// one axis carrying the number of currently touched touchpoints plus four axes describing the minimum and
         /// maximum X and Y values.
         /// </summary>
         /// <value>
         /// The axes count.
         /// </value>
-        public int AxesCount => _nTouchPointsSupported*2 + 5;
+        public int AxesCount => _nTouchPointsSupported * 2 + 5;
 
         /// <summary>
         /// Returns description information for all axes.
@@ -509,15 +508,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (iAxisId)
             {
-                case (int) TouchAxes.ActiveTouchpoints:
+                case (int)TouchAxes.ActiveTouchpoints:
                     return _activeTouchpoints.Count;
-                case (int) TouchAxes.MinX:
+
+                case (int)TouchAxes.MinX:
                     return 0;
-                case (int) TouchAxes.MaxX:
+
+                case (int)TouchAxes.MaxX:
                     return GetWindowWidth();
-                case (int) TouchAxes.MinY:
+
+                case (int)TouchAxes.MinY:
                     return 0;
-                case (int) TouchAxes.MaxY:
+
+                case (int)TouchAxes.MaxY:
                     return GetWindowHeight();
             }
             throw new InvalidOperationException(
@@ -525,7 +528,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Retrieves the button count. One button for each of the up to five supported touchpoints signalling that the touchpoint currently has contact.
+        /// Retrieves the button count. One button for each of the up to five supported touchpoints signaling that the touchpoint currently has contact.
         /// </summary>
         /// <value>
         /// The button count.
@@ -536,7 +539,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Retrieve a description for each button.
         /// </summary>
         /// <value>
-        /// The button imp desc.
+        /// The button imp description.
         /// </value>
         public IEnumerable<ButtonImpDescription> ButtonImpDesc => _tpButtonDescs.Values;
 
@@ -552,8 +555,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
     }
 
-
-
     /// <summary>
     /// TODO: Implement this!!! Keyboard device implementation for the Android platforms.
     /// </summary>
@@ -561,7 +562,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     {
         private AndroidGameView _view;
         private Keymapper _keymapper;
-        
+
         /// <summary>
         /// Should be called by the driver only.
         /// </summary>
@@ -617,7 +618,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             get
             {
                 foreach (var k1 in _keymapper.OrderBy(k => k.Value.Id))
-                    yield return new ButtonImpDescription {ButtonDesc = k1.Value, PollButton = false};
+                    yield return new ButtonImpDescription { ButtonDesc = k1.Value, PollButton = false };
             }
         }
 
@@ -644,7 +645,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id
@@ -655,8 +656,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+#pragma warning disable 0067
 
-        #pragma warning disable 0067
         /// <summary>
         /// No axes exist on this device, so listeners registered to this event will never get called.
         /// </summary>
@@ -667,6 +668,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// to get information from this device.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+
 #pragma warning restore 0067
 
         /* TODO - find something working on Android
@@ -714,18 +716,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>No return, always throws.</returns>
         public float GetAxis(int iAxisId)
         {
-            throw new InvalidOperationException($"Unsopported axis {iAxisId}. This device does not support any axis at all.");
+            throw new InvalidOperationException($"Unsupported axis {iAxisId}. This device does not support any axis at all.");
         }
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All keyboard buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to revive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
-            throw new InvalidOperationException($"Button {iButtonId} does not exist or is no pollable. Listen to the ButtonValueChanged event to receive keyboard notifications from this device.");
+            throw new InvalidOperationException($"Button {iButtonId} does not exist or is not pollable. Listen to the ButtonValueChanged event to receive keyboard notifications from this device.");
         }
     }
 
@@ -743,8 +745,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="View">The game window providing mouse input.</param>
         public MouseDeviceImp(View view)
         {
-            _view = (AndroidGameView) view;
-            /* TODO 
+            _view = (AndroidGameView)view;
+            /* TODO
             _View.Mouse.ButtonDown += OnGameWinMouseDown;
             _View.Mouse.ButtonUp += OnGameWinMouseUp;
             */
@@ -754,7 +756,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "Left",
-                    Id = (int) MouseButtons.Left
+                    Id = (int)MouseButtons.Left
                 },
                 PollButton = false
             };
@@ -763,7 +765,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "Middle",
-                    Id = (int) MouseButtons.Middle
+                    Id = (int)MouseButtons.Middle
                 },
                 PollButton = false
             };
@@ -772,7 +774,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "Right",
-                    Id = (int) MouseButtons.Right
+                    Id = (int)MouseButtons.Right
                 },
                 PollButton = false
             };
@@ -795,12 +797,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     AxisDesc = new AxisDescription
                     {
                         Name = "X",
-                        Id = (int) MouseAxes.X,
+                        Id = (int)MouseAxes.X,
                         Direction = AxisDirection.X,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.OtherAxis,
-                        MinValueOrAxis = (int) MouseAxes.MinX,
-                        MaxValueOrAxis = (int) MouseAxes.MaxX
+                        MinValueOrAxis = (int)MouseAxes.MinX,
+                        MaxValueOrAxis = (int)MouseAxes.MaxX
                     },
                     PollAxis = true
                 };
@@ -809,7 +811,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     AxisDesc = new AxisDescription
                     {
                         Name = "Y",
-                        Id = (int) MouseAxes.Y,
+                        Id = (int)MouseAxes.Y,
                         Direction = AxisDirection.Y,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.OtherAxis,
@@ -823,7 +825,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     AxisDesc = new AxisDescription
                     {
                         Name = "Wheel",
-                        Id = (int) MouseAxes.Wheel,
+                        Id = (int)MouseAxes.Wheel,
                         Direction = AxisDirection.Z,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.Unbound,
@@ -920,22 +922,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public string Desc => "Standard Android Mouse device.";
 
         /// <summary>
-        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the 
+        /// Returns a (hopefully) unique ID for this driver. Uniqueness is granted by using the
         /// full class name (including namespace).
         /// </summary>
         public string Id => GetType().FullName;
 
         /// <summary>
-        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to akquire mouse axis information.
+        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to acquire mouse axis information.
         /// </summary>
-        #pragma warning disable 0067
+#pragma warning disable 0067
+
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
         /// <summary>
         /// All three mouse buttons are event-based. Listen to this event to get information about mouse button state changes.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-        #pragma warning restore 0067
+
+#pragma warning restore 0067
 
         /// <summary>
         /// Retrieves values for the X, Y and Wheel axes. No other axes are supported by this device.
@@ -946,18 +950,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (iAxisId)
             {
-                case (int) MouseAxes.X:
+                case (int)MouseAxes.X:
                     return 0;
-                case (int) MouseAxes.Y:
+
+                case (int)MouseAxes.Y:
                     return 0;
-                case (int) MouseAxes.Wheel:
+
+                case (int)MouseAxes.Wheel:
                     return 0;
+
                 case (int)MouseAxes.MinX:
                     return 0;
+
                 case (int)MouseAxes.MaxX:
                     return _view.Width;
+
                 case (int)MouseAxes.MinY:
                     return 0;
+
                 case (int)MouseAxes.MaxY:
                     return _view.Height;
             }
@@ -966,14 +976,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All mouse buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to revive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
             throw new InvalidOperationException(
-                $"Unsopported axis {iButtonId}. This device does not support any to-be polled axes at all.");
+                $"Unsupported axis {iButtonId}. This device does not support any to-be polled axes at all.");
         }
 
         /* TODO: find something appropriate on Android
@@ -992,12 +1002,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     case MouseButton.Left:
                         btnDesc = _btnLeftDesc.ButtonDesc;
                         break;
+
                     case MouseButton.Middle:
                         btnDesc = _btnMiddleDesc.ButtonDesc;
                         break;
+
                     case MouseButton.Right:
                         btnDesc = _btnRightDesc.ButtonDesc;
                         break;
+
                     default:
                         return;
                 }
@@ -1025,12 +1038,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     case MouseButton.Left:
                         btnDesc = _btnLeftDesc.ButtonDesc;
                         break;
+
                     case MouseButton.Middle:
                         btnDesc = _btnMiddleDesc.ButtonDesc;
                         break;
+
                     case MouseButton.Right:
                         btnDesc = _btnRightDesc.ButtonDesc;
                         break;
+
                     default:
                         return;
                 }

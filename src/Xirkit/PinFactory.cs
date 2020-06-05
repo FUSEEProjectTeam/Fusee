@@ -2,18 +2,16 @@
 using System.Reflection;
 using System.Collections.Generic;
 using Fusee.Math.Core;
-using JSIL.Meta;
 
 namespace Fusee.Xirkit
 {
     /// <summary>
     /// This class' static member function creates Pins depending on the type of the member (int, double, string, ...) and also 
-    /// depending on whether the memeber is a propery (with a setter and getter) or a simple field.
+    /// depending on whether the member is a property (with a setter and getter) or a simple field.
     /// </summary>
 
     static class PinFactory
     {
-        [JSExternal]
         public static IOutPin CreateOutPin(Node n, String member)
         {
             // The code below mainly does something like a
@@ -34,7 +32,6 @@ namespace Fusee.Xirkit
             return (IOutPin)Activator.CreateInstance(outPinGeneric, new object[] { n, member, elementAccessor });
         }
 
-        [JSExternal]
         public static IInPin CreateInPin(Node n, string member, Type targetType)
         {
             // The code below mainly does something like a
@@ -59,7 +56,6 @@ namespace Fusee.Xirkit
         }
 
 
-        [JSExternal]
         public static void ReAttachInPin(Node n, IInPin ip)
         {
             string member = ip.Member;
@@ -73,7 +69,6 @@ namespace Fusee.Xirkit
             pi.SetValue(ip, elementAccessor, null);
         }
 
-       [JSExternal]
         public static void ReAttachOutPin(Node n, IOutPin op)
         {
             string member = op.Member;
@@ -84,14 +79,12 @@ namespace Fusee.Xirkit
             op.GetType().GetProperty("MemberAccessor").SetValue(op, elementAccessor, null);
         }
 
-        [JSIgnore]
         private static Type GetMemberTypeAndAccessor(Node n, string member, out object elementAccessor)
         {
             return GetMemberTypeAndAccessor(n, member, null, out elementAccessor);
         }
 
 
-        [JSIgnore]
         private static Type GetMemberTypeAndAccessor(Node n, string member, Type pinType, out object elementAccessor)
         {
             Type t = n.O.GetType();
@@ -135,7 +128,7 @@ namespace Fusee.Xirkit
                     fieldInfo = t.GetField(member);
                     if (fieldInfo == null)
                     {
-                        //TODO: change Exception to an apropriate exception type
+                        //TODO: change Exception to an appropriate exception type
                         throw new Exception(
                             "Neither a field nor a property named " + member + " exists");
                     }
@@ -153,7 +146,7 @@ namespace Fusee.Xirkit
 
                     if (!propertyInfo.CanRead)
                     {
-                        //TODO: change Exception to an apropriate exception type
+                        //TODO: change Exception to an appropriate exception type
                         throw new Exception(
                             "A property named " + member + " exists but we cannot read from it");
                     }
@@ -174,7 +167,6 @@ namespace Fusee.Xirkit
         // To toy around with different element accessor implementations, create your own versions of 
         // IMemberAccessor<T> derivatives and change the instantiation code below.
 
-        [JSIgnore]
         private static object InstantiatePropertyAccessor(PropertyInfo propertyInfo, Type memberType)
         {
             // Perform  <code> return new PropertyAccessor<t>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -185,7 +177,6 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-        [JSIgnore]
         private static object InstantiateFieldAccessor(FieldInfo fieldInfo, Type memberType)
         {
             // Perform  <code> return new FieldAccessor<t>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -199,8 +190,8 @@ namespace Fusee.Xirkit
         // [JSIgnore] (ignoring it will generate an exception in JSIl-generated PinFactory constructor)
         private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
-        [JSIgnore]
-        private static void InitConvMap()
+        //private static void InitConvMap()
+        static PinFactory()
         {
             // Look at http://msdn.microsoft.com/de-de/library/bb882516.aspx or 
             // google "anonymous functions c#" to see how to define the anonymous converter code.
@@ -253,19 +244,19 @@ namespace Fusee.Xirkit
             AddConverter<double, float4x4>(x => new float4x4((float)x, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From bool 
-            AddConverter<bool, int>(x => (x) ? 0 : 1);
-            AddConverter<bool, float>(x => (x) ? 0.0f : 1.0f);
-            AddConverter<bool, double>(x => (x) ? 0.0 : 1.0);
+            AddConverter<bool, int>(x => (x) ? 1 : 0);
+            AddConverter<bool, float>(x => (x) ? 1.0f : 0.0f);
+            AddConverter<bool, double>(x => (x) ? 1.0 : 0.0);
             AddConverter<bool, bool>(x => x);
             AddConverter<bool, string>(x => x.ToString());
-            AddConverter<bool, double2>(x => new double2((x) ? 0.0 : 1.0, 0));
-            AddConverter<bool, double3>(x => new double3((x) ? 0.0 : 1.0, 0, 0));
-            AddConverter<bool, double4>(x => new double4((x) ? 0.0 : 1.0, 0, 0, 1));
-            AddConverter<bool, double4x4>(x => new double4x4((x) ? 0.0 : 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            AddConverter<bool, float2>(x => new float2((x) ? 0.0f : 1.0f, 0));
-            AddConverter<bool, float3>(x => new float3((x) ? 0.0f : 1.0f, 0, 0));
-            AddConverter<bool, float4>(x => new float4((x) ? 0.0f : 1.0f, 0, 0, 1));
-            AddConverter<bool, float4x4>(x => new float4x4((x) ? 0.0f : 1.0f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<bool, double2>(x => new double2((x) ? 1.0 : 0.0, 0));
+            AddConverter<bool, double3>(x => new double3((x) ? 1.0 : 0.0, 0, 0));
+            AddConverter<bool, double4>(x => new double4((x) ? 1.0 : 0.0, 0, 0, 1));
+            AddConverter<bool, double4x4>(x => new double4x4((x) ? 1.0 : 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<bool, float2>(x => new float2((x) ? 1.0f : 0.0f, 0));
+            AddConverter<bool, float3>(x => new float3((x) ? 1.0f : 0.0f, 0, 0));
+            AddConverter<bool, float4>(x => new float4((x) ? 1.0f : 0.0f, 0, 0, 1));
+            AddConverter<bool, float4x4>(x => new float4x4((x) ? 1.0f : 0.0f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From string
             AddConverter<string, int>(x => int.Parse(x));
@@ -273,14 +264,14 @@ namespace Fusee.Xirkit
             AddConverter<string, double>(x => double.Parse(x));
             AddConverter<string, bool>(x => bool.Parse(x));
             AddConverter<string, string>(x => x);
-            AddConverter<string, double2>(double2.Parse);  // Pass the Parse method directly (it already has the Converter signature)
-            AddConverter<string, double3>(double3.Parse);
-            AddConverter<string, double4>(double4.Parse);
-            AddConverter<string, double4x4>(double4x4.Parse);
-            AddConverter<string, float2>(float2.Parse);
-            AddConverter<string, float3>(float3.Parse);
-            AddConverter<string, float4>(float4.Parse);
-            AddConverter<string, float4x4>(float4x4.Parse);
+            AddConverter<string, double2>(double2.ParseConverter);  // Pass the Parse method directly (it already has the Converter signature)
+            AddConverter<string, double3>(double3.ParseConverter);
+            AddConverter<string, double4>(double4.ParseConverter);
+            AddConverter<string, double4x4>(double4x4.ParseConverter);
+            AddConverter<string, float2>(float2.ParseConverter);
+            AddConverter<string, float3>(float3.ParseConverter);
+            AddConverter<string, float4>(float4.ParseConverter);
+            AddConverter<string, float4x4>(float4x4.ParseConverter);
 
             // From double2
             AddConverter<double2, int>(v => (int)v.x);
@@ -341,7 +332,7 @@ namespace Fusee.Xirkit
             AddConverter<float2, float2>(v => v);
             AddConverter<float2, float3>(v => new float3(v.x, v.y, 0));
             AddConverter<float2, float4>(v => new float4(v.x, v.y, 0, 1));
-            AddConverter<float2, double4x4>(v => new double4x4(v.x, v.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<float2, float4x4>(v => new float4x4(v.x, v.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float3
             AddConverter<float3, int>(v => (int)v.x);
@@ -356,7 +347,7 @@ namespace Fusee.Xirkit
             AddConverter<float3, float2>(v => new float2(v.x, v.y));
             AddConverter<float3, float3>(v => v);
             AddConverter<float3, float4>(v => new float4(v.x, v.y, (float)v.z, 1));
-            AddConverter<float3, double4x4>(v => new double4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<float3, float4x4>(v => new float4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float4
             AddConverter<float4, int>(v => (int)v.x);
@@ -405,7 +396,6 @@ namespace Fusee.Xirkit
             AddConverter<double4x4, float4x4>(v => new float4x4((float)v.M11, (float)v.M12, (float)v.M13, (float)v.M14, (float)v.M21, (float)v.M22, (float)v.M23, (float)v.M24, (float)v.M31, (float)v.M32, (float)v.M33, (float)v.M34, (float)v.M41, (float)v.M42, (float)v.M43, (float)v.M44));
         }
 
-       [JSIgnore]
         private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
@@ -417,20 +407,18 @@ namespace Fusee.Xirkit
             _convMap[typeof(TParm)][typeof(TRet)] = d;
         }
 
-       [JSIgnore]
         private static Delegate LookupConverter(Type from, Type to)
         {
-            if (_convMap == null)
-                InitConvMap();
+            //if (_convMap == null)
+            //    InitConvMap();
 
             return _convMap[from][to];
         }
 
-       [JSIgnore]
         private static bool CanConvert(Type from, Type to)
         {
-            if (_convMap == null)
-                InitConvMap();
+            //if (_convMap == null)
+            //    InitConvMap();
 
             Dictionary<Type, Delegate> dict;
             if (!_convMap.TryGetValue(from, out dict))
@@ -443,7 +431,6 @@ namespace Fusee.Xirkit
             return del != null;
         }
 
-       [JSIgnore]
         private static object InstantiateConvertingPropertyAccessor(PropertyInfo propertyInfo, Type pinType, Type memberType)
         {
             // Perform  <code> return new ConvertingPropertyAccessor<pinType, memberType>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -454,7 +441,6 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-       [JSIgnore]
         private static object InstantiateConvertingFieldAccessor(FieldInfo fieldInfo, Type pinType, Type memberType)
         {
             // Perform  <code> return new FieldAccessor<pinType, memberType>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -463,7 +449,6 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-       [JSIgnore]
         private static object InstantiateChainedMemberAccessor(MemberInfo[] miList, Type pinType, Type memberType)
         {
             // Perform  <code> return new ChainedMemberAccessor<pinType, memberType>(miList, converter, converter); </code> with a dynamic t (t known at runtime, not at compile time) 

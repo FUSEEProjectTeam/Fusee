@@ -78,7 +78,7 @@ def SerializeData(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDis
     return serializedData
 
 
-# recursivly get each node and its components and serialize them
+# recursively get each node and its components and serialize them
 def add_vertex(vi, face, i, mesh, uv_layer):
     vert = mesh.Vertices.add()
     vert.x = face.loops[vi].vert.co.x
@@ -722,7 +722,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         bboxMin = min(bboxList)
         bboxMax = max(bboxList)
         # the coordinate system of Blender is different to that one used by Fusee,
-        # therefore the axis need to be changed:
+        # therefore the axes need to be changed:
         mesh.BoundingBox.max.x = bboxMax[0]
         mesh.BoundingBox.max.y = bboxMax[2]
         mesh.BoundingBox.max.z = bboxMax[1]
@@ -1030,21 +1030,10 @@ def GetParents(obj):
 
 def prepare_mesh(obj):
     # This applies all the modifiers (without altering the scene)
-    # mesh = obj.to_mesh(depsgraph=bpy.context.depsgraph, apply_modifiers=True, calc_undeformed=False)
-    # depsgraph = bpy.context.evaluated_depsgraph_get()
-    # Invoke to_mesh() for original object.
-    # mesh_from_orig = obj.to_mesh()
-    # self.report({'INFO'}, f"{len(mesh_from_orig.vertices)} in new mesh without modifiers.")
-    # Remove temporary mesh.
-    # obj.to_mesh_clear()
-    # Invoke to_mesh() for evaluated object.
-    # object_eval = obj.evaluated_get(depsgraph)
-    # mesh = object_eval.to_mesh()
-    #self.report({'INFO'}, f"{len(mesh.vertices)} in new mesh with modifiers.")
-    # Remove temporary mesh.
-    # object_eval.to_mesh_clear()
-
-    mesh = obj.to_mesh()
+    # Taken from https://docs.blender.org/api/blender2.8/bpy.types.Depsgraph.html, "Evaluated ID example"
+    ev_depsgraph = bpy.context.evaluated_depsgraph_get()
+    object_eval = obj.evaluated_get(ev_depsgraph)
+    mesh = object_eval.data
 
     # Triangulate for web export
     bm = bmesh.new()
@@ -1058,3 +1047,65 @@ def prepare_mesh(obj):
     mesh.calc_loop_triangles()
 
     return mesh
+
+
+def prepare_mesh_elaborate(obj, export_props):
+    # Create a (deep (linked=False)) copy of obj.
+    # Makes use of the new 2.8 override context (taken from https://blender.stackexchange.com/questions/135597/how-to-duplicate-an-object-in-2-8-via-the-python-api-without-using-bpy-ops-obje )
+    bpy.ops.object.duplicate(
+       {"object" : obj,
+       "selected_objects" : [obj]},
+       linked=False)
+    # In case obj has an armature parent, bpy.context.active as well as bpy.context.object point to obj's parent AND NOT AS DOCUMENTED to the newly duplicated object.
+    # As debugging shows, the first (and only) object contained in bpy.context.selected_objects points to the duplication.
+    obj_copy = bpy.context.selected_objects[0]
+
+    # Select the copy (and nothing else)
+    bpy.ops.object.mode_set(mode = 'OBJECT')
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active = obj_copy
+    obj_copy.select_set(True)
+
+    # Apply Scale
+    if export_props["doApplyScale"]:
+        bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
+
+    # Flip normals on the copied object's copied mesh (Important: This happens BEFORE any modifiers are applied)
+    if export_props["doRecalcOutside"]:
+        bpy.ops.object.mode_set(mode = 'EDIT')
+        bpy.ops.mesh.select_all(action='SELECT')
+        bpy.ops.mesh.normals_make_consistent(inside=False)
+        bpy.ops.object.mode_set(mode = 'OBJECT')
+
+    # Apply all the modifiers (without altering the scene)
+    # Taken from https://docs.blender.org/api/blender2.8/bpy.types.Depsgraph.html, "Evaluated ID example"
+    if export_props["doApplyModifiers"]:
+        ev_depsgraph = bpy.context.evaluated_depsgraph_get()
+        obj_eval = obj_copy.evaluated_get(ev_depsgraph)
+        mesh_eval = obj_eval.data
+    else:
+        mesh_eval = obj_copy.data
+
+    # Triangulate
+    bm = bmesh.new()
+    bm.from_mesh(mesh_eval)
+    # Normal recalculation already performed BEFORE modifiers were applied. Otherwise face recalculation yields normals facing inside
+    # bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    mesh_triangulated = bpy.data.meshes.new("MeshTriangulated")
+    bm.to_mesh(mesh_triangulated)
+    bm.free()
+    del bm
+        
+    # Just for Debugging: link the triangulated mesh:
+    # obj_triangulated = bpy.data.objects.new("ObjectTriangulated", mesh_triangulated)
+    # bpy.context.collection.objects.link(obj_triangulated)
+
+    # Delete duplicated object
+    bpy.ops.object.mode_set(mode = 'OBJECT')
+    bpy.ops.object.select_all(action='DESELECT')
+    bpy.context.view_layer.objects.active = obj_copy
+    obj_copy.select_set(True)
+    bpy.ops.object.delete() 
+
+    return mesh_triangulated    

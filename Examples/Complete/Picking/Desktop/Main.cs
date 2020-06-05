@@ -1,11 +1,13 @@
-﻿using System.IO;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
-using Path = Fusee.Base.Common.Path;
+using System.IO;
 using System.Reflection;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Picking.Desktop
 {
@@ -13,23 +15,6 @@ namespace Fusee.Examples.Picking.Desktop
     {
         public static void Main()
         {
-            /*
-            SimpleType st = new SimpleType {Header = new SceneHeaderTest
-            {
-                Version = 1,
-                Generator = "Test",
-                CreatedBy = "Patrick",
-                CreationDate = "13-12-2016",
-            } };
-            var seri = new Serializer();
-            // var schem = ProtoBuf.Serializer.GetProto<SimpleType>();
-
-            using (FileStream str = new FileStream("FuseeSimpleType.st", System.IO.FileMode.Create))
-            {
-                seri.Serialize(str, st);
-            }
-            */
-
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
@@ -40,22 +25,21 @@ namespace Fusee.Examples.Picking.Desktop
                     ReturnedType = typeof(Font),
                     Decoder = delegate (string id, object storage)
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                        return new Font{ _fontImp = new FontImp((Stream)storage) };
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
+                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        var ser = new Serializer();
-                        return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
+                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);
@@ -64,7 +48,7 @@ namespace Fusee.Examples.Picking.Desktop
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-			app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
+            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));

@@ -1,39 +1,31 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Player.Desktop</PackageId>
-    <TargetFramework>net462</TargetFramework>
-    <OutputType>WinExe</OutputType>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
-  </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
-  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <PublishSingleFile>true</PublishSingleFile>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <OutputPath>$(BaseOutputPath)\Player\Desktop\</OutputPath>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <PublishTrimmed>true</PublishTrimmed>
+  </PropertyGroup>
+    
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Serialization\Fusee.Serialization.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Xene\Fusee.Xene.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

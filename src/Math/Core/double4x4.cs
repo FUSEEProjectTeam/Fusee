@@ -1,8 +1,7 @@
-#pragma warning disable 1591
-
-using System;
-using System.Runtime.InteropServices;
 using ProtoBuf;
+using System;
+using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
@@ -17,15 +16,15 @@ namespace Fusee.Math.Core
     /// from left to right represent a transformation where the rightmost matrix is applied
     /// first and the leftmost matrix is applied last, for example in (M3 * M2 * M1) * v the vector
     /// v is first transformed by M1, then by M2 and finally by M3. The translation part of a 4x4
-    /// matrix used in homogeneus coordinate calculations can be found in the the leftmost column 
+    /// matrix used in homogeneous coordinate calculations can be found in the leftmost column
     /// (M14 - x-translation, M24 - y-translation, M34 - z-translation).
     /// </para>
     /// <para>
     /// Note that although double4x4 objects represent matrices in COLUMN-vector-NOTATION as
     /// found in math books, the objects' contents is physically stored in ROW-major-ORDER, meaning that
-    /// in physical memory, a double4x4's components are stored contiguously in the following order: first row (M11, M12, M13, M14), 
+    /// in physical memory, a double4x4's components are stored contiguously in the following order: first row (M11, M12, M13, M14),
     /// then second row (M21, M22, M21, M24), and so on. When exchanging matrix contents with libraries like
-    /// graphics engines (OpenGL, Direct3D), physics engines, file formats, etc. make sure to convert to and 
+    /// graphics engines (OpenGL, Direct3D), physics engines, file formats, etc. make sure to convert to and
     /// from the given Matrix layout of the API you are exchanging data with.
     /// </para>
     /// <para>
@@ -33,18 +32,16 @@ namespace Fusee.Math.Core
     /// used in Computer Graphics. Most of these application matrices are handedness-agnostic, meaning
     /// that the resulting matrices can be used in both, left-handed and right-handed coordinate systems.
     /// This does not hold for LookAt and Projection matrices where the viewing direction plays a role. In
-    /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have 
-    /// bigger positive z-coordinates wheras in right-handed coordinate systems positions further away have smaller
+    /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have
+    /// bigger positive z-coordinates whereas in right-handed coordinate systems positions further away have smaller
     /// negative z-coordinates. By default, double4x4 will assume a left-handed coordinate system, but contains
     /// convenience construction methods to also create right-handed matrices if necessary. The right-handed versions
     /// of methods are postfixed with "RH".
     /// </para>
-    /// </remarks> 
+    /// </remarks>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
-    // ReSharper disable InconsistentNaming
     public struct double4x4 : IEquatable<double4x4>
-    // ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -82,7 +79,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static double4x4 Zero = new double4x4(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -132,7 +129,7 @@ namespace Fusee.Math.Core
             Row3 = new double4(m30, m31, m32, m33);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -162,11 +159,23 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Returns the trace of this matrix
+        /// </summary>
+        public double Trace
+        {
+            get
+            {
+                return Row0.x + Row1.y + Row2.z + Row3.w;
+            }
+        }
+
+        /// <summary>
         /// The first column of this matrix
         /// </summary>
         public double4 Column0
         {
             get { return new double4(Row0.x, Row1.x, Row2.x, Row3.x); }
+            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
         }
 
         /// <summary>
@@ -175,6 +184,7 @@ namespace Fusee.Math.Core
         public double4 Column1
         {
             get { return new double4(Row0.y, Row1.y, Row2.y, Row3.y); }
+            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
         }
 
         /// <summary>
@@ -183,6 +193,7 @@ namespace Fusee.Math.Core
         public double4 Column2
         {
             get { return new double4(Row0.z, Row1.z, Row2.z, Row3.z); }
+            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
         }
 
         /// <summary>
@@ -191,6 +202,7 @@ namespace Fusee.Math.Core
         public double4 Column3
         {
             get { return new double4(Row0.w, Row1.w, Row2.w, Row3.w); }
+            set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
         }
 
         /// <summary>
@@ -349,9 +361,111 @@ namespace Fusee.Math.Core
             // No setter here - might be too confusing
         }
 
-        #endregion
+        #endregion Properties
 
         #region Instance
+
+        #region this
+
+        /// <summary>
+        ///     Sets/Gets value from given index
+        /// </summary>
+        /// <param name="i">The ROW index</param>
+        /// <param name="j">The COLUMN index</param>
+        /// <returns></returns>
+        public double this[int i, int j]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 0:
+                        return Row0[j];
+
+                    case 1:
+                        return Row1[j];
+
+                    case 2:
+                        return Row2[j];
+
+                    case 3:
+                        return Row3[j];
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
+                }
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        Row0[j] = value;
+                        break;
+
+                    case 1:
+                        Row1[j] = value;
+                        break;
+
+                    case 2:
+                        Row2[j] = value;
+                        break;
+
+                    case 3:
+                        Row3[j] = value;
+                        break;
+
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
+                }
+            }
+        }
+
+        #endregion this
+
+        #region TRS Decomposition
+
+        /// <summary>
+        /// The translation component of this matrix.
+        /// </summary>
+        public double4x4 TranslationComponent()
+        {
+            return TranslationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The translation of this matrix.
+        /// </summary>
+        public double3 Translation()
+        {
+            return GetTranslation(this);
+        }
+
+        /// <summary>
+        /// The rotation component of this matrix.
+        /// </summary>
+        public double4x4 RotationComponent()
+        {
+            return RotationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale component of this matrix.
+        /// </summary>
+        public double4x4 ScaleComponent()
+        {
+            return ScaleDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale factors of this matrix.
+        /// </summary>
+        public double3 Scale()
+        {
+            return GetScale(this);
+        }
+
+        #endregion TRS Decomposition
 
         #region public Invert()
 
@@ -363,7 +477,15 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
-        #endregion
+        /// <summary>
+        /// Converts this instance into its inverse.
+        /// </summary>
+        public double4x4 InvertAffine()
+        {
+            return InvertAffine(this);
+        }
+
+        #endregion public Invert()
 
         #region public Transpose()
 
@@ -377,19 +499,20 @@ namespace Fusee.Math.Core
 
         #region double[] ToArray()
 
-        // ReSharper disable UnusedMember.Local
-        private double[] ToArray()
+        /// <summary>
+        /// Returns the matrix as double array.
+        /// </summary>
+        /// <returns></returns>
+        public double[] ToArray()
         {
             return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
-            // return new double[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
         }
-        // ReSharper restore UnusedMember.Local
 
-        #endregion
+        #endregion double[] ToArray()
 
-        #endregion
+        #endregion public Transpose()
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -405,21 +528,21 @@ namespace Fusee.Math.Core
         {
             double4x4 result;
 
-            var cos = (double)System.Math.Cos(-angle);
-            var sin = (double)System.Math.Sin(-angle);
-            var t = 1.0f - cos;
+            var cos = System.Math.Cos(-angle);
+            var sin = System.Math.Sin(-angle);
+            var t = 1.0 - cos;
 
             axis = axis.Normalize();
 
-            result = new double4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0f,
-                t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0f,
-                t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f);
+            result = new double4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0,
+                t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0,
+                t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0,
+                0.0, 0.0, 0.0, 1.0);
 
             return result;
         }
 
-        #endregion
+        #endregion CreateFromAxisAngle
 
         #region CreateRotation[XYZ]
 
@@ -483,7 +606,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateRotation[XYZ]
 
         #region CreateTranslation
 
@@ -521,7 +644,77 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateTranslation
+
+        #region Rotation matrix to euler representation
+
+        //see Blender mathutils and Graphic Gems IV p. 222-229
+        private static void RotMatToEuler2(double[][] mat, ref double[] eul1, ref double[] eul2)
+        {
+            var axis = new double3(1, 0, 2); //for rotation order YXZ, see Blender mathutils and Graphic Gems IV for other configurations
+            var parity = 1; //parity of axis permutation (even=0, odd=1) - 'n' in original code
+
+            int i = (int)axis.x, j = (int)axis.y, k = (int)axis.z;
+            var cy = System.Math.Sqrt(System.Math.Pow(mat[i][i], 2.0) + System.Math.Pow(mat[i][j], 2.0));
+
+            var FLT_EPSILON = 1.192092896e-07F;
+
+            if (cy > 16.0f * FLT_EPSILON)
+            {
+                eul1[i] = System.Math.Atan2(mat[j][k], mat[k][k]);
+                eul1[j] = System.Math.Atan2(-mat[i][k], cy);
+                eul1[k] = System.Math.Atan2(mat[i][j], mat[i][i]);
+
+                eul2[i] = System.Math.Atan2(-mat[j][k], -mat[k][k]);
+                eul2[j] = System.Math.Atan2(-mat[i][k], -cy);
+                eul2[k] = System.Math.Atan2(-mat[i][j], -mat[i][i]);
+            }
+            else
+            {
+                eul1[i] = System.Math.Atan2(-mat[k][j], mat[j][j]);
+                eul1[j] = System.Math.Atan2(-mat[i][k], cy);
+                eul1[k] = 0;
+
+                eul2[i] = System.Math.Atan2(-mat[k][j], mat[j][j]);
+                eul2[j] = System.Math.Atan2(-mat[i][k], cy);
+                eul2[k] = 0;
+            }
+
+            if (parity == 1)
+            {
+                for (var l = 0; l < eul1.Length; l++)
+                {
+                    eul1[l] *= -1;
+                    eul1[l] *= -1;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Takes a rotation matrix and returns its euler angle representation as a double3.
+        /// </summary>
+        /// <param name="rotMat">The given rotation matrix.</param>
+        /// <returns> The euler representation as a double3. </returns>
+        //see Blender mathutils and Graphic Gems IV p. 222-229
+        public static double3 RotMatToEuler(double4x4 rotMat)
+        {
+            //Matrix is beeing handled as a multidimentional array to ensure that the rotation order can be changed easily in the future.
+            var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
+
+            var eul1 = new double[3];
+            var eul2 = new double[3];
+            double d1, d2;
+
+            RotMatToEuler2(m, ref eul1, ref eul2);
+
+            d1 = System.Math.Abs(eul1[0]) + System.Math.Abs(eul1[1]) + System.Math.Abs(eul1[2]);
+            d2 = System.Math.Abs(eul2[0]) + System.Math.Abs(eul2[1]) + System.Math.Abs(eul2[2]);
+
+            /* return best, which is just the one with lowest values it in */
+            return d1 > d2 ? new double3(eul2[0], eul2[1], eul2[2]) : new double3(eul1[0], eul1[1], eul1[2]);
+        }
+
+        #endregion Rotation matrix to euler representation
 
         #region CreateOrthographic
 
@@ -538,7 +731,7 @@ namespace Fusee.Math.Core
             return CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar);
         }
 
-        #endregion
+        #endregion CreateOrthographic
 
         #region CreateOrthographicOffCenter
 
@@ -572,9 +765,7 @@ namespace Fusee.Math.Core
             result.M44 = 1;
 
             return result;
-
         }
-
 
         /// <summary>
         /// Creates a left handed orthographic projection matrix.
@@ -607,7 +798,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateOrthographicOffCenter
 
         #region CreatePerspectiveFieldOfView
 
@@ -654,7 +845,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreatePerspectiveFieldOfView
 
         #region CreatePerspectiveOffCenter
 
@@ -667,15 +858,14 @@ namespace Fusee.Math.Core
         /// <param name="top">Top edge of the view frustum</param>
         /// <param name="zNear">Distance to the near clip plane</param>
         /// <param name="zFar">Distance to the far clip plane</param>
-        /// <param name="result">A projection matrix that transforms camera space to raster space</param>
         /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
         /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value will be
-        /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform 
-        /// interprets z-values returned by the vertex shader to be in left-handed coordinates, where increasing 
-        /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this 
-        /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed 
+        /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform
+        /// interprets z-values returned by the vertex shader to be in left-handed coordinates, where increasing
+        /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this
+        /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed
         /// camera coordinate system.</remarks>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
         /// <item>zNear is negative or zero</item>
@@ -702,7 +892,7 @@ namespace Fusee.Math.Core
             double b = (top + bottom) / (top - bottom);
             double c = -(zFar + zNear) / (zFar - zNear);
             double d = -(2.0f * zFar * zNear) / (zFar - zNear);
-           
+
             result = new double4x4(x, 0, a, 0,
                                   0, y, b, 0,
                                   0, 0, c, d,
@@ -710,7 +900,6 @@ namespace Fusee.Math.Core
 
             return result;
         }
-
 
         /// <summary>
         /// Creates an left handed perspective projection matrix.
@@ -758,7 +947,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreatePerspectiveOffCenter
 
         #region Scale Functions
 
@@ -799,10 +988,10 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
-
+        #endregion Scale Functions
 
         #region Camera Helper Functions
+
         /// <summary>
         /// Build a left handed world space to camera space matrix
         /// </summary>
@@ -855,8 +1044,6 @@ namespace Fusee.Math.Core
                                 0, 0, 0, 1);
         }
 
-
-
         /// <summary>
         /// Build a world space to camera space matrix
         /// </summary>
@@ -876,7 +1063,7 @@ namespace Fusee.Math.Core
             return LookAt(new double3(eyeX, eyeY, eyeZ), new double3(targetX, targetY, targetZ), new double3(upX, upY, upZ));
         }
 
-        #endregion
+        #endregion Camera Helper Functions
 
         #region Elementary Arithmetic Functions
 
@@ -895,12 +1082,12 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Substracts the right instance from the left instance.
+        /// Subtracts the right instance from the left instance.
         /// </summary>
-        /// <param name="left">The left operand of the substraction.</param>
-        /// <param name="right">The right operand of the substraction.</param>
-        /// <returns>A new instance that is the result of the substraction.</returns>
-        public static double4x4 Substract(double4x4 left, double4x4 right)
+        /// <param name="left">The left operand of the subtraction.</param>
+        /// <param name="right">The right operand of the subtraction.</param>
+        /// <returns>A new instance that is the result of the subtraction.</returns>
+        public static double4x4 Subtract(double4x4 left, double4x4 right)
         {
             return new double4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
                                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
@@ -908,7 +1095,7 @@ namespace Fusee.Math.Core
                                 left.M41 - right.M41, left.M42 - right.M42, left.M43 - right.M43, left.M44 - right.M44);
         }
 
-        #endregion
+        #endregion Elementary Arithmetic Functions
 
         #region Multiply Functions
 
@@ -969,19 +1156,45 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply Functions
 
         #region Invert Functions
 
         /// <summary>
+        /// Checks if this matrix is invertible.
+        /// </summary>
+        /// <param name="mat">The matrix.</param>       
+        public static bool IsInvertable(double4x4 mat)
+        {
+            return mat.Determinant != 0d;
+        }
+
+        /// <summary>
+        /// Checks if this matrix is invertible.
+        /// </summary>
+        /// <param name="mat">The matrix.</param>
+        /// <param name="det">The determinant of the matrix.</param>       
+        public static bool IsInvertable(double4x4 mat, out double det)
+        {
+            det = mat.Determinant;
+            return det != 0d;
+        }
+
+        /// <summary>
         /// Calculate the inverse of the given matrix.
+        /// If you are unsure whether the matrix is invertible, check it with IsInvertable() first.
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
-        /// <returns>The inverse of the given matrix if it has one, or the input if it is singular.</returns>
+        /// <returns>The inverse of the given matrix.</returns>
         public static double4x4 Invert(double4x4 mat)
         {
             if (mat == Identity || mat == Zero) return mat;
-            if (mat.IsAffine) return InvertAffine(mat);
+
+            if (!IsInvertable(mat, out double det))
+                throw new ArgumentException("Matrix isn't invertible.");
+
+            if (mat.IsAffine)
+                return InvertAffine(mat);
 
             mat = mat.Transpose();
 
@@ -1048,20 +1261,11 @@ namespace Fusee.Math.Core
             var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
             m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
 
-            // calculate determinant
-            var det = mat.M11 * m11 + mat.M12 * m12 + mat.M13 * m13 + mat.M14 * m14;
-
-            if (det > M.EpsilonFloat || det < -M.EpsilonFloat)
-            {
-                det = 1 / det;
-
-                mat = new double4x4(det * m11, det * m12, det * m13, det * m14,
-                                   det * m21, det * m22, det * m23, det * m24,
-                                   det * m31, det * m32, det * m33, det * m34,
-                                   det * m41, det * m42, det * m43, det * m44);
-            }
-            else
-                mat = mat.Transpose();
+            var invDet = 1 / det;
+            mat = new double4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
+                                invDet * m21, invDet * m22, invDet * m23, invDet * m24,
+                                invDet * m31, invDet * m32, invDet * m33, invDet * m34,
+                                invDet * m41, invDet * m42, invDet * m43, invDet * m44);
 
             return mat;
         }
@@ -1073,31 +1277,41 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static double4x4 InvertAffine(double4x4 mat)
         {
-            // Row order notation
-            //var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
-            //var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
-            //var val3 = -(mat.M31*mat.M41 + mat.M32*mat.M42 + mat.M33*mat.M43);
+            //1. Save translation and scale
+            var translVec = mat.Translation();
+            var invScaleX = 1 / mat.Column0.xyz.Length;
+            var invScaleY = 1 / mat.Column1.xyz.Length;
+            var invScaleZ = 1 / mat.Column2.xyz.Length;
 
-            //return
-            //    new double4x4(new double4(mat.M11, mat.M21, mat.M31, 0),
-            //                 new double4(mat.M12, mat.M22, mat.M32, 0),
-            //                 new double4(mat.M13, mat.M23, mat.M33, 0),
-            //                 new double4(val1, val2, val3, 1));
+            //2. Get rotation only 
 
-            // Column order notation ???
-            var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
-            var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
-            var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);
+            //2.1 Eliminate translation
+            mat.Column3 = double4.UnitW;
 
-            return
-                new double4x4(new double4(mat.M11, mat.M21, mat.M31, val1),
-                             new double4(mat.M12, mat.M22, mat.M32, val2),
-                             new double4(mat.M13, mat.M23, mat.M33, val3),
-                             new double4(0, 0, 0, 1));
+            //2.2 Eliminate scale
+            mat.Column0 /= mat.Column0.Length;
+            mat.Column1 /= mat.Column1.Length;
+            mat.Column2 /= mat.Column2.Length;
 
+            //3. Invert rotation part
+            mat = mat.Transpose();
+
+            //4. Invert scale
+            mat.Column0 *= invScaleX;
+            mat.Column1 *= invScaleY;
+            mat.Column2 *= invScaleZ;
+
+            //5. Invert translation
+            var invTranslation = mat * (-1 * translVec);
+
+            mat.M14 = invTranslation.x;
+            mat.M24 = invTranslation.y;
+            mat.M34 = invTranslation.z;
+
+            return mat;
         }
 
-        #endregion
+        #endregion Invert Functions
 
         #region Transpose
 
@@ -1111,12 +1325,12 @@ namespace Fusee.Math.Core
             return new double4x4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
         }
 
-        #endregion
+        #endregion Transpose
 
         #region Transform
 
         /// <summary>
-        /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
@@ -1131,7 +1345,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
@@ -1146,7 +1360,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given 3D vector by a matrix using perspective division via matrix*vector (Postmultiplication of the vector).
+        /// Transforms a given 3D vector by a matrix using perspective division via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1166,7 +1380,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given 3D vector by a matrix using perspective division via vector*matrix (Premultiplication of the vector).
+        /// Transforms a given 3D vector by a matrix using perspective division via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1206,9 +1420,98 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Transform
 
-        #endregion
+        #region TRS Decomposition
+
+        /// <summary>
+        /// Calculates translation of the given double4x4 matrix and returns it as a double3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double3 GetTranslation(double4x4 mat)
+        {
+            return new double3(mat.M14, mat.M24, mat.M34);
+        }
+
+        /// <summary>
+        /// Calculates and returns only the translation component of the given double4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double4x4 TranslationDecomposition(double4x4 mat)
+        {
+            var translationVec = GetTranslation(mat);
+            var translationMtx = double4x4.Identity;
+
+            translationMtx.M14 = translationVec.x;
+            translationMtx.M24 = translationVec.y;
+            translationMtx.M34 = translationVec.z;
+
+            return translationMtx;
+        }
+
+        /// <summary>
+        /// Calculates and returns the rotation component of the given double4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double4x4 RotationDecomposition(double4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var rotationMtx = double4x4.Identity;
+
+            rotationMtx.M11 = mat.M11 / scalevector.x;
+            rotationMtx.M21 = mat.M21 / scalevector.x;
+            rotationMtx.M31 = mat.M31 / scalevector.x;
+
+            rotationMtx.M12 = mat.M12 / scalevector.y;
+            rotationMtx.M22 = mat.M22 / scalevector.y;
+            rotationMtx.M32 = mat.M32 / scalevector.y;
+
+            rotationMtx.M13 = mat.M13 / scalevector.z;
+            rotationMtx.M23 = mat.M23 / scalevector.z;
+            rotationMtx.M33 = mat.M33 / scalevector.z;
+
+            return rotationMtx;
+        }
+
+        /// <summary>
+        /// Calculates the scale factor of the given double4x4 and returns it as a double3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double3 GetScale(double4x4 mat)
+        {
+            var scale = double3.One;
+
+            scale.x = mat.Column0.Length;
+            scale.y = mat.Column1.Length;
+            scale.z = mat.Column2.Length;
+
+            return scale;
+        }
+
+        /// <summary>
+        /// Calculates and returns the scale component of the given double4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double4x4 ScaleDecomposition(double4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var scaleMtx = double4x4.Identity;
+
+            scaleMtx.M11 = scalevector.x;
+            scaleMtx.M22 = scalevector.y;
+            scaleMtx.M33 = scalevector.z;
+
+            return scaleMtx;
+        }
+
+        #endregion TRS Decomposition
+
+        #endregion Static
 
         #region Operators
 
@@ -1224,14 +1527,14 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Matrix substraction
+        /// Matrix subtraction
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
         /// <returns>A new double2x2 which holds the result of the multiplication</returns>
         public static double4x4 operator -(double4x4 left, double4x4 right)
         {
-            return Substract(left, right);
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -1321,22 +1624,42 @@ namespace Fusee.Math.Core
             return TransformPremult(vector, matrix);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current Matrix44.
+        /// Returns a System.String that represents the current double4x4.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);
+            return ConvertToString(null);
         }
 
-        #endregion
+        /// <summary>
+        /// Returns a System.String that represents the current double4x4.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
+        }
+
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -1346,19 +1669,17 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
-        /// <param name="obj">The object to compare tresult.</param>
+        /// <param name="obj">The object to compare this instance to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
         public override bool Equals(object obj)
         {
@@ -1368,25 +1689,21 @@ namespace Fusee.Math.Core
             return Equals((double4x4)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
-        #region IEquatable<Matrix4> Members
+        #region IEquatable<Matrix4> Members       
 
         /// <summary>
-        /// Indicates whether the current matrix represents an affine transformation.
-        /// </summary>
-        /// <returns>true if the current matrix represents an affine transformation; otherwise, false.</returns>
+        /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
+        /// </summary>       
         public bool IsAffine
         {
             get
             {
-                // Row order notation
-                // return (Column3 == double4.UnitW);
-
                 // Column order notation
                 return (Row3 == double4.UnitW);
             }
@@ -1404,7 +1721,7 @@ namespace Fusee.Math.Core
                 Row3 == other.Row3;
         }
 
-        #endregion
+        #endregion IEquatable<Matrix4> Members
 
         /// <summary>
         /// Gets and sets the Converter object. Has the ability to convert a string to a double4x4.
@@ -1412,8 +1729,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, double4x4> Parse { get; set; }
+        public static Converter<string, double4x4> ParseConverter { get; set; } = (x => double4x4.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a double4x4.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static double4x4 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 16)
+                throw new FormatException("String parse for double4x4 did not result in exactly 16 items.");
+
+            double[] doubles = new double[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    doubles[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new double4x4(doubles[0], doubles[1], doubles[2], doubles[3], doubles[4], doubles[5], doubles[6], doubles[7], doubles[8], doubles[9], doubles[10], doubles[11], doubles[12], doubles[13], doubles[14], doubles[15]);
+        }
     }
 }
-
-#pragma warning restore 1591

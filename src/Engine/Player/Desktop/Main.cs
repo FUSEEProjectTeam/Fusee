@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
-using Path = Fusee.Base.Common.Path;
-
+using Path = System.IO.Path;
 
 namespace Fusee.Engine.Player.Desktop
 {
-    public class Simple
+    public static class Simple
     {
         public static void TryAddDir(List<string> dirList, string dir)
         {
@@ -34,6 +37,7 @@ namespace Fusee.Engine.Player.Desktop
 
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string Cwd = Directory.GetCurrentDirectory();
+
             if (Cwd != ExeDir)
             {
                 TryAddDir(assetDirs, Path.Combine(ExeDir, "Assets"));
@@ -41,52 +45,80 @@ namespace Fusee.Engine.Player.Desktop
 
             if (args.Length >= 1)
             {
+                Diagnostics.Info("File: " + args[0]);
+
                 if (File.Exists(args[0]))
                 {
-                    TryAddDir(assetDirs, Path.GetDirectoryName(args[0]));
-                    if (Path.GetExtension(args[0]).ToLower().Contains("fus"))
+                    var ext = Path.GetExtension(args[0]).ToLower();
+                    var filepath = args[0];
+
+                    TryAddDir(assetDirs, Path.GetDirectoryName(filepath));
+                    switch (ext)
                     {
-                        // A .fus file - open it.
-                        modelFile = Path.GetFileName(args[0]);
-                    }
-                    else
-                    {
-                        // See if the passed argument is an entire Fusee App DLL
-                        try
-                        {
-                            Assembly asm = Assembly.LoadFrom(args[0]);
-                            tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                            TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(args[0]), "Assets"));
-                        }
-                        catch (Exception e)
-                        {
-                            Diagnostics.Log(e.ToString());
-                        }
+                        case ".fus":
+                            modelFile = Path.GetFileName(filepath);
+                            tApp = typeof(Fusee.Engine.Player.Core.Player);
+                            break;
+
+                        case ".fuz":
+                            var appname = Path.GetFileNameWithoutExtension(filepath);
+                            var tmppath = Path.GetTempPath();
+
+                            var apppath = Path.Combine(tmppath, "FuseeApp_" + appname);
+
+                            if (Directory.Exists(apppath))
+                                Directory.Delete(apppath, true);
+
+                            ZipFile.ExtractToDirectory(filepath, apppath);
+
+                            filepath = Path.Combine(apppath, appname + ".dll");
+                            goto default;
+
+                        default:
+                            try
+                            {
+                                Assembly asm = Assembly.LoadFrom(filepath);
+
+                                // Comparing our version with the version of the referenced Fusee.Serialization
+                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Serialization").Version;
+                                var ourversion = Assembly.GetEntryAssembly().GetName().Version;
+
+                                if (serversion != ourversion)
+                                {
+                                    Diagnostics.Info("Fusee player and the assembly are on different versions. This can result in unexpected behaviour. Player version: " + ourversion + " Assembly version: " + serversion);
+                                }
+
+                                tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                                TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(filepath), "Assets"));
+                            }
+                            catch (Exception e)
+                            {
+                                Diagnostics.Error("Error opening assembly", e);
+                            }
+                            break;
                     }
                 }
                 else
                 {
-                    Diagnostics.Log($"Cannot open {args[0]}.");
+                    Diagnostics.Warn($"Cannot open {args[0]}.");
                 }
             }
-
-            if (tApp == null)
+            else if (File.Exists("Fusee.App.dll"))
             {
-                // See if we are in "Deployed mode". That is: A Fusee.App.dll is lying next to us.
                 try
                 {
-                    Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
+                    Assembly asm = Assembly.LoadFrom("Fusee.App.dll");
                     tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(e.ToString());
+                    Diagnostics.Debug("Could not load Fusee.App.dll", e);
                 }
-                // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
-                if (tApp == null)
-                {
-                    tApp = typeof(Fusee.Engine.Player.Core.Player);
-                }
+            }
+            else
+            {
+                Diagnostics.Info("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
+                tApp = typeof(Fusee.Engine.Player.Core.Player);
             }
 
             var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
@@ -94,29 +126,24 @@ namespace Fusee.Engine.Player.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
+                        if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
+                    Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        var ser = new Serializer();
+                        if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        var scene = ser.Deserialize((Stream) storage, null, typeof(SceneContainer)) ;
-
-                        var container = scene as SceneContainer;
-
-                        return new ConvertSceneGraph().Convert(container);
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                     },
-                    Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
+                    Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);
@@ -125,7 +152,7 @@ namespace Fusee.Engine.Player.Desktop
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
             {
-                Diagnostics.Log($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
+                Diagnostics.Warn($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
             }
             else
             {

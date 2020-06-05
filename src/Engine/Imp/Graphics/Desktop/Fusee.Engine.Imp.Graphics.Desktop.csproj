@@ -1,36 +1,36 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Imp.Graphics.Desktop</PackageId>
-    <TargetFramework>net462</TargetFramework>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
-  <PropertyGroup>
+    <Description>Fusee Engine Imp Graphics Desktop</Description>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>$(FuseeBuildRoot)\ext\OpenTK\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK.GLControl">
-      <HintPath>$(FuseeBuildRoot)\ext\OpenTK\OpenTK.GLControl.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Windows.Forms" />
-  </ItemGroup>  
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="OpenTK" Version="3.2.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 
-  <Import Project="$(FuseeBuildRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
 </Project>

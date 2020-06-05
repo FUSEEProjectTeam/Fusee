@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OpenTK;
 using OpenTK.Input;
 using Fusee.Engine.Common;
@@ -31,16 +31,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             _keyboard = new KeyboardDeviceImp(_gameWindow);
             _mouse = new MouseDeviceImp(_gameWindow);
-            _gamePad = new GamePadDeviceImp(_gameWindow);
+            _gamePad0 = new GamePadDeviceImp(_gameWindow, 0);
+            _gamePad1 = new GamePadDeviceImp(_gameWindow, 1);
+            _gamePad2 = new GamePadDeviceImp(_gameWindow, 2);
+            _gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
         }
 
         private GameWindow _gameWindow;
         private KeyboardDeviceImp _keyboard;
         private MouseDeviceImp _mouse;
-        private GamePadDeviceImp _gamePad;
- 
+        private GamePadDeviceImp _gamePad0;
+        private GamePadDeviceImp _gamePad1;
+        private GamePadDeviceImp _gamePad2;
+        private GamePadDeviceImp _gamePad3;
+
+
         /// <summary>
-        /// Devices supported by this driver: One mouse and one keyboard.
+        /// Devices supported by this driver: One mouse, one keyboard and up to four gamepads.
         /// </summary>
         public IEnumerable<IInputDeviceImp> Devices
         {
@@ -48,8 +55,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 yield return _mouse;
                 yield return _keyboard;
-                yield return _gamePad;
-             }
+                yield return _gamePad0;
+                yield return _gamePad1;
+                yield return _gamePad2;
+                yield return _gamePad3;
+
+            }
         }
 
         /// <summary>
@@ -59,11 +70,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-#if PLATFORM_DESKTOP
                 const string pf = "Desktop";
-#elif PLATFORM_ANDROID
-                const string pf = "Android";
-#endif
                 return "OpenTK GameWindow Mouse and Keyboard input driver for " + pf;
             }
         }
@@ -136,10 +143,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 
     /// <summary>
-    /// Implements a Gamepad Control option only works for XBox Gamepads
+    /// Implements a gamepad control option only works for XBox Gamepads
     /// </summary>
     /// /// <remarks>
-    /// The current implementation does not fire the <see cref="NewDeviceConnected"/> and  <see cref="DeviceDisconnected"/>
+    /// The current implementation does not fire the <see cref="RenderCanvasInputDriverImp.NewDeviceConnected"/> and  <see cref="RenderCanvasInputDriverImp.DeviceDisconnected"/>
     /// events. This driver will always report one connected GamePad no matter how many physical devices are connected
     /// to the machine. If no physical GamePad is present all of its axes and buttons will return 0 or false.
     /// </remarks>
@@ -150,7 +157,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
         internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
-        {        
+        {
             _gameWindow = window;
             DeviceID = deviceID;
 
@@ -290,7 +297,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             get
             {
-                return GetType().FullName;
+                return GamePad.GetName(DeviceID);
             }
         }
         /// <summary>
@@ -305,7 +312,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns Type of ínput device.
+        /// Returns Type of input device.
         /// </summary>
         public DeviceCategory Category
         {
@@ -560,9 +567,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             _gameWindow = gameWindow;
             _keymapper = new Keymapper();
-            _gameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
-            _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
-
+            _gameWindow.KeyDown += OnGameWinKeyDown;
+            _gameWindow.KeyUp += OnGameWinKeyUp;
         }
 
         /// <summary>
@@ -700,12 +706,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>No return, always throws.</returns>
         public float GetAxis(int iAxisId)
         {
-            throw new InvalidOperationException($"Unsopported axis {iAxisId}. This device does not support any axis at all.");
+            throw new InvalidOperationException($"Unsupported axis {iAxisId}. This device does not support any axis at all.");
         }
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All keyboard buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to receive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
@@ -730,8 +736,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public MouseDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
-            _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
-            _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+
+            _gameWindow.MouseMove += OnMouseMove;
+
+            _gameWindow.MouseDown += OnGameWinMouseDown;
+            _gameWindow.MouseUp += OnGameWinMouseUp;
 
             _btnLeftDesc = new ButtonImpDescription
             {
@@ -786,7 +795,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = (int)MouseAxes.MinX,
                         MaxValueOrAxis = (int)MouseAxes.MaxX
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -800,7 +809,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = (int)MouseAxes.MinY,
                         MaxValueOrAxis = (int)MouseAxes.MaxY
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -910,16 +919,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public string Id => GetType().FullName;
 
         /// <summary>
-        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to akquire mouse axis information.
+        /// Mouse movement is event-based. Listen to this event to get information about mouse movement.
         /// </summary>
-#pragma warning disable 0067
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
         /// <summary>
         /// All three mouse buttons are event-based. Listen to this event to get information about mouse button state changes.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-#pragma warning restore 0067
 
         /// <summary>
         /// Retrieves values for the X, Y and Wheel axes. No other axes are supported by this device.
@@ -930,12 +937,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (iAxisId)
             {
-                case (int)MouseAxes.X:
-                    return _gameWindow.Mouse.X;
-                case (int)MouseAxes.Y:
-                    return _gameWindow.Mouse.Y;
                 case (int)MouseAxes.Wheel:
-                    return _gameWindow.Mouse.WheelPrecise;
+                    return OpenTK.Input.Mouse.GetCursorState().WheelPrecise;
                 case (int)MouseAxes.MinX:
                     return 0;
                 case (int)MouseAxes.MaxX:
@@ -949,15 +952,29 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Called when the game window's mouse is moved.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseMoveEventArgs"/> instance containing the event data.</param>
+        protected void OnMouseMove(object sender, MouseMoveEventArgs mouseArgs)
+        {
+            if (AxisValueChanged != null)
+            {
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = AxisImpDesc.First(x => x.AxisDesc.Id == (int)MouseAxes.X).AxisDesc, Value = mouseArgs.X });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = AxisImpDesc.First(y => y.AxisDesc.Id == (int)MouseAxes.Y).AxisDesc, Value = mouseArgs.Y });
+            }
+        }
+
+        /// <summary>
         /// This device does not support to-be-polled-buttons. All mouse buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to revive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
             throw new InvalidOperationException(
-                $"Unsopported axis {iButtonId}. This device does not support any to-be polled axes at all.");
+                $"Unsupported axis {iButtonId}. This device does not support any to-be polled axes at all.");
         }
 
         /// <summary>

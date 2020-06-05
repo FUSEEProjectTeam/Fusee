@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Jometri;
 using Fusee.Math.Core;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Examples.ThreeDFont.Core
 {
@@ -228,4 +228,3 @@ namespace Fusee.Examples.ThreeDFont.Core
         }
     }
 }
-

@@ -1,8 +1,10 @@
 ﻿using Fusee.Engine.Common;
 
 #if PLATFORM_DESKTOP
+
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
+
 namespace Fusee.Engine.Imp.Graphics.Android
 #endif
 {
@@ -12,16 +14,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
     public class AttributeImp : IAttribImp
     {
         internal int AttributeBufferObject;
-
     }
 
     /// <summary>
-    /// This is the implementation of the <see cref="IMeshImp" /> interface. 
+    /// This is the implementation of the <see cref="IMeshImp" /> interface.
     /// It is used to check the status of the informations of a mesh and flush informations if required.
     /// </summary>
     public class MeshImp : IMeshImp
     {
         #region Internal Fields
+
         internal int VertexBufferObject;
         internal int NormalBufferObject;
         internal int ColorBufferObject;
@@ -32,9 +34,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal int TangentBufferObject;
         internal int BitangentBufferObject;
         internal int NElements;
-        #endregion
+
+        #endregion Internal Fields
 
         #region Public Fields & Members pairs
+
         /// <summary>
         /// Invalidates the vertices.
         /// </summary>
@@ -166,6 +170,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         ///   <c>true</c> if [triangles set]; otherwise, <c>false</c>.
         /// </value>
         public bool TrianglesSet { get { return ElementBufferObject != 0; } }
-        #endregion
+
+        /// <summary>
+        /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
+        /// </summary>
+        public OpenGLPrimitiveType MeshType { get; set; }
+
+        #endregion Public Fields & Members pairs
     }
 }

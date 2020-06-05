@@ -1,26 +1,20 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Physics.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Imp.Physics.Desktop</PackageId>
-    <TargetFramework>net462</TargetFramework>
-  </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
-  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <IsPackable>false</IsPackable>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
     <Reference Include="BulletSharp">
-      <HintPath>$(FuseeBuildRoot)\ext\BulletSharp.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\BulletSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj" />
-  </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

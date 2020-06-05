@@ -7,7 +7,7 @@
     /// <see cref="N:Fusee.Serialization"/>. 
     /// </para>
     /// <para>
-    /// The core of this module is the <see cref="SceneVisitor"/> class implementing
+    /// The core of this module is the <see cref="Visitor{TNode,TComponent}"/> class implementing
     /// a visitor pattern to traverse scene graphs for various use cases such as
     /// <list type="bullet">
     ///   <item>Rendering</item>
@@ -20,7 +20,7 @@
     /// as most of them require knowledge about 3D rendering.
     /// </para>
     /// </summary>
-    static class NamespaceDoc
+    internal static class NamespaceDoc
     {
         // This class only exists to keep the namespace XML documentation 
     }

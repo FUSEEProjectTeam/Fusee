@@ -1,13 +1,13 @@
-﻿using System;
-using System.Diagnostics;
+﻿using Android.Content;
 using Android.Util;
-using Android.Content;
 using Android.Views;
-using OpenTK;
 using Fusee.Engine.Common;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
+using System;
+using System.Diagnostics;
 using Uri = Android.Net.Uri;
 
 namespace Fusee.Engine.Imp.Graphics.Android
@@ -18,7 +18,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
     public class RenderCanvasImp : IRenderCanvasImp
     {
         #region Fields
-
 
         /// <summary>
         /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
@@ -50,8 +49,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
-
         private string _title;
+
         /// <summary>
         /// Gets and sets the caption(title of the window).
         /// </summary>
@@ -63,7 +62,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             get { return _title; }
             set
             {
-                 _title = value;
+                _title = value;
             }
         }
 
@@ -95,7 +94,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public bool VerticalSync
         {
             get { return false; }
-            set {  }
+            set { }
         }
 
         /// <summary>
@@ -121,8 +120,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             get { return _gameView.Focused; }
         }
-
-        // Some tryptichon related Fields.
 
         /// <summary>
         /// Activates (true) or deactivates (false) the video wall feature.
@@ -164,9 +161,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         internal RenderCanvasGameView _gameView;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
@@ -183,10 +181,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _gameView.Dispose();
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Members
-
 
         /// <summary>
         /// Changes the window of the application to video wall mode.
@@ -212,14 +209,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Closes the GameWindow with a call to opentk.
+        /// Closes the GameWindow with a call to ÓpenTk.
         /// </summary>
         public void CloseGameWindow()
         {
         }
 
         /// <summary>
-        /// Presents this application instance. Call this function after rendering to show the final image. 
+        /// Presents this application instance. Call this function after rendering to show the final image.
         /// After Present is called the render buffers get flushed.
         /// </summary>
         public void Present()
@@ -228,7 +225,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)
@@ -251,7 +248,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as it is only for initilization purposes.
+        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as it is only for initialization purposes.
         /// </summary>
         public void Run()
         {
@@ -260,32 +257,36 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             Width = _gameView.Size.Width;
             Height = _gameView.Size.Height;
-            
         }
 
-        #endregion
+        #endregion Members
 
         #region Events
+
         /// <summary>
         /// Occurs when [initialize].
         /// </summary>
         public event EventHandler<InitEventArgs> Init;
+
         /// <summary>
-        /// Occurs when [un load].
+        /// Occurs when [unload].
         /// </summary>
         public event EventHandler<InitEventArgs> UnLoad;
+
         /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
+
         /// <summary>
         /// Occurs when [resize].
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
 
-        #endregion
+        #endregion Events
 
         #region Internal Members
+
         /// <summary>
         /// Does the initialize of this instance.
         /// </summary>
@@ -296,7 +297,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Does the unload of this instance. 
+        /// Does the unload of this instance.
         /// </summary>
         protected internal void DoUnLoad()
         {
@@ -321,20 +322,21 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (Resize != null)
                 Resize(this, new ResizeEventArgs(width, height));
         }
-        #endregion
 
+        #endregion Internal Members
     }
-
 
     public class RenderCanvasGameView : AndroidGameView
     {
         #region Fields
+
         private RenderCanvasImp _renderCanvasImp;
         private float _deltaTime;
         private Action _run;
         internal Context AndroidContext;
         private Stopwatch _stopwatch = new Stopwatch();
-        #endregion
+
+        #endregion Fields
 
         /// <summary>
         /// Gets the delta time.
@@ -349,18 +351,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
             get { return _deltaTime; }
         }
 
-
         #region Constructors
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasGameView"/> class.
         /// </summary>
         /// <param name="renderCanvasImp">The render canvas implementation.</param>
-        /// <param name="antiAliasing">if set to <c>true</c> perform Antialiasing.</param>
+        /// <param name="antialiasing">if set to <c>true</c> perform antialiasing.</param>
         /// <param name="context">The Android context.</param>
         /// <param name="attrs">An Android View attribute set.</param>
         /// <param name="run"></param>
-        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antiAliasing, Context context, IAttributeSet attrs, Action run) :
+        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antialiasing, Context context, IAttributeSet attrs, Action run) :
             base(context, attrs)
         {
             _renderCanvasImp = renderCanvasImp;
@@ -368,9 +369,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _run = run;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Overrides
+
         protected override void OnLoad(EventArgs e)
         {
             // Check for necessary capabilities
@@ -399,8 +401,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         protected override void OnUnload(EventArgs e)
         {
-            _renderCanvasImp.DoUnLoad();
-            _renderCanvasImp.Dispose();
         }
 
         protected override void OnResize(EventArgs e)
@@ -420,12 +420,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 _renderCanvasImp.DoRender();
         }
 
-        // This method is called everytime the context needs
-        // to be recreated. Use it to set any egl-specific settings
-        // prior to context creation
+        // This method is called every time the context needs to be recreated. 
+        //Use it to set any egl-specific settings prior to context creation.
         protected override void CreateFrameBuffer()
         {
-            GLContextVersion = GLContextVersion.Gles3_0;
+            ContextRenderingApi = GLVersion.ES3;
 
             // the default GraphicsMode that is set consists of (16, 16, 0, 0, 2, false)
             try
@@ -459,6 +458,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
             throw new Exception("Can't load egl, aborting");
         }
 
-        #endregion
+        #endregion Overrides
     }
 }

@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Gets a vector containg half of the values of width, height and depth of the box.
+        /// Gets a vector containing half of the values of width, height and depth of the box.
         /// </summary>
         /// <value>
         /// The half extents.
@@ -51,7 +51,6 @@ namespace Fusee.Engine.Core
         /// </value>
         public override float Margin
         {
-
             get
             {
                 var retval = _boxShapeImp.Margin;
@@ -59,7 +58,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (BoxShape) _boxShapeImp.UserObject;
+                var o = (BoxShape)_boxShapeImp.UserObject;
                 o._boxShapeImp.Margin = value;
             }
         }

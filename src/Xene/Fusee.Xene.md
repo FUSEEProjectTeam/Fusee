@@ -4,7 +4,7 @@ FUSEE Xene
 Scene Graphs
 ------------
 
-A major concept in all 3D graphics systems is the scene graph, object hierarchy, scene tree or however a specific system calls it. The common feature of all approaches is to keep the scene data in a tree-like structure. The use of such hierarchical scenes is to group objects together with properties such as colors, position, orientation etc. being shared among the grouped objects. Certain properties, especially transformation (position, orientation, scale) are not only shared among siblings but additionally cummulated from parent to child (e.g. a childs position is relative to its parent's position).
+A major concept in all 3D graphics systems is the scene graph, object hierarchy, scene tree or however a specific system calls it. The common feature of all approaches is to keep the scene data in a tree-like structure. The use of such hierarchical scenes is to group objects together with properties such as colors, position, orientation etc. being shared among the grouped objects. Certain properties, especially transformation (position, orientation, scale) are not only shared among siblings but additionally cumulated from parent to child (e.g. a child's position is relative to its parent's position).
 
 FUSEE's Xene system can be seen as a tool box with building blocks to create various scene graph implementations. The simplest scene graph implementation is just made up of a hierarchy of scene nodes where each node may contain 0 or more children - also scene nodes. In addition each node may contain zero or more lower-level building blocks, called components. The contents a node consists of can be organized in re-usable component types.
 
@@ -22,7 +22,7 @@ At least three categories of traversing such structures exist:
 2. Classical Visitor Pattern - All nodes and components are traversed in-order and -depending on their respective type- individual actions are performed. The result of a visitor operation is a set of side effects. Very often while traversing some state needs to be maintained keeping track of the overall traversal state. When side effects (such as rendering) are triggered during traversal, information from the state can be accessed.  
 3. Transformation Operations - Can be seen as something in-between the two previous categories. Visitor patterns for different use cases often share two common circumstances:
 	- The way how State is maintained (typically in stacks of individual   	values keeping track of information retrieved from tree elements).
-	- The generated Side-Effect (rather the result) is a list of data items resulting from data from individual nodes and cummulated state data.  
+	- The generated Side-Effect (rather the result) is a list of data items resulting from data from individual nodes and cumulated state data.  
 
 Introducing the Viserator Pattern
 ---------------------------------
@@ -32,7 +32,7 @@ A Viserator is a scene visitor which returns an enumerator of a user defined typ
 for use-cases where traversing a node-component-graph should yield a list (enumerator) of results.
 
 Very often you want to traverse a node-component-graph while maintaining a traversal state keeping track of
-inividual values and their changes while traversing. At certain points during the traversal a result arises that
+individual values and their changes while traversing. At certain points during the traversal a result arises that
 should be promoted to the outside of the traversal. Typically the result is derived from the state at a certain
 time during traversal and some additional information of the tree object currently visited.
 
@@ -43,5 +43,5 @@ the standard state types like StandardState. Then you need to derive your own cl
 during the traversal.
 
 
-The word Viserator is a combination of a visitor and and enumerator. Look up "to viscerate" in a dictionary and
-judge for yourself if a Viserator's operation resembles disembowelling the innards of a tree structure.
+The word Viserator is a combination of a visitor and enumerator. Look up "to viscerate" in a dictionary and
+judge for yourself if a Viserator's operation resembles disemboweling the innards of a tree structure.

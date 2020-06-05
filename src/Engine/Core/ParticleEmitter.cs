@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
     internal sealed class ParticleData
     {
         public float3 Position;
-        public float3 Velocity; 
+        public float3 Velocity;
         public float3 Gravity;
         public int Life;
         public float MaxSize;
@@ -70,6 +70,9 @@ namespace Fusee.Engine.Core
                 vTransparency = fuNormal.y;
             }";
 
+        /// <summary>
+        /// The pixel shader.
+        /// </summary>
         public string PsSimpleTexture = @"
             /* Copies incoming fragment color without change. */
             #ifdef GL_ES
@@ -100,12 +103,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns the particle mesh.
         /// </summary>
-        public Mesh PMesh
-        {
-            get { return ParticleMesh; }
-        }
+        public Mesh PMesh => ParticleMesh;
 
-        private List<ParticleData> _particleList = new List<ParticleData>();
+        private readonly List<ParticleData> _particleList = new List<ParticleData>();
         private ParticleData _particle;
         private Random _rnd;
         private double _randVelX;
@@ -117,7 +117,7 @@ namespace Fusee.Engine.Core
         private double _randRot;
         private int _randLife;
 
-        private int _customCount;
+        private readonly int _customCount;
         private int _customLifeMin;
         private int _customLifeMax;
         private float _customMinSize;
@@ -132,31 +132,31 @@ namespace Fusee.Engine.Core
         private float _customGravityY;
         private float _customGravityZ;
         private float _customTransparency;
-        private float _customRotation;
-        
+        private readonly float _customRotation;
 
-/// <summary>
-/// Initializes a new instance of the ParticleEmittter class.
-/// </summary>
-/// <param name="myCount"></param>
-/// <param name="myLifeMin"></param>
-/// <param name="myLifeMax"></param>
-/// <param name="myMinSize"></param>
-/// <param name="myMaxSize"></param>
-/// <param name="myRotation"></param>
-/// <param name="myTransparency"></param>
-/// <param name="myRandPosX"></param>
-/// <param name="myRandPosY"></param>
-/// <param name="myRandPosZ"></param>
-/// <param name="myRandVelX"></param>
-/// <param name="myRandVelY"></param>
-/// <param name="myRandVelZ"></param>
-/// <param name="myGravityX"></param>
-/// <param name="myGravityY"></param>
-/// <param name="myGravityZ"></param>
+
+        /// <summary>
+        /// Initializes a new instance of the ParticleEmittter class.
+        /// </summary>
+        /// <param name="myCount"></param>
+        /// <param name="myLifeMin"></param>
+        /// <param name="myLifeMax"></param>
+        /// <param name="myMinSize"></param>
+        /// <param name="myMaxSize"></param>
+        /// <param name="myRotation"></param>
+        /// <param name="myTransparency"></param>
+        /// <param name="myRandPosX"></param>
+        /// <param name="myRandPosY"></param>
+        /// <param name="myRandPosZ"></param>
+        /// <param name="myRandVelX"></param>
+        /// <param name="myRandVelY"></param>
+        /// <param name="myRandVelZ"></param>
+        /// <param name="myGravityX"></param>
+        /// <param name="myGravityY"></param>
+        /// <param name="myGravityZ"></param>
         public ParticleEmitter(int myCount, int myLifeMin, int myLifeMax, float myMinSize, float myMaxSize, float myRotation, float myTransparency, float myRandPosX, float myRandPosY, float myRandPosZ, double myRandVelX, double myRandVelY, double myRandVelZ, float myGravityX, float myGravityY, float myGravityZ)
         {
-            
+
             _customCount = myCount;
             _customLifeMin = myLifeMin;
             _customLifeMax = myLifeMax;
@@ -173,219 +173,135 @@ namespace Fusee.Engine.Core
             _customGravityX = myGravityX;
             _customGravityY = myGravityY;
             _customGravityZ = myGravityZ;
-            
+
         }
-       /*
-        /// <summary>
-        ///  Gets and sets the count of the particles.
-        /// </summary>
-        public int Count
-        {
-            get
-            {
-                return _customCount;
-            }
-            set
-            {
-                _customCount = value;
-            }
-        }
-*/
+        /*
+         /// <summary>
+         ///  Gets and sets the count of the particles.
+         /// </summary>
+         public int Count
+         {
+             get
+             {
+                 return _customCount;
+             }
+             set
+             {
+                 _customCount = value;
+             }
+         }
+ */
         /// <summary>
         /// Gets and sets the minimum life of the particles.
         /// </summary>
         public int LifeMin
         {
-            get
-            {
-                return _customLifeMin;
-            }
-            set
-            {
-                _customLifeMin = value;
-            }
+            get => _customLifeMin;
+            set => _customLifeMin = value;
         }
         /// <summary>
         /// Gets and sets the maximum life of the particles.
         /// </summary>
         public int LifeMax
         {
-            get
-            {
-                return _customLifeMax;
-            }
-            set
-            {
-                _customLifeMax = value;
-            }
+            get => _customLifeMax;
+            set => _customLifeMax = value;
         }
         /// <summary>
         /// Gets and sets the minimum size of the particles.
         /// </summary>
         public float MinSize
         {
-            get
-            {
-                return _customMinSize;
-            }
-            set
-            {
-                _customMinSize = value;
-            }
+            get => _customMinSize;
+            set => _customMinSize = value;
         }
         /// <summary>
         /// Gets and sets the maximum size of the particles.
         /// </summary>
         public float MaxSize
         {
-            get
-            {
-                return _customMaxSize;
-            }
-            set
-            {
-                _customMaxSize = value;
-            }
+            get => _customMaxSize;
+            set => _customMaxSize = value;
         }
         /// <summary>
         /// Gets and sets the transparency of particles.
         /// </summary>
         public float Transparency
         {
-            get
-            {
-                return _customTransparency;
-            }
-            set
-            {
-                _customTransparency = value;
-            }
+            get => _customTransparency;
+            set => _customTransparency = value;
         }
         /// <summary>
         /// Gets and sets the random position on the x-axis.
         /// </summary>
-        public double RandPosX 
+        public double RandPosX
         {
-            get
-            {
-                return _customRandPosX;
-            }
-            set
-            {
-                _customRandPosX = value;
-            }
+            get => _customRandPosX;
+            set => _customRandPosX = value;
         }
         /// <summary>
         /// Gets and sets the random position on the y-axis.
         /// </summary>
-        public double RandPosY 
+        public double RandPosY
         {
-            get
-            {
-                return _customRandPosY;
-            }
-            set
-            {
-                _customRandPosY = value;
-            }
+            get => _customRandPosY;
+            set => _customRandPosY = value;
         }
         /// <summary>
         /// Gets and sets the random position on the z-axis.
         /// </summary>
-        public double RandPosZ 
+        public double RandPosZ
         {
-            get
-            {
-                return _customRandPosZ;
-            }
-            set
-            {
-                _customRandPosZ = value;
-            }
+            get => _customRandPosZ;
+            set => _customRandPosZ = value;
         }
         /// <summary>
         /// Gets and sets the random velocity towards the x-axis.
         /// </summary>
         public double RandVelX
         {
-            get
-            {
-                return _customRandVelX;
-            }
-            set
-            {
-                _customRandVelX = value;
-            }
+            get => _customRandVelX;
+            set => _customRandVelX = value;
         }
         /// <summary>
         /// Gets and sets the random velocity towards the y-axis.
         /// </summary>
         public double RandVelY
         {
-            get
-            {
-                return _customRandVelY;
-            }
-            set
-            {
-                _customRandVelY = value;
-            }
+            get => _customRandVelY;
+            set => _customRandVelY = value;
         }
         /// <summary>
         /// Gets and sets the random velocity towards the z-axis.
         /// </summary>
         public double RandVelZ
         {
-            get
-            {
-                return _customRandVelZ;
-            }
-            set
-            {
-                _customRandVelZ = value;
-            }
+            get => _customRandVelZ;
+            set => _customRandVelZ = value;
         }
         /// <summary>
         /// Gets and sets the gravity towards the x-axis.
         /// </summary>
         public float GravityX
         {
-            get
-            {
-                return _customGravityX;
-            }
-            set
-            {
-                _customGravityX = value;
-            }
+            get => _customGravityX;
+            set => _customGravityX = value;
         }
         /// <summary>
         /// Gets and sets the gravity towards the y-axis.
         /// </summary>
         public float GravityY
         {
-            get
-            {
-                return _customGravityY;
-            }
-            set
-            {
-                _customGravityY = value;
-            }
+            get => _customGravityY;
+            set => _customGravityY = value;
         }
         /// <summary>
         /// Gets and sets the gravity towards the z-axis.
         /// </summary>
         public float GravityZ
         {
-            get
-            {
-                return _customGravityZ;
-            }
-            set
-            {
-                _customGravityZ = value;
-            }
+            get => _customGravityZ;
+            set => _customGravityZ = value;
         }
         /// <summary>
         /// This method fills the particleList with data, creates the particle mesh and manipulates the information of particleList.
@@ -393,115 +309,117 @@ namespace Fusee.Engine.Core
         /// <param name="deltaTime"></param>
         public void Tick(double deltaTime)
         {
-             var vertices = new float3[_customCount * 4];
-             var triangles = new ushort[_customCount * 6];
-             var normals = new float3[_customCount * 4];
-             var uVs = new float2[_customCount * 4];
-             _rnd = new Random();
+            var vertices = new float3[_customCount * 4];
+            var triangles = new ushort[_customCount * 6];
+            var normals = new float3[_customCount * 4];
+            var uVs = new float2[_customCount * 4];
+            _rnd = new Random();
 
-             //Initializes particle Data
-             while (_particleList.Count < _customCount)
-             {
+            //Initializes particle Data
+            while (_particleList.Count < _customCount)
+            {
 
-                 _randVelX = GenRand(-_customRandVelX, _customRandVelX);
-                 _randVelY = GenRand(-_customRandVelY, _customRandVelY);
-                 _randVelZ = GenRand(-_customRandVelZ, _customRandVelZ);
-                 _randPosX = GenRand(-_customRandPosX, _customRandPosX);
-                 _randPosY = GenRand(-_customRandPosY, _customRandPosY);
-                 _randPosZ = GenRand(-_customRandPosZ, _customRandPosZ);
-                 _randRot = GenRand(0.0, 1.3);
-                 _randLife = GenIntRand(_customLifeMin, _customLifeMax);
-                 _particle = new ParticleData();
-                 _particle.Position = new float3((float)_randPosX, (float)_randPosY, (float)_randPosZ);
-                 _particle.Velocity = new float3((float)_randVelX, (float)_randVelY, (float)_randVelZ);
-                 _particle.Gravity = new float3(_customGravityX, _customGravityY, _customGravityZ);
-                 _particle.Life = _randLife;
-                 _particle.MaxSize = _customMaxSize;
-                 _particle.MinSize = _customMinSize;
-                 _particle.Rotation = (float)_randRot;
-                 _particle.Transparency = _customTransparency;
-                 _particleList.Add(_particle);
-             }
+                _randVelX = GenRand(-_customRandVelX, _customRandVelX);
+                _randVelY = GenRand(-_customRandVelY, _customRandVelY);
+                _randVelZ = GenRand(-_customRandVelZ, _customRandVelZ);
+                _randPosX = GenRand(-_customRandPosX, _customRandPosX);
+                _randPosY = GenRand(-_customRandPosY, _customRandPosY);
+                _randPosZ = GenRand(-_customRandPosZ, _customRandPosZ);
+                _randRot = GenRand(0.0, 1.3);
+                _randLife = GenIntRand(_customLifeMin, _customLifeMax);
+                _particle = new ParticleData
+                {
+                    Position = new float3((float)_randPosX, (float)_randPosY, (float)_randPosZ),
+                    Velocity = new float3((float)_randVelX, (float)_randVelY, (float)_randVelZ),
+                    Gravity = new float3(_customGravityX, _customGravityY, _customGravityZ),
+                    Life = _randLife,
+                    MaxSize = _customMaxSize,
+                    MinSize = _customMinSize,
+                    Rotation = (float)_randRot,
+                    Transparency = _customTransparency
+                };
+                _particleList.Add(_particle);
+            }
 
-             // creates particle mesh
-             for (int k = 0; k < _particleList.Count; k++)
-             {
-                 ParticleData t = _particleList[k];
-                 float3 currentPos = t.Position;
-                 float currentSize = t.MinSize;
+            // creates particle mesh
+            for (var k = 0; k < _particleList.Count; k++)
+            {
+                var t = _particleList[k];
+                var currentPos = t.Position;
+                var currentSize = t.MinSize;
 
-                 if (t.Life > 0)
-                 {
-                     vertices[k * 4 + 0] = currentPos;
-                     vertices[k * 4 + 1] = currentPos;
-                     vertices[k * 4 + 2] = currentPos;
-                     vertices[k * 4 + 3] = currentPos;
+                if (t.Life > 0)
+                {
+                    vertices[k * 4 + 0] = currentPos;
+                    vertices[k * 4 + 1] = currentPos;
+                    vertices[k * 4 + 2] = currentPos;
+                    vertices[k * 4 + 3] = currentPos;
 
-                     uVs[k * 4 + 0] = new float2(currentSize / 2, -currentSize / 2);
-                     uVs[k * 4 + 1] = new float2(currentSize / 2, currentSize / 2);
-                     uVs[k * 4 + 2] = new float2(-currentSize / 2, currentSize / 2);
-                     uVs[k * 4 + 3] = new float2(-currentSize / 2, -currentSize / 2);
+                    uVs[k * 4 + 0] = new float2(currentSize / 2, -currentSize / 2);
+                    uVs[k * 4 + 1] = new float2(currentSize / 2, currentSize / 2);
+                    uVs[k * 4 + 2] = new float2(-currentSize / 2, currentSize / 2);
+                    uVs[k * 4 + 3] = new float2(-currentSize / 2, -currentSize / 2);
 
-                     normals[k * 4 + 0] = new float3(t.Rotation, t.Transparency, 1);
-                     normals[k * 4 + 1] = new float3(t.Rotation, t.Transparency, 1);
-                     normals[k * 4 + 2] = new float3(t.Rotation, t.Transparency, 1);
-                     normals[k * 4 + 3] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 0] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 1] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 2] = new float3(t.Rotation, t.Transparency, 1);
+                    normals[k * 4 + 3] = new float3(t.Rotation, t.Transparency, 1);
 
-                     triangles[k*6 + 0] = (ushort) (k*4 + 0);
-                     triangles[k*6 + 1] = (ushort) (k*4 + 1);
-                     triangles[k*6 + 2] = (ushort) (k*4 + 2);
-                     triangles[k*6 + 3] = (ushort) (k*4 + 0);
-                     triangles[k*6 + 4] = (ushort) (k*4 + 2);
-                     triangles[k*6 + 5] = (ushort) (k*4 + 3);
-                 }
-             }
+                    triangles[k * 6 + 0] = (ushort)(k * 4 + 0);
+                    triangles[k * 6 + 1] = (ushort)(k * 4 + 1);
+                    triangles[k * 6 + 2] = (ushort)(k * 4 + 2);
+                    triangles[k * 6 + 3] = (ushort)(k * 4 + 0);
+                    triangles[k * 6 + 4] = (ushort)(k * 4 + 2);
+                    triangles[k * 6 + 5] = (ushort)(k * 4 + 3);
+                }
+            }
 
-             ParticleMesh.Vertices = vertices;
-             ParticleMesh.Triangles = triangles;
-             ParticleMesh.Normals = normals;
-             ParticleMesh.UVs = uVs;
+            ParticleMesh.Vertices = vertices;
+            ParticleMesh.Triangles = triangles;
+            ParticleMesh.Normals = normals;
+            ParticleMesh.UVs = uVs;
 
-             //Updates information
-             for (int i = 0; i < _particleList.Count; i++)
-             {
-                 ParticleData changeParticle = _particleList[i];
-                 changeParticle.Position += (float)deltaTime * changeParticle.Velocity;
-                 changeParticle.Velocity -= changeParticle.Gravity;
+            //Updates information
+            for (var i = 0; i < _particleList.Count; i++)
+            {
+                var changeParticle = _particleList[i];
+                changeParticle.Position += (float)deltaTime * changeParticle.Velocity;
+                changeParticle.Velocity -= changeParticle.Gravity;
 
-                 //Rotation
-                 changeParticle.Rotation += _customRotation;
+                //Rotation
+                changeParticle.Rotation += _customRotation;
 
-                 //Transparency
-                 changeParticle.Transparency -= (changeParticle.Transparency/changeParticle.Life);
+                //Transparency
+                changeParticle.Transparency -= (changeParticle.Transparency / changeParticle.Life);
 
-                 //Scale
-                 if (changeParticle.MinSize <= changeParticle.MaxSize)
-                 {
-                     changeParticle.MinSize += changeParticle.MaxSize / changeParticle.Life;
-                 }
-                 //Life
-                 if (changeParticle.Life != 0)
-                 {
-                     changeParticle.Life -= 1;
-                 }
-                 _particleList[i] = changeParticle;
-                 //Death 
-                 if (changeParticle.Life == 0 || changeParticle.Life <= 0)
-                 {
-                     _particleList.Remove(changeParticle);
-                 }
-             }
+                //Scale
+                if (changeParticle.MinSize <= changeParticle.MaxSize)
+                {
+                    changeParticle.MinSize += changeParticle.MaxSize / changeParticle.Life;
+                }
+                //Life
+                if (changeParticle.Life != 0)
+                {
+                    changeParticle.Life -= 1;
+                }
+                _particleList[i] = changeParticle;
+                //Death 
+                if (changeParticle.Life == 0 || changeParticle.Life <= 0)
+                {
+                    _particleList.Remove(changeParticle);
+                }
+            }
         }
 
-        private  double GenRand(double one, double two)
+        private double GenRand(double one, double two)
         {
-            Random rand = _rnd;
-            return one + rand.NextDouble()*(two - one);
+            var rand = _rnd;
+            return one + rand.NextDouble() * (two - one);
         }
 
-        private  int GenIntRand(int one, int two)
+        private int GenIntRand(int one, int two)
         {
-            Random rand = _rnd;
+            var rand = _rnd;
             if (one < two)
             {
                 return rand.Next(one, two);

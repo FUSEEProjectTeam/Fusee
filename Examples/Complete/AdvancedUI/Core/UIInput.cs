@@ -8,9 +8,10 @@ namespace Fusee.Examples.AdvancedUI.Core
         //"Position" and "Size" determine a rectangle - with "Position" as its center - that encloses the object we want to mark with UI elements.
         //Could be the tangent plane with the correct size and center at "Position".
         internal float3 Position;
-        internal float2 Size;        
 
-        internal string SegmentationClass;        
+        internal float2 Size;
+
+        internal string SegmentationClass;
         internal float Probability;
 
         internal UIHelper.AnnotationKind AnnotationKind;

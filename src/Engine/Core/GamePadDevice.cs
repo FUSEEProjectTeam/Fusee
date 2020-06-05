@@ -1,5 +1,4 @@
 ﻿using Fusee.Engine.Common;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -85,7 +84,7 @@ namespace Fusee.Engine.Core
         /// The y movement.
         /// </value>
         public float YDPad => GetAxis(_yDPadId);
-        
+
 
 
         /// <summary>

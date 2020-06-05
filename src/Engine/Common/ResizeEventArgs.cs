@@ -7,14 +7,24 @@ namespace Fusee.Engine.Common
     /// </summary>
     public class ResizeEventArgs : EventArgs
     {
-        public int Width { get; private set; }
-        public int Height { get; private set; }
+        /// <summary>
+        /// The width held for the Resize event.
+        /// </summary>
+        public int Width { get; }
+        /// <summary>
+        /// The height held for the Resize event.
+        /// </summary>
+        public int Height { get; }
 
+        /// <summary>
+        /// Constructs a new ResizeEventArgs.
+        /// </summary>
+        /// <param name="width">The width held for the Resize event.</param>
+        /// <param name="height">The height held for the Resize event.</param>
         public ResizeEventArgs(int width, int height)
         {
             Width = width;
             Height = height;
         }
-
     }
 }

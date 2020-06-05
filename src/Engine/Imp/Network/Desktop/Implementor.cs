@@ -1,8 +1,7 @@
 ﻿using Fusee.Engine.Common;
 
-namespace Fusee.Engine.Imp.Network.Desktop.Imp.Network.Desktop
+namespace Fusee.Engine.Imp.Network.Desktop
 {
-
     /// <summary>
     /// This class is instantiated dynamically (by reflection)
     /// </summary>

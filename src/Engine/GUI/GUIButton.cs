@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Engine.GUI
 {
@@ -42,7 +43,7 @@ namespace Fusee.Engine.GUI
         {
             _isAttached = false;
         }
-        
+
         internal void InvokeEvents()
         {
             OnMouseOver?.Invoke(this);
@@ -71,10 +72,10 @@ namespace Fusee.Engine.GUI
 
         private void OnMouse(object sender, ButtonValueChangedArgs bvca)
         {
-                if (bvca.Pressed)
-                    OnMouseDown?.Invoke(this);
-                else
-                    OnMouseUp?.Invoke(this);
+            if (bvca.Pressed)
+                OnMouseDown?.Invoke(this);
+            else
+                OnMouseUp?.Invoke(this);
         }
 
         private void OnAxisChanged(object sender, AxisValueChangedArgs avca)

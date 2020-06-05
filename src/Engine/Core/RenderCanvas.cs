@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 
@@ -6,7 +7,7 @@ namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     A render canvas object references the physical output screen space real estate (e.g. the rendering window).
-    ///     A typical Game application will inherit from this class and overrite methods to implement your user code to
+    ///     A typical Game application will inherit from this class and overwrite methods to implement your user code to
     ///     to be performed on events like initialization, resize, and display refresh.
     ///     In the future, it will be likely that this class' functionality will be divided at two different places with
     ///     one containing the more view oriented aspects and the other containing the more application oriented aspects.
@@ -83,37 +84,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Members
-        /*
-        /// <summary>
-        ///     The RenderCanvas constructor. Depending on the implementation this constructor instantiates a 3D viewing window or
-        ///     connects a 3D
-        ///     render context to an existing part of the application window.
-        /// </summary>
-        public void InitImplementors()
-        {
-            if (CanvasImplementor == null)
-                CanvasImplementor = ImpFactory.CreateIRenderCanvasImp();
-
-            if (ContextImplementor == null)
-                ContextImplementor = ImpFactory.CreateIRenderContextImp(CanvasImplementor);
-
-            if (InputImplementor == null)
-                InputImplementor = ImpFactory.CreateIInputImp(CanvasImplementor);
-
-            if (AudioImplementor == null)
-                AudioImplementor = ImpFactory.CreateIAudioImp();
-
-            if (InputDriverImplementor == null)
-                InputDriverImplementor = ImpFactory.CreateIInputDriverImp();
-
-            if (NetworkImplementor == null)
-                NetworkImplementor = ImpFactory.CreateINetworkImp();
-
-            if (VideoManagerImplementor == null)
-                VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
-        }
-        */
+        #region Members       
 
         /// <summary>
         ///     Gets the name of the app.
@@ -122,11 +93,11 @@ namespace Fusee.Engine.Core
         protected string GetAppName()
         {
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof (FuseeApplicationAttribute), true);
+                typeof(FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                var fae = (FuseeApplicationAttribute) attributes[0];
+                var fae = (FuseeApplicationAttribute)attributes[0];
                 return fae.Name;
             }
             return GetType().Name;
@@ -139,11 +110,11 @@ namespace Fusee.Engine.Core
         protected int GetWindowWidth()
         {
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof (FuseeApplicationAttribute), true);
+                typeof(FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                var fae = (FuseeApplicationAttribute) attributes[0];
+                var fae = (FuseeApplicationAttribute)attributes[0];
                 return fae.Width;
             }
 
@@ -169,9 +140,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Inits the canvas for the rendering loop.
+        /// Initializes the canvas for the rendering loop.
         /// </summary>
-        protected void InitCanvas()
+        public void InitCanvas()
         {
             // InitImplementors();
             CanvasImplementor.Caption = GetAppName();
@@ -184,6 +155,7 @@ namespace Fusee.Engine.Core
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
+            RC.SetRenderStateSet(RenderStateSet.Default);
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;
@@ -202,21 +174,19 @@ namespace Fusee.Engine.Core
                 // rendering
                 RenderAFrame();
 
+                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
+                RC.ResetToDefaultRenderContextState();
+
                 // post-rendering
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
-        }
-
-        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize += action;
-        }
-
-        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize -= action;
+            CanvasImplementor.Resize += delegate
+            {
+                RC.DefaultState.CanvasWidth = Width;
+                RC.DefaultState.CanvasHeight = Height;
+                Resize(new ResizeEventArgs(Width, Height));
+            };
         }
 
         /// <summary>
@@ -243,8 +213,8 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Used to release the ressources of all audio and network instances.
-        ///     All audio and network ressources get reset.
+        ///     Used to release the resources of all audio and network instances.
+        ///     All audio and network resources get reset.
         /// </summary>
         public virtual void DeInit()
         {
@@ -269,7 +239,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Set the cursor (the mouse pointer image) to one of the pre-defined types
+        ///     Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)
@@ -301,7 +271,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Presents the contents of the backbuffer on the visible part of this render canvas.
+        ///     Presents the contents of the back-buffer on the visible part of this render canvas.
         /// </summary>
         /// <remarks>
         ///     Call this method from your rendering code implementation <see cref="RenderAFrame" /> after rendering geometry on
@@ -340,7 +310,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Closes the GameWindow with a call to opentk.
+        ///     Closes the GameWindow with a call to OpenTK.
         /// </summary>
         public void CloseGameWindow()
         {

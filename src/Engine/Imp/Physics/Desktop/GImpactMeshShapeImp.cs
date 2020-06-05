@@ -7,7 +7,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
     /// <summary>
     /// Implementation of the <see cref="IGImpactMeshShapeImp" /> interface using the bullet physics engine.
     /// </summary>
-    public class GImpactMeshShapeImp : CollisonShapeImp , IGImpactMeshShapeImp
+    public class GImpactMeshShapeImp : CollisonShapeImp, IGImpactMeshShapeImp
     {
         internal GImpactMeshShape BtGImpactMeshShape;
 

@@ -24,17 +24,29 @@ namespace Fusee.Engine.Core
             o._convexHullShapeImp.AddPoint(point);
         }
 
-
+        /// <summary>
+        /// Gets the scaled point by index from the cloud of vertices.
+        /// </summary>
+        /// <param name="index">The index of the point.</param>
+        /// <returns></returns>
         public float3 GetScaledPoint(int index)
         {
             return _convexHullShapeImp.GetScaledPoint(index);
         }
 
+        /// <summary>
+        /// Gets the unscaled points of the cloud of vertices.
+        /// </summary>
+        /// <returns>An array of unscaled vertices.</returns>
         public float3[] GetUnscaledPoints()
         {
             return _convexHullShapeImp.GetUnscaledPoints();
         }
 
+        /// <summary>
+        /// Gets the number of points of the cloud of vertices.
+        /// </summary>
+        /// <returns>The number of points.</returns>
         public int GetNumPoints()
         {
             return _convexHullShapeImp.GetNumPoints();

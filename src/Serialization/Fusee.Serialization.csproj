@@ -1,50 +1,25 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Serialization</RootNamespace>
-    <PackageId>Fusee.Serialization</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
-  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Fusee Serialization</Description>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-  </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
-  <PropertyGroup>
-    <BuildDependsOn>
-      $(BuildDependsOn);
-      SerializationCompileSerializer
-    </BuildDependsOn>
-  </PropertyGroup>
-
-  <!-- This target calls the protobuf precompiler. Note that the filename is hardwired and no item list is taken -->
-  <Target Name="SerializationCompileSerializer" Inputs="$(OutputPath)$(AssemblyName).dll" Outputs="$(OutputPath)Fusee.SerializationSerializer.dll">
-    <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" />
-    <Exec Command="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
-    <Message Importance="High" Text="$(AssemblyName).dll -&gt; $(OutputPath)SerializationSerializer.dll" />
-  </Target>
-  <PropertyGroup>
-    <CleanDependsOn>
-      $(CleanDependsOn);
-      SerializationCompileClean
-    </CleanDependsOn>
-  </PropertyGroup>
-  <Target Name="SerializationCompileClean">
-    <Message Importance="High" Text="Deleting $(OutputPath)SerializationSerializer.dll" />
-    <Delete Files="$(OutputPath)SerializationSerializer.dll" />
-  </Target>
 </Project>

@@ -1,29 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.Xml;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
-
+using Transform = Fusee.Engine.Core.Scene.Transform;
 
 namespace Fusee.Examples.GeometryEditing.Core
 {
-
     [FuseeApplication(Name = "FUSEE Geometry Editing Example", Description = "Example App to show basic geometry editing in FUSEE")]
     public class GeometryEditing : RenderCanvas
     {
-        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0,1.0f);
-        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f,1.0f);
+        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0, 1.0f);
+        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f, 1.0f);
 
-        // angle and camera variables 
+        // angle and camera variables
         private static float _angleHorz = M.PiOver6 * 2.0f, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom = 8, _xPos, _yPos;
+
         private static float2 _offset;
         private static float2 _offsetInit;
         private const float RotationSpeed = 7;
@@ -34,35 +38,35 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private bool _twoTouchRepeated;
 
-        private SceneNodeContainer _parentNode;
+        private SceneNode _parentNode;
         private SceneContainer _scene;
-        private SceneRenderer _renderer;
+        private SceneRendererForward _renderer;
 
         private Dictionary<int, Geometry> _activeGeometrys;
 
-        Random rng = new Random();
+        private Random rng = new Random();
 
         //picking
         private float2 _pickPos;
+
         private ScenePicker _scenePicker;
         private PickResult _currentPick;
 
-        private SceneNodeContainer _selectedNode;
+        private SceneNode _selectedNode;
         private bool _isTranslating;
         private bool _isScaling;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
-
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
-            _parentNode = new SceneNodeContainer
+            _parentNode = new SceneNode
             {
-                Components = new List<SceneComponentContainer>(),
+                Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            var parentTrans = new TransformComponent
+            var parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -71,13 +75,9 @@ namespace Fusee.Examples.GeometryEditing.Core
             _parentNode.Components.Add(parentTrans);
 
 
-            _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
+            _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-            _scene.Children[0].Components.Insert(0, projComp);
-
-            _renderer = new SceneRenderer(_scene);
+            _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
             //////////////////////////////////////////////////////////////////////////
@@ -92,15 +92,16 @@ namespace Fusee.Examples.GeometryEditing.Core
             //AddGeometryToSceneNode(sphere, new float3(0,0,0));
 
             //Geometry cuboid = CreateGeometry.CreateCuboidGeometry(5, 2, 5);
-            //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));         
+            //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             HandleCameraAndPicking();
             InteractionHandler();
@@ -110,16 +111,16 @@ namespace Fusee.Examples.GeometryEditing.Core
             Present();
         }
 
-        private void SelectGeometry(SceneNodeContainer selectedNode)
+        private void SelectGeometry(SceneNode selectedNode)
         {
             if (selectedNode != _selectedNode && selectedNode != null)
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetMaterial().Diffuse.Color = _defaultColor;
+                    _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetMaterial().Diffuse.Color = _selectedColor;
+                _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _selectedColor);
             }
         }
 
@@ -190,15 +191,15 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 _keyTimeout = 1;
                 int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
-                _activeGeometrys.Remove(currentGeometryIndex);                
+                _activeGeometrys.Remove(currentGeometryIndex);
 
                 var zwerg = new Dictionary<int, Geometry>();
                 foreach (var key in _activeGeometrys.Keys)
                 {
-                    if(key > currentGeometryIndex)
+                    if (key > currentGeometryIndex)
                     {
-                        var test = _activeGeometrys[key];                        
-                        zwerg.Add(key-1, test);
+                        var test = _activeGeometrys[key];
+                        zwerg.Add(key - 1, test);
                     }
                     else { zwerg.Add(key, _activeGeometrys[key]); }
                 }
@@ -212,7 +213,6 @@ namespace Fusee.Examples.GeometryEditing.Core
                 _parentNode.Children.RemoveAt(currentGeometryIndex);
                 _selectedNode = null;
                 _currentPick = null;
-                
             }
 
             //Insert
@@ -236,7 +236,6 @@ namespace Fusee.Examples.GeometryEditing.Core
                     Normals = geometryMesh.Normals,
                 };
                 currentSelection.Components[2] = meshComponent;
-
             }
 
             //Extrude
@@ -260,7 +259,6 @@ namespace Fusee.Examples.GeometryEditing.Core
                     Normals = geometryMesh.Normals,
                 };
                 currentSelection.Components[2] = meshComponent;
-
             }
 
             //Add Catmull-Clark
@@ -358,12 +356,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Mouse.RightButton)
             {
                 _pickPos = Mouse.Position;
-                Diagnostics.Log(_pickPos);
+                Diagnostics.Debug(_pickPos);
                 var pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
-                _scenePicker.View = viewMatrix;
-                _scenePicker.Projection = _projection;
-                var newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                var newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -377,7 +373,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             RC.View = viewMatrix;
             //var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
-            RC.Projection = /*mtxOffset **/ _projection;
+            RC.Projection = /*mtxOffset **/ RC.Projection;
         }
 
         private void AddGeometryToSceneNode(Geometry geometry, float3 position)
@@ -386,7 +382,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             newGeo.Triangulate();
             var geometryMesh = new JometriMesh(newGeo);
 
-            var sceneNodeContainer = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeContainer = new SceneNode { Components = new List<SceneComponent>() };
 
             var meshComponent = new Mesh
             {
@@ -394,22 +390,18 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Triangles = geometryMesh.Triangles,
                 Normals = geometryMesh.Normals,
             };
-            var translationComponent = new TransformComponent
+            var translationComponent = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var materialComponent = new MaterialComponent
-            {
-                Diffuse = new MatChannelContainer(),
-                Specular = new SpecularChannelContainer(),
-            };
-            materialComponent.Diffuse.Color = _defaultColor;
+            var shaderEffect = ShaderCodeBuilder.Default;
+            shaderEffect.SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(materialComponent);
+            sceneNodeContainer.Components.Add(shaderEffect);
             sceneNodeContainer.Components.Add(meshComponent);
-            
+
             _parentNode.Children.Add(sceneNodeContainer);
             _activeGeometrys.Add(_parentNode.Children.IndexOf(sceneNodeContainer), geometry);
         }
@@ -417,8 +409,6 @@ namespace Fusee.Examples.GeometryEditing.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-           
         }
-
     }
 }
