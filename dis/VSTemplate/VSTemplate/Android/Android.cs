@@ -23,20 +23,20 @@ namespace Fusee.App.$ext_safeprojectname$.Android
         HardwareAccelerated = false,
 #endif
         ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
-    public class MainActivity : Activity
+public class MainActivity : Activity
+{
+    protected override void OnCreate(Bundle savedInstanceState)
     {
-        protected override void OnCreate(Bundle savedInstanceState)
+        base.OnCreate(savedInstanceState);
+        RequestWindowFeature(WindowFeatures.NoTitle);
+        if (SupportedOpenGLVersion() >= 3)
         {
-            base.OnCreate(savedInstanceState);
-            RequestWindowFeature(WindowFeatures.NoTitle);
-            if (SupportedOpenGLVersion() >= 3)
-            {
-                // SetContentView(new LibPaintingView(ApplicationContext, null));
+            // SetContentView(new LibPaintingView(ApplicationContext, null));
 
-                // Inject Fusee.Engine.Base InjectMe dependencies
-                IO.IOImp = new IOImp(ApplicationContext);
+            // Inject Fusee.Engine.Base InjectMe dependencies
+            IO.IOImp = new IOImp(ApplicationContext);
 
-                var fap = new Fusee.Base.Imp.Android.ApkAssetProvider(ApplicationContext);
+            var fap = new Fusee.Base.Imp.Android.ApkAssetProvider(ApplicationContext);
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -62,57 +62,57 @@ namespace Fusee.App.$ext_safeprojectname$.Android
                 });
             AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.MainCore();
+            var app = new Core.MainCore();
 
-                // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
-                app.CanvasImplementor = rci;
-                app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
+            // Inject Fusee.Engine InjectMe dependencies (hard coded)
+            RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+            app.CanvasImplementor = rci;
+            app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 
-                SetContentView(rci.View);
+            SetContentView(rci.View);
 
-                Fusee.Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
-                // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
-                // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
-            }
-            else
-            {
-                Toast.MakeText(ApplicationContext, "Hardware does not support OpenGL ES 3.0 - Aborting...", ToastLength.Long);
-                Log.Info("@string/app_name", "Hardware does not support OpenGL ES 3.0 - Aborting...");
-            }
+            Fusee.Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
+            // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
+            // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
         }
-
-        /// <summary>
-        /// Gets the supported OpenGL ES version of device.
-        /// </summary>
-        /// <returns>Hieghest supported version of OpenGL ES</returns>
-        private long SupportedOpenGLVersion()
+        else
         {
-            //based on https://android.googlesource.com/platform/cts/+/master/tests/tests/graphics/src/android/opengl/cts/OpenGlEsVersionTest.java
-            var featureInfos = PackageManager.GetSystemAvailableFeatures();
-            if (featureInfos != null && featureInfos.Length > 0)
-            {
-                foreach (FeatureInfo info in featureInfos)
-                {
-                    // Null feature name means this feature is the open gl es version feature.
-                    if (info.Name == null)
-                    {
-                        if (info.ReqGlEsVersion != FeatureInfo.GlEsVersionUndefined)
-                            return GetMajorVersion(info.ReqGlEsVersion);
-                        else
-                            return 0L;
-                    }
-                }
-            }
-            return 0L;
-        }
-
-        private static long GetMajorVersion(long raw)
-        {
-            //based on https://android.googlesource.com/platform/cts/+/master/tests/tests/graphics/src/android/opengl/cts/OpenGlEsVersionTest.java
-            long cleaned = ((raw & 0xffff0000) >> 16);
-            Log.Info("GLVersion", "OpenGL ES major version: " + cleaned);
-            return cleaned;
+            Toast.MakeText(ApplicationContext, "Hardware does not support OpenGL ES 3.0 - Aborting...", ToastLength.Long);
+            Log.Info("@string/app_name", "Hardware does not support OpenGL ES 3.0 - Aborting...");
         }
     }
+
+    /// <summary>
+    /// Gets the supported OpenGL ES version of device.
+    /// </summary>
+    /// <returns>Hieghest supported version of OpenGL ES</returns>
+    private long SupportedOpenGLVersion()
+    {
+        //based on https://android.googlesource.com/platform/cts/+/master/tests/tests/graphics/src/android/opengl/cts/OpenGlEsVersionTest.java
+        var featureInfos = PackageManager.GetSystemAvailableFeatures();
+        if (featureInfos != null && featureInfos.Length > 0)
+        {
+            foreach (FeatureInfo info in featureInfos)
+            {
+                // Null feature name means this feature is the open gl es version feature.
+                if (info.Name == null)
+                {
+                    if (info.ReqGlEsVersion != FeatureInfo.GlEsVersionUndefined)
+                        return GetMajorVersion(info.ReqGlEsVersion);
+                    else
+                        return 0L;
+                }
+            }
+        }
+        return 0L;
+    }
+
+    private static long GetMajorVersion(long raw)
+    {
+        //based on https://android.googlesource.com/platform/cts/+/master/tests/tests/graphics/src/android/opengl/cts/OpenGlEsVersionTest.java
+        long cleaned = ((raw & 0xffff0000) >> 16);
+        Log.Info("GLVersion", "OpenGL ES major version: " + cleaned);
+        return cleaned;
+    }
+}
 }
