@@ -62,7 +62,6 @@
     <None Include="Android\Android.csproj" />
     <None Include="Android\Android.vstemplate" />
     <None Include="Android\FuseeLogo.ico" />
-    <None Include="Android\NuGet.config" />
     <None Include="Android\Properties\AndroidManifest.xml" />
     <None Include="Android\Properties\AssemblyInfo.cs" />
     <None Include="Android\Resources\drawable-hdpi\icon.png" />
@@ -74,8 +73,20 @@
     <None Include="Android\Resources\values\strings.xml" />
     <None Include="Android\__PreviewImage.png" />
     <None Include="Android\__TemplateIcon.ico" />
-    <None Include="Core\**\*" />
-    <None Include="Desktop\**\*" />
+    <None Include="Core\Assets\FUSEERocket.fus" />
+    <None Include="Core\Assets\FuseeText.png" />
+    <None Include="Core\Assets\Lato-Black.ttf" />
+    <None Include="Core\Core.cs" />
+    <None Include="Core\Core.csproj" />
+    <None Include="Core\Core.vstemplate" />
+    <None Include="Core\__PreviewImage.png" />
+    <None Include="Core\__TemplateIcon.ico" />
+    <None Include="Desktop\Desktop.cs" />
+    <None Include="Desktop\Desktop.csproj" />
+    <None Include="Desktop\Desktop.vstemplate" />
+    <None Include="Desktop\FuseeLogo.ico" />
+    <None Include="Desktop\__PreviewImage.png" />
+    <None Include="Desktop\__TemplateIcon.ico" />
     <None Include="__PreviewImage.png" />
     <None Include="__TemplateIcon.ico" />
   </ItemGroup>

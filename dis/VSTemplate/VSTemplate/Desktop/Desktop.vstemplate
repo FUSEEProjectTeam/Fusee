@@ -16,7 +16,6 @@
 		<Project TargetFileName="Desktop.csproj" File="Desktop.csproj" ReplaceParameters="true">
 			<ProjectItem ReplaceParameters="false" TargetFileName="FuseeLogo.ico">FuseeLogo.ico</ProjectItem>
 			<ProjectItem ReplaceParameters="true" TargetFileName="Desktop.cs">Desktop.cs</ProjectItem>
-			<ProjectItem ReplaceParameters="false" TargetFileName="NuGet.config">NuGet.config</ProjectItem>
 		</Project>
 	</TemplateContent>
 </VSTemplate>

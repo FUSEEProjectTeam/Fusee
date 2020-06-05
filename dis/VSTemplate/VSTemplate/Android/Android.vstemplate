@@ -17,7 +17,6 @@
 			<Folder Name="Assets" />
 			<ProjectItem ReplaceParameters="false">FuseeLogo.ico</ProjectItem>
 			<ProjectItem ReplaceParameters="true" >Android.cs</ProjectItem>
-			<ProjectItem ReplaceParameters="false">NuGet.config</ProjectItem>
 			<Folder Name="Properties" />
 			<ProjectItem ReplaceParameters="true" >Properties\AndroidManifest.xml</ProjectItem>
 			<ProjectItem ReplaceParameters="false">Properties\AssemblyInfo.cs</ProjectItem>
