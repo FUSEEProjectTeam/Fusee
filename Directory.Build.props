@@ -25,9 +25,10 @@
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
     <TieredCompilation>false</TieredCompilation>
-    <Deterministic>true</Deterministic>
+
+    <!--<Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
-    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>-->
 
     <PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
 
