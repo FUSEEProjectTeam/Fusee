@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\win-x64\publish\Fusee.Engine.Player.Desktop.exe" Link="NuGet\Player.exe" PackagePath="tools\netcoreapp3.0\any\Player.exe" />
+    <Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\win-x64\publish\Fusee.Engine.Player.Desktop.exe" Link="NuGet\Player.exe" PackagePath="tools\$(TargetFramework)\any\Player.exe" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,7 +81,7 @@
     <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\FusSerialization.proto;$(BlenderAddonSourcePath)\proto\FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
     <!-- Copy the python files to the bin output folder -->
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
-    <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
+    <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" ContinueOnError="false" />
 
     <!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
     <!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
@@ -93,7 +93,7 @@
     <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
 
     <ItemGroup>
-      <Content Include="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\**" PackagePath="tools\netcoreapp3.0\any\BlenderScripts\addons\$(BlenderAddOnProjectName)" />
+      <Content Include="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\**" PackagePath="tools\$(TargetFramework)\any\BlenderScripts\addons\$(BlenderAddOnProjectName)" />
     </ItemGroup>
   </Target>
 </Project>
