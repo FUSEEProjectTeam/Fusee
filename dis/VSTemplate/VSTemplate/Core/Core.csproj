@@ -13,6 +13,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fusee.Core" Version="0.8.0" />
+    <PackageReference Include="Fusee.Core" Version="0.8.1" />
   </ItemGroup>
 </Project>
