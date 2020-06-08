@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var outs = new List<string>();
             var texCount = 0;
 
-            var ssaoString = "G_SSAO";
+            var ssaoString = "Ssao";
             for (var i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
