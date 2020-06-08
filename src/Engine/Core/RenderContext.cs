@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _rci;
 
         private readonly ShaderEffectManager _shaderEffectManager;
-        private readonly Dictionary<ShaderEffect, CompiledShaderEffect> _allCompiledShaderEffects = new Dictionary<ShaderEffect, CompiledShaderEffect>();
+        private readonly Dictionary<Suid, CompiledShaderEffect> _allCompiledShaderEffects = new Dictionary<Suid, CompiledShaderEffect>();
 
         /// <summary>
         /// The currently used <see cref="ShaderEffect"/> is set in <see cref="SetShaderEffect(ShaderEffect)"/>.
@@ -983,7 +983,7 @@ namespace Fusee.Engine.Core
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
-            _allCompiledShaderEffects.Add(ef, compiledEffect);
+            _allCompiledShaderEffects.Add(ef.SessionUniqueIdentifier, compiledEffect);
 
             // register built shader effect
             _shaderEffectManager.RegisterShaderEffect(ef);
@@ -1001,7 +1001,7 @@ namespace Fusee.Engine.Core
         /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
         private void CreateAllShaderEffectVariables(ShaderEffect ef, Dictionary<string, ShaderParamInfo> activeUniforms)
         {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect))
+            if (!_allCompiledShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out var compiledEffect))
                 throw new ArgumentException("ShaderEffect isn't build yet - no compiled effect found!");
 
             if (compiledEffect.Parameters.Count != 0)
@@ -1069,7 +1069,7 @@ namespace Fusee.Engine.Core
         /// <param name="paramValue">The parameter's value.</param>
         internal void UpdateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
         {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
+            if (!_allCompiledShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out var compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
 
             //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
             //Because of this we do not need to take about which passes this effect belongs to.
@@ -1090,7 +1090,7 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The ShaderEffect.</param>
         internal void RemoveShader(ShaderEffect ef)
         {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out var sFxParam)) return;
+            if (!_allCompiledShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out var sFxParam)) return;
 
             foreach (var program in sFxParam.ShaderPrograms)
             {
@@ -1434,7 +1434,7 @@ namespace Fusee.Engine.Core
         {
             if (_currentShaderEffect == null) return;
 
-            var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
+            var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect.SessionUniqueIdentifier];
 
             for (var i = 0; i < compiledShaderEffect.ShaderPrograms.Length; i++)
             {
