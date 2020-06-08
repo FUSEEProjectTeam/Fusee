@@ -1,5 +1,6 @@
 ﻿using Fusee.Math.Core;
 using ProtoBuf;
+using System;
 
 namespace Fusee.Serialization.V1
 {
@@ -11,7 +12,7 @@ namespace Fusee.Serialization.V1
     // taken from http://www.codeproject.com/Articles/642677/Protobuf-net-the-unofficial-manual
     // Here is where I start disliking Protobuf...Note-to-self: Write own serialization
     [ProtoInclude(100, typeof(SpecularChannelContainer))]
-    public class MatChannelContainer
+    public class MatChannelContainer : IEquatable<MatChannelContainer>
     {
         /// <summary>
         /// The color of the light component.
@@ -30,13 +31,91 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(3)]
         public float Mix;
+
+        #region equals
+
+        /// <summary>
+        /// Compares two instances for equality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does equal right; false otherwise.
+        /// </returns>
+        public static bool operator ==(MatChannelContainer lhs, MatChannelContainer rhs)
+        {
+            // Check for null on left side.
+            if (lhs is null)
+            {
+                if (rhs is null)
+                    return true;
+
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+
+        /// <summary>
+        /// Compares two instances for inequality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does not equal right; false otherwise.
+        /// </returns>
+        public static bool operator !=(MatChannelContainer lhs, MatChannelContainer rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
+        /// Indicates whether the MatChannelContainer is equal to another one.
+        /// </summary>
+        /// <param name="other">The MatChannelContainer to compare with this one.</param>
+        /// <returns>
+        /// true if the current MatChannelContainer is equal to the other; otherwise, false.
+        /// </returns>
+        public bool Equals(MatChannelContainer other)
+        {
+            if (other is null)
+                return false;
+
+            return other.Color == Color && other.Texture == Texture && other.Mix == Mix;
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>
+        /// True if the instances are equal; false otherwise.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+                return false;
+            else
+                return Equals((MatChannelContainer)obj);
+        }
+
+        /// <summary>
+        /// Returns the hash for this instance.
+        /// </summary>        
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Color, Mix, Texture);
+        }
+
+        #endregion
     }
 
     /// <summary>
     /// The specular channel definition. 
     /// </summary>
     [ProtoContract]
-    public class SpecularChannelContainer : MatChannelContainer
+    public class SpecularChannelContainer : MatChannelContainer, IEquatable<SpecularChannelContainer>
     {
         /// <summary>
         /// The material's shininess.
@@ -49,13 +128,92 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(2)]
         public float Intensity;
+
+        #region equals
+
+        /// <summary>
+        /// Compares two instances for equality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does equal right; false otherwise.
+        /// </returns>
+        public static bool operator ==(SpecularChannelContainer lhs, SpecularChannelContainer rhs)
+        {
+            // Check for null on left side.
+            if (lhs is null)
+            {
+                if (rhs is null)
+                    return true;
+
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+
+        /// <summary>
+        /// Compares two instances for inequality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does not equal right; false otherwise.
+        /// </returns>
+        public static bool operator !=(SpecularChannelContainer lhs, SpecularChannelContainer rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
+        /// Indicates whether the MatChannelContainer is equal to another one.
+        /// </summary>
+        /// <param name="other">The MatChannelContainer to compare with this one.</param>
+        /// <returns>
+        /// true if the current MatChannelContainer is equal to the other; otherwise, false.
+        /// </returns>
+        public bool Equals(SpecularChannelContainer other)
+        {
+            if (other is null)
+                return false;
+
+            return other.Color == Color && other.Texture == Texture && other.Mix == Mix
+                && other.Shininess == Shininess && other.Intensity == Intensity;
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>
+        /// True if the instances are equal; false otherwise.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+                return false;
+            else
+                return Equals((SpecularChannelContainer)obj);
+        }
+
+        /// <summary>
+        /// Returns the hash for this instance.
+        /// </summary>        
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Color, Mix, Texture, Shininess, Intensity);
+        }
+
+        #endregion
     }
 
     /// <summary>
     /// If used, the material shows bumps defined by a normal map (a texture in RGB).
     /// </summary>
     [ProtoContract]
-    public class NormapMapChannelContainer
+    public class NormapMapChannelContainer : IEquatable<NormapMapChannelContainer>
     {
         /// <summary>
         /// The texture to read the normal information from.
@@ -68,6 +226,84 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(2)]
         public float Intensity;
+
+        #region equals
+
+        /// <summary>
+        /// Compares two instances for equality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does equal right; false otherwise.
+        /// </returns>
+        public static bool operator ==(NormapMapChannelContainer lhs, NormapMapChannelContainer rhs)
+        {
+            // Check for null on left side.
+            if (lhs is null)
+            {
+                if (rhs is null)
+                    return true;
+
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+
+        /// <summary>
+        /// Compares two instances for inequality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does not equal right; false otherwise.
+        /// </returns>
+        public static bool operator !=(NormapMapChannelContainer lhs, NormapMapChannelContainer rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
+        /// Indicates whether the MatChannelContainer is equal to another one.
+        /// </summary>
+        /// <param name="other">The MatChannelContainer to compare with this one.</param>
+        /// <returns>
+        /// true if the current MatChannelContainer is equal to the other; otherwise, false.
+        /// </returns>
+        public bool Equals(NormapMapChannelContainer other)
+        {
+            if (other is null)
+                return false;
+
+            return other.Texture == Texture && other.Texture == Texture && other.Intensity == Intensity;
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>
+        /// True if the instances are equal; false otherwise.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+                return false;
+            else
+                return Equals((NormapMapChannelContainer)obj);
+        }
+
+        /// <summary>
+        /// Returns the hash for this instance.
+        /// </summary>        
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Texture, Intensity);
+        }
+
+        #endregion
     }
 
     /// <summary>
@@ -76,7 +312,7 @@ namespace Fusee.Serialization.V1
     /// </summary>
     [ProtoContract]
     [ProtoInclude(200, typeof(FusMaterialPBR))]
-    public class FusMaterial : FusComponent
+    public class FusMaterial : FusComponent, IEquatable<FusMaterial>
     {
         #region Albedo
         /// <summary>
@@ -141,6 +377,86 @@ namespace Fusee.Serialization.V1
         [ProtoMember(4)]
         public NormapMapChannelContainer NormalMap;
         #endregion
-    }
 
+        #region equals
+
+        /// <summary>
+        /// Compares two instances for equality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does equal right; false otherwise.
+        /// </returns>
+        public static bool operator ==(FusMaterial lhs, FusMaterial rhs)
+        {
+            // Check for null on left side.
+            if (lhs is null)
+            {
+                if (rhs is null)
+                    return true;
+
+                return false;
+            }
+            // Equals handles case of null on right side.
+            return lhs.Equals(rhs);
+        }
+
+        /// <summary>
+        /// Compares two instances for inequality.
+        /// </summary>
+        /// <param name="lhs">The first instance.</param>
+        /// <param name="rhs">The second instance.</param>
+        /// <returns>
+        /// True, if left does not equal right; false otherwise.
+        /// </returns>
+        public static bool operator !=(FusMaterial lhs, FusMaterial rhs)
+        {
+            return !(lhs == rhs);
+        }
+
+        /// <summary>
+        /// Indicates whether the NormapMapChannel is equal to another one.
+        /// </summary>
+        /// <param name="other">The NormapMapChannel to compare with this one.</param>
+        /// <returns>
+        /// true if the current NormapMapChannel is equal to the other; otherwise, false.
+        /// </returns>
+        public bool Equals(FusMaterial other)
+        {
+            if (other is null)
+                return false;
+            return other.Albedo == Albedo
+                && other.Emissive == Emissive
+                && other.NormalMap == NormalMap
+                && other.Specular == Specular;
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>
+        /// True if the instances are equal; false otherwise.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if ((obj is null) || !GetType().Equals(obj.GetType()))
+                return false;
+            else
+                return Equals((FusMaterial)obj);
+
+        }
+
+        /// <summary>
+        /// Returns the hash for this instance.
+        /// </summary>
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Albedo, Emissive, NormalMap, Specular);
+        }
+
+        #endregion
+
+    }
 }
