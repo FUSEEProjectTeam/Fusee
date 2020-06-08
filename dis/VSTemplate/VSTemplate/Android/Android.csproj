@@ -58,7 +58,7 @@
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
-	  <PackageReference Include="Fusee.Android" Version="0.8.0" />
+	  <PackageReference Include="Fusee.Android" Version="0.8.1" />
 	  <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
   <!-- Assets -->
@@ -81,9 +81,6 @@
     <AndroidResource Include="Resources\drawable-mdpi\icon.png" />
     <AndroidResource Include="Resources\drawable-xhdpi\icon.png" />
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="NuGet.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->
