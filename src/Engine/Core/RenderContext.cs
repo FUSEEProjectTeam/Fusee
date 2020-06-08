@@ -1470,9 +1470,6 @@ namespace Fusee.Engine.Core
                     // After rendering always cleanup pending meshes
                     _meshManager.Cleanup();
                     _textureManager.Cleanup();
-
-                    // After rendering all passes cleanup shader effect
-                    _shaderEffectManager.Cleanup();
                 }
                 catch (Exception ex)
                 {

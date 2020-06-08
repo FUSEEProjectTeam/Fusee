@@ -111,7 +111,7 @@ namespace Fusee.Engine.Core.Scene
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
     /// TODO (mr): Move to Fusee.Engine.Common
-    public class ShaderEffect : SceneComponent, IDisposable
+    public class ShaderEffect : SceneComponent
     {
         /// <summary>
         /// The ShaderEffect'S uniform parameters and their values.
@@ -273,37 +273,22 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public int Count => ParamDecl.Count;
 
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
         /// <summary>
-        /// Invoke deletion of shaders on GPU
+        /// Invokes deletion of shaders on GPU
         /// </summary>
-        /// <param name="disposing"></param>
-        protected virtual void Dispose(bool disposing)
+        protected void Dispose()
         {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.Dispose));
-                }
-
-                disposedValue = true;
-            }
+            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.Dispose));
         }
 
         /// <summary>
-        /// Invoke deletion of shaders on GPU
+        /// Invokes deletion of shaders on GPU
         /// </summary>
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
+        ~ShaderEffect()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            Dispose();
         }
 
-        #endregion
     }
 
     /// <summary>

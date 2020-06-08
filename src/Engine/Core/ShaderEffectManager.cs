@@ -9,8 +9,6 @@ namespace Fusee.Engine.Core
     {
         private readonly RenderContext _rc;
 
-        private readonly Stack<ShaderEffect> _shaderEffectsToBeDeleted = new Stack<ShaderEffect>();
-
         private readonly Dictionary<Suid, ShaderEffect> _allShaderEffects = new Dictionary<Suid, ShaderEffect>();
 
         private void Remove(ShaderEffect ef)
@@ -29,6 +27,7 @@ namespace Fusee.Engine.Core
             {
                 case ShaderEffectChangedEnum.Dispose:
                     Remove(senderSF);
+                    _allShaderEffects.Remove(senderSF.SessionUniqueIdentifier);
                     break;
                 case ShaderEffectChangedEnum.UniformUpdated:
                     _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
@@ -62,21 +61,5 @@ namespace Fusee.Engine.Core
         {
             return _allShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out var shaderEffect) ? shaderEffect : null;
         }
-
-        /// <summary>
-        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
-        /// </summary>
-        public void Cleanup()
-        {
-            while (_shaderEffectsToBeDeleted.Count > 0)
-            {
-                var tmPop = _shaderEffectsToBeDeleted.Pop();
-                // remove one ShaderEffect from _allShaderEffects
-                _allShaderEffects.Remove(tmPop.SessionUniqueIdentifier);
-                // Remove one ShaderEffect from Memory
-                Remove(tmPop);
-            }
-        }
-
     }
 }
