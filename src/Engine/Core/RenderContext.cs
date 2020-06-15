@@ -114,7 +114,7 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<Effect, CompiledEffects> _allCompiledEffects = new Dictionary<Effect, CompiledEffects>();
 
         /// <summary>
-        /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect)"/>.
+        /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
         private Effect _currentEffect;
 
@@ -215,21 +215,21 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.View, _view);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.View, _view);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelView, ModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IView, InvView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IView, InvView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelView, InvModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITView, InvTransView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITView, InvTransView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelView, InvTransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TView, TransView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TView, TransView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelView, TransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
@@ -945,6 +945,7 @@ namespace Fusee.Engine.Core
         /// Will compile a shader by calling <see cref="IRenderContextImp.CreateShaderProgram(string, string, string)"/> if it hasn't been compiled yet.
         /// </summary>
         /// <param name="ef">The effect.</param>
+        /// <param name="renderForward"></param>
         /// <remarks>A Effect must be attached to a context before you can render geometry with it. The main
         /// task performed in this method is compiling the provided shader source code and uploading the shaders to
         /// the gpu.</remarks>
@@ -968,7 +969,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
-        /// <param name="renderForward">Is this effect used in a forward or a deferred renderer?</param>
+        /// <param name="renderForward">Is a forward or deferred renderer used? Will create the proper shader for the render method.</param>
         /// <param name="ef">The effect.</param>
         internal void CreateShaderProgram(Effect ef, bool renderForward = true)
         {
@@ -976,8 +977,14 @@ namespace Fusee.Engine.Core
                 throw new NullReferenceException("No Effect found!");
 
             // Is this shader effect already built?
-            if (_effectManager.GetEffect(ef) != null)
-                return;
+            var fx = _effectManager.GetEffect(ef);
+            if (fx != null)
+            {
+                if(renderForward && _allCompiledEffects[fx].ForwardFx != null)
+                    return;
+                if (!renderForward && _allCompiledEffects[fx].DeferredFx != null)
+                    return;
+            }
 
             if (_rci == null)
                 throw new NullReferenceException("No render context Implementation found!");
@@ -1003,27 +1010,31 @@ namespace Fusee.Engine.Core
                 {
                     var surfEffect = (SurfaceEffect)ef;
 
-                    surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
-
                     var renderDependentShards = new List<KeyValuePair<ShardCategory, string>>();
+
+                    //TODO: try to suppress adding these parameters if the effect is used only for deferred rendering.
+                    //May be difficult because we'd need to remove or add them (and only them) depending on the render method
+                    if (fx == null) //effect was never build before
+                    {
+                        surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
+                        foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
+                            surfEffect.ParamDecl.Add(dcl.Name, dcl);
+                    }
 
                     if (renderForward)
                     {
-                        foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
-                            surfEffect.ParamDecl.Add(dcl.Name, dcl);
-
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
-                        
+
                     }
                     else
                     {
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
                         renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
-                        
+
                     }
 
                     vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
@@ -1058,8 +1069,10 @@ namespace Fusee.Engine.Core
             {
                 if (_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledFx))
                 {
-                    CreateAllEffectVariables(ef, compiledFx.ForwardFx, shaderParams);
                     compiledFx.ForwardFx = compiledEffect;
+                    CreateAllEffectVariables(ef, compiledFx.ForwardFx, shaderParams);
+                    _allCompiledEffects[ef] = compiledFx;
+                    
                 }
                 else
                 {
@@ -1073,6 +1086,7 @@ namespace Fusee.Engine.Core
                 if (_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledFx))
                 {
                     compiledFx.DeferredFx = compiledEffect;
+                    _allCompiledEffects[ef] = compiledFx;
                 }
                 else
                 {
@@ -1084,14 +1098,13 @@ namespace Fusee.Engine.Core
 
             // register built shader effect
             _effectManager.RegisterEffect(ef);
-
-            
         }
 
         /// <summary>
         /// Gets the <see cref="CompiledEffect"/> from the RC's dictionary and creates all effect parameters. 
         /// </summary>
         /// <param name="ef">The ShaderEffect the parameters are created for.</param>
+        /// <param name="cFx">The compiled shader effect for which the effect variables will be created.</param>
         /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
         private void CreateAllEffectVariables(Effect ef, CompiledEffect cFx, Dictionary<string, ShaderParamInfo> activeUniforms)
         {
@@ -1530,6 +1543,7 @@ namespace Fusee.Engine.Core
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="m">The mesh that should be rendered.</param>
+        /// <param name="renderForward">Is a forward or deferred renderer used? Will fetch the proper shader for the render method.</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
@@ -1544,9 +1558,24 @@ namespace Fusee.Engine.Core
             {
                 CompiledEffect cFx;
                 if (renderForward)
+                {
+                    if (compiledEffect.ForwardFx == null)
+                    {
+                        CreateShaderProgram(_currentEffect, renderForward);
+                        compiledEffect = _allCompiledEffects[_currentEffect];
+                    }
+
                     cFx = compiledEffect.ForwardFx;
+                }
                 else
+                {
+                    if (compiledEffect.DeferredFx == null)
+                    {
+                        CreateShaderProgram(_currentEffect, renderForward);
+                        compiledEffect = _allCompiledEffects[_currentEffect];
+                    }
                     cFx = compiledEffect.DeferredFx;
+                }
 
                 SetShaderProgram(cFx.GpuHandle);
                 SetRenderStateSet(_currentEffect.RendererStates);

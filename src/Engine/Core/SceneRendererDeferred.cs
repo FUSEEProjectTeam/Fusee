@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
 
             if (_currentPass != RenderPasses.Shadow)
             {
-                
+
                 _rc.SetEffect(effect, false);
                 _state.Effect = effect;
             }
@@ -181,7 +181,7 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
-            _rc.Render(mesh, _currentPass == RenderPasses.Shadow? true : false);
+            _rc.Render(mesh, _currentPass == RenderPasses.Shadow ? true : false);
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);

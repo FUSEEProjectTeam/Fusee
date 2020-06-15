@@ -23,8 +23,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private const float RotationSpeed = 7;
 
-        private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneContainer _sponzaScene;
+        private SceneRendererDeferred _sceneRendererDeferred;
+        private SceneRendererForward _sceneRendererForward;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -63,7 +64,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            _sponzaScene = AssetStorage.Get<SceneContainer>("sponza.fus");
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
@@ -140,13 +141,13 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 },
             };
 
-            _rocketScene.Children.Add(new SceneNode()
+            _sponzaScene.Children.Add(new SceneNode()
             {
                 Name = "Light",
                 Children = aLotOfLights
             });
 
-            _rocketScene.Children.Add(
+            _sponzaScene.Children.Add(
                 new SceneNode()
                 {
                     Name = "Cam",
@@ -159,11 +160,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
             );
 
             // Wrap a SceneRenderer around the scene.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
+            _sceneRendererForward = new SceneRendererForward(_sponzaScene);
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
         }
+
+        private bool _renderDeferred = true;
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -210,10 +214,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
             }
 
             if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
+                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
 
             if (Keyboard.IsKeyDown(KeyCodes.G))
-                _sceneRenderer.SsaoOn = !_sceneRenderer.SsaoOn;
+                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
 
             if (Mouse.LeftButton)
             {
@@ -244,7 +248,16 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 200);
 
-            _sceneRenderer.Render(RC);
+            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
+                _renderDeferred = false;
+            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
+                _renderDeferred = true;
+
+            if (_renderDeferred)
+                _sceneRendererDeferred.Render(RC);
+            else
+                _sceneRendererForward.Render(RC);
+
             //_guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
