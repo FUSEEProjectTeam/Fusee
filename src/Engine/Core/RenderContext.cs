@@ -980,7 +980,7 @@ namespace Fusee.Engine.Core
             var fx = _effectManager.GetEffect(ef);
             if (fx != null)
             {
-                if(renderForward && _allCompiledEffects[fx].ForwardFx != null)
+                if (renderForward && _allCompiledEffects[fx].ForwardFx != null)
                     return;
                 if (!renderForward && _allCompiledEffects[fx].DeferredFx != null)
                     return;
@@ -1072,7 +1072,7 @@ namespace Fusee.Engine.Core
                     compiledFx.ForwardFx = compiledEffect;
                     CreateAllEffectVariables(ef, compiledFx.ForwardFx, shaderParams);
                     _allCompiledEffects[ef] = compiledFx;
-                    
+
                 }
                 else
                 {
