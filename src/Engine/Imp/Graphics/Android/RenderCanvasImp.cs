@@ -335,7 +335,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private Action _run;
         internal Context AndroidContext;
         private Stopwatch _stopwatch = new Stopwatch();
-        private bool _wasLoaded = false;
 
         #endregion Fields
 
@@ -373,6 +372,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion Constructors
 
         #region Overrides
+
+        private bool _wasLoaded = false;
 
         protected override void OnLoad(EventArgs e)
         {

@@ -143,8 +143,8 @@ namespace Fusee.Engine.Core
 
             if (_currentPass != RenderPasses.Shadow)
             {
-                _rc.CreateShaderProgram(false, effect);
-                _rc.SetEffect(effect);
+                
+                _rc.SetEffect(effect, false);
                 _state.Effect = effect;
             }
         }
@@ -181,7 +181,7 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
-            _rc.Render(mesh);
+            _rc.Render(mesh, _currentPass == RenderPasses.Shadow? true : false);
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
@@ -202,7 +202,7 @@ namespace Fusee.Engine.Core
 
             //If we render the shadow pass: ignore ShaderEffects of the SceneNodes and use the ones that are needed to render the shadow maps.
             if (_currentPass != RenderPasses.Shadow)
-                _rc.SetEffect(_state.Effect);
+                _rc.SetEffect(_state.Effect, false);
 
         }
         #endregion
@@ -556,7 +556,7 @@ namespace Fusee.Engine.Core
                                     if (_lightingPassEffectPoint == null)
                                     {
                                         _lightingPassEffectPoint = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableCubeMap)shadowParams.ShadowMap);
-                                        _rc.CreateShaderProgram(true, _lightingPassEffectPoint);
+                                        _rc.CreateShaderProgram(_lightingPassEffectPoint);
                                     }
                                     _lightingPassEffect = _lightingPassEffectPoint;
                                 }
@@ -567,7 +567,7 @@ namespace Fusee.Engine.Core
                                     if (_lightingPassEffectNoShadow == null)
                                     {
                                         _lightingPassEffectNoShadow = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
-                                        _rc.CreateShaderProgram(true, _lightingPassEffectNoShadow);
+                                        _rc.CreateShaderProgram(_lightingPassEffectNoShadow);
                                     }
                                     _lightingPassEffect = _lightingPassEffectNoShadow;
                                 }
@@ -581,7 +581,7 @@ namespace Fusee.Engine.Core
                                     if (_lightingPassEffectCascaded == null)
                                     {
                                         _lightingPassEffectCascaded = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableArrayTexture)shadowParams.ShadowMap, shadowParams.ClipPlanesForLightMat, NumberOfCascades, _texClearColor);
-                                        _rc.CreateShaderProgram(true, _lightingPassEffectCascaded);
+                                        _rc.CreateShaderProgram(_lightingPassEffectCascaded);
                                     }
                                     _lightingPassEffect = _lightingPassEffectCascaded;
                                 }
@@ -590,7 +590,7 @@ namespace Fusee.Engine.Core
                                     if (_lightingPassEffectOther == null)
                                     {
                                         _lightingPassEffectOther = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
-                                        _rc.CreateShaderProgram(true, _lightingPassEffectOther);
+                                        _rc.CreateShaderProgram(_lightingPassEffectOther);
                                     }
                                     _lightingPassEffect = _lightingPassEffectOther;
                                 }
@@ -601,7 +601,7 @@ namespace Fusee.Engine.Core
                                 if (_lightingPassEffectOther == null)
                                 {
                                     _lightingPassEffectOther = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
-                                    _rc.CreateShaderProgram(true, _lightingPassEffectOther);
+                                    _rc.CreateShaderProgram(_lightingPassEffectOther);
                                 }
                                 _lightingPassEffect = _lightingPassEffectOther;
                                 break;
@@ -615,7 +615,7 @@ namespace Fusee.Engine.Core
                     if (_lightingPassEffectNoShadow == null)
                     {
                         _lightingPassEffectNoShadow = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
-                        _rc.CreateShaderProgram(true, _lightingPassEffectNoShadow);
+                        _rc.CreateShaderProgram(_lightingPassEffectNoShadow);
                     }
                     _lightingPassEffect = _lightingPassEffectNoShadow;
                 }
@@ -647,7 +647,7 @@ namespace Fusee.Engine.Core
             if (_shadowEffect == null)
             {
                 _shadowEffect = MakeEffect.ShadowMapEffect();
-                _rc.CreateShaderProgram(true, _shadowEffect);
+                _rc.CreateShaderProgram(_shadowEffect);
             }
 
             foreach (var lightVisRes in LightViseratorResults)
@@ -666,14 +666,14 @@ namespace Fusee.Engine.Core
                             if (_shadowCubeMapEffect == null)
                             {
                                 _shadowCubeMapEffect = MakeEffect.ShadowCubeMapEffect(shadowParams.LightSpaceMatrices);
-                                _rc.CreateShaderProgram(true, _shadowCubeMapEffect);
+                                _rc.CreateShaderProgram(_shadowCubeMapEffect);
                             }
                             else
                                 _shadowCubeMapEffect.SetFxParam($"LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
 
                             _shadowCubeMapEffect.SetFxParam("LightMatClipPlanes", shadowParams.ClipPlanesForLightMat[0]);
                             _shadowCubeMapEffect.SetFxParam("LightPos", lightVisRes.Item2.WorldSpacePos);
-                            _rc.SetEffect(_shadowCubeMapEffect);
+                            _rc.SetEffect(_shadowCubeMapEffect, true);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMap);
 
@@ -688,7 +688,7 @@ namespace Fusee.Engine.Core
                             if (NumberOfCascades == 1)
                             {
                                 _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);
-                                _rc.SetEffect(_shadowEffect);
+                                _rc.SetEffect(_shadowEffect, true);
                                 _rc.SetRenderTarget((IWritableTexture)shadowParams.ShadowMap);
 
                                 _lightFrustum = shadowParams.Frustums[0];
@@ -700,7 +700,7 @@ namespace Fusee.Engine.Core
                                 for (int i = 0; i < NumberOfCascades; i++)
                                 {
                                     _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[i]);
-                                    _rc.SetEffect(_shadowEffect);
+                                    _rc.SetEffect(_shadowEffect, true);
                                     _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
 
                                     _lightFrustum = shadowParams.Frustums[i];
@@ -718,7 +718,7 @@ namespace Fusee.Engine.Core
                         {
                             DoFrumstumCulling = true;
                             _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);
-                            _rc.SetEffect(_shadowEffect);
+                            _rc.SetEffect(_shadowEffect, false);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
 
                             _lightFrustum = shadowParams.Frustums[0];
@@ -746,7 +746,7 @@ namespace Fusee.Engine.Core
             if (_ssaoTexEffect == null)
             {
                 _ssaoTexEffect = MakeEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes), 4);
-                _rc.CreateShaderProgram(true, _ssaoTexEffect);
+                _rc.CreateShaderProgram(_ssaoTexEffect);
             }
             _rc.SetEffect(_ssaoTexEffect);
             _rc.SetRenderTarget(_ssaoRenderTexture);
@@ -757,7 +757,7 @@ namespace Fusee.Engine.Core
             if (_blurEffect == null)
             {
                 _blurEffect = MakeEffect.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
-                _rc.CreateShaderProgram(true, _blurEffect);
+                _rc.CreateShaderProgram(_blurEffect);
             }
             _rc.SetEffect(_blurEffect);
             _rc.SetRenderTarget(_blurRenderTex);
@@ -773,7 +773,7 @@ namespace Fusee.Engine.Core
             if (_fxaaEffect == null)
             {
                 _fxaaEffect = MakeEffect.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
-                _rc.CreateShaderProgram(true, _fxaaEffect);
+                _rc.CreateShaderProgram(_fxaaEffect);
             }
             _rc.SetEffect(_fxaaEffect);
 
@@ -878,6 +878,20 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
+
+        /// <summary>
+        /// Sets the initial values in the <see cref="RendererState"/>.
+        /// </summary>
+        protected override void InitState()
+        {
+            _state.Clear();
+            _state.Model = float4x4.Identity;
+            _state.CanvasXForm = float4x4.Identity;
+            _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
+            _state.Effect = MakeEffect.Default;
+            _rc.CreateShaderProgram(_state.Effect, false);
+            _state.RenderUndoStates = new RenderStateSet();
+        }
 
         private void DeleteBuffers(object sender, EventArgs e)
         {

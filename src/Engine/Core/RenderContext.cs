@@ -111,7 +111,7 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _rci;
 
         private readonly EffectManager _effectManager;
-        private readonly Dictionary<Effect, CompiledEffect> _allCompiledEffects = new Dictionary<Effect, CompiledEffect>();
+        private readonly Dictionary<Effect, CompiledEffects> _allCompiledEffects = new Dictionary<Effect, CompiledEffects>();
 
         /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect)"/>.
@@ -948,7 +948,7 @@ namespace Fusee.Engine.Core
         /// <remarks>A Effect must be attached to a context before you can render geometry with it. The main
         /// task performed in this method is compiling the provided shader source code and uploading the shaders to
         /// the gpu.</remarks>
-        public void SetEffect(Effect ef)
+        public void SetEffect(Effect ef, bool renderForward = true)
         {
             if (_rci == null)
                 throw new NullReferenceException("No render context Implementation found!");
@@ -957,21 +957,20 @@ namespace Fusee.Engine.Core
                 throw new NullReferenceException("No Effect found!");
 
             // Is this shader effect already built?
-            if (_effectManager.GetEffect(ef) != null)
+            if (_effectManager.GetEffect(ef) == null)
             {
-                _currentEffect = ef;
-                return;
+                CreateShaderProgram(ef, renderForward);
             }
-
-            throw new KeyNotFoundException("Trying to set unknown effect!");
+            _currentEffect = ef;
+            return;
         }
 
         /// <summary>
-        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect)"/>.
+        /// Creates a shader program on the gpu. Needs to be called before <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
         /// <param name="renderForward">Is this effect used in a forward or a deferred renderer?</param>
         /// <param name="ef">The effect.</param>
-        public void CreateShaderProgram(bool renderForward, Effect ef)
+        internal void CreateShaderProgram(Effect ef, bool renderForward = true)
         {
             if (ef == null)
                 throw new NullReferenceException("No Effect found!");
@@ -986,30 +985,58 @@ namespace Fusee.Engine.Core
             var compiledEffect = new CompiledEffect();
             var shaderParams = new Dictionary<string, ShaderParamInfo>();
 
+            string vert = string.Empty;
+            string geom = string.Empty;
+            string frag = string.Empty;
 
-            RenderIndependendEffect riFx;
             try // to compile all the shaders
             {
                 var efType = ef.GetType();
-
                 if (efType == typeof(ShaderEffect))
                 {
                     var shaderEffect = (ShaderEffect)ef;
-                    riFx = new RenderIndependendEffect(CompiledEffectUsage.Unknown, shaderEffect);
+                    vert = shaderEffect.VertexShaderSrc;
+                    geom = shaderEffect.GeometryShaderSrc;
+                    frag = shaderEffect.PixelShaderSrc;
                 }
                 else
                 {
                     var surfEffect = (SurfaceEffect)ef;
-                    riFx = new RenderIndependendEffect(CompiledEffectUsage.Unknown, surfEffect);
-                }
 
-                var shaderOnGpu = _rci.CreateShaderProgram(riFx.VS, riFx.PS, riFx.GS);
+                    surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
+
+                    var renderDependentShards = new List<KeyValuePair<ShardCategory, string>>();
+
+                    if (renderForward)
+                    {
+                        foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
+                            surfEffect.ParamDecl.Add(dcl.Name, dcl);
+
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
+                        
+                    }
+                    else
+                    {
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
+                        renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                        
+                    }
+
+                    vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
+                    geom = SurfaceEffect.JoinShards(surfEffect.GeometryShaderSrc);
+                    frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
+                }
+                var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
                 var activeUniforms = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
 
                 if (activeUniforms.Count == 0)
                 {
                     var ex = new Exception();
-                    Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { riFx.VS, riFx.PS, riFx.GS }); ;
+                    Diagnostics.Error("Error while compiling shader for pass - couldn't get parameters form the gpu!", ex, new string[] { vert, geom, frag }); ;
                     throw new Exception("Error while compiling shader for pass.", ex);
                 }
 
@@ -1023,16 +1050,42 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                Diagnostics.Error("Error while compiling shader ", ex, new string[] { riFx.VS, riFx.PS, riFx.GS });
+                Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
                 throw new Exception("Error while compiling shader ", ex);
             }
 
-            _allCompiledEffects.Add(ef, compiledEffect);
+            if (renderForward)
+            {
+                if (_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledFx))
+                {
+                    CreateAllEffectVariables(ef, compiledFx.ForwardFx, shaderParams);
+                    compiledFx.ForwardFx = compiledEffect;
+                }
+                else
+                {
+                    var cFx = new CompiledEffects() { ForwardFx = compiledEffect };
+                    CreateAllEffectVariables(ef, cFx.ForwardFx, shaderParams);
+                    _allCompiledEffects.Add(ef, cFx);
+                }
+            }
+            else
+            {
+                if (_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledFx))
+                {
+                    compiledFx.DeferredFx = compiledEffect;
+                }
+                else
+                {
+                    var cFx = new CompiledEffects() { DeferredFx = compiledEffect };
+                    CreateAllEffectVariables(ef, cFx.DeferredFx, shaderParams);
+                    _allCompiledEffects.Add(ef, cFx);
+                }
+            }
 
             // register built shader effect
             _effectManager.RegisterEffect(ef);
 
-            CreateAllEffectVariables(ef, shaderParams);
+            
         }
 
         /// <summary>
@@ -1040,12 +1093,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="ef">The ShaderEffect the parameters are created for.</param>
         /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
-        private void CreateAllEffectVariables(Effect ef, Dictionary<string, ShaderParamInfo> activeUniforms)
+        private void CreateAllEffectVariables(Effect ef, CompiledEffect cFx, Dictionary<string, ShaderParamInfo> activeUniforms)
         {
-            if (!_allCompiledEffects.TryGetValue(ef, out var compiledEffect))
-                throw new ArgumentException("Effect isn't build yet - no compiled effect found!");
-
-            if (compiledEffect.ActiveUniforms.Count != 0)
+            if (cFx.ActiveUniforms.Count != 0)
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active uniforms and create a EffectParam for each one.
@@ -1068,7 +1118,7 @@ namespace Fusee.Engine.Core
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
-                compiledEffect.ActiveUniforms.Add(activeUniform.Key, effectParam);
+                cFx.ActiveUniforms.Add(activeUniform.Key, effectParam);
             }
         }
 
@@ -1099,17 +1149,24 @@ namespace Fusee.Engine.Core
         /// <param name="paramValue">The parameter's value.</param>
         internal void UpdateParameterInCompiledEffect(Effect ef, string name, object paramValue)
         {
-            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffect compiledEffect)) throw new ArgumentException("Effect isn't build yet!");
+            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffects)) throw new ArgumentException("Effect isn't build yet!");
 
-            //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
-            //Because of this we do not need to take about which passes this effect belongs to.
-            if (compiledEffect.ActiveUniforms.TryGetValue(name, out FxParam effectParam))
+            var forwardFx = compiledEffects.ForwardFx;
+            if (forwardFx != null && forwardFx.ActiveUniforms.TryGetValue(name, out FxParam effectParamFw))
             {
-                effectParam.Value = paramValue;
-                effectParam.HasValueChanged = true;
+                effectParamFw.Value = paramValue;
+                effectParamFw.HasValueChanged = true;
             }
-            else
-                Diagnostics.Warn($"Parameter {name} is declared in Effect but currently not used by the shader.");
+
+            var deferredFx = compiledEffects.DeferredFx;
+            if (deferredFx != null && deferredFx.ActiveUniforms.TryGetValue(name, out FxParam effectParamDf))
+            {
+                effectParamDf.Value = paramValue;
+                effectParamDf.HasValueChanged = true;
+            }
+            //else
+            //    Diagnostics.Warn($"Parameter {name} is declared in Effect but currently not used by the shader."); 
+
         }
 
         /// <summary>
@@ -1118,9 +1175,10 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The Effect.</param>
         internal void RemoveShader(Effect ef)
         {
-            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffect compiledEffect)) return;
+            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffect)) return;
 
-            _rci.RemoveShader(compiledEffect.GpuHandle);
+            _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
+            _rci.RemoveShader(compiledEffect.DeferredFx?.GpuHandle);
         }
 
         /// <summary>
@@ -1476,7 +1534,7 @@ namespace Fusee.Engine.Core
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        internal void Render(Mesh m)
+        public void Render(Mesh m, bool renderForward = true)
         {
             if (_currentEffect == null) return;
 
@@ -1484,10 +1542,16 @@ namespace Fusee.Engine.Core
 
             try
             {
-                SetShaderProgram(compiledEffect.GpuHandle);
+                CompiledEffect cFx;
+                if (renderForward)
+                    cFx = compiledEffect.ForwardFx;
+                else
+                    cFx = compiledEffect.DeferredFx;
+
+                SetShaderProgram(cFx.GpuHandle);
                 SetRenderStateSet(_currentEffect.RendererStates);
 
-                foreach (var fxParam in compiledEffect.ActiveUniforms)
+                foreach (var fxParam in cFx.ActiveUniforms)
                 {
                     if (!_currentEffect.ParamDecl.TryGetValue(fxParam.Key, out IFxParamDeclaration dcl))
                     {
@@ -1505,7 +1569,7 @@ namespace Fusee.Engine.Core
                         }
                     }
 
-                    var param = compiledEffect.ActiveUniforms[fxParam.Key];
+                    var param = cFx.ActiveUniforms[fxParam.Key];
                     SetShaderParamT(param);
                     param.HasValueChanged = false;
                 }

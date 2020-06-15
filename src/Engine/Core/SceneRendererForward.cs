@@ -659,8 +659,7 @@ namespace Fusee.Engine.Core
                 HasNumberOfLightsChanged = false;
             }
             _state.Effect = effect;
-            _rc.CreateShaderProgram(true, _state.Effect);
-            _rc.SetEffect(_state.Effect);
+            _rc.SetEffect(_state.Effect, true);
         }
 
         /// <summary>
@@ -689,7 +688,7 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
-            _rc.Render(mesh);
+            _rc.Render(mesh, true);
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
@@ -768,7 +767,7 @@ namespace Fusee.Engine.Core
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = MakeEffect.Default;
-            _rc.CreateShaderProgram(true, _state.Effect);
+            _rc.CreateShaderProgram(_state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
         }
 
@@ -788,11 +787,10 @@ namespace Fusee.Engine.Core
             _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
-            _rc.SetEffect(_state.Effect);
-
+            _rc.SetEffect(_state.Effect, true);
         }
 
-        #endregion        
+        #endregion
 
         private void UpdateShaderParamsForAllLights()
         {

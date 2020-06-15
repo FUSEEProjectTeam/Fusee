@@ -305,10 +305,19 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
-        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList)
+        internal static string JoinShards(List<KeyValuePair<ShardCategory, string>> shardList, List<KeyValuePair<ShardCategory, string>> renderMathodDependentShards = null)
         {
+            List<KeyValuePair<ShardCategory, string>> completeList;
+            if (renderMathodDependentShards != null)
+            {
+                completeList = shardList.Concat(renderMathodDependentShards).ToList();
+                completeList.Sort((x, y) => x.Key.CompareTo(y.Key));
+            }
+            else
+                completeList = shardList;
+
             string res = string.Empty;
-            foreach (var kvp in shardList)
+            foreach (var kvp in completeList)
                 res += kvp.Value;
 
             return res;
