@@ -5,7 +5,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Fusee.Examples.Bone.Core
 {
@@ -63,7 +62,7 @@ namespace Fusee.Examples.Bone.Core
                                 Translation = new float3(0, 0, 0),
                                 Scale = float3.One
                             },
-                            new Fusee.Engine.Core.Scene.Bone()
+                            new Engine.Core.Scene.Bone()
                         },
                         Children = new ChildList()
                         {
@@ -87,8 +86,8 @@ namespace Fusee.Examples.Bone.Core
                     }
                 }
             };
+
             _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-            // convert scene graph is not called in this project, so we can add a bone animation
 
             // then add a weightcomponent with weight matrices etc:
             // binding matrices is the start point of every transformation

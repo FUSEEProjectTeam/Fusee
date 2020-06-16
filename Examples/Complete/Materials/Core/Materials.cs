@@ -396,6 +396,7 @@ namespace Fusee.Examples.Materials.Core
                                     icosphereWithTangents
                                 }
                             },
+                            // ---- Specular Textures are not implemented yet. There is no fitting shader! ---- //
                             //new SceneNode
                             //{
                             //    Components = new List<SceneComponent>
