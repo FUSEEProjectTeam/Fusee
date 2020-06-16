@@ -1,10 +1,15 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
+using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Examples.Bone.Core
 {
@@ -32,9 +37,18 @@ namespace Fusee.Examples.Bone.Core
 
         private float _maxPinchSpeed;
 
+        private SceneRendererForward _guiRenderer;
+        private SceneContainer _gui;
+        private SceneInteractionHandler _sih;
+
         // Init is called on startup.
         public override void Init()
         {
+            _gui = CreateGui();
+
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui);
+
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
 
@@ -47,7 +61,9 @@ namespace Fusee.Examples.Bone.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the standard model
+            //----- DUMMY SCENE BELOW - use the fus file when the exporter is able to export bones again ---- //
+            //_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+
             _scene = new SceneContainer
             {
                 Children = new List<SceneNode>
@@ -74,12 +90,12 @@ namespace Fusee.Examples.Bone.Core
                                     {
                                         Rotation = float3.Zero,
                                         Translation = new float3(0, 0.5f, 0),
-                                        Scale = float3.One
+                                        Scale = new float3(10, 100, 10)
                                     },
                                     new Engine.Core.Scene.Bone(),
                                     new Weight(),
                                     ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
-                                    CreateCuboid(float3.One)
+                                    new Cube()
                                 }
                             }
                         }
@@ -87,21 +103,8 @@ namespace Fusee.Examples.Bone.Core
                 }
             };
 
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-
-            // then add a weightcomponent with weight matrices etc:
-            // binding matrices is the start point of every transformation
-            // as many entries as vertices are present in current model
-            //var cube = _scene.Children[0].GetComponent<Mesh>();
-            //var vertexCount = cube.Vertices.Length;
-
-            //var bindingMatrices = new List<float4x4>();
-            //for (var i = 0; i < vertexCount; i++)
-            //{
-            //    bindingMatrices.Add(float4x4.Identity);
-            //}
-            var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
-            var wm = _scene.Children[1].Children[2].GetComponent<Weight>();
+            var mesh = _scene.Children[0].Children[0].GetComponent<Cube>();
+            var wm = _scene.Children[0].Children[0].GetComponent<Weight>();
             var WeightMap = new List<VertexWeightList>();
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
@@ -123,7 +126,20 @@ namespace Fusee.Examples.Bone.Core
                 });
             }
             wm.WeightMap = WeightMap;
-            var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
+            var weightMapFromScene = _scene.Children[0].Children[0].Components[1];
+
+            #region LEGACY / REFERENCE CODE
+            // Add a weightcomponent with weight matrices etc:
+            // binding matrices is the start point of every transformation
+            // as many entries as vertices are present in current model
+            //var cube = _scene.Children[0].GetComponent<Mesh>();
+            //var vertexCount = cube.Vertices.Length;
+
+            //var bindingMatrices = new List<float4x4>();
+            //for (var i = 0; i < vertexCount; i++)
+            //{
+            //    bindingMatrices.Add(float4x4.Identity);
+            //}
 
             //_scene.Children.Insert(0, new SceneNode()
             //{
@@ -195,9 +211,7 @@ namespace Fusee.Examples.Bone.Core
             //    // Joints are added automatically during scene conversion (ConvertSceneGraph)
             //});
 
-            ////_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-            //// now we can convert the scene
-            //_scene = new ConvertSceneGraph().Convert(_scene);
+            #endregion
 
             var aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -228,6 +242,7 @@ namespace Fusee.Examples.Bone.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -326,7 +341,7 @@ namespace Fusee.Examples.Bone.Core
             RC.Projection = mtxOffset * RC.Projection;
 
             // move one bone
-            var translation = _scene.Children[1].Children[1].GetComponent<Transform>();
+            var translation = _scene.Children[0].Children[0].GetComponent<Transform>();
             translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
@@ -336,130 +351,112 @@ namespace Fusee.Examples.Bone.Core
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, 0.1f, 1000);
+            _guiRenderer.Render(RC);
+
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        private InputDevice Creator(IInputDeviceImp device)
+        private SceneContainer CreateGui()
         {
-            throw new NotImplementedException();
-        }
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
 
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-        }
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
-        public static Mesh CreateCuboid(float3 size)
-        {
-            return new Mesh
+            var btnFuseeLogo = new GUIButton
             {
-                Vertices = new[]
-                {
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
-
-                Triangles = new ushort[]
-                {
-                    // front face
-                    0, 2, 1, 0, 3, 2,
-
-                    // right face
-                    4, 6, 5, 4, 7, 6,
-
-                    // back face
-                    8, 10, 9, 8, 11, 10,
-
-                    // left face
-                    12, 14, 13, 12, 15, 14,
-
-                    // top face
-                    16, 18, 17, 16, 19, 18,
-
-                    // bottom face
-                    20, 22, 21, 20, 23, 22
-                },
-
-                Normals = new[]
-                {
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0)
-                },
-
-                UVs = new[]
-                {
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0)
-                },
-                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
+                Name = "Canvas_Button"
             };
+            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
+            btnFuseeLogo.OnMouseExit += BtnLogoExit;
+            btnFuseeLogo.OnMouseDown += BtnLogoDown;
+
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var fuseeLogo = new TextureNode(
+                "fuseeLogo",
+                vsTex,
+                psTex,
+                //Set the albedo texture you want to use.
+                guiFuseeLogo,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                //Define Offset and therefor the size of the element.
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                );
+            fuseeLogo.AddComponent(btnFuseeLogo);
+
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var guiLatoBlack = new FontMap(fontLato, 24);
+
+            var text = new TextNode(
+                "FUSEE Bone Example",
+                "ButtonText",
+                vsTex,
+                psTex,
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
+
+            var text1 = new TextNode(
+                "Work in progress!! Will not function as expected.",
+                "wip",
+                vsTex,
+                psTex,
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, canvasHeight / 2 - 0.5f), canvasHeight, canvasWidth, new float2(8, 1)),
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Red),
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
+
+            var canvas = new CanvasNode(
+                "Canvas",
+                CanvasRenderMode.Screen,
+                new MinMaxRect
+                {
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text,
+                    text1
+                }
+            };
+
+            return new SceneContainer
+            {
+                Children = new List<SceneNode>
+                {
+                    //Add canvas.
+                    canvas
+                }
+            };
+        }
+
+        public void BtnLogoEnter(CodeComponent sender)
+        {
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
+        }
+
+        public void BtnLogoExit(CodeComponent sender)
+        {
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
+        }
+
+        public void BtnLogoDown(CodeComponent sender)
+        {
+            OpenLink("http://fusee3d.org");
         }
     }
 }
