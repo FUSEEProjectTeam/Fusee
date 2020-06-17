@@ -49,7 +49,7 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcTex},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
             });
 

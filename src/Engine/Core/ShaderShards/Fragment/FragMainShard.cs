@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>();
 
-            var ssaoString = RenderTargetTextureTypes.Ssao.ToString();
+            var ssaoString = "Ssao";
 
             for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
