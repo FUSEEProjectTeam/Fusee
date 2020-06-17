@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core
         public float4x4[] LightSpaceMatrices;
 
         //The world space frustum planes of the light frustum.
-        public List<Frustum> Frustums;
+        public List<FrustumF> Frustums;
 
         public IWritableTexture[] ShadowMaps;
         public float2[] ClipPlanesForLightMat;
@@ -183,7 +183,7 @@ namespace Fusee.Engine.Core
             var allSplitProjectionMatrices = CascadesProjectionMatrices(numberOfCascades, lambda, zNear, zFar, width, height, fov);
 
             foreach (Tuple<float4x4, float2> tuple in allSplitProjectionMatrices)
-                yield return new Tuple<float3[], float2>(Frustum.CalculateFrustumCorners(tuple.Item1 * view).ToArray(), tuple.Item2);
+                yield return new Tuple<float3[], float2>(FrustumF.CalculateFrustumCorners(tuple.Item1 * view).ToArray(), tuple.Item2);
         }
 
         #endregion

@@ -461,17 +461,23 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            _currentNode.AddComponent(new Octant
-            {
-                Center = cc.Center,
+            _currentNode.AddComponent(
+            new OctantComponent() 
+            { 
+                Octant = new OctantD
+                {
+                    Center = cc.Center,
+
+                    IsLeaf = cc.IsLeaf,
+                    Level = cc.Level,
+                    PosInParent = cc.PosInParent,
+                    Size = cc.Size,
+                    
+                },
                 Guid = cc.Guid,
-                IsLeaf = cc.IsLeaf,
-                Level = cc.Level,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
                 PosInHierarchyTex = cc.PosInHierarchyTex,
-                PosInParent = cc.PosInParent,
-                Size = cc.Size,
                 VisibleChildIndices = cc.VisibleChildIndices,
                 WasLoaded = cc.WasLoaded
             });
@@ -631,7 +637,6 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
             return _convertedScene;
         }
-
 
         #region Visitors
 
@@ -921,7 +926,7 @@ namespace Fusee.Engine.Core
                 Name = cam.Name,
                 ClippingPlanes = cam.ClippingPlanes,
                 Fov = cam.Fov,
-                ProjectionMethod = cam.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
+                ProjectionMethod = cam.ProjectionMethod == Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 
@@ -930,19 +935,19 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="oct"></param>
         [VisitMethod]
-        public void ConvOctant(Octant oct)
+        public void ConvOctant(OctantComponent oct)
         {
             _currentNode.AddComponent(new FusOctant
             {
-                Center = oct.Center,
+                Center = oct.Octant.Center,
                 Guid = oct.Guid,
-                IsLeaf = oct.IsLeaf,
-                Level = oct.Level,
+                IsLeaf = oct.Octant.IsLeaf,
+                Level = oct.Octant.Level,
                 Name = oct.Name,
                 NumberOfPointsInNode = oct.NumberOfPointsInNode,
                 PosInHierarchyTex = oct.PosInHierarchyTex,
-                PosInParent = oct.PosInParent,
-                Size = oct.Size,
+                PosInParent = oct.Octant.PosInParent,
+                Size = oct.Octant.Size,
                 VisibleChildIndices = oct.VisibleChildIndices,
                 WasLoaded = oct.WasLoaded
             });

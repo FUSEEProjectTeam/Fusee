@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The world space frustum planes, derived from the current view-projection matrix.
         /// </summary>
-        public Frustum RenderFrustum { get; private set; }
+        public FrustumF RenderFrustum { get; private set; }
 
 
         /// <summary>
@@ -784,7 +784,7 @@ namespace Fusee.Engine.Core
             DefaultState = new RenderContextDefaultState();
             GlobalFXParams = new Dictionary<string, object>();
 
-            RenderFrustum = new Frustum();
+            RenderFrustum = new FrustumF();
 
             View = DefaultState.View;
             Model = float4x4.Identity;

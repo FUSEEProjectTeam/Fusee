@@ -1,4 +1,5 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Serialization;
@@ -40,7 +41,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],
                     Colors = new uint[pointSplit.Count]
                 };
@@ -82,7 +83,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],
                     //Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
                     Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt/4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
@@ -121,7 +122,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],                    
                     Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
                 };
@@ -160,7 +161,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],
                     Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()                    
                 };
@@ -205,7 +206,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = normalSplitt.Select(pt => new float3(pt.xyz)).ToArray(),
                     //Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
                     Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
@@ -248,7 +249,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = normalSplitt.Select(pt => new float3(pt.xyz)).ToArray(),
                     Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
                 };
@@ -291,7 +292,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = normalSplitt.Select(pt => new float3(pt.xyz)).ToArray(),
                     Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()
                 };

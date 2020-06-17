@@ -190,9 +190,9 @@ namespace Fusee.Examples.Camera.Core
             }
 
             var viewProjection = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
-            _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
+            _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
 
-            var frustum = new Frustum();
+            var frustum = new FrustumF();
             frustum.CalculateFrustumPlanes(viewProjection);
 
             // Sets a mesh inactive if it does not pass the culling test and active if it does. 
@@ -212,7 +212,7 @@ namespace Fusee.Examples.Camera.Core
             Present();
         }
 
-        private void UserSideFrustumCulling(IList<SceneNode> nodeChildren, Frustum frustum)
+        private void UserSideFrustumCulling(IList<SceneNode> nodeChildren, FrustumF frustum)
         {
             foreach (var node in nodeChildren)
             {

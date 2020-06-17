@@ -18,7 +18,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public double Size { get; protected set; }
 
-
         /// <summary>
         /// Creates a new instance of type Bucket.
         /// </summary>

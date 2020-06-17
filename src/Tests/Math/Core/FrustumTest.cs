@@ -18,7 +18,7 @@ namespace Fusee.Test.Math.Core
         public void CalculateFrustumCorners_IsFrustumCorners()
         {
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
-            var actualCorners = Frustum.CalculateFrustumCorners(projection).ToList();
+            var actualCorners = FrustumF.CalculateFrustumCorners(projection).ToList();
 
             var expectedCorners = new List<float3>()
             {
@@ -46,7 +46,7 @@ namespace Fusee.Test.Math.Core
         public static IEnumerable<object[]> GetFrustumPlanes()
         {
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
-            var frustum = new Frustum();
+            var frustum = new FrustumF();
             frustum.CalculateFrustumPlanes(projection);
 
             var left = new PlaneF() { A = -0.5f, B = 0, C = -0.5f, D = 0 };

@@ -123,7 +123,6 @@ namespace Fusee.Math.Core
             return (float)System.Math.Acos(cosAlpha);
         }
 
-
         #region Plane-Box Intersection
 
         /// <summary>
@@ -140,6 +139,19 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Test whether a <see cref="OctantF"/> intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// </summary>
+        /// <param name="octant">The <see cref="OctantF"/>.</param> 
+        public bool Intersects(OctantF octant)
+        {
+            var r = BoxExtendInNormalDirection(octant);
+            var s = SignedDistanceFromPoint((float3)octant.Center);
+
+            return System.Math.Abs(s) <= r;
+        }
+
+        /// <summary>
         /// Test whether a <see cref="OBBf"/> intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
         /// </summary>
@@ -150,6 +162,30 @@ namespace Fusee.Math.Core
             var s = SignedDistanceFromPoint(obb.Center);
 
             return System.Math.Abs(s) <= r;
+        }
+
+        /// <summary>
+        /// Test whether a <see cref="AABBf"/> intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
+        /// because FUSEE defines a point with a negative signed distance to be inside.
+        /// </summary>
+        /// <param name="octant">The octant.</param> 
+        public bool InsideOrIntersecting(OctantF octant)
+        {
+            var r = BoxExtendInNormalDirection(octant);
+
+            //Distance from aabb center to plane
+            var s = SignedDistanceFromPoint(octant.Center);
+
+            //Completely inside
+            if (s <= -r)
+                return true;
+            //Completely outside
+            else if (r <= s)
+                return false;
+            //else intersecting
+            return true;
         }
 
         /// <summary>
@@ -197,6 +233,16 @@ namespace Fusee.Math.Core
                 return false;
             //else intersecting
             return true;
+        }
+
+        /// <summary>
+        /// Calculates the projection interval radius of an octant onto line L(t) = octant.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// <param name="octant">The <see cref="OctantF"/>.</param>
+        /// </summary>
+        private float BoxExtendInNormalDirection(OctantF octant)
+        {
+            var boxExtend = (float)octant.Size * 0.5f;
+            return boxExtend * System.Math.Abs(Normal.x) + boxExtend * System.Math.Abs(Normal.y) + boxExtend * System.Math.Abs(Normal.z);
         }
 
         /// <summary>

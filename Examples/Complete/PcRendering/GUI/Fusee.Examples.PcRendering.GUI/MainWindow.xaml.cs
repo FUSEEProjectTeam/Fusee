@@ -2,12 +2,12 @@
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PcRendering.Core;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.PointAccessorCollections;
 using Fusee.Serialization;
-using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Reflection;
@@ -29,7 +29,7 @@ namespace Fusee.Examples.PcRendering.WPF
     {
         public IPcRendering app;
 
-        private bool _isAppInizialized = false;        
+        private bool _isAppInizialized = false;
         private bool _areOctantsShown;
 
         private bool _ptSizeDragStarted;
@@ -150,7 +150,7 @@ namespace Fusee.Examples.PcRendering.WPF
             if (!_isAppInizialized || !app.IsSceneLoaded) return;
             if (EDLNeighbourPxVal == null) return;
 
-            EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");            
+            EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");
             PtRenderingParams.EdlNoOfNeighbourPx = (int)((Slider)sender).Value;
 
             _edlNeighbourPxDragStarted = false;
@@ -348,12 +348,12 @@ namespace Fusee.Examples.PcRendering.WPF
                 {
                     MessageBox.Show("Invalid file selected", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
-                }               
+                }
 
                 fullPath = ofd.FileName;
                 path = fullPath.Replace(ofd.SafeFileName, "");
 
-                await OpenFusThread(path);                
+                await OpenFusThread(path);
 
                 MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
@@ -362,7 +362,7 @@ namespace Fusee.Examples.PcRendering.WPF
                 {
                     app.DeletePointCloud();
 
-                    SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && app.GetOocLoaderWasSceneUpdated() && _isAppInizialized);                    
+                    SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && app.GetOocLoaderWasSceneUpdated() && _isAppInizialized);
                 }
 
                 PtRenderingParams.PathToOocFile = path;
@@ -435,12 +435,12 @@ namespace Fusee.Examples.PcRendering.WPF
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
             PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
-        }        
+        }
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
         {
-            while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !app.IsSceneLoaded)            
-                continue;           
+            while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !app.IsSceneLoaded)
+                continue;
 
             if (!_areOctantsShown)
             {
@@ -488,30 +488,30 @@ namespace Fusee.Examples.PcRendering.WPF
                 _fusThread = new Thread(() =>
                 {
                     // Inject Fusee.Engine.Base InjectMe dependencies
-                    IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+                    IO.IOImp = new IOImp();
 
                     var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
                     fap.RegisterTypeHandler(
                         new AssetHandler
                         {
                             ReturnedType = typeof(Font),
-                            Decoder = delegate (string id, object storage)
+                            Decoder = (string id, object storage) =>
                             {
-                                if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
+                                if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                                 return new Font { _fontImp = new FontImp((Stream)storage) };
                             },
-                            Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
+                            Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                         });
                     fap.RegisterTypeHandler(
                         new AssetHandler
                         {
                             ReturnedType = typeof(SceneContainer),
-                            Decoder = delegate (string id, object storage)
+                            Decoder = (string id, object storage) =>
                             {
-                                if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                                return Serializer.DeserializeSceneContainer((Stream)storage);
+                                if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
                             },
-                            Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
+                            Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                         });
 
                     AssetStorage.RegisterProvider(fap);
@@ -548,10 +548,10 @@ namespace Fusee.Examples.PcRendering.WPF
                 _fusThread.Start();
 
                 SpinWait.SpinUntil(() => app != null && app.IsInitialized);
-                
+
                 Closed += (s, e) => app?.CloseGameWindow();
 
-            }); 
+            });
 
             _isAppInizialized = true;
             InnerGrid.IsEnabled = true;

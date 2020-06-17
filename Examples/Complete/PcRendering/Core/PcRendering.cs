@@ -2,16 +2,15 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.OoCFileReaderWriter;
 using Fusee.Pointcloud.PointAccessorCollections;
-using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -54,7 +53,7 @@ namespace Fusee.Examples.PcRendering.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private float _maxPinchSpeed;
 
@@ -69,23 +68,23 @@ namespace Fusee.Examples.PcRendering.Core
 
         private WritableTexture _depthTex;
 
-        private TransformComponent _camTransform;
-        private CameraComponent _cam;
+        private Transform _camTransform;
+        private Camera _cam;
 
         // Init is called on startup. 
-        public override async Task<bool> Init()
+        public void Init()
         {
-            _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
+            _depthTex = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
 
             IsAlive = true;
             AppSetup();
 
             _scene = new SceneContainer
             {
-                Children = new List<SceneNodeContainer>()
+                Children = new List<SceneNode>()
             };
 
-            _camTransform = new TransformComponent()
+            _camTransform = new Transform()
             {
                 Name = "MainCamTransform",
                 Scale = float3.One,
@@ -93,15 +92,15 @@ namespace Fusee.Examples.PcRendering.Core
                 Rotation = float3.Zero
             };
 
-            _cam = new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
+            _cam = new Camera(ProjectionMethod.Perspective, ZNear, ZFar, _fovy)
             {
                 BackgroundColor = float4.One
             };
 
-            var mainCam = new SceneNodeContainer()
+            var mainCam = new SceneNode()
             {
                 Name = "MainCam",
-                Components = new List<SceneComponentContainer>()
+                Components = new List<SceneComponent>()
                 {
                     _camTransform,
                     _cam
@@ -130,8 +129,6 @@ namespace Fusee.Examples.PcRendering.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             IsInitialized = true;
-
-            return true;
         }       
 
         // RenderAFrame is called once a frame
@@ -215,8 +212,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                 if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
                 {
-                    //Render Depth-only pass
-                    _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = PtRenderingParams.DepthPassEf;
+                    //Render Depth-only pass                    
+                    _scene.Children[1].RemoveComponent<ShaderEffect>();
+                    _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
+
                     _cam.RenderTexture = _depthTex;
                     _sceneRenderer.Render(RC);
                     _cam.RenderTexture = null;
@@ -224,8 +223,8 @@ namespace Fusee.Examples.PcRendering.Core
 
                 //Render color pass
                 //Change shader effect in complete scene
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = PtRenderingParams.ColorPassEf;               
-
+                _scene.Children[1].RemoveComponent<ShaderEffect>();
+                _scene.Children[1].AddComponent(PtRenderingParams.ColorPassEf);
                 _sceneRenderer.Render(RC);
 
                 //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
@@ -274,7 +273,7 @@ namespace Fusee.Examples.PcRendering.Core
             //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
-                _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
+                _depthTex = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
 
                 PtRenderingParams.DepthPassEf.SetEffectParam("ScreenParams", new float2(Width, Height));
                 PtRenderingParams.ColorPassEf.SetEffectParam("ScreenParams", new float2(Width, Height));
@@ -304,7 +303,7 @@ namespace Fusee.Examples.PcRendering.Core
             return RC;
         }
 
-        public SceneNodeContainer GetOocLoaderRootNode()
+        public SceneNode GetOocLoaderRootNode()
         {
             return OocLoader.RootNode;
         }
@@ -339,8 +338,8 @@ namespace Fusee.Examples.PcRendering.Core
             //create Scene from octree structure
             var root = OocFileReader.GetScene(PtRenderingParams.DepthPassEf);
 
-            var ptOctantComp = root.GetComponent<PtOctantComponent>();
-            InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
+            var ptOctantComp = root.GetComponent<OctantComponent>();
+            InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Octant.Center.x, (float)ptOctantComp.Octant.Center.y, (float)(ptOctantComp.Octant.Center.z - (ptOctantComp.Octant.Size * 2f)));
 
             _scene.Children.Add(root);
 
@@ -354,17 +353,23 @@ namespace Fusee.Examples.PcRendering.Core
             var byteSize = OocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
 
-            var ptRootComponent = root.GetComponent<PtOctantComponent>();
-            _octreeRootCenter = ptRootComponent.Center;
-            _octreeRootLength = ptRootComponent.Size;
+            var ptRootComponent = root.GetComponent<OctantComponent>();
+            _octreeRootCenter = ptRootComponent.Octant.Center;
+            _octreeRootLength = ptRootComponent.Octant.Size;
 
             PtRenderingParams.DepthPassEf = PtRenderingParams.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
             if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = PtRenderingParams.DepthPassEf;
+            {
+                _scene.Children[1].RemoveComponent<ShaderEffect>();
+                _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
+            }
             else
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = PtRenderingParams.ColorPassEf;
+            {
+                _scene.Children[1].RemoveComponent<ShaderEffect>();
+                _scene.Children[1].AddComponent(PtRenderingParams.ColorPassEf);
+            }
 
             IsSceneLoaded = true;
         }
@@ -433,7 +438,7 @@ namespace Fusee.Examples.PcRendering.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
+            var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -441,26 +446,26 @@ namespace Fusee.Examples.PcRendering.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
-            var text = new TextNodeContainer(
-                "FUSEE Simple Example",
-                "ButtonText",
-                vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
+            var text = new TextNode(
+                text : "FUSEE Simple Example",
+                name : "ButtonText",
+                vs : vsTex,
+                ps : psTex,
+                anchors : UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                offsets : UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                fontMap : guiLatoBlack,
+                color : ColorUint.Tofloat4(ColorUint.Greenery));
 
-            var canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -479,7 +484,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             return new SceneContainer
             {
-                Children = new List<SceneNodeContainer>
+                Children = new List<SceneNode>
                 {
                     //Add canvas.
                     canvas
@@ -489,12 +494,12 @@ namespace Fusee.Examples.PcRendering.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
         }
 
         public void BtnLogoDown(CodeComponent sender)
