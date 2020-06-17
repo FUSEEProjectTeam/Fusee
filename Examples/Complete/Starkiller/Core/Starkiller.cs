@@ -107,6 +107,7 @@ namespace Fusee.Examples.Starkiller.Core
             _schiff.GetTransform().Translation.y = bewegungVertikal;
             _schiff.GetTransform().Translation.z = 0;
 
+            //Bewegung der Meteoriten
             foreach (var m in _meteors.Children)
             {
                 
@@ -122,6 +123,7 @@ namespace Fusee.Examples.Starkiller.Core
                 trans.Rotation.z += 1 * DeltaTime;
             }
 
+            //abfeuern des einzelnen Projektils + Platzierung vor dem Raumschiff
             if (Keyboard.IsKeyDown(KeyCodes.Space))
             {
                 for (var i = 0; i < _projectiles.Children.Count; i++)
@@ -137,6 +139,7 @@ namespace Fusee.Examples.Starkiller.Core
                 }
             }
 
+            // Bewegung des Projektils
             for (var i = 0; i < _projectiles.Children.Count; i++)
             {
                 if (abgefeuert[i])
@@ -152,7 +155,20 @@ namespace Fusee.Examples.Starkiller.Core
                
             }
 
-            //Geschoss abfeuern
+            //Kollisions abfrage
+            for(var i =0; i<_projectiles.Children.Count;i++)
+            {
+                if(abgefeuert[i])
+                {
+                    var center = _projectiles.Children[i].GetMesh();
+                    foreach( var m in _meteors.Children)
+                    {
+
+                        //if
+                    }
+                }
+            }
+           
 
 
             //Tick any animations and Render the scene loaded in Init()
