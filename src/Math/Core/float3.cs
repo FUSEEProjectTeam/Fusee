@@ -221,6 +221,16 @@ namespace Fusee.Math.Core
             return new[] { x, y, z };
         }
 
+        /// <summary>
+        /// Returns a bool which determines whether this float3 isNaN
+        /// </summary>
+        public bool IsNaN => float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z);
+
+        /// <summary>
+        /// Returns a bool which determines whether this float3 contains a infinity value
+        /// </summary>
+        public bool IsInfinity => float.IsInfinity(x) || float.IsInfinity(y) || float.IsInfinity(z);
+
         #endregion Instance
 
         #region Static
@@ -251,6 +261,22 @@ namespace Fusee.Math.Core
         /// Defines an instance with all components set to 1.
         /// </summary>
         public static readonly float3 One = new float3(1, 1, 1);
+
+        #region Infinity
+
+        /// <summary>
+        /// Returns a float3 which contains positive infinity values
+        /// </summary>
+        public static float3 PositiveInfinity => One * float.PositiveInfinity;
+
+        /// <summary>
+        /// Returns a float3 which contains negative infinity values
+        /// </summary>
+        public static float3 NegativeInfinity => One * float.NegativeInfinity;
+
+
+        #endregion
+
 
         // <summary>
         // Defines the size of the float3 struct in bytes.
@@ -1109,7 +1135,7 @@ namespace Fusee.Math.Core
 
             if (strings.Length != 3)
                 throw new FormatException("String parse for float3 did not result in exactly 3 items.");
-            
+
             float[] floats = new float[strings.Length];
 
             for (int i = 0; i < strings.Length; i++)

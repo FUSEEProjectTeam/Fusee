@@ -181,7 +181,7 @@ namespace Fusee.Test.Math.Core
 
             var actual = vec.ToArray();
 
-            Assert.Equal(new float[] {1, 2, 3, 4}, actual);
+            Assert.Equal(new float[] { 1, 2, 3, 4 }, actual);
         }
 
         [Fact]
@@ -578,7 +578,7 @@ namespace Fusee.Test.Math.Core
         {
             var vec = new double4(1, 1, 1, 1);
 
-            var actual = (float4) vec;
+            var actual = (float4)vec;
 
             Assert.Equal(new float4(1, 1, 1, 1), actual);
         }
@@ -631,11 +631,11 @@ namespace Fusee.Test.Math.Core
 
         public static IEnumerable<object[]> GetNormalize()
         {
-            yield return new object[] {new float4(4, 0, 0, 0), new float4(1, 0, 0, 0)};
-            yield return new object[] {new float4(0, 4, 0, 0), new float4(0, 1, 0, 0)};
-            yield return new object[] {new float4(0, 0, 4, 0), new float4(0, 0, 1, 0)};
-            yield return new object[] {new float4(0, 0, 0, 4), new float4(0, 0, 0, 1)};
-            yield return new object[] {new float4(1, 1, 1, 1), new float4(0.5f, 0.5f, 0.5f, 0.5f)};
+            yield return new object[] { new float4(4, 0, 0, 0), new float4(1, 0, 0, 0) };
+            yield return new object[] { new float4(0, 4, 0, 0), new float4(0, 1, 0, 0) };
+            yield return new object[] { new float4(0, 0, 4, 0), new float4(0, 0, 1, 0) };
+            yield return new object[] { new float4(0, 0, 0, 4), new float4(0, 0, 0, 1) };
+            yield return new object[] { new float4(1, 1, 1, 1), new float4(0.5f, 0.5f, 0.5f, 0.5f) };
         }
 
         public static IEnumerable<object[]> GetAddition()
@@ -643,9 +643,9 @@ namespace Fusee.Test.Math.Core
             var zero = new float4(0, 0, 0, 0);
             var one = new float4(1, 1, 1, 1);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
-            yield return new object[] {one, one, new float4(2, 2, 2, 2)};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
+            yield return new object[] { one, one, new float4(2, 2, 2, 2) };
         }
 
         public static IEnumerable<object[]> GetSubtraction()
@@ -653,25 +653,25 @@ namespace Fusee.Test.Math.Core
             var zero = new float4(0, 0, 0, 0);
             var one = new float4(1, 1, 1, 1);
 
-            yield return new object[] {one, one, zero};
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, -one};
+            yield return new object[] { one, one, zero };
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, -one };
         }
 
         public static IEnumerable<object[]> GetMultiply()
         {
             var one = new float4(1, 1, 1, 1);
 
-            yield return new object[] {one, 1, one};
-            yield return new object[] {one, 2, new float4(2, 2, 2, 2)};
-            yield return new object[] {one, 0, new float4(0, 0, 0, 0)};
+            yield return new object[] { one, 1, one };
+            yield return new object[] { one, 2, new float4(2, 2, 2, 2) };
+            yield return new object[] { one, 0, new float4(0, 0, 0, 0) };
         }
 
         public static IEnumerable<object[]> GetDivide()
         {
             var one = new float4(1, 1, 1, 1);
 
-            yield return new object[] {new float4(2, 2, 2, 2), 2, one};
+            yield return new object[] { new float4(2, 2, 2, 2), 2, one };
             yield return new object[] { one, 1, one };
         }
 
@@ -680,8 +680,8 @@ namespace Fusee.Test.Math.Core
             var one = new float4(1, 1, 1, 1);
             var zero = new float4(0, 0, 0, 0);
 
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {zero, one, zero};
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { zero, one, zero };
         }
 
         public static IEnumerable<object[]> GetMax()
@@ -689,8 +689,8 @@ namespace Fusee.Test.Math.Core
             var one = new float4(1, 1, 1, 1);
             var zero = new float4(0, 0, 0, 0);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
         }
 
         public static IEnumerable<object[]> GetClamp()
@@ -698,9 +698,9 @@ namespace Fusee.Test.Math.Core
             var one = new float4(1, 1, 1, 1);
             var zero = new float4(0, 0, 0, 0);
 
-            yield return new object[] {new float4(2, 2, 2, 2), zero, one, one};
-            yield return new object[] {new float4(-1, -1, -1, -1), zero, one, zero};
-            yield return new object[] {new float4(0.5f, 0.5f, 0.5f, 0.5f), zero, one, new float4(0.5f, 0.5f, 0.5f, 0.5f)};
+            yield return new object[] { new float4(2, 2, 2, 2), zero, one, one };
+            yield return new object[] { new float4(-1, -1, -1, -1), zero, one, zero };
+            yield return new object[] { new float4(0.5f, 0.5f, 0.5f, 0.5f), zero, one, new float4(0.5f, 0.5f, 0.5f, 0.5f) };
         }
 
         public static IEnumerable<object[]> GetLerp()
@@ -708,9 +708,9 @@ namespace Fusee.Test.Math.Core
             var one = new float4(1, 1, 1, 1);
             var zero = new float4(0, 0, 0, 0);
 
-            yield return new object[] {zero, one, 0.5f, new float4(0.5f, 0.5f, 0.5f, 0.5f)};
-            yield return new object[] {zero, one, 0, zero};
-            yield return new object[] {zero, one, 1, one};
+            yield return new object[] { zero, one, 0.5f, new float4(0.5f, 0.5f, 0.5f, 0.5f) };
+            yield return new object[] { zero, one, 0, zero };
+            yield return new object[] { zero, one, 1, one };
         }
 
         public static IEnumerable<object[]> GetBarycentric()
@@ -719,9 +719,9 @@ namespace Fusee.Test.Math.Core
             var y = new float4(0, 1, 0, 0);
             var z = new float4(0, 0, 1, 0);
 
-            yield return new object[] {x, y, z, 0, 0, z};
-            yield return new object[] {x, y, z, 1, 0, x};
-            yield return new object[] {x, y, z, 0, 1, y};
+            yield return new object[] { x, y, z, 0, 0, z };
+            yield return new object[] { x, y, z, 1, 0, x };
+            yield return new object[] { x, y, z, 0, 1, y };
         }
 
         #endregion

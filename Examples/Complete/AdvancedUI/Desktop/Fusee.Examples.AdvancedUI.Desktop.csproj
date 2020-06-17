@@ -1,14 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.AdvancedUI.Desktop</RootNamespace>
-    <PackageId>Fusee.Examples.AdvancedUI.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputType>WinExe</OutputType>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
     <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Desktop\</OutputPath>
   </PropertyGroup>
   
@@ -20,6 +13,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
     <ProjectReference Include="..\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
+    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
   
 </Project>

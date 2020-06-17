@@ -357,11 +357,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Initializes a new instance of the <see cref="RenderCanvasGameView"/> class.
         /// </summary>
         /// <param name="renderCanvasImp">The render canvas implementation.</param>
-        /// <param name="antiAliasing">if set to <c>true</c> perform antialiasing.</param>
+        /// <param name="antialiasing">if set to <c>true</c> perform antialiasing.</param>
         /// <param name="context">The Android context.</param>
         /// <param name="attrs">An Android View attribute set.</param>
         /// <param name="run"></param>
-        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antiAliasing, Context context, IAttributeSet attrs, Action run) :
+        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antialiasing, Context context, IAttributeSet attrs, Action run) :
             base(context, attrs)
         {
             _renderCanvasImp = renderCanvasImp;
@@ -420,9 +420,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 _renderCanvasImp.DoRender();
         }
 
-        // This method is called every time the context needs
-        // to be recreated. Use it to set any egl-specific settings
-        // prior to context creation
+        // This method is called every time the context needs to be recreated. 
+        //Use it to set any egl-specific settings prior to context creation.
         protected override void CreateFrameBuffer()
         {
             ContextRenderingApi = GLVersion.ES3;

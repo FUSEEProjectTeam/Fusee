@@ -43,7 +43,7 @@ namespace Fusee.Jometri
             }
         }
 
-        #region Triangulate monotone polygone
+        #region Triangulate monotone polygon
 
         private static void TriangulateMonotone(Face face)
         {
@@ -196,7 +196,7 @@ namespace Fusee.Jometri
 
             foreach (var vert in vertTypes)
             {
-                if (vert.Value.Equals(VertexType.SPLIT_VERTEX) || vert.Value.Equals(VertexType.MERGE_VERTEX))
+                if (vert.Value.Equals(VertexType.SplitVertex) || vert.Value.Equals(VertexType.MergeVertex))
                     return false;
             }
             return true;
@@ -230,24 +230,24 @@ namespace Fusee.Jometri
             if (IsUnderVert(face, vert, nextVert) && IsUnderVert(face, vert, prevVert))
             {
                 if (_geometry.IsAngleGreaterPi(face, nextVert, vert, prevVert))
-                    vertType = VertexType.SPLIT_VERTEX;
+                    vertType = VertexType.SplitVertex;
                 else
                 {
-                    vertType = VertexType.START_VERTEX;
+                    vertType = VertexType.StartVertex;
                 }
             }
             else if (IsOverVert(face, vert, nextVert) && IsOverVert(face, vert, prevVert))
             {
                 if (_geometry.IsAngleGreaterPi(face, nextVert, vert, prevVert))
-                    vertType = VertexType.MERGE_VERTEX;
+                    vertType = VertexType.MergeVertex;
                 else
                 {
-                    vertType = VertexType.END_VERTEX;
+                    vertType = VertexType.EndVertex;
                 }
             }
             else
             {
-                vertType = VertexType.REGULAR_VERTEX;
+                vertType = VertexType.RegularVertex;
             }
         }
 
@@ -300,19 +300,19 @@ namespace Fusee.Jometri
 
                 switch (vertTypes[current.Handle])
                 {
-                    case VertexType.START_VERTEX:
+                    case VertexType.StartVertex:
                         HandleStartVertex(face, current, faceHalfEdges);
                         break;
-                    case VertexType.END_VERTEX:
+                    case VertexType.EndVertex:
                         HandleEndVertex(current, faceHalfEdges, newFaces);
                         break;
-                    case VertexType.SPLIT_VERTEX:
+                    case VertexType.SplitVertex:
                         HandleSplitVertex(face, current, faceHalfEdges, newFaces);
                         break;
-                    case VertexType.MERGE_VERTEX:
+                    case VertexType.MergeVertex:
                         HandleMergeVertex(face, current, faceHalfEdges, newFaces);
                         break;
-                    case VertexType.REGULAR_VERTEX:
+                    case VertexType.RegularVertex:
                         HandleRegularVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     default:

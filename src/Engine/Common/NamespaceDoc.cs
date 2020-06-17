@@ -11,7 +11,7 @@
     /// <see cref="N:Fusee.Engine.Core"/> to underlying platform-specific implementations.
     /// </para>
     /// </summary>
-    static class NamespaceDoc
+    internal static class NamespaceDoc
     {
         // This class only exists to keep the namespace XML documentation 
     }

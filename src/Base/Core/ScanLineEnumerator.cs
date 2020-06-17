@@ -32,7 +32,7 @@ namespace Fusee.Base.Core
         public bool MoveNext()
         {
             int totalHeight = _ySrc + _height;
-            if(_currentPosition < totalHeight)
+            if (_currentPosition < totalHeight)
             {
                 _currentPosition++;
                 return true;

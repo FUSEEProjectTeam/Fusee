@@ -1,4 +1,5 @@
-﻿using Fusee.Serialization;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -15,18 +16,18 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Sets the precision to highp float.
         /// </summary>
-        public static string EsPrecisionHighpFloat = "precision highp float; \n";       
+        public static string EsPrecisionHighpFloat = "precision highp float; \n";
 
         /// <summary>
         /// Sets the version to 300es.
         /// </summary>
         public static string Version300Es = "#version 300 es\n";
-        
+
 
         /// <summary>
         /// Sets preprocessor that defines the bone count.
         /// </summary>
-        public static string DefineBones(ShaderEffectProps effectProps, WeightComponent wc)
+        public static string DefineBones(ShaderEffectProps effectProps, Weight wc)
         {
             if (effectProps.MeshProbs.HasWeightMap)
                 return $"#define {BoneDefineVar} {wc.Joints.Count}";

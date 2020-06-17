@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -58,7 +59,7 @@ namespace Fusee.Pointcloud.Common
         /// <summary>
         /// Wrapper to get the Root Node from the app's File Loader./>
         /// </summary>
-        SceneNodeContainer GetOocLoaderRootNode();
+        SceneNode GetOocLoaderRootNode();
 
         /// <summary>
         /// Wrapper to get the WasSceneUpdated bool from the app's File Loader./>

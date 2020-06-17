@@ -1,14 +1,15 @@
-﻿using System;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,7 +20,7 @@ namespace FuseeApp
     {
         // Horizontal and vertical rotation Angles for the displayed object 
         private static float _angleHorz = M.PiOver4, _angleVert;
-        
+
         // Horizontal and vertical angular speed
         private static float _angleVelHorz, _angleVelVert;
 
@@ -42,7 +43,7 @@ namespace FuseeApp
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-            
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
         }
@@ -52,14 +53,14 @@ namespace FuseeApp
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            
+
             RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }             
+            }
 
             if (Mouse.LeftButton)
             {
@@ -98,8 +99,8 @@ namespace FuseeApp
             RC.View = mtxCam * mtxRot;
 
             // Tick any animations and Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);            
-            
+            _sceneRenderer.Render(RC);
+
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }

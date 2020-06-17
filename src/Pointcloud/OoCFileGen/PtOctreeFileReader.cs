@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Fusee.Xene;
+using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
@@ -67,7 +68,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="effect">Shader effect the points shall be rendered with.</param>
         /// <param name="octree"></param>
         /// <returns></returns>
-        public SceneNodeContainer GetScene(ShaderEffect effect)
+        public SceneNode GetScene(ShaderEffect effect)
         {
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
             JObject jsonObj;
@@ -88,20 +89,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             
 
-            var rootSnc = new SceneNodeContainer
+            var rootSnc = new SceneNode
             {
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
-                    new TransformComponent
+                    new Transform
                     {
                         Scale = float3.One,
                         //Translation = (float3) center
                     },
-                    new ShaderEffectComponent
-                    {
-                        Effect = effect
-                    },
-                    new PtOctantComponent
+                    effect,
+                    new PtOctant
                     {
                         PosInParent = -1, //root!
                         Center = center,
@@ -138,7 +136,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Creates the scene structure by reading in the octree.hierarchy file.
         /// </summary>
-        private void ReadHierarchyToScene(SceneNodeContainer rootSnc, ShaderEffect effect)
+        private void ReadHierarchyToScene(SceneNode rootSnc, ShaderEffect effect)
         {
             var pathToHierarchy = _fileFolderPath + "\\octree.hierarchy";
 
@@ -157,11 +155,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         /// <param name="node">The current node to process.</param>
         /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's children exist.</param>
-        private void CreateSceneNode(SceneNodeContainer nodeSnc, ShaderEffect effect, BinaryReader binaryReader)
+        private void CreateSceneNode(SceneNode nodeSnc, ShaderEffect effect, BinaryReader binaryReader)
         {
             try
             {
-                var octantcomp = nodeSnc.GetComponent<PtOctantComponent>();
+                var octantcomp = nodeSnc.GetComponent<PtOctant>();
 
                 // loadable properties
                 byte[] guidBytes = new byte[16];
@@ -182,7 +180,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     if (childExists)
                     {
                         var childSnc = CreateSncForChildNode(index);
-                        var childOctantComp = childSnc.GetComponent<PtOctantComponent>();
+                        var childOctantComp = childSnc.GetComponent<PtOctant>();
                         childOctantComp.Size = octantcomp.Size / 2;
                         childOctantComp.Center = PtOctant<TPoint>.CalcCildCenterAtPos(index, octantcomp.Size, octantcomp.Center);
                         nodeSnc.Children.Add(childSnc);
@@ -198,17 +196,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        private SceneNodeContainer CreateSncForChildNode(int posInParent)
+        private SceneNode CreateSncForChildNode(int posInParent)
         {
-            return new SceneNodeContainer
+            return new SceneNode
             {
-                Components = new List<SceneComponentContainer>
+                Components = new List<SceneComponent>
                 {
-                    new PtOctantComponent
+                    new PtOctant
                     {
                         PosInParent = posInParent
                     },
-                    new TransformComponent
+                    new Transform
                     {
                         Scale = float3.One /** (float)(node.Size / parentSize)*/,
                         //Translation = (float3) (node.Center - parentCenter)

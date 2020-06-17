@@ -215,7 +215,7 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
-        
+
         #region Methods
 
         #region Arithmetic Functions

@@ -1,0 +1,21 @@
+name: Linting
+
+on: push
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: dotnet tool restore
+      run: dotnet tool restore
+    - name: dotnet format folder
+      run: dotnet tool run dotnet-format -f . --exclude src\Engine\Imp\Graphics\Shared
+    - name: dotnet format solution
+      run: dotnet tool run dotnet-format
+    - name: Commiting changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Linting

@@ -12,10 +12,12 @@ namespace Fusee.Engine.Common
         /// The x-coordinate
         /// </summary>
         public int x;
+
         /// <summary>
         /// The y-coordinate
         /// </summary>
         public int y;
+
         /// <summary>
         /// The z-coordinate
         /// </summary>

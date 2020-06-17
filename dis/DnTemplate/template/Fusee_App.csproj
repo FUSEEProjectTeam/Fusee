@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -11,5 +11,6 @@
   <ItemGroup>
     <PackageReference Include="Fusee.Desktop" Version="0.7.5" />
     <PackageReference Include="Fusee.Desktop" Version="0.7.6" />
+    <PackageReference Include="Fusee.Desktop" Version="0.8.1" />
   </ItemGroup>
 </Project>

@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
-using Fusee.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Fusee.Engine.Core
 {
@@ -49,14 +49,14 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
             });
 
         }
 
         /// <summary>
-        /// Shader effect for the ssao pass.
+        /// Shader effect for the SSAO pass.
         /// </summary>        
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
@@ -91,9 +91,9 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
 
                 new EffectParameterDeclaration {Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
                 new EffectParameterDeclaration {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
@@ -104,9 +104,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
+        /// Creates a blurred SSAO texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>        
+        /// <param name="ssaoRenderTex">The non blurred SSAO texture.</param>        
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
@@ -114,14 +114,14 @@ namespace Fusee.Engine.Core
             float blurKernelSize;
             switch (ssaoRenderTex.Width)
             {
-                case (int)TexRes.LOW_RES:
+                case (int)TexRes.Low:
                     blurKernelSize = 2.0f;
                     break;
                 default:
-                case (int)TexRes.MID_RES:
+                case (int)TexRes.Middle:
                     blurKernelSize = 4.0f;
                     break;
-                case (int)TexRes.HIGH_RES:
+                case (int)TexRes.High:
                     blurKernelSize = 8.0f;
                     break;
             }
@@ -162,7 +162,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -174,7 +174,9 @@ namespace Fusee.Engine.Core
                     effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
                 }
                 else
+                {
                     effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
+                }
             }
 
             return new ShaderEffect(new[]
@@ -207,7 +209,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -292,8 +294,8 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
             });
         }
 
@@ -301,15 +303,15 @@ namespace Fusee.Engine.Core
         {
             return new List<EffectParameterDeclaration>()
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},                
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
                 new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
@@ -329,132 +331,229 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Make ShaderEffect
-        /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
-        /// </summary>
-        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
-        /// <param name="specularColor">The specular color for the resulting effect.</param>
-        /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
-        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+
+        //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefore we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....
+        private static MeshProps AnalyzeMesh(Mesh mesh, Weight wc = null)
         {
-            MaterialComponent temp = new MaterialComponent
+            return new MeshProps
             {
-                Diffuse = new MatChannelContainer
-                {
-                    Color = diffuseColor
-                },
-                Specular = new SpecularChannelContainer
-                {
-                    Color = specularColor,
-                    Shininess = shininess,
-                    Intensity = specularIntensity,
-                }
+                HasNormals = mesh == null || mesh.Normals != null && mesh.Normals.Length > 0,
+                HasUVs = mesh == null || mesh.UVs != null && mesh.UVs.Length > 0,
+                HasColors = false,
+                HasWeightMap = wc != null,
+                HasTangents = mesh == null || (mesh.Tangents != null && mesh.Tangents.Length > 1),
+                HasBiTangents = mesh == null || (mesh.BiTangents != null && mesh.BiTangents.Length > 1)
             };
-            return MakeShaderEffectFromMatComp(temp);
         }
 
         /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
+        ///     Builds a very simple shader effect with just albedo
         /// </summary>
-        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
-        /// <param name="specularColor">The specular color for the resulting effect.</param>
-        /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <param name="albedoColor">The albedo color the resulting effect.</param>
+        /// <param name="albedoTexture">The (optional) albedo texture to use.</param>   
+        /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>   
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static ShaderEffect MakeShaderEffect(float4 albedoColor, string albedoTexture = "", float albedoTextureMix = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
-                Diffuse = new MatChannelContainer
+                MatProbs =
                 {
-                    Color = diffuseColor
+                    HasAlbedo = true,
+                    HasAlbedoTexture = albedoTexture != string.Empty
                 },
-                Specular = new SpecularChannelContainer
+                MatType = MaterialType.Standard,
+                MatValues =
                 {
-                    Color = specularColor,
-                    Shininess = shininess,
-                    Intensity = specularIntensity,
+                    AlbedoColor = albedoColor,
+                    AlbedoTexture = albedoTexture != string.Empty ? albedoTexture : null,
+                    AlbedoMix = albedoTextureMix
                 }
-            };
-            return MakeShaderEffectFromMatCompProto(temp);
+            });
         }
 
         /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
+        ///     Builds a very simple shader effect with just albedo
         /// </summary>
-        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
-        /// <param name="specularColor">The specular color for the resulting effect.</param>
-        /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="texName">Name of the texture you want to use.</param>
-        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
-        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <param name="albedoColor">The albedo color for the resulting effect.</param>
+        /// <param name="albedoTexture">The (optional) albedo texture to use.</param>   
+        /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>   
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, string albedoTexture = "", float albedoTextureMix = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            return MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
             {
-                Diffuse = new MatChannelContainer
+                MatProbs =
                 {
-                    Color = diffuseColor,
-                    Texture = texName,
-                    Mix = diffuseMix
+                    HasAlbedo = true,
+                    HasAlbedoTexture = albedoTexture != string.Empty
                 },
-                Specular = new SpecularChannelContainer
+                MatType = MaterialType.Standard,
+                MatValues =
                 {
-                    Color = specularColor,
-                    Shininess = shininess,
-                    Intensity = specularIntensity,
+                    AlbedoColor = albedoColor,
+                    AlbedoTexture = albedoTexture != string.Empty ? albedoTexture : null,
+                    AlbedoMix = albedoTextureMix
                 }
-            };
-            return MakeShaderEffectFromMatComp(temp);
+            });
         }
 
         /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
+        ///     Builds a simple shader effect with albedo and specular color.
         /// </summary>
-        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        /// <param name="albedoColor">The albedo color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
-        /// <param name="texName">Name of the texture you want to use.</param>
-        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        public static ShaderEffect MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
-            MaterialComponent temp = new MaterialComponent
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
-                Diffuse = new MatChannelContainer
+                MatProbs =
                 {
-                    Color = diffuseColor,
-                    Texture = texName,
-                    Mix = diffuseMix
+                    HasAlbedo = true,
+                    HasSpecular = true
                 },
-                Specular = new SpecularChannelContainer
+                MatType = MaterialType.Standard,
+                MatValues =
                 {
-                    Color = specularColor,
-                    Shininess = shininess,
-                    Intensity = specularIntensity,
+                    AlbedoColor = albedoColor,
+                    SpecularColor = specularColor,
+                    SpecularShininess = shininess,
+                    SpecularIntensity = specularIntensity
                 }
-            };
+            });
+        }
 
-            return MakeShaderEffectFromMatCompProto(temp);
+        /// <summary>
+        ///     Builds a simple shader effect with albedo and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        {
+            return MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+            {
+                MatProbs =
+                {
+                    HasAlbedo = true,
+                    HasSpecular = true
+                },
+                MatType = MaterialType.Standard,
+                MatValues =
+                {
+                    AlbedoColor = albedoColor,
+                    SpecularColor = specularColor,
+                    SpecularShininess = shininess,
+                    SpecularIntensity = specularIntensity
+                }
+            });
+        }
+
+        /// <summary>
+        ///     Builds a simple shader effect with albedo and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="albedoTexture">Name of the albedo texture you want to use.</param>
+        /// <param name="albedoTextureMix">Determines how much the albedo color and the color from the texture are mixed.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffect MakeShaderEffect(float4 albedoColor, float4 specularColor, float shininess, string albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
+        {
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
+            {
+                MatProbs =
+                {
+                    HasAlbedo = true,
+                    HasAlbedoTexture = true,
+                    HasSpecular = true
+                },
+                MatType = MaterialType.Standard,
+                MatValues =
+                {
+                    AlbedoColor = albedoColor,
+                    AlbedoMix = albedoTextureMix,
+                    AlbedoTexture = albedoTexture,
+                    SpecularColor = specularColor,
+                    SpecularShininess = shininess,
+                    SpecularIntensity = specularIntensity
+                }
+            });
+        }
+
+        /// <summary>
+        ///     Builds a simple shader effect with albedo and specular color.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="albedoTexture">Name of the albedo texture you want to use.</param>
+        /// <param name="albedoTextureMix">Determines how much the albedo color and the color from the texture are mixed.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, float4 specularColor, float shininess, string albedoTexture, float albedoTextureMix, float specularIntensity = 0.5f)
+        {
+            return MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+            {
+                MatProbs =
+                {
+                    HasAlbedo = true,
+                    HasAlbedoTexture = true,
+                    HasSpecular = true
+                },
+                MatType = MaterialType.Standard,
+                MatValues =
+                {
+                    AlbedoColor = albedoColor,
+                    AlbedoMix = albedoTextureMix,
+                    AlbedoTexture = albedoTexture,
+                    SpecularColor = specularColor,
+                    SpecularShininess = shininess,
+                    SpecularIntensity = specularIntensity
+                }
+            });
+        }
+
+        /// <summary>
+        /// Build a complex shader by specifying the <see cref="ShaderEffectProps"/> explicitly.
+        /// </summary>
+        /// <param name="fxProps">The ShaderEffectProps to use (including values)</param>
+        /// <returns>a new ShaderEffectProtoPixel</returns>
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(ShaderEffectProps fxProps)
+        {
+            return MakeShaderEffectFromShaderEffectPropsProto(fxProps);
+        }
+
+        /// <summary>
+        /// Build a complex shader by specifying the <see cref="ShaderEffectProps"/> explicitly.
+        /// </summary>
+        /// <param name="fxProps">The ShaderEffectProps to use (including values)</param>
+        /// <returns></returns>
+        public static ShaderEffect MakeShaderEffect(ShaderEffectProps fxProps)
+        {
+            return MakeShaderEffectFromShaderEffectProps(fxProps);
         }
 
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
-        /// <param name="mc">The MaterialComponent</param> 
+        /// <param name="fxProps">The shader effect properties</param> 
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffect MakeShaderEffectFromShaderEffectProps(ShaderEffectProps fxProps, Weight wc = null)
         {
-            var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
-            var vs = CreateVertexShader(wc, effectProps);
-            var ps = CreatePixelShader(effectProps);
-            var effectParameters = AssembleEffectParamers(mc);
+            fxProps.MeshProbs = AnalyzeMesh(null);
+
+            var vs = CreateVertexShader(wc, fxProps);
+            var ps = CreatePixelShader(fxProps);
+            var effectParameters = AssembleEffectParamers(fxProps);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
@@ -483,16 +582,17 @@ namespace Fusee.Engine.Core
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
-        /// <param name="mc">The MaterialComponent</param> 
+        /// <param name="fxProps">The shader effect properties</param> 
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffectProtoPixel MakeShaderEffectFromShaderEffectPropsProto(ShaderEffectProps fxProps, Weight wc = null)
         {
-            var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
-            string vs = CreateVertexShader(wc, effectProps);
-            string ps = CreateProtoPixelShader(effectProps);
-            var effectParameters = AssembleEffectParamers(mc);
+            fxProps.MeshProbs = AnalyzeMesh(null);
+
+            var vs = CreateVertexShader(wc, fxProps);
+            var ps = CreateProtoPixelShader(fxProps);
+            var effectParameters = AssembleEffectParamers(fxProps);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
@@ -516,7 +616,7 @@ namespace Fusee.Engine.Core
                 effectParameters
             )
             {
-                EffectProps = effectProps
+                EffectProps = fxProps
             };
             return ret;
         }
@@ -525,7 +625,7 @@ namespace Fusee.Engine.Core
 
         #region Create Shaders from Shards
 
-        private static string CreateVertexShader(WeightComponent wc, ShaderEffectProps effectProps)
+        private static string CreateVertexShader(Weight wc, ShaderEffectProps effectProps)
         {
             var vertexShader = new List<string>
             {
@@ -579,7 +679,7 @@ namespace Fusee.Engine.Core
             return string.Join("\n", protoPixelShader);
         }
 
-        private static string CreateDeferredLightingPixelShader(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
+        private static string CreateDeferredLightingPixelShader(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var frag = new StringBuilder();
             frag.Append(HeaderShard.Version300Es);
@@ -619,69 +719,69 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(ShaderEffectProps fxProps)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
-            if (mc.HasDiffuse)
+            if (fxProps.MatProbs.HasAlbedo)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.DiffuseColor,
-                    Value = mc.Diffuse.Color
+                    Name = UniformNameDeclarations.AlbedoColor,
+                    Value = fxProps.MatValues.AlbedoColor
                 });
-                if (mc.Diffuse.Texture != null)
+                if (fxProps.MatValues.AlbedoTexture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.DiffuseMix,
-                        Value = mc.Diffuse.Mix
+                        Name = UniformNameDeclarations.AlbedoMix,
+                        Value = fxProps.MatValues.AlbedoMix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.DiffuseTexture,
-                        Value = LoadTexture(mc.Diffuse.Texture)
+                        Name = UniformNameDeclarations.AlbedoTexture,
+                        Value = LoadTexture(fxProps.MatValues.AlbedoTexture)
                     });
                 }
             }
 
-            if (mc.HasSpecular)
+            if (fxProps.MatProbs.HasSpecular)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = UniformNameDeclarations.SpecularColor,
-                    Value = mc.Specular.Color
+                    Value = fxProps.MatValues.SpecularColor
                 });
 
-                if (mc.GetType() == typeof(MaterialComponent))
+                if (fxProps.MatType == MaterialType.Standard)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.SpecularShininessName,
-                        Value = mc.Specular.Shininess
+                        Name = UniformNameDeclarations.SpecularShininess,
+                        Value = fxProps.MatValues.SpecularShininess
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.SpecularStrength,
-                        Value = mc.Specular.Intensity
+                        Name = UniformNameDeclarations.SpecularIntensity,
+                        Value = fxProps.MatValues.SpecularIntensity
                     });
-                    if (mc.Specular.Texture != null)
+                    if (fxProps.MatValues.SpecularTexture != null)
                     {
                         effectParameters.Add(new EffectParameterDeclaration
                         {
-                            Name = UniformNameDeclarations.SpecularMixName,
-                            Value = mc.Specular.Mix
+                            Name = UniformNameDeclarations.SpecularMix,
+                            Value = fxProps.MatValues.SpecularMix
                         });
                         effectParameters.Add(new EffectParameterDeclaration
                         {
-                            Name = UniformNameDeclarations.SpecularTextureName,
-                            Value = LoadTexture(mc.Specular.Texture)
+                            Name = UniformNameDeclarations.SpecularTexture,
+                            Value = LoadTexture(fxProps.MatValues.SpecularTexture)
                         });
                     }
                 }
-                else if (mc.GetType() == typeof(MaterialPBRComponent))
+                else if (fxProps.MatType == MaterialType.MaterialPbr)
                 {
-                    var mcPbr = (MaterialPBRComponent)mc;
+                    var mcPbr = fxProps.MatValues;
 
                     var delta = 0.0000001f;
                     var diffuseFractionDelta = 0.99999f; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
@@ -709,43 +809,43 @@ namespace Fusee.Engine.Core
                 }
             }
 
-            if (mc.HasEmissive)
+            if (fxProps.MatProbs.HasEmissive)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.EmissiveColorName,
-                    Value = mc.Emissive.Color
+                    Name = UniformNameDeclarations.EmissiveColor,
+                    Value = fxProps.MatValues.EmissiveColor
                 });
-                if (mc.Emissive.Texture != null)
+                if (fxProps.MatValues.EmissiveTexture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.EmissiveMixName,
-                        Value = mc.Emissive.Mix
+                        Name = UniformNameDeclarations.EmissiveMix,
+                        Value = fxProps.MatValues.EmissiveMix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.EmissiveTextureName,
-                        Value = LoadTexture(mc.Emissive.Texture)
+                        Name = UniformNameDeclarations.EmissiveTexture,
+                        Value = LoadTexture(fxProps.MatValues.EmissiveTexture)
                     });
                 }
             }
 
-            if (mc.HasBump)
+            if (fxProps.MatProbs.HasNormalMap)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.BumpIntensityName,
-                    Value = mc.Bump.Intensity
+                    Name = UniformNameDeclarations.NormalMapIntensity,
+                    Value = fxProps.MatValues.NormalMapIntensity
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = UniformNameDeclarations.BumpTextureName,
-                    Value = LoadTexture(mc.Bump.Texture)
+                    Name = UniformNameDeclarations.NormalMap,
+                    Value = LoadTexture(fxProps.MatValues.NormalMap)
                 });
             }
 
-            for (int i = 0; i < LightingShard.NumberOfLightsForward; i++)
+            for (var i = 0; i < LightingShard.NumberOfLightsForward; i++)
             {
                 if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
                 {
@@ -867,31 +967,30 @@ namespace Fusee.Engine.Core
             if (image != null)
                 return new Texture(image);
 
-            image = AssetStorage.Get<ImageData>("DefaultTexture.png");
-            if (image != null)
-                return new Texture(image);
+            Diagnostics.Warn("Texture not found", null, new[] { path });
 
             return new Texture(new ImageData());
         }
 
         private static ShaderEffect CreateDefaultEffect()
         {
-            var defaultMat = new MaterialComponent
+            return MakeShaderEffectFromShaderEffectProps(new ShaderEffectProps
             {
-                Diffuse = new MatChannelContainer
+                MatProbs =
                 {
-                    Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
+                    HasAlbedo = true,
+                    HasSpecular = true
                 },
-                Specular = new SpecularChannelContainer
+                MatType = MaterialType.Standard,
+                MatValues =
                 {
-                    Color = new float4(1, 1, 1, 1),
-                    Intensity = 0.5f,
-                    Shininess = 22
+                    AlbedoColor = new float4(0.5f, 0.5f, 0.5f, 1.0f),
+                    SpecularColor = new float4(1, 1, 1, 1),
+                    SpecularShininess = 22,
+                    SpecularIntensity = 0.5f
                 }
-            };
-
-            return MakeShaderEffectFromMatComp(defaultMat);
-        }       
+            });
+        }
 
     }
 }

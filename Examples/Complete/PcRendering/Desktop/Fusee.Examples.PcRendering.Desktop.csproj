@@ -1,25 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Fusee.Examples.PcRendering.Desktop</RootNamespace>
-    <PackageId>Fusee.Examples.PcRendering.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputType>Exe</OutputType>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<OutputPath>$(BaseOutputPath)\Examples\PcRendering\Desktop\</OutputPath>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Desktop\</OutputPath>
-    <StartupObject>Fusee.Examples.PcRendering.Desktop.PcRendering</StartupObject>
-  </PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="System.Drawing.Common" Version="4.7.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-    <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj" />
+	</ItemGroup>
 </Project>

@@ -1,6 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
+using Fusee.Engine.Core.Scene;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class LightingShard
     {
         ///The maximal number of lights we can render when using the forward pipeline.
-        public const int NumberOfLightsForward = 8;        
+        public const int NumberOfLightsForward = 8;
 
         /// <summary>
         /// Struct, that describes a Light object in the shader code./>
@@ -57,13 +57,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             switch (effectProps.MatType)
             {
                 case MaterialType.Standard:
-                    if (effectProps.MatProbs.HasDiffuse)
+                    if (effectProps.MatProbs.HasAlbedo)
                         lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(SpecularComponent());
                     break;
                 case MaterialType.MaterialPbr:
-                    if (effectProps.MatProbs.HasDiffuse)
+                    if (effectProps.MatProbs.HasAlbedo)
                         lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(PbrSpecularComponent());
@@ -239,8 +239,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var bumpNormals = new List<string>
             {
-                "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensityName}, {UniformNameDeclarations.BumpIntensityName}, 1.0);",
+                "///////////////// Normal mapping, tangent space ///////////////////",
+                $"vec3 N = ((texture({UniformNameDeclarations.NormalMap}, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.NormalMapIntensity}, {UniformNameDeclarations.NormalMapIntensity}, 1.0);",
                 $"N = (N.x * vec3({VaryingNameDeclarations.Tangent})) + (N.y * {VaryingNameDeclarations.Bitangent}) + (N.z * {VaryingNameDeclarations.Normal});",
                 "N = normalize(N);"
             };
@@ -270,26 +270,28 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             };
 
             var applyLightParams = new List<string>();
-            applyLightParams.AddRange(effectProps.MatProbs.HasBump ? bumpNormals : normals);
+            applyLightParams.AddRange(effectProps.MatProbs.HasNormalMap ? bumpNormals : normals);
             applyLightParams.AddRange(fragToLightDirAndLightInit);
 
-            if (effectProps.MatProbs.HasDiffuse)
+            if (effectProps.MatProbs.HasAlbedo)
             {
                 //TODO: Test alpha blending between diffuse and texture
-                if (effectProps.MatProbs.HasDiffuseTexture)
+                if (effectProps.MatProbs.HasAlbedoTexture)
+                {
                     applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColor}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
+                        $"vec4 blendedCol = mix({UniformNameDeclarations.AlbedoColor}, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.AlbedoMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
+                }
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
+                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.AlbedoColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
             }
 
             if (effectProps.MatProbs.HasSpecular)
             {
                 if (effectProps.MatType == MaterialType.Standard)
                 {
-                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininessName});");
-                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *intensities.rgb) *specularTerm, 1.0);");
+                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
+                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularIntensity} *intensities.rgb) *specularTerm, 1.0);");
                 }
                 else if (effectProps.MatType == MaterialType.MaterialPbr)
                 {
@@ -364,11 +366,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one. For deferred rendering, this equals the "main" method.
         /// </summary>
-        public static string ApplyLightDeferred(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
+        public static string ApplyLightDeferred(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var methodBody = new List<string>
             {
-                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
+                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
             };
 
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
@@ -383,10 +385,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add(@"    return;");
             methodBody.Add("}");
 
-            methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION]}, {VaryingNameDeclarations.TextureCoordinates});");
-            methodBody.Add($"vec4 diffuseColor = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
-            methodBody.Add($"vec3 occlusion = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
-            methodBody.Add($"vec3 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position]}, {VaryingNameDeclarations.TextureCoordinates});");
+            methodBody.Add($"vec4 diffuseColor = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec3 occlusion = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec3 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
 
             //Lighting calculation
             //-------------------------            
@@ -584,7 +586,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }, methodBody);
         }
 
-        private static string GetShadow(LightComponent lc, bool isCascaded, int numberOfCascades = 0)
+        private static string GetShadow(Light lc, bool isCascaded, int numberOfCascades = 0)
         {
             var frag = new StringBuilder();
             if (isCascaded)
@@ -735,13 +737,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
     internal struct LightParamStrings
     {
-        public string PositionViewSpace;        
+        public string PositionViewSpace;
         public string Intensities;
         public string MaxDistance;
         public string Strength;
         public string OuterAngle;
         public string InnerAngle;
-        public string Direction;        
+        public string Direction;
         public string LightType;
         public string IsActive;
         public string IsCastingShadows;

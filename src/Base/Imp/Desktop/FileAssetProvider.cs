@@ -142,7 +142,7 @@ namespace Fusee.Base.Imp.Desktop
             if (File.Exists(id))
                 return new FileStream(id, FileMode.Open);
 
-            // At last, look at the specifie base directories
+            // At last, look at the specified base directories
             foreach (var baseDir in _baseDirs)
             {
                 string path = Path.Combine(baseDir, id);
@@ -185,10 +185,11 @@ namespace Fusee.Base.Imp.Desktop
         /// Create an async stream for the asset identified by id.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
-        /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a filestream to the asset.</returns>
+        /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a file stream to the asset.</returns>
         protected override async Task<Stream> GetStreamAsync(string id)
         {
-            return await Task<Stream>.Factory.StartNew(() => { 
+            return await Task<Stream>.Factory.StartNew(() =>
+            {
                 if (id == null) throw new ArgumentNullException(nameof(id));
 
                 // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
@@ -199,7 +200,7 @@ namespace Fusee.Base.Imp.Desktop
                 if (File.Exists(id))
                     return new FileStream(id, FileMode.Open);
 
-                // At last, look at the specifie base directories
+                // At last, look at the specified base directories
                 foreach (var baseDir in _baseDirs)
                 {
                     string path = Path.Combine(baseDir, id);

@@ -1,6 +1,6 @@
 ﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public WireframeCube()
         {
-            MeshType = (int)OpenGLPrimitiveType.LINES;
+            MeshType = (int)OpenGLPrimitiveType.Lines;
             Vertices = new float3[]
             {
                 new float3(+0.5f, +0.5f, +0.5f),

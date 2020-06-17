@@ -1,5 +1,5 @@
-﻿using Fusee.Math.Core;
-using Fusee.Serialization;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -45,11 +45,10 @@ namespace Fusee.Engine.Core
                 new float2(0, 1),
                 new float2(1, 1),
                 new float2(1, 0),
-                
+
             };
             #endregion
         }
 
     }
 }
-

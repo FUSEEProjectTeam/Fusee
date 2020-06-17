@@ -10,7 +10,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 {
 
     /// <summary>
-    /// Input driver implementation supporting Windows 8 spacemouse input.
+    /// Input driver implementation supporting Windows 8 SpaceMouse input.
     /// </summary>
     public class WindowsSpaceMouseDriverImp : IInputDriverImp
     {
@@ -74,7 +74,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <value>
         /// A human-readable string describing the driver.
         /// </value>
-        public string DriverDesc => "Driver providing a spacemouse device implementation for Windows 8 (and up) spacemouse input.";
+        public string DriverDesc => "Driver providing a SpaceMouse device implementation for Windows 8 (and up) SpaceMouse input.";
 
 #pragma warning disable 0067
         /// <summary>
@@ -145,7 +145,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
-        
+
         #region Windows handling
         // This helper static method is required because the 32-bit version of user32.dll does not contain this API
         // (on any versions of Windows), so linking the method will fail at run-time. The bridge dispatches the request
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             OperatingSystem os = Environment.OSVersion;
 
-            // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps NOT targetet for a specific windows version (like 8.1 or 10)
+            // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps, that do NOT target a specific windows version (like 8.1 or 10)
             // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" SMI handling is first supported.
             if (os.Platform == PlatformID.Win32NT
                 && (os.Version.Major > 6
@@ -237,7 +237,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return _gameWindow.Height;
         }
         #endregion
-               
+
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDeviceImp" /> class.
         /// </summary>
@@ -351,7 +351,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Returns the description of this implementation.
         /// </summary>
-        public string Desc => "Standard spacemouse implementation";
+        public string Desc => "Standard SpaceMouse implementation";
 
         /// <summary>
         /// Returns the Category this device belongs in.

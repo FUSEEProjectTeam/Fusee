@@ -2,7 +2,7 @@
 # protoc will generate .py files from .proto files within this directory
 # See proto_src/Readme.md for explanation
 # 
-# Ignore Scene.proto
-Scene.proto
+# Ignore FusSerialization.proto
+FusSerialization.proto
 
 

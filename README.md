@@ -11,9 +11,6 @@ don't support C#, like Content-Creation-Software C++ Plug-In-APIs
 and native HTML5/WebGL Javascript code.
 
 
-|  | develop | master |
-| --- | --- | --- |
-| Desktop (.NET Core 3.0) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop-netcore3.0?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=10&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop-netcore3.0?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=10&branchName=master) |
-| Desktop (.NET Core 3.1-preview) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop-netcore3.1-preview?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=14&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop-netcore3.1-preview?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=14&branchName=master) |
-| Android | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Android-MSBuild16?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=9&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Android-MSBuild16?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=9&branchName=master) |
-| WASM | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-WASM?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=11&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-WASM?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=11&branchName=master) |
+| develop | master |
+| ------- | ------ |
+| [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=develop)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) | [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=master)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) |

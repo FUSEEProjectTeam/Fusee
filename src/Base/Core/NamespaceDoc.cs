@@ -2,12 +2,12 @@
 {
     /// <summary>
     /// <para>
-    /// Types in this module implent FUSEE's basic functionality 
+    /// Types in this module implement FUSEE's basic functionality 
     /// such as operating system functionality abstraction with varying implementations
     /// on different platforms and general functionality not related to 3D rendering
     /// </para>
     /// <para>
-    /// Among the most important classses are
+    /// Among the most important classes are
     /// <list type="bullet">
     ///   <item>
     ///     <term><see cref="AssetStorage"/></term>

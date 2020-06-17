@@ -5,7 +5,7 @@ using Fusee.Math.Core;
 namespace Fusee.Xirkit
 {
     /// <summary>
-    /// Class used inside Xirkit to accces (read and write) nested members that are referenced
+    /// Class used inside Xirkit to access (read and write) nested members that are referenced
     /// by a chain of properties/fields separated by the object-access operator '.' (dot).
     /// </summary>
     /// <typeparam name="TPin">The type of the pin (the type to the outside world).</typeparam>
@@ -45,20 +45,20 @@ namespace Fusee.Xirkit
                 MemberInfo m = _miList[i];
                 if (m is FieldInfo)
                 {
-                    _pre[i] = delegate(int ii) { _oList[ii + 1] = ((FieldInfo)_miList[ii]).GetValue(_oList[ii]); };
-                    _post[i] = delegate(int ii) { ((FieldInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1]); };
+                    _pre[i] = delegate (int ii) { _oList[ii + 1] = ((FieldInfo)_miList[ii]).GetValue(_oList[ii]); };
+                    _post[i] = delegate (int ii) { ((FieldInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1]); };
                 }
                 else
                 {
-                    _pre[i] = delegate(int ii) { _oList[ii + 1] = ((PropertyInfo)_miList[ii]).GetValue(_oList[ii], null); };
-                    _post[i] = delegate(int ii) { ((PropertyInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1], null); };
+                    _pre[i] = delegate (int ii) { _oList[ii + 1] = ((PropertyInfo)_miList[ii]).GetValue(_oList[ii], null); };
+                    _post[i] = delegate (int ii) { ((PropertyInfo)_miList[ii]).SetValue(_oList[ii], _oList[ii + 1], null); };
                 }
             }
 
         }
 
         /// <summary>
-        /// Assigns the value given in val to the object acessed by this member accessor.
+        /// Assigns the value given in val to the object accessed by this member accessor.
         /// </summary>
         /// <param name="o">The object to which the access chain belongs to.</param>
         /// <param name="val">The value to be written to the end of the access chain starting in o.</param>

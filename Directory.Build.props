@@ -9,21 +9,31 @@
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
     <Product>FUSEE</Product>
-    <Version>0.7.6.0</Version>
-    <AssemblyVersion>0.7.6.0</AssemblyVersion>
-    <FileVersion>0.7.6.0</FileVersion>
-    <PackageVersion>0.7.6.0</PackageVersion>
+    <Version>0.8.1.0</Version>
+    <AssemblyVersion>0.8.1.0</AssemblyVersion>
+    <FileVersion>0.8.1.0</FileVersion>
+    <PackageVersion>0.8.1.0</PackageVersion>
     <Copyright>Copyright © 2013-today</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
     <PackageIcon>images\icon.png</PackageIcon>
+    <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
     <TieredCompilation>false</TieredCompilation>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Release' ">true</PublishReadyToRun>
 
+    <!--<Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>-->
+
+    <PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
+
+    <ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
+    
     <!--
     Suppress warnings
     1701 and 1702 is standard.

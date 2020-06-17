@@ -29,10 +29,10 @@ namespace Fusee.Jometri
     {
         private static Geometry _geometry;
 
-        #region geometry initialisation from PolyBoundary
+        #region geometry initialization from PolyBoundary
 
         /// <summary>
-        /// Used in the initialisation process of a new Geometry.
+        /// Used in the initialization process of a new Geometry.
         /// A BoundaryEdge contains one edge of the boundary and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry.
         /// </summary>
         internal struct BoundaryEdge
@@ -145,13 +145,13 @@ namespace Fusee.Jometri
                     return v;
                 }
 
-                //Create Vertice and VertHandle.
+                //Create Vertex and VertHandle.
                 vertHandle = handle;
                 vert = new Vertex(vertHandle, pointCoord);
             }
             else
             {
-                //Create Vertices and VertHandle.
+                //Create Vertex and VertHandle.
                 vertHandle = handle;
                 vert = new Vertex(vertHandle, pointCoord);
             }
@@ -374,4 +374,3 @@ namespace Fusee.Jometri
         #endregion
     }
 }
-

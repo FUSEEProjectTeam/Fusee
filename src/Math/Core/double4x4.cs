@@ -159,6 +159,17 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Returns the trace of this matrix
+        /// </summary>
+        public double Trace
+        {
+            get
+            {
+                return Row0.x + Row1.y + Row2.z + Row3.w;
+            }
+        }
+
+        /// <summary>
         /// The first column of this matrix
         /// </summary>
         public double4 Column0
@@ -1686,9 +1697,9 @@ namespace Fusee.Math.Core
 
         #region IEquatable<Matrix4> Members       
 
-         /// <summary>
-         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
-         /// </summary>       
+        /// <summary>
+        /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
+        /// </summary>       
         public bool IsAffine
         {
             get

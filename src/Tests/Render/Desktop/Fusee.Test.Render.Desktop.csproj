@@ -1,13 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Test.Render.Desktop</RootNamespace>
-    <PackageId>Fusee.Test.Render.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputType>Library</OutputType>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
   </PropertyGroup>
 
@@ -15,15 +8,6 @@
     <Content Include="References\**\*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
-    <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
   
   <ItemGroup>
@@ -42,7 +26,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BoneAnimation\Core\Fusee.Examples.Bone.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BumpMapping\Core\Fusee.Examples.Bump.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\NormalMap\Core\Fusee.Examples.NormalMap.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\GeometryEditing\Core\Fusee.Examples.GeometryEditing.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\MeshingAround\Core\Fusee.Examples.MeshingAround.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Picking\Core\Fusee.Examples.Picking.Core.csproj" />
@@ -50,5 +34,11 @@
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\SimpleDeferred\Core\Fusee.Examples.SimpleDeferred.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ThreeDFont\Core\Fusee.Examples.ThreeDFont.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\UI\Core\Fusee.Examples.UI.Core.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 </Project>

@@ -72,10 +72,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (compareMode)
             {
-                case Common.TextureCompareMode.NONE:
+                case Common.TextureCompareMode.None:
                     return OpenTK.Graphics.OpenGL.TextureCompareMode.None;
 
-                case Common.TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE:
+                case Common.TextureCompareMode.CompareRefToTexture:
                     return OpenTK.Graphics.OpenGL.TextureCompareMode.CompareRefToTexture;
 
                 default:
@@ -90,28 +90,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             switch (filterMode)
             {
-                case TextureFilterMode.NEAREST:
+                case TextureFilterMode.Nearest:
                     minFilter = TextureMinFilter.Nearest;
                     magFilter = TextureMagFilter.Nearest;
                     break;
                 default:
-                case TextureFilterMode.LINEAR:
+                case TextureFilterMode.Linear:
                     minFilter = TextureMinFilter.Linear;
                     magFilter = TextureMagFilter.Linear;
                     break;
-                case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
+                case TextureFilterMode.NearestMipmapNearest:
                     minFilter = TextureMinFilter.NearestMipmapNearest;
                     magFilter = TextureMagFilter.Nearest;
                     break;
-                case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
+                case TextureFilterMode.LinearMipmapNearest:
                     minFilter = TextureMinFilter.LinearMipmapNearest;
                     magFilter = TextureMagFilter.Linear;
                     break;
-                case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
+                case TextureFilterMode.NearestMipmapLinear:
                     minFilter = TextureMinFilter.NearestMipmapLinear;
                     magFilter = TextureMagFilter.Nearest;
                     break;
-                case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
+                case TextureFilterMode.LinearMipmapLinear:
                     minFilter = TextureMinFilter.LinearMipmapLinear;
                     magFilter = TextureMagFilter.Linear;
                     break;
@@ -158,13 +158,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (wrapMode)
             {
                 default:
-                case Common.TextureWrapMode.REPEAT:
+                case Common.TextureWrapMode.Repeat:
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat;
-                case Common.TextureWrapMode.MIRRORED_REPEAT:
+                case Common.TextureWrapMode.MirroredRepeat:
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.MirroredRepeat;
-                case Common.TextureWrapMode.CLAMP_TO_EDGE:
+                case Common.TextureWrapMode.ClampToEdge:
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge;
-                case Common.TextureWrapMode.CLAMP_TO_BORDER:
+                case Common.TextureWrapMode.ClampToBorder:
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToBorder;
             }
         }
@@ -325,7 +325,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));            
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -489,11 +489,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
-            // mr: Detach Shader & delete
-            //GL.DetachShader(program, fragmentObject);
-            //GL.DetachShader(program, vertexObject);
-            //GL.DeleteShader(fragmentObject);
-            //GL.DeleteShader(vertexObject);
+            GL.DetachShader(program, fragmentObject);
+            GL.DetachShader(program, vertexObject);
+            GL.DeleteShader(fragmentObject);
+            GL.DeleteShader(vertexObject);
 
             return new ShaderHandleImp { Handle = program };
         }
@@ -511,8 +510,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Finish();
             GL.Flush();
 
-            // cleanup
-            GL.DeleteShader(program);
             GL.DeleteProgram(program);
         }
 
@@ -756,16 +753,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (texTarget)
             {
-                case TextureType.TEXTURE1D:
+                case TextureType.Texture1D:
                     GL.BindTexture(TextureTarget.Texture1D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE2D:
+                case TextureType.Texture2D:
                     GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE3D:
+                case TextureType.Texture3D:
                     GL.BindTexture(TextureTarget.Texture3D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE_CUBE_MAP:
+                case TextureType.TextureCubeMap:
                     GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
                     break;
                 default:
@@ -853,7 +850,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
         {
             int iParam = ((ShaderParam)param).handle;
-           texUnitArray = new int[texIds.Length];
+            texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
             {
@@ -880,7 +877,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
         {
-            SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);            
+            SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
             GL.Uniform1(((ShaderParam)param).handle, texUnit);
         }
 
@@ -897,7 +894,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             fixed (int* pFlt = &texUnitArray[0])
                 GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
         }
-        
+
         #endregion
 
         #region Clear
@@ -1387,11 +1384,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.TRIANGLES:
+                    case OpenGLPrimitiveType.Triangles:
                     default:
                         GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.POINT:
+                    case OpenGLPrimitiveType.Points:
                         // enable gl_PointSize to set the point size
                         if (!_isPtRenderingEnabled)
                         {
@@ -1402,7 +1399,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         }
                         GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LINES:
+                    case OpenGLPrimitiveType.Lines:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
@@ -1410,7 +1407,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         }
                         GL.DrawElements(PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LINE_LOOP:
+                    case OpenGLPrimitiveType.LineLoop:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
@@ -1418,7 +1415,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         }
                         GL.DrawElements(PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.LINE_STRIP:
+                    case OpenGLPrimitiveType.LineStrip:
                         if (!_isLineSmoothEnabled)
                         {
                             GL.Enable(EnableCap.LineSmooth);
@@ -1426,16 +1423,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         }
                         GL.DrawElements(PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.PATCHES:
+                    case OpenGLPrimitiveType.Patches:
                         GL.DrawElements(PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.QUAD_STRIP:
+                    case OpenGLPrimitiveType.QuadStrip:
                         GL.DrawElements(PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.TRIANGLE_FAN:
+                    case OpenGLPrimitiveType.TriangleFan:
                         GL.DrawElements(PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.TRIANGLE_STRIP:
+                    case OpenGLPrimitiveType.TriangleStrip:
                         GL.DrawElements(PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
@@ -1459,7 +1456,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
@@ -1490,7 +1487,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case BlendOperation.Maximum:
                     return BlendEquationMode.Max;
                 default:
-                    throw new ArgumentOutOfRangeException("bo");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bo}");
             }
         }
 
@@ -1509,7 +1506,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case BlendEquationMode.FuncReverseSubtract:
                     return BlendOperation.ReverseSubtract;
                 default:
-                    throw new ArgumentOutOfRangeException("bom");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
             }
         }
 
@@ -1885,7 +1882,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1922,7 +1919,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1972,7 +1969,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             }
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null && !renderTarget.IsDepthOnly)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth] == null && !renderTarget.IsDepthOnly)
             {
                 int gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
@@ -2016,7 +2013,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int depthCnt = 0;
 
-            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
+            var depthTexPos = (int)RenderTargetTextureTypes.Depth;
 
             if (!renderTarget.IsDepthOnly)
             {
@@ -2154,9 +2151,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (capability)
             {
-                case HardwareCapability.CAN_RENDER_DEFFERED:
+                case HardwareCapability.CanRenderDeferred:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
-                case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
+                case HardwareCapability.CanUseGeometryShaders:
                     return 1U;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);

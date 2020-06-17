@@ -1,12 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Sound.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Imp.Sound.Desktop</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
@@ -25,6 +20,8 @@
   </ItemGroup>
   
   <ItemGroup>   
+    <None Include="$(FuseeEngineRoot)\ext\SFML\Windows\csfml-audio-2.dll" Link="Natives\csfml-audio-2.dll" />
+    <None Include="$(FuseeEngineRoot)\ext\SFML\Windows\csfml-system-2.dll" Link="Natives\csfml-system-2.dll" />
     <None Include="$(FuseeEngineRoot)\ext\SFML\Windows\csfml-window-2.dll" Link="Natives\csfml-window-2.dll" />
     <None Include="$(FuseeEngineRoot)\ext\SFML\Windows\libsndfile-1.dll" Link="Natives\libsndfile-1.dll" />
     <None Include="$(FuseeEngineRoot)\ext\SFML\Windows\openal32.dll" Link="Natives\openal32.dll" />
@@ -33,6 +30,14 @@
   </ItemGroup>
     
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <Reference Include="sfmlnet-audio-2">
+      <HintPath>$(FuseeEngineRoot)\ext\SFML\sfmlnet-audio-2.dll</HintPath>
+    </Reference>
+    <Reference Include="sfmlnet-system-2">
+      <HintPath>$(FuseeEngineRoot)\ext\SFML\sfmlnet-system-2.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

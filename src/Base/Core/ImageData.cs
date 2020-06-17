@@ -120,8 +120,8 @@ namespace Fusee.Base.Core
             CopyFunc copyLine;
             if (PixelFormat.ColorFormat.Equals(src.PixelFormat.ColorFormat))
             {
-                // Case: same colorspace, just loop over scanlines from src and copy linewise into this ImageData
-                copyLine = delegate(byte[] srcScanLineBytes, int destinationIndex)
+                // Case: same color space, just loop over scanlines from src and copy line-wise into this ImageData
+                copyLine = delegate (byte[] srcScanLineBytes, int destinationIndex)
                 {
                     Array.Copy(srcScanLineBytes, 0, PixelData, destinationIndex, srcScanLineBytes.Length);
                 };
@@ -136,7 +136,7 @@ namespace Fusee.Base.Core
                         switch (src.PixelFormat.ColorFormat)
                         {
                             case ColorFormat.RGB:
-                                copyLine = delegate(byte[] srcLineBytes, int destinationIndex)
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
                                     {
@@ -245,7 +245,7 @@ namespace Fusee.Base.Core
                 if (srcScanLine != null)
                 {
                     byte[] srcScanLineBytes = srcScanLine.GetScanLineBytes();
-                    int destinationIndex = yDst * PixelFormat.BytesPerPixel*Width + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
+                    int destinationIndex = yDst * PixelFormat.BytesPerPixel * Width + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
                     copyLine(srcScanLineBytes, destinationIndex);
                     yDst++; // increment yDst == move to the next line
                 }
@@ -265,7 +265,7 @@ namespace Fusee.Base.Core
         {
             if ((xSrc + width) > Width)
             {
-                throw new ArgumentOutOfRangeException("Cannot get ScanLineEnumerator due to exceeding ImageData Width="+Width+". Choose xSrc+width to be smaller than Width of ImageData");
+                throw new ArgumentOutOfRangeException("Cannot get ScanLineEnumerator due to exceeding ImageData Width=" + Width + ". Choose xSrc+width to be smaller than Width of ImageData");
             }
             if ((ySrc + height) > Height)
             {
@@ -276,7 +276,7 @@ namespace Fusee.Base.Core
             {
                 // 1D offsetCoordinate that represents location in PixelData byte array (sizeof PixelData is Width*Height*BytesPerPixel)
                 int srcOffset = ((PixelFormat.BytesPerPixel * Width) * i) + xSrc * PixelFormat.BytesPerPixel; // go down vertical along i by width times BytesPerPixel and then add horizontal width offset times BytesPerPixel
-                yield return new ScanLine(PixelData,srcOffset,width, PixelFormat);
+                yield return new ScanLine(PixelData, srcOffset, width, PixelFormat);
             }
         }
 
@@ -320,7 +320,7 @@ namespace Fusee.Base.Core
         }
 
 
-        private delegate void CopyFunc(byte[] srcScanLineBytes, int dstIndex);       
+        private delegate void CopyFunc(byte[] srcScanLineBytes, int dstIndex);
 
         /// <summary>
         /// Checks if an image contains no data by checking if <see cref="Width"/> or <see cref="Height"/> is 0.

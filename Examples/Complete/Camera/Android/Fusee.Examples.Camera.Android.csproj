@@ -101,7 +101,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Camera\Core\Fusee.Examples.Camera.Core.csproj">
       <Project>{e23994a2-8da9-408a-877a-71e7168fe25d}</Project>
-      <Name>Fusee.Examples.Camera.Core</Name>
+      <Name>Fusee.Examples.Simple.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->

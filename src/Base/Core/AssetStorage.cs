@@ -7,12 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
-using Fusee.Serialization;
 
 namespace Fusee.Base.Core
 {
     /// <summary>
-    /// A class providing access to Assets. An asset is considered any content to be loaded, de-serialized and converted during
+    /// A class providing access to Assets. An asset is considered any content to be loaded, deserialized and converted during
     /// an application's lifetime. Often Assets should be loaded up-front and accessed during run-time with no perceivable delay.
     /// AssetStorage is a staticton (a singleton with an additional static interface).
     /// </summary>
@@ -102,7 +101,7 @@ namespace Fusee.Base.Core
 
             return default;
         }
-    
+
         /// <summary>
         /// Staticton implementation of <see cref="RegisterAssetProvider"/>.
         /// </summary>
@@ -138,7 +137,7 @@ namespace Fusee.Base.Core
             {
                 throw new InvalidOperationException($"DeepCopy: ProtoBuf.ProtoContractAttribute is not defined on '{source.GetType().Name}'!");
             }
-            // var ser = new ProtoBuf.Serializer<T>();
+
             var stream = new MemoryStream();
 
             ProtoBuf.Serializer.Serialize(stream, source);

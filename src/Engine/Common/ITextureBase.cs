@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Common;
-using Fusee.Serialization;
 using System;
 
 namespace Fusee.Engine.Common
@@ -12,22 +11,22 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// 1D Texture, width only.
         /// </summary>
-        TEXTURE1D,
+        Texture1D,
 
         /// <summary>
         /// 2D Texture, width and height.
-        /// </summary>        
-        TEXTURE2D,
+        /// </summary>
+        Texture2D,
 
         /// <summary>
         /// 3D Texture, width, height, depth.
         /// </summary>
-        TEXTURE3D,
+        Texture3D,
 
         /// <summary>
         /// Exactly 6 distinct sets of 2D images, all of the same size. They act as 6 faces of a cube.
         /// </summary>
-        TEXTURE_CUBE_MAP
+        TextureCubeMap
     }
 
     /// <summary>
@@ -38,19 +37,19 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The integer part of the uv coordinate will be ignored and a repeating pattern is formed.
         /// </summary>
-        REPEAT,
+        Repeat,
         /// <summary>
         /// The texture will be repeated, but it will be mirrored when the integer part of the uv coordinate is odd.
         /// </summary>
-        MIRRORED_REPEAT,
+        MirroredRepeat,
         /// <summary>
         /// The coordinate will simply be clamped between 0 and 1.
         /// </summary>
-        CLAMP_TO_EDGE,
+        ClampToEdge,
         /// <summary>
         /// The coordinates that fall outside the range will be given a specified border color.
         /// </summary>
-        CLAMP_TO_BORDER
+        ClampToBorder
     }
 
     /// <summary>
@@ -64,12 +63,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Disables the compare mode.
         /// </summary>
-        NONE,
+        None,
         /// <summary>
         /// Enables the compare mode.
         /// </summary>
-        GL_COMPARE_REF_TO_TEXTURE 
-    }    
+        CompareRefToTexture
+    }
 
     /// <summary>
     /// Defines how to map texels to uv coordinates.
@@ -79,27 +78,27 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Default texture filtering method. When set, the pixel which center is closest to the texture coordinate is selected. 
         /// </summary>
-        NEAREST,
+        Nearest,
         /// <summary>
         /// Bilinear filtering.An interpolated value from the texture coordinate's neighboring texels, approximating a color between the texels, is taken.
         /// </summary>
-        LINEAR,
+        Linear,
         /// <summary>
         /// Takes the nearest mipmap to match the pixel size and uses nearest neighbor interpolation for texture sampling.
         /// </summary>
-        NEAREST_MIPMAP_NEAREST,
+        NearestMipmapNearest,
         /// <summary>
         /// Takes the nearest mipmap level and samples using linear interpolation. 
         /// </summary>
-        LINEAR_MIPMAP_NEAREST,
+        LinearMipmapNearest,
         /// <summary>
         /// Linearly interpolates between the two mipmaps that most closely match the size of a pixel and samples via nearest neighbor interpolation.
         /// </summary>
-        NEAREST_MIPMAP_LINEAR,
+        NearestMipmapLinear,
         /// <summary>
         /// Linearly interpolates between the two closest mipmaps and samples the texture via linear interpolation.
         /// </summary>
-        LINEAR_MIPMAP_LINEAR
+        LinearMipmapLinear
     }
 
     /// <summary>

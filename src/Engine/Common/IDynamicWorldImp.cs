@@ -3,7 +3,7 @@
 namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Implementation agnostic representation of a dynamic worl. The dynamic world is the root object of 
+    /// Implementation agnostic representation of a dynamic world. The dynamic world is the root object of 
     /// any physics simulation. It keeps track of all objects moving and rotating within the world.
     /// </summary>
     public interface IDynamicWorldImp
@@ -281,9 +281,9 @@ namespace Fusee.Engine.Common
         /// Adds the g impact mesh shape.
         /// </summary>
         /// <param name="meshTriangles">The mesh triangles.</param>
-        /// <param name="meshVertecies">The mesh vertecies.</param>
+        /// <param name="meshVertecies">The mesh vertices.</param>
         /// <returns></returns>
-        IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[]meshVertecies);
+        IGImpactMeshShapeImp AddGImpactMeshShape(int[] meshTriangles, float3[] meshVertecies);
 
         /// <summary>
         /// Numbers the constraints.

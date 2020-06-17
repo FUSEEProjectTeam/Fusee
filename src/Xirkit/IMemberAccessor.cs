@@ -23,5 +23,5 @@
         /// <param name="o">The object from which the member identified with this instance's member accessor the value is to be retrieved from.</param>
         /// <returns>The value currently stored in o's member.</returns>
         T Get(object o);
-    } 
+    }
 }

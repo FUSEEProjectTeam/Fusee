@@ -20,6 +20,6 @@
         /// Stops this stream.
         /// </summary>
         void Stop();
-        
+
     }
 }

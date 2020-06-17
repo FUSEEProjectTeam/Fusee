@@ -165,7 +165,7 @@ namespace Fusee.Test.Math.Core
         {
             var mat = new float3x3(1, 1, 1, 2, 2, 2, 3, 3, 3);
 
-            var actual = mat.AsArray;
+            var actual = mat.ToArray();
 
             Assert.Equal(new float[] { 1, 1, 1, 2, 2, 2, 3, 3, 3 }, actual);
         }
@@ -378,8 +378,8 @@ namespace Fusee.Test.Math.Core
             var zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
             var one = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            yield return new object[] {zero, one, one};
-            yield return new object[] {one, zero, one};
+            yield return new object[] { zero, one, one };
+            yield return new object[] { one, zero, one };
         }
 
         public static IEnumerable<object[]> GetSubtraction()
@@ -387,8 +387,8 @@ namespace Fusee.Test.Math.Core
             var one = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
             var zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            yield return new object[] {one, one, zero};
-            yield return new object[] {one, zero, one};
+            yield return new object[] { one, one, zero };
+            yield return new object[] { one, zero, one };
         }
 
         public static IEnumerable<object[]> GetMultiply()
@@ -397,9 +397,9 @@ namespace Fusee.Test.Math.Core
             var ident = new float3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
             var zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            yield return new object[] {one, ident, one};
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {one, one, new float3x3(3, 3, 3, 3, 3, 3, 3, 3, 3)};
+            yield return new object[] { one, ident, one };
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { one, one, new float3x3(3, 3, 3, 3, 3, 3, 3, 3, 3) };
         }
 
         public static IEnumerable<object[]> GetTransformFloat3()
@@ -412,9 +412,9 @@ namespace Fusee.Test.Math.Core
             var yRot = new float3x3(new float3(0, 0, 1), new float3(0, 1, 0), new float3(-1, 0, 0));
             var zRot = new float3x3(new float3(0, -1, 0), new float3(1, 0, 0), new float3(0, 0, 1));
 
-            yield return new object[] {xRot, y, z};
-            yield return new object[] {yRot, z, x};
-            yield return new object[] {zRot, x, y};
+            yield return new object[] { xRot, y, z };
+            yield return new object[] { yRot, z, x };
+            yield return new object[] { zRot, x, y };
         }
 
         public static IEnumerable<object[]> GetTransformFloat2()
@@ -425,8 +425,8 @@ namespace Fusee.Test.Math.Core
             var rot90 = new float3x3(0, -1, 0, 1, 0, 0, 0, 0, 1);
             var rot270 = new float3x3(0, 1, 0, -1, 0, 0, 0, 0, 1);
 
-            yield return new object[] {rot90, x, y};
-            yield return new object[] {rot270, x, -y};
+            yield return new object[] { rot90, x, y };
+            yield return new object[] { rot270, x, -y };
         }
 
         #endregion

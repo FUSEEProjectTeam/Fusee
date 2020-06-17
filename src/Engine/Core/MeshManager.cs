@@ -2,46 +2,45 @@
 using System.Collections.Generic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Serialization;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
     internal class MeshManager
     {
         private readonly IRenderContextImp _renderContextImp;
-
-        private Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
-
-        private Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
+        private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
+        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
 
         private void Remove(IMeshImp meshImp)
         {
-                if (meshImp.VerticesSet)
-                    _renderContextImp.RemoveVertices(meshImp);
+            if (meshImp.VerticesSet)
+                _renderContextImp.RemoveVertices(meshImp);
 
-                if (meshImp.NormalsSet)
-                    _renderContextImp.RemoveNormals(meshImp);
+            if (meshImp.NormalsSet)
+                _renderContextImp.RemoveNormals(meshImp);
 
-                if (meshImp.ColorsSet)
-                    _renderContextImp.RemoveColors(meshImp);
+            if (meshImp.ColorsSet)
+                _renderContextImp.RemoveColors(meshImp);
 
-                if (meshImp.UVsSet)
-                    _renderContextImp.RemoveUVs(meshImp);
+            if (meshImp.UVsSet)
+                _renderContextImp.RemoveUVs(meshImp);
 
-                if (meshImp.TrianglesSet)
-                    _renderContextImp.RemoveTriangles(meshImp);
+            if (meshImp.TrianglesSet)
+                _renderContextImp.RemoveTriangles(meshImp);
 
-                if (meshImp.BoneWeightsSet)
-                    _renderContextImp.RemoveBoneWeights(meshImp);
+            if (meshImp.BoneWeightsSet)
+                _renderContextImp.RemoveBoneWeights(meshImp);
 
-                if (meshImp.BoneIndicesSet)
-                    _renderContextImp.RemoveBoneIndices(meshImp);
+            if (meshImp.BoneIndicesSet)
+                _renderContextImp.RemoveBoneIndices(meshImp);
 
-                if (meshImp.TangentsSet)
-                    _renderContextImp.RemoveTangents(meshImp);
+            if (meshImp.TangentsSet)
+                _renderContextImp.RemoveTangents(meshImp);
 
-                if (meshImp.BiTangentsSet)
-                    _renderContextImp.RemoveBiTangents(meshImp);
+            if (meshImp.BiTangentsSet)
+                _renderContextImp.RemoveBiTangents(meshImp);
 
             // Force collection
             GC.Collect();
@@ -49,27 +48,25 @@ namespace Fusee.Engine.Core
 
         private void MeshChanged(object sender, MeshDataEventArgs meshDataEventArgs)
         {
-            IMeshImp toBeUpdatedMeshImp;
-            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier,
-                out toBeUpdatedMeshImp))
-            {
+            if (!_identifierToMeshImpDictionary.TryGetValue(meshDataEventArgs.Mesh.SessionUniqueIdentifier, out IMeshImp toBeUpdatedMeshImp))
                 throw new KeyNotFoundException("Mesh is not registered.");
-            }
 
-            Mesh mesh = meshDataEventArgs.Mesh;
+            var mesh = meshDataEventArgs.Mesh;
 
             switch (meshDataEventArgs.ChangedEnum)
             {
                 case MeshChangedEnum.Disposed:
+
                     // Add the meshImp to the toBeDeleted Stack...#
                     _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp);
+
                     // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
                     _identifierToMeshImpDictionary.Remove(mesh.SessionUniqueIdentifier);
-                    // add the identifier to the reusable identifiers stack
-                    //_reusableIdentifiers.Push(meshDataEventArgs.Mesh.Identifier);
+
                     break;
                 case MeshChangedEnum.Vertices:
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
+                    mesh.BoundingBox = new AABBf(mesh.Vertices);
                     break;
                 case MeshChangedEnum.Triangles:
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
@@ -95,14 +92,13 @@ namespace Fusee.Engine.Core
                 case MeshChangedEnum.BiTangents:
                     _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
                     break;
-
             }
         }
 
         private IMeshImp RegisterNewMesh(Mesh mesh)
         {
             // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
-            IMeshImp meshImp = _renderContextImp.CreateMeshImp();
+            var meshImp = _renderContextImp.CreateMeshImp();
 
             // Begin Setup GPU Buffers / allocate GPU memory
             if (mesh.VerticesSet)
@@ -137,7 +133,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the mesh data and dispose event (deallocation)
             mesh.MeshChanged += MeshChanged;
 
-            meshImp.MeshType = (OpenGLPrimitiveType) mesh.MeshType;
+            meshImp.MeshType = (OpenGLPrimitiveType)mesh.MeshType;
 
             _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
 
@@ -164,7 +160,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {
@@ -173,7 +169,7 @@ namespace Fusee.Engine.Core
                 return;
             }
             while (_toBeDeletedMeshImps.Count > 0)
-            {         
+            {
                 var tobeDeletedMeshImp = _toBeDeletedMeshImps.Pop();
                 Remove(tobeDeletedMeshImp);
             }

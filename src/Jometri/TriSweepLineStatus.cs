@@ -23,7 +23,7 @@
             return null;
         }
 
-        //---------- The follwoing methods are only needed because of JSIL's "CompareTo not found in context" error, delete them if this is fixed --------------//
+        //---------- The following methods are only needed because of JSIL's "CompareTo not found in context" error, delete them if this is fixed --------------//
         public new void InsertNode(float key, TriStatusEdge value)
         {
             if (_globalRoot == null)

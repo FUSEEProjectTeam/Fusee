@@ -122,9 +122,9 @@ namespace Fusee.Engine.Common
         List<INetworkConnection> Connections { get; }
 
         /// <summary>
-        /// Gets the local ip. Do not use this often due to performance reasons.
+        /// Gets the local IP. Do not use this often due to performance reasons.
         /// </summary>
-        /// <returns>The local ip as a string.</returns>
+        /// <returns>The local IP as a string.</returns>
         string GetLocalIp();
 
         /// <summary>
@@ -151,8 +151,9 @@ namespace Fusee.Engine.Common
         /// <param name="type">The type of the system (only peer or client are supported).</param>
         /// <param name="host">The host. Example: 129.12.12.12</param>
         /// <param name="port">The port.</param>
-        /// <returns>True if could open connection succesfully.</returns>
+        /// <returns>True if could open connection successfully.</returns>
         bool OpenConnection(SysType type, string host, int port);
+
         /// <summary>
         /// Closes the connection.
         /// </summary>
