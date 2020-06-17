@@ -12,7 +12,20 @@
             "program": "fusee.exe",
             "args": ["player", "${workspaceRoot}/bin/Debug/Fusee_App.dll"],
             "stopAtEntry": false,
-            "console": "externalTerminal"
+            "console": "externalTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Debug in FUSEE Player (with external code)",
+            "type": "coreclr",
+            "request": "launch", 
+            "preLaunchTask": "build",
+            "program": "fusee.exe",
+            "args": ["player", "${workspaceRoot}/bin/Debug/Fusee_App.dll"],
+            "stopAtEntry": false,
+            "console": "externalTerminal",
+            "justMyCode": false,
+            "enableStepFiltering": false
         }
     ]
 }
