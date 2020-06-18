@@ -116,7 +116,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The ShaderEffect'S uniform parameters and their values.
         /// </summary>
-        public Dictionary<string, object> ParamDecl { get; protected set; }
+        internal Dictionary<string, object> ParamDecl { get; set; }
 
         /// <summary>
         /// List of <see cref="RenderStateSet"/>
