@@ -4,12 +4,10 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
-using Fusee.Jometri;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using Transform = Fusee.Engine.Core.Scene.Transform;
 
@@ -338,7 +336,7 @@ namespace Fusee.Examples.Materials.Core
                                                 HasAlbedo = true,
                                                 HasAlbedoTexture = true,
                                                 HasSpecular = true,
-                                                HasSpecularTexture = true,
+                                                //HasSpecularTexture = true,
                                                 HasEmissive = true,
                                                 HasEmissiveTexture = true,
                                                 HasNormalMap = true
@@ -353,7 +351,7 @@ namespace Fusee.Examples.Materials.Core
                                                 SpecularIntensity = 2f,
                                                 SpecularShininess = 25f,
                                                 SpecularMix = 1f,
-                                                SpecularTexture = "specularTex.jpg",
+                                                //SpecularTexture = "specularTex.jpg",
                                                 NormalMap = "normalTex.jpg",
                                                 NormalMapIntensity = 1f,
                                                 EmissiveColor = new float4(0, 1, 1, 1),
@@ -398,38 +396,39 @@ namespace Fusee.Examples.Materials.Core
                                     icosphereWithTangents
                                 }
                             },
-                            new SceneNode
-                            {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Name = "specular texture",
-                                        Translation = new float3(0, 0, 0)
-                                    },
-                                    ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                                    {
-                                        MatProbs =
-                                        {
-                                            HasAlbedo = true,
-                                            HasAlbedoTexture = true,
-                                            HasSpecular = true,
-                                            HasSpecularTexture = true
-                                        },
-                                        MatType = MaterialType.Standard,
-                                        MatValues =
-                                        {
-                                            AlbedoColor = new float4(0.39f, 0.19f, 0, 1),
-                                            SpecularColor = float4.One,
-                                            SpecularIntensity = 2f,
-                                            SpecularShininess = 25f,
-                                            SpecularMix = 1f, // TODO: Implement in ShaderShards
-                                            SpecularTexture = "specularTex.jpg" // TODO: Implement in ShaderShards
-                                        }
-                                    }),
-                                    icosphereWithTangents
-                                }
-                            },
+                            // ---- Specular Textures are not implemented yet. There is no fitting shader! ---- //
+                            //new SceneNode
+                            //{
+                            //    Components = new List<SceneComponent>
+                            //    {
+                            //        new Transform
+                            //        {
+                            //            Name = "specular texture",
+                            //            Translation = new float3(0, 0, 0)
+                            //        },
+                            //        ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                            //        {
+                            //            MatProbs =
+                            //            {
+                            //                HasAlbedo = true,
+                            //                HasAlbedoTexture = true,
+                            //                HasSpecular = true,
+                            //                HasSpecularTexture = true
+                            //            },
+                            //            MatType = MaterialType.Standard,
+                            //            MatValues =
+                            //            {
+                            //                AlbedoColor = new float4(0.39f, 0.19f, 0, 1),
+                            //                SpecularColor = float4.One,
+                            //                SpecularIntensity = 2f,
+                            //                SpecularShininess = 25f,
+                            //                SpecularMix = 1f, // TODO: Implement in ShaderShards
+                            //                SpecularTexture = "specularTex.jpg" // TODO: Implement in ShaderShards
+                            //            }
+                            //        }),
+                            //        icosphereWithTangents
+                            //    }
+                            //},
                             new SceneNode
                             {
                                 Components = new List<SceneComponent>
