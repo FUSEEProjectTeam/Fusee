@@ -72,7 +72,7 @@ namespace Fusee.Examples.PcRendering.Core
         private Camera _cam;
 
         // Init is called on startup. 
-        public void Init()
+        public override void Init()
         {
             _depthTex = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
 
@@ -214,7 +214,7 @@ namespace Fusee.Examples.PcRendering.Core
                 {
                     //Render Depth-only pass                    
                     _scene.Children[1].RemoveComponent<ShaderEffect>();
-                    _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
+                    _scene.Children[1].Components.Insert(1, PtRenderingParams.DepthPassEf);
 
                     _cam.RenderTexture = _depthTex;
                     _sceneRenderer.Render(RC);
@@ -224,7 +224,7 @@ namespace Fusee.Examples.PcRendering.Core
                 //Render color pass
                 //Change shader effect in complete scene
                 _scene.Children[1].RemoveComponent<ShaderEffect>();
-                _scene.Children[1].AddComponent(PtRenderingParams.ColorPassEf);
+                _scene.Children[1].Components.Insert(1, PtRenderingParams.ColorPassEf);
                 _sceneRenderer.Render(RC);
 
                 //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
@@ -255,14 +255,12 @@ namespace Fusee.Examples.PcRendering.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
 
             ReadyToLoadNewFile = true;
-
-            Diagnostics.Debug(FramePerSecond.ToString());
         }
 
         // Is called when the window was resized
@@ -336,7 +334,7 @@ namespace Fusee.Examples.PcRendering.Core
         public void LoadPointCloudFromFile()
         {
             //create Scene from octree structure
-            var root = OocFileReader.GetScene(PtRenderingParams.DepthPassEf);
+            var root = OocFileReader.GetScene(ShaderCodeBuilder.Default/*PtRenderingParams.DepthPassEf*/);
 
             var ptOctantComp = root.GetComponent<OctantComponent>();
             InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Octant.Center.x, (float)ptOctantComp.Octant.Center.y, (float)(ptOctantComp.Octant.Center.z - (ptOctantComp.Octant.Size * 2f)));
@@ -359,6 +357,8 @@ namespace Fusee.Examples.PcRendering.Core
 
             PtRenderingParams.DepthPassEf = PtRenderingParams.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            root.RemoveComponent<ShaderEffect>();
+            root.Components.Insert(1, PtRenderingParams.DepthPassEf);
 
             if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
             {

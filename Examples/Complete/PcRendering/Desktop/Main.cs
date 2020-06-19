@@ -48,8 +48,6 @@ namespace Fusee.Examples.PcRendering.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            AssetStorage.RegisterProvider(fap);
-
             var ptType = AppSetupHelper.GetPtType(PtRenderingParams.PathToOocFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
