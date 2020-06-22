@@ -438,17 +438,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // Compile vertex shader
             GL.ShaderSource(vertexObject, vs);
-
-            Diagnostics.Warn("GL error code:" + GL.GetError());
-
             GL.CompileShader(vertexObject);
-
-            Diagnostics.Warn("GL error code:" + GL.GetError());
-
             GL.GetShaderInfoLog(vertexObject, out string info);
-
-            Diagnostics.Warn("GL error code:" + GL.GetError());
-
             GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out int statusCode);
 
             if (statusCode != 1)
@@ -459,15 +450,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (gs != null)
             {
                 geometryObject = GL.CreateShader(ShaderType.GeometryShader);
-                Diagnostics.Warn("GL error code:" + GL.GetError());
                 GL.ShaderSource(geometryObject, gs);
-                Diagnostics.Warn("GL error code:" + GL.GetError());
                 GL.CompileShader(geometryObject);
-                Diagnostics.Warn("GL error code:" + GL.GetError());
                 GL.GetShaderInfoLog(geometryObject, out info);
-                Diagnostics.Warn("GL error code:" + GL.GetError());
                 GL.GetShader(geometryObject, ShaderParameter.CompileStatus, out statusCode);
-                Diagnostics.Warn("GL error code:" + GL.GetError());
             }
 
             if (statusCode != 1)
@@ -475,13 +461,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // Compile pixel shader
             GL.ShaderSource(fragmentObject, ps);
-            Diagnostics.Warn("GL error code:" + GL.GetError());
             GL.CompileShader(fragmentObject);
-            Diagnostics.Warn("GL error code:" + GL.GetError());
             GL.GetShaderInfoLog(fragmentObject, out info);
-            Diagnostics.Warn("GL error code:" + GL.GetError());
             GL.GetShader(fragmentObject, ShaderParameter.CompileStatus, out statusCode);
-            Diagnostics.Warn("GL error code:" + GL.GetError());
 
             if (statusCode != 1)
                 throw new ApplicationException(info);
