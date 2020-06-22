@@ -66,7 +66,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// Reads the meta.json and .hierarchy files and returns an octree.
         /// </summary>
         /// <param name="effect">Shader effect the points shall be rendered with.</param>
-        /// <param name="octree"></param>
         /// <returns></returns>
         public SceneNode GetScene(ShaderEffect effect)
         {
@@ -86,8 +85,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             //var maxNoOfPointsInBucket = (int)jsonNoOfPts;
             //var jsonMaxLvl = (JValue)jsonObj["octree"]["maxLevel"];
             //var maxLvl = (int)jsonMaxLvl;
-
-            
 
             var rootSnc = new SceneNode
             {

@@ -141,7 +141,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     //    LoadNode(GetMeshsForNode, PtAcc, ref orderdToLoad);
                     //}
 
-                    Diagnostics.Debug("Finished loading.");
+                    //Diagnostics.Debug("Finished loading.");
                 }
             });
             loadingThread.Start();
@@ -170,7 +170,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                 _nodesToRender = _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                if (ptSizeMode == PointSizeMode.ADAPTIVE_SIZE)
+                if (ptSizeMode == PointSizeMode.AdaptiveSize)
                 {
                     TraverseBreadthFirstToCreate1DTex(_rootNode, VisibleOctreeHierarchyTex);
                     depthPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
@@ -308,7 +308,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             var frustum = new FrustumD();
             frustum.CalculateFrustumPlanes(RC.Projection * RC.View);
-           
+
             if (!ptOctantChildComp.Octant.InsideOrIntersectingFrustum(frustum))
             {
                 _globalLoadingCache.TryRemove(ptOctantChildComp.Guid, out var val); //node that is in loading cache isn't visible anymore                
@@ -356,7 +356,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Traverse and updates the scene (octree) according to the _nodesToRender list.
         /// </summary>
-        /// <param name="nodesToRender">Nodes that are visible AND loaded - corresponds to the ones that can be rendered.</param>
         /// <param name="node">Node that is processed in this step of the traversal.</param>        
         private void TraverseToUpdateScene(SceneNode node)
         {

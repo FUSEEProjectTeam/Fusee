@@ -1,8 +1,6 @@
 #version 300 es
 
-#ifdef GL_ES
 precision highp float;
-#endif
 
 uniform vec2 ScreenParams;
 uniform int PointMode;
@@ -17,7 +15,7 @@ uniform mat4 FUSEE_IV;
 uniform vec2 ClipPlaneDist;
 uniform float InitCamPosZ;
 
-uniform usampler2D OctreeTex;
+uniform highp usampler2D OctreeTex;
 uniform int OctreeTexWidth;
 
 uniform int OctantLevel;

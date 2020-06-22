@@ -1,8 +1,6 @@
 #version 300 es
 
-#ifdef GL_ES
 precision highp float;
-#endif
 
 uniform mat4 FUSEE_P;
 uniform mat4 FUSEE_V;
@@ -42,7 +40,7 @@ float LinearizeDepth(float depth)
 	float near = ClipPlaneDist.x;
 	float far = ClipPlaneDist.y;
 
-    float z = depth * 2.0 - 1.0; // back to NDC 
+	float z = depth * 2.0 - 1.0; // back to NDC 
 	return  (2.0 * near * far) / (far + near - z * (far - near));
 }
 
@@ -111,20 +109,19 @@ vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 a
 
 vec3 ViewNormalFromDepth(float depth, vec2 texcoords) 
 {
+	const vec2 offset1 = vec2(0.0,0.001);
+	const vec2 offset2 = vec2(0.001,0.0);
   
-  const vec2 offset1 = vec2(0.0,0.001);
-  const vec2 offset2 = vec2(0.001,0.0);
+	float depth1 = texture(DepthTex, texcoords + offset1).r;
+	float depth2 = texture(DepthTex, texcoords + offset2).r;
   
-  float depth1 = texture(DepthTex, texcoords + offset1).r;
-  float depth2 = texture(DepthTex, texcoords + offset2).r;
+	vec3 p1 = vec3(offset1, depth1 - depth);
+	vec3 p2 = vec3(offset2, depth2 - depth);
   
-  vec3 p1 = vec3(offset1, depth1 - depth);
-  vec3 p2 = vec3(offset2, depth2 - depth);
+	vec3 normal = cross(p1, p2);
+	normal.z = normal.z;
   
-  vec3 normal = cross(p1, p2);
-  normal.z = normal.z;
-  
-  return normalize(normal);
+	return normalize(normal);
 }
 
 void main(void)
@@ -133,87 +130,85 @@ void main(void)
 	vec4 position;
 	float weight;
 
-	vec4 col;
-
 	switch (PointShape)
 	{
-	case 0: // default = square
-	default:
-		gl_FragDepth = gl_FragCoord.z;
-		break;
-	case 1: // circle						
+		case 0: // default = square
+		default:
+			gl_FragDepth = gl_FragCoord.z;
+			break;
+		case 1: // circle						
 
-		float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);
+			float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);
 			
-		if(distanceFromCenter > 1.0)
-			discard;
+			if(distanceFromCenter > 1.0)
+				discard;
 			
-		gl_FragDepth = gl_FragCoord.z;
+			gl_FragDepth = gl_FragCoord.z;
 
-		break;
-	case 2: //paraboloid
+			break;
+		case 2: //paraboloid
 
-		weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function
+			weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function
 
-		position = vViewPos;
-		position.z += weight * vWorldSpacePointRad;
-		position = FUSEE_P * position;
-		position = position / position.w;
-		gl_FragDepth = (position.z + 1.0) / 2.0;
+			position = vViewPos;
+			position.z += weight * vWorldSpacePointRad;
+			position = FUSEE_P * position;
+			position = position / position.w;
+			gl_FragDepth = (position.z + 1.0) / 2.0;
 
-		break;
-	case 3: //cone
+			break;
+		case 3: //cone
 
-		//[-1, 1]
-		weight = 1.0 - length(distanceVector);
+			//[-1, 1]
+			weight = 1.0 - length(distanceVector);
 
-		position = vViewPos;
-		position.z += weight * vWorldSpacePointRad;
-		position = FUSEE_P * position;
-		position = position / position.w;
-		gl_FragDepth = (position.z + 1.0) / 2.0;
+			position = vViewPos;
+			position.z += weight * vWorldSpacePointRad;
+			position = FUSEE_P * position;
+			position = position / position.w;
+			gl_FragDepth = (position.z + 1.0) / 2.0;
 
-		break;
+			break;
 
-	case 4: //sphere
+		case 4: //sphere
 
-		//prevent sqrt(x < 0) - z values can (and should, in this case) become negative 
-		float zwerg = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0));
-		if (zwerg < 0.0)
-			weight = -1.0;
-		else
-			weight = sqrt(zwerg);
+			//prevent sqrt(x < 0) - z values can (and should, in this case) become negative 
+			float zwerg = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0));
+			if (zwerg < 0.0)
+				weight = -1.0;
+			else
+				weight = sqrt(zwerg);
 
-		position = vViewPos;
-		position.z += weight * vWorldSpacePointRad;
-		position = FUSEE_P * position;
-		position = position / position.w;
-		gl_FragDepth = (position.z + 1.0) / 2.0;
+			position = vViewPos;
+			position.z += weight * vWorldSpacePointRad;
+			position = FUSEE_P * position;
+			position = position / position.w;
+			gl_FragDepth = (position.z + 1.0) / 2.0;
 
-		break;
+			break;
 	}
 
 	switch (ColorMode)
 	{
-		case 0: // default = point cloud rgb
-			default:
+		case 0: // default = point cloud rgb			
 			oColor = vColor; //vColor = vertex color
-		break;
+			break;
 		case 1:
+		default:
 			oColor = Color; //one color for all points (uniform)
-		break;
+			break;
 		case 2:
 			oColor = vec4(vNormal, 1.0);
-		break;
+			break;
 		case 3:
 			oColor = vec4(weight, weight, weight, 1);
 			break;
 		case 4:
 			oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
 			break;
-		case 5:
-			oColor = vIntensity;
-		break;
+		case 5:		
+			oColor = Color; // vIntensity
+			break;
 	}
 
 	// SSAO - kind of depth only. 
@@ -274,12 +269,12 @@ void main(void)
 	switch (Lighting)
 	{
 		default:
-		case 0: // default = unlit		
-		{			
+		case 0: // default = unlit
+		{
 			break;
 		}
 		case 1:
-		{			
+		{
 			float linearDepth = LinearizeDepth(z);
 
 			if(linearDepth > 0.1)
@@ -287,7 +282,7 @@ void main(void)
 			
 			if(CalcSSAO == 1)
 			{
-				vec3 ambient = oColor.xyz * vec3(occlusion, occlusion, occlusion) * SSAOStrength;				
+				vec3 ambient = oColor.xyz * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
 				oColor.xyz = ambient + oColor.xyz;
 			}
 
@@ -303,12 +298,12 @@ void main(void)
 			vec3 diffuseColor = intensityDiff * oColor.xyz;
 
 			if(CalcSSAO == 1)
-			{				
-				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;				
+			{
+				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
 				oColor = vec4(ambient + diffuseColor, oColor.a);
 			}
-			else			
-				oColor = vec4(diffuseColor, oColor.a);		
+			else
+				oColor = vec4(diffuseColor, oColor.a);
 			
 			break;
 		}

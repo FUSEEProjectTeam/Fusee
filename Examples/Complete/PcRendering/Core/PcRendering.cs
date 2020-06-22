@@ -58,7 +58,7 @@ namespace Fusee.Examples.PcRendering.Core
         private float _maxPinchSpeed;
 
         private float3 _initCamPos;
-        public float3 InitCameraPos { get { return _initCamPos; } private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } }       
+        public float3 InitCameraPos { get { return _initCamPos; } private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } }
 
         private bool _isTexInitialized = false;
 
@@ -105,7 +105,7 @@ namespace Fusee.Examples.PcRendering.Core
                     _camTransform,
                     _cam
                 }
-            };            
+            };
 
             _scene.Children.Insert(0, mainCam);
 
@@ -117,7 +117,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).            
 
-            if (!UseWPF)            
+            if (!UseWPF)
                 LoadPointCloudFromFile();
 
             _gui = CreateGui();
@@ -125,11 +125,11 @@ namespace Fusee.Examples.PcRendering.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_scene); 
+            _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             IsInitialized = true;
-        }       
+        }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -205,12 +205,12 @@ namespace Fusee.Examples.PcRendering.Core
 
                 if (HasUserMoved() || _camTransform.Translation == InitCameraPos)
                 {
-                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);                    
+                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
                 }
-                
+
                 //----------------------------  
 
-                if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
+                if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
                 {
                     //Render Depth-only pass                    
                     _scene.Children[1].RemoveComponent<ShaderEffect>();
@@ -266,7 +266,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.UNLIT) return;
+            if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.Unlit) return;
 
             //(re)create depth tex and fbo
             if (_isTexInitialized)
@@ -360,7 +360,7 @@ namespace Fusee.Examples.PcRendering.Core
             root.RemoveComponent<ShaderEffect>();
             root.Components.Insert(1, PtRenderingParams.DepthPassEf);
 
-            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
+            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
             {
                 _scene.Children[1].RemoveComponent<ShaderEffect>();
                 _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
@@ -390,9 +390,9 @@ namespace Fusee.Examples.PcRendering.Core
 
         public void ResetCamera()
         {
-            _camTransform .Translation = InitCameraPos;
+            _camTransform.Translation = InitCameraPos;
             _angleHorz = _angleVert = 0;
-        }        
+        }
 
         public void DeleteOctants()
         {
@@ -413,11 +413,11 @@ namespace Fusee.Examples.PcRendering.Core
             foreach (var param in PtRenderingParams.ShaderParamsToUpdate)
             {
                 PtRenderingParams.DepthPassEf.SetEffectParam(param.Key, param.Value);
-                PtRenderingParams.ColorPassEf.SetEffectParam(param.Key, param.Value);                
+                PtRenderingParams.ColorPassEf.SetEffectParam(param.Key, param.Value);
             }
 
             PtRenderingParams.ShaderParamsToUpdate.Clear();
-        }        
+        }
 
         #region UI
 
@@ -456,14 +456,14 @@ namespace Fusee.Examples.PcRendering.Core
             var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = new TextNode(
-                text : "FUSEE Simple Example",
-                name : "ButtonText",
-                vs : vsTex,
-                ps : psTex,
-                anchors : UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                offsets : UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                fontMap : guiLatoBlack,
-                color : ColorUint.Tofloat4(ColorUint.Greenery));
+                text: "FUSEE Simple Example",
+                name: "ButtonText",
+                vs: vsTex,
+                ps: psTex,
+                anchors: UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                offsets: UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                fontMap: guiLatoBlack,
+                color: ColorUint.Tofloat4(ColorUint.Greenery));
 
             var canvas = new CanvasNode(
                 "Canvas",

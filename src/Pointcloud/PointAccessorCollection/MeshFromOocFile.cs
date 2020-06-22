@@ -2,7 +2,6 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using Fusee.Serialization;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -13,17 +12,17 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     /// Fore every point type: Define a Method that returns a Mesh.
     /// </summary>
     public static class MeshFromOocFile
-    {    
+    {
         public static List<Mesh> GetMeshsForNode_Pos64(PointAccessor<Pos64> ptAccessor, List<Pos64> points)
         {
             var allPoints = new List<double3>();
-            
+
 
             for (int i = 0; i < points.Count(); i++)
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                
+
             }
 
             var allMeshes = new List<Mesh>();
@@ -31,12 +30,12 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             var maxVertCount = ushort.MaxValue - 1;
 
             var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            
+
 
             for (int i = 0; i < allPointsSplitted.Count; i++)
             {
                 var pointSplit = allPointsSplitted[i];
-                
+
                 var currentMesh = new Mesh
                 {
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
@@ -86,8 +85,8 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                     MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],
                     //Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
-                    Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt/4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
-                };                
+                    Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
+                };
 
                 allMeshes.Add(currentMesh);
             }
@@ -99,23 +98,23 @@ namespace Fusee.Pointcloud.PointAccessorCollections
         {
             var allPoints = new List<double3>();
             var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
-            
+
             for (int i = 0; i < points.Count(); i++)
             {
                 var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));                
+                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
             }
 
             var allMeshes = new List<Mesh>();
 
             var maxVertCount = ushort.MaxValue - 1;
 
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();            
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
             var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
 
             for (int i = 0; i < allPointsSplitted.Count; i++)
             {
-                var pointSplit = allPointsSplitted[i];                
+                var pointSplit = allPointsSplitted[i];
                 var intentsitySplit = allIntensitiesSplitted[i];
 
                 var currentMesh = new Mesh
@@ -123,7 +122,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                     Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
                     MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = new float3[pointSplit.Count],                    
+                    Normals = new float3[pointSplit.Count],
                     Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
                 };
 
@@ -135,7 +134,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
 
         public static List<Mesh> GetMeshsForNode_Pos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
         {
-            var allPoints = new List<double3>();            
+            var allPoints = new List<double3>();
             var allColors = new List<float3>();
 
             for (int i = 0; i < points.Count(); i++)
@@ -150,12 +149,12 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             var maxVertCount = ushort.MaxValue - 1;
 
             var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();            
+            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
 
             for (int i = 0; i < allPointsSplitted.Count; i++)
             {
                 var pointSplit = allPointsSplitted[i];
-                var colorSplit = allColorsSplitted[i];                ;
+                var colorSplit = allColorsSplitted[i]; ;
 
                 var currentMesh = new Mesh
                 {
@@ -163,7 +162,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
                     MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],
-                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()                    
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()
                 };
 
                 allMeshes.Add(currentMesh);

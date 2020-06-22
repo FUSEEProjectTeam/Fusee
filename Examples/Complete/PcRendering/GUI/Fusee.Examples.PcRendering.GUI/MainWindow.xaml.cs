@@ -69,7 +69,7 @@ namespace Fusee.Examples.PcRendering.WPF
             SingleColor.SelectedColor = System.Windows.Media.Color.FromScRgb(col.a, col.r, col.g, col.b);
             SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
 
-            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
+            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.Single)
                 SingleColor.IsEnabled = false;
             else
                 SingleColor.IsEnabled = true;
@@ -257,7 +257,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
             PtRenderingParams.Lighting = (Lighting)e.AddedItems[0];
 
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SsaoOnly || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.Unlit)
             {
                 SSAOCheckbox.IsEnabled = false;
                 SSAOStrengthLabel.IsEnabled = false;
@@ -270,12 +270,12 @@ namespace Fusee.Examples.PcRendering.WPF
                 SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
             }
 
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY)
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SsaoOnly)
                 SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = true;
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.Unlit)
                 SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = false;
 
-            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.BLINN_PHONG)
+            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.BlinnPhong)
             {
                 SpecStrength.IsEnabled = false;
                 SpecStrengthLabel.IsEnabled = false;
@@ -290,7 +290,7 @@ namespace Fusee.Examples.PcRendering.WPF
                 ShininessVal.IsEnabled = true;
             }
 
-            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.EDL)
+            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.Edl)
             {
                 EDLNeighbourPx.IsEnabled = false;
                 EDLNeighbourPxLabel.IsEnabled = false;
@@ -323,7 +323,7 @@ namespace Fusee.Examples.PcRendering.WPF
             if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.ColorMode = (ColorMode)e.AddedItems[0];
 
-            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
+            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.Single)
                 SingleColor.IsEnabled = false;
             else
                 SingleColor.IsEnabled = true;

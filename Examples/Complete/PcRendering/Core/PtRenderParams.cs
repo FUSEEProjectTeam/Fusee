@@ -11,12 +11,12 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();
         public static int MaxNoOfVisiblePoints = 500000;
-        public static string PathToOocFile = "D://HolbeinPferdOctree";
+        public static string PathToOocFile = "C://Users//sbuse//Desktop//Fraunhofer//MultiVis//Punktwolken//HolbeinPferdOctree";
 
         public static ShaderEffect DepthPassEf;
         public static ShaderEffect ColorPassEf;
 
-        private static Lighting _lighting = Lighting.EDL;
+        private static Lighting _lighting = Lighting.Edl;
         public static Lighting Lighting
         {
             get { return _lighting; }
@@ -27,7 +27,7 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static PointShape _shape = PointShape.PARABOLID;
+        private static PointShape _shape = PointShape.Paraboloid;
         public static PointShape Shape
         {
             get { return _shape; }
@@ -38,7 +38,7 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static PointSizeMode _ptMode = PointSizeMode.ADAPTIVE_SIZE;
+        private static PointSizeMode _ptMode = PointSizeMode.AdaptiveSize;
         public static PointSizeMode PtMode
         {
             get { return _ptMode; }
@@ -49,7 +49,7 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static ColorMode _colorMode = ColorMode.SINGLE;
+        private static ColorMode _colorMode = ColorMode.Single;
         public static ColorMode ColorMode
         {
             get { return _colorMode; }
