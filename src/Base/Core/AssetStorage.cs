@@ -58,16 +58,6 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Returns true if an asset is successfully loaded
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public static bool IsAssetLoaded(string id)
-        {
-            return Instance._assetBuffer.TryGetValue(id, out var value) && value.IsCompleted;
-        }
-
-        /// <summary>
         /// Returns true if an asset has finished loading successfully,
         /// returns false if not present, see <see cref="IsAssetPresent(string)"/>
         /// </summary>
