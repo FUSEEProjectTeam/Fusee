@@ -22,7 +22,6 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-
             }
 
             var allMeshes = new List<Mesh>();
