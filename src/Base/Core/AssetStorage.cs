@@ -1,12 +1,9 @@
+using Fusee.Base.Common;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Dynamic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Fusee.Base.Common;
 
 namespace Fusee.Base.Core
 {
@@ -26,11 +23,20 @@ namespace Fusee.Base.Core
     public sealed class AssetStorage
     {
         private readonly List<IAssetProvider> _providers;
+        private readonly Dictionary<string, Task> _assetBuffer;
+
         private static AssetStorage _instance;
+
+        /// <summary>
+        /// Returns true if all assets have finished loading, independent of failed or success state
+        /// </summary>
+        public static bool AllAssetsFinishedLoading =>
+            _instance._assetBuffer.Values.All(x => x.IsCompleted);
 
         private AssetStorage()
         {
             _providers = new List<IAssetProvider>();
+            _assetBuffer = new Dictionary<string, Task>();
         }
 
         /// <summary>
@@ -39,7 +45,42 @@ namespace Fusee.Base.Core
         /// <value>
         /// The (one-and-only) instance of AssetStorage.
         /// </value>
-        public static AssetStorage Instance => _instance ?? (_instance = new AssetStorage());
+        public static AssetStorage Instance => _instance ??= new AssetStorage();
+
+        /// <summary>
+        /// Returns true if an asset is currently loading or already loaded, independent of failed or success state!
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool IsAssetPresent(string id)
+        {
+            return Instance._assetBuffer.ContainsKey(id);
+        }
+
+        /// <summary>
+        /// Returns true if an asset is successfully loaded
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool IsAssetLoaded(string id)
+        {
+            return Instance._assetBuffer.TryGetValue(id, out var value) && value.IsCompleted;
+        }
+
+        /// <summary>
+        /// Returns true if an asset has finished loading successfully,
+        /// returns false if not present, see <see cref="IsAssetPresent(string)"/>
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static bool IsAssetLoaded(string id)
+        {
+            if (Instance._assetBuffer.TryGetValue(id, out var val))
+            {
+                return val.IsCompletedSuccessfully;
+            }
+            return false;
+        }
 
         /// <summary>
         /// Staticton implementation of <see cref="GetAsset{T}"/>.
@@ -47,7 +88,10 @@ namespace Fusee.Base.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        public static T Get<T>(string id) => Instance.GetAsset<T>(id);
+        public static T Get<T>(string id)
+        {
+            return Instance.GetAsset<T>(id);
+        }
 
         /// <summary>
         /// Staticton implementation of <see cref="GetAsset{T}"/>.
@@ -55,7 +99,35 @@ namespace Fusee.Base.Core
         /// <typeparam name="T"></typeparam>
         /// <param name="id">The identifier.</param>
         /// <returns></returns>
-        public static async Task<T> GetAsync<T>(string id) => await Instance.GetAssetAsync<T>(id).ConfigureAwait(false);
+        public static Task<T> GetAsync<T>(string id)
+        {
+            if (_instance._assetBuffer.TryGetValue(id, out var value))
+            {
+                return (Task<T>)value;
+            }
+            else
+            {
+                var task = Instance.GetAssetAsync<T>(id);
+                _instance._assetBuffer.Add(id, task);
+                return task;
+            }
+        }
+
+
+        /// <summary>
+        /// Retrieves the assets identified by ids in an completely async parallel matter.
+        /// </summary>
+        /// <typeparam name="T">The expected types of the asset to retrieve.</typeparam>
+        /// <param name="ids">The identifiers.</param>
+        /// <returns>The assets, if found. Otherwise null.</returns>
+        public static Task<T[]> GetAssetsAsync<T>(IEnumerable<string> ids)
+        {
+            var allTasks = new List<Task<T>>();
+            foreach (var id in ids)
+                allTasks.Add(_instance.GetAssetAsync<T>(id));
+
+            return Task.WhenAll(allTasks);
+        }
 
         /// <summary>
         /// Retrieves the asset identified by id.
@@ -76,11 +148,12 @@ namespace Fusee.Base.Core
                     return (T)assetProvider.GetAsset(id, typeof(T));
                 }
             }
-            return default(T);
+            return default;
         }
 
+
         /// <summary>
-        /// Retrieves the asset identified by id.
+        /// Retrieves a <see cref="Task"/> which loads the asset identified by id, eventually.
         /// </summary>
         /// <typeparam name="T">The expected type of the asset to retrieve.</typeparam>
         /// <param name="id">The identifier.</param>
@@ -95,7 +168,7 @@ namespace Fusee.Base.Core
             {
                 if (await assetProvider.CanGetAsync(id, typeof(T)).ConfigureAwait(false))
                 {
-                    return (T)await assetProvider.GetAssetAsync(id, typeof(T)).ConfigureAwait(false);
+                    return assetProvider.GetAssetAsync(id, typeof(T));
                 }
             }
 
@@ -107,10 +180,12 @@ namespace Fusee.Base.Core
         /// </summary>
         /// <param name="assetProvider">The asset provider.</param>
         public static void RegisterProvider(IAssetProvider assetProvider)
-                    => Instance.RegisterAssetProvider(assetProvider);
+        {
+            Instance.RegisterAssetProvider(assetProvider);
+        }
 
         /// <summary>
-        /// Registers the given asset provider. Use this method to register asset providers 
+        /// Registers the given asset provider. Use this method to register asset providers
         /// for the platform (desktop, mobile, web) your main application should run on.
         /// </summary>
         /// <param name="assetProvider">The asset provider to register.</param>
@@ -122,7 +197,7 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Creates a deep copy of the source object. Only works for source objects with the 
+        /// Creates a deep copy of the source object. Only works for source objects with the
         /// <see cref="ProtoBuf.ProtoContractAttribute"/> defined on their class.
         /// </summary>
         /// <typeparam name="T">
@@ -140,9 +215,10 @@ namespace Fusee.Base.Core
 
             var stream = new MemoryStream();
 
-            ProtoBuf.Serializer.Serialize(stream, source);
-            stream.Position = 0;
-            return ProtoBuf.Serializer.Deserialize<T>(stream) as T;
+            //ProtoBuf.Serializer.Serialize(stream, source);
+            //stream.Position = 0;
+            //return ProtoBuf.Serializer.Deserialize<T>(stream) as T;
+            return source;
         }
     }
 }
