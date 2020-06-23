@@ -29,7 +29,7 @@ namespace Fusee.Test.Assets.Desktop
         static void SimpleMultipleReadOfTxtFile()
         {
             // To check the cache dictionary
-            for(var i = 0; i < 10000; i++)
+            for (var i = 0; i < 10000; i++)
                 Assert.Equal("Test123", AssetStorage.Get<string>("test.txt"));
         }
 
