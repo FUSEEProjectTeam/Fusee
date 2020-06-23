@@ -42,7 +42,9 @@ namespace Fusee.Examples.Simple.Core
 
         public async void LoadAssets()
         {
-            _gui = await CreateGui().ConfigureAwait(false);
+            _gui = await GUI.CreateDefaultGui(Width, Height,
+                "FUSEE Simple Example", _canvasRenderMode,
+                BtnLogoEnter, BtnLogoExit, BtnLogoDown).ConfigureAwait(false);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -69,7 +71,10 @@ namespace Fusee.Examples.Simple.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_isLoaded) return;
+            if (!_isLoaded)
+            {
+                return;
+            }
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -91,7 +96,7 @@ namespace Fusee.Examples.Simple.Core
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                float2 touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
                 _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
             }
@@ -104,7 +109,7 @@ namespace Fusee.Examples.Simple.Core
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                    float curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -114,12 +119,12 @@ namespace Fusee.Examples.Simple.Core
             _angleVert += _angleVelVert;
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
+            float4x4 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            float4x4 mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            float4x4 view = mtxCam * mtxRot;
+            float4x4 perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            float4x4 orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
             // Render the scene loaded in Init()
             RC.View = view;
@@ -130,7 +135,10 @@ namespace Fusee.Examples.Simple.Core
 
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
+            {
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            }
+
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
@@ -140,80 +148,6 @@ namespace Fusee.Examples.Simple.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private async Task<SceneContainer> CreateGui()
-        {
-            var shader = await AssetStorage.GetAssetsAsync<string>(new string[] { "texture.vert", "texture.frag" }).ConfigureAwait(false);
-            var vsTex = shader[0];
-            var psTex = shader[1];
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
-                "fuseeLogo",
-                vsTex,
-                psTex,
-                //Set the albedo texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = new TextNode(
-                "FUSEE Simple Example",
-                "ButtonText",
-                vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
         }
 
         public void BtnLogoEnter(CodeComponent sender)
