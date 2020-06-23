@@ -25,12 +25,12 @@ namespace Fusee.Base.Core
         {
             // any memory checks of available memory vs dictionary size, etc. fails here and isn't available
             // for web. Therefore just this 20 element cap.
-            if(assetBuffer.Keys.Count > 20)
+            if (assetBuffer.Keys.Count > 20)
             {
                 var timesSorted = _timeAdded.Keys.ToList();
                 timesSorted.Sort(); // this sort from oldest [0] to newest [length]
 
-                for(var i = 0; i < 10; i++)
+                for (var i = 0; i < 10; i++)
                 {
                     var oldestTime = timesSorted[i];
                     var keyOfOldestTime = _timeAdded[oldestTime];
@@ -203,7 +203,7 @@ namespace Fusee.Base.Core
             {
                 if (await assetProvider.CanGetAsync(id, typeof(T)).ConfigureAwait(false))
                 {
-                    return (T) await assetProvider.GetAssetAsync(id, typeof(T)).ConfigureAwait(false);
+                    return (T)await assetProvider.GetAssetAsync(id, typeof(T)).ConfigureAwait(false);
                 }
             }
 
