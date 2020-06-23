@@ -23,6 +23,9 @@ namespace Fusee.Base.Core
         /// <param name="value"></param>
         internal static void AddTask(this Dictionary<string, Task> assetBuffer, string key, Task value)
         {
+            // check if present
+            if (assetBuffer.ContainsKey(key)) return;
+
             // any memory checks of available memory vs dictionary size, etc. fails here and isn't available
             // for web. Therefore just this 20 element cap.
             if (assetBuffer.Keys.Count > 20)
@@ -229,6 +232,14 @@ namespace Fusee.Base.Core
             if (_providers.Contains(assetProvider))
                 throw new InvalidOperationException("Asset Provider already registered " + assetProvider);
             _providers.Add(assetProvider);
+        }
+
+        /// <summary>
+        /// Unregisters all asset providers.
+        /// </summary>
+        public static void UnRegisterAllAssetProviders()
+        {
+            Instance._providers.Clear();
         }
 
         /// <summary>
