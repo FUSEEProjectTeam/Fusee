@@ -23,7 +23,7 @@ namespace Fusee.Base.Imp.Android
         /// <returns>An ImageData object with all necessary information for the texture-binding process.</returns>
         public static Task<ImageData> LoadImageAsync(Stream file)
         {
-            return Task.Factory.StartNew(() => LoadImage(file));
+            return Task.FromResult(LoadImage(file));
         }
 
         /// <summary>
