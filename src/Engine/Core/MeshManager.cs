@@ -99,7 +99,7 @@ namespace Fusee.Engine.Core
         {
             // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
             var meshImp = _renderContextImp.CreateMeshImp();
-            meshImp.MeshType = (OpenGLPrimitiveType)mesh.MeshType;
+
             // Begin Setup GPU Buffers / allocate GPU memory
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);
@@ -132,6 +132,8 @@ namespace Fusee.Engine.Core
 
             // Setup handler to observe changes of the mesh data and dispose event (deallocation)
             mesh.MeshChanged += MeshChanged;
+
+            meshImp.MeshType = (OpenGLPrimitiveType)mesh.MeshType;
 
             _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
 

@@ -190,8 +190,8 @@ void main(void)
 
 	switch (ColorMode)
 	{
-		case 0: // default = point cloud rgb
-			oColor = Color; //vColor = vertex color
+		case 0: // default = point cloud rgb			
+			oColor = vColor; //vColor = vertex color
 			break;
 		case 1:
 		default:
@@ -207,7 +207,7 @@ void main(void)
 			oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
 			break;
 		case 5:		
-			oColor = vIntensity; // vIntensity
+			oColor = Color; // vIntensity
 			break;
 	}
 

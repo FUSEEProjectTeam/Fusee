@@ -49,6 +49,8 @@ namespace Fusee.Engine.Core
         }
     }
 
+
+
     /// <summary>
     /// Creates a simple cube geometry straight from the code.
     /// </summary>
