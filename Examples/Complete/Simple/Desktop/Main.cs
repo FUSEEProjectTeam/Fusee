@@ -39,6 +39,7 @@ namespace Fusee.Examples.Simple.Desktop
                     Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
+
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),

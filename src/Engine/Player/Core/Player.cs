@@ -51,46 +51,43 @@ namespace Fusee.Engine.Player.Core
 
         private float _maxPinchSpeed;
 
+        private bool _isLoaded;
+
         private GamePadDevice _gamePad;
 
-        // Init is called on startup. 
-        public override void Init()
+        public async void LoadAssets()
         {
-            _initCanvasWidth = Width / 100f;
-            _initCanvasHeight = Height / 100f;
-
-            _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
-            // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
-            _zoom = 400;
-
-            _angleRoll = 0;
-            _angleRollInit = 0;
-            _twoTouchRepeated = false;
-            _offset = float2.Zero;
-            _offsetInit = float2.Zero;
-
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile).ConfigureAwait(false);
 
-            _gui = CreateGui();
+            // Initialize the information text line.
+            var textToDisplay = "FUSEE 3D Scene";
+            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
+            {
+                textToDisplay += " created";
+                if (_scene.Header.CreatedBy != null)
+                    textToDisplay += " by " + _scene.Header.CreatedBy;
+
+                if (_scene.Header.CreationDate != null)
+                    textToDisplay += " on " + _scene.Header.CreationDate;
+            }
+
+            _gui = await GUIHelper.CreateDefaultGui(Width, Height,
+                textToDisplay, _canvasRenderMode,
+                BtnLogoEnter, BtnLogoExit, BtnLogoDown).ConfigureAwait(false);
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Register the input devices that are not already given.
-            _gamePad = GetDevice<GamePadDevice>(0);
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
-                // If the model origin is more than one third away from its bounding box, 
+                // If the model origin is more than one third away from its bounding box,
                 // recenter it to the bounding box. Do this check individually per dimension.
-                // This way, small deviations will keep the model's original center, while big deviations 
+                // This way, small deviations will keep the model's original center, while big deviations
                 // will make the model rotate around its geometric center.
                 float3 bbCenter = bbox.Value.Center;
                 float3 bbSize = bbox.Value.Size;
@@ -114,14 +111,42 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            _isLoaded = true;
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            _initCanvasWidth = Width / 100f;
+            _initCanvasHeight = Height / 100f;
+
+            _canvasHeight = _initCanvasHeight;
+            _canvasWidth = _initCanvasWidth;
+
+            // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
+            _zoom = 400;
+
+            _angleRoll = 0;
+            _angleRollInit = 0;
+            _twoTouchRepeated = false;
+            _offset = float2.Zero;
+            _offsetInit = float2.Zero;
+
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(1, 1, 1, 1);
+
+            // Register the input devices that are not already given.
+            _gamePad = GetDevice<GamePadDevice>(0);
+
+            LoadAssets();
         }
 
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            //if (_gamePad != null)
-            //    Diagnostics.Log(_gamePad.LSX);
+            if (!_isLoaded) return;
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -239,94 +264,6 @@ namespace Fusee.Engine.Player.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
-        }
-
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-
-        }
-
-        private SceneContainer CreateGui()
-        {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
-                "fuseeLogo",
-                vsTex,
-                psTex,
-                //Set the diffuse texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            // Initialize the information text line.
-            var textToDisplay = "FUSEE 3D Scene";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                textToDisplay += " created";
-                if (_scene.Header.CreatedBy != null)
-                    textToDisplay += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    textToDisplay += " on " + _scene.Header.CreationDate;
-            }
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = new TextNode(
-                textToDisplay,
-                "SceneDescriptionText",
-                vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                });
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
         }
 
         public void BtnLogoEnter(CodeComponent sender)

@@ -9,11 +9,10 @@ using System.Threading.Tasks;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
-    /// Helper method for GUI creation
+    /// Helper methods for GUI creation
     /// </summary>
-    public static class GUI
+    public static class GUIHelper
     {
-
         /// <summary>
         /// Creates the default Fusee GUI with the top left logo and a description text at the bottom
         /// </summary>
@@ -24,7 +23,7 @@ namespace Fusee.Engine.GUI
         /// <param name="btnLogoEnter"></param>
         /// <param name="btnLogoExit"></param>
         /// <param name="btnLogoDown"></param>
-        /// <returns>awaitable Task<SceneContainer></returns>
+        /// <returns>awaitable <see cref="Task"/></returns>
         public static async Task<SceneContainer> CreateDefaultGui(int width, int height, string descriptionText, CanvasRenderMode canvasRenderMode,
             CodeComponent.InteractionHandler btnLogoEnter,
             CodeComponent.InteractionHandler btnLogoExit,

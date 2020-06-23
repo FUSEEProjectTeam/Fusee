@@ -1,4 +1,3 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -7,9 +6,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -42,7 +39,7 @@ namespace Fusee.Examples.Simple.Core
 
         public async void LoadAssets()
         {
-            _gui = await GUI.CreateDefaultGui(Width, Height,
+            _gui = await GUIHelper.CreateDefaultGui(Width, Height,
                 "FUSEE Simple Example", _canvasRenderMode,
                 BtnLogoEnter, BtnLogoExit, BtnLogoDown).ConfigureAwait(false);
 
@@ -64,7 +61,6 @@ namespace Fusee.Examples.Simple.Core
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
             LoadAssets();
         }
 
