@@ -1020,6 +1020,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentException("Vertices must not be null or empty");
             }
 
+            if (((MeshImp)mr).MeshType == OpenGLPrimitiveType.Points)
+                ((MeshImp)mr).NElements = vertices.Length;
+
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
@@ -1219,7 +1222,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new ArgumentException("triangleIndices must not be null or empty");
             }
-            ((MeshImp)mr).NElements = triangleIndices.Length;
+
+            if(((MeshImp)mr).MeshType != OpenGLPrimitiveType.Points)
+                ((MeshImp)mr).NElements = triangleIndices.Length;
             int trisBytes = triangleIndices.Length * sizeof(short);
 
             if (((MeshImp)mr).ElementBufferObject == 0)
@@ -1376,7 +1381,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (((MeshImp)mr).ElementBufferObject != 0)
+            if (((MeshImp)mr).MeshType != OpenGLPrimitiveType.Points && ((MeshImp)mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
 
@@ -1386,17 +1391,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     default:
                         GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
-                    case OpenGLPrimitiveType.Points:
-                        // enable gl_PointSize to set the point size
-                        if (!_isPtRenderingEnabled)
-                        {
-                            _isPtRenderingEnabled = true;
-                            GL.Enable(EnableCap.ProgramPointSize);
-                            GL.Enable(EnableCap.PointSprite);
-                            GL.Enable(EnableCap.VertexProgramPointSize);
-                        }
-                        GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                        break;
+
                     case OpenGLPrimitiveType.Lines:
                         if (!_isLineSmoothEnabled)
                         {
@@ -1434,6 +1429,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         GL.DrawElements(PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
+            }
+            else
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
+                // enable gl_PointSize to set the point size
+                if (!_isPtRenderingEnabled)
+                {
+                    _isPtRenderingEnabled = true;
+                    GL.Enable(EnableCap.ProgramPointSize);
+                    GL.Enable(EnableCap.PointSprite);
+                    GL.Enable(EnableCap.VertexProgramPointSize);
+                }
+                GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
             }
 
             if (((MeshImp)mr).VertexBufferObject != 0)

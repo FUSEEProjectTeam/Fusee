@@ -8,13 +8,166 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.Simple.Core
 {
+
+    /// <summary>
+    /// Creates a simple cube geometry straight from the code.
+    /// </summary>
+    public class CubeVertColors : Mesh
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Cube" /> class.
+        /// The default cube is 1 unit big.
+        /// </summary>
+        public CubeVertColors()
+        {
+            #region Fields
+            MeshType = 5;
+            // TODO: Remove redundant vertices
+            Vertices = new[]
+            {
+                new float3 {x = +0.5f, y = -0.5f, z = +0.5f},
+                new float3 {x = +0.5f, y = +0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = +0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = -0.5f, z = +0.5f},
+                new float3 {x = +0.5f, y = -0.5f, z = -0.5f},
+                new float3 {x = +0.5f, y = +0.5f, z = -0.5f},
+                new float3 {x = +0.5f, y = +0.5f, z = +0.5f},
+                new float3 {x = +0.5f, y = -0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = -0.5f, z = -0.5f},
+                new float3 {x = -0.5f, y = +0.5f, z = -0.5f},
+                new float3 {x = +0.5f, y = +0.5f, z = -0.5f},
+                new float3 {x = +0.5f, y = -0.5f, z = -0.5f},
+                new float3 {x = -0.5f, y = -0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = +0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = +0.5f, z = -0.5f},
+                new float3 {x = -0.5f, y = -0.5f, z = -0.5f},
+                new float3 {x = +0.5f, y = +0.5f, z = +0.5f},
+                new float3 {x = +0.5f, y = +0.5f, z = -0.5f},
+                new float3 {x = -0.5f, y = +0.5f, z = -0.5f},
+                new float3 {x = -0.5f, y = +0.5f, z = +0.5f},
+                new float3 {x = +0.5f, y = -0.5f, z = -0.5f},
+                new float3 {x = +0.5f, y = -0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = -0.5f, z = +0.5f},
+                new float3 {x = -0.5f, y = -0.5f, z = -0.5f}
+
+            };
+
+            //Triangles = new ushort[]
+            //{
+            //    // front face
+            //    0, 2, 1, 0, 3, 2,
+
+            //    // right face
+            //    4, 6, 5, 4, 7, 6,
+                
+            //    // back face
+            //    8, 10, 9, 8, 11, 10,
+               
+            //    // left face
+            //    12, 14, 13, 12, 15, 14,
+                
+            //    // top face
+            //    16, 18, 17, 16, 19, 18,
+
+            //    // bottom face
+            //    20, 22, 21, 20, 23, 22
+
+            //};
+
+            Normals = new[]
+            {
+                new float3(0, 0, 1),
+                new float3(0, 0, 1),
+                new float3(0, 0, 1),
+                new float3(0, 0, 1),
+                new float3(1, 0, 0),
+                new float3(1, 0, 0),
+                new float3(1, 0, 0),
+                new float3(1, 0, 0),
+                new float3(0, 0, -1),
+                new float3(0, 0, -1),
+                new float3(0, 0, -1),
+                new float3(0, 0, -1),
+                new float3(-1, 0, 0),
+                new float3(-1, 0, 0),
+                new float3(-1, 0, 0),
+                new float3(-1, 0, 0),
+                new float3(0, 1, 0),
+                new float3(0, 1, 0),
+                new float3(0, 1, 0),
+                new float3(0, 1, 0),
+                new float3(0, -1, 0),
+                new float3(0, -1, 0),
+                new float3(0, -1, 0),
+                new float3(0, -1, 0)
+            };
+
+            UVs = new[]
+            {
+                new float2(1, 0),
+                new float2(1, 1),
+                new float2(0, 1),
+                new float2(0, 0),
+                new float2(1, 0),
+                new float2(1, 1),
+                new float2(0, 1),
+                new float2(0, 0),
+                new float2(1, 0),
+                new float2(1, 1),
+                new float2(0, 1),
+                new float2(0, 0),
+                new float2(1, 0),
+                new float2(1, 1),
+                new float2(0, 1),
+                new float2(0, 0),
+                new float2(1, 0),
+                new float2(1, 1),
+                new float2(0, 1),
+                new float2(0, 0),
+                new float2(1, 0),
+                new float2(1, 1),
+                new float2(0, 1),
+                new float2(0, 0)
+            };
+
+            Colors = new[]
+            {
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb(),
+                (uint)Color.Red.ToArgb()
+            };
+        }
+        #endregion
+    }
+
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
@@ -52,9 +205,46 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
+            _rocketScene = new SceneContainer()
+            {
+                Children = new List<SceneNode>()
+                {
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponent>()
+                        {
+                            new ShaderEffect(new[]
+                            {
+                                new EffectPassDeclaration
+                                {
+                                    VS = AssetStorage.Get<string>("vertCol.vert"),
+                                    PS = AssetStorage.Get<string>("vertCol.frag"),
+                                    StateSet = new RenderStateSet
+                                    {
+                                        ZEnable = true,
+                                        AlphaBlendEnable = true,
+                                        SourceBlend = Blend.SourceAlpha,
+                                        DestinationBlend = Blend.InverseSourceAlpha,
+                                        BlendOperation = BlendOperation.Add,
+                                    }
+                                }
+                            },
+                            new List<EffectParameterDeclaration>()
+                            {
+                                new EffectParameterDeclaration(){Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity}
+                            }
+                        ),
+                        new CubeVertColors()
+                        }
+                    }
+                }
+            };
+            
+            RC.SetRenderState(RenderState.FillMode, 1);
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
-            _guiRenderer = new SceneRendererForward(_gui);
+           //_guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -125,7 +315,7 @@ namespace Fusee.Examples.Simple.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
