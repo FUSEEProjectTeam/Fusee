@@ -38,28 +38,39 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
-        // Init is called on startup.
-        public override void Init()
+        private bool _isLoaded;
+
+        public async void LoadAssets()
         {
-            _gui = CreateGui();
+            _gui = await CreateGui().ConfigureAwait(false);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("FUSEERocket.fus").ConfigureAwait(false);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            _isLoaded = true;
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(1, 1, 1, 1);
+
+            LoadAssets();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_isLoaded) return;
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -131,10 +142,11 @@ namespace Fusee.Examples.Simple.Core
             Present();
         }
 
-        private SceneContainer CreateGui()
+        private async Task<SceneContainer> CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
+            var shader = await AssetStorage.GetAssetsAsync<string>(new string[] { "texture.vert", "texture.frag" }).ConfigureAwait(false);
+            var vsTex = shader[0];
+            var psTex = shader[1];
 
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
@@ -147,7 +159,7 @@ namespace Fusee.Examples.Simple.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
@@ -162,7 +174,7 @@ namespace Fusee.Examples.Simple.Core
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
