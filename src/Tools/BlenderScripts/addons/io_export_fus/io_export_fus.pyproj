@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="proto\" />
+    <Folder Include="proto_src\" />
   </ItemGroup>
   <!-- Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /-->
   <!-- RE-GENERATING THE PROTBUF SERIALIZATION PYTHON CODE AND ZIPPING THE BLENDER ADDON DOES NOT WORK. PYTHON PROJECTS JUST DONT INVOKE THE BUILD TARGET. 

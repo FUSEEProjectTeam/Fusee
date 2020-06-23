@@ -158,7 +158,7 @@ namespace Fusee.Base.Core
             {
                 if (await assetProvider.CanGetAsync(id, typeof(T)).ConfigureAwait(false))
                 {
-                    return assetProvider.GetAssetAsync(id, typeof(T));
+                    return (T) await assetProvider.GetAssetAsync(id, typeof(T)).ConfigureAwait(false);
                 }
             }
 

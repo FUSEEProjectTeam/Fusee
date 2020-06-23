@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core
         /// If rendered with FXAA we'll need an additional (final) pass, that takes the lighted scene, rendered to a texture, as input.
         /// </summary>
         /// <param name="srcTex">RenderTarget, that contains a single texture in the Albedo/Specular channel, that contains the lighted scene.</param>
-        /// <param name="screenParams">The width and height of the screen.</param>       
+        /// <param name="screenParams">The width and height of the screen.</param>
         // see: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
         public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
@@ -57,10 +57,10 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Shader effect for the SSAO pass.
-        /// </summary>        
+        /// </summary>
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
-        /// <param name="screenParams">Width and Height of the screen.</param>        
+        /// <param name="screenParams">Width and Height of the screen.</param>
         public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
         {
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
@@ -106,7 +106,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a blurred SSAO texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="ssaoRenderTex">The non blurred SSAO texture.</param>        
+        /// <param name="ssaoRenderTex">The non blurred SSAO texture.</param>
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
@@ -156,11 +156,11 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
@@ -201,13 +201,13 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// [Parallel light only] ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMaps">The cascaded shadow maps.</param>
         /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
@@ -350,8 +350,8 @@ namespace Fusee.Engine.Core
         ///     Builds a very simple shader effect with just albedo
         /// </summary>
         /// <param name="albedoColor">The albedo color the resulting effect.</param>
-        /// <param name="albedoTexture">The (optional) albedo texture to use.</param>   
-        /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>   
+        /// <param name="albedoTexture">The (optional) albedo texture to use.</param>
+        /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffect MakeShaderEffect(float4 albedoColor, string albedoTexture = "", float albedoTextureMix = 0.5f)
         {
@@ -376,8 +376,8 @@ namespace Fusee.Engine.Core
         ///     Builds a very simple shader effect with just albedo
         /// </summary>
         /// <param name="albedoColor">The albedo color for the resulting effect.</param>
-        /// <param name="albedoTexture">The (optional) albedo texture to use.</param>   
-        /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>   
+        /// <param name="albedoTexture">The (optional) albedo texture to use.</param>
+        /// <param name="albedoTextureMix">The mix between albedo color and texture.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 albedoColor, string albedoTexture = "", float albedoTextureMix = 0.5f)
         {
@@ -540,13 +540,13 @@ namespace Fusee.Engine.Core
             return MakeShaderEffectFromShaderEffectProps(fxProps);
         }
 
-        /// <summary> 
-        /// Creates a ShaderEffectComponent from a MaterialComponent 
-        /// </summary> 
-        /// <param name="fxProps">The shader effect properties</param> 
-        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
-        /// <returns></returns> 
-        /// <exception cref="Exception"></exception> 
+        /// <summary>
+        /// Creates a ShaderEffectComponent from a MaterialComponent
+        /// </summary>
+        /// <param name="fxProps">The shader effect properties</param>
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static ShaderEffect MakeShaderEffectFromShaderEffectProps(ShaderEffectProps fxProps, Weight wc = null)
         {
             fxProps.MeshProbs = AnalyzeMesh(null);
@@ -579,13 +579,13 @@ namespace Fusee.Engine.Core
             return ret;
         }
 
-        /// <summary> 
-        /// Creates a ShaderEffectComponent from a MaterialComponent 
-        /// </summary> 
-        /// <param name="fxProps">The shader effect properties</param> 
-        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
-        /// <returns></returns> 
-        /// <exception cref="Exception"></exception> 
+        /// <summary>
+        /// Creates a ShaderEffectComponent from a MaterialComponent
+        /// </summary>
+        /// <param name="fxProps">The shader effect properties</param>
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public static ShaderEffectProtoPixel MakeShaderEffectFromShaderEffectPropsProto(ShaderEffectProps fxProps, Weight wc = null)
         {
             fxProps.MeshProbs = AnalyzeMesh(null);
@@ -600,8 +600,8 @@ namespace Fusee.Engine.Core
                 {
                     new EffectPassDeclarationProto
                     {
-                        VS = vs, 
-                        //VS = VsBones, 
+                        VS = vs,
+                        //VS = VsBones,
                         ProtoPS = ps,
                         StateSet = new RenderStateSet
                         {
@@ -635,7 +635,7 @@ namespace Fusee.Engine.Core
                 VertPropertiesShard.InAndOutParams(effectProps),
             };
 
-            // Main            
+            // Main
             vertexShader.Add(VertMainShard.VertexMain(effectProps));
 
             return string.Join("\n", vertexShader);
@@ -698,7 +698,7 @@ namespace Fusee.Engine.Core
             frag.Append(FragPropertiesShard.ColorOut());
 
             //Shadow calculation methods
-            //-------------------------------------- 
+            //--------------------------------------
             if (lc.Type != LightType.Point)
                 frag.Append(LightingShard.ShadowCalculation());
             else
