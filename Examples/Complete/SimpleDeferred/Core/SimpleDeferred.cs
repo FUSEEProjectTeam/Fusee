@@ -42,30 +42,21 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        // Init is called on startup.
-        public override void Init()
-        {
-            _camTransform = new Transform()
-            {
-                Scale = float3.One,
-                Translation = float3.Zero
-            };
+        private bool _isLoaded;
 
-            _gui = CreateGui();
+        private async void LoadAssets()
+        {
+
+            _gui = await GUIHelper.CreateDefaultGui(Width, Height, "FUSEE Deferred Example", CanvasRenderMode.Screen,
+                BtnLogoEnter, BtnLogoExit, BtnLogoDown);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
-            _backgroundColorNight = new float4(0, 0, 0.05f, 1);
-
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus").ConfigureAwait(false);
             //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<Scene>("shadowTest.fus");
-
-
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
@@ -179,11 +170,31 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
+
+            _isLoaded = true;
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            _camTransform = new Transform()
+            {
+                Scale = float3.One,
+                Translation = float3.Zero
+            };
+
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
+            _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
+            _backgroundColorNight = new float4(0, 0, 0.05f, 1);
+
+            LoadAssets();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_isLoaded) return;
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -271,97 +282,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private SceneContainer CreateGui()
-        {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
-                "fuseeLogo",
-                vsTex,
-                psTex,
-                //Set the diffuse texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
-                );
-
-            // TODO (mr): How to add this?
-            //fuseeLogo.Add(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = new TextNode(
-                "FUSEE Deferred Example",
-                "ButtonText",
-                vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-
-            var guiCamComp = new Camera(ProjectionMethod.Orthographic, 1, 3000, M.PiOver4)
-            {
-                ClearColor = false
-            };
-
-            var cam = new SceneNode()
-            {
-                Name = "GUICam",
-                Components = new List<SceneComponent>()
-                {
-                    guiCamComp
-                }
-            };
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    cam,
-                    //Add canvas.
-                    canvas
-                }
-            };
         }
 
         public void BtnLogoEnter(CodeComponent sender)
