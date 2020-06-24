@@ -26,13 +26,13 @@ uniform float EDLStrength;
 uniform int EDLNeighbourPixels;
 uniform sampler2D DepthTex;
 
-in vec4 vColor;
+in vec3 vColor;
 in vec3 vNormal;
 in vec4 vViewPos;
 in vec4 vClipPos;
 in vec4 vWorldPos;
 in float vWorldSpacePointRad;
-in vec4 vIntensity;
+in vec3 vIntensity;
 out vec4 oColor;
 
 float LinearizeDepth(float depth) 
@@ -191,7 +191,7 @@ void main(void)
 	switch (ColorMode)
 	{
 		case 0: // default = point cloud rgb			
-			oColor = vColor; //vColor = vertex color
+			oColor = vec4(vColor, 1.0); //vColor = vertex color
 			break;
 		case 1:
 		default:
@@ -207,7 +207,7 @@ void main(void)
 			oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
 			break;
 		case 5:		
-			oColor = Color; // vIntensity
+			oColor = vec4(vIntensity, 1.0);
 			break;
 	}
 
@@ -345,4 +345,3 @@ void main(void)
 	}
 
 }
-
