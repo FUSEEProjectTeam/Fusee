@@ -32,6 +32,15 @@ namespace Fusee.Pointcloud.Common
     {
         #region PointT_Member
 
+        /// <summary>
+        /// Gets the type of the point as list of the HasXY methods.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetPointType()
+        {
+            return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
+        }
+
         #region PointXYZ
         // PointXYZ
         public virtual bool HasPositionFloat3_32 => false;
@@ -72,16 +81,7 @@ namespace Fusee.Pointcloud.Common
         public virtual bool HasColorFloat64 => false;
         public virtual bool HasColorFloat3_32 => false;
         public virtual bool HasColorFloat3_64 => false;
-        #endregion
-
-        /// <summary>
-        /// Gets the type of the point as list of the HasXY methods.
-        /// </summary>
-        /// <returns></returns>
-        public List<string> GetPointType()
-        {
-            return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
-        }
+        #endregion        
 
         #region PointXYZINormalRGBL
         // PointXYZINormalRGBL

@@ -43,6 +43,12 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                         CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
+                case PointType.Pos64Label8:
+                    {
+                        var ptAcc = new Pos64Label8_Accessor();
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
+                        break;
+                    }
                 case PointType.Pos64Nor32Col32IShort:
                     {
                         var ptAcc = new Pos64Nor32Col32IShort_Accessor();

@@ -131,6 +131,47 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             return allMeshes;
         }
 
+        public static List<Mesh> GetMeshsForNode_Pos64Label8(PointAccessor<Pos64Label8> ptAccessor, List<Pos64Label8> points)
+        {
+            var allPoints = new List<double3>();
+            var allLabels = new List<byte>();
+
+            for (int i = 0; i < points.Count(); i++)
+            {
+                var pt = points[i];
+                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
+                allLabels.Add(ptAccessor.GetLabelUInt_8(ref pt));
+            }
+
+            var allMeshes = new List<Mesh>();
+
+            var maxVertCount = ushort.MaxValue - 1;
+
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
+            var allLabelsSplitted = SplitList(allLabels, maxVertCount).ToList();
+
+            for (int i = 0; i < allPointsSplitted.Count; i++)
+            {
+                var pointSplit = allPointsSplitted[i];
+
+                //TODO: add a way to generate a color range from this. See CloudCompare.
+                var labelSplit = allLabelsSplitted[i];
+
+                var currentMesh = new Mesh
+                {
+                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
+                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
+                    MeshType = (int)OpenGLPrimitiveType.Points,
+                    Normals = new float3[pointSplit.Count],
+                    //Colors = labelSplit.ToArray()
+                };
+
+                allMeshes.Add(currentMesh);
+            }
+
+            return allMeshes;
+        }
+
         public static List<Mesh> GetMeshsForNode_Pos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
         {
             var allPoints = new List<double3>();

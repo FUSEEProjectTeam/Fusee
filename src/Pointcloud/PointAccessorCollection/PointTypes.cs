@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 
 namespace Fusee.Pointcloud.PointAccessorCollections
-{    
+{
     /// <summary>
     /// Enum that contains all available point types.
     /// Abbreviations:
@@ -18,6 +18,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
         Pos64Col32IShort,
         Pos64IShort,
         Pos64Col32,
+        Pos64Label8,
         Pos64Nor32Col32IShort,
         Pos64Nor32IShort,
         Pos64Nor32Col32
@@ -34,8 +35,8 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position double3.
     /// </summary>
-    public struct Pos64 
-    {        
+    public struct Pos64
+    {
         public double3 Position;
     }
 
@@ -46,7 +47,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     {
         public double3 Position;
         public float3 Color;
-        public ushort Intensity;       
+        public ushort Intensity;
     }
 
     /// <summary>
@@ -64,7 +65,16 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     public struct Pos64Col32
     {
         public double3 Position;
-        public float3 Color;        
+        public float3 Color;
+    }
+
+    /// <summary>
+    /// Point type: Position, color of the classification.
+    /// </summary>
+    public struct Pos64Label8
+    {
+        public double3 Position;
+        public byte Label;
     }
 
     /// <summary>

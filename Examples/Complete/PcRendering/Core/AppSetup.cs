@@ -90,6 +90,24 @@ namespace Fusee.Examples.PcRendering.Core
                         app = appImp;
                         break;
                     }
+                case PointType.Pos64Label8:
+                    {
+                        var appImp = (PcRendering<Pos64Label8>)app;
+
+                        appImp.AppSetup = () =>
+                        {
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Label8>(pathToFile, appImp.GetRc())
+                            {
+                                PointThreshold = pointThreshold,
+                                PtAcc = new Pos64Label8_Accessor(),
+                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Label8
+                            };
+                            appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Label8>(pathToFile);
+                        };
+
+                        app = appImp;
+                        break;
+                    }
                 case PointType.Pos64Nor32Col32IShort:
                     {
                         var appImp = (PcRendering<Pos64Nor32Col32IShort>)app;

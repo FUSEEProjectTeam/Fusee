@@ -108,8 +108,32 @@ namespace Fusee.Pointcloud.PointAccessorCollections
         {
             return ref point.Position;
         }
+    }
 
-        
+    public class Pos64Label8_Accessor : PointAccessor<Pos64Label8>
+    {
+        public override bool HasPositionFloat3_64 => true;
+        public override bool HasLabelUInt_8 => true;
+
+        public override void SetLabelUInt_8(ref Pos64Label8 point, byte val)
+        {
+            point.Label = val;
+        }
+
+        public override ref byte GetLabelUInt_8(ref Pos64Label8 point)
+        {
+            return ref point.Label;
+        }
+
+        public override void SetPositionFloat3_64(ref Pos64Label8 point, double3 val)
+        {
+            point.Position = val;
+        }
+
+        public override ref double3 GetPositionFloat3_64(ref Pos64Label8 point)
+        {
+            return ref point.Position;
+        }
     }
 
     public class Pos64Nor32Col32IShort_Accessor : PointAccessor<Pos64Nor32Col32IShort>
