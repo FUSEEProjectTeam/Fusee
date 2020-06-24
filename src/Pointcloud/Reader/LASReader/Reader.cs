@@ -155,7 +155,13 @@ namespace Fusee.Pointcloud.Reader.LASReader
                 pa.SetIntensityUInt_16(ref point, currentPoint.Intensity);
 
             if (currentFormat.HasClassification && pa.HasLabelUInt_8)
-                pa.SetLabelUInt_8(ref point, currentPoint.Classification);
+            {
+                //TODO: HACK!! label was somehow written to UserData and not to classification
+                if(currentPoint.Classification != 0)
+                    pa.SetLabelUInt_8(ref point, currentPoint.Classification);
+                else
+                    pa.SetLabelUInt_8(ref point, currentPoint.UserData);
+            }
 
             if (currentFormat.HasColor && pa.HasColorFloat3_32)
                 pa.SetColorFloat3_32(ref point, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
