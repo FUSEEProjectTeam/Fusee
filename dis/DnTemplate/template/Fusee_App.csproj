@@ -12,5 +12,6 @@
     <PackageReference Include="Fusee.Desktop" Version="0.7.5" />
     <PackageReference Include="Fusee.Desktop" Version="0.7.6" />
     <PackageReference Include="Fusee.Desktop" Version="0.8.1" />
+    <PackageReference Include="Fusee.Desktop" Version="0.8.2" />
   </ItemGroup>
 </Project>

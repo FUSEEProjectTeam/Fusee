@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
-        private readonly Dictionary<FusMaterial, ShaderEffect> _matMap;
+        private readonly Dictionary<FusMaterial, ShaderEffectProtoPixel> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
         private readonly Stack<SceneNode> _boneContainers;
 
@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new SceneContainer();
 
-            _matMap = new Dictionary<FusMaterial, ShaderEffect>();
+            _matMap = new Dictionary<FusMaterial, ShaderEffectProtoPixel>();
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _boneContainers = new Stack<SceneNode>();
         }
@@ -487,7 +487,7 @@ namespace Fusee.Engine.Core
 
         #region Make ShaderEffect
 
-        private ShaderEffect LookupMaterial(FusMaterial m)
+        private ShaderEffectProtoPixel LookupMaterial(FusMaterial m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
@@ -520,7 +520,7 @@ namespace Fusee.Engine.Core
                 vals.SpecularShininess = m.Specular.Shininess;
             }
 
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(
                 new ShaderEffectProps
                 {
                     MatProbs =
@@ -580,7 +580,7 @@ namespace Fusee.Engine.Core
             vals.FresnelReflectance = m.FresnelReflectance;
             vals.RoughnessValue = m.RoughnessValue;
 
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectProps(
+            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(
                 new ShaderEffectProps
                 {
                     MatProbs =

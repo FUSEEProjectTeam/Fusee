@@ -3,6 +3,7 @@
     <PackageId>Fusee.Android</PackageId>
     <TargetFramework>MonoAndroid81</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
   <PropertyGroup>
