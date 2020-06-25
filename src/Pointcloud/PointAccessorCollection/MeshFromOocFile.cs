@@ -129,18 +129,22 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             }
 
             return allMeshes;
-        }
+        }        
 
         public static List<Mesh> GetMeshsForNode_Pos64Label8(PointAccessor<Pos64Label8> ptAccessor, List<Pos64Label8> points)
         {
             var allPoints = new List<double3>();
-            var allLabels = new List<byte>();
+            var allLabels = new List<float3>();
 
             for (int i = 0; i < points.Count(); i++)
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                allLabels.Add(ptAccessor.GetLabelUInt_8(ref pt));
+
+                var lbl = ptAccessor.GetLabelUInt_8(ref pt);
+                var colorScale = new float3[4] { new float3(0, 0, 1), new float3(0, 1, 0), new float3(1, 1, 0), new float3(1, 0, 0) };
+                var col = LabelToColor(colorScale, 32, lbl);
+                allLabels.Add(col);
             }
 
             var allMeshes = new List<Mesh>();
@@ -153,8 +157,6 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             for (int i = 0; i < allPointsSplitted.Count; i++)
             {
                 var pointSplit = allPointsSplitted[i];
-
-                //TODO: add a way to generate a color range from this. See CloudCompare.
                 var labelSplit = allLabelsSplitted[i];
 
                 var currentMesh = new Mesh
@@ -163,7 +165,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
                     MeshType = (int)OpenGLPrimitiveType.Points,
                     Normals = new float3[pointSplit.Count],
-                    //Colors = labelSplit.ToArray()
+                    Colors = labelSplit.Select(pt => ColorToUint(pt)).ToArray()
                 };
 
                 allMeshes.Add(currentMesh);
@@ -350,9 +352,33 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             }
         }
 
+        private static float3 LabelToColor(float3[] colors, int numberOfLabels, int label)
+        {
+            var numberOfColors = colors.Length;
+            var range = numberOfLabels / (numberOfColors - 1.0f);
+            var colArea = label == 0 ? 0 : (int)(label / range);
+
+            var col1 = colors[colArea];
+            var col2 = colors[colArea + 1];
+
+            var percent = (((100 / range) * label) % 100) / 100;
+
+            return col1 + percent * (col2 - col1);
+
+        }
+
         private static uint ColorToUInt(int r, int g, int b)
         {
             return (uint)((b << 16) | (g << 8) | (r << 0));
+        }
+
+        private static uint ColorToUint(float3 col)
+        {
+            uint packedR = (uint)(col.r * 255);
+            uint packedG = (uint)(col.g * 255) << 8; 
+            uint packedB = (uint)(col.b * 255) << 16; 
+
+            return packedR + packedG + packedB;
         }
     }
 }

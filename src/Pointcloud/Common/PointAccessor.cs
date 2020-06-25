@@ -1667,7 +1667,7 @@ namespace Fusee.Pointcloud.Common
                     return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
 
                 if (HasLabelUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_8(ref pointIn, byteIn[offset + 1]);
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_8(ref pointIn, byteIn[offset]);
                 if (HasLabelUInt_16)
                     return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
                 if (HasLabelUInt_32)
