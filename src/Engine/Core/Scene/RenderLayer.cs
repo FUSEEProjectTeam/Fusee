@@ -26,9 +26,9 @@ namespace Fusee.Engine.Core.Scene
         All = 0x00000000,
 
         /// <summary>
-        /// Equivalent to Layer01
+        /// Equivalent to All
         /// </summary>
-        Default = Layer01,
+        Default = All,
 
         /// <summary>
         /// Render on none layer. This will take precedence over all other RenderLayers.
