@@ -17,7 +17,7 @@ namespace Fusee.Examples.RenderLayerEx.Core
 {
     /// <summary>
     /// This example builds a 3x3 grid of rockets rendered by 2 cameras.
-    /// - The left camera is on RenderLayers.Layer01 the right is on RenderLayers.Layer01.
+    /// - The left camera is on RenderLayers.Layer01 the right is on RenderLayers.Layer02.
     /// - The corner rockets are on RenderLayers.All => rendered by both cameras
     /// - The center-center rocket is on RenderLayers.None => not rendered by any camera
     /// - The center rockets on the top and bottom are on RenderLayers.Layer01 => only rendered by the left camera.
