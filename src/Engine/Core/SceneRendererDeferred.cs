@@ -109,9 +109,10 @@ namespace Fusee.Engine.Core
         /// Creates a new instance of type SceneRendererDeferred.
         /// </summary>
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
+        /// <param name="renderLayer"></param>
         /// <param name="texRes">The g-buffer texture resolution.</param>
         /// <param name="shadowMapRes">The shadow map resolution.</param>       
-        public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.Middle, TexRes shadowMapRes = TexRes.Middle) : base(sc)
+        public SceneRendererDeferred(SceneContainer sc, RenderLayers renderLayer = RenderLayers.Default, TexRes texRes = TexRes.Middle, TexRes shadowMapRes = TexRes.Middle) : base(sc, renderLayer)
         {
             TexRes = texRes;
             ShadowMapRes = shadowMapRes;
@@ -188,7 +189,12 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
-            _rc.Render(mesh);
+
+            if ((RenderLayer.HasFlag(_state.RenderLayer.Layer) || _state.RenderLayer.Layer.HasFlag(RenderLayer)) && (!_state.RenderLayer.Layer.HasFlag(RenderLayers.None)))
+            {
+                _rc.Render(mesh);
+            }
+
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
@@ -440,6 +446,8 @@ namespace Fusee.Engine.Core
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam, WritableTexture renderTex = null)
         {
             var tex = cam.Item2.Camera.RenderTexture;
+
+            RenderLayer = cam.Item2.Camera.RenderLayer;
 
             if (tex != null)
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
