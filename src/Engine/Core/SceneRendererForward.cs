@@ -712,7 +712,7 @@ namespace Fusee.Engine.Core
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
 
-            if ((RenderLayer.HasFlag(_state.RenderLayer.Layer) || _state.RenderLayer.Layer.HasFlag(RenderLayer))  && (!_state.RenderLayer.Layer.HasFlag(RenderLayers.None)))
+            if ((RenderLayer.HasFlag(_state.RenderLayer.Layer) || _state.RenderLayer.Layer.HasFlag(RenderLayer)) && (!_state.RenderLayer.Layer.HasFlag(RenderLayers.None)))
             {
                 _rc.Render(mesh);
             }

@@ -36,13 +36,13 @@ namespace Fusee.Examples.RenderLayerEx.Core
 
             // Loading the rocket and picking it apart for reuse
             var rocket = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
-            
+
             var gray = rocket.Children[0].Children[0];
             var white = rocket.Children[0].Children[1];
             var green = rocket.Children[0].Children[2];
 
             var rocketTransform = rocket.Children[0].GetTransform();
-            
+
             var grayShEf = gray.GetComponent<ShaderEffect>();
             var grayMesh = gray.GetComponent<Mesh>();
             var whiteShEf = white.GetComponent<ShaderEffect>();
