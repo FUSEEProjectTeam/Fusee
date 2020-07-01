@@ -98,17 +98,24 @@ namespace Fusee.Engine.Core.Scene
         public CustomCameraUpdate CustomCameraUpdate;
 
         /// <summary>
+        /// Sets the RenderLayer for this camera.
+        /// </summary>
+        public RenderLayers RenderLayer;
+
+        /// <summary>
         /// Creates a new instance of type CameraComponent.
         /// </summary>
         /// <param name="projectionMethod">The projection method. See <see cref="ProjectionMethod"/>.</param>
         /// <param name="zNear">The near clipping plane. See <see cref="ClippingPlanes"/>.</param>
         /// <param name="zFar">The far clipping plane. See <see cref="ClippingPlanes"/>.</param>
         /// <param name="fovY">The vertical field of view in radians.</param>
-        public Camera(ProjectionMethod projectionMethod, float zNear, float zFar, float fovY)
+        /// <param name="renderLayer">The <see cref="RenderLayers"/> for this camera</param>
+        public Camera(ProjectionMethod projectionMethod, float zNear, float zFar, float fovY, RenderLayers renderLayer = RenderLayers.Default)
         {
             ProjectionMethod = projectionMethod;
             ClippingPlanes = new float2(zNear, zFar);
             Fov = fovY;
+            RenderLayer = renderLayer;
         }
 
         /// <summary>
