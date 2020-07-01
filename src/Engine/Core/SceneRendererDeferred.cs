@@ -166,7 +166,7 @@ namespace Fusee.Engine.Core
         public new void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
-            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))            
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
 
             if (DoFrumstumCulling)
