@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\win-x64\publish\Fusee.Engine.Player.Desktop.exe" Link="NuGet\Player.exe" PackagePath="tools\netcoreapp3.0\any\Player.exe" />
+    <Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\win-x64\publish\Fusee.Engine.Player.Desktop.exe" Link="NuGet\Player.exe" PackagePath="tools\$(TargetFramework)\any\Player.exe" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +41,12 @@
     </ProjectReference>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="Google.Protobuf.Tools" Version="3.11.3" />
+    <!-- Do NOT update Google.Protobuf.Tools past 3.11.* without testing a clean build of the Blender plugin -->
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.7.0" />
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
@@ -51,17 +57,16 @@
   <!-- Names and directories -->
   <PropertyGroup>
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
-    <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
-    <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
   </PropertyGroup>
 
-  <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
+  <!-- Since we are using protoc from Google.Protobuf.Tools and they are switching up the directory seperators from windows to linux and paths are only recognized if they are consistent we have to use different targets for windows and linux here -->
+
+  <Target Name="BlenderAddonPostBuildStepWindows" AfterTargets="Build" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'True'">
     <!-- Use protoc from Goole.Protobuf.Tools nuget package -->
-    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Windows)))' == 'True'">
+    <PropertyGroup>
+      <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
+      <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
       <protoc_executable>$(protoc_windows64)</protoc_executable>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'True'">
-      <protoc_executable>$(protoc_linux64)</protoc_executable>
     </PropertyGroup>
     <!-- Input files part of the Addon -->
     <ItemGroup>
@@ -69,26 +74,44 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.exe&quot; protoschema -o &quot;$(BlenderAddonSourcePath)\proto_src\FusSerialization.proto&quot;" />
+    <Exec Timeout="120000" Command='dotnet "$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.dll" protoschema -o "$(BlenderAddonSourcePath)\proto\FusSerialization.proto"' />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for FusSerialization.proto -->
-    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="$(protoc_executable) --proto_path=$(protoc_tools) --proto_path=$(BlenderAddonSourcePath)\proto_src --python_out=$(BlenderAddonSourcePath)\proto FusSerialization.proto" />
-    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\FusSerialization.proto;$(BlenderAddonSourcePath)\proto\FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto" Command='"$(protoc_executable)" --proto_path="$(protoc_tools)\" --proto_path="$(BlenderAddonSourcePath)\proto" --python_out="$(BlenderAddonSourcePath)\proto" "$(BlenderAddonSourcePath)\proto\FusSerialization.proto"' />
+    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto\FusSerialization.proto;$(BlenderAddonSourcePath)\proto\FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
     <!-- Copy the python files to the bin output folder -->
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
-    <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
-
-    <!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
-    <!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
-    <!-- install from https://github.com/loresoft/msbuildtasks/releases -->
-    <!-- Message Importance="High" Text="[FUSEE BlenderAddon] Zipping %(BlenderAddonPythonFiles.Filename) into $(BlenderAddOnProjectName).zip" /^-->
-    <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
-    <!-- Message Importance="High" Text="[ERROR Creating FUSEE BlenderAddon] $(BlenderAddOnProjectName).zip. Zip Task not installed. Install MSBuildCommunityTasks from https://github.com/loresoft/msbuildtasks/releases!!" Condition="!Exists($(MSBuildCommunityTargets))"/ -->
-    <!-- Zip ZipFileName="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName).zip" WorkingDirectory="$(BlenderAddonSourcePath)\..\" Files="@(BlenderAddonPythonFiles)" /-->
-    <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
+    <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
 
     <ItemGroup>
-      <Content Include="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\**" PackagePath="tools\netcoreapp3.0\any\BlenderScripts\addons\$(BlenderAddOnProjectName)" />
+      <Content Include="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\**" PackagePath="tools\$(TargetFramework)\any\BlenderScripts\addons\$(BlenderAddOnProjectName)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="BlenderAddonPostBuildStepLinux" AfterTargets="Build" Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'True'">
+    <!-- Use protoc from Goole.Protobuf.Tools nuget package -->
+    <PropertyGroup Condition="'$([System.Runtime.InteropServices.RuntimeInformation]::IsOSPlatform($([System.Runtime.InteropServices.OSPlatform]::Linux)))' == 'True'">
+      <BlenderAddonSourcePath>$(FuseeEngineRoot)/src/Tools/BlenderScripts/addons/$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
+      <BlenderAddonOutputPath>$(OutputPath)/BlenderScripts/addons</BlenderAddonOutputPath>
+      <protoc_executable>$(protoc_linux64)</protoc_executable>
+    </PropertyGroup>
+    <!-- Input files part of the Addon -->
+    <ItemGroup>
+      <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)/**/*.py" />
+      <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)/ext/protobuf/Python/**/*" />
+    </ItemGroup>
+    <!-- Create the protoschema -->
+    <Exec Timeout="120000" Command='dotnet "$(FuseeEngineRoot)/bin/$(Configuration)/Tools/CmdLine/fusee.dll" protoschema -o "$(BlenderAddonSourcePath)/proto/FusSerialization.proto"' />
+    <!-- call the protobuf code generator to build the python code -->
+    <!-- for FusSerialization.proto -->
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)/proto" Command='"$(protoc_executable)" --proto_path="$(protoc_tools)" --proto_path="$(BlenderAddonSourcePath)/proto" --python_out="$(BlenderAddonSourcePath)/proto" "$(BlenderAddonSourcePath)/proto/FusSerialization.proto"' />
+    <Copy SourceFiles="$(BlenderAddonSourcePath)/proto/FusSerialization.proto;$(BlenderAddonSourcePath)/proto/FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)/$(BlenderAddOnProjectName)/proto" />
+    <!-- Copy the python files to the bin output folder -->
+    <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)/$(BlenderAddOnProjectName)/%(RecursiveDir)" />
+    <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)/$(BlenderAddOnProjectName)/%(RecursiveDir)" />
+
+    <ItemGroup>
+      <Content Include="$(BlenderAddonOutputPath)/$(BlenderAddOnProjectName)/**" PackagePath="tools/$(TargetFramework)/any/BlenderScripts/addons/$(BlenderAddOnProjectName)" />
     </ItemGroup>
   </Target>
 </Project>

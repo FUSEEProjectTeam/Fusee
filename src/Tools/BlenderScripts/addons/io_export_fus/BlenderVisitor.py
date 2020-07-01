@@ -21,11 +21,12 @@ from math import *
 
 def GetPaths(filepath):
     # relative filepath -> absolute filepath
-    basename = os.path.basename(filepath)
     if os.path.dirname(filepath) == '//':
+        basename = os.path.basename(filepath)
         filepath = os.path.join(os.path.dirname(bpy.data.filepath), basename)        
     else:
         filepath = filepath.replace("//", "")
+        basename = os.path.basename(filepath)
         filepath = os.path.join(os.path.dirname(bpy.data.filepath), filepath)        
     fullpath = filepath
     return fullpath, basename

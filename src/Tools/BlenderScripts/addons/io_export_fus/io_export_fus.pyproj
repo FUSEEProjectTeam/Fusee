@@ -16,6 +16,7 @@
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>Global|PythonCore|3.5-32</InterpreterId>
     <UseIISExpress>true</UseIISExpress>
+    <SuppressEnvironmentCreationPrompt>True</SuppressEnvironmentCreationPrompt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -28,9 +29,14 @@
     <Compile Include="proto\FusSerialization_pb2.py" />
     <Compile Include="SerializeData.py" />
     <Compile Include="__init__.py" />
+    <Compile Include="**\*.py" />
+    <Content Include="**\*.proto" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|PythonCore|3.5-32" />
+    <None Include="proto\.gitignore" />
+    <None Include=".gitignore" />
+    <None Include="README.md" />
+    <None Include="requirements.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="proto\" />

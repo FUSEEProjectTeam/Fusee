@@ -35,6 +35,12 @@ namespace Fusee.Engine.Core
         public TexRes TexRes { get; private set; } = TexRes.Middle;
 
         /// <summary>
+        /// Sets the distance to the far plane for the cascaded shadow mapping calculation.
+        /// For smaller scenes we need to choose smaller values to get shadow maps with decent resolution.
+        /// </summary>
+        public int CascadeFarPlane = 500;
+
+        /// <summary>
         /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
         /// </summary>
         public bool FxaaOn { get; set; } = true;
@@ -242,7 +248,7 @@ namespace Fusee.Engine.Core
                         }
 
                         var zNear = _rc.DefaultState.ZNearDefautlt;
-                        var zFar = _rc.DefaultState.ZFarDefault;
+                        var zFar = CascadeFarPlane == 0 ? _rc.DefaultState.ZFarDefault : CascadeFarPlane;
                         var fov = _rc.DefaultState.FovDefault;
                         var width = _rc.DefaultState.CanvasWidth;
                         var height = _rc.DefaultState.CanvasHeight;

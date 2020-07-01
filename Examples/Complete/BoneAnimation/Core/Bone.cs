@@ -1,7 +1,10 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 
 namespace Fusee.Examples.Bone.Core
@@ -28,6 +31,10 @@ namespace Fusee.Examples.Bone.Core
         private bool _keys;
 
         private float _maxPinchSpeed;
+
+        private SceneRendererForward _guiRenderer;
+        private SceneContainer _gui;
+        private SceneInteractionHandler _sih;
 
         // Init is called on startup.
         public override void Init()
@@ -191,6 +198,7 @@ namespace Fusee.Examples.Bone.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -297,6 +305,9 @@ namespace Fusee.Examples.Bone.Core
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
+
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, 0.1f, 1000);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

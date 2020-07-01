@@ -5,7 +5,7 @@ Exports the current blender scene to the FUSEE file format (.fus)
 bl_info = {
     "name": ".fus format",
     "author": "The FUSEE Project Team",
-    "version": (0, 8, 0),
+    "version": (0, 8, 2),
     "blender": (2, 80, 0),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",

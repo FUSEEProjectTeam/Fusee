@@ -11,6 +11,6 @@ don't support C#, like Content-Creation-Software C++ Plug-In-APIs
 and native HTML5/WebGL Javascript code.
 
 
-| develop | master |
-| ------- | ------ |
-| [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=develop)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) | [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=master)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) |
+| master | develop |
+| ------ | ------- |
+| [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=master)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) | [![Build](https://github.com/FUSEEProjectTeam/Fusee/workflows/Build/badge.svg?branch=develop)](https://github.com/FUSEEProjectTeam/Fusee/actions?query=workflow:Build) |

@@ -387,6 +387,39 @@ namespace Fusee.Examples.Materials.Core
                                     icosphereWithTangents
                                 }
                             },
+                            // ---- Specular Textures are not implemented yet. There is no fitting shader! ---- //
+                            //new SceneNode
+                            //{
+                            //    Components = new List<SceneComponent>
+                            //    {
+                            //        new Transform
+                            //        {
+                            //            Name = "specular texture",
+                            //            Translation = new float3(0, 0, 0)
+                            //        },
+                            //        ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
+                            //        {
+                            //            MatProbs =
+                            //            {
+                            //                HasAlbedo = true,
+                            //                HasAlbedoTexture = true,
+                            //                HasSpecular = true,
+                            //                HasSpecularTexture = true
+                            //            },
+                            //            MatType = MaterialType.Standard,
+                            //            MatValues =
+                            //            {
+                            //                AlbedoColor = new float4(0.39f, 0.19f, 0, 1),
+                            //                SpecularColor = float4.One,
+                            //                SpecularIntensity = 2f,
+                            //                SpecularShininess = 25f,
+                            //                SpecularMix = 1f, // TODO: Implement in ShaderShards
+                            //                SpecularTexture = "specularTex.jpg" // TODO: Implement in ShaderShards
+                            //            }
+                            //        }),
+                            //        icosphereWithTangents
+                            //    }
+                            //},
                             new SceneNode
                             {
                                 Components = new List<SceneComponent>
