@@ -166,6 +166,8 @@ namespace Fusee.Engine.Core
         public new void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))            
+                return;
 
             if (DoFrumstumCulling)
             {
@@ -189,12 +191,7 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
-
-            if ((RenderLayer.HasFlag(_state.RenderLayer.Layer) || _state.RenderLayer.Layer.HasFlag(RenderLayer)) && (!_state.RenderLayer.Layer.HasFlag(RenderLayers.None)))
-            {
-                _rc.Render(mesh);
-            }
-
+            _rc.Render(mesh);
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
