@@ -363,7 +363,8 @@ class BlenderVisitor:
                         bumpTexture = basename
                         self.__textures.append(fullpath)
 
-                # TODO: Emissive from BSDF_PRINCIPLED
+                hasEmissive = True
+                emissColor = node.inputs['Emission'].default_value
 
                 hasBRDF = True
                 roughnessVal = roughness

@@ -29,7 +29,7 @@ namespace Fusee.Serialization.V1
         public AlbedoChannel? Albedo;
         #endregion
 
-        #region Emissive
+        #region Emission
         /// <summary>
         /// Gets a value indicating whether this instance has an emissive channel.
         /// </summary>

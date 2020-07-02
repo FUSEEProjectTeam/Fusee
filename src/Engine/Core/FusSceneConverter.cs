@@ -492,6 +492,8 @@ namespace Fusee.Engine.Core
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
 
+            var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
+
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
@@ -502,7 +504,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, m.Albedo.Mix, float2.One);
+                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, m.Specular.Shininess, albedoTex, m.Albedo.Mix, float2.One);
             }
             else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -514,7 +516,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, float2.One);
+                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, float2.One);
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -534,12 +536,12 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
+                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BlinnPhong)
-                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, m.Specular.Shininess, m.Specular.Strength);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, m.Specular.Shininess, m.Specular.Strength);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
-                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
@@ -557,6 +559,8 @@ namespace Fusee.Engine.Core
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 lightingSetup |= LightingSetupFlags.NormalMap;
 
+            var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
+
             //TODO: Texture Tiles instead of float2.One - can they be exported?
             //TODO: Subsurface color is exported but not used in the MakeEffect Methods
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
@@ -569,7 +573,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
-                sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, m.Albedo.Mix, float2.One);
+                sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, m.Albedo.Mix, float2.One);
             }
             else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -581,7 +585,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, normalTex, m.NormalMap.Intensity, float2.One);
+                sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, normalTex, m.NormalMap.Intensity, float2.One);
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -601,12 +605,12 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
+                sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BRDF)
-                sfx = MakeEffect.FromBRDF(m.Albedo.Color, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
+                sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
-                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, 0, 0);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 

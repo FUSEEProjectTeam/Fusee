@@ -26,7 +26,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -81,6 +81,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _gold_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
+                emissionColor: new float4(0,0,0,0),
                 roughness: 0.2f,
                 metallic: 1,
                 specular: 0,
@@ -91,6 +92,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _paint_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(0.0f, 231f / 256f, 1f, 1.0f),
+                emissionColor: new float4(),
                 roughness: 0.05f,
                 metallic: 0,
                 specular: 1f,
@@ -101,6 +103,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _rubber_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f),
+                emissionColor: new float4(),
                 roughness: 1.0f,
                 metallic: 0,
                 specular: 0.1f,
@@ -111,6 +114,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _subsurf_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f),
+                emissionColor: new float4(),
                 roughness: 0.508f,
                 metallic: 0,
                 specular: 0.079f,
@@ -128,7 +132,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 

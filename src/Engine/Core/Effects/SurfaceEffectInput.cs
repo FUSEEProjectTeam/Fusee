@@ -48,6 +48,24 @@ namespace Fusee.Engine.Core.Effects
         private float4 _albedo;
 
         /// <summary>
+        /// The albedo color.
+        /// </summary>
+        public float4 Emission
+        {
+            get => _emission;
+
+            set
+            {
+                if (value != _emission)
+                {
+                    _emission = value;
+                    NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
+                }
+            }
+        }
+        private float4 _emission;
+
+        /// <summary>
         /// Event to notify a <see cref="SurfaceEffect"/> about a changed value of a property of this class.
         /// </summary>
         public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;

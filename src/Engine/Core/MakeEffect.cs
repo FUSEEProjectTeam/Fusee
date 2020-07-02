@@ -21,7 +21,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
-        public static SurfaceEffect Default { get; } = FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), 22);
+        public static SurfaceEffect Default { get; } = FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22);
 
         #region Deferred
 
@@ -364,14 +364,16 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular components.
         /// </summary>
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float shininess, float specularStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess, float specularStrength = 0.5f)
         {
             var input = new SpecularInput()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 Shininess = shininess,
                 SpecularStrength = specularStrength
             };
@@ -382,17 +384,19 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular components.
         /// </summary>
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
         /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface)
+        public static DefaultSurfaceEffect FromBRDF(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface)
         {
             var input = new BRDFInput()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 Roughness = roughness,
                 Metallic = metallic,
                 Specular = specular,
@@ -407,16 +411,18 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float shininess, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float4 emissionColor, float shininess, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
         {
             var input = new TextureInput()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 Shininess = shininess,
                 SpecularStrength = specularStrength,
                 AlbedoMix = albedoMix,
@@ -432,16 +438,18 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float shininess, Texture normalTex, float normalMapStrength, float2 texTiles, float specularStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float4 emissionColor, float shininess, Texture normalTex, float normalMapStrength, float2 texTiles, float specularStrength = 0.5f)
         {
             var input = new TextureInput()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 Shininess = shininess,
                 SpecularStrength = specularStrength,
                 NormalTex = normalTex,
@@ -457,6 +465,7 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
@@ -464,11 +473,12 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float shininess, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f, float normalMapStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float4 emissionColor, float shininess, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f, float normalMapStrength = 0.5f)
         {
             var input = new TextureInput()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 Shininess = shininess,
                 SpecularStrength = specularStrength,
                 AlbedoMix = albedoMix,
@@ -486,6 +496,7 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
@@ -494,11 +505,12 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
+        public static DefaultSurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 AlbedoMix = albedoMix,
                 AlbedoTex = albedoTex,
                 Roughness = roughness,
@@ -517,6 +529,7 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
@@ -525,11 +538,12 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
+        public static DefaultSurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 Roughness = roughness,
                 Metallic = metallic,
                 Specular = specular,
@@ -548,6 +562,7 @@ namespace Fusee.Engine.Core
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="normalTex">The normal map.</param>
@@ -558,11 +573,12 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFTexture(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
+        public static DefaultSurfaceEffect FromBRDFTexture(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
         {
             var input = new TextureInputBRDF()
             {
                 Albedo = albedoColor,
+                Emission = emissionColor,
                 AlbedoMix = albedoMix,
                 AlbedoTex = albedoTex,
                 Roughness = roughness,

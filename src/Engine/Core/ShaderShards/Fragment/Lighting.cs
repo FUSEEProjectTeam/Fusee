@@ -360,7 +360,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"Ispe = vec3(specularTerm) * surfOut.specularStrength;");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return  (Idif + Ispe) * att * lightStrength * light.intensities.rgb;");
+                methodBody.Add("return  (Idif + Ispe + surfOut.emission.rgb) * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
@@ -395,6 +395,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"//Combining the layers...");
                 methodBody.Add($"res += (1.0 - F) * diffLayer;      // diffuse layer, affected by reflectivity");
                 methodBody.Add($"res += specLayer;                  // direct specular, not affected by reflectivity");
+                methodBody.Add($"res += + surfOut.emission.rgb;");
 
                 methodBody.AddRange(Attenuation());
                 methodBody.Add("return res * att * lightStrength * light.intensities.rgb;");
@@ -582,7 +583,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"//Combining the layers...",
                 $"res.rgb += (1.0 - F) * diffLayer;      // diffuse layer, affected by reflectivity",
                 $"res.rgb += specLayer;                  // direct specular, not affected by reflectivity",
-
             "}",
             "else if(decodedShadingModel == uint(3))",
             "{",

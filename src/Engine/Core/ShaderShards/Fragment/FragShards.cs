@@ -13,7 +13,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static readonly List<string> SurfOutBody_Color = new List<string>()
         {
-            "OUT.albedo = IN.Albedo;"
+            "OUT.albedo = IN.Albedo;",
+            "OUT.emission = IN.Emission;"
         };
 
         /// <summary>
@@ -24,6 +25,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
             "OUT.shininess = IN.Shininess;",
+            "OUT.emission = IN.Emission;"
         };
 
         /// <summary>
@@ -32,6 +34,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static readonly List<string> SurfOutBody_GBuffer = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
+            "OUT.emission = IN.Emission;",
             "OUT.depth = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);",
             $"OUT.specular =  vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);"
         };
@@ -42,6 +45,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static readonly List<string> SurfOutBody_BRDF = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
+            "OUT.emission = IN.Emission;",
             "OUT.roughness = IN.Roughness;",
             "OUT.metallic = IN.Metallic;",
             "OUT.ior = IN.IOR;",
@@ -76,10 +80,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add($"vec4 texCol = texture(IN.AlbedoTex, {VaryingNameDeclarations.TextureCoordinates} * IN.TexTiles);");
                 res.Add($"vec3 mix = mix(IN.Albedo.rgb, texCol.xyz, IN.AlbedoMix);");
                 res.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
-                res.Add($"OUT.albedo = vec4(mix * luma, texCol.a);");
+                res.Add($"OUT.albedo = vec4(mix * luma, texCol.a);");                
             }
             else
                 res.Add("OUT.albedo = IN.Albedo;");
+
+            res.Add($"OUT.emission = IN.Emission;");
 
             if (lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {

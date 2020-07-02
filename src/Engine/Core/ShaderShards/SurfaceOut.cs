@@ -79,6 +79,7 @@ namespace Fusee.Engine.Core.ShaderShards
         internal static readonly Tuple<GLSL.Type, string> Pos = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "position");
         internal static readonly Tuple<GLSL.Type, string> Normal = new Tuple<GLSL.Type, string>(GLSL.Type.Vec3, "normal");
         internal static readonly Tuple<GLSL.Type, string> Albedo = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "albedo");
+        internal static readonly Tuple<GLSL.Type, string> Emission = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "emission");
         internal static readonly Tuple<GLSL.Type, string> Shininess = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "shininess");
         internal static readonly Tuple<GLSL.Type, string> SpecularStrength = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specularStrength");
 
@@ -93,10 +94,10 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
 
-        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0))";
-        private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
-        private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
+        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0), vec4(0),)";
+        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0))";
+        private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
+        private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
@@ -194,6 +195,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 "{",
                 $"  {GLSL.DecodeType(Pos.Item1)} {Pos.Item2};",
                 $"  {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};",
+                $"  {GLSL.DecodeType(Emission.Item1)} {Emission.Item2};",
             };
 
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
