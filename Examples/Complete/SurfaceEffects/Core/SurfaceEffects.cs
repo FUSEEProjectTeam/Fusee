@@ -81,7 +81,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _gold_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
-                emissionColor: new float4(0,0,0,0),
+                emissionColor: new float4(0, 0, 0, 0),
                 roughness: 0.2f,
                 metallic: 1,
                 specular: 0,
