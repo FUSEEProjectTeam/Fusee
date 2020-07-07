@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "WebLaunch": {
+      "commandName": "Executable",
+      "executablePath": "python",
+      "commandLineArgs": "server.py",
+      "workingDirectory": "$(OutputPath)",
+      "launchBrowser": true,
+      "launchUrl": "http://localhost:8000/"
+    }
+  }
+}
