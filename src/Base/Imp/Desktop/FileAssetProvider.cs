@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
 using FileMode = System.IO.FileMode;
 using Path = Fusee.Base.Common.Path;
 
@@ -41,7 +41,9 @@ namespace Fusee.Base.Imp.Desktop
         {
             _baseDirs = new List<string>();
             if (baseDirs == null)
+            {
                 _baseDirs.Add(AppDomain.CurrentDomain.BaseDirectory);
+            }
             else
             {
                 foreach (var baseDir in baseDirs)
@@ -145,7 +147,7 @@ namespace Fusee.Base.Imp.Desktop
             // At last, look at the specified base directories
             foreach (var baseDir in _baseDirs)
             {
-                string path = Path.Combine(baseDir, id);
+                var path = Path.Combine(baseDir, id);
                 if (File.Exists(path))
                     return new FileStream(path, FileMode.Open);
             }
@@ -174,7 +176,7 @@ namespace Fusee.Base.Imp.Desktop
 
             foreach (var baseDir in _baseDirs)
             {
-                string path = Path.Combine(baseDir, id);
+                var path = Path.Combine(baseDir, id);
                 if (File.Exists(path))
                     return true;
             }
@@ -203,12 +205,12 @@ namespace Fusee.Base.Imp.Desktop
                 // At last, look at the specified base directories
                 foreach (var baseDir in _baseDirs)
                 {
-                    string path = Path.Combine(baseDir, id);
+                    var path = Path.Combine(baseDir, id);
                     if (File.Exists(path))
                         return new FileStream(path, FileMode.Open);
                 }
                 return null;
-            });
+            }).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -232,7 +234,7 @@ namespace Fusee.Base.Imp.Desktop
 
                 foreach (var baseDir in _baseDirs)
                 {
-                    string path = Path.Combine(baseDir, id);
+                    var path = Path.Combine(baseDir, id);
                     if (File.Exists(path))
                         return true;
                 }
