@@ -36,6 +36,11 @@ namespace Fusee.Engine.Core
         protected CollapsingStateStack<RenderStateSet> _renderStates = new CollapsingStateStack<RenderStateSet>();
 
         /// <summary>
+        /// State of the <see cref="RenderLayer"/>.
+        /// </summary>
+        protected CollapsingStateStack<RenderLayer> _renderLayer = new CollapsingStateStack<RenderLayer>();
+
+        /// <summary>
         /// Gets and sets the top of stack of the Render states state stack.
         /// </summary>
         public RenderStateSet RenderUndoStates
@@ -81,6 +86,15 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Gets and sets the RenderLayer.
+        /// </summary>
+        public RenderLayer RenderLayer
+        {
+            set => _renderLayer.Tos = value;
+            get => _renderLayer.Tos;
+        }
+
+        /// <summary>
         /// Creates a new instance of type RenderState.
         /// </summary>
         public RendererState()
@@ -90,6 +104,7 @@ namespace Fusee.Engine.Core
             RegisterState(_effect);
             RegisterState(_uiRect);
             RegisterState(_renderStates);
+            RegisterState(_renderLayer);
         }
     }
 }

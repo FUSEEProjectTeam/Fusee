@@ -32,6 +32,11 @@ namespace Fusee.Engine.Core
         public bool DoFrumstumCulling = true;
 
         /// <summary>
+        /// The RenderLayer this renderer should render.
+        /// </summary>
+        public RenderLayers RenderLayer { get; set; }
+
+        /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNode, LightResult>> LightViseratorResults
@@ -74,7 +79,7 @@ namespace Fusee.Engine.Core
         protected SceneContainer _sc;
 
         /// <summary>
-        /// The RenderContext, used to render the scene.
+        /// The RenderContext, used to render the scene. This will be ignored if cameras are used.
         /// </summary>
         protected RenderContext _rc;
 
@@ -130,7 +135,8 @@ namespace Fusee.Engine.Core
         /// This scene renderer is used for forward rendering.
         /// </summary>
         /// <param name="sc">The <see cref="Scene"/> containing the scene that is rendered.</param>
-        public SceneRendererForward(SceneContainer sc)
+        /// <param name="renderLayer"></param>
+        public SceneRendererForward(SceneContainer sc, RenderLayers renderLayer = RenderLayers.Default)
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
@@ -309,6 +315,8 @@ namespace Fusee.Engine.Core
         {
             var tex = cam.Item2.Camera.RenderTexture;
 
+            RenderLayer = cam.Item2.Camera.RenderLayer;
+
             if (tex != null)
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
             else
@@ -344,6 +352,16 @@ namespace Fusee.Engine.Core
         }
 
         #region Visitors
+
+        /// <summary>
+        /// Renders the RenderLayer.
+        /// </summary>
+        /// <param name="renderLayer"></param>
+        [VisitMethod]
+        public void RenderRenderLayer(RenderLayer renderLayer)
+        {
+            _state.RenderLayer = renderLayer;
+        }
 
         /// <summary>
         /// Renders the Bone.
@@ -671,6 +689,8 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
+                return;
 
             if (DoFrumstumCulling)
             {
@@ -769,6 +789,7 @@ namespace Fusee.Engine.Core
             _state.Effect = MakeEffect.Default;
             _rc.CreateShaderProgram(_state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
+            _state.RenderLayer = new RenderLayer();
         }
 
         /// <summary>
