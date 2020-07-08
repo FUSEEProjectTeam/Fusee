@@ -449,7 +449,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position]}, {VaryingNameDeclarations.TextureCoordinates});");
             methodBody.Add($"vec4 albedo = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
-
+            methodBody.Add($"vec4 emission = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular]}, {VaryingNameDeclarations.TextureCoordinates});");
 
 
@@ -609,7 +609,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "if(specularVars.a != 4.0) //4.0 == unlit",
                 "{",
                     $"float strength = (1.0 - ambientCo) * light.strength;",
-                    $"lighting = ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);",
+                    $"lighting = emission + ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);",
                 "}",
                 "else",
                 "{",

@@ -158,6 +158,17 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Create a texture that is intended to save emissive color.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateEmissionTex(int width, int height)
+        {
+            return new WritableTexture(RenderTargetTextureTypes.Emission, new ImagePixelFormat(ColorFormat.RGB), width, height, false, TextureFilterMode.Linear);
+        }
+
+        /// <summary>
         /// Create a texture that is intended to save normal information.
         /// </summary>
         /// <param name="width">Width in px.</param>

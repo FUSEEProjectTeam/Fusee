@@ -76,6 +76,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Depth:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
+                    case (int)RenderTargetTextureTypes.Emission:
+                        fragMainBody.Add($"{texName} = surfOut.emission;");
+                        break;
                     case (int)RenderTargetTextureTypes.Specular:
                         {
                             if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))

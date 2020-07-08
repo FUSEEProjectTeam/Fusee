@@ -33,7 +33,12 @@
         /// <summary>
         /// Specular texture.
         /// </summary>
-        Specular
+        Specular,
+
+        /// <summary>
+        /// Contains the emissive color.
+        /// </summary>
+        Emission
     }
 
     /// <summary>

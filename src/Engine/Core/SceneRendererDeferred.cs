@@ -125,6 +125,7 @@ namespace Fusee.Engine.Core
             _gBufferRenderTarget.SetNormalTex();
             _gBufferRenderTarget.SetDepthTex(TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
             _gBufferRenderTarget.SetSpecularTex();
+            _gBufferRenderTarget.SetEmissiveTex();
 
             _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
@@ -149,7 +150,6 @@ namespace Fusee.Engine.Core
 
             if (_currentPass != RenderPasses.Shadow)
             {
-
                 _rc.SetEffect(effect, false);
                 _state.Effect = effect;
             }

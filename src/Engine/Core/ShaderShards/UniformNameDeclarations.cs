@@ -318,6 +318,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Enum.GetName(typeof(RenderTargetTextureTypes), 3),
             Enum.GetName(typeof(RenderTargetTextureTypes), 4),
             Enum.GetName(typeof(RenderTargetTextureTypes), 5),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 6),
         };
     }
 }
