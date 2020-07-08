@@ -80,7 +80,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1), 20, paperTex, 1.0f, float2.One, 0.5f)                            
+                            MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1), float4.Zero, 20, paperTex, 1.0f, float2.One, 0.5f)                            
                             //sphere
                         }
                     },
@@ -95,7 +95,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1,1), 20),
+                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1,1), float4.Zero, 20),
                             line
                         }
                     }

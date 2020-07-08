@@ -60,11 +60,11 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"), false, TextureFilterMode.Linear);
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"), false, TextureFilterMode.Linear);
 
-        internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, 20f, 0f);
-        internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, 20f, 0f);
-        internal static readonly SurfaceEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, 20f, 0f);
+        internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, float4.Zero, 20f, 0f);
+        internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, float4.Zero, 20f, 0f);
+        internal static readonly SurfaceEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, float4.Zero, 20f, 0f);
 
-        internal static readonly SurfaceEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly SurfaceEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), float4.Zero, 20, 0);
 
         private static readonly float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
@@ -229,7 +229,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "circle" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, 20, 0),
+                    MakeEffect.FromDiffuseSpecular(col, float4.Zero, 20, 0),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
@@ -278,7 +278,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, 20, 0),
+                    MakeEffect.FromDiffuseSpecular(col, float4.Zero, 20, 0),
                 }
             };
         }

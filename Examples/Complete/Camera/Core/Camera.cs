@@ -87,7 +87,7 @@ namespace Fusee.Examples.Camera.Core
                 Name = "Frustum",
                 Components = new List<SceneComponent>()
                 {
-                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), 0),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.Zero, 0),
                     _frustum
                 }
             };
@@ -99,7 +99,7 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), 10),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.Zero, 10),
                     new Cube(),
 
                 },

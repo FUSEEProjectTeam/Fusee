@@ -251,7 +251,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(new float4(1, 0, 0, 1), 0, 0));
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(new float4(1, 0, 0, 1), float4.Zero, 0, 0));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 

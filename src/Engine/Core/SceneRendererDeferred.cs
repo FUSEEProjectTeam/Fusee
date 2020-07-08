@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="effect">The effect.</param>
         [VisitMethod]
-        public new void RenderShaderEffect(Effect effect)
+        public void RenderShaderEffect(Effect effect)
         {
             if (HasNumberOfLightsChanged)
                 HasNumberOfLightsChanged = false;
