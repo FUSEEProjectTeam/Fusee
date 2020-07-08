@@ -1,17 +1,9 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Xene;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using static Fusee.Engine.Core.Input;
-using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.RenderLayerEx.Core
 {
@@ -35,7 +27,7 @@ namespace Fusee.Examples.RenderLayerEx.Core
             _scene = new SceneContainer();
 
             // Loading the rocket and picking it apart for reuse
-            var rocket = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            var rocket = AssetStorage.Get<SceneContainer>("RocketFus.fus");
 
             var gray = rocket.Children[0].Children[0];
             var white = rocket.Children[0].Children[1];
@@ -43,11 +35,11 @@ namespace Fusee.Examples.RenderLayerEx.Core
 
             var rocketTransform = rocket.Children[0].GetTransform();
 
-            var grayShEf = gray.GetComponent<ShaderEffect>();
+            var grayShEf = gray.GetComponent<DefaultSurfaceEffect>();
             var grayMesh = gray.GetComponent<Mesh>();
-            var whiteShEf = white.GetComponent<ShaderEffect>();
+            var whiteShEf = white.GetComponent<DefaultSurfaceEffect>();
             var whiteMesh = white.GetComponent<Mesh>();
-            var greenShEf = green.GetComponent<ShaderEffect>();
+            var greenShEf = green.GetComponent<DefaultSurfaceEffect>();
             var greenMesh = green.GetComponent<Mesh>();
 
             // RenderLayer Components
