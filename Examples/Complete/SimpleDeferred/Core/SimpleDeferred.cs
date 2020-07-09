@@ -2,7 +2,9 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -21,8 +23,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private const float RotationSpeed = 7;
 
-        private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneContainer _sponzaScene;
+        private SceneRendererDeferred _sceneRendererDeferred;
+        private SceneRendererForward _sceneRendererForward;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -61,19 +64,15 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
-            //_rocketScene = AssetStorage.Get<Scene>("shadowTest.fus");
-
-
+            _sponzaScene = AssetStorage.Get<SceneContainer>("sponza.fus");
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
-            var redLight = new Light() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
-            var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 900, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000040f };
-            var greenLight = new Light() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
+            var redLight = new Light() { Type = LightType.Point, Color = new float4(1, 0.56f, 0.1f, 1), MaxDistance = 15, Active = true, IsCastingShadows = false, Bias = 0.015f };
+            var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0.6f, 0.8f, 1, 1), MaxDistance = 180, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.0000001f };
+            var greenLight = new Light() { Type = LightType.Point, Color = new float4(0.8f, 1.0f, 0.6f, 1), Strength = 1f, MaxDistance = 50, Active = true, IsCastingShadows = true, Bias = 0.1f };
 
-            _sunTransform = new Transform() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
+            _sunTransform = new Transform() { Translation = new float3(0, 100, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(100, 100, 100) };
 
             var aLotOfLights = new ChildList
             {
@@ -85,84 +84,70 @@ namespace Fusee.Examples.SimpleDeferred.Core
                         _sunTransform,
                         _sun,
                     },
-                    //Children = new ChildList()
-                    //{
-                    //    new SceneNode()
-                    //    {
-                    //        s = new List<Scene>()
-                    //        {
-                    //            new Transform
-                    //            {
-                    //                Scale = float3.One/2f
-                    //            },
-                    //            new Cube()
-                    //        }
-                    //    }
-                    //}
                 },
                 new SceneNode()
                 {
                     Name = "blueLight",
                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(-600, 180, 180), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
-                    blueLight,
-                }
+                    {
+                        new Transform(){ Translation = new float3(-100, 25, 36), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
+                        blueLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight1",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(-600, 180, 180)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(-49, 15, 15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight2",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(-600, 180, -140)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(-49, 15, -15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight3",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(500, 180, 180)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(54, 15, 15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "redLight4",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(500, 180, -140)},
-                    redLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(54, 15, -15)},
+                        redLight,
+                    }
                 },
                 new SceneNode()
                 {
                     Name = "greenLight",
-                     Components = new List<SceneComponent>()
-                {
-                    new Transform(){ Translation = new float3(0, 100, 150)},
-                    greenLight,
-                }
+                    Components = new List<SceneComponent>()
+                    {
+                        new Transform(){ Translation = new float3(0, 25, 0)},
+                        greenLight,
+                    }
                 },
             };
 
-            _rocketScene.Children.Add(new SceneNode()
+            _sponzaScene.Children.Add(new SceneNode()
             {
                 Name = "Light",
                 Children = aLotOfLights
             });
 
-            _rocketScene.Children.Add(
+            _sponzaScene.Children.Add(
                 new SceneNode()
                 {
                     Name = "Cam",
@@ -175,11 +160,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
             );
 
             // Wrap a SceneRenderer around the scene.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
+            _sceneRendererForward = new SceneRendererForward(_sponzaScene);
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
         }
+
+        private bool _renderDeferred = true;
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -226,10 +214,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
             }
 
             if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
+                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
 
             if (Keyboard.IsKeyDown(KeyCodes.G))
-                _sceneRenderer.SsaoOn = !_sceneRenderer.SsaoOn;
+                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
 
             if (Mouse.LeftButton)
             {
@@ -258,10 +246,19 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 200);
 
-            _sceneRenderer.Render(RC);
-            _guiRenderer.Render(RC);
+            if (Keyboard.IsKeyDown(KeyCodes.F1) && _renderDeferred)
+                _renderDeferred = false;
+            else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
+                _renderDeferred = true;
+
+            if (_renderDeferred)
+                _sceneRendererDeferred.Render(RC);
+            else
+                _sceneRendererForward.Render(RC);
+
+            //_guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -277,6 +274,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
 
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
@@ -300,7 +298,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
 
             // TODO (mr): How to add this?
@@ -313,14 +312,13 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 "FUSEE Deferred Example",
                 "ButtonText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery),
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
-
 
             var guiCamComp = new Camera(ProjectionMethod.Orthographic, 1, 3000, M.PiOver4)
             {
@@ -366,12 +364,16 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

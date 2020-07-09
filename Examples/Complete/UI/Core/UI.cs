@@ -2,8 +2,9 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -38,7 +39,7 @@ namespace Fusee.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initWindowWidth;
         private float _initWindowHeight;
         private float _initCanvasWidth;
@@ -46,9 +47,12 @@ namespace Fusee.Examples.UI.Core
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-        private float zNear = 1f;
-        private float zFar = 1000;
-        private float fov = M.PiOver4;
+        private readonly float zNear = 1f;
+        private readonly float zFar = 1000;
+        private readonly float fov = M.PiOver4;
+
+        private readonly float4 _canvasDefaultColor = new float4(1, 0f, 0f, 1);
+        private readonly float4 _canvasHoverColor = new float4(1, 0.4f, 0.1f, 1);
 
         private GUIText _fpsText;
 
@@ -57,6 +61,7 @@ namespace Fusee.Examples.UI.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
@@ -72,7 +77,7 @@ namespace Fusee.Examples.UI.Core
                 "FPS: 0.00",
                 "FPSText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.DownDownRight),
                 new MinMaxRect
                 {
@@ -94,7 +99,7 @@ namespace Fusee.Examples.UI.Core
                 "quickly.",
                 "ButtonText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchAll),
                 new MinMaxRect
                 {
@@ -111,7 +116,7 @@ namespace Fusee.Examples.UI.Core
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
                 //Set the albedo texture you want to use.
-                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.Linear),
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
@@ -146,13 +151,14 @@ namespace Fusee.Examples.UI.Core
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
+                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
+                float2.One);
 
             var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
@@ -184,7 +190,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -198,7 +204,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -212,7 +218,7 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 vsNineSlice,
                 psNineSlice,
-                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.StretchVertical), //Anchor is in the lower right corner. Anchor is in the lower left corner.
                 UIElementPosition.CalcOffsets(AnchorPos.StretchVertical, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
@@ -245,9 +251,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            var canvasMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1));
-
-            canvas.AddComponent(canvasMat);
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(new float4(1, 0, 0, 1), float4.Zero, 0, 0));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
@@ -291,17 +295,13 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0.4f, 0.1f, 1));
-            var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
-            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0.4f, 0.1f, 1));
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasHoverColor;
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1, 0, 0, 1));
-            var n = _scene.Children.FindNodes(node => node.Name == "Canvas").First();
-            n.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(1, 0, 0, 1));
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasDefaultColor;
         }
 
         public void OnBtnCatDown(CodeComponent sender)

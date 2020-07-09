@@ -1,8 +1,11 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -32,9 +35,9 @@ namespace Fusee.Examples.Camera.Core
 
         private Transform _mainCamTransform;
         private Transform _guiCamTransform;
-        private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
-        private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
-        private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _mainCam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private Transform _cubeOneTransform;
         private Transform _sndCamTransform;
@@ -67,7 +70,6 @@ namespace Fusee.Examples.Camera.Core
             _guiCam.ClearDepth = false;
             _guiCam.FrustumCullingOn = false;
 
-
             _mainCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
@@ -80,25 +82,24 @@ namespace Fusee.Examples.Camera.Core
             _sih = new SceneInteractionHandler(_gui);
 
             _frustum = new WireframeCube();
-            var frustumNode = new SceneNode()
+            SceneNode frustumNode = new SceneNode()
             {
                 Name = "Frustum",
                 Components = new List<SceneComponent>()
                 {
-                    new Transform(),
-                   ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.Zero, 0),
                     _frustum
                 }
             };
 
-            var cam = new SceneNode()
+            SceneNode cam = new SceneNode()
             {
                 Name = "MainCam",
                 Components = new List<SceneComponent>()
                 {
                     _mainCamTransform,
                     _mainCam,
-                    ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.Zero, 10),
                     new Cube(),
 
                 },
@@ -126,7 +127,7 @@ namespace Fusee.Examples.Camera.Core
                 Scale = float3.One
             };
 
-            var cam1 = new SceneNode()
+            SceneNode cam1 = new SceneNode()
             {
                 Name = "SecondCam",
                 Components = new List<SceneComponent>()
@@ -189,10 +190,10 @@ namespace Fusee.Examples.Camera.Core
                 _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-            var viewProjection = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
+            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out float4 viewport) * float4x4.Invert(_mainCamTransform.Matrix());
             _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
 
-            var frustum = new Frustum();
+            Frustum frustum = new Frustum();
             frustum.CalculateFrustumPlanes(viewProjection);
 
             // Sets a mesh inactive if it does not pass the culling test and active if it does. 
@@ -204,9 +205,14 @@ namespace Fusee.Examples.Camera.Core
             _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
+            {
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            }
+
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -214,15 +220,18 @@ namespace Fusee.Examples.Camera.Core
 
         private void UserSideFrustumCulling(IList<SceneNode> nodeChildren, Frustum frustum)
         {
-            foreach (var node in nodeChildren)
+            foreach (SceneNode node in nodeChildren)
             {
-                var mesh = node.GetComponent<Mesh>();
+                if (node.Name == "Frustum" || node.Name.Contains("Cam"))
+                    continue;
+
+                Mesh mesh = node.GetComponent<Mesh>();
                 if (mesh != null)
                 {
                     //We only perform the test for meshes that do have a calculated - non-zero sized - bounding box.
                     if (mesh.BoundingBox.Size != float3.Zero)
                     {
-                        var worldSpaceBoundingBox = node.GetComponent<Transform>().Matrix() * mesh.BoundingBox;
+                        AABBf worldSpaceBoundingBox = node.GetComponent<Transform>().Matrix() * mesh.BoundingBox;
                         if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
                         {
                             mesh.Active = false;
@@ -235,19 +244,22 @@ namespace Fusee.Examples.Camera.Core
                 }
 
                 if (node.Children.Count != 0)
+                {
                     UserSideFrustumCulling(node.Children, frustum);
+                }
             }
         }
 
         private SceneContainer CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
+            string vsTex = AssetStorage.Get<string>("texture.vert");
+            string psTex = AssetStorage.Get<string>("texture.frag");
+            string psText = AssetStorage.Get<string>("text.frag");
 
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
+            float canvasWidth = Width / 100f;
+            float canvasHeight = Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            GUIButton btnFuseeLogo = new GUIButton
             {
                 Name = "Canvas_Button"
             };
@@ -255,8 +267,8 @@ namespace Fusee.Examples.Camera.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            Texture guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            TextureNode fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -266,18 +278,19 @@ namespace Fusee.Examples.Camera.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
+            Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            FontMap guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
-                "FUSEE Simple Example",
+            TextNode text = new TextNode(
+                "FUSEE Camera Example",
                 "ButtonText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
@@ -285,7 +298,7 @@ namespace Fusee.Examples.Camera.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            var canvas = new CanvasNode(
+            CanvasNode canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -302,7 +315,7 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            var cam = new SceneNode()
+            SceneNode cam = new SceneNode()
             {
                 Name = "GUICam",
                 Components = new List<SceneComponent>()
@@ -325,12 +338,16 @@ namespace Fusee.Examples.Camera.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
+            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

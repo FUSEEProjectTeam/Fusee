@@ -9,6 +9,51 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\background.png" />
+    <None Remove="Assets\background_ddn.png" />
+    <None Remove="Assets\chain_texture.png" />
+    <None Remove="Assets\chain_texture_ddn.png" />
+    <None Remove="Assets\lion_ddn.png" />
+    <None Remove="Assets\spnza_bricks_a_ddn.png" />
+    <None Remove="Assets\spnza_bricks_a_diff.png" />
+    <None Remove="Assets\sponza.fus" />
+    <None Remove="Assets\sponza_arch_ddn.png" />
+    <None Remove="Assets\sponza_arch_diff.png" />
+    <None Remove="Assets\sponza_ceiling_a_ddn.png" />
+    <None Remove="Assets\sponza_ceiling_a_diff.png" />
+    <None Remove="Assets\sponza_column_a_ddn.png" />
+    <None Remove="Assets\sponza_column_a_diff.png" />
+    <None Remove="Assets\sponza_column_b_ddn.png" />
+    <None Remove="Assets\sponza_column_b_diff.png" />
+    <None Remove="Assets\sponza_column_c_ddn.png" />
+    <None Remove="Assets\sponza_column_c_diff.png" />
+    <None Remove="Assets\sponza_curtain_blue_diff.png" />
+    <None Remove="Assets\sponza_curtain_ddn.png" />
+    <None Remove="Assets\sponza_curtain_diff.png" />
+    <None Remove="Assets\sponza_curtain_green_diff.png" />
+    <None Remove="Assets\sponza_details_ddn.png" />
+    <None Remove="Assets\sponza_details_diff.png" />
+    <None Remove="Assets\sponza_fabric_blue_diff.png" />
+    <None Remove="Assets\sponza_fabric_ddn.png" />
+    <None Remove="Assets\sponza_fabric_diff.png" />
+    <None Remove="Assets\sponza_fabric_green_diff.png" />
+    <None Remove="Assets\sponza_flagpole_ddn.png" />
+    <None Remove="Assets\sponza_flagpole_diff.png" />
+    <None Remove="Assets\sponza_floor_a_ddn.png" />
+    <None Remove="Assets\sponza_floor_a_diff.png" />
+    <None Remove="Assets\sponza_roof_ddn.png" />
+    <None Remove="Assets\sponza_roof_diff.png" />
+    <None Remove="Assets\sponza_thorn_ddn.png" />
+    <None Remove="Assets\sponza_thorn_diff.png" />
+    <None Remove="Assets\vase_dif.png" />
+    <None Remove="Assets\vase_hanging.png" />
+    <None Remove="Assets\vase_hanging_ddn.png" />
+    <None Remove="Assets\vase_plant.png" />
+    <None Remove="Assets\vase_round.png" />
+    <None Remove="Assets\vase_round_ddn.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />

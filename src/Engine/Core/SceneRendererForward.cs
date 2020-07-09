@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
@@ -47,7 +48,7 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    LightingShard.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+                    Lighting.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
                     HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
@@ -65,7 +66,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Caches SceneNodes and their model matrices. Used when visiting a <see cref="Bone"/>.
         /// </summary>
-        protected Dictionary<SceneNode, float4x4> _boneMap;
+        protected Dictionary<SceneNode, float4x4> _boneMap = new Dictionary<SceneNode, float4x4>();
 
         /// <summary>
         /// Manages animations.
@@ -139,11 +140,6 @@ namespace Fusee.Engine.Core
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
-            var buildFrag = new ProtoToFrag(_sc, true);
-            buildFrag.BuildFragmentShaders();
-
-            RenderLayer = renderLayer;
-
             _state = new RendererState();
             InitAnimations(_sc);
         }
@@ -274,8 +270,7 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
-                _boneMap = new Dictionary<SceneNode, float4x4>();
-                _rc.SetShaderEffect(ShaderCodeBuilder.Default);
+                InitState();
             }
         }
         #endregion
@@ -284,7 +279,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Renders the scene.
         /// </summary>
-        /// <param name="rc"></param>       
+        /// <param name="rc"></param>
         public void Render(RenderContext rc)
         {
             SetContext(rc);
@@ -435,14 +430,14 @@ namespace Fusee.Engine.Core
                 var frustumCorners = new float4[4];
 
                 frustumCorners[0] = _rc.InvProjection * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = _rc.InvProjection * new float4(1, -1, -1, 1); //nbr 
-                frustumCorners[2] = _rc.InvProjection * new float4(-1, 1, -1, 1); //ntl  
-                frustumCorners[3] = _rc.InvProjection * new float4(1, 1, -1, 1); //ntr                
+                frustumCorners[1] = _rc.InvProjection * new float4(1, -1, -1, 1); //nbr
+                frustumCorners[2] = _rc.InvProjection * new float4(-1, 1, -1, 1); //ntl
+                frustumCorners[3] = _rc.InvProjection * new float4(1, 1, -1, 1); //ntr
 
                 for (var i = 0; i < frustumCorners.Length; i++)
                 {
                     var corner = frustumCorners[i];
-                    corner /= corner.w; //world space frustum corners               
+                    corner /= corner.w; //world space frustum corners
                     frustumCorners[i] = corner;
                 }
 
@@ -665,24 +660,24 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderPtOctant(Octant ptOctant)
         {
-            _state.Effect.SetEffectParam("OctantLevel", ptOctant.Level);
+            _state.Effect.SetFxParam("OctantLevel", ptOctant.Level);
         }
 
 
         /// <summary>
         /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
         /// </summary>
-        /// <param name="shader">The ShaderEffect</param>
+        /// <param name="effect">The <see cref="Effect"/></param>
         [VisitMethod]
-        public void RenderShaderEffect(ShaderEffect shader)
+        public void RenderEffect(Effect effect)
         {
             if (HasNumberOfLightsChanged)
             {
                 //change #define MAX_LIGHTS... or rebuild shader effect?
                 HasNumberOfLightsChanged = false;
             }
-            _state.Effect = shader;
-            _rc.SetShaderEffect(_state.Effect);
+            _state.Effect = effect;
+            _rc.SetEffect(_state.Effect, true);
         }
 
         /// <summary>
@@ -713,12 +708,17 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
-            _rc.Render(mesh);
+            _rc.Render(mesh, true);
             var renderStatesAfter = _rc.CurrentRenderState.Copy();
 
             _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
         }
 
+        /// <summary>
+        /// Adds bone indices and bone weights from a <see cref="Weight"/> to a mesh.
+        /// </summary>
+        /// <param name="mesh"></param>
+        /// <param name="wc"></param>
         protected void AddWeightToMesh(Mesh mesh, Weight wc)
         {
             var boneWeights = new float4[wc.WeightMap.Count];
@@ -786,7 +786,8 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = ShaderCodeBuilder.Default;
+            _state.Effect = MakeEffect.Default;
+            _rc.CreateShaderProgram(_state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
         }
@@ -807,22 +808,28 @@ namespace Fusee.Engine.Core
             _rc.SetRenderStateSet(_state.RenderUndoStates);
             _state.Pop();
             _rc.Model = _state.Model;
-            _rc.SetShaderEffect(_state.Effect);
-
+            _rc.SetEffect(_state.Effect, true);
         }
 
-        #endregion        
+        #endregion
 
         private void UpdateShaderParamsForAllLights()
         {
-            for (var i = 0; i < _lightResults.Count; i++)
-            {
-                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
-                {
-                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
-                }
+            if (_lightResults.Count > Lighting.NumberOfLightsForward)
+                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.NumberOfLightsForward} will be ignored!");
 
-                UpdateShaderParamForLight(i, _lightResults[i].Item2);
+            for (var i = 0; i < Lighting.NumberOfLightsForward; i++)
+            {
+                if (i < _lightResults.Count)
+                {
+
+                    if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
+                        Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+
+                    UpdateShaderParamForLight(i, _lightResults[i].Item2);
+                }
+                else
+                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive", 0);
             }
         }
 
@@ -840,7 +847,7 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
+            var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
             // Set parameters in modelview space since the lightning calculation is in modelview space
             _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);

@@ -6,10 +6,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Xene;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Examples.Bone.Core
 {
@@ -30,7 +26,6 @@ namespace Fusee.Examples.Bone.Core
         private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
-        private float4x4 _projection;
         private bool _twoTouchRepeated;
 
         private bool _keys;
@@ -44,10 +39,7 @@ namespace Fusee.Examples.Bone.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = CreateGui();
-
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
+            Diagnostics.Warn("[05/2020] Bone animation is disabled for now due to the Blender exporter not be able to export bones!");
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -61,52 +53,28 @@ namespace Fusee.Examples.Bone.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            //----- DUMMY SCENE BELOW - use the fus file when the exporter is able to export bones again ---- //
-            //_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+            // Load the standard model
 
-            _scene = new SceneContainer
+            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+
+            #region LEGACY CODE - REFERENCE ONLY!
+            /*
+            =====================================================================================
+            // then add a weightcomponent with weight matrices etc:
+            // binding matrices is the start point of every transformation
+            // as many entries as vertices are present in current model
+            var cube = _scene.Children[0].GetComponent<Mesh>();
+            var vertexCount = cube.Vertices.Length;
+
+            var bindingMatrices = new List<float4x4>();
+            for (var i = 0; i < vertexCount; i++)
             {
-                Children = new List<SceneNode>
-                {
-                    new SceneNode
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Rotation = float3.Zero,
-                                Translation = new float3(0, 0, 0),
-                                Scale = float3.One
-                            },
-                            new Engine.Core.Scene.Bone()
-                        },
-                        Children = new ChildList()
-                        {
-                            new SceneNode
-                            {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Rotation = float3.Zero,
-                                        Translation = new float3(0, 0.5f, 0),
-                                        Scale = new float3(10, 100, 10)
-                                    },
-                                    new Engine.Core.Scene.Bone(),
-                                    new Weight(),
-                                    ShaderCodeBuilder.MakeShaderEffect(albedoColor: new float4(1.0f, 0.4f, 0.2f,1.0f)),
-                                    new Cube()
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            var mesh = _scene.Children[0].Children[0].GetComponent<Cube>();
-            var wm = _scene.Children[0].Children[0].GetComponent<Weight>();
-            var WeightMap = new List<VertexWeightList>();
-            for (var i = 0; i < mesh.Vertices.Length; i++)
+                bindingMatrices.Add(float4x4.Identity);
+            }
+            Mesh mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
+            Weight wm = _scene.Children[1].Children[2].GetComponent<Weight>();
+            List<VertexWeightList> WeightMap = new List<VertexWeightList>();
+            for (int i = 0; i < mesh.Vertices.Length; i++)
             {
                 WeightMap.Add(new VertexWeightList
                 {
@@ -126,95 +94,83 @@ namespace Fusee.Examples.Bone.Core
                 });
             }
             wm.WeightMap = WeightMap;
-            var weightMapFromScene = _scene.Children[0].Children[0].Components[1];
+            SceneComponent weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
-            #region LEGACY / REFERENCE CODE
-            // Add a weightcomponent with weight matrices etc:
-            // binding matrices is the start point of every transformation
-            // as many entries as vertices are present in current model
-            //var cube = _scene.Children[0].GetComponent<Mesh>();
-            //var vertexCount = cube.Vertices.Length;
+            _scene.Children.Insert(0, new SceneNode()
+            {
+                Name = "BoneContainer1",
+                Components = new List<SceneComponentContainer>()
+                {
+                    new TransformComponent()
+                    {
+                        Translation = new float3(0, 2, 0),
+                        Scale = new float3(1, 1, 1)
+                    },
 
-            //var bindingMatrices = new List<float4x4>();
-            //for (var i = 0; i < vertexCount; i++)
-            //{
-            //    bindingMatrices.Add(float4x4.Identity);
-            //}
+                },
+                Children = new ChildList
+                {
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponentContainer>
+                        {
+                            new TransformComponent
+                            {
+                                Translation = new float3(0, -1f, 0),
+                                Scale = new float3(1, 2, 1)
+                            },
+                            new BoneComponent(),
+                            new Cube()
+                        }
+                    },
 
-            //_scene.Children.Insert(0, new SceneNode()
-            //{
-            //    Name = "BoneContainer1",
-            //    Components = new List<SceneComponentContainer>()
-            //    {
-            //        new TransformComponent()
-            //        {
-            //            Translation = new float3(0, 2, 0),
-            //            Scale = new float3(1, 1, 1)
-            //        },
+                    new SceneNode()
+                    {
+                        Name = "BoneContainer2",
+                        Components = new List<SceneComponentContainer>
+                        {
+                            new TransformComponent
+                            {
+                                Translation = new float3(0, -2, 0),
+                                Scale = new float3(1, 2, 1)
+                            },
 
-            //    },
-            //    Children = new ChildList
-            //    {
-            //        new SceneNode()
-            //        {
-            //            Components = new List<SceneComponentContainer>
-            //            {
-            //                new TransformComponent
-            //                {
-            //                    Translation = new float3(0, -1f, 0),
-            //                    Scale = new float3(1, 2, 1)
-            //                },
-            //                new BoneComponent(),
-            //                new Cube()
-            //            }
-            //        },
+                        },
 
-            //        new SceneNode()
-            //        {
-            //            Name = "BoneContainer2",
-            //            Components = new List<SceneComponentContainer>
-            //            {
-            //                new TransformComponent
-            //                {
-            //                    Translation = new float3(0, -2, 0),
-            //                    Scale = new float3(1, 2, 1)
-            //                },
+                        Children = new ChildList
+                        {
+                            new SceneNode
+                            {
+                            Components = new List<SceneComponentContainer>()
+                            {
+                                new TransformComponent()
+                                {
+                                    Translation = new float3(0, -0.5f, 0),
+                                    Scale = new float3(1,1,1)
+                                },
+                                new BoneComponent(),
+                                new Cube()
+                            }
+                            }
+                        }
 
-            //            },
+                    }
+                }
 
-            //            Children = new ChildList
-            //            {
-            //                new SceneNode
-            //                {
-            //                Components = new List<SceneComponentContainer>()
-            //                {
-            //                    new TransformComponent()
-            //                    {
-            //                        Translation = new float3(0, -0.5f, 0),
-            //                        Scale = new float3(1,1,1)
-            //                    },
-            //                    new BoneComponent(),
-            //                    new Cube()
-            //                }
-            //                }
-            //            }
+            });
 
-            //        }
-            //    }
+            _scene.Children[1].Components.Insert(1, new WeightComponent
+            {
+                BindingMatrices = bindingMatrices,
+                WeightMap = WeightMap
+                // Joints are added automatically during scene conversion (ConvertSceneGraph)
+            });
 
-            //});
-
-            //_scene.Children[1].Components.Insert(1, new WeightComponent
-            //{
-            //    BindingMatrices = bindingMatrices,
-            //    WeightMap = WeightMap
-            //    // Joints are added automatically during scene conversion (ConvertSceneGraph)
-            //});
-
+            */
             #endregion
 
-            var aabbc = new AABBCalculator(_scene);
-            var bbox = aabbc.GetBox();
+            AABBCalculator aabbc = new AABBCalculator(_scene);
+            AABBf? bbox = aabbc.GetBox();
             if (bbox != null)
             {
                 // If the model origin is more than one third away from its bounding box,
@@ -248,7 +204,6 @@ namespace Fusee.Examples.Bone.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -260,7 +215,7 @@ namespace Fusee.Examples.Bone.Core
                 _keys = true;
             }
 
-            var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+            float curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
 
             // Zoom & Roll
             if (Input.Touch.TwoPoint)
@@ -334,16 +289,16 @@ namespace Fusee.Examples.Bone.Core
             _angleRoll = M.MinAngle(_angleRoll);
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
+            float4x4 mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            float4x4 mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
-            var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
+            float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
 
-            // move one bone
-            var translation = _scene.Children[0].Children[0].GetComponent<Transform>();
-            translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
-            translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
+            // TODO: rewrite for new scene when BONES are exported from Blender again
+            //Transform translation = _scene.Children[1].Children[1].GetComponent<Transform>();
+            //translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
+            //translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
             //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
 
@@ -356,107 +311,6 @@ namespace Fusee.Examples.Bone.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private SceneContainer CreateGui()
-        {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
-                "fuseeLogo",
-                vsTex,
-                psTex,
-                //Set the albedo texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = new TextNode(
-                "FUSEE Bone Example",
-                "ButtonText",
-                vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            var text1 = new TextNode(
-                "Work in progress!! Will not function as expected.",
-                "wip",
-                vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, canvasHeight / 2 - 0.5f), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Red),
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                CanvasRenderMode.Screen,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text,
-                    text1
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
-        }
-
-        public void BtnLogoEnter(CodeComponent sender)
-        {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
-        }
-
-        public void BtnLogoExit(CodeComponent sender)
-        {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
-        }
-
-        public void BtnLogoDown(CodeComponent sender)
-        {
-            OpenLink("http://fusee3d.org");
         }
     }
 }

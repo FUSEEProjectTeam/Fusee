@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The color attribute name.
         /// </summary>
-        public const string Color = "fuColor";
+        public const string VertexColor = "fuColor";
 
         /// <summary>
         /// The normal attribute name.
@@ -38,12 +38,12 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The tangent attribute name.
         /// </summary>
-        public const string TangentAttribName = "fuTangent";
+        public const string Tangent = "fuTangent";
 
         /// <summary>
         /// The bitangent attribute name.
         /// </summary>
-        public const string BitangentAttribName = "fuBitangent";
+        public const string Bitangent = "fuBitangent";
 
         /// <summary>
         /// The bone weight attribute name.
@@ -206,7 +206,6 @@ namespace Fusee.Engine.Core.ShaderShards
 
         #endregion
 
-
         /// <summary>
         /// The var name for the uniform PassNo variable.
         /// </summary>
@@ -223,14 +222,14 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string ScreenParams = "ScreenParams";
 
         /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixel shaders.
+        /// The var name for the uniform AmbientStrength variable within the pixel shaders.
         /// </summary>
-        public const string AmbientStrengthName = "AmbientStrength";
+        public const string AmbientStrength = "AmbientStrength";
 
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public const string AlbedoColor = "AlbedoColor";
+        public const string Albedo = "Albedo";
 
         /// <summary>
         /// The var name for the uniform SpecularColor variable within the pixel shaders.
@@ -248,6 +247,11 @@ namespace Fusee.Engine.Core.ShaderShards
         public const string AlbedoTexture = "AlbedoTexture";
 
         /// <summary>
+        /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
+        /// </summary>
+        public const string DiffuseTextureTiles = "AlbedoTextureTiles";
+
+        /// <summary>
         /// The var name for the uniform SpecularTexture variable within the pixel shaders.
         /// </summary>
         public const string SpecularTexture = "SpecularTexture";
@@ -261,6 +265,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The var name for the uniform NormalMap variable within the pixel shaders.
         /// </summary>
         public const string NormalMap = "NormalMap";
+
+        /// <summary>
+        /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
+        /// </summary>
+        public const string NormalTextureTiles = "NormalTextureTiles";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
@@ -285,27 +294,18 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform SpecularIntensity variable within the pixel shaders.
         /// </summary>
-        public const string SpecularIntensity = "SpecularIntensity";
+        public const string SpecularStrength = "SpecularStrength";
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] Describes the roughness of the material.
-        /// </summary>       
+        /// </summary>
         public const string RoughnessValue = "RoughnessValue";
 
         /// <summary>
-        /// [PBR (Cook-Torrance) only] This float describes the fresnel reflectance of the material.
-        /// </summary>        
-        public const string FresnelReflectance = "FresnelReflectance";
-
-        /// <summary>
-        /// [PBR (Cook-Torrance) only] This float describes the diffuse fraction of the material.
-        /// </summary>       
-        public const string DiffuseFraction = "DiffuseFraction";
-
-        /// <summary>
-        /// The var name for the uniform BumpIntensity variable within the pixel shaders.
+        /// The var name for the uniform NormalMapIntensity variable within the pixel shaders.
         /// </summary>
         public const string NormalMapIntensity = "NormalMapIntensity";
+
 
         /// <summary>
         /// List of all possible render texture names.
@@ -318,6 +318,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Enum.GetName(typeof(RenderTargetTextureTypes), 3),
             Enum.GetName(typeof(RenderTargetTextureTypes), 4),
             Enum.GetName(typeof(RenderTargetTextureTypes), 5),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 6),
         };
     }
 }
