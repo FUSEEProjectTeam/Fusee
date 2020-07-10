@@ -902,6 +902,7 @@ namespace Fusee.Engine.Core
             _state.Effect = MakeEffect.Default;
             _rc.CreateShaderProgram(_state.Effect, false);
             _state.RenderUndoStates = new RenderStateSet();
+            _state.RenderLayer = new RenderLayer();
         }
 
         private void DeleteBuffers(object sender, EventArgs e)
