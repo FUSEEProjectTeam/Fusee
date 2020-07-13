@@ -20,7 +20,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var fragMainBody = new List<string>
             {
-                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.AlbedoColor});", //ambient component
+                $"vec4 result = vec4(0,0,0,0);",
+                $"vec3 ambient = ambientLighting(0.2, {UniformNameDeclarations.AlbedoColor});",
                 $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
@@ -32,11 +33,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float currentOuterConeAngle = allLights[i].outerConeAngle;",
                 "float currentInnerConeAngle = allLights[i].innerConeAngle;",
                 "int currentLightType = allLights[i].lightType; ",
-                "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
+                "result.rgb += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType);",
                 "}",
 
-                 effectProps.MatProbs.HasAlbedoTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.AlbedoColor}.w);",
+                 effectProps.MatProbs.HasAlbedoTexture ? $"oFragmentColor = vec4(ambient + result.rgb, mix({UniformNameDeclarations.AlbedoColor}.a, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}).a, {UniformNameDeclarations.AlbedoMix}));" : $"oFragmentColor = vec4(result.rgb + ambient, {UniformNameDeclarations.AlbedoColor}.a);",
             };
 
             return ShaderShardUtil.MainMethod(fragMainBody);
