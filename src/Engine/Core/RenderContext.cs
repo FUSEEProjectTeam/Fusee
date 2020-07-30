@@ -1188,8 +1188,13 @@ namespace Fusee.Engine.Core
         {
             if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffect)) return;
 
-            _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
-            _rci.RemoveShader(compiledEffect.DeferredFx?.GpuHandle);
+            _allCompiledEffects.Remove(ef);
+
+            if (compiledEffect.ForwardFx != null)
+                _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
+
+            if (compiledEffect.DeferredFx != null)
+                _rci.RemoveShader(compiledEffect.DeferredFx?.GpuHandle);
         }
 
         /// <summary>
