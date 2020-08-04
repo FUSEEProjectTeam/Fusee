@@ -362,6 +362,41 @@ namespace Fusee.Engine.Core
         #region Make Effect from parameters
 
         /// <summary>
+        /// Creates a simple unlit effect from an color only.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color.</param>
+        /// <returns></returns>
+        public static DefaultSurfaceEffect FromUnlit(float4 albedoColor)
+        {
+            var input = new ColorInput()
+            {
+                Albedo = albedoColor               
+            };
+            return new DefaultSurfaceEffect(LightingSetupFlags.Unlit, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
+        }
+
+        /// <summary>
+        /// Creates a simple unlit shader from an albedo color and texture.
+        /// </summary>
+        /// <param name="albedoColor">The albedo color.</param>
+        /// <param name="albedoTex">The albedo texture.</param>
+        /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
+        /// <returns></returns>
+        public static DefaultSurfaceEffect FromUnlitAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix)
+        {
+            var lightingSetup = LightingSetupFlags.Unlit | LightingSetupFlags.AlbedoTex;
+            var input = new TextureInputUnlit()
+            {
+                Albedo = albedoColor,
+                AlbedoTex = albedoTex,
+                AlbedoMix = albedoMix,
+                TexTiles = texTiles
+            };
+            return new DefaultSurfaceEffect(lightingSetup, input, FragShards.SurfOutBody_Textures(lightingSetup), VertShards.SufOutBody_Pos);
+        }
+
+        /// <summary>
         /// Builds a simple shader effect with diffuse and specular components.
         /// </summary>
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
