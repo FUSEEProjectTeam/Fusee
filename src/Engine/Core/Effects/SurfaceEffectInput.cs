@@ -330,6 +330,64 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
+    public class TextureInputUnlit : ColorInput
+    {
+        /// <summary>
+        /// The mix between albedo texture and albedo color.
+        /// </summary>
+        public float AlbedoMix
+        {
+            get => _albedoMix;
+            set
+            {
+                if (value != _albedoMix)
+                {
+                    _albedoMix = value;
+                    NotifyPropertyChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                }
+            }
+        }
+        private float _albedoMix;
+
+        /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture AlbedoTex
+        {
+            get => _albedoTex;
+            set
+            {
+                if (value != _albedoTex)
+                {
+                    _albedoTex = value;
+                    NotifyPropertyChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                }
+            }
+        }
+        private Texture _albedoTex;
+        
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyPropertyChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles = float2.One;
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case for specular lighting with strength and shininess.
+    /// </summary>
     public class TextureInputBRDF : BRDFInput
     {
         /// <summary>

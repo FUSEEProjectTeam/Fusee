@@ -94,7 +94,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
 
-        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0), vec4(0),)";
+        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0), vec4(0))";
         private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0))";
         private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
         private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
