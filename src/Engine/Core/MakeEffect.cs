@@ -370,7 +370,7 @@ namespace Fusee.Engine.Core
         {
             var input = new ColorInput()
             {
-                Albedo = albedoColor               
+                Albedo = albedoColor
             };
             return new DefaultSurfaceEffect(LightingSetupFlags.Unlit, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
         }

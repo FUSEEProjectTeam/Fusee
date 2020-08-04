@@ -365,7 +365,7 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private Texture _albedoTex;
-        
+
         /// <summary>
         /// The normal texture.
         /// </summary>
