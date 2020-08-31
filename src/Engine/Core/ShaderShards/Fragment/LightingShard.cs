@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using System;
@@ -85,10 +85,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                $"return vec4(color.xyz * ambientCoefficient, 1.0);"
+                $"return vec3(color.xyz * ambientCoefficient);"
             };
 
-            return (GLSL.CreateMethod(GLSL.Type.Vec4, "ambientLighting",
+            return (GLSL.CreateMethod(GLSL.Type.Vec3, "ambientLighting",
                 new[] { GLSL.CreateVar(GLSL.Type.Float, "ambientCoefficient"), GLSL.CreateVar(GLSL.Type.Vec4, "color") }, methodBody));
         }
 
@@ -264,8 +264,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "}",
                 $"vec2 o_texcoords = {VaryingNameDeclarations.TextureCoordinates};",
                 "",
-                "vec4 Idif = vec4(0);",
-                "vec4 Ispe = vec4(0);",
+                "vec3 Idif = vec3(0);",
+                "vec3 Ispe = vec3(0);",
                 ""
             };
 
@@ -279,11 +279,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (effectProps.MatProbs.HasAlbedoTexture)
                 {
                     applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.AlbedoColor}, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.AlbedoMix});" +
-                        $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
+                        $"vec3 blendedCol = mix({UniformNameDeclarations.AlbedoColor}.rgb, texture({UniformNameDeclarations.AlbedoTexture}, {VaryingNameDeclarations.TextureCoordinates}).rgb, {UniformNameDeclarations.AlbedoMix});" +
+                        $"Idif = blendedCol * diffuseLighting(N, L) * intensities.rgb;");
                 }
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.AlbedoColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");
+                    applyLightParams.Add($"Idif = vec3({UniformNameDeclarations.AlbedoColor}.rgb * intensities.rgb * diffuseLighting(N, L));");
             }
 
             if (effectProps.MatProbs.HasSpecular)
@@ -291,13 +291,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (effectProps.MatType == MaterialType.Standard)
                 {
                     applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, {UniformNameDeclarations.SpecularShininess});");
-                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularIntensity} *intensities.rgb) *specularTerm, 1.0);");
+                    applyLightParams.Add($"Ispe = vec3(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularIntensity} *intensities.rgb) *specularTerm);");
                 }
                 else if (effectProps.MatType == MaterialType.MaterialPbr)
                 {
                     applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
                     applyLightParams.Add("float specular = specularLighting(N, L, V, k);");
-                    applyLightParams.Add($"Ispe = intensities * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0 - k));");
+                    applyLightParams.Add($"Ispe = intensities.rgb * {UniformNameDeclarations.SpecularColor}.rgb * (k + specular * (1.0 - k));");
                 }
             }
 
@@ -332,7 +332,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var methodBody = new List<string>();
             methodBody.AddRange(applyLightParams);
-            methodBody.Add("vec4 lighting = vec4(0);");
+            methodBody.Add("vec3 lighting = vec3(0);");
             methodBody.Add("");
             //methodBody.AddRange(attenuation);
             methodBody.Add("if(lightType == 0) // PointLight");
@@ -353,7 +353,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             methodBody.Add("return lighting;");
 
-            return GLSL.CreateMethod(GLSL.Type.Vec4, "ApplyLight",
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "ApplyLight",
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "position"), GLSL.CreateVar(GLSL.Type.Vec4, "intensities"),
