@@ -54,17 +54,14 @@ namespace Fusee.Examples.CompletionScan.Core
         private float2 _pickPos;
 
 
+        private Transform _modelCamTransform;
         private Transform _mainCamTransform;
         private Transform _sndCamTransform;
         private Transform _guiCamTransform;
+        private readonly Fusee.Engine.Core.Scene.Camera _modelCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
-
-        private float _anlgeHorznd;
-        private float _angleVertSnd;
-        private float _valHorzSnd;
-        private float _valVertSnd;
 
         private float _anlgeHorzMain;
         private float _angleVertMain;
@@ -80,11 +77,15 @@ namespace Fusee.Examples.CompletionScan.Core
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            _mainCam.Viewport = new float4(0, 0, 100, 100);
-            _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
-            _mainCam.Layer = -1;
+            _modelCam.Viewport = new float4(0, 0, 100, 100);
+            _modelCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
+            _modelCam.Layer = -1;
 
-            _sndCam.Viewport = new float4(0, 0, 0, 0);
+            _mainCam.Viewport = new float4(0, 0, 50, 100);
+            _mainCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _mainCam.Layer = 10;
+
+            _sndCam.Viewport = new float4(50, 0, 50, 100);
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _sndCam.Layer = 10;
 
@@ -113,20 +114,20 @@ namespace Fusee.Examples.CompletionScan.Core
             _shader.SetEffectParam("AlbedoTexture", _texture);
 
             // Set up cameras
-            _mainCamTransform = new Transform()
+            _modelCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 0, 0),
                 Scale = float3.One
             };
 
-            var cam = new SceneNode()
+            var modelCam = new SceneNode()
             {
-                Name = "MainCam",
+                Name = "ModelCam",
                 Components = new List<SceneComponent>()
                 {
-                    _mainCamTransform,
-                    _mainCam,
+                    _modelCamTransform,
+                    _modelCam,
                     ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10),
                     new Cube(),
 
@@ -148,16 +149,33 @@ namespace Fusee.Examples.CompletionScan.Core
                 }
             };
 
-            _sndCamTransform = _guiCamTransform = new Transform()
+            _mainCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 1, -30),
                 Scale = float3.One
             };
 
+            _sndCamTransform = new Transform()
+            {
+                Rotation = new float3(0, M.Pi, 0),
+                Translation = new float3(0, 1, 30),
+                Scale = float3.One
+            };
+
             var cam1 = new SceneNode()
             {
-                Name = "SecondCam",
+                Name = "MainCam",
+                Components = new List<SceneComponent>()
+                {
+                    _mainCamTransform,
+                    _mainCam,
+                }
+            };
+
+            var cam2 = new SceneNode()
+            {
+                Name = "SndCam",
                 Components = new List<SceneComponent>()
                 {
                     _sndCamTransform,
@@ -165,16 +183,14 @@ namespace Fusee.Examples.CompletionScan.Core
                 }
             };
 
-            _anlgeHorznd = _sndCamTransform.Rotation.y;
-            _angleVertSnd = _sndCamTransform.Rotation.x;
-            _anlgeHorzMain = _mainCamTransform.Rotation.y;
-            _angleVertMain = _mainCamTransform.Rotation.x;
-
+            _anlgeHorzMain = _modelCamTransform.Rotation.y;
+            _angleVertMain = _modelCamTransform.Rotation.x;
 
             _gui = CreateGui();
 
-            _scene.Children.Add(cam);
+            _scene.Children.Add(modelCam);
             _scene.Children.Add(cam1);
+            _scene.Children.Add(cam2);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
@@ -212,19 +228,7 @@ namespace Fusee.Examples.CompletionScan.Core
 
                 _valHorzMain = _valVertMain = 0;
 
-                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
-            }
-            else if (Mouse.RightButton)
-            {
-                _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
-                _valVertSnd = Mouse.YVel * 0.003f * DeltaTime;
-
-                _anlgeHorznd += _valHorzSnd;
-                _angleVertSnd += _valVertSnd;
-
-                _valHorzSnd = _valVertSnd = 0;
-
-                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
+                _modelCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
             else if (Keyboard.GetKey(KeyCodes.Space))
             {
@@ -246,7 +250,7 @@ namespace Fusee.Examples.CompletionScan.Core
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                RC.View = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
+                RC.View = _modelCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_modelCamTransform.Matrix());
 
                 PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
