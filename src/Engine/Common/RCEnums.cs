@@ -165,7 +165,7 @@ namespace Fusee.Engine.Common
     /// <summary>
     /// Specifies if and how triangle culling should be performed. If no culling is specified, triangles are rendered, no matter how they are oriented.
     /// Clockwise and Counterclockwise culling refers to in which order a triangle's vertices appear on the screen. If either is specified, triangles
-    /// in the respective order are culled.
+    /// in the respective order are displayed.
     /// </summary>
     public enum Cull
     {

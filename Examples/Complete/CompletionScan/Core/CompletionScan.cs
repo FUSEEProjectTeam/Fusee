@@ -7,7 +7,9 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
@@ -15,44 +17,74 @@ using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.CompletionScan.Core
 {
-    [FuseeApplication(Name = "FUSEE Texture Changing Example", Description = "Yet another FUSEE App ;).")]
+    [FuseeApplication(Name = "FUSEE Picking Example", Description = "How to use the Scene Picker.")]
     public class CompletionScan : RenderCanvas
     {
-        private SceneContainer _rocketScene;
+        // angle variables
+        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+
+        private const float RotationSpeed = 7;
+        private const float Damping = 0.8f;
+
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
-
-        private SceneRendererForward _guiRenderer;
-        private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-
-        // Cam variables
-        private Transform _camTransform;
-        private Transform _guiCamTransform;
-        private Transform _sndCamTransform;
-        private readonly Camera _cam = new Camera(ProjectionMethod.Perspective, 1, 100, M.PiOver4);
-        private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
-        private readonly Camera _sndCam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-
-        // Angle variables
-        private float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
-        private float _angleHorzSnd, _angleVertSnd, _angleVelHorzSnd, _angleVelVertSnd;
-
-        private const float Damping = 0.003f;
-        private WireframeCube _frustum;
+        private ScenePicker _scenePicker;
 
         private SceneNode _sphere;
         private Texture _texture;
         private ShaderEffect _shader;
 
+        private bool _keys;
+
+        private const float ZNear = 0.1f;
+        private const float ZFar = 1000;
+        private float _fovy = M.PiOver4;
+
+        private SceneRendererForward _guiRenderer;
+        private SceneContainer _gui;
+        private SceneInteractionHandler _sih;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private float _initCanvasWidth;
+        private float _initCanvasHeight;
+        private float _canvasWidth = 16;
+        private float _canvasHeight = 9;
+
+        private PickResult _currentPick;
+        private bool _pick;
+        private float2 _pickPos;
+
+
+        private Transform _mainCamTransform;
+        private Transform _sndCamTransform;
+        private Transform _guiCamTransform;
+        private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+
+        private float _anlgeHorznd;
+        private float _angleVertSnd;
+        private float _valHorzSnd;
+        private float _valVertSnd;
+
+        private float _anlgeHorzMain;
+        private float _angleVertMain;
+        private float _valHorzMain;
+        private float _valVertMain;
+
+        private readonly float _rotAngle = M.PiOver4;
+        private float3 _rotAxis;
+        private float3 _rotPivot;
+
+
+
         // Init is called on startup.
         public override async Task<bool> Init()
         {
-            _cam.Viewport = new float4(0, 0, 100, 100);
-            _cam.BackgroundColor = new float4(1, 1, 1, 1);
-            _cam.Layer = -1;
+            _mainCam.Viewport = new float4(0, 0, 100, 100);
+            _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
+            _mainCam.Layer = -1;
 
-            _sndCam.Viewport = new float4(60, 60, 40, 40);
+            _sndCam.Viewport = new float4(0, 0, 0, 0);
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _sndCam.Layer = 10;
 
@@ -60,26 +92,41 @@ namespace Fusee.Examples.CompletionScan.Core
             _guiCam.ClearDepth = false;
             _guiCam.FrustumCullingOn = false;
 
-            _camTransform = _guiCamTransform = new Transform()
+            _initCanvasWidth = Width / 100f;
+            _initCanvasHeight = Height / 100f;
+
+            _canvasHeight = _initCanvasHeight;
+            _canvasWidth = _initCanvasWidth;
+
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(1, 1, 1, 1);
+
+            // Create the sphere model
+            _scene = AssetStorage.Get<SceneContainer>("sphere_highpoly.fus");
+
+            _sphere = _scene.Children[0];
+            _shader = _sphere.GetComponent<ShaderEffect>();
+
+            ImageData image = AssetStorage.Get<ImageData>("green.png");
+            _texture = new Texture(image);
+
+            _shader.SetEffectParam("AlbedoTexture", _texture);
+
+            // Set up cameras
+            _mainCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 0, 0),
                 Scale = float3.One
             };
-            _sndCamTransform = new Transform()
-            {
-                Rotation = new float3(M.PiOver2, 0, 0),
-                Translation = new float3(0, 30, 0),
-                Scale = float3.One
-            };
 
             var cam = new SceneNode()
             {
-                Name = "Cam",
+                Name = "MainCam",
                 Components = new List<SceneComponent>()
                 {
-                    _camTransform,
-                    _cam,
+                    _mainCamTransform,
+                    _mainCam,
                     ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10),
                     new Cube(),
 
@@ -100,6 +147,14 @@ namespace Fusee.Examples.CompletionScan.Core
                     }
                 }
             };
+
+            _sndCamTransform = _guiCamTransform = new Transform()
+            {
+                Rotation = float3.Zero,
+                Translation = new float3(0, 1, -30),
+                Scale = float3.One
+            };
+
             var cam1 = new SceneNode()
             {
                 Name = "SecondCam",
@@ -110,46 +165,28 @@ namespace Fusee.Examples.CompletionScan.Core
                 }
             };
 
-            _angleHorzSnd = _sndCamTransform.Rotation.y;
+            _anlgeHorznd = _sndCamTransform.Rotation.y;
             _angleVertSnd = _sndCamTransform.Rotation.x;
-            _angleHorz = _camTransform.Rotation.y;
-            _angleVert = _camTransform.Rotation.x;
+            _anlgeHorzMain = _mainCamTransform.Rotation.y;
+            _angleVertMain = _mainCamTransform.Rotation.x;
 
-            _frustum = new WireframeCube();
-            var frustumNode = new SceneNode()
-            {
-                Name = "Frustum",
-                Components = new List<SceneComponent>()
-                {
-                    new Transform(),
-                    ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0),
-                    _frustum
-                }
-            };
 
             _gui = CreateGui();
 
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
-            // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sphere.fus");
-
-            _sphere = _rocketScene.Children[0];
-            _shader = _sphere.GetComponent<ShaderEffect>();
-
-            ImageData image = AssetStorage.Get<ImageData>("green.png");
-            _texture = new Texture(image);
-
-            _shader.SetEffectParam("AlbedoTexture", _texture);
-
-            _rocketScene.Children.Add(cam);
-            _rocketScene.Children.Add(cam1);
-            _rocketScene.Children.Add(frustumNode);
+            _scene.Children.Add(cam);
+            _scene.Children.Add(cam1);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_scene);
+            _scenePicker = new ScenePicker(_scene);
+
+            
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
+            _rotPivot = _scene.Children[1].GetComponent<Transform>().Translation;
 
             return true;
         }
@@ -157,59 +194,97 @@ namespace Fusee.Examples.CompletionScan.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            // Clear the backbuffer
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
+
+            // Mouse and keyboard movement
             if (Mouse.LeftButton)
             {
-                _angleVelHorz = Mouse.XVel * Damping * DeltaTime;
-                _angleVelVert = Mouse.YVel * Damping * DeltaTime;
+                _keys = false;
 
-                _angleHorz += _angleVelHorz;
-                _angleVert += _angleVelVert;
+                _valHorzMain = Mouse.XVel * 0.003f * DeltaTime;
+                _valVertMain = Mouse.YVel * 0.003f * DeltaTime;
 
-                _angleVelHorz = _angleVelVert = 0;
+                _anlgeHorzMain += _valHorzMain;
+                _angleVertMain += _valVertMain;
 
-                _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
+                _valHorzMain = _valVertMain = 0;
+
+                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
             else if (Mouse.RightButton)
             {
-                _angleVelHorzSnd = Mouse.XVel * Damping * DeltaTime;
-                _angleVelVertSnd = Mouse.YVel * Damping * DeltaTime;
+                _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
+                _valVertSnd = Mouse.YVel * 0.003f * DeltaTime;
 
-                _angleHorzSnd += _angleVelHorzSnd;
-                _angleVertSnd += _angleVelVertSnd;
+                _anlgeHorznd += _valHorzSnd;
+                _angleVertSnd += _valVertSnd;
 
-                _angleVelHorzSnd = _angleVelVertSnd = 0;
+                _valHorzSnd = _valVertSnd = 0;
 
-                _sndCamTransform.FpsView(_angleHorzSnd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
+                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
-
-            var viewProjection = _cam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_camTransform.Matrix());
-            _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
-
-
-            if (Keyboard.GetButton(32))
+            else if (Keyboard.GetKey(KeyCodes.Space))
             {
-                /*ImageData image = new ImageData(_texture.PixelData, _texture.Width, _texture.Height, _texture.PixelFormat);
-
-                image.Blt(0, 0, AssetStorage.Get<ImageData>("red.png"));
-
-                Texture newTex = new Texture(image);
-
-                _shader.SetEffectParam("AlbedoTexture", newTex);*/
-
-                _texture.Blt(0, 0, AssetStorage.Get<ImageData>("red.png"));
+                _pick = true;
+                _pickPos = new float2(Width / 2, Height / 2);
+            }
+            else if (Mouse.MiddleButton)
+            {
+                _pick = true;
+                _pickPos = Mouse.Position;
+            }
+            else
+            {
+                _pick = false;
             }
 
+            // Check
+            if (_pick)
+            {
+                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
+                RC.View = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
 
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+
+                if (newPick != null)
+                {
+                    int x = (int)(_texture.Width * newPick.UV.x);
+                    int y = (int)(_texture.Height * newPick.UV.y);
+
+                    _texture.Blt(x - 50, y - 50, AssetStorage.Get<ImageData>("red.png"), 0, 0, 100, 100);
+
+                    var cube = new SceneNode()
+                    {
+                        Name = "Cube",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = newPick.WorldPos,
+                                Scale = new float3(0.1f, 0.1f, 0.1f)
+                            },
+                            ShaderCodeBuilder.MakeShaderEffect(new float4(0,0,1,1), float4.One, 10),
+                            new Cube(),
+
+                        }
+                    };
+
+                    _scene.Children.Add(cube);
+                }
+
+                _pick = false;
+            }
+            
+            // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
 
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
 
@@ -217,9 +292,6 @@ namespace Fusee.Examples.CompletionScan.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -240,7 +312,7 @@ namespace Fusee.Examples.CompletionScan.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -248,12 +320,12 @@ namespace Fusee.Examples.CompletionScan.Core
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                "FUSEE Simple Example",
+                "Completion Scan",
                 "ButtonText",
                 vsTex,
                 psTex,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery),
                 HorizontalTextAlignment.CENTER,
@@ -264,17 +336,12 @@ namespace Fusee.Examples.CompletionScan.Core
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
+                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
+                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 }
-            };
+            );
+            canvas.Children.Add(fuseeLogo);
+            canvas.Children.Add(text);
 
             var cam = new SceneNode()
             {
