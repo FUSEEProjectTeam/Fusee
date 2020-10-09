@@ -189,7 +189,7 @@ namespace Fusee.Examples.PcRendering.WPF
             if (PtSizeVal == null) return;
             PtSizeVal.Content = e.NewValue.ToString("0");
 
-            if (_ptSizeDragStarted) return;
+            // if (_ptSizeDragStarted) return;
             PtRenderingParams.Size = (int)e.NewValue;
         }
 
@@ -540,6 +540,7 @@ namespace Fusee.Examples.PcRendering.WPF
                     app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
                     Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
                     Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
+                    Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
 
                     app.Run();
 

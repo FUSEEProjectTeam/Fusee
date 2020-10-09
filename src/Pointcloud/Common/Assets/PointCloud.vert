@@ -206,6 +206,7 @@ int getLevelOfDetail()
 
 void main(void)
 {	
+	float pointSizeDivisor = 100.0;
 	vColor = fuColor;
 	//vIntensity = intensity;
 
@@ -251,7 +252,7 @@ void main(void)
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
 			float worldPtSize = float(PointSize);
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / 30.0;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 		//Octree level-dependent
@@ -260,14 +261,14 @@ void main(void)
 			float spacing = pow(0.5, float(OctantLevel));
 			
 			float worldPtSize = float(PointSize) * spacing;
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / 30.0;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 		//level of detail
 		case 3:
 		{			
 			float worldPtSize = float(PointSize) / (pow(2.0, float(getLevelOfDetail())));
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / 30.0;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;			
 		}	
 	}

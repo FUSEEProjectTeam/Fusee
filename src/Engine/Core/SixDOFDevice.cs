@@ -20,10 +20,10 @@ namespace Fusee.Engine.Core
 
         }
         /// <summary>
-        /// Gets the deflection values.
+        /// Gets the positional velocity values.
         /// </summary>
         /// <value>
-        /// The SixDOF device´s deflection from its resting position.
+        /// The SixDOF device's deflection from its resting position.
         /// </value>
         public float3 Translation
         {
@@ -37,7 +37,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets the rotation values.
+        /// Gets the rotational velocity values.
         /// </summary>
         /// <value>
         /// The SixDOF device´s rotation from its resting position.

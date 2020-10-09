@@ -71,9 +71,13 @@ namespace Fusee.Examples.PcRendering.Core
         private Transform _camTransform;
         private Camera _cam;
 
+        private SixDOFDevice _spaceMouse;
+
         // Init is called on startup. 
         public override void Init()
         {
+            _spaceMouse = Input.GetDevice<SixDOFDevice>();
+
             _depthTex = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
 
             IsAlive = true;
@@ -198,15 +202,53 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 }
 
-                _angleHorz += _angleVelHorz;
-                _angleVert += _angleVelVert;
-                _angleVelHorz = 0;
-                _angleVelVert = 0;
-
-                if (HasUserMoved() || _camTransform.Translation == InitCameraPos)
+                if (SpaceMouseMoving(out float3 velPos, out float3 velRot))
                 {
-                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
+                    Diagnostics.Debug($"Spacemouse Pos: {velPos}; Spacemouse Rot: {velRot}");
+
+                    /*
+                    float4x4 rotMat = _camTransform.Matrix().RotationComponent();
+                    
+                    var camRight = rotMat.Column0.xyz;
+                    var camUp = rotMat.Column1.xyz;
+                    var camForward = rotMat.Column2.xyz;
+
+                    tc.Translation += camForward * inputWSAxis * speed;
+                    tc.Translation += camRight * inputADAxis * speed;
+                    */
+
+                    _angleHorz -= velRot.y;
+                    _angleVert -= velRot.x;
+
+                    float speed = DeltaTime * 12;
+
+                    _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
+                    _camTransform.Translation.y += velPos.y * speed;
+
+                    /*
+                    float4x4 spaceMouseMat = float4x4.CreateTranslation(velPos) * float4x4.CreateRotationYXZ(velRot);
+
+                    float4x4 camMat = _camTransform.Matrix();
+                    float4x4 camMatInv = float4x4.Invert(camMat);
+
+                    camMat = camMat * spaceMouseMat * camMatInv;
+
+                    _camTransform.Rotation += velRot;
+                    _camTransform.Translation += camMat.Translation();
+                    */
                 }
+                else
+                {
+                    _angleHorz += _angleVelHorz;
+                    _angleVert += _angleVelVert;
+                    _angleVelHorz = 0;
+                    _angleVelVert = 0;
+
+                    if (HasUserMoved() || _camTransform.Translation == InitCameraPos)
+                    {
+                        _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
+                    }
+                }                
 
                 //----------------------------  
 
@@ -263,8 +305,34 @@ namespace Fusee.Examples.PcRendering.Core
             ReadyToLoadNewFile = true;
         }
 
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
+        private bool SpaceMouseMoving(out float3 velPos, out float3 velRot)
+        {
+            if (_spaceMouse != null && _spaceMouse.IsConnected)
+            {
+                bool spaceMouseMovement = false;
+                velPos = 0.001f * _spaceMouse.Translation;
+                if (velPos.LengthSquared < 0.01f)
+                    velPos = float3.Zero;
+                else
+                    spaceMouseMovement = true;
+                velRot = 0.0001f * _spaceMouse.Rotation;
+                velRot.z = 0;
+                if (velRot.LengthSquared < 0.000005f)
+                    velRot = float3.Zero;
+                else
+                    spaceMouseMovement = true;
+
+                return spaceMouseMovement;
+            }
+            velPos = float3.Zero;
+            velRot = float3.Zero;
+            return false;
+        }
+
+
+
+    // Is called when the window was resized
+    public override void Resize(ResizeEventArgs e)
         {
             if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.Unlit) return;
 
