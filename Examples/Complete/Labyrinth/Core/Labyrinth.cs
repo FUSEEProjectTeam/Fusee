@@ -264,8 +264,8 @@ namespace Fusee.Examples.Labyrinth.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            // Set the clear color for the backbuffer to black (0% intensity in color channels R, G, B  100% intensity in color channelsA).
+            RC.ClearColor = new float4(0, 0, 0, 1);
 
             // Find the ball and create AABB
             FindBall();
@@ -485,7 +485,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 else
                 {
                     _mtxCam = float4x4.LookAt(_head.Translation.x - _cam.x * M.Sin(_angle), _head.Translation.y + _cam.y, _head.Translation.z - _cam.z * M.Cos(_angle), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                    _head.Rotation = new float3(_head.Rotation.x, + _angle - 90 * M.Pi / 180, _head.Rotation.z);
+                    _head.Rotation = new float3(_head.Rotation.x, + _angle, _head.Rotation.z);
                     _bodytrans.Rotation = new float3(0, - _angle, 0);
                     _movement = true;
                 }
@@ -501,22 +501,24 @@ namespace Fusee.Examples.Labyrinth.Core
 
                     // WS Axis
                     _moveX = Keyboard.WSAxis * _speed * DeltaTime;
-                    
-                    if (_moveX != 0)
+                    _moveZ = Keyboard.ADAxis * _speed * DeltaTime;
+
+                    if (_moveX!= 0 && (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D)))
                     {
                         _head.Translation.x += _moveX * M.Sin(_angle);
                         _head.Translation.z += _moveX * M.Cos(_angle);
 
-                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveX)), 0);
+
+                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
                     }
 
                     // AD Axis
-                    _moveZ = Keyboard.ADAxis * _speed * DeltaTime;
-                    if (_moveZ != 0)
+                    
+                    if (_moveZ != 0 && (!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S)))
                     {
                         _head.Translation.x += _moveZ * M.Cos(_angle);
                         _head.Translation.z -= _moveZ * M.Sin(_angle);
-                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Cos(_angle), 0, -M.Sin(_angle)), -_moveZ)), 0);
+                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
                     }
                 }
             }
