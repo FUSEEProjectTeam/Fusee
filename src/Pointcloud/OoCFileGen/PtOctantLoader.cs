@@ -3,8 +3,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using Fusee.Serialization;
-using Fusee.Xene;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -46,8 +44,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 _rootNode = value;
 
                 // gets pixel radius of the node
-                RootNode.GetComponent<OctantComponent>().Octant.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
-                _initRootScreenProjSize = (float)RootNode.GetComponent<OctantComponent>().Octant.ProjectedScreenSize;
+                RootNode.GetComponent<Octant>().OctantD.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+                _initRootScreenProjSize = (float)RootNode.GetComponent<Octant>().OctantD.ProjectedScreenSize;
                 _minScreenProjectedSize = _initRootScreenProjSize * _minProjSizeModifier;
             }
         }
@@ -129,7 +127,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                         continue;
 
                     var loopLength = _globalLoadingCache.Count;
-                    var orderdToLoad = _globalLoadingCache.OrderByDescending(kvp => kvp.Value.GetComponent<OctantComponent>().Octant.ProjectedScreenSize).ToList();
+                    var orderdToLoad = _globalLoadingCache.OrderByDescending(kvp => kvp.Value.GetComponent<Octant>().OctantD.ProjectedScreenSize).ToList();
                     Parallel.For(0, loopLength,
                     index =>
                     {
@@ -193,7 +191,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             DeleteOctants(scene);
             foreach (var node in _nodesToRender.Values)
             {
-                var ptOctantComp = node.GetComponent<OctantComponent>();
+                var ptOctantComp = node.GetComponent<Octant>();
 
                 if (_loadedMeshs.ContainsKey(ptOctantComp.Guid))
                 {
@@ -204,8 +202,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                         {
                             new Transform()
                             {
-                                Translation = (float3)ptOctantComp.Octant.Center,
-                                Scale = float3.One * (float)ptOctantComp.Octant.Size
+                                Translation = (float3)ptOctantComp.OctantD.Center,
+                                Scale = float3.One * (float)ptOctantComp.OctantD.Size
                             },
                             _wfcEffect,
                             wfc
@@ -264,8 +262,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 var kvp = _nodesOrderedByProjectionSize.Last();
                 var biggestNode = kvp.Value;
 
-                var ptOctantComp = kvp.Value.GetComponent<OctantComponent>();
-                _determinedAsVisible.Add(kvp.Value.GetComponent<OctantComponent>().Guid, kvp.Value);
+                var ptOctantComp = kvp.Value.GetComponent<Octant>();
+                _determinedAsVisible.Add(kvp.Value.GetComponent<Octant>().Guid, kvp.Value);
 
                 if (!ptOctantComp.WasLoaded)
                 {
@@ -286,9 +284,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private void ProcessChildren(SceneNode node, float fov)
         {
-            var ptOctantComp = node.GetComponent<OctantComponent>();
+            var ptOctantComp = node.GetComponent<Octant>();
 
-            if (ptOctantComp.Octant.IsLeaf) return;
+            if (ptOctantComp.OctantD.IsLeaf) return;
 
             // add child nodes to the heap of ordered nodes
             foreach (var child in node.Children)
@@ -302,14 +300,14 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private void ProcessNode(SceneNode node, float fov)
         {
-            var ptOctantChildComp = node.GetComponent<OctantComponent>();
+            var ptOctantChildComp = node.GetComponent<Octant>();
 
             //If node does not intersect the viewing frustum, remove it from loaded meshes and return.
 
             var frustum = new FrustumD();
             frustum.CalculateFrustumPlanes(RC.Projection * RC.View);
 
-            if (!ptOctantChildComp.Octant.InsideOrIntersectingFrustum(frustum))
+            if (!ptOctantChildComp.OctantD.InsideOrIntersectingFrustum(frustum))
             {
                 _globalLoadingCache.TryRemove(ptOctantChildComp.Guid, out var val); //node that is in loading cache isn't visible anymore                
                 return;
@@ -319,18 +317,18 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var camPosD = new double3(camPos.x, camPos.y, camPos.z);
 
             // gets pixel radius of the node
-            ptOctantChildComp.Octant.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+            ptOctantChildComp.OctantD.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
 
             //If the nodes screen projected size is too small, remove it from loaded meshes and return.
-            if (ptOctantChildComp.Octant.ProjectedScreenSize < _minScreenProjectedSize)
+            if (ptOctantChildComp.OctantD.ProjectedScreenSize < _minScreenProjectedSize)
             {
                 _globalLoadingCache.TryRemove(ptOctantChildComp.Guid, out var val); //node that is in loading cache isn't visible anymore                
                 return;
             }
             //Else if the node is visible and big enough, load if necessary and add to visible nodes.
             // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
-            if (!_nodesOrderedByProjectionSize.ContainsKey(ptOctantChildComp.Octant.ProjectedScreenSize))
-                _nodesOrderedByProjectionSize.Add(ptOctantChildComp.Octant.ProjectedScreenSize, node);
+            if (!_nodesOrderedByProjectionSize.ContainsKey(ptOctantChildComp.OctantD.ProjectedScreenSize))
+                _nodesOrderedByProjectionSize.Add(ptOctantChildComp.OctantD.ProjectedScreenSize, node);
 
         }
 
@@ -339,7 +337,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var kvp = orderdToLoad.First();
             var node = kvp.Value;
 
-            var ptOctantComp = node.GetComponent<OctantComponent>();
+            var ptOctantComp = node.GetComponent<Octant>();
             if (!ptOctantComp.WasLoaded)
             {
                 var pts = LoadPointsForNode(ptAccessor, ptOctantComp);
@@ -359,7 +357,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="node">Node that is processed in this step of the traversal.</param>        
         private void TraverseToUpdateScene(SceneNode node)
         {
-            var ptOctantComp = node.GetComponent<OctantComponent>();
+            var ptOctantComp = node.GetComponent<Octant>();
             ptOctantComp.VisibleChildIndices = 0;
 
             if (!_nodesToRender.ContainsKey(ptOctantComp.Guid)) //Node isn't visible
@@ -388,7 +386,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        private void RemoveMeshes(SceneNode node, OctantComponent ptOctantComponent)
+        private void RemoveMeshes(SceneNode node, Octant ptOctantComponent)
         {
             node.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
 
@@ -407,7 +405,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             ptOctantComponent.VisibleChildIndices = 0;
         }
 
-        private List<TPoint> LoadPointsForNode(PointAccessor<TPoint> ptAccessor, OctantComponent ptOctantComponent)
+        private List<TPoint> LoadPointsForNode(PointAccessor<TPoint> ptAccessor, Octant ptOctantComponent)
         {
             var pathToFile = FileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
 
@@ -442,7 +440,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         }
 
-        private int GetPtCountFromFile(OctantComponent ptOctantComponent)
+        private int GetPtCountFromFile(Octant ptOctantComponent)
         {
             var pathToFile = FileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
 
@@ -474,7 +472,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             Queue<SceneNode> candidates = new Queue<SceneNode>();
 
-            var rootPtOctantComp = node.GetComponent<OctantComponent>();
+            var rootPtOctantComp = node.GetComponent<Octant>();
             rootPtOctantComp.PosInHierarchyTex = 0;
             if (!_nodesToRender.ContainsKey(rootPtOctantComp.Guid))
                 return;
@@ -487,7 +485,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             while (candidates.Count > 0)
             {
                 node = candidates.Dequeue();
-                var ptOctantComp = node.GetComponent<OctantComponent>();
+                var ptOctantComp = node.GetComponent<Octant>();
 
                 //check if octantcomp.guid is in VisibleNode
                 //yes --> write to 1D tex
@@ -497,7 +495,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                     if (node.Parent != null)
                     {
-                        var parentPtOctantComp = node.Parent.GetComponent<OctantComponent>();
+                        var parentPtOctantComp = node.Parent.GetComponent<Octant>();
 
                         //If parentPtOctantComp.VisibleChildIndices == 0 this child is the first visible one.
                         if (_nodesToRender.ContainsKey(parentPtOctantComp.Guid))
@@ -510,7 +508,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                             }
 
                             //add the index of this node to VisibleChildIndices
-                            byte indexNumber = (byte)System.Math.Pow(2, ptOctantComp.Octant.PosInParent);
+                            byte indexNumber = (byte)System.Math.Pow(2, ptOctantComp.OctantD.PosInParent);
                             parentPtOctantComp.VisibleChildIndices += indexNumber;
                             visibleOctantsImgData.PixelData[parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel] = parentPtOctantComp.VisibleChildIndices;
                         }

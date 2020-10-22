@@ -22,6 +22,12 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Grid\Fusee.Structures.Grid.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Octree\Fusee.Structures.Octree.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
   </Project>
 

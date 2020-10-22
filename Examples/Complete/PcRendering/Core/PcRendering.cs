@@ -404,8 +404,8 @@ namespace Fusee.Examples.PcRendering.Core
             //create Scene from octree structure
             var root = OocFileReader.GetScene(ShaderCodeBuilder.Default/*PtRenderingParams.DepthPassEf*/);
 
-            var ptOctantComp = root.GetComponent<OctantComponent>();
-            InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Octant.Center.x, (float)ptOctantComp.Octant.Center.y, (float)(ptOctantComp.Octant.Center.z - (ptOctantComp.Octant.Size * 2f)));
+            var ptOctantComp = root.GetComponent<Octant>();
+            InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.OctantD.Center.x, (float)ptOctantComp.OctantD.Center.y, (float)(ptOctantComp.OctantD.Center.z - (ptOctantComp.OctantD.Size * 2f)));
 
             _scene.Children.Add(root);
 
@@ -419,9 +419,9 @@ namespace Fusee.Examples.PcRendering.Core
             var byteSize = OocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
 
-            var ptRootComponent = root.GetComponent<OctantComponent>();
-            _octreeRootCenter = ptRootComponent.Octant.Center;
-            _octreeRootLength = ptRootComponent.Octant.Size;
+            var ptRootComponent = root.GetComponent<Octant>();
+            _octreeRootCenter = ptRootComponent.OctantD.Center;
+            _octreeRootLength = ptRootComponent.OctantD.Size;
 
             PtRenderingParams.DepthPassEf = PtRenderingParams.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);

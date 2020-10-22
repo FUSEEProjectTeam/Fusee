@@ -1,11 +1,11 @@
-﻿using Fusee.Engine.Core;
+﻿using Fusee.Structures.Octree;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
-    public class PtOctant<TPoint> : Octant<TPoint>
+    public class PtOctant<TPoint> : PayloadOctantD<TPoint>
     {
         //The Resolution of an Octant is defined by the minimum distance (spacing) between points.
         //If the minimum distance between a point and its nearest neighbor is smaller then this distance, it will fall into a child octant.
@@ -13,13 +13,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         public Guid Guid { get; set; }
 
-        public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
+        public PtOctant(double3 center, double size, PayloadOctantD<TPoint>[] children = null)
         {
             Center = center;
             Size = size;
 
             if (children == null)
-                Children = new Octant<TPoint>[8];
+                Children = new PayloadOctantD<TPoint>[8];
             else
                 Children = children;
 
@@ -86,7 +86,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     {
         public PtGrid<TPoint> Grid;
 
-        public PtOctantWrite(double3 center, double size, Octant<TPoint>[] children = null)
+        public PtOctantWrite(double3 center, double size, PayloadOctantD<TPoint>[] children = null)
         {
             Guid = Guid.NewGuid();
 
@@ -94,7 +94,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Size = size;
 
             if (children == null)
-                Children = new Octant<TPoint>[8];
+                Children = new PayloadOctantD<TPoint>[8];
             else
                 Children = children;
 

@@ -1,6 +1,6 @@
-using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
+using Fusee.Structures.Octree;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -106,7 +106,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             } 
         }
 
-        private static int GetChildIndexToWritePoint(Octant<TPoint> octant, double3 point)
+        private static int GetChildIndexToWritePoint(PayloadOctantD<TPoint> octant, double3 point)
         {
             var halfSize = octant.Size / 2d;
             var translationVec = new double3(octant.Center.x - halfSize, octant.Center.y - halfSize, octant.Center.z - halfSize); //translate to zero           
@@ -181,7 +181,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             {
                 for (int i = parent.Children.Length-1; i >= 0; i--)
                 {
-                    Octant<TPoint> child = parent.Children[i];
+                    PayloadOctantD<TPoint> child = parent.Children[i];
                     if (child != null)
                         iterateAction?.Invoke((PtOctantWrite<TPoint>)child);
                 }

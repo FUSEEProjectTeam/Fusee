@@ -1,6 +1,6 @@
-﻿using Fusee.Engine.Core;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
+using Fusee.Structures.Grid;
 using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
@@ -9,7 +9,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     /// The cell of a <see cref="PtGrid{TPoint}"/>.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class GridCell<T> : Bucket<T>
+    public class GridCell<T> : BucketD
     {
         /// <summary>
         /// The point that occupies this cell.
