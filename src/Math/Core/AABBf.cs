@@ -189,7 +189,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(Frustum frustum)
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
         {
             if (!frustum.Near.InsideOrIntersecting(this))
                 return false;
