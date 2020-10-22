@@ -1,17 +1,17 @@
-﻿using Fusee.Math.Core;
-using System;
+﻿using System;
+using Fusee.Structures.Octree;
 
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// Component that allows a SceneNode to save information usually associated with a "PtOctant".
+    /// Component that allows a SceneNode to save information usually associated with a <see cref="Structures.Octree.OctantD"/>.
     /// </summary>
-    public class OctantComponent : SceneComponent
+    public class Octant : SceneComponent
     {
         /// <summary>
         /// The payload-independent information about an octant.
         /// </summary>
-        public OctantD Octant;
+        public OctantD OctantD;
 
         /// <summary>
         /// Unique identifier of the node.

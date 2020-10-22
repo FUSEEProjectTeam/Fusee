@@ -139,14 +139,15 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Test whether a <see cref="OctantD"/> intersects this plane.
+        /// Test whether a cuboid intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
         /// </summary>
-        /// <param name="octant">The <see cref="OctantD"/>.</param> 
-        public bool Intersects(OctantD octant)
+        /// <param name="center">The center of the cuboid.</param>
+        /// <param name="size">The width, height and length of the cuboid.</param>
+        public bool Intersects(double3 center, double3 size)
         {
-            var r = BoxExtendInNormalDirection(octant);
-            var s = SignedDistanceFromPoint(octant.Center);
+            var r = BoxExtendInNormalDirection(size);
+            var s = SignedDistanceFromPoint(center);
 
             return System.Math.Abs(s) <= r;
         }
@@ -165,18 +166,44 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Test whether a <see cref="OctantD"/> intersects this plane.
+        /// Test whether a cuboid intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
         /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
         /// because FUSEE defines a point with a negative signed distance to be inside.
         /// </summary>
-        /// <param name="octant">The octant.</param> 
-        public bool InsideOrIntersecting(OctantD octant)
+        /// <param name="center">The center of the cuboid.</param>
+        /// <param name="size">The width, height and length of the cuboid.</param>
+        public bool InsideOrIntersecting(double3 center, double3 size)
         {
-            var r = BoxExtendInNormalDirection(octant);
+            var r = BoxExtendInNormalDirection(size);
 
             //Distance from aabb center to plane
-            var s = SignedDistanceFromPoint(octant.Center);
+            var s = SignedDistanceFromPoint(center);
+
+            //Completely inside
+            if (s <= -r)
+                return true;
+            //Completely outside
+            else if (r <= s)
+                return false;
+            //else intersecting
+            return true;
+        }
+
+        /// <summary>
+        /// Test whether a cuboid intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
+        /// because FUSEE defines a point with a negative signed distance to be inside.
+        /// </summary>
+        /// <param name="center">The center of the cuboid.</param>
+        /// <param name="size">The width, height and length of the cuboid.</param>
+        public bool InsideOrIntersecting(double3 center, double size)
+        {
+            var r = BoxExtendInNormalDirection(size);
+
+            //Distance from aabb center to plane
+            var s = SignedDistanceFromPoint(center);
 
             //Completely inside
             if (s <= -r)
@@ -246,12 +273,22 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Calculates the projection interval radius of an octant onto line L(t) = octant.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="octant">The <see cref="OctantD"/>.</param>
+        /// Calculates the projection interval radius of an cuboid onto line L(t) = cuboid.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// <param name="size">The width, height and length of a cuboid.</param>
         /// </summary>
-        private double BoxExtendInNormalDirection(OctantD octant)
+        private double BoxExtendInNormalDirection(double3 size)
         {
-            var boxExtend = octant.Size * 0.5f;
+            var boxExtend = size * 0.5f;
+            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
+        }
+
+        /// <summary>
+        /// Calculates the projection interval radius of an cuboid onto line L(t) = cuboid.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// <param name="size">The width, height and length of a cuboid.</param>
+        /// </summary>
+        private double BoxExtendInNormalDirection(double size)
+        {
+            var boxExtend = size * 0.5f;
             return boxExtend * System.Math.Abs(Normal.x) + boxExtend * System.Math.Abs(Normal.y) + boxExtend * System.Math.Abs(Normal.z);
         }
 

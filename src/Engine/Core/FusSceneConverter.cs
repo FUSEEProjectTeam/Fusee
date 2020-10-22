@@ -4,6 +4,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
+using Fusee.Structures.Octree;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
@@ -462,9 +463,9 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(
-            new OctantComponent() 
+            new Octant() 
             { 
-                Octant = new OctantD
+                OctantD = new OctantD
                 {
                     Center = cc.Center,
 
@@ -935,19 +936,19 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="oct"></param>
         [VisitMethod]
-        public void ConvOctant(OctantComponent oct)
+        public void ConvOctant(Octant oct)
         {
             _currentNode.AddComponent(new FusOctant
             {
-                Center = oct.Octant.Center,
+                Center = oct.OctantD.Center,
                 Guid = oct.Guid,
-                IsLeaf = oct.Octant.IsLeaf,
-                Level = oct.Octant.Level,
+                IsLeaf = oct.OctantD.IsLeaf,
+                Level = oct.OctantD.Level,
                 Name = oct.Name,
                 NumberOfPointsInNode = oct.NumberOfPointsInNode,
                 PosInHierarchyTex = oct.PosInHierarchyTex,
-                PosInParent = oct.Octant.PosInParent,
-                Size = oct.Octant.Size,
+                PosInParent = oct.OctantD.PosInParent,
+                Size = oct.OctantD.Size,
                 VisibleChildIndices = oct.VisibleChildIndices,
                 WasLoaded = oct.WasLoaded
             });

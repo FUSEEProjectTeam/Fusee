@@ -1,6 +1,10 @@
-﻿
-namespace Fusee.Math.Core
+﻿using Fusee.Math.Core;
+
+namespace Fusee.Structures.Octree
 {
+    /// <summary>
+    /// 1/8 of an cube - used in an Octree.
+    /// </summary>
     public class OctantF
     {
         /// <summary>
@@ -49,11 +53,24 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Checks if a viewing frustum lies within or intersects this AABB.      
         /// </summary>
-        /// <param name="plane">The plane to test against.</param>
+        /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingPlane(PlaneF plane)
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
         {
-            return plane.InsideOrIntersecting(this);
+            if (!frustum.Near.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(Center, Size))
+                return false;
+
+            return true;
         }
     }
 }

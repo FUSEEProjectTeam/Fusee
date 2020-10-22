@@ -240,6 +240,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.NormalMap.An
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Xirkit.NestedAccess", "src\Tests\Xirkit\Fusee.Xirkit.NestedAccess.Test\Fusee.Test.Xirkit.NestedAccess.csproj", "{AA8F3E1A-A9AF-4975-BFAC-230E4AE277E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Structures", "Structures", "{4E3209AB-185F-4ED5-83AF-828B9B6F5391}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Structures.Grid", "src\Structures\Grid\Fusee.Structures.Grid.csproj", "{5A301EEC-17A5-408E-8638-4730086B6E57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Structures.Octree", "src\Structures\Octree\Fusee.Structures.Octree.csproj", "{5C86C9B6-F7EB-4927-BF5A-1AD23804D999}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
