@@ -464,8 +464,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(
-            new Octant() 
-            { 
+            new Octant()
+            {
                 OctantD = new OctantD
                 {
                     Center = cc.Center,
@@ -474,7 +474,7 @@ namespace Fusee.Engine.Core
                     Level = cc.Level,
                     PosInParent = cc.PosInParent,
                     Size = cc.Size,
-                    
+
                 },
                 Guid = cc.Guid,
                 Name = cc.Name,
