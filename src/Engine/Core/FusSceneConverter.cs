@@ -477,13 +477,9 @@ namespace Fusee.Engine.Core
                     
                 },
                 Guid = cc.Guid,
-                IsLeaf = cc.IsLeaf,
-                Level = cc.Level,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
                 PosInHierarchyTex = cc.PosInHierarchyTex,
-                PosInParent = cc.PosInParent,
-                Size = cc.Size,
                 VisibleChildIndices = cc.VisibleChildIndices,
                 WasLoaded = cc.WasLoaded
             });
