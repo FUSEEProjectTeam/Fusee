@@ -6,6 +6,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization.V1;
+using Fusee.Structures.Octree;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -162,14 +163,14 @@ namespace Fusee.Test.Serialization.V1
                 if (gtComp is Octant octant)
                 {
                     Assert.Equal(octant.Name, ((FusOctant)fusFileComp).Name);
-                    Assert.Equal(octant.Center, ((FusOctant)fusFileComp).Center);
+                    Assert.Equal(octant.OctantD.Center, ((FusOctant)fusFileComp).Center);
                     Assert.Equal(octant.Guid, ((FusOctant)fusFileComp).Guid);
-                    Assert.Equal(octant.IsLeaf, ((FusOctant)fusFileComp).IsLeaf);
-                    Assert.Equal(octant.Level, ((FusOctant)fusFileComp).Level);
+                    Assert.Equal(octant.OctantD.IsLeaf, ((FusOctant)fusFileComp).IsLeaf);
+                    Assert.Equal(octant.OctantD.Level, ((FusOctant)fusFileComp).Level);
                     Assert.Equal(octant.NumberOfPointsInNode, ((FusOctant)fusFileComp).NumberOfPointsInNode);
                     Assert.Equal(octant.PosInHierarchyTex, ((FusOctant)fusFileComp).PosInHierarchyTex);
-                    Assert.Equal(octant.PosInParent, ((FusOctant)fusFileComp).PosInParent);
-                    Assert.Equal(octant.Size, ((FusOctant)fusFileComp).Size);
+                    Assert.Equal(octant.OctantD.PosInParent, ((FusOctant)fusFileComp).PosInParent);
+                    Assert.Equal(octant.OctantD.Size, ((FusOctant)fusFileComp).Size);
                     Assert.Equal(octant.VisibleChildIndices, ((FusOctant)fusFileComp).VisibleChildIndices);
                     Assert.Equal(octant.WasLoaded, ((FusOctant)fusFileComp).WasLoaded);
                 }
@@ -361,14 +362,14 @@ namespace Fusee.Test.Serialization.V1
                 if (gtComp is Octant octant)
                 {
                     Assert.Equal(octant.Name, ((Octant)sceneFileComp).Name);
-                    Assert.Equal(octant.Center, ((Octant)sceneFileComp).Center);
+                    Assert.Equal(octant.OctantD.Center, ((Octant)sceneFileComp).OctantD.Center);
                     Assert.Equal(octant.Guid, ((Octant)sceneFileComp).Guid);
-                    Assert.Equal(octant.IsLeaf, ((Octant)sceneFileComp).IsLeaf);
-                    Assert.Equal(octant.Level, ((Octant)sceneFileComp).Level);
+                    Assert.Equal(octant.OctantD.IsLeaf, ((Octant)sceneFileComp).OctantD.IsLeaf);
+                    Assert.Equal(octant.OctantD.Level, ((Octant)sceneFileComp).OctantD.Level);
                     Assert.Equal(octant.NumberOfPointsInNode, ((Octant)sceneFileComp).NumberOfPointsInNode);
                     Assert.Equal(octant.PosInHierarchyTex, ((Octant)sceneFileComp).PosInHierarchyTex);
-                    Assert.Equal(octant.PosInParent, ((Octant)sceneFileComp).PosInParent);
-                    Assert.Equal(octant.Size, ((Octant)sceneFileComp).Size);
+                    Assert.Equal(octant.OctantD.PosInParent, ((Octant)sceneFileComp).OctantD.PosInParent);
+                    Assert.Equal(octant.OctantD.Size, ((Octant)sceneFileComp).OctantD.Size);
                     Assert.Equal(octant.VisibleChildIndices, ((Octant)sceneFileComp).VisibleChildIndices);
                     Assert.Equal(octant.WasLoaded, ((Octant)sceneFileComp).WasLoaded);
                 }
@@ -554,15 +555,18 @@ namespace Fusee.Test.Serialization.V1
                        },
                        new Octant
                        {
-                           Center = double3.One,
+                           OctantD = new OctantD()
+                           {
+                               Center = double3.One,
+                               IsLeaf = false,
+                               Level = 10,
+                               PosInParent = 5,
+                               Size = 20,
+                           },
                            Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
-                           IsLeaf = false,
-                           Level = 10,
                            Name = "MyOctant",
                            NumberOfPointsInNode = 2,
                            PosInHierarchyTex = 0,
-                           PosInParent = 5,
-                           Size = 20,
                            VisibleChildIndices = 1,
                            WasLoaded = true
                        },

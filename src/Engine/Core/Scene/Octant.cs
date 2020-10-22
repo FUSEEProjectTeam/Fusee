@@ -1,42 +1,22 @@
-﻿using Fusee.Math.Core;
-using System;
+﻿using System;
+using Fusee.Structures.Octree;
 
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// Component that allows a SceneNode to save information usually associated with a "PtOctant".
+    /// Component that allows a SceneNode to save information usually associated with a <see cref="Structures.Octree.OctantD"/>.
     /// </summary>
     public class Octant : SceneComponent
     {
         /// <summary>
-        /// Defines the position in the parent octant.
+        /// The payload-independent information about an octant.
         /// </summary>
-        public int PosInParent;
-
-        /// <summary>
-        /// The level of the octree the node lies in.
-        /// </summary>
-        public int Level;
+        public OctantD OctantD;
 
         /// <summary>
         /// Unique identifier of the node.
         /// </summary>
         public Guid Guid;
-
-        /// <summary>
-        /// Center in world space.
-        /// </summary>
-        public double3 Center;
-
-        /// <summary>
-        /// Length of on side of the cubical node.
-        /// </summary>
-        public double Size;
-
-        /// <summary>
-        /// Defines if the node is a leaf node.
-        /// </summary>
-        public bool IsLeaf;
 
         /// <summary>
         /// Defines if the node was loaded into memory.
@@ -49,26 +29,13 @@ namespace Fusee.Engine.Core.Scene
         public int NumberOfPointsInNode;
 
         /// <summary>
-        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
+        /// The octant's position in the texture which contains the octree's hierarchy.
         /// </summary>
-        public double ProjectedScreenSize { get; private set; }
-
-
         public int PosInHierarchyTex;
 
-        public byte VisibleChildIndices;
-
         /// <summary>
-        /// Calculates the size, projected into screen space.
+        /// Used to decode which children of an octant are visible, given a certain viewing frustum.
         /// </summary>
-        /// <param name="camPos">Position of the camera.</param>
-        /// <param name="screenHeight">Hight of the canvas.</param>
-        /// <param name="fov">Field of view.</param>
-        public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
-        {
-            var distance = (Center - camPos).Length;
-            var slope = (float)System.Math.Tan(fov / 2f);
-            ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
-        }
+        public byte VisibleChildIndices;
     }
 }
