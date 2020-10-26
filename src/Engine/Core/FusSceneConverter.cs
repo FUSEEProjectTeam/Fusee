@@ -56,22 +56,22 @@ namespace Fusee.Engine.Core
                     {
                         if (matcomp.HasAlbedo)
                         {
-                            matcomp.Albedo.Texture = fus.Header.LoadPath + "/" + matcomp.Albedo.Texture;
+                            matcomp.Albedo.Texture = Path.Combine(fus.Header.LoadPath, matcomp.Albedo.Texture);
                         }
 
                         if (matcomp.HasEmissive)
                         {
-                            matcomp.Emissive.Texture = fus.Header.LoadPath + "/" + matcomp.Emissive.Texture;
+                            matcomp.Emissive.Texture = Path.Combine(fus.Header.LoadPath, matcomp.Emissive.Texture);
                         }
 
                         if (matcomp.HasNormalMap)
                         {
-                            matcomp.NormalMap.Texture = fus.Header.LoadPath + "/" + matcomp.NormalMap.Texture;
+                            matcomp.NormalMap.Texture = Path.Combine(fus.Header.LoadPath, matcomp.NormalMap.Texture);
                         }
 
                         if (matcomp.HasSpecular)
                         {
-                            matcomp.Specular.Texture = fus.Header.LoadPath + "/" + matcomp.Specular.Texture;
+                            matcomp.Specular.Texture = Path.Combine(fus.Header.LoadPath, matcomp.Specular.Texture);
                         }
                     }
                 }
