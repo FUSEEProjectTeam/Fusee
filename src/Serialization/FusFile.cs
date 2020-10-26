@@ -39,8 +39,8 @@ namespace Fusee.Serialization
         /// The path this file was loaded from.
         /// </summary>
         [ProtoIgnore]
-        public string LoadPath;        
-        
+        public string LoadPath;
+
         /// <summary>
         /// The filename this file was loaded from.
         /// </summary>
