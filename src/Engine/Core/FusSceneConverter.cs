@@ -464,12 +464,12 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(
-            new Octant(cc.Center, cc.Size) 
+            new Octant(cc.Center, cc.Size)
             {
                 IsLeaf = cc.IsLeaf,
                 Level = cc.Level,
                 PosInParent = cc.PosInParent,
-                
+
                 Guid = cc.Guid,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,

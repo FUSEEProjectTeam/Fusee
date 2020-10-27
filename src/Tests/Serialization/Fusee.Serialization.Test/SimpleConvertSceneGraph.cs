@@ -556,8 +556,8 @@ namespace Fusee.Test.Serialization.V1
                        {
                             IsLeaf = false,
                             Level = 10,
-                            PosInParent = 5,                               
-                           
+                            PosInParent = 5,
+
                            Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
                            Name = "MyOctant",
                            NumberOfPointsInNode = 2,
