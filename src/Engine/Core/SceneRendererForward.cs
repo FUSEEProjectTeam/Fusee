@@ -645,7 +645,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderPtOctant(Octant ptOctant)
         {
-            _state.Effect.SetEffectParam("OctantLevel", ptOctant.OctantD.Level);
+            _state.Effect.SetEffectParam("OctantLevel", ptOctant.Level);
         }
 
 
