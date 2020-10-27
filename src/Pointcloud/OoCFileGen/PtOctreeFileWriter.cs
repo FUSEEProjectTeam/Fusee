@@ -47,7 +47,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             watch.Restart();
 
             var nodesToWrite = new List<PtOctantWrite<TPoint>>();
-            
+
             octree.Traverse((PtOctantWrite<TPoint> node) =>
             {
                 //WriteNode(octree.PtAccessor, node);
@@ -57,7 +57,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Diagnostics.Log("-------------- Traverse tree: " + watch.ElapsedMilliseconds + "ms.");
 
             watch.Restart();
-            Parallel.ForEach(nodesToWrite, new ParallelOptions { MaxDegreeOfParallelism = nodesToWrite.Count / 3 } ,(node) => 
+            Parallel.ForEach(nodesToWrite, new ParallelOptions { MaxDegreeOfParallelism = nodesToWrite.Count / 3 }, (node) =>
             {
                 WriteNode(octree.PtAccessor, node);
             });
@@ -77,7 +77,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 {
                     // write loadable properties (in which file the node's content - i.e. points - are stored)
                     bw.Write(node.Guid.ToByteArray()); // 16 bytes
-                    bw.Write(node.Level);                    
+                    bw.Write(node.Level);
                     bw.Write(node.IsLeaf);
                     //bw.Write(node.StreamPosition);
 
@@ -138,16 +138,16 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             //Add JProperty for "pointAccessorBools" that contains all bools from the point accessor that are set to true.
             var ptAccessorObj = new JObject();
-            
+
             foreach (var propertyName in ptAccessor.GetPointType())
             {
                 ptAccessorObj.Add(propertyName, true);
             }
             var ptAccessorBools = new JProperty("ptAccessorBools", ptAccessorObj);
             jsonObj.Add(ptAccessorBools);
-            
+
             //Add JPorperty for "pointType"
-            var pointType = typeof(TPoint);            
+            var pointType = typeof(TPoint);
             var ptType = new JProperty("pointType", pointType.Name);
             jsonObj.Add(ptType);
 

@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using Fusee.Structures.Grid;
+using Fusee.Structures;
 using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
@@ -8,19 +8,29 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     /// <summary>
     /// The cell of a <see cref="PtGrid{TPoint}"/>.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
-    public class GridCell<T> : BucketD
+    /// <typeparam name="O">The type of the point that occupies this cell.</typeparam>
+    public class GridCell<O> : IBucket<double3, double>
     {
         /// <summary>
         /// The point that occupies this cell.
         /// </summary>
-        public T Occupant;
+        public O Occupant;
 
         public GridCell(double3 center, double size)
         {
             Center = center;
             Size = size;
         }
+
+        /// <summary>
+        /// Center of this Bucket in world space coordinates.
+        /// </summary>
+        public double3 Center { get; }
+
+        /// <summary>
+        /// Length, width and height of this Octant.
+        /// </summary>
+        public double Size { get; }
     }
 
     /// <summary>
