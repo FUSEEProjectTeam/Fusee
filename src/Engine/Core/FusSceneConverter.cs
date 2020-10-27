@@ -6,9 +6,9 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
-using Fusee.Structures.Octree;
 using Fusee.Xene;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Fusee.Engine.Core
@@ -464,18 +464,12 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(
-            new Octant()
+            new Octant(cc.Center, cc.Size) 
             {
-                OctantD = new OctantD
-                {
-                    Center = cc.Center,
-
-                    IsLeaf = cc.IsLeaf,
-                    Level = cc.Level,
-                    PosInParent = cc.PosInParent,
-                    Size = cc.Size,
-
-                },
+                IsLeaf = cc.IsLeaf,
+                Level = cc.Level,
+                PosInParent = cc.PosInParent,
+                
                 Guid = cc.Guid,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
@@ -1077,15 +1071,15 @@ namespace Fusee.Engine.Core
         {
             _currentNode.AddComponent(new FusOctant
             {
-                Center = oct.OctantD.Center,
+                Center = new double3(oct.Center.x, oct.Center.y, oct.Center.z),
                 Guid = oct.Guid,
-                IsLeaf = oct.OctantD.IsLeaf,
-                Level = oct.OctantD.Level,
+                IsLeaf = oct.IsLeaf,
+                Level = oct.Level,
                 Name = oct.Name,
                 NumberOfPointsInNode = oct.NumberOfPointsInNode,
                 PosInHierarchyTex = oct.PosInHierarchyTex,
-                PosInParent = oct.OctantD.PosInParent,
-                Size = oct.OctantD.Size,
+                PosInParent = oct.PosInParent,
+                Size = oct.Size,
                 VisibleChildIndices = oct.VisibleChildIndices,
                 WasLoaded = oct.WasLoaded
             });

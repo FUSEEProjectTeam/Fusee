@@ -44,8 +44,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Octree\Fusee.Structures.Octree.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
   </ItemGroup>
 </Project>
