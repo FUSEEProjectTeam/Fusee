@@ -1,15 +1,12 @@
-﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using Fusee.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Fusee.Xene;
-using Fusee.Engine.Core.Scene;
-using Fusee.Structures;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
@@ -68,7 +65,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         /// <param name="effect">Shader effect the points shall be rendered with.</param>
         /// <returns></returns>
-        public SceneNode GetScene(ShaderEffect effect)
+        public SceneNode GetScene()
         {
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
             JObject jsonObj;
@@ -96,7 +93,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                         Scale = float3.One,
                         //Translation = (float3) center
                     },
-                    effect,
                     new Octant(center, size)
                     {
 
@@ -110,7 +106,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             //scene.Children.Add(rootSnc);
             NumberOfOctants++;
 
-            ReadHierarchyToScene(rootSnc, effect);
+            ReadHierarchyToScene(rootSnc);
             return rootSnc;
         }
 
@@ -134,7 +130,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Creates the scene structure by reading in the octree.hierarchy file.
         /// </summary>
-        private void ReadHierarchyToScene(SceneNode rootSnc, ShaderEffect effect)
+        private void ReadHierarchyToScene(SceneNode rootSnc)
         {
             var pathToHierarchy = _fileFolderPath + "\\octree.hierarchy";
 
@@ -142,7 +138,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             using (BinaryReader br = new BinaryReader(fileStream))
             {
-                CreateSceneNode(rootSnc, effect, br);
+                CreateSceneNode(rootSnc,br);
             }
 
             fileStream.Dispose();
@@ -153,7 +149,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         /// <param name="node">The current node to process.</param>
         /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's children exist.</param>
-        private void CreateSceneNode(SceneNode nodeSnc, ShaderEffect effect, BinaryReader binaryReader)
+        private void CreateSceneNode(SceneNode nodeSnc, BinaryReader binaryReader)
         {
             try
             {
@@ -184,7 +180,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                         nodeSnc.Children.Add(childSnc);
                         NumberOfOctants++;
 
-                        CreateSceneNode(childSnc, effect, binaryReader);
+                        CreateSceneNode(childSnc, binaryReader);
                     }
                 }
             }

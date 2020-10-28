@@ -1,9 +1,10 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.Effects;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Fusee.Examples.PcRendering.Core
 {
@@ -150,9 +151,8 @@ namespace Fusee.Examples.PcRendering.Core
 
         internal static ShaderEffect CreateDepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
+            return new ShaderEffect(
+            new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("PointCloud.vert"),
                     PS = AssetStorage.Get<string>("PointDepth.frag"),
@@ -161,31 +161,30 @@ namespace Fusee.Examples.PcRendering.Core
                         AlphaBlendEnable = true,
                         ZEnable = true,
                     }
-                }
-            },
-            new[]
+                },
+            new List<IFxParamDeclaration>
             {
-                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_M", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_IV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
 
-                new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
-                new EffectParameterDeclaration {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
+                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
+                new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
 
-                new EffectParameterDeclaration {Name = "PointSize", Value = Size},
-                new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
-                new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
+                new FxParamDeclaration<int> {Name = "PointSize", Value = Size},
+                new FxParamDeclaration<int> {Name = "PointShape", Value = (int)Shape},
+                new FxParamDeclaration<int> {Name = "PointMode", Value = (int)PtMode},
 
-                new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
-                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
+                new FxParamDeclaration<float> {Name = "OctantRes", Value = 0f},
+                new FxParamDeclaration<int> {Name = "OctantLevel", Value = 0},
 
-                new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
-                new EffectParameterDeclaration {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
-                new EffectParameterDeclaration {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
-                new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength}
+                new FxParamDeclaration<Texture> {Name = "OctreeTex", Value = octreeTex},
+                new FxParamDeclaration<int> {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
+                new FxParamDeclaration<float3> {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
+                new FxParamDeclaration<float> {Name = "OctreeRootLength", Value = (float)octreeRootLength}
             });
         }
 
@@ -195,9 +194,8 @@ namespace Fusee.Examples.PcRendering.Core
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(32);
 
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
+            return new ShaderEffect(
+                new FxPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("PointCloud.vert"),
                     PS = AssetStorage.Get<string>("PointCloud.frag"),
@@ -206,48 +204,47 @@ namespace Fusee.Examples.PcRendering.Core
                         AlphaBlendEnable = true,
                         ZEnable = true,
                     }
-                }
-            },
-            new[]
+                },
+            new List<IFxParamDeclaration>            
             {
-                new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_M", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_IV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
 
-                new EffectParameterDeclaration {Name = "ClipPlaneDist", Value = clipPlaneDist},
-                new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
-                new EffectParameterDeclaration {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
-                new EffectParameterDeclaration {Name = "Color", Value = SingleColor},
+                new FxParamDeclaration<float2> {Name = "ClipPlaneDist", Value = clipPlaneDist},
+                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
+                new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
+                new FxParamDeclaration<float4> {Name = "Color", Value = SingleColor},
 
-                new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
-                new EffectParameterDeclaration {Name = "PointSize", Value = Size},
-                new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
-                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode},
+                new FxParamDeclaration<int> {Name = "PointMode", Value = (int)PtMode},
+                new FxParamDeclaration<int> {Name = "PointSize", Value = Size},
+                new FxParamDeclaration<int> {Name = "PointShape", Value = (int)Shape},
+                new FxParamDeclaration<int> {Name = "ColorMode", Value = (int)ColorMode},
 
-                new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting},
-                new EffectParameterDeclaration{Name = "DepthTex", Value = depthTex},
-                new EffectParameterDeclaration{Name = "EDLStrength", Value = EdlStrength},
-                new EffectParameterDeclaration{Name = "EDLNeighbourPixels", Value = EdlNoOfNeighbourPx},
-                new EffectParameterDeclaration {Name = "SpecularStrength", Value = SpecularStrength},
-                new EffectParameterDeclaration {Name = "Shininess", Value = Shininess},
-                new EffectParameterDeclaration {Name = "SpecularColor", Value = new float4(1,1,1,1)},
+                new FxParamDeclaration<int> {Name = "Lighting", Value = (int)Lighting},
+                new FxParamDeclaration<WritableTexture>{Name = "DepthTex", Value = depthTex},
+                new FxParamDeclaration<float>{Name = "EDLStrength", Value = EdlStrength},
+                new FxParamDeclaration<int>{Name = "EDLNeighbourPixels", Value = EdlNoOfNeighbourPx},
+                new FxParamDeclaration<float> {Name = "SpecularStrength", Value = SpecularStrength},
+                new FxParamDeclaration<float> {Name = "Shininess", Value = Shininess},
+                new FxParamDeclaration<float4> {Name = "SpecularColor", Value = new float4(1,1,1,1)},
 
-                new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
-                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
+                new FxParamDeclaration<float> {Name = "OctantRes", Value = 0f},
+                new FxParamDeclaration<int> {Name = "OctantLevel", Value = 0},
 
-                new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
-                new EffectParameterDeclaration {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
-                new EffectParameterDeclaration {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
-                new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength},
+                new FxParamDeclaration<Texture> {Name = "OctreeTex", Value = octreeTex},
+                new FxParamDeclaration<int> {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
+                new FxParamDeclaration<float3> {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
+                new FxParamDeclaration<float> {Name = "OctreeRootLength", Value = (float)octreeRootLength},
 
-                new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
-                new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
-                new EffectParameterDeclaration {Name = "CalcSSAO", Value = CalcSSAO ? 1 : 0},
-                new EffectParameterDeclaration {Name = "SSAOStrength", Value = SSAOStrength}
+                new FxParamDeclaration<float3[]> {Name = "SSAOKernel[0]", Value = ssaoKernel},
+                new FxParamDeclaration<Texture> {Name = "NoiseTex", Value = ssaoNoiseTex},
+                new FxParamDeclaration<int> {Name = "CalcSSAO", Value = CalcSSAO ? 1 : 0},
+                new FxParamDeclaration<float> {Name = "SSAOStrength", Value = SSAOStrength}
             });
         }
     }

@@ -1,6 +1,8 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using System;
@@ -81,7 +83,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new ConcurrentDictionary<Guid, SceneNode>();   //nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
 
         private readonly WireframeCube wfc = new WireframeCube();
-        private readonly ShaderEffect _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 0, 1), new float4(1, 1, 1, 1), 10);
+        private readonly DefaultSurfaceEffect _wfcEffect = (DefaultSurfaceEffect)MakeEffect.Default;
+            
 
         /// <summary>
         /// The path to the folder that holds the file.
@@ -171,8 +174,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 if (ptSizeMode == PointSizeMode.AdaptiveSize)
                 {
                     TraverseBreadthFirstToCreate1DTex(_rootNode, VisibleOctreeHierarchyTex);
-                    depthPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
-                    colorPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
+                    depthPassEf.SetFxParam("OctreeTex", VisibleOctreeHierarchyTex);
+                    colorPassEf.SetFxParam("OctreeTex", VisibleOctreeHierarchyTex);
                 }
 
                 TraverseToUpdateScene(_rootNode);
