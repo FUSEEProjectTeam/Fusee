@@ -1,4 +1,6 @@
-﻿using Fusee.Base.Core;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
@@ -84,8 +86,9 @@ namespace Fusee.Engine.Core
         private readonly Stack<SceneNode> _predecessors;
         private SceneNode _currentNode;
 
-        private readonly Dictionary<FusMaterial, ShaderEffectProtoPixel> _matMap;
+        private readonly Dictionary<FusMaterialBase, Effect> _matMap;
         private readonly Dictionary<FusMesh, Mesh> _meshMap;
+        private readonly Dictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
 
         /// <summary>
@@ -101,8 +104,9 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNode>();
             _convertedScene = new SceneContainer();
 
-            _matMap = new Dictionary<FusMaterial, ShaderEffectProtoPixel>();
+            _matMap = new Dictionary<FusMaterialBase, Effect>();
             _meshMap = new Dictionary<FusMesh, Mesh>();
+            _texMap = new Dictionary<string, Texture>();
             _boneContainers = new Stack<SceneNode>();
         }
 
@@ -112,7 +116,6 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
             return _convertedScene;
         }
-
 
         #region Visitors
 
@@ -193,16 +196,16 @@ namespace Fusee.Engine.Core
                 Width = xft.Width,
                 Name = xft.Name,
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.Center
-                ? Scene.HorizontalTextAlignment.Center
-                : xft.HorizontalAlignment == Serialization.V1.HorizontalTextAlignment.Left
-                ? Scene.HorizontalTextAlignment.Left
-                : Scene.HorizontalTextAlignment.Right,
-                VerticalAlignment = xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.Center
-                ? Scene.VerticalTextAlignment.Center
-                : xft.VerticalAlignment == Serialization.V1.VerticalTextAlignment.Bottom
-                ? Scene.VerticalTextAlignment.Bottom
-                : Scene.VerticalTextAlignment.Top
+                xft.HorizontalAlignment == FusHorizontalTextAlignment.Center
+                ? HorizontalTextAlignment.Center
+                : xft.HorizontalAlignment == FusHorizontalTextAlignment.Left
+                ? HorizontalTextAlignment.Left
+                : HorizontalTextAlignment.Right,
+                VerticalAlignment = xft.VerticalAlignment == FusVerticalTextAlignment.Center
+                ? VerticalTextAlignment.Center
+                : xft.VerticalAlignment == FusVerticalTextAlignment.Bottom
+                ? VerticalTextAlignment.Bottom
+                : VerticalTextAlignment.Top
             });
         }
 
@@ -267,7 +270,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(FusMaterial matComp)
+        public void ConvMaterial(FusMaterialStandard matComp)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
@@ -281,7 +284,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(FusMaterialPBR matComp)
+        public void ConvMaterial(FusMaterialBRDF matComp)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
@@ -350,9 +353,7 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var currentNodeEffect = _currentNode.GetComponent<ShaderEffect>();
-
-            if (currentNodeEffect?.GetEffectParam(UniformNameDeclarations.NormalMap) != null)
+            if (_currentNode.GetComponent<DefaultSurfaceEffect>().LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -463,12 +464,12 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             _currentNode.AddComponent(
-            new Octant(cc.Center, cc.Size) 
+            new Octant(cc.Center, cc.Size)
             {
                 IsLeaf = cc.IsLeaf,
                 Level = cc.Level,
                 PosInParent = cc.PosInParent,
-                
+
                 Guid = cc.Guid,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
@@ -480,124 +481,143 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Make ShaderEffect
+        #region Make Effect
 
-        private ShaderEffectProtoPixel LookupMaterial(FusMaterial m)
+        private Effect LookupMaterial(FusMaterialStandard m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var vals = new MaterialValues();
+            var lightingSetup = m.HasSpecularChannel ? LightingSetupFlags.BlinnPhong : LightingSetupFlags.DiffuseOnly;
+            if (m.Albedo.Texture != null && m.Albedo.Texture != "")
+                lightingSetup |= LightingSetupFlags.AlbedoTex;
+            if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
+                lightingSetup |= LightingSetupFlags.NormalMap;
 
-            if (m.HasNormalMap)
-            {
-                vals.NormalMap = m.NormalMap.Texture ?? null;
-                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
-            }
-            if (m.HasAlbedo)
-            {
-                vals.AlbedoColor = m.Albedo.Color;
-                vals.AlbedoMix = m.Albedo.Mix;
-                vals.AlbedoTexture = m.Albedo.Texture ?? null;
-            }
-            if (m.HasEmissive)
-            {
-                vals.EmissiveColor = m.Emissive.Color;
-                vals.EmissiveMix = m.Emissive.Mix;
-                vals.EmissiveTexture = m.Emissive.Texture ?? null;
-            }
+            var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
 
-            if (m.HasSpecular)
+            if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
-                vals.SpecularColor = m.Specular.Color;
-                vals.SpecularMix = m.Specular.Mix;
-                vals.SpecularTexture = m.Specular.Texture ?? null;
-                vals.SpecularIntensity = m.Specular.Intensity;
-                vals.SpecularShininess = m.Specular.Shininess;
-            }
-
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(
-                new ShaderEffectProps
+                if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    MatProbs =
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                     {
-                        HasAlbedo = m.HasAlbedo,
-                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
-                        HasSpecular = m.HasSpecular,
-                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
-                        HasEmissive = m.HasEmissive,
-                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
-                        HasNormalMap = m.HasNormalMap
-                    },
-                    MatType = MaterialType.Standard,
-                    MatValues = vals
-                });
-
-            sfx.Name = m.Name ?? "";
+                        PathAndName = m.Albedo.Texture
+                    };
+                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                }
+                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, m.Specular.Shininess, albedoTex, m.Albedo.Mix, float2.One);
+            }
+            else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            {
+                if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                {
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    {
+                        PathAndName = m.NormalMap.Texture
+                    };
+                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                }
+                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, float2.One);
+            }
+            else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            {
+                if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                {
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    {
+                        PathAndName = m.Albedo.Texture
+                    };
+                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                }
+                if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                {
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    {
+                        PathAndName = m.NormalMap.Texture
+                    };
+                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                }
+                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
+            }
+            else if (lightingSetup == LightingSetupFlags.BlinnPhong)
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, m.Specular.Shininess, m.Specular.Strength);
+            else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
+            else
+                throw new System.ArgumentException("Material couldn't be resolved.");
 
             _matMap.Add(m, sfx);
             return sfx;
         }
 
-        private ShaderEffect LookupMaterial(FusMaterialPBR m)
+        private Effect LookupMaterial(FusMaterialBRDF m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var vals = new MaterialValues();
+            var lightingSetup = LightingSetupFlags.BRDF;
+            if (m.Albedo.Texture != null && m.Albedo.Texture != "")
+                lightingSetup |= LightingSetupFlags.AlbedoTex;
+            if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
+                lightingSetup |= LightingSetupFlags.NormalMap;
 
-            if (m.HasNormalMap)
-            {
-                vals.NormalMap = m.NormalMap.Texture ?? null;
-                vals.NormalMapIntensity = m.HasNormalMap ? m.NormalMap.Intensity : 0;
-            }
-            if (m.HasAlbedo)
-            {
-                vals.AlbedoColor = m.Albedo.Color;
-                vals.AlbedoMix = m.Albedo.Mix;
-                vals.AlbedoTexture = m.Albedo.Texture ?? null;
-            }
-            if (m.HasEmissive)
-            {
-                vals.EmissiveColor = m.Emissive.Color;
-                vals.EmissiveMix = m.Emissive.Mix;
-                vals.EmissiveTexture = m.Emissive.Texture ?? null;
-            }
+            var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
 
-            if (m.HasSpecular)
+            //TODO: Texture Tiles instead of float2.One - can they be exported?
+            //TODO: Subsurface color is exported but not used in the MakeEffect Methods
+            if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
-                vals.SpecularColor = m.Specular.Color;
-                vals.SpecularMix = m.Specular.Mix;
-                vals.SpecularTexture = m.Specular.Texture ?? null;
-                vals.SpecularIntensity = m.Specular.Intensity;
-                vals.SpecularShininess = m.Specular.Shininess;
-            }
-
-            vals.DiffuseFraction = m.DiffuseFraction;
-            vals.FresnelReflectance = m.FresnelReflectance;
-            vals.RoughnessValue = m.RoughnessValue;
-
-            sfx = ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(
-                new ShaderEffectProps
+                if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    MatProbs =
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
                     {
-                        HasAlbedo = m.HasAlbedo,
-                        HasAlbedoTexture = m.HasAlbedo && m.Albedo.Texture != null,
-                        HasSpecular = m.HasSpecular,
-                        HasSpecularTexture = m.HasSpecular && m.Specular.Texture != null,
-                        HasEmissive = m.HasEmissive,
-                        HasEmissiveTexture = m.HasEmissive && m.Emissive.Texture != null,
-                        HasNormalMap = m.HasNormalMap
-                    },
-                    MatType = MaterialType.MaterialPbr,
-                    MatValues = vals
-                });
-
-            sfx.Name = m.Name ?? "";
+                        PathAndName = m.Albedo.Texture
+                    };
+                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                }
+                sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, m.Albedo.Mix, float2.One);
+            }
+            else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            {
+                if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                {
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    {
+                        PathAndName = m.NormalMap.Texture
+                    };
+                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                }
+                sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, normalTex, m.NormalMap.Intensity, float2.One);
+            }
+            else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            {
+                if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                {
+                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    {
+                        PathAndName = m.Albedo.Texture
+                    };
+                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                }
+                if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                {
+                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    {
+                        PathAndName = m.NormalMap.Texture
+                    };
+                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                }
+                sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
+            }
+            else if (lightingSetup == LightingSetupFlags.BRDF)
+                sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
+            else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
+            else
+                throw new System.ArgumentException("Material couldn't be resolved.");
 
             _matMap.Add(m, sfx);
             return sfx;
         }
-
         #endregion
     }
 
@@ -663,11 +683,10 @@ namespace Fusee.Engine.Core
         /// Converts the animation component.
         ///</summary>
         [VisitMethod]
-        public void ConvAnimation(Core.Scene.Animation a)
+        public void ConvAnimation(Animation a)
         {
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }
-
 
         ///<summary>
         /// Converts the XForm component.
@@ -692,17 +711,19 @@ namespace Fusee.Engine.Core
                 Height = xft.Height,
                 Width = xft.Width,
                 Name = xft.Name,
+
                 HorizontalAlignment =
-                xft.HorizontalAlignment == Scene.HorizontalTextAlignment.Center
-                ? Serialization.V1.HorizontalTextAlignment.Center
-                : xft.HorizontalAlignment == Scene.HorizontalTextAlignment.Left
-                ? Serialization.V1.HorizontalTextAlignment.Left
-                : Serialization.V1.HorizontalTextAlignment.Right,
-                VerticalAlignment = xft.VerticalAlignment == Scene.VerticalTextAlignment.Center
-                ? Serialization.V1.VerticalTextAlignment.Center
-                : xft.VerticalAlignment == Scene.VerticalTextAlignment.Bottom
-                ? Serialization.V1.VerticalTextAlignment.Bottom
-                : Serialization.V1.VerticalTextAlignment.Top
+                xft.HorizontalAlignment == HorizontalTextAlignment.Center
+                ? FusHorizontalTextAlignment.Center
+                : xft.HorizontalAlignment == HorizontalTextAlignment.Left
+                ? FusHorizontalTextAlignment.Left
+                : FusHorizontalTextAlignment.Right,
+
+                VerticalAlignment = xft.VerticalAlignment == VerticalTextAlignment.Center
+                ? FusVerticalTextAlignment.Center
+                : xft.VerticalAlignment == VerticalTextAlignment.Bottom
+                ? FusVerticalTextAlignment.Bottom
+                : FusVerticalTextAlignment.Top
             });
         }
 
@@ -737,7 +758,6 @@ namespace Fusee.Engine.Core
             });
         }
 
-
         ///<summary>
         ///Converts the transform component.
         ///</summary>
@@ -754,83 +774,201 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Converts the shader effect.
+        /// Converts an effect.
         /// </summary>
-        /// <param name="fx"></param>
+        /// <param name="effect"></param>
         [VisitMethod]
-        public void ConvShaderEffect(ShaderEffect fx)
+        public void ConvEffect(DefaultSurfaceEffect effect)
         {
-            // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
-
-            var mat = new FusMaterial();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.AlbedoColor))
-                mat.Albedo = new MatChannelContainer();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
-                mat.Specular = new SpecularChannelContainer();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
-                mat.NormalMap = new NormapMapChannelContainer();
-
-            if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
-                mat.Emissive = new MatChannelContainer();
-
-            foreach (var decl in fx.ParamDecl)
+            if (effect.LightingSetup.HasFlag(LightingSetupFlags.BRDF))
             {
-                switch (decl.Key)
+                var mat = new FusMaterialBRDF() { Albedo = new AlbedoChannel() };
+                if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    case UniformNameDeclarations.AlbedoColor:
-                        mat.Albedo.Color = (float4)decl.Value;
-                        break;
-                    case UniformNameDeclarations.AlbedoTexture:
-                        mat.Albedo.Texture = (string)decl.Value;
-                        break;
-                    case UniformNameDeclarations.AlbedoMix:
-                        mat.Albedo.Mix = (float)decl.Value;
-                        break;
+                    var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
 
+                    if (surfaceInput.AlbedoTex != null)
+                    {
+                        mat.Albedo.Mix = surfaceInput.AlbedoMix;
+                        mat.Albedo.Texture = surfaceInput.AlbedoTex?.PathAndName;
+                    }
 
-                    case UniformNameDeclarations.EmissiveColor:
-                        mat.Emissive.Color = (float4)decl.Value;
-                        break;
-                    case UniformNameDeclarations.EmissiveTexture:
-                        mat.Emissive.Texture = (string)decl.Value;
-                        break;
-                    case UniformNameDeclarations.EmissiveMix:
-                        mat.Emissive.Mix = (float)decl.Value;
-                        break;
+                    if (surfaceInput.NormalTex != null)
+                    {
+                        mat.NormalMap = new NormapMapChannel()
+                        {
+                            Texture = surfaceInput.NormalTex.PathAndName,
+                            Intensity = surfaceInput.NormalMappingStrength
+                        };
+                    }
 
+                    mat.BRDF = new BRDFChannel()
+                    {
+                        IOR = surfaceInput.IOR,
+                        Metallic = surfaceInput.Metallic,
+                        Roughness = surfaceInput.Roughness,
+                        Specular = surfaceInput.Specular,
+                        Subsurface = surfaceInput.Subsurface,
+                        SubsurfaceColor = surfaceInput.SubsurfaceColor
+                    };
 
-                    case UniformNameDeclarations.SpecularColor:
-                        mat.Specular.Color = (float4)decl.Value;
-                        break;
-                    case UniformNameDeclarations.SpecularTexture:
-                        mat.Specular.Texture = (string)decl.Value;
-                        break;
-                    case UniformNameDeclarations.SpecularMix:
-                        mat.Specular.Mix = (float)decl.Value;
-                        break;
-                    case UniformNameDeclarations.SpecularShininess:
-                        mat.Specular.Shininess = (float)decl.Value;
-                        break;
-                    case UniformNameDeclarations.SpecularIntensity:
-                        mat.Specular.Intensity = (float)decl.Value;
-                        break;
-
-                    case UniformNameDeclarations.NormalMap:
-                        mat.NormalMap.Texture = (string)decl.Value;
-                        break;
-                    case UniformNameDeclarations.NormalMapIntensity:
-                        mat.NormalMap.Intensity = (float)decl.Value;
-                        break;
                 }
-            }
+                else
+                {
+                    var surfaceInput = (BRDFInput)effect.SurfaceInput;
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
+                    mat.BRDF = new BRDFChannel()
+                    {
+                        IOR = surfaceInput.IOR,
+                        Metallic = surfaceInput.Metallic,
+                        Roughness = surfaceInput.Roughness,
+                        Specular = surfaceInput.Specular,
+                        Subsurface = surfaceInput.Subsurface,
+                        SubsurfaceColor = surfaceInput.SubsurfaceColor
+                    };
+                }
 
-            _currentNode.AddComponent(mat);
+                _currentNode.AddComponent(mat);
+
+            }
+            else if (effect.LightingSetup.HasFlag(LightingSetupFlags.BlinnPhong) ||
+                    effect.LightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly) ||
+                    effect.LightingSetup.HasFlag(LightingSetupFlags.Unlit))
+            {
+                var mat = new FusMaterialStandard();
+                if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    var surfaceInput = (TextureInput)effect.SurfaceInput;
+
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
+
+                    if (surfaceInput.AlbedoTex != null)
+                    {
+                        mat.Albedo.Mix = surfaceInput.AlbedoMix;
+                        mat.Albedo.Texture = surfaceInput.AlbedoTex?.PathAndName;
+                    }
+
+                    if (surfaceInput.NormalTex != null)
+                    {
+                        mat.NormalMap = new NormapMapChannel()
+                        {
+                            Texture = surfaceInput.NormalTex.PathAndName,
+                            Intensity = surfaceInput.NormalMappingStrength
+                        };
+                    }
+
+                    mat.Specular = new SpecularChannel()
+                    {
+                        Shininess = surfaceInput.Shininess,
+                        Strength = surfaceInput.SpecularStrength
+                    };
+
+                }
+                else
+                {
+                    var surfaceInput = (SpecularInput)effect.SurfaceInput;
+                    mat.Albedo = new AlbedoChannel()
+                    {
+                        Color = surfaceInput.Albedo
+                    };
+
+                    mat.Specular = new SpecularChannel()
+                    {
+                        Shininess = surfaceInput.Shininess,
+                        Strength = surfaceInput.SpecularStrength
+                    };
+                }
+
+                _currentNode.AddComponent(mat);
+            }
         }
 
+        ///// <summary>
+        ///// Converts the shader effect.
+        ///// </summary>
+        ///// <param name="fx"></param>
+        //[VisitMethod]
+        //public void ConvShaderEffect(ShaderEffect fx)
+        //{
+        //    // TODO: SurfaceEffect to FusMaterial and SurfaceEffect to FusMaterialPBR
+        //    // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
 
+        //    var mat = new FusMaterialStandard();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.Albedo))
+        //        mat.Albedo = new AlbedoChannel();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
+        //        mat.Specular = new SpecularChannel();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
+        //        mat.NormalMap = new NormapMapChannel();
+
+        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
+        //        mat.Emissive = new AlbedoChannel();
+
+        //    foreach (var decl in fx.ParamDecl)
+        //    {
+        //        switch (decl.Key)
+        //        {
+        //            case UniformNameDeclarations.Albedo:
+        //                mat.Albedo.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.AlbedoTexture:
+        //                //mat.Albedo.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.AlbedoMix:
+        //                mat.Albedo.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+
+        //            case UniformNameDeclarations.EmissiveColor:
+        //                mat.Emissive.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.EmissiveTexture:
+        //                //mat.Emissive.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.EmissiveMix:
+        //                mat.Emissive.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+
+
+        //            case UniformNameDeclarations.SpecularColor:
+        //                mat.Specular.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.SpecularTexture:
+        //                //mat.Specular.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.SpecularMix:
+        //                mat.Specular.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.SpecularShininess:
+        //                mat.Specular.Shininess = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+        //            case UniformNameDeclarations.SpecularStrength:
+        //                mat.Specular.Strength = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+
+        //            case UniformNameDeclarations.NormalMap:
+        //                //mat.NormalMap.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
+        //                break;
+        //            case UniformNameDeclarations.NormalMapIntensity:
+        //                mat.NormalMap.Intensity = ((FxParamDeclaration<float>)decl.Value).Value;
+        //                break;
+        //        }
+        //    }
+
+        //    _currentNode.AddComponent(mat);
+        //}
 
         /// <summary>
         /// Converts the shader.
@@ -877,7 +1015,6 @@ namespace Fusee.Engine.Core
                 UVs = m.UVs,
                 Vertices = m.Vertices
             };
-
 
             _currentNode.AddComponent(mesh);
         }

@@ -6,7 +6,7 @@ using Fusee.Structures;
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// Component that allows a SceneNode to save information from a <see cref="IOctant{T, K, P}"/>.
+    /// Component that allows a SceneNode to save information from a <see cref="Structures.Octant{T, K, P}"/>.
     /// </summary>
     public class Octant : SceneComponent, IOctant<double3, double, Mesh>
     {
@@ -30,15 +30,16 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public double Size { get; set; }
 
-        /// <summary>
-        /// Is this octant a leaf node in the octree?
-        /// </summary>
         public bool IsLeaf { get; set; }
 
-        /// <summary>
-        /// Integer that defines this octants position in its parent.
-        /// </summary>
         public int PosInParent { get; set; }
+
+        public int Level { get; set; }
+
+        /// <summary>
+        /// Unique identifier of the node.
+        /// </summary>
+        public Guid Guid;
 
         /// <summary>
         /// The level of the octree this octant belongs to.
@@ -138,7 +139,7 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// Checks if a viewing frustum lies within or intersects this Octant.      
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>

@@ -1,12 +1,11 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using Fusee.Serialization;
-using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,7 +43,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private Dictionary<int, Geometry> _activeGeometrys;
 
-        private Random rng = new Random();
+        private readonly Random rng = new Random();
 
         //picking
         private float2 _pickPos;
@@ -66,7 +65,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Children = new ChildList()
             };
 
-            var parentTrans = new Transform
+            Transform parentTrans = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -117,10 +116,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
+                    _selectedNode.GetComponent<ShaderEffect>().SetFxParam(UniformNameDeclarations.Albedo, _defaultColor);
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, _selectedColor);
+                _selectedNode.GetComponent<ShaderEffect>().SetFxParam(UniformNameDeclarations.Albedo, _selectedColor);
             }
         }
 
@@ -130,31 +129,34 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Keyboard.GetKey(KeyCodes.D1) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
-                var geometry = CreatePrimitiveGeometry.CreateCuboidGeometry(1, 1, 1);
+                Geometry geometry = CreatePrimitiveGeometry.CreateCuboidGeometry(1, 1, 1);
                 AddGeometryToSceneNode(geometry, new float3(0, 0, 0));
             }
             if (Keyboard.GetKey(KeyCodes.D2) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
-                var geometry = CreatePrimitiveGeometry.CreatePyramidGeometry(1, 1, 1);
+                Geometry geometry = CreatePrimitiveGeometry.CreatePyramidGeometry(1, 1, 1);
                 AddGeometryToSceneNode(geometry, new float3(0, 0, 0));
             }
             if (Keyboard.GetKey(KeyCodes.D3) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
-                var geometry = CreatePrimitiveGeometry.CreateConeGeometry(1, 1, 15);
+                Geometry geometry = CreatePrimitiveGeometry.CreateConeGeometry(1, 1, 15);
                 AddGeometryToSceneNode(geometry, new float3(0, 0, 0));
             }
             if (Keyboard.GetKey(KeyCodes.D4) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
-                var geometry = CreatePrimitiveGeometry.CreateSpehreGeometry(1, 30, 15);
+                Geometry geometry = CreatePrimitiveGeometry.CreateSpehreGeometry(1, 30, 15);
                 AddGeometryToSceneNode(geometry, new float3(0, 0, 0));
             }
             _keyTimeout -= DeltaTime;
 
             //following actions are only allowed if something is selected
-            if (_selectedNode == null) return;
+            if (_selectedNode == null)
+            {
+                return;
+            }
 
             //Translate Geometry
             if (Keyboard.GetKey(KeyCodes.G))
@@ -163,7 +165,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             }
             if (_isTranslating)
             {
-                var worldPos = new float3(Mouse.Velocity.x * .0001f, Mouse.Velocity.y * -.0001f, Mouse.WheelVel * .001f);
+                float3 worldPos = new float3(Mouse.Velocity.x * .0001f, Mouse.Velocity.y * -.0001f, Mouse.WheelVel * .001f);
                 _selectedNode.GetTransform().Translation += worldPos.xyz;
 
                 if (Mouse.LeftButton)
@@ -193,19 +195,19 @@ namespace Fusee.Examples.GeometryEditing.Core
                 int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
                 _activeGeometrys.Remove(currentGeometryIndex);
 
-                var zwerg = new Dictionary<int, Geometry>();
-                foreach (var key in _activeGeometrys.Keys)
+                Dictionary<int, Geometry> zwerg = new Dictionary<int, Geometry>();
+                foreach (int key in _activeGeometrys.Keys)
                 {
                     if (key > currentGeometryIndex)
                     {
-                        var test = _activeGeometrys[key];
+                        Geometry test = _activeGeometrys[key];
                         zwerg.Add(key - 1, test);
                     }
                     else { zwerg.Add(key, _activeGeometrys[key]); }
                 }
 
                 _activeGeometrys.Clear();
-                foreach (var item in zwerg)
+                foreach (KeyValuePair<int, Geometry> item in zwerg)
                 {
                     _activeGeometrys.Add(item.Key, item.Value);
                 }
@@ -219,17 +221,17 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Keyboard.GetKey(KeyCodes.I) && _keyTimeout < 0)
             {
                 _keyTimeout = .25f;
-                var currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
-                var currentSelection = _parentNode.Children[currentGeometryIndex];
-                var currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
+                int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
+                SceneNode currentSelection = _parentNode.Children[currentGeometryIndex];
+                Geometry currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
 
                 currentSelectedGeometry.InsetFace(rng.Next(4, currentSelectedGeometry.GetAllFaces().Count()), .5f);
-                var copy = currentSelectedGeometry.CloneGeometry();
+                Geometry copy = currentSelectedGeometry.CloneGeometry();
                 _activeGeometrys[currentGeometryIndex] = copy;
                 currentSelectedGeometry.Triangulate();
 
-                var geometryMesh = new JometriMesh(currentSelectedGeometry);
-                var meshComponent = new Mesh
+                JometriMesh geometryMesh = new JometriMesh(currentSelectedGeometry);
+                Mesh meshComponent = new Mesh
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -242,17 +244,17 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Keyboard.GetKey(KeyCodes.E) && _keyTimeout < 0)
             {
                 _keyTimeout = .25f;
-                var currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
-                var currentSelection = _parentNode.Children[currentGeometryIndex];
-                var currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
+                int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
+                SceneNode currentSelection = _parentNode.Children[currentGeometryIndex];
+                Geometry currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
 
                 currentSelectedGeometry.ExtrudeFace(rng.Next(4, currentSelectedGeometry.GetAllFaces().Count()), 1);
-                var copy = currentSelectedGeometry.CloneGeometry();
+                Geometry copy = currentSelectedGeometry.CloneGeometry();
                 _activeGeometrys[currentGeometryIndex] = copy;
                 currentSelectedGeometry.Triangulate();
 
-                var geometryMesh = new JometriMesh(currentSelectedGeometry);
-                var meshComponent = new Mesh
+                JometriMesh geometryMesh = new JometriMesh(currentSelectedGeometry);
+                Mesh meshComponent = new Mesh
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -265,17 +267,17 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Keyboard.GetKey(KeyCodes.C) && _keyTimeout < 0)
             {
                 _keyTimeout = .25f;
-                var currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
-                var currentSelection = _parentNode.Children[currentGeometryIndex];
-                var currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
+                int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
+                SceneNode currentSelection = _parentNode.Children[currentGeometryIndex];
+                Geometry currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
 
                 currentSelectedGeometry = SubdivisionSurface.CatmullClarkSubdivision(currentSelectedGeometry);
-                var copy = currentSelectedGeometry.CloneGeometry();
+                Geometry copy = currentSelectedGeometry.CloneGeometry();
                 _activeGeometrys[currentGeometryIndex] = copy;
                 currentSelectedGeometry.Triangulate();
 
-                var geometryMesh = new JometriMesh(currentSelectedGeometry);
-                var meshComponent = new Mesh
+                JometriMesh geometryMesh = new JometriMesh(currentSelectedGeometry);
+                Mesh meshComponent = new Mesh
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -287,7 +289,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private void HandleCameraAndPicking()
         {
-            var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+            float curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
 
             //Camera Rotation
             if (Mouse.MiddleButton && !Keyboard.GetKey(KeyCodes.LShift))
@@ -326,7 +328,9 @@ namespace Fusee.Examples.GeometryEditing.Core
             _zoom += _zoomVel;
             // Limit zoom
             if (_zoom < 2)
+            {
                 _zoom = 2;
+            }
 
             _angleHorz += _angleVelHorz;
             // Wrap-around to keep _angleHorz between -PI and + PI
@@ -347,19 +351,19 @@ namespace Fusee.Examples.GeometryEditing.Core
             }
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(_xPos, _yPos, -_zoom, _xPos, _yPos, 0, 0, 1, 0);
+            float4x4 mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            float4x4 mtxCam = float4x4.LookAt(_xPos, _yPos, -_zoom, _xPos, _yPos, 0, 0, 1, 0);
 
-            var viewMatrix = mtxCam * mtxRot * _sceneScale;
+            float4x4 viewMatrix = mtxCam * mtxRot * _sceneScale;
 
             //Picking
             if (Mouse.RightButton)
             {
                 _pickPos = Mouse.Position;
                 Diagnostics.Debug(_pickPos);
-                var pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
+                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
-                var newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -380,26 +384,25 @@ namespace Fusee.Examples.GeometryEditing.Core
         {
             Geometry newGeo = geometry.CloneGeometry();
             newGeo.Triangulate();
-            var geometryMesh = new JometriMesh(newGeo);
+            JometriMesh geometryMesh = new JometriMesh(newGeo);
 
-            var sceneNodeContainer = new SceneNode { Components = new List<SceneComponent>() };
+            SceneNode sceneNodeContainer = new SceneNode { Components = new List<SceneComponent>() };
 
-            var meshComponent = new Mesh
+            Mesh meshComponent = new Mesh
             {
                 Vertices = geometryMesh.Vertices,
                 Triangles = geometryMesh.Triangles,
                 Normals = geometryMesh.Normals,
             };
-            var translationComponent = new Transform
+            Transform translationComponent = new Transform
             {
                 Rotation = float3.Zero,
                 Scale = new float3(1, 1, 1),
                 Translation = position
             };
-            var shaderEffect = ShaderCodeBuilder.Default;
-            shaderEffect.SetEffectParam(UniformNameDeclarations.AlbedoColor, _defaultColor);
+
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(shaderEffect);
+            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor, float4.Zero, 0, 0));
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);

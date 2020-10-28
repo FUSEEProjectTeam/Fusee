@@ -2,7 +2,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a Icosahedron geometry straight from the code.
@@ -73,54 +73,16 @@ namespace Fusee.Engine.Core
             Normals = new float3[] { };
             NormalAndUvHelper.CreateVertexNormals(this);
 
-            UVs = CreateUVs();
+            UVs = new float2[Vertices.Length];
             for (var i = 0; i < Vertices.Length; i++)
             {
                 UVs[i] =
                     new float2(0.5f + ((float)System.Math.Atan2(Vertices[i].z, Vertices[i].x) / (2 * M.Pi)),
                         0.5f - ((float)System.Math.Asin(Vertices[i].y) / M.Pi));
+                UVs[i].y *= -1;
             }
         }
-
-        private static float2[] CreateUVs()
-        {
-            //The number of vertices in the resulting uv map horizontally
-            const float w = 5.5f;
-            //The number of vertices in the resulting uv map horizontally
-            const float h = 3f;
-
-            var uvs = new float2[22];
-
-            uvs[0] = new float2(1, 0);
-            uvs[1] = new float2(1, 1);
-            uvs[2] = new float2(0, 1);
-            uvs[3] = new float2(4f / w, 1);
-            uvs[4] = new float2(5f / w, 1);
-
-            uvs[5] = new float2(0.5f / w, 2 / h);
-            uvs[6] = new float2(1.5f / w, 2 / h);
-            uvs[7] = new float2(2.5f / w, 2 / h);
-            uvs[8] = new float2(3.5f / w, 2 / h);
-            uvs[9] = new float2(4.5f / w, 2 / h);
-            uvs[10] = new float2(1, 2 / h);
-
-            uvs[11] = new float2(0, 1 / h);
-            uvs[12] = new float2(1f / w, 1 / h);
-            uvs[13] = new float2(2f / w, 1 / h);
-            uvs[14] = new float2(3f / w, 1 / h);
-            uvs[15] = new float2(4f / w, 1 / h);
-            uvs[16] = new float2(5f / w, 1 / h);
-
-            uvs[17] = new float2(0.5f / w, 0);
-            uvs[18] = new float2(1.5f / w, 0);
-            uvs[19] = new float2(2.5f / w, 0);
-            uvs[20] = new float2(3.5f / w, 0);
-            uvs[21] = new float2(4.5f / w, 0);
-
-            return uvs;
-        }
     }
-
 
     /// <summary>
     /// Creates a Icosphere geometry straight from the code.
@@ -206,6 +168,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
                 mesh.UVs[i] = new float2(0.5f + ((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2 * M.Pi)), 0.5f - ((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
+                mesh.UVs[i].y *= -1;
             }
 
             return mesh;

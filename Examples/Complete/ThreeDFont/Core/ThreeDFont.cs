@@ -1,10 +1,10 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
@@ -137,24 +137,6 @@ namespace Fusee.Examples.ThreeDFont.Core
             var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
 
             _renderer = new SceneRendererForward(sc);
-
-            var shaderFx = new ShaderEffect(new[] {
-                new EffectPassDeclaration
-                {
-                    PS = AssetStorage.Get<string>("FragShader.frag"),
-                    VS = AssetStorage.Get<string>("VertShader.vert"),
-                    StateSet = new RenderStateSet
-                    {
-                        ZEnable = true
-                    }
-                }
-            },
-            new List<EffectParameterDeclaration>
-            {
-                new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
-            });
-
-            RC.SetShaderEffect(shaderFx);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);

@@ -47,7 +47,6 @@ namespace Fusee.Engine.Common
         /// </summary>
         void DisableDepthClamp();
 
-
         /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
@@ -294,6 +293,20 @@ namespace Fusee.Engine.Common
         void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height);
 
         /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureFilterMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="filterMode">The new filter mode.</param>
+        void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode);
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureWrapMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="wrapMode">The new wrap mode.</param>
+        void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode);
+
+        /// <summary>
         /// Creates a new texture and binds it to the shader.
         /// </summary>
         /// <remarks>
@@ -302,6 +315,12 @@ namespace Fusee.Engine.Common
         /// </remarks>
         /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
         ITextureHandle CreateTexture(ITexture img);
+
+        /// <summary>
+        /// Creates a new cube map and binds it to the shader.
+        /// </summary>        
+        /// <param name="img">An <see cref="IWritableArrayTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(IWritableArrayTexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
@@ -577,22 +596,13 @@ namespace Fusee.Engine.Common
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle);
 
-        /*
-         * TODO: NO tangent space normal maps at this time...
-         * 
-         * http://gamedev.stackexchange.com/a/72806/44105
-         * 
         /// <summary>
-        /// This method is a replacement for SetVertices, SetUVs and SetNormals. Taking all three
-        /// vertex information arrays a the same time, an implementation can additionally calculate
-        /// tangent and bitangent information as well. 
+        /// Renders into the given layer of the array texture.
         /// </summary>
-        /// <param name="meshImp">The mesh implementation to operate on.</param>
-        /// <param name="vertices">The array of vertices</param>
-        /// <param name="uVs">The texture coordinate array</param>
-        /// <param name="normals">The normals</param>
-        void SetVertexData(IMeshImp meshImp, float3[] vertices, float2[] uVs, float3[] normals);
-         * */
+        /// <param name="tex">The array texture.</param>
+        /// <param name="layer">The layer to render to.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle);
 
         /// <summary>
         /// Retrieves a sub-image of the given region.

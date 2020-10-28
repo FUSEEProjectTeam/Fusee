@@ -80,14 +80,14 @@ namespace Fusee.Serialization.V1
         public AABBf BoundingBox;
 
         /// <summary>
-        /// The tangent of each triangle for bump mapping.
+        /// The tangent of each triangle for normal mapping.
         /// w-component is handedness
         /// </summary>
         [ProtoMember(9)]
         public float4[] Tangents;
 
         /// <summary>
-        /// The bitangent of each triangle for bump mapping.
+        /// The bitangent of each triangle for normal mapping.
         /// </summary>
         [ProtoMember(10)]
         public float3[] BiTangents;

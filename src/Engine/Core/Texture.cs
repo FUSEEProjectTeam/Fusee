@@ -29,6 +29,11 @@ namespace Fusee.Engine.Core
         #region Properties
 
         /// <summary>
+        /// Reference to the original image. Should save  path/file name. 
+        /// </summary>
+        public string PathAndName;
+
+        /// <summary>
         /// Width in pixels.
         /// </summary>
         public int Width
@@ -82,30 +87,41 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TextureWrapMode WrapMode
         {
-            get;
-            private set;
+            get
+            {
+                return _wrapMode;
+            }
+            set
+            {
+                _wrapMode = value;
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.WrapModeChanged));
+            }
         }
+        private TextureWrapMode _wrapMode;
 
         /// <summary>
         /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
         /// </summary>
         public TextureFilterMode FilterMode
         {
-            get;
-            private set;
+            get
+            {
+                return _filterMode;
+            }
+            set
+            {
+                _filterMode = value;
+                TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.FilterModeChanged));
+            }
         }
+        private TextureFilterMode _filterMode;
 
         /// <summary>
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
         /// </summary>
         public RenderTargetTextureTypes TextureType { get; private set; }
 
-        #endregion
-
-        /// <summary>
-        /// Creates a new instance of type Texture.
-        /// </summary>
-        protected Texture() { }
+        #endregion        
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
@@ -117,7 +133,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.Linear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
+        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LinearMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(pixelData, width, height, colorFormat);
@@ -133,7 +149,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.Linear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
+        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(
@@ -175,7 +191,7 @@ namespace Fusee.Engine.Core
                 return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
-            this.TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
+            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
         }
 
         /// <summary>

@@ -241,6 +241,28 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.NormalMap.An
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Xirkit.NestedAccess", "src\Tests\Xirkit\Fusee.Xirkit.NestedAccess.Test\Fusee.Test.Xirkit.NestedAccess.csproj", "{AA8F3E1A-A9AF-4975-BFAC-230E4AE277E2}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SurfaceEffects", "SurfaceEffects", "{64A3E471-73D4-420D-9F9A-3A219660BF53}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SurfaceEffects.Core", "Examples\Complete\SurfaceEffects\Core\Fusee.Examples.SurfaceEffects.Core.csproj", "{16DF559F-0BB4-4FBB-A4E5-E53E65549B09}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SurfaceEffects.Desktop", "Examples\Complete\SurfaceEffects\Desktop\Fusee.Examples.SurfaceEffects.Desktop.csproj", "{C73B445A-4B90-4372-85CC-1D2A33CB314B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.SurfaceEffects.Android", "Examples\Complete\SurfaceEffects\Android\Fusee.Examples.SurfaceEffects.Android.csproj", "{85302355-1F4C-415A-8310-D154AFEE5F04}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderLayer", "RenderLayer", "{34064EB3-8E57-4570-844B-A34CDF9ADFF2}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RenderLayer.Core", "Examples\Complete\RenderLayer\Core\Fusee.Examples.RenderLayer.Core.csproj", "{BB9B240B-9B6F-4AA1-8D9F-01C9C894C230}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RenderLayer.Desktop", "Examples\Complete\RenderLayer\Desktop\Fusee.Examples.RenderLayer.Desktop.csproj", "{47BB5BE6-4969-4B23-A212-6BA85232EC5A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.RenderLayer.Android", "Examples\Complete\RenderLayer\Android\Fusee.Examples.RenderLayer.Android.csproj", "{50089417-1B29-43FA-9E12-472157E4884E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Integrations", "Integrations", "{918BCBD4-1FE9-4A60-A356-5CB2FD40E079}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Integrations.Core", "Examples\Complete\Integrations\Core\Fusee.Examples.Integrations.Core.csproj", "{7F095190-C217-455E-B6B4-7E22F8BF3AFE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Integrations.Wpf", "Examples\Complete\Integrations\Wpf\Fusee.Examples.Integrations.Wpf.csproj", "{960FB754-E669-4332-B70D-0FBB47CD0FBB}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Structures", "src\Structures\Fusee.Structures.csproj", "{0A28C2C9-3274-4A4E-8E47-AD5CDD41C280}"
 EndProject
 Global
@@ -4887,6 +4909,17 @@ Global
 		{07265D13-949B-421F-A714-9E4445B7183E} = {F3B54D27-75AC-40B3-8E6E-F960D13D94BC}
 		{A3612BAA-F7FD-4B99-A367-7B589F9263EA} = {F3B54D27-75AC-40B3-8E6E-F960D13D94BC}
 		{AA8F3E1A-A9AF-4975-BFAC-230E4AE277E2} = {F7860526-7F03-47EF-B364-4670E512A1F1}
+		{64A3E471-73D4-420D-9F9A-3A219660BF53} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{16DF559F-0BB4-4FBB-A4E5-E53E65549B09} = {64A3E471-73D4-420D-9F9A-3A219660BF53}
+		{C73B445A-4B90-4372-85CC-1D2A33CB314B} = {64A3E471-73D4-420D-9F9A-3A219660BF53}
+		{85302355-1F4C-415A-8310-D154AFEE5F04} = {64A3E471-73D4-420D-9F9A-3A219660BF53}
+		{34064EB3-8E57-4570-844B-A34CDF9ADFF2} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{BB9B240B-9B6F-4AA1-8D9F-01C9C894C230} = {34064EB3-8E57-4570-844B-A34CDF9ADFF2}
+		{47BB5BE6-4969-4B23-A212-6BA85232EC5A} = {34064EB3-8E57-4570-844B-A34CDF9ADFF2}
+		{50089417-1B29-43FA-9E12-472157E4884E} = {34064EB3-8E57-4570-844B-A34CDF9ADFF2}
+		{918BCBD4-1FE9-4A60-A356-5CB2FD40E079} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{7F095190-C217-455E-B6B4-7E22F8BF3AFE} = {918BCBD4-1FE9-4A60-A356-5CB2FD40E079}
+		{960FB754-E669-4332-B70D-0FBB47CD0FBB} = {918BCBD4-1FE9-4A60-A356-5CB2FD40E079}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

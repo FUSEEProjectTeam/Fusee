@@ -40,6 +40,7 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.3" />
     <!-- Do NOT update Google.Protobuf.Tools past 3.11.* without testing a clean build of the Blender plugin -->
     <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
@@ -51,9 +52,9 @@
   </ItemGroup>
 
   <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
-	 This code should be part of the respective .pyproj project file. Unforntunately .pyprojects
+	 This code should be part of the respective .pyproj project file. Unfortunately .pyprojects
 	 don't do anything during "Build". Thus Post-Build steps are non functional. -->
-  <!-- Names and directoreies -->
+  <!-- Names and directories -->
   <PropertyGroup>
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
   </PropertyGroup>
