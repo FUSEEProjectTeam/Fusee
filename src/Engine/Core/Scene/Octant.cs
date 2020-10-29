@@ -33,7 +33,7 @@ namespace Fusee.Engine.Core.Scene
         public bool IsLeaf { get; set; }
 
         public int PosInParent { get; set; }
-        
+
 
         /// <summary>
         /// The level of the octree this octant belongs to.

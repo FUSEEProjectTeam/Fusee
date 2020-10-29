@@ -129,7 +129,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             }
 
             return allMeshes;
-        }        
+        }
 
         public static List<Mesh> GetMeshsForNode_Pos64Label8(PointAccessor<Pos64Label8> ptAccessor, List<Pos64Label8> points)
         {
@@ -375,8 +375,8 @@ namespace Fusee.Pointcloud.PointAccessorCollections
         private static uint ColorToUint(float3 col)
         {
             uint packedR = (uint)(col.r * 255);
-            uint packedG = (uint)(col.g * 255) << 8; 
-            uint packedB = (uint)(col.b * 255) << 16; 
+            uint packedG = (uint)(col.g * 255) << 8;
+            uint packedB = (uint)(col.b * 255) << 16;
 
             return packedR + packedG + packedB;
         }

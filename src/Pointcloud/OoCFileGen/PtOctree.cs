@@ -47,9 +47,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             Root = root;
 
-            if (Root.Payload.Count >= MaxNoOfPointsInBucket)            
+            if (Root.Payload.Count >= MaxNoOfPointsInBucket)
                 Subdivide((PtOctantWrite<TPoint>)Root); //Initial subdivision
-            
+
         }
 
         public PtOctree(PtOctant<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
@@ -60,14 +60,15 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         }
 
         public void Subdivide(PtOctantWrite<TPoint> octant)
-        {            
-            for (int i = 0; i < octant.Payload.Count; i++) {            
+        {
+            for (int i = 0; i < octant.Payload.Count; i++)
+            {
                 var pt = octant.Payload[i];
                 var ptPos = PtAccessor.GetPositionFloat3_64(ref pt);
                 var posInParent = GetChildIndexToWritePoint(octant, ptPos);
 
-                CreateChildAndReadPtToGrid(posInParent, octant, pt);                
-            }            
+                CreateChildAndReadPtToGrid(posInParent, octant, pt);
+            }
             octant.Payload.Clear();
 
             for (int i = 0; i < octant.Children.Length; i++)
@@ -75,14 +76,14 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 var child = (PtOctantWrite<TPoint>)octant.Children[i];
                 if (child == null) continue;
 
-                if (child.Payload.Count >= MaxNoOfPointsInBucket)                
-                    Subdivide(child);                
-                else                
-                    child.IsLeaf = true;                    
-                           
+                if (child.Payload.Count >= MaxNoOfPointsInBucket)
+                    Subdivide(child);
+                else
+                    child.IsLeaf = true;
+
             }
         }
-               
+
         private void CreateChildAndReadPtToGrid(int posInParent, PtOctantWrite<TPoint> octant, TPoint point)
         {
             PtOctantWrite<TPoint> child;
@@ -96,14 +97,14 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                 var childGrid = new PtGrid<TPoint>(PtAccessor, child, point);
                 child.Grid = childGrid;
-                octant.Children[posInParent] = child;                
+                octant.Children[posInParent] = child;
             }
             else
             {
                 var firstCenter = PtGrid<TPoint>.CalcCenterOfUpperLeftCell(octant);
                 child = (PtOctantWrite<TPoint>)octant.Children[posInParent];
                 child.Grid.ReadPointToGrid(PtAccessor, child, point, firstCenter);
-            } 
+            }
         }
 
         private static int GetChildIndexToWritePoint(IOctant<double3, double, TPoint> octant, double3 point)
@@ -121,17 +122,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             _getChildIdxBitArray[0] = indexX == 1;
             _getChildIdxBitArray[1] = indexZ == 1;
-            _getChildIdxBitArray[2] = indexY == 1;            
+            _getChildIdxBitArray[2] = indexY == 1;
 
             _getChildIdxBitArray.CopyTo(_getChildIdxResultArray, 0);
 
-            return _getChildIdxResultArray[0];           
-        }        
+            return _getChildIdxResultArray[0];
+        }
 
         public static IEnumerable<TPoint> GetPointsFromGrid(PtOctantWrite<TPoint> octant)
         {
             foreach (var cell in octant.Grid.GridCells)
-            { 
+            {
                 if (cell == null) continue;
                 yield return cell.Occupant;
             }
@@ -148,7 +149,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Starts traversing from a given node.>.
         /// </summary>
-        public void Traverse(PtOctantWrite<TPoint>node, Action<PtOctantWrite<TPoint>> callback)
+        public void Traverse(PtOctantWrite<TPoint> node, Action<PtOctantWrite<TPoint>> callback)
         {
             DoTraverse(node, callback);
         }
@@ -179,13 +180,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         {
             if (parent.Children != null)
             {
-                for (int i = parent.Children.Length-1; i >= 0; i--)
+                for (int i = parent.Children.Length - 1; i >= 0; i--)
                 {
                     PtOctantWrite<TPoint> child = parent.Children[i] as PtOctantWrite<TPoint>;
                     if (child != null)
                         iterateAction?.Invoke((PtOctantWrite<TPoint>)child);
                 }
-                
+
             }
         }
 

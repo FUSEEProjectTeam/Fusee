@@ -77,7 +77,7 @@ namespace Fusee.Pointcloud.Reader.LASReader
         ///     The point format description (cast to MetaInfo)
         /// </summary>
         public IMeta MetaInfo { get; }
-        
+
         private IntPtr _ptrToLASClass = new IntPtr();
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Fusee.Pointcloud.Reader.LASReader
             if (currentFormat.HasClassification && pa.HasLabelUInt_8)
             {
                 //TODO: HACK!! label was somehow written to UserData and not to classification
-                if(currentPoint.Classification != 0)
+                if (currentPoint.Classification != 0)
                     pa.SetLabelUInt_8(ref point, currentPoint.Classification);
                 else
                     pa.SetLabelUInt_8(ref point, currentPoint.UserData);
@@ -171,7 +171,7 @@ namespace Fusee.Pointcloud.Reader.LASReader
 
         PointFormat ParsePointDataByteFormatToFormatStruct(MetaInfo info)
         {
-            switch(info.PointDataFormat)
+            switch (info.PointDataFormat)
             {
                 default:
                     throw new ArgumentException($"Point data format with byte {info.PointDataFormat} not recognized!");
@@ -192,7 +192,7 @@ namespace Fusee.Pointcloud.Reader.LASReader
                         HasIntensity = true,
                         HasUserData = false
                     };
-            }             
+            }
         }
 
         #region IDisposable Support

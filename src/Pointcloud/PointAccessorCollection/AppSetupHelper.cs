@@ -4,7 +4,7 @@ using System;
 using System.IO;
 
 namespace Fusee.Pointcloud.PointAccessorCollections
-{  
+{
     public static class AppSetupHelper
     {
         public delegate void AppSetupDelegate();
@@ -28,7 +28,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             {
                 throw new ArgumentException("Invalid point type!");
             }
-        }       
+        }
 
     }
 }

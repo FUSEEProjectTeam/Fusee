@@ -138,7 +138,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             using (BinaryReader br = new BinaryReader(fileStream))
             {
-                CreateSceneNode(rootSnc,br);
+                CreateSceneNode(rootSnc, br);
             }
 
             fileStream.Dispose();

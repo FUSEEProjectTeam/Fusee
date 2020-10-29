@@ -5,7 +5,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Pointcloud.Common
-{ 
+{
     /// <summary>
     /// Implement this interface into apps that use the ooc file converter.
     /// </summary>
@@ -14,12 +14,12 @@ namespace Fusee.Pointcloud.Common
         /// <summary>
         /// Needed when using UI / WPF. Set to false on DeInit().
         /// </summary>
-        bool IsAlive { get;}
+        bool IsAlive { get; }
 
         /// <summary>
         /// Needed when using UI / WPF. Determines if a new file can be loaded. E.g. when 
         /// </summary>
-        bool ReadyToLoadNewFile { get;}
+        bool ReadyToLoadNewFile { get; }
 
         /// <summary>
         /// Set to true if the outlines of visible octants shall be rendered.
@@ -39,7 +39,7 @@ namespace Fusee.Pointcloud.Common
         /// <summary>
         /// Allows to check if the app has finished its Init() call.
         /// </summary>
-        bool IsInitialized { get;}        
+        bool IsInitialized { get; }
 
         /// <summary>
         /// The initial camera position. E.g. for resetting the camera.
@@ -114,12 +114,12 @@ namespace Fusee.Pointcloud.Common
         /// <summary>
         /// <see cref="RenderCanvas.Run"/>
         /// </summary>
-        void Run();       
+        void Run();
 
         /// <summary>
         /// Wrapper to get the app's RenderContext.
         /// </summary>
         /// <returns></returns>
-        RenderContext GetRc();               
+        RenderContext GetRc();
     }
 }

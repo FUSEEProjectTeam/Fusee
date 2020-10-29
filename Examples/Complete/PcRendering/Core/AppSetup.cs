@@ -29,7 +29,7 @@ namespace Fusee.Examples.PcRendering.Core
                                 PtAcc = new Pos64_Accessor(),
                                 GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64
 
-                        };
+                            };
                             appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64>(pathToFile);
                         };
 
@@ -77,7 +77,7 @@ namespace Fusee.Examples.PcRendering.Core
                         var appImp = (PcRendering<Pos64Col32>)app;
 
                         appImp.AppSetup = () =>
-                        { 
+                        {
                             appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
@@ -113,7 +113,7 @@ namespace Fusee.Examples.PcRendering.Core
                         var appImp = (PcRendering<Pos64Nor32Col32IShort>)app;
 
                         appImp.AppSetup = () =>
-                        { 
+                        {
                             appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,

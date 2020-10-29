@@ -8,7 +8,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     public class Pos64_Accessor : PointAccessor<Pos64>
     {
         public override bool HasPositionFloat3_64 => true;
-                
+
 
         public override void SetPositionFloat3_64(ref Pos64 point, double3 val)
         {
@@ -62,7 +62,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     {
         public override bool HasPositionFloat3_64 => true;
         public override bool HasIntensityUInt_16 => true;
-                
+
         public override void SetPositionFloat3_64(ref Pos64IShort point, double3 val)
         {
             point.Position = val;
@@ -88,7 +88,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
     {
         public override bool HasPositionFloat3_64 => true;
         public override bool HasColorFloat3_32 => true;
-        
+
         public override void SetColorFloat3_32(ref Pos64Col32 point, float3 val)
         {
             point.Color = val;

@@ -94,7 +94,7 @@
     /// Available Lighting methods.
     /// </summary>
     public enum Lighting
-    {      
+    {
         /// <summary>
         /// Albedo only - no lighting is calculated.
         /// </summary>
@@ -110,7 +110,7 @@
         /// <summary>
         /// Diffuse lighting with specular highlights.
         /// </summary>
-        BlinnPhong = 3,   
+        BlinnPhong = 3,
         /// <summary>
         /// Only occlusion, calculated in screen space.
         /// </summary>

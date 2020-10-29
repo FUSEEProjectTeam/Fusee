@@ -153,15 +153,15 @@ namespace Fusee.Examples.PcRendering.Core
         {
             return new ShaderEffect(
             new FxPassDeclaration
+            {
+                VS = AssetStorage.Get<string>("PointCloud.vert"),
+                PS = AssetStorage.Get<string>("PointDepth.frag"),
+                StateSet = new RenderStateSet
                 {
-                    VS = AssetStorage.Get<string>("PointCloud.vert"),
-                    PS = AssetStorage.Get<string>("PointDepth.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                    }
-                },
+                    AlphaBlendEnable = true,
+                    ZEnable = true,
+                }
+            },
             new List<IFxParamDeclaration>
             {
                 new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
@@ -205,7 +205,7 @@ namespace Fusee.Examples.PcRendering.Core
                         ZEnable = true,
                     }
                 },
-            new List<IFxParamDeclaration>            
+            new List<IFxParamDeclaration>
             {
                 new FxParamDeclaration<float4x4> {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},

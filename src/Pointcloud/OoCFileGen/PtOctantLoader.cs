@@ -84,7 +84,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private readonly WireframeCube wfc = new WireframeCube();
         private readonly DefaultSurfaceEffect _wfcEffect = (DefaultSurfaceEffect)MakeEffect.Default;
-            
+
 
         /// <summary>
         /// The path to the folder that holds the file.

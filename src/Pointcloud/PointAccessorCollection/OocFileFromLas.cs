@@ -122,7 +122,7 @@ namespace Fusee.Pointcloud.PointAccessorCollections
             occFileWriter.WriteCompleteData(octree, ptAcc);
             Console.WriteLine("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
         }
-        
+
         private static List<TPoint> FromLasToList<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, bool doExchangeYZ) where TPoint : new()
         {
             var reader = new LASPointReader(pathToPc);
@@ -141,13 +141,13 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 for (int i = 0; i < points.Length; i++)
                 {
                     var pt = points[i];
-                    
+
                     var pos = ptAcc.GetPositionFloat3_32(ref pt);
-                    if(doExchangeYZ)
+                    if (doExchangeYZ)
                         ExchangeYZ(ref pos);
                     pos -= firstPoint;
                     ptAcc.SetPositionFloat3_32(ref pt, pos);
-                    
+
                     points[i] = pt;
                 }
             }
@@ -158,13 +158,13 @@ namespace Fusee.Pointcloud.PointAccessorCollections
                 for (int i = 0; i < points.Length; i++)
                 {
                     var pt = points[i];
-                    
+
                     var pos = ptAcc.GetPositionFloat3_64(ref pt);
                     if (doExchangeYZ)
                         ExchangeYZ(ref pos);
                     pos -= firstPoint;
                     ptAcc.SetPositionFloat3_64(ref pt, pos);
-                    
+
                     points[i] = pt;
                 }
             }

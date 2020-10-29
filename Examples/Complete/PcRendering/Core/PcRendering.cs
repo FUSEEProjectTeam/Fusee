@@ -250,7 +250,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
                     }
-                }                
+                }
 
                 //----------------------------  
 
@@ -333,8 +333,8 @@ namespace Fusee.Examples.PcRendering.Core
 
 
 
-    // Is called when the window was resized
-    public override void Resize(ResizeEventArgs e)
+        // Is called when the window was resized
+        public override void Resize(ResizeEventArgs e)
         {
             if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.Unlit) return;
 
@@ -427,7 +427,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             PtRenderingParams.DepthPassEf = PtRenderingParams.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            
+
             if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
             {
                 _scene.Children[1].RemoveComponent<ShaderEffect>();
