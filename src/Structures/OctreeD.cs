@@ -12,7 +12,7 @@ namespace Fusee.Structures
 
         public delegate void HandlePayload(IOctant<double3, double, P> parent, IOctant<double3, double, P> child, P payload);
 
-        
+
         //TODO: 
         // > Complete Octree?
 

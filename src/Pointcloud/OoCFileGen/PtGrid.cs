@@ -46,7 +46,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public PtGrid()
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new GridCell<TPoint>[128, 128, 128];           
+            GridCells = new GridCell<TPoint>[128, 128, 128];
         }
 
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
