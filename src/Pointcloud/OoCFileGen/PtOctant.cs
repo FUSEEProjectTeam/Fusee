@@ -5,12 +5,21 @@ using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
+    /// <summary>
+    /// Octant implementation for rendering point clouds.
+    /// </summary>
+    /// <typeparam name="TPoint"></typeparam>
     public class PtOctant<TPoint> : IOctant<double3, double, TPoint>
     {
-        //The Resolution of an Octant is defined by the minimum distance (spacing) between points.
-        //If the minimum distance between a point and its nearest neighbor is smaller then this distance, it will fall into a child octant.
+        /// <summary>
+        ///The Resolution of an Octant is defined by the minimum distance (spacing) between points.
+        ///If the minimum distance between a point and its nearest neighbor is smaller then this distance, it will fall into a child octant.
+        /// </summary>
         public double Resolution;
 
+        /// <summary>
+        /// The globally unique identifier for this octant.
+        /// </summary>
         public Guid Guid { get; set; }
 
         /// <summary>
@@ -48,6 +57,12 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         public int Level { get; set; }
 
+        /// <summary>
+        /// Creates a new instance of type PtOctant.
+        /// </summary>
+        /// <param name="center">The center point of this octant, <see cref="IBucket{T, K}.Center"/>.</param>
+        /// <param name="size">The size of this octant, <see cref="IBucket{T, K}.Size"/>. </param>
+        /// <param name="children">The children of this octant - can be null.</param>
         public PtOctant(double3 center, double size, IOctant<double3, double, TPoint>[] children = null)
         {
             Center = center;
@@ -60,6 +75,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             Payload = new List<TPoint>();
         }
+
+        /// <summary>
+        /// Creates a new instance of type PtOctant.
+        /// </summary>
         protected PtOctant() { }
 
         public IOctant<double3, double, TPoint> CreateChild(int posInParent)
@@ -80,7 +99,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             return CalcCildCenterAtPos(posInParent, Size, Center);
         }
 
-        public static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
+        internal static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
         {
             double3 childCenter;
             var childsHalfSize = parentSize / 4d;

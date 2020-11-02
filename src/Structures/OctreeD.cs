@@ -6,22 +6,46 @@ namespace Fusee.Structures
 {
     public abstract class OctreeD<P>
     {
+        /// <summary>
+        /// The maximum level this octee has - corresponds to the maximum number af subdivisions of an Octant.
+        /// Can be used as subdivision termination condition or be set in the method <see cref="SubdivTerminationCondition(IOctant{double3, double, P})"/>.
+        /// </summary>
         public int MaxLevel;
 
+        /// <summary>
+        /// The root Octant of this Octree.
+        /// </summary>
         public IOctant<double3, double, P> Root;
 
-        public delegate void HandlePayload(IOctant<double3, double, P> parent, IOctant<double3, double, P> child, P payload);
+        /// <summary>
+        /// Needed for subdivision - method that determines what happens to a payload item after the creation of an octants children.
+        /// </summary>
+        /// <param name="parent">The parent octant.</param>
+        /// <param name="child">The child octant a payload item falls into.</param>
+        /// <param name="payloadItem">The payload item.</param>
+        protected abstract void HandlePayload(IOctant<double3, double, P> parent, IOctant<double3, double, P> child, P payloadItem);
 
+        /// <summary>
+        /// Needed for subdivision - Method that returns a condition that terminates the subdivision.
+        /// </summary>
+        /// <param name="octant">The octant to subdivide.</param>
+        /// <returns></returns>
+        protected abstract bool SubdivTerminationCondition(IOctant<double3, double, P> octant);
 
-        //TODO: 
-        // > Complete Octree?
+        /// <summary>
+        /// Needed for subdivision - method that provides functionality to determine and return the index (position) of the child a payload item will fall into.
+        /// </summary>
+        /// <param name="octant">The octant to subdivide.</param>
+        /// <param name="payloadItem">The payload item for which the child index is determined.</param>
+        /// <returns></returns>
+        protected abstract int GetChildPosition(IOctant<double3, double, P> octant, P payloadItem);
 
-        //public void Subdivide(IOctant<double3, double, P> octant, Func<bool> SubdivTerminationCondition)
-        //{
-        //    Subdivide(octant, () => true, SubdivTerminationCondition);
-        //}
-
-        public void Subdivide(IOctant<double3, double, P> octant, Func<IOctant<double3, double, P>, P, int> GetChildPosition, Func<bool> SubdivTerminationCondition, HandlePayload handlePayload)
+        /// <summary>
+        /// Subdivision creates the children of an Octant. Here the payload of an Octant will be iterated and for each item it is determined in which child it will fall.
+        /// If there isn't a child already it will be created.
+        /// </summary>
+        /// <param name="octant">The Octant to subdivide.</param>        
+        public void Subdivide(IOctant<double3, double, P> octant)
         {
             for (int i = 0; i < octant.Payload.Count; i++)
             {
@@ -31,7 +55,7 @@ namespace Fusee.Structures
                 if (octant.Children[posInParent] != null)
                     octant.Children[posInParent] = octant.CreateChild(posInParent);
 
-                handlePayload(octant, octant.Children[posInParent], payload);
+                HandlePayload(octant, octant.Children[posInParent], payload);
             }
             octant.Payload.Clear();
 
@@ -40,8 +64,8 @@ namespace Fusee.Structures
                 var child = octant.Children[i];
                 if (child == null) continue;
 
-                if (SubdivTerminationCondition())
-                    Subdivide(child, GetChildPosition, SubdivTerminationCondition, handlePayload);
+                if (SubdivTerminationCondition(child))
+                    Subdivide(child);
                 else
                     child.IsLeaf = true;
             }
@@ -83,7 +107,7 @@ namespace Fusee.Structures
 
         /// <summary>
         /// Iterates through the child node and calls the given action for each child.
-        /// </summary>        
+        /// </summary>
         private static void IterateChildren(IOctant<double3, double, P> parent, Action<IOctant<double3, double, P>> iterateAction)
         {
             if (parent.Children != null)
