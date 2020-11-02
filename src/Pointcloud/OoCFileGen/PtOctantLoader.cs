@@ -332,7 +332,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
             if (!_nodesOrderedByProjectionSize.ContainsKey(ptOctantChildComp.ProjectedScreenSize))
                 _nodesOrderedByProjectionSize.Add(ptOctantChildComp.ProjectedScreenSize, node);
-
         }
 
         private void LoadNode(Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor, ref List<KeyValuePair<Guid, SceneNode>> orderdToLoad)

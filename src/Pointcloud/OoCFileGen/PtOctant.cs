@@ -81,7 +81,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         protected PtOctant() { }
 
-        public IOctant<double3, double, TPoint> CreateChild(int posInParent)
+        public virtual IOctant<double3, double, TPoint> CreateChild(int posInParent)
         {
             var childCenter = CalcCildCenterAtPos(posInParent);
 
@@ -155,7 +155,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Payload = new List<TPoint>();
         }
 
-        public new PtOctantWrite<TPoint> CreateChild(int posInParent)
+        public override IOctant<double3, double, TPoint> CreateChild(int posInParent)
         {
             var childCenter = CalcCildCenterAtPos(posInParent);
 

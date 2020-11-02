@@ -7,7 +7,7 @@ namespace Fusee.Structures
     public abstract class OctreeD<P>
     {
         /// <summary>
-        /// The maximum level this octee has - corresponds to the maximum number af subdivisions of an Octant.
+        /// The maximum level this octree has - corresponds to the maximum number of subdivisions of an Octant.
         /// Can be used as subdivision termination condition or be set in the method <see cref="SubdivTerminationCondition(IOctant{double3, double, P})"/>.
         /// </summary>
         public int MaxLevel;
@@ -18,7 +18,7 @@ namespace Fusee.Structures
         public IOctant<double3, double, P> Root;
 
         /// <summary>
-        /// Needed for subdivision - method that determines what happens to a payload item after the creation of an octants children.
+        /// Needed for subdivision - method that determines what happens to a payload item after the generation of an octants children.
         /// </summary>
         /// <param name="parent">The parent octant.</param>
         /// <param name="child">The child octant a payload item falls into.</param>
@@ -44,7 +44,7 @@ namespace Fusee.Structures
         /// Subdivision creates the children of an Octant. Here the payload of an Octant will be iterated and for each item it is determined in which child it will fall.
         /// If there isn't a child already it will be created.
         /// </summary>
-        /// <param name="octant">The Octant to subdivide.</param>        
+        /// <param name="octant">The Octant to subdivide.</param>
         public void Subdivide(IOctant<double3, double, P> octant)
         {
             for (int i = 0; i < octant.Payload.Count; i++)
@@ -52,7 +52,7 @@ namespace Fusee.Structures
                 var payload = octant.Payload[i];
                 var posInParent = GetChildPosition(octant, payload);
 
-                if (octant.Children[posInParent] != null)
+                if (octant.Children[posInParent] == null)
                     octant.Children[posInParent] = octant.CreateChild(posInParent);
 
                 HandlePayload(octant, octant.Children[posInParent], payload);

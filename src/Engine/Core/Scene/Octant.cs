@@ -6,7 +6,7 @@ using Fusee.Structures;
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// Component that allows a SceneNode to save information from a <see cref="Structures.IOctant{T, K, P}"/>.
+    /// Component that allows a SceneNode to save information from a <see cref="IOctant{T, K, P}"/>.
     /// </summary>
     public class Octant : SceneComponent, IOctant<double3, double, Mesh>
     {
@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Integer that defines this octants position (1 to 8) in its parent.
         /// </summary>
-        public int PosInParent { get; }
+        public int PosInParent { get; set; }
 
         /// <summary>
         /// The level of the octree this octant belongs to.

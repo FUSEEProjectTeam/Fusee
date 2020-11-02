@@ -16,6 +16,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         public O Occupant;
 
+        /// <summary>
+        /// Creates a new instance of type GridCell.
+        /// </summary>
+        /// <param name="center">The center of the cell.</param>
+        /// <param name="size">The size of the cell.</param>
         public GridCell(double3 center, double size)
         {
             Center = center;
@@ -39,10 +44,16 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     /// <typeparam name="TPoint">Point type (<seealso cref="PointAccessor{TPoint}"/>)</typeparam>
     public class PtGrid<TPoint>
     {
+        /// <summary>
+        /// All grid cells as three dimensional array.
+        /// </summary>
         public GridCell<TPoint>[,,] GridCells;
 
         private readonly List<int3> _neighbouCellIdxOffsets;
 
+        /// <summary>
+        /// Creates a new instance of type PtGrid.
+        /// </summary>
         public PtGrid()
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);

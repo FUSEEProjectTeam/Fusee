@@ -68,11 +68,22 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Root = root;
         }
 
+        /// <summary>
+        /// Needed for subdivision - Method that returns a condition that terminates the subdivision.
+        /// </summary>
+        /// <param name="child">The octant to subdivide.</param>
+        /// <returns></returns>
         protected override bool SubdivTerminationCondition(IOctant<double3, double, TPoint> child)
         {
             return child.Payload.Count >= MaxNoOfPointsInBucket;
         }
 
+        /// <summary>
+        /// Needed for subdivision - method that determines what happens to a payload item after the creation of an octants children.
+        /// </summary>
+        /// <param name="parent">The parent octant.</param>
+        /// <param name="child">The child octant a payload item falls into.</param>
+        /// <param name="payload">The payload item.</param>
         protected override void HandlePayload(IOctant<double3, double, TPoint> parent, IOctant<double3, double, TPoint> child, TPoint payload)
         {
             if (MaxLevel < child.Level)
@@ -81,9 +92,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var parentWrite = (PtOctantWrite<TPoint>)parent;
             var firstCenter = PtGrid<TPoint>.CalcCenterOfUpperLeftCell(parentWrite);
 
-            ((PtOctantWrite<TPoint>)child).Grid.ReadPointToGrid(PtAccessor, parentWrite, payload, firstCenter);
+            var childWrite = (PtOctantWrite<TPoint>)child;
+
+            childWrite.Grid.ReadPointToGrid(PtAccessor, childWrite, payload, firstCenter);
         }
 
+        /// <summary>
+        /// Needed for subdivision - method that provides functionality to determine and return the index (position) of the child a payload item will fall into.
+        /// </summary>
+        /// <param name="octant">The octant to subdivide.</param>
+        /// <param name="pt">The point for which the child index is determined.</param>
+        /// <returns></returns>
         protected override int GetChildPosition(IOctant<double3, double, TPoint> octant, TPoint pt)
         {
             var point = PtAccessor.GetPositionFloat3_64(ref pt);
