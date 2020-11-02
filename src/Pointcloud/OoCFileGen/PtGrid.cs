@@ -43,13 +43,18 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private readonly List<int3> _neighbouCellIdxOffsets;
 
+        public PtGrid()
+        {
+            _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
+            GridCells = new GridCell<TPoint>[128, 128, 128];           
+        }
+
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
 
             var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
-
             ReadPointToGrid(ptAccessor, parentOctant, point, firstCenter);
         }
 

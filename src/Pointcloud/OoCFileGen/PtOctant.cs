@@ -62,7 +62,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         }
         protected PtOctant() { }
 
-        public PtOctant<TPoint> CreateChild(int posInParent)
+        public IOctant<double3, double, TPoint> CreateChild(int posInParent)
         {
             var childCenter = CalcCildCenterAtPos(posInParent);
 
@@ -146,6 +146,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 Resolution = Resolution / 2d,
                 Level = Level + 1
             };
+
+            child.Grid = new PtGrid<TPoint>();
+
             return child;
         }
     }

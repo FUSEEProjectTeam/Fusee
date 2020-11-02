@@ -1,5 +1,7 @@
 using Fusee.Base.Core;
+using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
+using Fusee.Structures;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -25,7 +27,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             if (!Directory.Exists(_fileFolderPath)) Directory.CreateDirectory(_fileFolderPath);
         }
 
-        public Dictionary<Guid, FileStream> fileStreams = new Dictionary<Guid, FileStream>();
+        public Dictionary<Guid, FileStream> FileStreams = new Dictionary<Guid, FileStream>();
 
         /// <summary>
         /// Creates all files (meta.json, .hierarchy and .node).
@@ -38,23 +40,24 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             watch.Restart();
 
             WriteMeta(octree, ptAccessor);
-            Diagnostics.Log("-------------- Write meta file: " + watch.ElapsedMilliseconds + "ms.");
+            Diagnostics.Debug("-------------- Write meta file: " + watch.ElapsedMilliseconds + "ms.");
 
             watch.Restart();
             WriteHierarchy(octree);
-            Diagnostics.Log("-------------- Write hierarchy file: " + watch.ElapsedMilliseconds + "ms.");
+            Diagnostics.Debug("-------------- Write hierarchy file: " + watch.ElapsedMilliseconds + "ms.");
 
             watch.Restart();
 
             var nodesToWrite = new List<PtOctantWrite<TPoint>>();
 
-            octree.Traverse((PtOctantWrite<TPoint> node) =>
+            octree.Traverse((IOctant<double3, double, TPoint> node) =>
             {
+                var ptNode = (PtOctantWrite<TPoint>)node;
                 //WriteNode(octree.PtAccessor, node);
-                nodesToWrite.Add(node);
-                fileStreams.Add(node.Guid, File.Create(GetPathToFile(node)));
+                nodesToWrite.Add(ptNode);
+                FileStreams.Add(ptNode.Guid, File.Create(GetPathToFile(ptNode)));
             });
-            Diagnostics.Log("-------------- Traverse tree: " + watch.ElapsedMilliseconds + "ms.");
+            Diagnostics.Debug("-------------- Traverse tree: " + watch.ElapsedMilliseconds + "ms.");
 
             watch.Restart();
             Parallel.ForEach(nodesToWrite, new ParallelOptions { MaxDegreeOfParallelism = nodesToWrite.Count / 3 }, (node) =>
@@ -62,7 +65,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 WriteNode(octree.PtAccessor, node);
             });
 
-            Diagnostics.Log("-------------- Write hierarchy files: " + watch.ElapsedMilliseconds + "ms.");
+            Diagnostics.Debug("-------------- Write hierarchy files: " + watch.ElapsedMilliseconds + "ms.");
         }
 
         /// <summary>
@@ -73,10 +76,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         {
             using (BinaryWriter bw = new BinaryWriter(File.Open(_fileFolderPath + "\\octree.hierarchy", FileMode.OpenOrCreate)))
             {
-                octree.Traverse((PtOctantWrite<TPoint> node) =>
+                octree.Traverse((IOctant<double3, double, TPoint> node) =>
                 {
                     // write loadable properties (in which file the node's content - i.e. points - are stored)
-                    bw.Write(node.Guid.ToByteArray()); // 16 bytes
+                    bw.Write(((PtOctantWrite<TPoint>)node).Guid.ToByteArray()); // 16 bytes
                     bw.Write(node.Level);
                     bw.Write(node.IsLeaf);
                     //bw.Write(node.StreamPosition);
@@ -173,7 +176,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             if (points.Count == 0)
                 return;
 
-            var stream = fileStreams[node.Guid];
+            var stream = FileStreams[node.Guid];
 
             using (stream)
             {

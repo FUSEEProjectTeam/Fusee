@@ -121,7 +121,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             using (BinaryReader br = new BinaryReader(fileStream))
             {
-                CreateNode(octree.Root, br);
+                CreateNode((PtOctant<TPoint>)octree.Root, br);
             }
 
             fileStream.Dispose();
@@ -238,7 +238,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                     if (childExists)
                     {
-                        PtOctant<TPoint> child = node.CreateChild(index);
+                        PtOctant<TPoint> child = (PtOctant<TPoint>)node.CreateChild(index);
                         node.Children[index] = child;
                         CreateNode(child, binaryReader);
                     }

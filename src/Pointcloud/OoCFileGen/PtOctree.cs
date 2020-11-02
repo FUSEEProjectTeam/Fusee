@@ -7,15 +7,11 @@ using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
-    public class PtOctree<TPoint>
+    public class PtOctree<TPoint> : OctreeD<TPoint>
     {
         public int MaxNoOfPointsInBucket { get; private set; }
 
         public PointAccessor<TPoint> PtAccessor { get; private set; }
-
-        public PtOctant<TPoint> Root;
-
-        public int MaxLevel;
 
         private static readonly BitArray _getChildIdxBitArray = new BitArray(3);
         private static readonly int[] _getChildIdxResultArray = new int[1];
@@ -48,8 +44,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Root = root;
 
             if (Root.Payload.Count >= MaxNoOfPointsInBucket)
-                Subdivide((PtOctantWrite<TPoint>)Root); //Initial subdivision
-
+                Subdivide((PtOctantWrite<TPoint>)Root, GetChildPosition, () => true, HandlePayload); //Initial subdivision
         }
 
         public PtOctree(PtOctant<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
@@ -59,56 +54,21 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Root = root;
         }
 
-        public void Subdivide(PtOctantWrite<TPoint> octant)
+        public void HandlePayload(IOctant<double3, double, TPoint> parent, IOctant<double3, double, TPoint> child, TPoint payload)
         {
-            for (int i = 0; i < octant.Payload.Count; i++)
-            {
-                var pt = octant.Payload[i];
-                var ptPos = PtAccessor.GetPositionFloat3_64(ref pt);
-                var posInParent = GetChildIndexToWritePoint(octant, ptPos);
+            if (MaxLevel < child.Level)
+                MaxLevel = child.Level;
 
-                CreateChildAndReadPtToGrid(posInParent, octant, pt);
-            }
-            octant.Payload.Clear();
+            var parentWrite = (PtOctantWrite<TPoint>)parent;
+            var firstCenter = PtGrid<TPoint>.CalcCenterOfUpperLeftCell(parentWrite);
 
-            for (int i = 0; i < octant.Children.Length; i++)
-            {
-                var child = (PtOctantWrite<TPoint>)octant.Children[i];
-                if (child == null) continue;
-
-                if (child.Payload.Count >= MaxNoOfPointsInBucket)
-                    Subdivide(child);
-                else
-                    child.IsLeaf = true;
-
-            }
+            ((PtOctantWrite<TPoint>)child).Grid.ReadPointToGrid(PtAccessor, parentWrite, payload, firstCenter);
         }
 
-        private void CreateChildAndReadPtToGrid(int posInParent, PtOctantWrite<TPoint> octant, TPoint point)
+        private int GetChildPosition(IOctant<double3, double, TPoint> octant, TPoint pt)
         {
-            PtOctantWrite<TPoint> child;
+            var point = PtAccessor.GetPositionFloat3_64(ref pt);
 
-            if (octant.Children[posInParent] == null)
-            {
-                child = octant.CreateChild(posInParent) as PtOctantWrite<TPoint>;
-
-                if (MaxLevel < child.Level)
-                    MaxLevel = child.Level;
-
-                var childGrid = new PtGrid<TPoint>(PtAccessor, child, point);
-                child.Grid = childGrid;
-                octant.Children[posInParent] = child;
-            }
-            else
-            {
-                var firstCenter = PtGrid<TPoint>.CalcCenterOfUpperLeftCell(octant);
-                child = (PtOctantWrite<TPoint>)octant.Children[posInParent];
-                child.Grid.ReadPointToGrid(PtAccessor, child, point, firstCenter);
-            }
-        }
-
-        private static int GetChildIndexToWritePoint(IOctant<double3, double, TPoint> octant, double3 point)
-        {
             var halfSize = octant.Size / 2d;
             var translationVec = new double3(octant.Center.x - halfSize, octant.Center.y - halfSize, octant.Center.z - halfSize); //translate to zero           
 
@@ -137,58 +97,5 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 yield return cell.Occupant;
             }
         }
-
-        /// <summary>
-        /// Starts traversing from root.>.
-        /// </summary>
-        public void Traverse(Action<PtOctantWrite<TPoint>> callback)
-        {
-            DoTraverse((PtOctantWrite<TPoint>)Root, callback);
-        }
-
-        /// <summary>
-        /// Starts traversing from a given node.>.
-        /// </summary>
-        public void Traverse(PtOctantWrite<TPoint> node, Action<PtOctantWrite<TPoint>> callback)
-        {
-            DoTraverse(node, callback);
-        }
-
-        private static void DoTraverse(PtOctantWrite<TPoint> node, Action<PtOctantWrite<TPoint>> callback)
-        {
-            var candidates = new Stack<PtOctantWrite<TPoint>>();
-            candidates.Push(node);
-
-            while (candidates.Count > 0)
-            {
-                node = candidates.Pop();
-                callback(node);
-
-                // add children as candidates
-
-                IterateChildren(node, (PtOctantWrite<TPoint> childNode) =>
-                {
-                    candidates.Push(childNode);
-                });
-            }
-        }
-
-        /// <summary>
-        /// Iterates through the child node and calls for each child the given action.
-        /// </summary>        
-        private static void IterateChildren(PtOctantWrite<TPoint> parent, Action<PtOctantWrite<TPoint>> iterateAction)
-        {
-            if (parent.Children != null)
-            {
-                for (int i = parent.Children.Length - 1; i >= 0; i--)
-                {
-                    PtOctantWrite<TPoint> child = parent.Children[i] as PtOctantWrite<TPoint>;
-                    if (child != null)
-                        iterateAction?.Invoke((PtOctantWrite<TPoint>)child);
-                }
-
-            }
-        }
-
     }
 }

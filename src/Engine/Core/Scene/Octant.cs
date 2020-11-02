@@ -6,7 +6,7 @@ using Fusee.Structures;
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// Component that allows a SceneNode to save information from a <see cref="Structures.Octant{T, K, P}"/>.
+    /// Component that allows a SceneNode to save information from a <see cref="Structures.IOctant{T, K, P}"/>.
     /// </summary>
     public class Octant : SceneComponent, IOctant<double3, double, Mesh>
     {
@@ -153,6 +153,11 @@ namespace Fusee.Engine.Core.Scene
                 return false;
 
             return true;
+        }
+
+        public IOctant<double3, double, Mesh> CreateChild(int atPosInParent)
+        {
+            throw new NotImplementedException();
         }
     }
 }
