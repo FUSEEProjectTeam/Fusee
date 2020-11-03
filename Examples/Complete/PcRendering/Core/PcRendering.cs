@@ -80,7 +80,7 @@ namespace Fusee.Examples.PcRendering.Core
         {
             _spaceMouse = Input.GetDevice<SixDOFDevice>();
 
-            _depthTex = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
+            _depthTex = WritableTexture.CreateDepthTex(Width, Height);//new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false, TextureFilterMode.Linear);
 
             IsAlive = true;
             AppSetup();
@@ -233,7 +233,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                 if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
                 {
-                    //Render Depth-only pass                    
+                    //Render Depth-only pass
                     _scene.Children[1].RemoveComponent<ShaderEffect>();
                     _scene.Children[1].Components.Insert(1, PtRenderingParams.DepthPassEf);
 
@@ -405,16 +405,11 @@ namespace Fusee.Examples.PcRendering.Core
             PtRenderingParams.DepthPassEf = PtRenderingParams.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
-            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
-            {
-                _scene.Children[1].RemoveComponent<ShaderEffect>();
+            _scene.Children[1].RemoveComponent<ShaderEffect>();
+            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit) 
                 _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
-            }
             else
-            {
-                _scene.Children[1].RemoveComponent<ShaderEffect>();
                 _scene.Children[1].AddComponent(PtRenderingParams.ColorPassEf);
-            }
 
             IsSceneLoaded = true;
         }

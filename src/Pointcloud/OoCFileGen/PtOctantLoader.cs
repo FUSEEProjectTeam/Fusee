@@ -392,8 +392,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             if (meshs != null)
             {
                 foreach (var mesh in meshs)
+                {
                     mesh.Dispose();
-
+                }
             }
             _loadedMeshs.TryRemove(ptOctantComponent.Guid, out var loadedMesh);
 
