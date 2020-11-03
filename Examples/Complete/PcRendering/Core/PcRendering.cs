@@ -406,7 +406,7 @@ namespace Fusee.Examples.PcRendering.Core
             PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
             _scene.Children[1].RemoveComponent<ShaderEffect>();
-            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit) 
+            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
                 _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
             else
                 _scene.Children[1].AddComponent(PtRenderingParams.ColorPassEf);
