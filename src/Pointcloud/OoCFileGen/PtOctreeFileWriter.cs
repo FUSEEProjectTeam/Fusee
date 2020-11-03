@@ -53,7 +53,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             octree.Traverse((IOctant<double3, double, TPoint> node) =>
             {
                 var ptNode = (PtOctantWrite<TPoint>)node;
-                //WriteNode(octree.PtAccessor, node);
                 nodesToWrite.Add(ptNode);
                 FileStreams.Add(ptNode.Guid, File.Create(GetPathToFile(ptNode)));
             });
@@ -65,7 +64,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 WriteNode(octree.PtAccessor, node);
             });
 
-            Diagnostics.Debug("-------------- Write hierarchy files: " + watch.ElapsedMilliseconds + "ms.");
+            Diagnostics.Debug("-------------- Write node files: " + watch.ElapsedMilliseconds + "ms.");
         }
 
         /// <summary>
@@ -116,14 +115,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var spacing = ptOctant.Resolution;
 
             var jsonObj = new JObject(
-                //new JProperty("numberOfPoints", octree.PointCount),
-                //new JProperty("boundingBox",
-                //    new JObject(
-                //        new JProperty("center", new JArray(center.X, center.Y, center.Z)),
-                //        new JProperty("size", new JArray(length.X, length.Y, length.Z))
-                //    )
-                //),
-
                 new JProperty("octree",
                     new JObject(
                         new JProperty("maxLevel", octree.MaxLevel),
