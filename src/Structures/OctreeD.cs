@@ -45,7 +45,7 @@ namespace Fusee.Structures
         /// If there isn't a child already it will be created.
         /// </summary>
         /// <param name="octant">The Octant to subdivide.</param>
-        public void Subdivide(IOctant<double3, double, P> octant)
+        public virtual void Subdivide(IOctant<double3, double, P> octant)
         {
             for (int i = 0; i < octant.Payload.Count; i++)
             {
@@ -64,7 +64,7 @@ namespace Fusee.Structures
                 var child = octant.Children[i];
                 if (child == null) continue;
 
-                if (SubdivTerminationCondition(child))
+                if (!SubdivTerminationCondition(child))
                     Subdivide(child);
                 else
                     child.IsLeaf = true;
@@ -72,7 +72,7 @@ namespace Fusee.Structures
         }
 
         /// <summary>
-        /// Start traversing from the root node.
+        /// Start traversing (breadth first) from the root node.
         /// </summary>
         public void Traverse(Action<IOctant<double3, double, P>> callback)
         {
@@ -80,7 +80,7 @@ namespace Fusee.Structures
         }
 
         /// <summary>
-        /// Start traversing from a given node.
+        /// Start traversing (breadth first) from a given node.
         /// </summary>
         public void Traverse(IOctant<double3, double, P> node, Action<IOctant<double3, double, P>> callback)
         {

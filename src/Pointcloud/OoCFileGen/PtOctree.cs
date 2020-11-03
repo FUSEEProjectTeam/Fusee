@@ -75,7 +75,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <returns></returns>
         protected override bool SubdivTerminationCondition(IOctant<double3, double, TPoint> child)
         {
-            return child.Payload.Count >= MaxNoOfPointsInBucket;
+            return child.Payload.Count <= MaxNoOfPointsInBucket;
         }
 
         /// <summary>
