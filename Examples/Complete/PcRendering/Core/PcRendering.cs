@@ -2,8 +2,9 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Examples.PcRendering.Core
 {
@@ -35,7 +35,7 @@ namespace Fusee.Examples.PcRendering.Core
         public bool IsAlive { get; private set; }
 
         // angle variables
-        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
         private static float2 _offset;
         private static float2 _offsetInit;
 
@@ -60,7 +60,7 @@ namespace Fusee.Examples.PcRendering.Core
         private float _maxPinchSpeed;
 
         private float3 _initCamPos;
-        public float3 InitCameraPos { get { return _initCamPos; } private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } }
+        public float3 InitCameraPos { get => _initCamPos; private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } }
 
         private bool _isTexInitialized = false;
 
@@ -147,16 +147,18 @@ namespace Fusee.Examples.PcRendering.Core
 
             if (IsSceneLoaded)
             {
-                if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint))
+                var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
+
+                // ------------ Enable to update the Scene only when the user isn't moving ------------------
+                /*if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint) || isSpaceMouseMoving)
                     OocLoader.IsUserMoving = true;
                 else
-                    OocLoader.IsUserMoving = false;
+                    OocLoader.IsUserMoving = false;*/
+                //--------------------------------------------------------------------------------------------
 
                 // Mouse and keyboard movement
                 if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
-                {
                     _keys = true;
-                }
 
                 // Zoom & Roll
                 if (Touch.TwoPoint)
@@ -204,21 +206,8 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 }
 
-                if (SpaceMouseMoving(out float3 velPos, out float3 velRot))
+                if (isSpaceMouseMoving)
                 {
-                    Diagnostics.Debug($"Spacemouse Pos: {velPos}; Spacemouse Rot: {velRot}");
-
-                    /*
-                    float4x4 rotMat = _camTransform.Matrix().RotationComponent();
-                    
-                    var camRight = rotMat.Column0.xyz;
-                    var camUp = rotMat.Column1.xyz;
-                    var camForward = rotMat.Column2.xyz;
-
-                    tc.Translation += camForward * inputWSAxis * speed;
-                    tc.Translation += camRight * inputADAxis * speed;
-                    */
-
                     _angleHorz -= velRot.y;
                     _angleVert -= velRot.x;
 
@@ -226,18 +215,6 @@ namespace Fusee.Examples.PcRendering.Core
 
                     _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
                     _camTransform.Translation.y += velPos.y * speed;
-
-                    /*
-                    float4x4 spaceMouseMat = float4x4.CreateTranslation(velPos) * float4x4.CreateRotationYXZ(velRot);
-
-                    float4x4 camMat = _camTransform.Matrix();
-                    float4x4 camMatInv = float4x4.Invert(camMat);
-
-                    camMat = camMat * spaceMouseMat * camMatInv;
-
-                    _camTransform.Rotation += velRot;
-                    _camTransform.Translation += camMat.Translation();
-                    */
                 }
                 else
                 {
