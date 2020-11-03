@@ -1,43 +1,9 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using Fusee.Structures;
 using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
-    /// <summary>
-    /// The cell of a <see cref="PtGrid{TPoint}"/>.
-    /// </summary>
-    /// <typeparam name="O">The type of the point that occupies this cell.</typeparam>
-    public class GridCell<O> : IBucket<double3, double>
-    {
-        /// <summary>
-        /// The point that occupies this cell.
-        /// </summary>
-        public O Occupant;
-
-        /// <summary>
-        /// Creates a new instance of type GridCell.
-        /// </summary>
-        /// <param name="center">The center of the cell.</param>
-        /// <param name="size">The size of the cell.</param>
-        public GridCell(double3 center, double size)
-        {
-            Center = center;
-            Size = size;
-        }
-
-        /// <summary>
-        /// Center of this Bucket in world space coordinates.
-        /// </summary>
-        public double3 Center { get; }
-
-        /// <summary>
-        /// Length, width and height of this Octant.
-        /// </summary>
-        public double Size { get; }
-    }
-
     /// <summary>
     /// Data structure that filters points and determines which fall into the next octree level.
     /// </summary>
@@ -47,7 +13,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// All grid cells as three dimensional array.
         /// </summary>
-        public GridCell<TPoint>[,,] GridCells;
+        public PtGridCell<TPoint>[,,] GridCells;
 
         private readonly List<int3> _neighbouCellIdxOffsets;
 
@@ -57,13 +23,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public PtGrid()
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new GridCell<TPoint>[128, 128, 128];
+            GridCells = new PtGridCell<TPoint>[128, 128, 128];
         }
 
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new GridCell<TPoint>[128, 128, 128];
+            GridCells = new PtGridCell<TPoint>[128, 128, 128];
 
             var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
             ReadPointToGrid(ptAccessor, parentOctant, point, firstCenter);
@@ -72,7 +38,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, List<TPoint> points)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new GridCell<TPoint>[128, 128, 128];
+            GridCells = new PtGridCell<TPoint>[128, 128, 128];
 
             var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
 
@@ -142,7 +108,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             if (cell == null)
             {
                 var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
-                cell = new GridCell<TPoint>(center, parentOctant.Resolution)
+                cell = new PtGridCell<TPoint>(center, parentOctant.Resolution)
                 {
                     Occupant = point
                 };
