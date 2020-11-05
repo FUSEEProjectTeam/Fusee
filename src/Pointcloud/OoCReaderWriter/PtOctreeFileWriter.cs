@@ -1,6 +1,6 @@
 using Fusee.Base.Core;
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using Fusee.Structures;
 using Newtonsoft.Json.Linq;
 using System;
@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     public class PtOctreeFileWriter<TPoint>
     {
@@ -203,7 +203,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             foreach (var cell in node.Grid.GridCells)
             {
                 if (cell != null)
-                    yield return cell.Occupant;
+                    yield return ((PtGridCell<TPoint>)cell).Occupant;
             }
         }
 

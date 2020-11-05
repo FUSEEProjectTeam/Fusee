@@ -1,8 +1,8 @@
 ﻿using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using System.Collections.Generic;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     /// <summary>
     /// Data structure that filters points and determines which fall into the next octree level.

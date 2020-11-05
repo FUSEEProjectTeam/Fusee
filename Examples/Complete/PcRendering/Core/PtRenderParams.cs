@@ -2,7 +2,7 @@
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 

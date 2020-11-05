@@ -5,8 +5,8 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PcRendering.Core;
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
-using Fusee.Pointcloud.PointAccessorCollections;
+using Fusee.PointCloud.Common;
+using Fusee.PointCloud.PointAccessorCollections;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -69,7 +69,7 @@ namespace Fusee.Examples.PcRendering.WPF
             SingleColor.SelectedColor = System.Windows.Media.Color.FromScRgb(col.a, col.r, col.g, col.b);
             SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
 
-            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.Single)
+            if (PtRenderingParams.ColorMode != PointCloud.Common.ColorMode.Single)
                 SingleColor.IsEnabled = false;
             else
                 SingleColor.IsEnabled = true;
@@ -78,10 +78,10 @@ namespace Fusee.Examples.PcRendering.WPF
         }
 
         [DllImport("user32.dll", SetLastError = true)]
-        static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
-        static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
         #region UI Handler
 
@@ -257,7 +257,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
             PtRenderingParams.Lighting = (Lighting)e.AddedItems[0];
 
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SsaoOnly || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.Unlit)
+            if (PtRenderingParams.Lighting == PointCloud.Common.Lighting.SsaoOnly || PtRenderingParams.Lighting == PointCloud.Common.Lighting.Unlit)
             {
                 SSAOCheckbox.IsEnabled = false;
                 SSAOStrengthLabel.IsEnabled = false;
@@ -270,12 +270,12 @@ namespace Fusee.Examples.PcRendering.WPF
                 SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
             }
 
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SsaoOnly)
+            if (PtRenderingParams.Lighting == PointCloud.Common.Lighting.SsaoOnly)
                 SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = true;
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.Unlit)
+            if (PtRenderingParams.Lighting == PointCloud.Common.Lighting.Unlit)
                 SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = false;
 
-            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.BlinnPhong)
+            if (PtRenderingParams.Lighting != PointCloud.Common.Lighting.BlinnPhong)
             {
                 SpecStrength.IsEnabled = false;
                 SpecStrengthLabel.IsEnabled = false;
@@ -290,7 +290,7 @@ namespace Fusee.Examples.PcRendering.WPF
                 ShininessVal.IsEnabled = true;
             }
 
-            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.Edl)
+            if (PtRenderingParams.Lighting != PointCloud.Common.Lighting.Edl)
             {
                 EDLNeighbourPx.IsEnabled = false;
                 EDLNeighbourPxLabel.IsEnabled = false;
@@ -323,7 +323,7 @@ namespace Fusee.Examples.PcRendering.WPF
             if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.ColorMode = (ColorMode)e.AddedItems[0];
 
-            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.Single)
+            if (PtRenderingParams.ColorMode != PointCloud.Common.ColorMode.Single)
                 SingleColor.IsEnabled = false;
             else
                 SingleColor.IsEnabled = true;
@@ -525,7 +525,7 @@ namespace Fusee.Examples.PcRendering.WPF
                     var ptType = AppSetupHelper.GetPtType(pathToFile);
                     var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
-                    var genericType = Type.GetType("Fusee.Pointcloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.Pointcloud.PointAccessorCollections");
+                    var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
 
                     var objectType = typeof(PcRendering<>);
                     var objWithGenType = objectType.MakeGenericType(genericType);

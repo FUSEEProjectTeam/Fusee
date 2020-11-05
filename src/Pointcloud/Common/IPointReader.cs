@@ -1,4 +1,4 @@
-﻿namespace Fusee.Pointcloud.Common
+﻿namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Interface for point types or formats. Eg. xyzirgb

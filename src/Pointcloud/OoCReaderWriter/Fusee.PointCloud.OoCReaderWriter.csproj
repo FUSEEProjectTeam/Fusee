@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Pointcloud.OoCFileReaderWriter</RootNamespace>
-    <PackageId>Fusee.Pointcloud.OoCFileReaderWriter</PackageId>
+    <RootNamespace>Fusee.Pointcloud.OoCReaderWriter</RootNamespace>
+    <PackageId>Fusee.PointCloud.OoCReaderWriter</PackageId>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Description>Fusee Pointcloud OoCFileReaderWriter</Description>
+    <Description>Fusee PointCloud OoCReaderWriter</Description>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,7 +19,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />

@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using Fusee.Pointcloud.PointAccessorCollections;
+using Fusee.PointCloud.PointAccessorCollections;
 
-namespace Fusee.Pointcloud.Converter.ToOocFileCmdLine
+namespace Fusee.PointCloud.OoCFileGenerator
 {
     static class Program
     {

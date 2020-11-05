@@ -4,7 +4,7 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     public class PtOctantLoader<TPoint> where TPoint : new()
     {

@@ -1,12 +1,12 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using System.Collections.Generic;
 using System.Linq;
 
 
-namespace Fusee.Pointcloud.PointAccessorCollections
+namespace Fusee.PointCloud.PointAccessorCollections
 {
     /// <summary>
     /// Fore every point type: Define a Method that returns a Mesh.

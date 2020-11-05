@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:Fusee.Examples.PcRendering.WPF"
-        xmlns:sew="clr-namespace:Fusee.Pointcloud.Common;assembly=Fusee.Pointcloud.Common"
+        xmlns:sew="clr-namespace:Fusee.PointCloud.Common;assembly=Fusee.Pointcloud.Common"
         mc:Ignorable="d"        
         Title="Fusee Point Cloud Viewer"  MaxHeight ="927" MinWidth="330" MaxWidth="310" ResizeMode="CanResize" ShowInTaskbar="True" Background="#FFCECECE"
         Height="{Binding SystemParameters.PrimaryScreenHeight}"         

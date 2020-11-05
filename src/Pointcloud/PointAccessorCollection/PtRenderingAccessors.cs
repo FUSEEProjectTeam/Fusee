@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 
-namespace Fusee.Pointcloud.PointAccessorCollections
+namespace Fusee.PointCloud.PointAccessorCollections
 {
     //Collection of PointAccessor classes. There has to be one for each PointType.
 
@@ -255,7 +255,5 @@ namespace Fusee.Pointcloud.PointAccessorCollections
         {
             point.Normal = val;
         }
-
-
     }
 }

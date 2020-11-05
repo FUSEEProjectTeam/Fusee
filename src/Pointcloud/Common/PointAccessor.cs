@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-namespace Fusee.Pointcloud.Common
+namespace Fusee.PointCloud.Common
 {
     /// <summary>
     ///     Every point cloud needs a point accessor

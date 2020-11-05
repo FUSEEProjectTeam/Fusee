@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 
-namespace Fusee.Pointcloud.PointAccessorCollections
+namespace Fusee.PointCloud.PointAccessorCollections
 {
     public static class AppSetupHelper
     {

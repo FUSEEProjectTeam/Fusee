@@ -3,18 +3,18 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>fusee</AssemblyName>
-    <PackageId>Fusee.Pointcloud.ToOocFileConverter</PackageId>
-    <RootNamespace>Fusee.Tools.ToOocFileConverter</RootNamespace>
+    <PackageId>Fusee.PointCloud.OoCFileGenerator</PackageId>
+    <RootNamespace>Fusee.PointCloud.OoCFileGenerator</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fusee</ToolCommandName>
     <PackageTags>dotnet;tools;fusee</PackageTags>
   </PropertyGroup>
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Pointcloud\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\PointCloud\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\PointAccessorCollection\Fusee.Pointcloud.PointAccessorCollections.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\PointAccessorCollection\Fusee.PointCloud.PointAccessorCollections.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>  
   </ItemGroup>

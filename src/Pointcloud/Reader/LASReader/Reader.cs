@@ -1,11 +1,11 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Fusee.Pointcloud.Reader.LASReader
+namespace Fusee.PointCloud.Reader.LASReader
 {
     public struct PointFormat : IPointFormat
     {

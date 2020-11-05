@@ -10,17 +10,15 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<ProjectReference Include="..\..\..\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
 	</ItemGroup>
 	
 	<ItemGroup>

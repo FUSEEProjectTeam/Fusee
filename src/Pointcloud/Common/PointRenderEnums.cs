@@ -1,4 +1,4 @@
-﻿namespace Fusee.Pointcloud.Common
+﻿namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Available point shapes.

@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Pointcloud.Common</RootNamespace>
-    <PackageId>Fusee.Pointcloud.Common</PackageId>
+    <RootNamespace>Fusee.PointCloud.Common</RootNamespace>
+    <PackageId>Fusee.PointCloud.Common</PackageId>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Description>Fusee Pointcloud Common</Description>
+    <Description>Fusee PointCloud Common</Description>
   </PropertyGroup>
 
   <PropertyGroup>

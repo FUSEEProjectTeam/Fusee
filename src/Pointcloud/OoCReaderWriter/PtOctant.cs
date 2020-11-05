@@ -3,7 +3,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     /// <summary>
     /// Octant implementation for rendering point clouds.

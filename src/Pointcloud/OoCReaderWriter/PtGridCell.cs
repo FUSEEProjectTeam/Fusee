@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Structures;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     /// <summary>
     /// The cell of a <see cref="PtGrid{TPoint}"/>.

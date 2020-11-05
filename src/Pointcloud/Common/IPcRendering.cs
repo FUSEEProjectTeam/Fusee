@@ -4,7 +4,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
-namespace Fusee.Pointcloud.Common
+namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Implement this interface into apps that use the ooc file converter.

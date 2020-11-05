@@ -1,10 +1,10 @@
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using Fusee.Structures;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     public class PtOctree<TPoint> : OctreeD<TPoint>
     {
@@ -132,7 +132,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             foreach (var cell in octant.Grid.GridCells)
             {
                 if (cell == null) continue;
-                yield return cell.Occupant;
+                yield return ((PtGridCell<TPoint>)cell).Occupant;
             }
         }
     }

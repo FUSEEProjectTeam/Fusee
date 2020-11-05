@@ -1,13 +1,13 @@
 ﻿using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
-using Fusee.Pointcloud.OoCFileReaderWriter;
-using Fusee.Pointcloud.Reader.LASReader;
+using Fusee.PointCloud.Common;
+using Fusee.PointCloud.OoCReaderWriter;
+using Fusee.PointCloud.Reader.LASReader;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Fusee.Pointcloud.PointAccessorCollections
+namespace Fusee.PointCloud.PointAccessorCollections
 {
     /// <summary>
     /// Provides methods for the Pointcloud.Converter to create the ooc files according to the user-given point type.

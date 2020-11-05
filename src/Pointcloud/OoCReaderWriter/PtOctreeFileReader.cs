@@ -1,14 +1,13 @@
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Pointcloud.Common;
+using Fusee.PointCloud.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Fusee.Pointcloud.OoCFileReaderWriter
+namespace Fusee.PointCloud.OoCReaderWriter
 {
     public class PtOctreeFileReader<TPoint>
     {
@@ -184,7 +183,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     }
                 }
             }
-            catch (EndOfStreamException e)
+            catch (EndOfStreamException)
             {
 
             }
@@ -244,7 +243,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     }
                 }
             }
-            catch (EndOfStreamException e)
+            catch (EndOfStreamException)
             {
 
             }
