@@ -5,7 +5,9 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Fusee.Engine.Core
@@ -20,7 +22,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static SceneContainer ConvertFrom(FusFile fus)
+        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
         {
             if (fus == null)
             {
@@ -35,8 +37,46 @@ namespace Fusee.Engine.Core
                 return new SceneContainer();
             }
 
+            // if id is given set fields in FusFile
+            if (!string.IsNullOrEmpty(id))
+            {
+                fus.Header.LoadFilename = Path.GetFileName(id);
+                fus.Header.LoadPath = Path.GetDirectoryName(id);
+            }
+
             var instance = new FusFileToSceneConvertV1();
             var payload = (FusScene)fus.Contents;
+
+            // if path is set, update path dependent payload
+            if (!string.IsNullOrEmpty(fus.Header.LoadPath))
+            {
+                for (int i = 0; i < payload.ComponentList.Count; i++)
+                {
+                    if (payload.ComponentList[i] is FusMaterial matcomp)
+                    {
+                        if (matcomp.HasAlbedo)
+                        {
+                            matcomp.Albedo.Texture = Path.Combine(fus.Header.LoadPath, matcomp.Albedo.Texture);
+                        }
+
+                        if (matcomp.HasEmissive)
+                        {
+                            matcomp.Emissive.Texture = Path.Combine(fus.Header.LoadPath, matcomp.Emissive.Texture);
+                        }
+
+                        if (matcomp.HasNormalMap)
+                        {
+                            matcomp.NormalMap.Texture = Path.Combine(fus.Header.LoadPath, matcomp.NormalMap.Texture);
+                        }
+
+                        if (matcomp.HasSpecular)
+                        {
+                            matcomp.Specular.Texture = Path.Combine(fus.Header.LoadPath, matcomp.Specular.Texture);
+                        }
+                    }
+                }
+            }
+
             var converted = instance.Convert(payload);
 
             converted.Header = new SceneHeader
