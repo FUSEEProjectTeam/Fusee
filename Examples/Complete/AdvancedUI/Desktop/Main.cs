@@ -40,12 +40,8 @@ namespace Fusee.Examples.AdvancedUI.Desktop
                     ReturnedType = typeof(SceneContainer),
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase))
-                        {
-                            return null;
-                        }
-
-                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
 
                     Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
