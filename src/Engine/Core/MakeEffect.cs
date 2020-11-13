@@ -675,6 +675,9 @@ namespace Fusee.Engine.Core
             frag.Append(Lighting.BRDFSpecularComponent());
             frag.Append(Lighting.AttenuationPointComponent());
             frag.Append(Lighting.AttenuationConeComponent());
+            frag.Append(Lighting.GammaCorrection());
+            frag.Append(Lighting.EncodeSRGB());
+            frag.Append(Lighting.DecodeSRGB());
 
             frag.Append(Lighting.ApplyLightDeferred(lc, isCascaded, numberOfCascades, debugCascades));
 
