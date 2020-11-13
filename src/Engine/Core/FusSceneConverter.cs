@@ -533,7 +533,7 @@ namespace Fusee.Engine.Core
             float3 c = float3.Step(new float3(0.0031308f, 0.0031308f, 0.0031308f), linearRGB);
             return float3.Lerp(a, b, c);
         }
-       
+
         private Effect LookupMaterial(FusMaterialStandard m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;

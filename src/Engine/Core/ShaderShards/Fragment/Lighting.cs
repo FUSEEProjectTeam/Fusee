@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Caches "allLight[i]." names (used as uniform parameters).
         /// </summary>
-        internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();        
+        internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="LightingSetupFlags"/> and the LightingCalculationMethod.
@@ -104,7 +104,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Method for calculation the diffuse lighting component.
         /// Replaces the standard diffuse calculation with the one introduced in [Burley 2012, "Physically-Based Shading at Disney"].
         /// NOTE: In theory the albedo and subsurface colors should be divided by PI or multiplied by 1/PI to maintain energy conservation. If we do this here the colors are too dark.
-        /// This may become an issue with more advanced lighting calculations. See [Akenine-Möller 2018, Real-Time-Rendering 4th Edition, p. 308 - 316].
+        /// This may become an issue with more advanced lighting calculations. See [Akenine-Mï¿½ller 2018, Real-Time-Rendering 4th Edition, p. 308 - 316].
         /// </summary>
         public static string BRDFDiffuseComponent()
         {
