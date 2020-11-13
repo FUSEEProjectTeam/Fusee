@@ -525,37 +525,12 @@ namespace Fusee.Engine.Core
 
         #region Make Effect
 
-        private static float3 GammaCorrection(float3 color, float gamma)
-        {
-           
-            return new float3(MathF.Pow(color.r, gamma), MathF.Pow(color.g, gamma), MathF.Pow(color.b, gamma));
-        }
-
-        public static float Step(float edge, float val) 
-        {
-            return val < edge ? 0.0f : 1.0f;
-        }
-
-        public static float3 Step(float3 edge, float3 val)
-        {
-            return new float3(Step(edge.x, val.x), Step(edge.y, val.y), Step(edge.z, val.z));
-        }
-
         private static float3 EncodeSRGB(float3 linearRGB)
         {
             float3 a = 12.92f * linearRGB;
             float g = 1.0f / 2.4f;
-            float3 b = 1.055f * new float3(MathF.Pow(linearRGB.r, g), MathF.Pow(linearRGB.g, g), MathF.Pow(linearRGB.b, g)) - 0.055f;
-            float3 c = Step(new float3(0.0031308f, 0.0031308f, 0.0031308f), linearRGB);
-            return float3.Lerp(a, b, c);
-        }
-
-        private static float3 DecodeSRGB(float3 screenRGB)
-        {
-            float3 a = screenRGB / 12.92f;
-            float3 col = (screenRGB + 0.055f) / 1.055f;
-            float3 b = new float3(MathF.Pow(col.r, 2.4f), MathF.Pow(col.g, 2.4f), MathF.Pow(col.b, 2.4f));
-            float3 c = Step(new float3(0.04045f, 0.04045f, 0.04045f), screenRGB);
+            float3 b = 1.055f * new float3((float)System.Math.Pow(linearRGB.r, g), (float)System.Math.Pow(linearRGB.g, g), (float)System.Math.Pow(linearRGB.b, g)) - 0.055f;
+            float3 c = float3.Step(new float3(0.0031308f, 0.0031308f, 0.0031308f), linearRGB);
             return float3.Lerp(a, b, c);
         }
        
@@ -729,6 +704,15 @@ namespace Fusee.Engine.Core
             return _convertedScene;
         }
 
+        private static float3 DecodeSRGB(float3 screenRGB)
+        {
+            float3 a = screenRGB / 12.92f;
+            float3 col = (screenRGB + 0.055f) / 1.055f;
+            float3 b = new float3(MathF.Pow(col.r, 2.4f), MathF.Pow(col.g, 2.4f), MathF.Pow(col.b, 2.4f));
+            float3 c = float3.Step(new float3(0.04045f, 0.04045f, 0.04045f), screenRGB);
+            return float3.Lerp(a, b, c);
+        }
+
         #region Visitors
 
         /// <summary>
@@ -864,7 +848,7 @@ namespace Fusee.Engine.Core
                     var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = surfaceInput.Albedo
+                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
                     };
 
                     if (surfaceInput.AlbedoTex != null)
@@ -898,7 +882,7 @@ namespace Fusee.Engine.Core
                     var surfaceInput = (BRDFInput)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = surfaceInput.Albedo
+                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
                     };
                     mat.BRDF = new BRDFChannel()
                     {
@@ -925,7 +909,7 @@ namespace Fusee.Engine.Core
 
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = surfaceInput.Albedo
+                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
                     };
 
                     if (surfaceInput.AlbedoTex != null)
@@ -955,7 +939,7 @@ namespace Fusee.Engine.Core
                     var surfaceInput = (SpecularInput)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = surfaceInput.Albedo
+                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
                     };
 
                     mat.Specular = new SpecularChannel()

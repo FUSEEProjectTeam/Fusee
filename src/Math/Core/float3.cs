@@ -613,6 +613,11 @@ namespace Fusee.Math.Core
 
         #endregion Cross
 
+        public static float3 Step(float3 edge, float3 val)
+        {
+            return new float3(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z));
+        }
+
         #region Lerp
 
         /// <summary>

@@ -891,5 +891,10 @@ namespace Fusee.Math.Core
         }
 
         #endregion Internal Members
+
+        public static float Step(float edge, float val)
+        {
+            return val < edge ? 0.0f : 1.0f;
+        }
     }
 }
