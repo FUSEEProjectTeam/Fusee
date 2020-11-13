@@ -632,6 +632,23 @@ namespace Fusee.Math.Core
             return a;
         }
 
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
+        /// <returns>
+        /// a when blend=0, b when blend=1, and a linear combination otherwise
+        /// </returns>
+        public static float3 Lerp(float3 a, float3 b, float3 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
+            a.z = blend.z * (b.z - a.z) + a.z;
+            return a;
+        }
+
         #endregion Lerp
 
         #region Barycentric
