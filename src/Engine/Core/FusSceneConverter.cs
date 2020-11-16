@@ -15,7 +15,7 @@ using System.Linq;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use <see cref="ConvertFrom(FusFile, string)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
+    /// Use <see cref="ConvertFrom(FusFile)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
     /// in order to have each visited element converted and/or split into its high/low level, render-ready/serialization-ready components.
     /// </summary>
     public static class FusSceneConverter
@@ -525,15 +525,6 @@ namespace Fusee.Engine.Core
 
         #region Make Effect
 
-        private static float3 EncodeSRGB(float3 linearRGB)
-        {
-            float3 a = 12.92f * linearRGB;
-            float g = 1.0f / 2.4f;
-            float3 b = 1.055f * new float3((float)System.Math.Pow(linearRGB.r, g), (float)System.Math.Pow(linearRGB.g, g), (float)System.Math.Pow(linearRGB.b, g)) - 0.055f;
-            float3 c = float3.Step(new float3(0.0031308f, 0.0031308f, 0.0031308f), linearRGB);
-            return float3.Lerp(a, b, c);
-        }
-
         private Effect LookupMaterial(FusMaterialStandard m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
@@ -556,7 +547,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.Albedo.Texture, albedoTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(new float4(EncodeSRGB(m.Albedo.Color.rgb), m.Albedo.Color.a), emissive, m.Specular.Shininess, albedoTex, m.Albedo.Mix, float2.One);
+                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, m.Specular.Shininess, albedoTex, m.Albedo.Mix, float2.One);
             }
             else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -568,7 +559,7 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(new float4(EncodeSRGB(m.Albedo.Color.rgb), m.Albedo.Color.a), emissive, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, float2.One);
+                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, m.Specular.Shininess, normalTex, m.NormalMap.Intensity, float2.One);
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
@@ -588,12 +579,12 @@ namespace Fusee.Engine.Core
                     };
                     _texMap.Add(m.NormalMap.Texture, normalTex);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularTexture(new float4(EncodeSRGB(m.Albedo.Color.rgb), m.Albedo.Color.a), emissive, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
+                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, m.Specular.Shininess, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BlinnPhong)
-                sfx = MakeEffect.FromDiffuseSpecular(new float4(EncodeSRGB(m.Albedo.Color.rgb), m.Albedo.Color.a), emissive, m.Specular.Shininess, m.Specular.Strength);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, m.Specular.Shininess, m.Specular.Strength);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
-                sfx = MakeEffect.FromDiffuseSpecular(new float4(EncodeSRGB(m.Albedo.Color.rgb), m.Albedo.Color.a), emissive, 0, 0);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
@@ -702,15 +693,6 @@ namespace Fusee.Engine.Core
         {
             Traverse(sc.Children);
             return _convertedScene;
-        }
-
-        private static float3 DecodeSRGB(float3 screenRGB)
-        {
-            float3 a = screenRGB / 12.92f;
-            float3 col = (screenRGB + 0.055f) / 1.055f;
-            float3 b = new float3(MathF.Pow(col.r, 2.4f), MathF.Pow(col.g, 2.4f), MathF.Pow(col.b, 2.4f));
-            float3 c = float3.Step(new float3(0.04045f, 0.04045f, 0.04045f), screenRGB);
-            return float3.Lerp(a, b, c);
         }
 
         #region Visitors
@@ -848,7 +830,7 @@ namespace Fusee.Engine.Core
                     var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
+                        Color = surfaceInput.Albedo
                     };
 
                     if (surfaceInput.AlbedoTex != null)
@@ -882,7 +864,7 @@ namespace Fusee.Engine.Core
                     var surfaceInput = (BRDFInput)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
+                        Color = surfaceInput.Albedo
                     };
                     mat.BRDF = new BRDFChannel()
                     {
@@ -909,7 +891,7 @@ namespace Fusee.Engine.Core
 
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
+                        Color = surfaceInput.Albedo
                     };
 
                     if (surfaceInput.AlbedoTex != null)
@@ -939,7 +921,7 @@ namespace Fusee.Engine.Core
                     var surfaceInput = (SpecularInput)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
-                        Color = new float4(DecodeSRGB(surfaceInput.Albedo.rgb), surfaceInput.Albedo.a)
+                        Color = surfaceInput.Albedo
                     };
 
                     mat.Specular = new SpecularChannel()
