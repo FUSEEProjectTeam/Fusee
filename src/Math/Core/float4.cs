@@ -546,6 +546,16 @@ namespace Fusee.Math.Core
 
         #endregion Dot
 
+        /// <summary>
+        /// Performs <see cref="M.Step(float, float)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        public static float4 Step(float4 edge, float4 val)
+        {
+            return new float4(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z),M.Step(edge.w, val.w));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -561,6 +571,22 @@ namespace Fusee.Math.Core
             a.y = blend * (b.y - a.y) + a.y;
             a.z = blend * (b.z - a.z) + a.z;
             a.w = blend * (b.w - a.w) + a.w;
+            return a;
+        }
+
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        public static float4 Lerp(float4 a, float4 b, float4 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
+            a.z = blend.z * (b.z - a.z) + a.z;
+            a.w = blend.w * (b.w - a.w) + a.w;
             return a;
         }
 

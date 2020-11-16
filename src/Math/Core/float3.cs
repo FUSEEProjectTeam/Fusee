@@ -613,6 +613,11 @@ namespace Fusee.Math.Core
 
         #endregion Cross
 
+        /// <summary>
+        /// Performs <see cref="M.Step(float, float)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
         public static float3 Step(float3 edge, float3 val)
         {
             return new float3(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z));
@@ -638,14 +643,12 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns a new Vector that is the linear blend of the 2 given Vectors
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
         /// </summary>
         /// <param name="a">First input vector</param>
         /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
-        /// <returns>
-        /// a when blend=0, b when blend=1, and a linear combination otherwise
-        /// </returns>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
         public static float3 Lerp(float3 a, float3 b, float3 blend)
         {
             a.x = blend.x * (b.x - a.x) + a.x;
