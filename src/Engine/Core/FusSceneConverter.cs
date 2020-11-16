@@ -7,7 +7,6 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -15,7 +14,7 @@ using System.Linq;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Use <see cref="ConvertFrom(FusFile)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
+    /// Use <see cref="ConvertFrom(FusFile, string)"/> and <see cref="ConvertTo(SceneContainer)"/>, to create new high/low level graph from a low/high level graph (made out of scene nodes and components)
     /// in order to have each visited element converted and/or split into its high/low level, render-ready/serialization-ready components.
     /// </summary>
     public static class FusSceneConverter
