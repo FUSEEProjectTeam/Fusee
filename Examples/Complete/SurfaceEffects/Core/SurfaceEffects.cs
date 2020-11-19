@@ -100,7 +100,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 specular: 1f,
                 ior: 1.46f,
                 subsurface: 0
-            );;
+            ); ;
 
             _rubber_brdfFx = MakeEffect.FromBRDF
             (

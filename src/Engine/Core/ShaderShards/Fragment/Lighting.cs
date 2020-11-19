@@ -643,7 +643,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string EncodeSRGB()
         {
-            var methodBody = new List<string> 
+            var methodBody = new List<string>
             {
                 "vec3 a = 12.92 * linearRGB;",
                 "vec3 b = 1.055 * pow(linearRGB, vec3(1.0 / 2.4)) - 0.055;",
@@ -690,7 +690,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "color"),
                     GLSL.CreateVar(GLSL.Type.Float, "g")
-                }, methodBody );
+                }, methodBody);
         }
 
         /// <summary>

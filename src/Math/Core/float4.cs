@@ -574,7 +574,7 @@ namespace Fusee.Math.Core
         /// <param name="val">Specifies the value to be used to generate the step function.</param>
         public static float4 Step(float4 edge, float4 val)
         {
-            return new float4(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z),M.Step(edge.w, val.w));
+            return new float4(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z), M.Step(edge.w, val.w));
         }
 
         /// <summary>
@@ -679,7 +679,7 @@ namespace Fusee.Math.Core
         /// <param name="a">The alpha value in range 0 - 255.</param>
         public static float4 LinearColorFromSRgb(int r, int g, int b, int a)
         {
-            return new float4(float3.LinearColorFromSRgb(r,g,b), a/255f);
+            return new float4(float3.LinearColorFromSRgb(r, g, b), a / 255f);
         }
 
         /// <summary>
