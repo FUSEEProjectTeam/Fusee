@@ -663,7 +663,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string DecodeSRGB()
         {
-
             var methodBody = new List<string>
             {
                 "vec3 a = screenRGB / 12.92;",
