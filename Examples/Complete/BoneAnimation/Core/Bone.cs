@@ -51,7 +51,7 @@ namespace Fusee.Examples.Bone.Core
             _offsetInit = float2.Zero;
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = float4.One;
 
             // Load the standard model
 

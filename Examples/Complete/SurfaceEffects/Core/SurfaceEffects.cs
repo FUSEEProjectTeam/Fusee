@@ -10,7 +10,6 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -48,26 +47,6 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
         private DefaultSurfaceEffect _testFx;
 
-
-        //vec3 decodeSRGB(vec3 screenRGB)
-        //{
-        //    vec3 a = screenRGB / 12.92;
-        //    vec3 b = pow((screenRGB + 0.055) / 1.055, vec3(2.4));
-        //    vec3 c = step(vec3(0.04045), screenRGB);
-        //    return mix(a, b, c);
-        //}
-
-        private float3 ToLinear(float3 sRGBCol)
-        {
-            float3 a = sRGBCol / 12.92f;
-
-            float3 zwerg = (sRGBCol + 0.055f) / 1.055f;
-
-            float3 b = new float3(MathF.Pow(zwerg.r, 2.4f), MathF.Pow(zwerg.g, 2.4f), MathF.Pow(zwerg.b, 2.4f));
-            float3 c = float3.Step(new float3(0.04045f, 0.04045f, 0.04045f), sRGBCol);
-            return float3.Lerp(a, b, c);
-        }
-
         // Init is called on startup.
         public override void Init()
         {
@@ -102,7 +81,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(ToLinear(new float3(1.0f, 227f / 256f, 157f / 256)), 1.0f),
+                albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(0, 0, 0, 0),
                 roughness: 0.2f,
                 metallic: 1,
@@ -113,26 +92,19 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             _paint_brdfFx = MakeEffect.FromBRDF
             (
-                //Photoshop RGB
-                albedoColor: new float4(ToLinear(new float3(0.44f, 0.533f, 0.156f)), 1.0f),
-
-                //Blender RGB
-                //new float4(0.161431f, 0.246197f, 0.021525f, 1.0f),
-
-                //FUSEE Greenery
-                //new float4(ToLinear(ColorUint.Greenery.Tofloat4().rgb), 1.0f),
-
+                //ColorUint.Greenery, 
+                new float4(float4.LinearColorFromSRgb(0x708828FF)),
                 emissionColor: new float4(),
                 roughness: 0.05f,
                 metallic: 0,
                 specular: 1f,
                 ior: 1.46f,
                 subsurface: 0
-            );
+            );;
 
             _rubber_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(ToLinear(new float3(214f / 256f, 84f / 256f, 68f / 256f)), 1.0f),
+                albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(),
                 roughness: 1.0f,
                 metallic: 0,
@@ -143,7 +115,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             _subsurf_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(ToLinear(new float3(255f / 256f, 234f / 256f, 215f / 256f)), 1.0f),
+                albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(),
                 roughness: 0.508f,
                 metallic: 0,
@@ -295,7 +267,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
+                ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
@@ -329,7 +301,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 

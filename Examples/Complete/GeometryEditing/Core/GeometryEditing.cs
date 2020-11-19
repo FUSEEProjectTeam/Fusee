@@ -21,8 +21,8 @@ namespace Fusee.Examples.GeometryEditing.Core
     [FuseeApplication(Name = "FUSEE Geometry Editing Example", Description = "Example App to show basic geometry editing in FUSEE")]
     public class GeometryEditing : RenderCanvas
     {
-        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0, 1.0f);
-        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f, 1.0f);
+        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0, 1.0f).LinearColorFromSRgb();
+        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f, 1.0f).LinearColorFromSRgb();
 
         // angle and camera variables
         private static float _angleHorz = M.PiOver6 * 2.0f, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom = 8, _xPos, _yPos;

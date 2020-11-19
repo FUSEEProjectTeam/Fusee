@@ -392,7 +392,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static implicit operator float3(ColorUint value)
         {
-            return float3.LinearColorFromSRgb(new float3(value.R / (float)byte.MaxValue, value.G / (float)byte.MaxValue, value.B / (float)byte.MaxValue));
+            return float3.LinearColorFromSRgb(Tofloat3(value));
         }
 
         /// <summary>
@@ -404,7 +404,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static implicit operator float4(ColorUint value)
         {
-            return float4.LinearColorFromSRgb(new float4(value.R / (float)byte.MaxValue, value.G / (float)byte.MaxValue, value.B / (float)byte.MaxValue, value.A / (float)byte.MaxValue));
+            return float4.LinearColorFromSRgb(Tofloat4(value));
         }
 
         /// <summary>

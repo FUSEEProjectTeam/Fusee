@@ -533,7 +533,7 @@ namespace Fusee.Test.Serialization.V1
                            }
                        },
                        MakeEffect.FromDiffuseSpecular(
-                           albedoColor: ColorUint.Tofloat4(ColorUint.Red),
+                           albedoColor: ColorUint.Red,
                            emissionColor: float4.Zero,
                            shininess: 4.0f,
                            specularStrength: 1.0f),
@@ -567,7 +567,7 @@ namespace Fusee.Test.Serialization.V1
                            WasLoaded = true
                        },
                        new Camera(Engine.Core.Scene.ProjectionMethod.Orthographic, 0, 500, 2000),
-                       MakeEffect.FromBRDF(ColorUint.Tofloat4(ColorUint.Green), float4.Zero, 0.2f, 0, 0.5f, 1.46f, 0),
+                       MakeEffect.FromBRDF(ColorUint.Green, float4.Zero, 0.2f, 0, 0.5f, 1.46f, 0),
                        new Cube()
                     },
                     Children = new ChildList
@@ -579,7 +579,7 @@ namespace Fusee.Test.Serialization.V1
                             {
                                 new Transform {Translation=new float3(0, 60, 0),  Scale = new float3(20, 100, 20) },
                                 MakeEffect.FromDiffuseSpecular(
-                                    albedoColor: ColorUint.Tofloat4(ColorUint.Green),
+                                    albedoColor: ColorUint.Green,
                                     emissionColor: float4.Zero,
                                     specularStrength: 1.0f,
                                     shininess: 4.0f),
@@ -607,7 +607,7 @@ namespace Fusee.Test.Serialization.V1
                                             {
                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
                                                 MakeEffect.FromDiffuseSpecular(
-                                                    albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
+                                                    albedoColor: ColorUint.Yellow,
                                                     emissionColor: float4.Zero,
                                                     specularStrength: 1.0f,
                                                     shininess: 4.0f),
@@ -631,7 +631,7 @@ namespace Fusee.Test.Serialization.V1
                                                             {
                                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
                                                                 MakeEffect.FromDiffuseSpecular(
-                                                                                    albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
+                                                                                    albedoColor: ColorUint.Blue,
                                                                                     emissionColor: float4.Zero,
                                                                                     specularStrength: 1.0f,
                                                                                     shininess: 4.0f),

@@ -51,8 +51,8 @@ namespace Fusee.Examples.UI.Core
         private readonly float zFar = 1000;
         private readonly float fov = M.PiOver4;
 
-        private readonly float4 _canvasDefaultColor = new float4(1, 0f, 0f, 1);
-        private readonly float4 _canvasHoverColor = new float4(1, 0.4f, 0.1f, 1);
+        private readonly float4 _canvasDefaultColor = ColorUint.Red;
+        private readonly float4 _canvasHoverColor = ColorUint.OrangeRed;
 
         private GUIText _fpsText;
 
@@ -85,7 +85,7 @@ namespace Fusee.Examples.UI.Core
                     Max = new float2(0, 1)
                 },
                  _fontMap,
-                ColorUint.Tofloat4(ColorUint.White),
+                ColorUint.White,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center
             );
@@ -107,7 +107,7 @@ namespace Fusee.Examples.UI.Core
                     Max = new float2(-1f, -0.5f)
                 },
                 _fontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery),
+                ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
@@ -251,7 +251,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(new float4(1, 0, 0, 1), float4.Zero, 0, 0));
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(ColorUint.Red, float4.Zero, 0, 0));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
