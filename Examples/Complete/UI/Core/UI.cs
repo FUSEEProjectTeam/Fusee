@@ -11,7 +11,6 @@ using Fusee.Xene;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using FontMap = Fusee.Engine.Core.FontMap;
 
 namespace Fusee.Examples.UI.Core
@@ -37,11 +36,8 @@ namespace Fusee.Examples.UI.Core
         private GUIButton _btnCat;
 
         private FontMap _fontMap;
-        private FontMap _fontMap1;
-
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initWindowWidth;
-        private float _initWindowHeight;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -51,8 +47,8 @@ namespace Fusee.Examples.UI.Core
         private readonly float zFar = 1000;
         private readonly float fov = M.PiOver4;
 
-        private readonly float4 _canvasDefaultColor = ColorUint.Red;
-        private readonly float4 _canvasHoverColor = ColorUint.OrangeRed;
+        private readonly float4 _canvasDefaultColor = (float4)ColorUint.Red;
+        private readonly float4 _canvasHoverColor = (float4)ColorUint.OrangeRed;
 
         private GUIText _fpsText;
 
@@ -85,7 +81,7 @@ namespace Fusee.Examples.UI.Core
                     Max = new float2(0, 1)
                 },
                  _fontMap,
-                ColorUint.White,
+                (float4)ColorUint.White,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center
             );
@@ -107,7 +103,7 @@ namespace Fusee.Examples.UI.Core
                     Max = new float2(-1f, -0.5f)
                 },
                 _fontMap,
-                ColorUint.Greenery,
+                (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
@@ -251,7 +247,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            canvas.AddComponent(MakeEffect.FromDiffuseSpecular(ColorUint.Red, float4.Zero, 0, 0));
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
@@ -340,7 +336,6 @@ namespace Fusee.Examples.UI.Core
         public override void Init()
         {
             _initWindowWidth = Width;
-            _initWindowHeight = Height;
             if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
                 _initCanvasWidth = Width / 100f;
@@ -356,7 +351,6 @@ namespace Fusee.Examples.UI.Core
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
-            _fontMap1 = new FontMap(fontLato, 8);
             _fontMap = new FontMap(fontLato, 24);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).

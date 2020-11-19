@@ -11,7 +11,6 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -20,11 +19,6 @@ namespace Fusee.Examples.Camera.Core
     [FuseeApplication(Name = "FUSEE Camera Example", Description = " ")]
     public class CameraExample : RenderCanvas
     {
-        // angle variables
-        private readonly float _rotAngle = M.PiOver4;
-        private float3 _rotAxis;
-        private float3 _rotPivot;
-
         private SceneContainer _rocketScene;
         private SceneRendererForward _sceneRenderer;
 
@@ -87,7 +81,7 @@ namespace Fusee.Examples.Camera.Core
                 Name = "Frustum",
                 Components = new List<SceneComponent>()
                 {
-                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.Zero, 0),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.Zero),
                     _frustum
                 }
             };
@@ -99,7 +93,7 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.Zero, 10),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.Zero),
                     new Cube(),
 
                 },
@@ -144,11 +138,8 @@ namespace Fusee.Examples.Camera.Core
 
             // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
-            //_rocketScene = Rocket.Build();
-
 
             _cubeOneTransform = _rocketScene.Children[0].GetComponent<Transform>();
-            //_cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
@@ -157,9 +148,6 @@ namespace Fusee.Examples.Camera.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
-            _rotPivot = _rocketScene.Children[1].GetComponent<Transform>().Translation;
         }
 
         // RenderAFrame is called once a frame
@@ -294,7 +282,7 @@ namespace Fusee.Examples.Camera.Core
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Greenery,
+                (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
@@ -339,7 +327,7 @@ namespace Fusee.Examples.Camera.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 

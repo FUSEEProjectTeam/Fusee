@@ -92,7 +92,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                ColorUint.Black,
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center),new TextNode(
                                 "NOT YET IMPLEMENTED",
@@ -131,7 +131,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                ColorUint.Black,
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -156,7 +156,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                ColorUint.Black,
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -181,7 +181,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                ColorUint.Black,
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center),
                                 new TextNode(
@@ -221,7 +221,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                ColorUint.Black,
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -246,7 +246,7 @@ namespace Fusee.Examples.Materials.Core
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect(),
                                         fontLatoMap,
-                                        ColorUint.Black,
+                                        (float4)ColorUint.Black,
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center),
                                       new TextNode(
@@ -286,7 +286,7 @@ namespace Fusee.Examples.Materials.Core
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect(),
                                         fontLatoMap,
-                                        ColorUint.Black,
+                                        (float4)ColorUint.Black,
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center),
                                      new TextNode(
@@ -434,7 +434,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "specular texture - not impl.",
                                         Translation = new float3(0, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, 85),
+                                    MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, 85, 0.5f),
                                     icosphereWithTangents
                                 }
                             },

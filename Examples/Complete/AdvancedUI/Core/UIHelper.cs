@@ -49,7 +49,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static readonly float4 Yellow = new float4(0.89411f, 0.63137f, 0.31372f, alphaVis).LinearColorFromSRgb();
         internal static readonly float4 Gray = new float4(0.47843f, 0.52549f, 0.54901f, alphaVis).LinearColorFromSRgb();
 
-        internal static readonly float4 White = ColorUint.White;
+        internal static readonly float4 White = (float4)ColorUint.White;
 
         private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"), false, TextureFilterMode.Linear);
         private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"), false, TextureFilterMode.Linear);
@@ -60,11 +60,11 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"), false, TextureFilterMode.Linear);
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"), false, TextureFilterMode.Linear);
 
-        internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, float4.Zero, 20f, 0f);
-        internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, float4.Zero, 20f, 0f);
-        internal static readonly SurfaceEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, float4.Zero, 20f, 0f);
+        internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, float4.Zero);
+        internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, float4.Zero);
+        internal static readonly SurfaceEffect GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, float4.Zero);
 
-        internal static readonly SurfaceEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular(ColorUint.White, float4.Zero, 20, 0);
+        internal static readonly SurfaceEffect OccludedDummyEffect = MakeEffect.FromDiffuseSpecular((float4)ColorUint.White, float4.Zero);
 
         private static readonly float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
@@ -151,7 +151,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 },
                 UIElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
                 RalewayFontMap,
-                ColorUint.Black,
+                (float4)ColorUint.Black,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
@@ -229,7 +229,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "circle" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, float4.Zero, 20, 0),
+                    MakeEffect.FromDiffuseSpecular(col, float4.Zero),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
@@ -278,7 +278,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, float4.Zero, 20, 0),
+                    MakeEffect.FromDiffuseSpecular(col, float4.Zero),
                 }
             };
         }

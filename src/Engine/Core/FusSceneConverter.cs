@@ -583,7 +583,7 @@ namespace Fusee.Engine.Core
             else if (lightingSetup == LightingSetupFlags.BlinnPhong)
                 sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, m.Specular.Shininess, m.Specular.Strength);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
-                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
@@ -652,7 +652,7 @@ namespace Fusee.Engine.Core
             else if (lightingSetup == LightingSetupFlags.BRDF)
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
             else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
-                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, 0, 0);
+                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 

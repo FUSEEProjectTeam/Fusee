@@ -96,7 +96,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1, 1).LinearColorFromSRgb(), float4.Zero, 20),
+                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1, 1).LinearColorFromSRgb(), float4.Zero, 20, 1.0f),
                             line
                         }
                     }
@@ -466,7 +466,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
