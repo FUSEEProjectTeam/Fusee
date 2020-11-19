@@ -81,6 +81,18 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new float4.
         /// </summary>
+        /// <param name="val">This value will be set for the x, y, z and w component.</param>
+        public float4(float val)
+        {
+            x = val;
+            y = val;
+            z = val;
+            w = val;
+        }
+
+        /// <summary>
+        /// Constructs a new float4.
+        /// </summary>
         /// <param name="x">The x component of the float4.</param>
         /// <param name="y">The y component of the float4.</param>
         /// <param name="z">The z component of the float4.</param>
@@ -324,6 +336,15 @@ namespace Fusee.Math.Core
 
         #endregion public Round()
 
+        /// <summary>
+        /// Converts this float4 - which is interpreted as a color - from linear color space to sRgb space.
+        /// </summary>
+        /// <returns></returns>
+        public float4 LinearColorFromSRgb()
+        {
+            return LinearColorFromSRgb(this);
+        }
+
         #endregion Instance
 
         #region Static
@@ -556,6 +577,17 @@ namespace Fusee.Math.Core
             return new float4(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z),M.Step(edge.w, val.w));
         }
 
+        /// <summary>
+        /// Returns a float4 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The float4 to be raised to a power.</param>
+        /// <param name="exp">A float that specifies a power.</param>
+        /// <returns></returns>
+        public static float4 Pow(float4 val, float exp)
+        {
+            return new float4(MathF.Pow(val.x, exp), MathF.Pow(val.y, exp), MathF.Pow(val.z, exp), MathF.Pow(val.w, exp));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -626,6 +658,54 @@ namespace Fusee.Math.Core
         }
 
         #endregion Round
+
+        #region Color Conversion
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="sRGBCol">The sRgb color value as <see cref="float4"/>.</param>
+        public static float4 LinearColorFromSRgb(float4 sRGBCol)
+        {
+            return new float4(float3.LinearColorFromSRgb(sRGBCol.rgb), sRGBCol.a);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        /// <param name="a">The alpha value in range 0 - 255.</param>
+        public static float4 LinearColorFromSRgb(int r, int g, int b, int a)
+        {
+            return new float4(float3.LinearColorFromSRgb(r,g,b), a/255f);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFFFF" string.</param>
+        public static float4 LinearColorFromSRgb(string hex)
+        {
+            var rgba = Convert.ToUInt32(hex, 16);
+            return LinearColorFromSRgb(rgba);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static float4 LinearColorFromSRgb(uint col)
+        {
+            var a = (byte)(col & byte.MaxValue);
+            var b = (byte)(col >> 8 & byte.MaxValue);
+            var g = (byte)(col >> 16 & byte.MaxValue);
+            var r = (byte)(col >> 24 & byte.MaxValue);
+            return LinearColorFromSRgb(r, g, b, a);
+        }
+
+        #endregion
 
         #endregion Static
 
@@ -856,7 +936,7 @@ namespace Fusee.Math.Core
 
         #endregion Overrides
 
-        #region Color
+        #region Color Swizzle
 
         /// <summary>
         /// The red component (same as x)

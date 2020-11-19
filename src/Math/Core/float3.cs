@@ -1,6 +1,7 @@
 ﻿using ProtoBuf;
 using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -38,6 +39,17 @@ namespace Fusee.Math.Core
         #endregion Fields
 
         #region Constructors
+
+        /// <summary>
+        /// Constructs a new float3.
+        /// </summary>
+        /// <param name="val">This value will be set for the x, y and z component.</param>
+        public float3(float val)
+        {
+            x = val;
+            y = val;
+            z = val;
+        }
 
         /// <summary>
         /// Constructs a new float3.
@@ -211,6 +223,19 @@ namespace Fusee.Math.Core
         }
 
         #endregion public NormalizeFast()
+
+        #region Color Conversion
+
+        /// <summary>
+        /// Converts this float3 - which is interpreted as a color - from linear color space to sRgb space.
+        /// </summary>
+        /// <returns></returns>
+        public float3 LinearColorFromSRgb()
+        {
+            return LinearColorFromSRgb(this);
+        }
+
+        #endregion
 
         /// <summary>
         /// Returns an array of floats with the three components of the vector.
@@ -623,6 +648,17 @@ namespace Fusee.Math.Core
             return new float3(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z));
         }
 
+        /// <summary>
+        /// Returns a float3 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The float3 to be raised to a power.</param>
+        /// <param name="exp">A float that specifies a power.</param>
+        /// <returns></returns>
+        public static float3 Pow(float3 val, float exp)
+        {
+            return new float3(MathF.Pow(val.r, exp), MathF.Pow(val.g, exp), MathF.Pow(val.b, exp));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -784,6 +820,59 @@ namespace Fusee.Math.Core
         }
 
         #endregion Rotate
+
+        #region Color Conversion
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="sRGBCol">The sRgb color value as <see cref="float3"/>.</param>
+        public static float3 LinearColorFromSRgb(float3 sRGBCol)
+        {
+            return new float3(LinearToSRgb(sRGBCol.x), LinearToSRgb(sRGBCol.y), LinearToSRgb(sRGBCol.z));
+        }
+
+        private static float LinearToSRgb(float input)
+        {
+            return input <= 0.04045f ? input  / 12.92f :MathF.Pow((input + 0.055f) * (1.0f / 1.055f), 2.4f);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        public static float3 LinearColorFromSRgb(int r, int g, int b)
+        {
+            var val = new float3(r / 255f, g / 255f, b / 255f);
+            return LinearColorFromSRgb(val);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFF" string.</param>
+        public static float3 LinearColorFromSRgb(string hex)
+        {
+            var rgb = Convert.ToUInt32(hex, 16);
+            return LinearColorFromSRgb(rgb);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static float3 LinearColorFromSRgb(uint col)
+        {
+            var b = (byte)(col & byte.MaxValue);
+            var g = (byte)(col >> 8 & byte.MaxValue);
+            var r = (byte)(col >> 16 & byte.MaxValue);
+
+            return LinearColorFromSRgb(r, g, b);
+        }
+
+        #endregion
 
         #endregion Static
 
@@ -1083,7 +1172,7 @@ namespace Fusee.Math.Core
 
         #endregion Overrides
 
-        #region Color
+        #region Color Swizzle
 
         /// <summary>
         /// The red component (same as x)
