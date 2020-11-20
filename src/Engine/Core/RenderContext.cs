@@ -268,21 +268,21 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, _model);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.Model, _model);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelView, ModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModel, InvModel);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IModel, InvModel);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelView, InvModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModel, InvTransModel);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModel, InvTransModel);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelView, InvTransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
 
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModel, TransModel);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TModel, TransModel);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelView, TransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
             }
         }
 

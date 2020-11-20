@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Enables or disables Frustum Culling.
-        /// If we render with one or more cameras this value will be overwritten by <see cref="CameraComponent.FrustumCullingOn"/>.
+        /// If we render with one or more cameras this value will be overwritten by <see cref="Camera.FrustumCullingOn"/>.
         /// </summary>
         public bool DoFrumstumCulling = true;
 
