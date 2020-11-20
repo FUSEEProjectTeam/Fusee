@@ -235,6 +235,15 @@ namespace Fusee.Math.Core
             return LinearColorFromSRgb(this);
         }
 
+        /// <summary>
+        /// Converts this float3 - which is interpreted as a color - from sRgb space to linear color space.
+        /// </summary>
+        /// <returns></returns>
+        public float3 SRgbFromLinearColor()
+        {
+            return SRgbFromLinearColor(this);
+        }
+
         #endregion
 
         /// <summary>
@@ -826,6 +835,55 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Converts a color value from linear to sRgb space.
         /// </summary>
+        /// <param name="linearColor">The linear color value as <see cref="float3"/>.</param>
+        public static float3 SRgbFromLinearColor(float3 linearColor)
+        {
+            return new float3(SRgbToLinear(linearColor.x), SRgbToLinear(linearColor.y), SRgbToLinear(linearColor.z));
+        }
+
+        private static float SRgbToLinear(float input)
+        {
+            return input > 0.0031308f ? input * 12.92f : MathF.Pow((input - 0.055f) * 1.055f, 1f/2.4f);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        public static float3 SRgbFromLinearColor(int r, int g, int b)
+        {
+            var val = new float3(r / 255f, g / 255f, b / 255f);
+            return SRgbFromLinearColor(val);
+        }
+
+        /// <summary>
+        ///Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFF" string.</param>
+        public static float3 SRgbFromLinearColor(string hex)
+        {
+            var rgb = Convert.ToUInt32(hex, 16);
+            return SRgbFromLinearColor(rgb);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static float3 SRgbFromLinearColor(uint col)
+        {
+            var b = (byte)(col & byte.MaxValue);
+            var g = (byte)(col >> 8 & byte.MaxValue);
+            var r = (byte)(col >> 16 & byte.MaxValue);
+
+            return SRgbFromLinearColor(r, g, b);
+        }
+        
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
         /// <param name="sRGBCol">The sRgb color value as <see cref="float3"/>.</param>
         public static float3 LinearColorFromSRgb(float3 sRGBCol)
         {
@@ -838,7 +896,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Converts a color value from linear to sRgb space.
+        /// Converts a color value from sRgb to linear space.
         /// </summary>
         /// <param name="r">The red color value in range 0 - 255.</param>
         /// <param name="g">The green color value in range 0 - 255.</param>
@@ -850,7 +908,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Converts a color value from linear to sRgb space.
+        /// Converts a color value from sRgb to linear space.
         /// </summary>
         /// <param name="hex">The color value as hex code in form of a "FFFFFF" string.</param>
         public static float3 LinearColorFromSRgb(string hex)
@@ -860,7 +918,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Converts a color value from linear to sRgb space.
+        /// Converts a color value from sRgb to linear space.
         /// </summary>
         /// <param name="col">The color value as uint.</param>
         public static float3 LinearColorFromSRgb(uint col)

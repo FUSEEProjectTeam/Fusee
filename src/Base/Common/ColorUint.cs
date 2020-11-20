@@ -410,24 +410,26 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Math.float3"/> to <see cref="T:Fusee.Engine.ColorUint"/>.
         /// </summary>
-        /// <param name="value">The color value. It is expected to be in SRgb color space.</param>
+        /// <param name="value">The color value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator ColorUint(float3 value)
         {
+            value = value.SRgbFromLinearColor();
             return new ColorUint(value.x, value.y, value.z, 1f);
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Math.float4"/> to <see cref="T:Fusee.Engine.ColorUint"/>.
         /// </summary>
-        /// <param name="value">The value. It is expected to be in SRgb color space.</param>
+        /// <param name="value">The color value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator ColorUint(float4 value)
         {
+            value = value.SRgbFromLinearColor();
             return new ColorUint(value.x, value.y, value.z, value.w);
         }
 

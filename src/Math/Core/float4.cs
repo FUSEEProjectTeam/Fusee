@@ -337,12 +337,21 @@ namespace Fusee.Math.Core
         #endregion public Round()
 
         /// <summary>
-        /// Converts this float4 - which is interpreted as a color - from linear color space to sRgb space.
+        /// Converts this float4 - which is interpreted as a color - from sRgb space to linear color space.       
         /// </summary>
         /// <returns></returns>
         public float4 LinearColorFromSRgb()
         {
             return LinearColorFromSRgb(this);
+        }
+
+        /// <summary>
+        /// Converts this float4 - which is interpreted as a color - from linear color space to sRgb space.
+        /// </summary>
+        /// <returns></returns>
+        public float4 SRgbFromLinearColor()
+        {
+            return SRgbFromLinearColor(this);
         }
 
         #endregion Instance
@@ -664,6 +673,50 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Converts a color value from linear to sRgb space.
         /// </summary>
+        /// <param name="sRGBCol">The linear color value as <see cref="float4"/>.</param>
+        public static float4 SRgbFromLinearColor(float4 sRGBCol)
+        {
+            return new float4(float3.SRgbFromLinearColor(sRGBCol.rgb), sRGBCol.a);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        /// <param name="a">The alpha value in range 0 - 255.</param>
+        public static float4 SRgbFromLinearColor(int r, int g, int b, int a)
+        {
+            return new float4(float3.SRgbFromLinearColor(r, g, b), a / 255f);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFFFF" string.</param>
+        public static float4 SRgbFromLinearColor(string hex)
+        {
+            var rgba = Convert.ToUInt32(hex, 16);
+            return SRgbFromLinearColor(rgba);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static float4 SRgbFromLinearColor(uint col)
+        {
+            var a = (byte)(col & byte.MaxValue);
+            var b = (byte)(col >> 8 & byte.MaxValue);
+            var g = (byte)(col >> 16 & byte.MaxValue);
+            var r = (byte)(col >> 24 & byte.MaxValue);
+            return SRgbFromLinearColor(r, g, b, a);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
         /// <param name="sRGBCol">The sRgb color value as <see cref="float4"/>.</param>
         public static float4 LinearColorFromSRgb(float4 sRGBCol)
         {
@@ -671,7 +724,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Converts a color value from linear to sRgb space.
+        ///Converts a color value from sRgb to linear space.
         /// </summary>
         /// <param name="r">The red color value in range 0 - 255.</param>
         /// <param name="g">The green color value in range 0 - 255.</param>
@@ -683,7 +736,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Converts a color value from linear to sRgb space.
+        /// Converts a color value from sRgb to linear space.
         /// </summary>
         /// <param name="hex">The color value as hex code in form of a "FFFFFFFF" string.</param>
         public static float4 LinearColorFromSRgb(string hex)
@@ -693,7 +746,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Converts a color value from linear to sRgb space.
+        /// Converts a color value from sRgb to linear space.
         /// </summary>
         /// <param name="col">The color value as uint.</param>
         public static float4 LinearColorFromSRgb(uint col)
