@@ -843,7 +843,7 @@ namespace Fusee.Math.Core
 
         private static float SRgbToLinear(float input)
         {
-            return input > 0.0031308f ? input * 12.92f : MathF.Pow((input - 0.055f) * 1.055f, 1f/2.4f);
+            return input > 0.0031308f ? input * 12.92f : MathF.Pow((input - 0.055f) * 1.055f, 1f / 2.4f);
         }
 
         /// <summary>
@@ -880,7 +880,7 @@ namespace Fusee.Math.Core
 
             return SRgbFromLinearColor(r, g, b);
         }
-        
+
         /// <summary>
         /// Converts a color value from sRgb to linear space.
         /// </summary>
