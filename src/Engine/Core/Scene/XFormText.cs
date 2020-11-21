@@ -1,51 +1,8 @@
-﻿using Fusee.Math.Core;
-
+﻿
+using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core.Scene
 {
-    /// <summary>
-    /// Defines the alignment in x direction.
-    /// </summary>
-    public enum HorizontalTextAlignment
-    {
-        /// <summary>
-        /// The text will be aligned to the left border of the enclosing <see cref="MinMaxRect"/>.
-        /// </summary>
-        Left,
-
-        /// <summary>
-        /// The text will be aligned to the middle of the horizontal axis of the enclosing <see cref="MinMaxRect"/>.
-        /// </summary>
-        Center,
-
-        /// <summary>
-        /// The text will be aligned to the right border of the enclosing <see cref="MinMaxRect"/>.
-        /// </summary>
-        Right
-    }
-
-    /// <summary>
-    /// Defines the alignment in y direction.
-    /// </summary>
-    public enum VerticalTextAlignment
-    {
-        /// <summary>
-        /// The text will be aligned to the top border of the enclosing <see cref="MinMaxRect"/>.
-        /// </summary>
-        Top,
-
-        /// <summary>
-        /// The text will be aligned to the middle of vertical axis of the enclosing <see cref="MinMaxRect"/>.
-        /// </summary>
-        Center,
-
-        /// <summary>
-        /// The text will be aligned to the bottom border of the enclosing <see cref="MinMaxRect"/>.
-        /// </summary>
-        Bottom,
-
-    }
-
     /// <summary>
     /// Enables the scene renderer to treat GUI text differently.
     /// </summary>  

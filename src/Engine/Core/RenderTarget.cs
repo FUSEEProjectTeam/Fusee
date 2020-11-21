@@ -122,6 +122,14 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>        
+        public void SetEmissiveTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution);
+        }
+
+        /// <summary>
         /// Public implementation of Dispose pattern callable by consumers.
         /// </summary>
         public void Dispose()

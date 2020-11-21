@@ -11,7 +11,7 @@ using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Picking.Desktop
 {
-    public class Simple
+    public class Picking
     {
         public static void Main()
         {

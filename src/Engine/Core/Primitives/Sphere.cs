@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a simple sphere geometry straight from the code.
@@ -58,8 +58,8 @@ namespace Fusee.Engine.Core
 
             #region UVs
             var uvs = new float2[vertices.Length];
-            uvs[0] = float2.UnitY;
-            uvs[uvs.Length - 1] = float2.Zero;
+            uvs[0] = new float2(0.5f, 1f);
+            uvs[uvs.Length - 1] = new float2(0.5f, 0f);
             for (var lat = 0; lat < rings; lat++)
             {
                 for (var lon = 0; lon <= segments; lon++)

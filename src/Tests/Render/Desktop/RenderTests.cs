@@ -44,13 +44,13 @@ namespace Fusee.Test.Render.Desktop
         //}
 
         [Fact]
-        public void BumpMappingTest()
+        public void NormalMappingTest()
         {
-            Program.Example = new Fusee.Examples.NormalMap.Core.NormalMap();
-            Program.Init("BumpMappingTest.png");
+            Program.Example = new Examples.NormalMap.Core.NormalMap();
+            Program.Init("NormalMappingTest.png");
 
             var referenceIm = new Bitmap(@"References\BumpMapping.png");
-            var testIm = new Bitmap("BumpMappingTest.png");
+            var testIm = new Bitmap("NormalMappingTest.png");
 
             var percent = CompareImage(referenceIm, testIm);
 

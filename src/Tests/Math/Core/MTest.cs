@@ -513,7 +513,6 @@ namespace Fusee.Test.Math.Core
         }
         #endregion
 
-
         #region BinomialCoefficient
         [Fact]
         public void BinominalCoefficient_IsOne()
@@ -651,6 +650,14 @@ namespace Fusee.Test.Math.Core
         public void Clamp_IsMinIsMax_double(double x, double min, double max)
         {
             Assert.Equal(1, M.Clamp(x, min, max));
+        }
+
+        [Theory]
+        [InlineData(2.222f, 1.111f, 0.0f)]
+        [InlineData(1.111f, 2.222f, 1.0f)]
+        public void Step(float edge, float val, float expected)
+        {
+            Assert.Equal(expected, M.Step(edge, val));
         }
 
         #endregion

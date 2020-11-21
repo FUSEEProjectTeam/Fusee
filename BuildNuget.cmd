@@ -26,7 +26,13 @@ msbuild src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj
 dotnet pack dis\NuGet\Core\Core.csproj -c Release -o bin\Release\nuget
 dotnet pack dis\NuGet\Desktop\Desktop.csproj -c Release -o bin\Release\nuget
 msbuild dis\NuGet\Android\Android.csproj -t:restore,pack -p:Configuration=Release
+
 dotnet pack dis\DnTemplate\DnTemplate.csproj -c Release -o bin\Release\nuget
+
+msbuild dis\VSTemplate\VSTemplate.sln -t:restore,pack -p:Configuration=Release
+copy /Y dis\VSTemplate\VSTemplate\bin\Release\ProjectTemplates\CSharp\1033\Fusee.Template.VS.zip bin\Release\nuget\
+copy /Y dis\VSTemplate\VSIX\bin\Release\Fusee.Template.VS.vsix bin\Release\nuget\
+
 goto END
 
 :ERRORDOTNET

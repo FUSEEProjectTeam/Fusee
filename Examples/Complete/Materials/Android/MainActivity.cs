@@ -7,7 +7,6 @@ using Android.Widget;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
@@ -22,7 +21,7 @@ namespace Fusee.Examples.Materials.Android
 #if __ANDROID_11__
         HardwareAccelerated = false,
 #endif
-        ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
+        ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
     public class MainActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)
