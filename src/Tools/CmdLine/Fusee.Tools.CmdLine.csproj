@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <PackageId>Fusee.Tools.CmdLine</PackageId>
     <AssemblyName>fusee</AssemblyName>
@@ -74,10 +74,10 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Exec Timeout="120000" Command='dotnet "$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.dll" protoschema -o "$(BlenderAddonSourcePath)\proto\FusSerialization.proto"' />
+    <Exec Timeout="120000" Command="dotnet &quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.dll&quot; protoschema -o &quot;$(BlenderAddonSourcePath)\proto\FusSerialization.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for FusSerialization.proto -->
-    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto" Command='"$(protoc_executable)" --proto_path="$(protoc_tools)\" --proto_path="$(BlenderAddonSourcePath)\proto" --python_out="$(BlenderAddonSourcePath)\proto" "$(BlenderAddonSourcePath)\proto\FusSerialization.proto"' />
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto" Command="&quot;$(protoc_executable)&quot; --proto_path=&quot;$(protoc_tools)\&quot; --proto_path=&quot;$(BlenderAddonSourcePath)\proto&quot; --python_out=&quot;$(BlenderAddonSourcePath)\proto&quot; &quot;$(BlenderAddonSourcePath)\proto\FusSerialization.proto&quot;" />
     <Copy SourceFiles="$(BlenderAddonSourcePath)\proto\FusSerialization.proto;$(BlenderAddonSourcePath)\proto\FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
     <!-- Copy the python files to the bin output folder -->
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
@@ -101,10 +101,10 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)/ext/protobuf/Python/**/*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Exec Timeout="120000" Command='dotnet "$(FuseeEngineRoot)/bin/$(Configuration)/Tools/CmdLine/fusee.dll" protoschema -o "$(BlenderAddonSourcePath)/proto/FusSerialization.proto"' />
+    <Exec Timeout="120000" Command="dotnet &quot;$(FuseeEngineRoot)/bin/$(Configuration)/Tools/CmdLine/fusee.dll&quot; protoschema -o &quot;$(BlenderAddonSourcePath)/proto/FusSerialization.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for FusSerialization.proto -->
-    <Exec WorkingDirectory="$(BlenderAddonSourcePath)/proto" Command='"$(protoc_executable)" --proto_path="$(protoc_tools)" --proto_path="$(BlenderAddonSourcePath)/proto" --python_out="$(BlenderAddonSourcePath)/proto" "$(BlenderAddonSourcePath)/proto/FusSerialization.proto"' />
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)/proto" Command="&quot;$(protoc_executable)&quot; --proto_path=&quot;$(protoc_tools)&quot; --proto_path=&quot;$(BlenderAddonSourcePath)/proto&quot; --python_out=&quot;$(BlenderAddonSourcePath)/proto&quot; &quot;$(BlenderAddonSourcePath)/proto/FusSerialization.proto&quot;" />
     <Copy SourceFiles="$(BlenderAddonSourcePath)/proto/FusSerialization.proto;$(BlenderAddonSourcePath)/proto/FusSerialization_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)/$(BlenderAddOnProjectName)/proto" />
     <!-- Copy the python files to the bin output folder -->
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)/$(BlenderAddOnProjectName)/%(RecursiveDir)" />
