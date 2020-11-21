@@ -43,15 +43,31 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
+        /// Contains all methods for color management (gamma and from and to sRGB).
+        /// </summary>
+        /// <returns></returns>
+        public static string ColorManagementMethods()
+        {
+            var lighting = new List<string>
+            {
+                GammaCorrection(),
+                EncodeSRGB(),
+                DecodeSRGB()
+            };
+
+            return string.Join("\n", lighting);
+        }
+
+        /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="LightingSetupFlags"/> and the LightingCalculationMethod.
         /// </summary>
         /// <param name="setup">The <see cref="LightingSetupFlags"/> which is used to decide which lighting methods we need.</param>
         public static string AssembleLightingMethods(LightingSetupFlags setup)
         {
-            if (setup == LightingSetupFlags.Unlit)
-                return string.Empty;
-
-            var lighting = new List<string>();
+            var lighting = new List<string>
+            {
+                ColorManagementMethods()
+            };
 
             //Adds methods to the PS that calculate the single light components (diffuse, specular)
             if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
@@ -123,8 +139,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float Fss90 = LdotH * LdotH * roughness;",
                 "float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);",
                 "float ss = 1.25 * (Fss * (1.0 / max((NdotL + NdotV), 0.001) - 0.5) + 0.5);",
-                "return mix((albedo / PI) * (Fd * NdotL), (subsurfaceColor / PI) * ss, subsurface);"
-
+                "return mix((albedo) * Fd * NdotL, (subsurfaceColor) * ss, subsurface);"
             };
             return GLSL.CreateMethod(GLSL.Type.Vec3, "diffuseLighting",
                 new[]
@@ -182,7 +197,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float denom = (NdotH * NdotH) * (alphaSqr - 1.0) + 1.0f;",
                 "D = alphaSqr / (PI * (denom * denom));",
                 "",
-                "// G (ometry - Schlick�s Approximation of Smith)",
+                "// G (ometry - Schlicks Approximation of Smith)",
                 "float r = roughness + 1.0;",
                 "float k = (r * r) / 8.0;",
                 "",
@@ -462,7 +477,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "// then calculate lighting as usual",
             "vec4 lighting = vec4(0);",
             "",
-            "float ambientCo = 0.2;",
+            "float ambientCo = 0.1;",
             "vec4 ambient = vec4(0,0,0,1);",
             "vec4 diffuse = vec4(0,0,0,1);",
             "vec4 specular = vec4(0,0,0,1);",
@@ -617,9 +632,65 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "}",
             });
 
-            methodBody.Add($"{FragProperties.OutColorName} = lighting;");
+            //methodBody.Add($"{FragProperties.OutColorName} = vec4(GammaCorrection(lighting.rgb, 1.0/1.9), lighting.a);");
+            methodBody.Add($"{FragProperties.OutColorName} = vec4(EncodeSRGB(lighting.rgb), lighting.a);");
 
             return GLSL.MainMethod(methodBody);
+        }
+
+        /// <summary>
+        /// Converts a color from linear space to sRGB.
+        /// </summary>
+        public static string EncodeSRGB()
+        {
+            var methodBody = new List<string>
+            {
+                "vec3 a = 12.92 * linearRGB;",
+                "vec3 b = 1.055 * pow(linearRGB, vec3(1.0 / 2.4)) - 0.055;",
+                "vec3 c = step(vec3(0.0031308), linearRGB);",
+                "return mix(a, b, c);"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "EncodeSRGB",
+               new[]
+               {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "linearRGB")
+               }, methodBody);
+        }
+
+        /// <summary>
+        /// Converts a color from sRGB to linear space.
+        /// </summary>
+        public static string DecodeSRGB()
+        {
+            var methodBody = new List<string>
+            {
+                "vec3 a = screenRGB / 12.92;",
+                "vec3 b = pow((screenRGB + 0.055) / 1.055, vec3(2.4));",
+                "vec3 c = step(vec3(0.04045), screenRGB);",
+                "return mix(a, b, c);"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "DecodeSRGB",
+              new[]
+              {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "screenRGB")
+              }, methodBody);
+        }
+
+        /// <summary>
+        /// Method for gamma correction.
+        /// </summary>
+        public static string GammaCorrection()
+        {
+            var methodBody = new List<string> { "return pow(color, vec3(g));" };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "GammaCorrection",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "color"),
+                    GLSL.CreateVar(GLSL.Type.Float, "g")
+                }, methodBody);
         }
 
         /// <summary>

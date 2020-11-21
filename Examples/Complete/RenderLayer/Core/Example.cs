@@ -114,20 +114,24 @@ namespace Fusee.Examples.RenderLayerEx.Core
             var cam = new SceneNode();
             cam.AddComponent(new Transform { Translation = new float3(0, 1.7f, -16), Rotation = new float3(0, 0, 0) });
 
-            var cam1 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-            cam1.Viewport = new float4(0, 0, 50, 100);
-            cam1.BackgroundColor = new float4(new float4(1, 0.8f, 0.8f, 1));
-            cam1.Layer = 1;
-            cam1.FrustumCullingOn = false;
-            cam1.RenderLayer = RenderLayers.Layer01;
+            var cam1 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4)
+            {
+                Viewport = new float4(0, 0, 50, 100),
+                BackgroundColor = new float4(1, 0.8f, 0.8f, 1),
+                Layer = 1,
+                FrustumCullingOn = false,
+                RenderLayer = RenderLayers.Layer01
+            };
             cam.AddComponent(cam1);
 
-            var cam2 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-            cam2.Viewport = new float4(50, 0, 50, 100);
-            cam2.BackgroundColor = new float4(new float4(0.8f, 1, 0.8f, 1));
-            cam2.Layer = 1;
-            cam2.FrustumCullingOn = false;
-            cam2.RenderLayer = RenderLayers.Layer02;
+            var cam2 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4)
+            {
+                Viewport = new float4(50, 0, 50, 100),
+                BackgroundColor = new float4(0.8f, 1, 0.8f, 1),
+                Layer = 1,
+                FrustumCullingOn = false,
+                RenderLayer = RenderLayers.Layer02
+            };
             cam.AddComponent(cam2);
 
             _scene.Children.Add(cam);

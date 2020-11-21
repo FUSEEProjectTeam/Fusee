@@ -36,6 +36,16 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new float2.
         /// </summary>
+        /// <param name="val">This value will be set for the x and y component.</param>
+        public float2(float val)
+        {
+            x = val;
+            y = val;
+        }
+
+        /// <summary>
+        /// Constructs a new float2.
+        /// </summary>
         /// <param name="x">The x coordinate of the net float2.</param>
         /// <param name="y">The y coordinate of the net float2.</param>
         public float2(float x, float y)
@@ -488,6 +498,27 @@ namespace Fusee.Math.Core
 
         #endregion Dot
 
+        /// <summary>
+        /// Performs <see cref="M.Step(float, float)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        public static float2 Step(float2 edge, float2 val)
+        {
+            return new float2(M.Step(edge.x, val.x), M.Step(edge.y, val.y));
+        }
+
+        /// <summary>
+        /// Returns a float2 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The float3 to be raised to a power.</param>
+        /// <param name="exp">A float that specifies a power.</param>
+        /// <returns></returns>
+        public static float2 Pow(float2 val, float exp)
+        {
+            return new float2(MathF.Pow(val.r, exp), MathF.Pow(val.g, exp));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -503,6 +534,20 @@ namespace Fusee.Math.Core
         {
             a.x = blend * (b.x - a.x) + a.x;
             a.y = blend * (b.y - a.y) + a.y;
+            return a;
+        }
+
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        public static float2 Lerp(float2 a, float2 b, float2 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
             return a;
         }
 

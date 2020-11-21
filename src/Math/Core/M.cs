@@ -867,6 +867,18 @@ namespace Fusee.Math.Core
 
         #endregion Equals
 
+        /// <summary>
+        /// Generates a step function by comparing "val" to "edge".
+        /// 0.0 is returned if "val" is smaller than "edge" and 1.0 is returned otherwise.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        /// <returns></returns>
+        public static float Step(float edge, float val)
+        {
+            return val < edge ? 0.0f : 1.0f;
+        }
+
         #endregion Public Members
 
         #region Internal Members

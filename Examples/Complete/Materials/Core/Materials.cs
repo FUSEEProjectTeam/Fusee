@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;
@@ -66,7 +67,7 @@ namespace Fusee.Examples.Materials.Core
                             UIElementPosition.GetAnchors(AnchorPos.DownDownLeft),
                             UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
                             fontLatoMap,
-                            new float4(1,1,0,1),
+                            new float4(1, 1, 0, 1).LinearColorFromSRgb(),
                             HorizontalTextAlignment.Left,
                             VerticalTextAlignment.Center)
                         }
@@ -91,7 +92,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                new float4(0,0,0,1),
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center),new TextNode(
                                 "NOT YET IMPLEMENTED",
@@ -130,7 +131,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                new float4(0,0,0,1),
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -155,7 +156,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                new float4(0,0,0,1),
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -180,7 +181,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                new float4(0,0,0,1),
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center),
                                 new TextNode(
@@ -195,7 +196,7 @@ namespace Fusee.Examples.Materials.Core
                                     Min = new float2(0, -1.25f)
                                 },
                                 fontLatoMap,
-                                new float4(1,0,0,0.75f),
+                                new float4(1,0,0,0.75f).LinearColorFromSRgb(),
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -220,7 +221,7 @@ namespace Fusee.Examples.Materials.Core
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
-                                new float4(0,0,0,1),
+                                (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center)
                         }
@@ -245,7 +246,7 @@ namespace Fusee.Examples.Materials.Core
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect(),
                                         fontLatoMap,
-                                        new float4(0,0,0,1),
+                                        (float4)ColorUint.Black,
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center),
                                       new TextNode(
@@ -260,7 +261,7 @@ namespace Fusee.Examples.Materials.Core
                                             Min = new float2(0, -1.25f)
                                         },
                                         fontLatoMap,
-                                        new float4(1,0,0,0.75f),
+                                        new float4(1,0,0,0.75f).LinearColorFromSRgb(),
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center)
                                 }
@@ -285,7 +286,7 @@ namespace Fusee.Examples.Materials.Core
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect(),
                                         fontLatoMap,
-                                        new float4(0,0,0,1),
+                                        (float4)ColorUint.Black,
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center),
                                      new TextNode(
@@ -300,7 +301,7 @@ namespace Fusee.Examples.Materials.Core
                                             Min = new float2(0, -1.75f)
                                         },
                                         fontLatoMap,
-                                        new float4(1,0,0,0.75f),
+                                        new float4(1,0,0,0.75f).LinearColorFromSRgb(),
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center)
                                 }
@@ -332,7 +333,7 @@ namespace Fusee.Examples.Materials.Core
                                         Translation = new float3(-15, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularTexture(
-                                        albedoColor : float4.One * 0.25f,
+                                        albedoColor : (float4.One * 0.25f).LinearColorFromSRgb(),
                                         emissionColor: float4.Zero,
                                         shininess : 25f,
                                         albedoTex : albedoTex,
@@ -362,7 +363,7 @@ namespace Fusee.Examples.Materials.Core
                                         Translation = new float3(-10, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecular(
-                                    albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
                                     shininess: 25.0f,
                                     specularStrength: 1f),
@@ -380,7 +381,7 @@ namespace Fusee.Examples.Materials.Core
                                     },
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture
                                     (
-                                        albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                        albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                         emissionColor: float4.Zero,
                                         shininess: 256.0f,
                                         albedoTex: albedoTex,
@@ -433,7 +434,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "specular texture - not impl.",
                                         Translation = new float3(0, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, 85),
+                                    MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, 85, 0.5f),
                                     icosphereWithTangents
                                 }
                             },
@@ -447,7 +448,7 @@ namespace Fusee.Examples.Materials.Core
                                         Translation = new float3(5, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularTexture(
-                                            albedoColor: float4.One * 0.25f,
+                                            albedoColor: (float4.One * 0.25f).LinearColorFromSRgb(),
                                             emissionColor: float4.Zero,
                                             shininess: 200f,
                                             albedoTex : albedoTex,
@@ -470,7 +471,7 @@ namespace Fusee.Examples.Materials.Core
                                         Translation = new float3(10, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture(
-                                    albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
                                     shininess: 256.0f,
                                     albedoTex: albedoTex,
@@ -490,7 +491,7 @@ namespace Fusee.Examples.Materials.Core
                                         Translation = new float3(15, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture(
-                                    albedoColor: new float4(0.39f, 0.19f, 0, 1),
+                                    albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
                                     shininess: 256.0f,
                                     albedoTex: albedoTex,

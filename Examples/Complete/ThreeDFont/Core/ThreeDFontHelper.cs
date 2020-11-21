@@ -17,7 +17,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             _font = font;
         }
 
-        //Reads all curves from a given text and retruns them as a List of Curves.
+        //Reads all curves from a given text and returns them as a List of Curves.
         private IList<Curve> GetTextCurves()
         {
             var curves = new List<Curve>();

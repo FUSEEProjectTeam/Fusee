@@ -78,9 +78,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
             {
                 res.Add($"vec4 texCol = texture(IN.AlbedoTex, {VaryingNameDeclarations.TextureCoordinates} * IN.TexTiles);");
-                res.Add($"vec3 mix = mix(IN.Albedo.rgb, texCol.xyz, IN.AlbedoMix);");
-                res.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
-                res.Add($"OUT.albedo = vec4(mix * luma, texCol.a);");
+                res.Add($"texCol = vec4(DecodeSRGB(texCol.rgb), texCol.a);");
+                res.Add("float linearLuminance = (0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b);");
+                res.Add($"vec3 mix = mix(IN.Albedo.rgb * linearLuminance, texCol.xyz, IN.AlbedoMix);");
+                res.Add($"OUT.albedo = vec4(mix, texCol.a);");
             }
             else
                 res.Add("OUT.albedo = IN.Albedo;");

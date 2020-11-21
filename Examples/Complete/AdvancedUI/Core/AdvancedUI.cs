@@ -1,4 +1,5 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
@@ -80,7 +81,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1), float4.Zero, 20, paperTex, 1.0f, float2.One, 0.5f)                            
+                            MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1).LinearColorFromSRgb(), float4.Zero, 20, paperTex, 1.0f, float2.One, 0.5f)                            
                             //sphere
                         }
                     },
@@ -95,7 +96,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
                             },
-                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1,1), float4.Zero, 20),
+                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1, 1).LinearColorFromSRgb(), float4.Zero, 20, 1.0f),
                             line
                         }
                     }
@@ -465,14 +466,14 @@ namespace Fusee.Examples.AdvancedUI.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.Albedo, ColorUint.White);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 

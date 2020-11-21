@@ -83,14 +83,14 @@ namespace Fusee.Engine.Core.Effects
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Method)]
+        [FxShard(ShardCategory.SurfOut)]
         public static string SurfOutFragMethod;
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Method)]
+        [FxShard(ShardCategory.SurfOut)]
         public static string SurfOutVertMethod;
         //======================================================//
 
@@ -217,6 +217,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Main:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
+                    case ShardCategory.SurfOut:
 
                         if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
                             HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)prop.GetValue(this));
@@ -285,6 +286,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Main:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
+                    case ShardCategory.SurfOut:
                         if (field.IsStatic && field.FieldType == typeof(string))
                         {
                             var val = (string)field.GetValue(this);

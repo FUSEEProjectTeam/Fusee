@@ -21,7 +21,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
-        public static SurfaceEffect Default { get; } = FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22);
+        public static SurfaceEffect Default { get; } = FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22, 1.0f);
 
         #region Deferred
 
@@ -404,7 +404,7 @@ namespace Fusee.Engine.Core
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess, float specularStrength = 0.5f)
+        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess = 255, float specularStrength = 0.0f)
         {
             var input = new SpecularInput()
             {
@@ -675,6 +675,9 @@ namespace Fusee.Engine.Core
             frag.Append(Lighting.BRDFSpecularComponent());
             frag.Append(Lighting.AttenuationPointComponent());
             frag.Append(Lighting.AttenuationConeComponent());
+            frag.Append(Lighting.GammaCorrection());
+            frag.Append(Lighting.EncodeSRGB());
+            frag.Append(Lighting.DecodeSRGB());
 
             frag.Append(Lighting.ApplyLightDeferred(lc, isCascaded, numberOfCascades, debugCascades));
 

@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 fragMainBody.AddRange(
                 new List<string>()
                 {
-                    $"float ambientCo = 0.2;",
+                    $"float ambientCo = 0.1;",
                     $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
                     $"vec3 result = vec3(0.0);",
                     $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
@@ -31,11 +31,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         "if(allLights[i].isActive == 0) continue;",
                         "result += ApplyLight(allLights[i], surfOut, ambientCo);",
                     "}",
-                    $"oFragmentColor = vec4(result.rgb + ambient, surfOut.albedo.a);"
+                    //$"oFragmentColor = vec4(GammaCorrection(result.rgb, 1.0/2.0)+ ambient, surfOut.albedo.a);"
+                    $"oFragmentColor = vec4(EncodeSRGB(result.rgb) + ambient, surfOut.albedo.a);"
                 });
             }
             else
-                fragMainBody.Add("oFragmentColor = surfOut.albedo;");
+            {
+                //fragMainBody.Add("oFragmentColor = vec4(GammaCorrection(surfOut.albedo.rgb, 1.0/2.0), surfOut.albedo.a);");
+                fragMainBody.Add("oFragmentColor = vec4(EncodeSRGB(surfOut.albedo.rgb), surfOut.albedo.a);");
+            }
 
             return GLSL.MainMethod(fragMainBody);
         }
