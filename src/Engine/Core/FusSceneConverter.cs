@@ -394,7 +394,8 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            if (_currentNode.GetComponent<DefaultSurfaceEffect>().LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            var _currentNodeDefaultSurfaceEffect = _currentNode.GetComponent<DefaultSurfaceEffect>();
+            if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
