@@ -1,7 +1,6 @@
 ﻿using ProtoBuf;
 using System;
 using System.Globalization;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -173,10 +172,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public float Length
-        {
-            get { return (float)System.Math.Sqrt(LengthSquared); }
-        }
+        public float Length => (float)System.Math.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -193,10 +189,7 @@ namespace Fusee.Math.Core
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
         /// </remarks>
-        public float LengthSquared
-        {
-            get { return x * x + y * y + z * z; }
-        }
+        public float LengthSquared => x * x + y * y + z * z;
 
         #endregion public float LengthSquared
 
@@ -939,62 +932,62 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and z components of this instance.
         /// </summary>
-        public float2 xz { get { return new float2(x, z); } set { x = value.x; z = value.y; } }
+        public float2 xz { get => new float2(x, z); set { x = value.x; z = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
         /// </summary>
-        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
+        public float2 yx { get => new float2(y, x); set { y = value.x; x = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and z components of this instance.
         /// </summary>
-        public float2 yz { get { return new float2(y, z); } set { y = value.x; z = value.y; } }
+        public float2 yz { get => new float2(y, z); set { y = value.x; z = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the z and x components of this instance.
         /// </summary>
-        public float2 zx { get { return new float2(z, x); } set { z = value.x; x = value.y; } }
+        public float2 zx { get => new float2(z, x); set { z = value.x; x = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the z and y components of this instance.
         /// </summary>
-        public float2 zy { get { return new float2(z, y); } set { z = value.x; y = value.y; } }
+        public float2 zy { get => new float2(z, y); set { z = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-        public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+        public float3 xyz { get => new float3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
         /// </summary>
-        public float3 xzy { get { return new float3(x, z, y); } set { x = value.x; z = value.y; y = value.z; } }
+        public float3 xzy { get => new float3(x, z, y); set { x = value.x; z = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
         /// </summary>
-        public float3 yzx { get { return new float3(y, z, x); } set { y = value.x; z = value.y; x = value.z; } }
+        public float3 yzx { get => new float3(y, z, x); set { y = value.x; z = value.y; x = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, x and z components of this instance.
         /// </summary>
-        public float3 yxz { get { return new float3(y, x, z); } set { y = value.x; x = value.y; z = value.z; } }
+        public float3 yxz { get => new float3(y, x, z); set { y = value.x; x = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, x and y components of this instance.
         /// </summary>
-        public float3 zxy { get { return new float3(z, x, y); } set { z = value.x; x = value.y; y = value.z; } }
+        public float3 zxy { get => new float3(z, x, y); set { z = value.x; x = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, y and x components of this instance.
         /// </summary>
-        public float3 zyx { get { return new float3(z, y, x); } set { z = value.x; y = value.y; x = value.z; } }
+        public float3 zyx { get => new float3(z, y, x); set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion Swizzle
 
@@ -1163,7 +1156,7 @@ namespace Fusee.Math.Core
         /// Returns a System.String that represents the current float3.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -1175,7 +1168,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -1189,7 +1182,7 @@ namespace Fusee.Math.Core
 
             char separator = M.GetNumericListSeparator(provider);
 
-            return String.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
+            return string.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
         }
 
         #endregion public override string ToString()
@@ -1237,8 +1230,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float r
         {
-            get { return x; }
-            set { x = value; }
+            get => x;
+            set => x = value;
         }
 
         /// <summary>
@@ -1246,8 +1239,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float g
         {
-            get { return y; }
-            set { y = value; }
+            get => y;
+            set => y = value;
         }
 
         /// <summary>
@@ -1255,8 +1248,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float b
         {
-            get { return z; }
-            set { z = value; }
+            get => z;
+            set => z = value;
         }
 
         #endregion Color

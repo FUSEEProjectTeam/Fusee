@@ -53,8 +53,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double3 xyz
         {
-            get { return _xyz; }
-            set { _xyz = value; }
+            get => _xyz;
+            set => _xyz = value;
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double x
         {
-            get { return _xyz.x; }
-            set { _xyz.x = value; }
+            get => _xyz.x;
+            set => _xyz.x = value;
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double y
         {
-            get { return _xyz.y; }
-            set { _xyz.y = value; }
+            get => _xyz.y;
+            set => _xyz.y = value;
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double z
         {
-            get { return _xyz.z; }
-            set { _xyz.z = value; }
+            get => _xyz.z;
+            set => _xyz.z = value;
         }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double w
         {
-            get { return _w; }
-            set { _w = value; }
+            get => _w;
+            set => _w = value;
         }
 
         #endregion Properties
@@ -181,10 +181,7 @@ namespace Fusee.Math.Core
         ///     Gets the length (magnitude) of the QuaternionD.
         /// </summary>
         /// <seealso cref="LengthSquared" />
-        public double Length
-        {
-            get { return System.Math.Sqrt(w * w + xyz.LengthSquared); }
-        }
+        public double Length => System.Math.Sqrt(w * w + xyz.LengthSquared);
 
         #endregion public double Length
 
@@ -193,10 +190,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Gets the square of the QuaternionD length (magnitude).
         /// </summary>
-        public double LengthSquared
-        {
-            get { return w * w + xyz.LengthSquared; }
-        }
+        public double LengthSquared => w * w + xyz.LengthSquared;
 
         #endregion public double LengthSquared
 
@@ -700,7 +694,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -712,7 +706,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return String.Format(provider, "V: {0} w: {1}", xyz.ToString(provider), w.ToString(provider));
+            return string.Format(provider, "V: {0} w: {1}", xyz.ToString(provider), w.ToString(provider));
         }
 
         #endregion public override string ToString()
