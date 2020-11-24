@@ -29,7 +29,7 @@ msbuild dis\NuGet\Android\Android.csproj -t:restore,pack -p:Configuration=Releas
 
 dotnet pack dis\DnTemplate\DnTemplate.csproj -c Release -o bin\Release\nuget
 
-msbuild dis\VSTemplate\VSTemplate.sln -t:restore,pack -p:Configuration=Release
+msbuild dis\VSTemplate\VSTemplate.sln -t:restore,build -p:Configuration=Release
 copy /Y dis\VSTemplate\VSTemplate\bin\Release\ProjectTemplates\CSharp\1033\Fusee.Template.VS.zip bin\Release\nuget\
 copy /Y dis\VSTemplate\VSIX\bin\Release\Fusee.Template.VS.vsix bin\Release\nuget\
 
