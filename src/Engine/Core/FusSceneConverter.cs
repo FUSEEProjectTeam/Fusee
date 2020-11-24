@@ -673,7 +673,7 @@ namespace Fusee.Engine.Core
             return sfx;
         }
 
-        private Effect LookupMaterial(FusMaterialBRDF m) 
+        private Effect LookupMaterial(FusMaterialBRDF m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
@@ -732,7 +732,7 @@ namespace Fusee.Engine.Core
                 sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BRDF)
-                sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);            
+                sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
