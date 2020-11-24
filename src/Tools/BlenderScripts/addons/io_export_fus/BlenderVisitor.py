@@ -226,6 +226,7 @@ class BlenderVisitor:
         hasMix = False
         hasBump = False
         hasBRDF = False
+        hasRoughnessOnly = False
 
         diffColor = None
         diffTexture = None
@@ -256,8 +257,10 @@ class BlenderVisitor:
             #### DIFFUSE
             if node.type == 'BSDF_DIFFUSE' and hasDiffuse == False:
                 hasDiffuse = True
+                hasRoughnessOnly = True
 
                 diffColor = node.inputs['Color'].default_value        # Color
+                roughnessVal = node.inputs['Roughness'].default_value
                 # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Color'].links
                 if len(links) > 0:
@@ -373,8 +376,6 @@ class BlenderVisitor:
                 iorVal = IOR
                 subsurfaceVal = subsurface
                 subsurfaceColorVal = subsurfaceColor
-                #print("Roughness: " + str(roughness))
-                #print("Metallic: " + str(metallic))
 
         if hasDiffuse:
             self.__fusWriter.BeginMaterial(matName)
@@ -385,8 +386,10 @@ class BlenderVisitor:
                 self.__fusWriter.AddEmissive(emissColor, emissTexture, emissMix)
             if hasBump:
                 self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
-            if hasBRDF:
+            elif hasBRDF:
                 self.__fusWriter.AddBRDFMaterialSettings(roughnessVal, metallicVal, specularVal, iorVal, subsurfaceVal, subsurfaceColorVal)
+            elif hasRoughnessOnly:
+                self.__fusWriter.AddDiffuseBRDFMaterialSettings(roughnessVal)
             self.__fusWriter.EndMaterial()
         else:
             self.__AddDefaultMaterial()

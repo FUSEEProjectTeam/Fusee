@@ -14,6 +14,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static readonly List<string> SurfOutBody_Color = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
+            "OUT.roughness = IN.Roughness;",
             "OUT.emission = IN.Emission;"
         };
 
@@ -25,6 +26,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
             "OUT.shininess = IN.Shininess;",
+            "OUT.roughness = IN.Roughness;",
             "OUT.emission = IN.Emission;"
         };
 
@@ -60,8 +62,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
+            if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
+                res.Add("OUT.roughness = IN.Roughness;");
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
             }

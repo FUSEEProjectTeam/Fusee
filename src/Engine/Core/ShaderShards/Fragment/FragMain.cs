@@ -91,13 +91,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                                 fragMainBody.Add("float invShadingModel = 1.0 / encodedShadingModel;");
                                 fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, encodedShadingModel);");
                             }
-                            else if (lightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
+                            else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
                             {
                                 fragMainBody.Add("float encodedShadingModel = float((2 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("float invShadingModel = 1.0 / encodedShadingModel;");
                                 fragMainBody.Add("//reason for multiplying by 'invShadingModel': keep alpha blending enabled and allow premultiplied alpha while not changing the colors in the specular tex.");
                                 fragMainBody.Add("//this is only needed if alpha blending is enabled");
-                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength, surfOut.shininess, 0.0, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength, surfOut.shininess, surfOut.roughness, encodedShadingModel);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
                             {

@@ -397,23 +397,42 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Builds a simple shader effect with diffuse component.
+        /// </summary>
+        /// <param name="albedoColor">The diffuse color the resulting effect.</param>
+        /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static DefaultSurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f)
+        {
+            var input = new ColorInput()
+            {
+                Albedo = albedoColor,
+                Roughness = roughness
+
+            };
+            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+        }
+
+        /// <summary>
         /// Builds a simple shader effect with diffuse and specular components.
         /// </summary>
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
+        /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess = 255, float specularStrength = 0.0f)
+        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
         {
             var input = new SpecularInput()
             {
                 Albedo = albedoColor,
                 Emission = emissionColor,
                 Shininess = shininess,
-                SpecularStrength = specularStrength
+                SpecularStrength = specularStrength,
+                Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.BlinnPhong, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseSpecular, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -442,7 +461,6 @@ namespace Fusee.Engine.Core
             return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
         }
 
-
         /// <summary>
         /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
@@ -453,7 +471,8 @@ namespace Fusee.Engine.Core
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float4 emissionColor, float shininess, Texture albedoTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f)
+        /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
+        public static DefaultSurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float4 emissionColor, Texture albedoTex, float albedoMix, float2 texTiles, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
         {
             var input = new TextureInput()
             {
@@ -463,10 +482,11 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 AlbedoMix = albedoMix,
                 AlbedoTex = albedoTex,
-                TexTiles = texTiles
+                TexTiles = texTiles,
+                Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex;
+            var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -480,7 +500,8 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float4 emissionColor, float shininess, Texture normalTex, float normalMapStrength, float2 texTiles, float specularStrength = 0.5f)
+        /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
+        public static DefaultSurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float4 emissionColor, Texture normalTex, float normalMapStrength, float2 texTiles, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
         {
             var input = new TextureInput()
             {
@@ -490,10 +511,11 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
-                TexTiles = texTiles
+                TexTiles = texTiles,
+                Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.BlinnPhong | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -509,7 +531,8 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float4 emissionColor, float shininess, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float specularStrength = 0.5f, float normalMapStrength = 0.5f)
+        /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
+        public static DefaultSurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float4 emissionColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float shininess = 255, float specularStrength = 0.5f, float normalMapStrength = 0.5f, float roughness = 0f)
         {
             var input = new TextureInput()
             {
@@ -521,10 +544,11 @@ namespace Fusee.Engine.Core
                 AlbedoTex = albedoTex,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
-                TexTiles = texTiles
+                TexTiles = texTiles,
+                Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
@@ -669,8 +693,9 @@ namespace Fusee.Engine.Core
             frag.Append(Lighting.SchlickFresnel());
             frag.Append(Lighting.G1());
             //frag.Append(Lighting.GetF0());
-            frag.Append(Lighting.DiffuseComponent());
-            frag.Append(Lighting.BRDFDiffuseComponent());
+            frag.Append(Lighting.LambertDiffuseComponent());
+            frag.Append(Lighting.OrenNayarDiffuseComponent());
+            frag.Append(Lighting.DisneyDiffuseComponent());
             frag.Append(Lighting.SpecularComponent());
             frag.Append(Lighting.BRDFSpecularComponent());
             frag.Append(Lighting.AttenuationPointComponent());

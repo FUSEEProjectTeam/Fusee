@@ -77,7 +77,7 @@ namespace Fusee.Test.Serialization.V1
                 {
                     Assert.Equal(fx.Name, ((FusMaterialBase)fusFileComp).Name);
 
-                    if (fx.LightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
+                    if (fx.LightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
                     {
                         if (!fx.LightingSetup.HasFlag(LightingSetupFlags.Unlit))
                         {
@@ -284,7 +284,7 @@ namespace Fusee.Test.Serialization.V1
 
                 if (gtComp is DefaultSurfaceEffect fx)
                 {
-                    if (fx.LightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
+                    if (fx.LightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
                     {
                         if (!fx.LightingSetup.HasFlag(LightingSetupFlags.Unlit))
                         {

@@ -66,6 +66,24 @@ namespace Fusee.Engine.Core.Effects
         private float4 _emission;
 
         /// <summary>
+        /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
+        /// </summary>
+        public float Roughness
+        {
+            get => _roughness;
+
+            set
+            {
+                if (value != _roughness)
+                {
+                    _roughness = value;
+                    NotifyPropertyChanged(_roughness.GetType(), nameof(Emission), _roughness);
+                }
+            }
+        }
+        private float _roughness;
+
+        /// <summary>
         /// Event to notify a <see cref="SurfaceEffect"/> about a changed value of a property of this class.
         /// </summary>
         public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;

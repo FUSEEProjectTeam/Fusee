@@ -64,7 +64,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
 
-            var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lightingFlags = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             _testFx = new DefaultSurfaceEffect(
                 lightingFlags, new TextureInput(),
                 Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags),

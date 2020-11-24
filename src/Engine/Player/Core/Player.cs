@@ -19,7 +19,7 @@ namespace Fusee.Engine.Player.Core
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
-        public string ModelFile = "Model.fus";
+        public string ModelFile = "CubeCar.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
@@ -73,7 +73,7 @@ namespace Fusee.Engine.Player.Core
             _offsetInit = float2.Zero;
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(136f / 255f, 176f / 255f, 75f / 255f, 1);
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);

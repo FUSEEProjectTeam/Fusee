@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// A Effect uses the standard (= non pbr) lighting calculation.
         /// </summary>
-        BlinnPhong = 8,
+        DiffuseSpecular = 8,
 
         /// <summary>
         /// A Effect uses a pbr specular calculation (BRDF).
@@ -95,8 +95,8 @@ namespace Fusee.Engine.Core.ShaderShards
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
 
         private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0), vec4(0))";
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0))";
-        private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0)";
+        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0)";
+        private static readonly string DefaultSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0)";
         private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
 
         /// <summary>
@@ -111,7 +111,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
             var structDcl = BuildStructDecl(setup);
 
-            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
+            if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
@@ -201,7 +201,12 @@ namespace Fusee.Engine.Core.ShaderShards
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
 
-            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
+            if (setup.HasFlag(LightingSetupFlags.DiffuseOnly) || setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
+            {
+                dcl.Add($"  {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
+            }
+
+            if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
                 dcl.Add($"  {GLSL.DecodeType(SpecularStrength.Item1)} {SpecularStrength.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Shininess.Item1)} {Shininess.Item2};");
