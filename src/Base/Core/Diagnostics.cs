@@ -92,6 +92,7 @@ namespace Fusee.Base.Core
         public enum SeverityLevel
         {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+            Verbose = -1,
             Debug = 0,
             Info,
             Warn,
@@ -104,6 +105,8 @@ namespace Fusee.Base.Core
         {
             switch (lvl)
             {
+                case SeverityLevel.Verbose:
+                    return "Verbose";
                 case SeverityLevel.Debug:
                     return "Debug";
                 case SeverityLevel.Info:
@@ -123,6 +126,9 @@ namespace Fusee.Base.Core
         {
             switch (lvl)
             {
+                case SeverityLevel.Verbose:
+                    Console.ForegroundColor = ConsoleColor.DarkGray;
+                    break;
                 case SeverityLevel.Debug:
                     Console.ForegroundColor = ConsoleColor.Green;
                     break;
@@ -231,6 +237,22 @@ namespace Fusee.Base.Core
             Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
         }
 
+        /// <summary>
+        ///     Log a debug event.
+        ///     Per default visible within the Visual Studio debug console and the console window in debug builds.
+        /// </summary>
+        /// <param name="o">The object to write</param>
+        /// <param name="ex">A possible exception, optional</param>
+        /// <param name="args">Possible arguments, optional</param>
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
+        [Conditional("DEBUG")]
+        public static void Verbose(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
+        {
+            Writer(o, SeverityLevel.Verbose, ex, args, callerName, sourceLineNumber, sourceFilePath);
+        }
+        
         /// <summary>
         ///     Log a debug event.
         ///     Per default visible within the Visual Studio debug console and the console window in debug builds.
