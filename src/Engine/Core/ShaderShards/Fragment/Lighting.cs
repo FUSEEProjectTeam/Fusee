@@ -140,15 +140,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var methodBody = new List<string>
             {
                 "//OrenNayarBrdf",
-                "float roughness2 = roughness * roughness;",
-                "float a = 1.0 - 0.5 * roughness2 / (roughness2 + 0.33);",
-                "float b = 0.45 * roughness2 / (roughness2 + 0.09);",
-                "float cosPhi = dot(normalize(V - NdotV * N), normalize(L - NdotL * N)); // cos(phi_v, phi_l)",
-                "float sinNV = sqrt(1.0 - NdotV * NdotV);",
-                "float sinNL = sqrt(1.0 - NdotL * NdotL);",
-                "float s = NdotV < NdotL ? sinNV : sinNL; // sin(max(theta_v, theta_l))",
-                "float t = NdotV > NdotL ? sinNV / NdotV : sinNL / NdotL; // tan(min(theta_v, theta_l))",
-                "return albedo * (a + b * cosPhi * s * t);"
+                "float LdotH = clamp(dot(L, normalize(L + V)), 0.0, 1.0);",
+                "float sigma2 = roughness * roughness;",
+                "float s = LdotH - NdotL * NdotV;",
+                "float A = 1. - .5 * (sigma2 / (((sigma2 + .33) + .000001)));",
+                "float B = .45 * sigma2 / ((sigma2 + .09) + .00001);",
+                "float ga = dot(V - N * NdotV, N - N * NdotL);",
+                "return albedo * max(0., NdotL) * (A + B * max(0., ga) * sqrt(max((1.0 - NdotV * NdotV) * (1.0 - NdotL * NdotL), 0.)) / max(NdotL, NdotV));"
             };
 
             return GLSL.CreateMethod(GLSL.Type.Vec3, "OrenNayarDiffuseLighting",
@@ -468,9 +466,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
                 methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
                 methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+                
                 methodBody.AddRange(Attenuation());
 
-                methodBody.Add("return Idif * att * lightStrength * light.intensities.rgb;");
+                methodBody.Add($"return Idif * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.Glossy))
             {

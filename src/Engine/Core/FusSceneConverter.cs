@@ -651,56 +651,167 @@ namespace Fusee.Engine.Core
 
             var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
 
-            if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
-                if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        PathAndName = m.Albedo.Texture
-                    };
-                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.Albedo.Texture
+                        };
+                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                    }
+                    sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, albedoTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, roughness);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, albedoTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, roughness);
+                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                    {
+                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.NormalMap.Texture
+                        };
+                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                    }
+                    sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, normalTex, m.NormalMap.Intensity, float2.One.PerpendicularLeft, shininess, specularStrenght, roughness);
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                    {
+                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.Albedo.Texture
+                        };
+                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                    }
+                    if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                    {
+                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.NormalMap.Texture
+                        };
+                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                    }
+                    sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, albedoTex, normalTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, m.NormalMap.Intensity, roughness);
+                }
+                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, shininess, specularStrenght, roughness);
+                }
+                else
+                    throw new System.ArgumentException("Material couldn't be resolved.");
             }
-            else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+
+            else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
-                if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        PathAndName = m.NormalMap.Texture
-                    };
-                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.Albedo.Texture
+                        };
+                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                    }
+                    sfx = MakeEffect.FromDiffuseAlbedoTexture(m.Albedo.Color, albedoTex, float2.One, m.Albedo.Mix, roughness);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, normalTex, m.NormalMap.Intensity, float2.One.PerpendicularLeft, shininess, specularStrenght, roughness);
+                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                    {
+                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.NormalMap.Texture
+                        };
+                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                    }
+                    sfx = MakeEffect.FromDiffuseNormalTexture(m.Albedo.Color, normalTex, m.NormalMap.Intensity, float2.One, roughness);
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                    {
+                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.Albedo.Texture
+                        };
+                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                    }
+                    if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                    {
+                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.NormalMap.Texture
+                        };
+                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                    }
+                    sfx = MakeEffect.FromDiffuseTexture(m.Albedo.Color, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity, roughness);
+                }
+                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness);
+                }
+                else
+                    throw new System.ArgumentException("Material couldn't be resolved.");
             }
-            else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+
+            else if (lightingSetup.HasFlag(LightingSetupFlags.Glossy))
             {
-                if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
-                        PathAndName = m.Albedo.Texture
-                    };
-                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.Albedo.Texture
+                        };
+                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                    }
+                    sfx = MakeEffect.FromGlossyAlbedoTexture(m.Albedo.Color, albedoTex, float2.One, m.Albedo.Mix, roughness);
                 }
-                if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
-                        PathAndName = m.NormalMap.Texture
-                    };
-                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.NormalMap.Texture
+                        };
+                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                    }
+                    sfx = MakeEffect.FromGlossyNormalTexture(m.Albedo.Color, normalTex, m.NormalMap.Intensity, float2.One, roughness);
                 }
-                sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, albedoTex, normalTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, m.NormalMap.Intensity, roughness);
+                else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
+                    {
+                        albedoTex = new Texture(AssetStorage.Get<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.Albedo.Texture
+                        };
+                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                    }
+                    if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
+                    {
+                        normalTex = new Texture(AssetStorage.Get<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                        {
+                            PathAndName = m.NormalMap.Texture
+                        };
+                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                    }
+                    sfx = MakeEffect.FromGlossyTexture(m.Albedo.Color, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity, roughness);
+                }
+                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    sfx = MakeEffect.FromGlossy(m.Albedo.Color, roughness);
+                }
+                else
+                    throw new System.ArgumentException("Material couldn't be resolved.");
             }
-            else if (lightingSetup == LightingSetupFlags.DiffuseSpecular)
-                sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, shininess, specularStrenght, roughness);
-            else if (lightingSetup == LightingSetupFlags.DiffuseOnly)
-                sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness);
-            else if (lightingSetup == LightingSetupFlags.Glossy)
-                sfx = MakeEffect.FromGlossy(m.Albedo.Color, roughness);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
@@ -862,6 +973,7 @@ namespace Fusee.Engine.Core
             });
         }
 
+        //TODO: implement FusMaterialDiffuseBRDF and FusMaterialGlossyBRDF
         /// <summary>
         /// Converts an effect.
         /// </summary>
@@ -929,12 +1041,13 @@ namespace Fusee.Engine.Core
             }
             else if (effect.LightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular) ||
                     effect.LightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly) ||
-                    effect.LightingSetup.HasFlag(LightingSetupFlags.Unlit))
+                    effect.LightingSetup.HasFlag(LightingSetupFlags.Unlit) ||
+                    effect.LightingSetup.HasFlag(LightingSetupFlags.Glossy))
             {
                 var mat = new FusMaterialStandard();
                 if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
-                    var surfaceInput = (TextureInput)effect.SurfaceInput;
+                    var surfaceInput = (TextureInputSpecular)effect.SurfaceInput;
 
                     mat.Albedo = new AlbedoChannel()
                     {
@@ -981,83 +1094,6 @@ namespace Fusee.Engine.Core
                 _currentNode.AddComponent(mat);
             }
         }
-
-        ///// <summary>
-        ///// Converts the shader effect.
-        ///// </summary>
-        ///// <param name="fx"></param>
-        //[VisitMethod]
-        //public void ConvShaderEffect(ShaderEffect fx)
-        //{
-        //    // TODO: SurfaceEffect to FusMaterial and SurfaceEffect to FusMaterialPBR
-        //    // TODO: FusMaterialPBR not yet implemented, needs to be done when blender export to principle BRDF shader is implemented properly
-
-        //    var mat = new FusMaterialStandard();
-
-        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.Albedo))
-        //        mat.Albedo = new AlbedoChannel();
-
-        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.SpecularColor))
-        //        mat.Specular = new SpecularChannel();
-
-        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.NormalMap))
-        //        mat.NormalMap = new NormapMapChannel();
-
-        //    if (fx.ParamDecl.ContainsKey(UniformNameDeclarations.EmissiveColor))
-        //        mat.Emissive = new AlbedoChannel();
-
-        //    foreach (var decl in fx.ParamDecl)
-        //    {
-        //        switch (decl.Key)
-        //        {
-        //            case UniformNameDeclarations.Albedo:
-        //                mat.Albedo.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
-        //                break;
-        //            case UniformNameDeclarations.AlbedoTexture:
-        //                //mat.Albedo.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-        //                break;
-        //            case UniformNameDeclarations.AlbedoMix:
-        //                mat.Albedo.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
-        //                break;
-
-        //            case UniformNameDeclarations.EmissiveColor:
-        //                mat.Emissive.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
-        //                break;
-        //            case UniformNameDeclarations.EmissiveTexture:
-        //                //mat.Emissive.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-        //                break;
-        //            case UniformNameDeclarations.EmissiveMix:
-        //                mat.Emissive.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
-        //                break;
-
-
-        //            case UniformNameDeclarations.SpecularColor:
-        //                mat.Specular.Color = ((FxParamDeclaration<float4>)decl.Value).Value;
-        //                break;
-        //            case UniformNameDeclarations.SpecularTexture:
-        //                //mat.Specular.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-        //                break;
-        //            case UniformNameDeclarations.SpecularMix:
-        //                mat.Specular.Mix = ((FxParamDeclaration<float>)decl.Value).Value;
-        //                break;
-        //            case UniformNameDeclarations.SpecularShininess:
-        //                mat.Specular.Shininess = ((FxParamDeclaration<float>)decl.Value).Value;
-        //                break;
-        //            case UniformNameDeclarations.SpecularStrength:
-        //                mat.Specular.Strength = ((FxParamDeclaration<float>)decl.Value).Value;
-        //                break;
-
-        //            case UniformNameDeclarations.NormalMap:
-        //                //mat.NormalMap.Texture = ((FxParamDeclaration<Texture>)decl.Value).Value; //TODO: FusMat expects the path, whereas the param declaration holds the actual Texture
-        //                break;
-        //            case UniformNameDeclarations.NormalMapIntensity:
-        //                mat.NormalMap.Intensity = ((FxParamDeclaration<float>)decl.Value).Value;
-        //                break;
-        //        }
-        //    }
-
-        //    _currentNode.AddComponent(mat);
-        //}
 
         /// <summary>
         /// Converts the shader.

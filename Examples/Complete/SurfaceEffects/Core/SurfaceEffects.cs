@@ -66,18 +66,18 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             var lightingFlags = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             _testFx = new DefaultSurfaceEffect(
-                lightingFlags, new TextureInput(),
+                lightingFlags, new TextureInputSpecular(),
                 Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags),
                 Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
 
             _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
 
-            ((TextureInput)_testFx.SurfaceInput).AlbedoTex = albedoTex;
-            ((TextureInput)_testFx.SurfaceInput).NormalTex = normalTex;
-            ((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
-            ((TextureInput)_testFx.SurfaceInput).Shininess = 5f;
-            ((TextureInput)_testFx.SurfaceInput).SpecularStrength = 1f;
-            ((TextureInput)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
+            ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoTex = albedoTex;
+            ((TextureInputSpecular)_testFx.SurfaceInput).NormalTex = normalTex;
+            ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoMix = 1.0f;
+            ((TextureInputSpecular)_testFx.SurfaceInput).Shininess = 5f;
+            ((TextureInputSpecular)_testFx.SurfaceInput).SpecularStrength = 1f;
+            ((TextureInputSpecular)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (

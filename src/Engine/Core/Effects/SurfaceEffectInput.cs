@@ -48,24 +48,6 @@ namespace Fusee.Engine.Core.Effects
         private float4 _albedo;
 
         /// <summary>
-        /// The albedo color.
-        /// </summary>
-        //public float4 Emission
-        //{
-        //    get => _emission;
-
-        //    set
-        //    {
-        //        if (value != _emission)
-        //        {
-        //            _emission = value;
-        //            NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
-        //        }
-        //    }
-        //}
-        //private float4 _emission;
-
-        /// <summary>
         /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
         /// </summary>
         public float Roughness
@@ -275,7 +257,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
-    public class TextureInput : SpecularInput
+    public class TextureInputSpecular : SpecularInput
     {
         /// <summary>
         /// The mix between albedo texture and albedo color.
@@ -367,7 +349,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
-    public class TextureInputUnlit : ColorInput
+    public class TextureInputColorUnlit : ColorInput
     {
         /// <summary>
         /// The mix between albedo texture and albedo color.
@@ -419,6 +401,47 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float2 _texTiles = float2.One;
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case for specular lighting with strength and shininess.
+    /// </summary>
+    public class TextureInputColor : TextureInputColorUnlit
+    {
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public Texture NormalTex
+        {
+            get => _normalTex;
+            set
+            {
+                if (value != _normalTex)
+                {
+                    _normalTex = value;
+                    NotifyPropertyChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                }
+            }
+        }
+        private Texture _normalTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float NormalMappingStrength
+        {
+            get => _normalMappingStrength;
+            set
+            {
+                if (value != _normalMappingStrength)
+                {
+                    _normalMappingStrength = value;
+                    NotifyPropertyChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                }
+            }
+        }
+        private float _normalMappingStrength = 1f;
     }
 
     /// <summary>

@@ -18,6 +18,12 @@ namespace Fusee.Serialization.V1
         [ProtoMember(1)]
         public float Roughness;
 
+        /// <summary>
+        /// The microfacet distribution function. Currently not set because FUSEE only implements GGX.
+        /// </summary>
+        [ProtoMember(2)]
+        public Distribution Distribution;
+
         #region equals
 
         /// <summary>
@@ -69,7 +75,8 @@ namespace Fusee.Serialization.V1
             return other.Albedo == Albedo
                 && other.Emissive == Emissive
                 && other.NormalMap == NormalMap
-                && other.Roughness == Roughness;
+                && other.Roughness == Roughness
+                && other.Distribution == Distribution;
         }
 
         /// <summary>
@@ -93,9 +100,21 @@ namespace Fusee.Serialization.V1
         /// </summary>
         public override int GetHashCode()
         {
-            return HashCode.Combine(Albedo, Emissive, NormalMap, Roughness);
+            return HashCode.Combine(Albedo, Emissive, NormalMap, Roughness, Distribution);
         }
 
         #endregion
+    }
+
+    ///<summary>
+    ///The available microfacet distribution functions.
+    ///</summary>
+    [ProtoContract]
+    public enum Distribution
+    {
+        /// <summary>
+        /// The GGX distribution function.
+        /// </summary>
+        GGX
     }
 }

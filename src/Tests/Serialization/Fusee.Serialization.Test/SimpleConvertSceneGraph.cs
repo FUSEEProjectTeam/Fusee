@@ -86,14 +86,14 @@ namespace Fusee.Test.Serialization.V1
 
                         if (fx.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                         {
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).NormalMappingStrength, ((FusMaterialStandard)fusFileComp).NormalMap?.Intensity);
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).NormalTex.PathAndName, ((FusMaterialStandard)fusFileComp).NormalMap.Texture);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).NormalMappingStrength, ((FusMaterialStandard)fusFileComp).NormalMap?.Intensity);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).NormalTex.PathAndName, ((FusMaterialStandard)fusFileComp).NormalMap.Texture);
                         }
 
                         if (fx.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
                         {
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).AlbedoMix, ((FusMaterialStandard)fusFileComp).Albedo?.Mix);
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).AlbedoTex.PathAndName, ((FusMaterialStandard)fusFileComp).Albedo.Texture);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).AlbedoMix, ((FusMaterialStandard)fusFileComp).Albedo?.Mix);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).AlbedoTex.PathAndName, ((FusMaterialStandard)fusFileComp).Albedo.Texture);
                         }
                         Assert.Equal(((SpecularInput)fx.SurfaceInput).Shininess, ((FusMaterialStandard)fusFileComp).Specular.Shininess);
                         Assert.Equal(((SpecularInput)fx.SurfaceInput).SpecularStrength, ((FusMaterialStandard)fusFileComp).Specular.Strength);
@@ -293,14 +293,14 @@ namespace Fusee.Test.Serialization.V1
 
                         if (fx.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                         {
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).NormalMappingStrength, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalMappingStrength);
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).NormalTex.PathAndName, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalTex.PathAndName);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).NormalMappingStrength, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalMappingStrength);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).NormalTex.PathAndName, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalTex.PathAndName);
                         }
 
                         if (fx.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
                         {
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).AlbedoMix, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoMix);
-                            Assert.Equal(((TextureInput)fx.SurfaceInput).AlbedoTex.PathAndName, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoTex.PathAndName);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).AlbedoMix, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoMix);
+                            Assert.Equal(((TextureInputSpecular)fx.SurfaceInput).AlbedoTex.PathAndName, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoTex.PathAndName);
                         }
                         Assert.Equal(((SpecularInput)fx.SurfaceInput).Shininess, ((SpecularInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).Shininess);
                         Assert.Equal(((SpecularInput)fx.SurfaceInput).SpecularStrength, ((SpecularInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).SpecularStrength);
@@ -322,14 +322,14 @@ namespace Fusee.Test.Serialization.V1
 
                         if (fx.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                         {
-                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).NormalMappingStrength, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalMappingStrength);
-                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).NormalTex.PathAndName, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalTex.PathAndName);
+                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).NormalMappingStrength, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalMappingStrength);
+                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).NormalTex.PathAndName, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).NormalTex.PathAndName);
                         }
 
                         if (fx.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
                         {
-                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).AlbedoMix, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoMix);
-                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).AlbedoTex.PathAndName, ((TextureInput)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoTex.PathAndName);
+                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).AlbedoMix, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoMix);
+                            Assert.Equal(((TextureInputBRDF)fx.SurfaceInput).AlbedoTex.PathAndName, ((TextureInputSpecular)((DefaultSurfaceEffect)sceneFileComp).SurfaceInput).AlbedoTex.PathAndName);
                         }
                     }
 

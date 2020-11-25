@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_DiffSpecularStd = new List<string>()
+        public static readonly List<string> SurfOutBody_DiffSpecular = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
@@ -61,7 +61,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
+            if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly) || lightingSetup.HasFlag(LightingSetupFlags.Glossy))
+            {
+                res.Add("OUT.roughness = IN.Roughness;");
+            }
+            else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
@@ -76,6 +80,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add("OUT.specular = IN.Specular;");
                 res.Add("OUT.subsurface = IN.Subsurface;");
                 res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
+                res.Add("OUT.emission = IN.Emission;");
             }
 
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
@@ -88,8 +93,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
             else
                 res.Add("OUT.albedo = IN.Albedo;");
-
-            res.Add($"OUT.emission = IN.Emission;");
 
             if (lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {

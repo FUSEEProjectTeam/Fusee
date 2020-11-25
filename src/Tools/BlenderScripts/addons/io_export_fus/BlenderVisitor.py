@@ -262,11 +262,22 @@ class BlenderVisitor:
                 albedoColor = node.inputs['Color'].default_value        # Color
                 roughnessVal = node.inputs['Roughness'].default_value
                 # check, if material has got textures. If so, get texture filepath
+                # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Color'].links
+                
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
-                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
-                        difftexture = basename
+                        fullpath, basename = GetPaths(
+                            node.inputs['Color'].links[0].from_node.image.filepath)
+                        albedoTexture = basename
+                        self.__textures.append(fullpath)
+
+                linksNorm = node.inputs['Normal'].links                
+                if len(linksNorm) > 0:
+                    if linksNorm[0].from_node.type == 'TEX_IMAGE':
+                        hasBump = True
+                        fullpath, basename = GetPaths(node.inputs['Normal'].links[0].from_node.image.filepath)
+                        bumpTexture = basename
                         self.__textures.append(fullpath)
 
             #### SPECULAR
@@ -275,14 +286,23 @@ class BlenderVisitor:
                 hasDiffuse = False
 
                 albedoColor = node.inputs['Color'].default_value
-                roughness = node.inputs['Roughness'].default_value
+                roughnessVal = node.inputs['Roughness'].default_value                
                 
-                # Check, if material has got textures. If so, get texture filepath
+                # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Color'].links
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
-                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
-                        specTexture = basename
+                        fullpath, basename = GetPaths(
+                            node.inputs['Color'].links[0].from_node.image.filepath)
+                        albedoTexture = basename
+                        self.__textures.append(fullpath)
+
+                linksNorm = node.inputs['Normal'].links
+                if len(linksNorm) > 0:
+                    if linksNorm[0].from_node.type == 'TEX_IMAGE':
+                        hasBump = True
+                        fullpath, basename = GetPaths(node.inputs['Normal'].links[0].from_node.image.filepath)
+                        bumpTexture = bumpTexture
                         self.__textures.append(fullpath)
 
             #### EMISSIVE
@@ -314,7 +334,7 @@ class BlenderVisitor:
             #### BUMP
             elif node.type == 'NORMAL_MAP':
                 hasBump = True
-                bumpIntensity =  node.inputs['Strength'].default_value / 10.0                         
+                bumpIntensity =  node.inputs['Strength'].default_value                         
                 links = node.inputs['Color'].links
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
@@ -384,15 +404,17 @@ class BlenderVisitor:
                 self.__fusWriter.AddEmissive(emissColor, emissTexture, emissMix)
             if hasBump:
                 self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
-            elif hasBRDF:
+            if hasBRDF:
                 self.__fusWriter.AddBRDFMaterialSettings(roughnessVal, metallicVal, specularVal, iorVal, subsurfaceVal, subsurfaceColorVal)
-            elif hasRoughnessOnly:
+            if hasRoughnessOnly:
                 self.__fusWriter.AddRoughnessOnlyMaterialSettings(roughnessVal, False)
             self.__fusWriter.EndMaterial()
         else:
             if hasRoughnessOnly:
                 self.__fusWriter.BeginMaterial(matName)
-                self.__fusWriter.AddAlbedo(albedoColor, albedoTexture, albedoMix)
+                self.__fusWriter.AddAlbedo(albedoColor, albedoTexture, albedoMix)                
+                if hasBump:
+                    self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
                 self.__fusWriter.AddRoughnessOnlyMaterialSettings(roughnessVal, True)
                 self.__fusWriter.EndMaterial()
             else:
