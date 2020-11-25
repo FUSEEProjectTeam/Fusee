@@ -252,7 +252,7 @@ namespace Fusee.Base.Core
         {
             Writer(o, SeverityLevel.Verbose, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
-        
+
         /// <summary>
         ///     Log a debug event.
         ///     Per default visible within the Visual Studio debug console and the console window in debug builds.
