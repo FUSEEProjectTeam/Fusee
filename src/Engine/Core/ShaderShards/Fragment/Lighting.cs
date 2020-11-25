@@ -466,7 +466,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
                 methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
                 methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
-                
+
                 methodBody.AddRange(Attenuation());
 
                 methodBody.Add($"return Idif * att * lightStrength * light.intensities.rgb;");

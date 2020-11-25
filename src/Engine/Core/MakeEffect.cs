@@ -730,7 +730,7 @@ namespace Fusee.Engine.Core
                 Subsurface = subsurface
             };
             return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
-        }        
+        }
 
         /// <summary>
         /// Builds a simple shader effect with diffuse and specular color.
