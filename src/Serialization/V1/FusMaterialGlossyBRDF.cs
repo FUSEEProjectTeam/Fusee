@@ -10,8 +10,14 @@ namespace Fusee.Serialization.V1
     /// NOTE: At the moment FUSEE lacks an implementation of the reflection calculation.
     /// </summary>
     [ProtoContract]
-    public class FusMaterialGlossyBRDF : FusMaterialDiffuseBRDF, IEquatable<FusMaterialGlossyBRDF>
+    public class FusMaterialGlossyBRDF : FusMaterialBase, IEquatable<FusMaterialGlossyBRDF>
     {
+        /// <summary>
+        /// Specifies microfacet roughness of the surface specular reflection.
+        /// </summary>
+        [ProtoMember(1)]
+        public float Roughness;
+
         #region equals
 
         /// <summary>

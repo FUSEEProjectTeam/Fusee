@@ -212,14 +212,17 @@ class FusSceneWriter:
         self.__curMaterial.FusMaterialBRDF.BRDF.IOR = ior
         self.__curMaterial.FusMaterialBRDF.BRDF.Subsurface = subsurface
 
-        if subsurfaceColor != None:            
+        if subsurfaceColor != None:
             self.__curMaterial.FusMaterialBRDF.BRDF.SubsurfaceColor.x = subsurfaceColor[0]
             self.__curMaterial.FusMaterialBRDF.BRDF.SubsurfaceColor.y = subsurfaceColor[1]
             self.__curMaterial.FusMaterialBRDF.BRDF.SubsurfaceColor.z = subsurfaceColor[2]  
 
-    def AddDiffuseBRDFMaterialSettings(self, roughness):
+    def AddRoughnessOnlyMaterialSettings(self, roughness, isGlossy):
         self.__checkMaterialOpen()
-        self.__curMaterial.FusMaterialDiffuseBRDF.Roughness = roughness
+        if isGlossy:
+            self.__curMaterial.FusMaterialGlossyBRDF.Roughness = roughness;
+        else:
+            self.__curMaterial.FusMaterialDiffuseBRDF.Roughness = roughness;
 
     def EndMaterial(self):
         self.__checkMaterialOpen()

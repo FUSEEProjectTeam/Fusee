@@ -50,20 +50,20 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo color.
         /// </summary>
-        public float4 Emission
-        {
-            get => _emission;
+        //public float4 Emission
+        //{
+        //    get => _emission;
 
-            set
-            {
-                if (value != _emission)
-                {
-                    _emission = value;
-                    NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
-                }
-            }
-        }
-        private float4 _emission;
+        //    set
+        //    {
+        //        if (value != _emission)
+        //        {
+        //            _emission = value;
+        //            NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
+        //        }
+        //    }
+        //}
+        //private float4 _emission;
 
         /// <summary>
         /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _roughness)
                 {
                     _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Emission), _roughness);
+                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
                 }
             }
         }
@@ -108,21 +108,22 @@ namespace Fusee.Engine.Core.Effects
     public class BRDFInput : ColorInput
     {
         /// <summary>
-        /// The roughness of the specular and diffuse reflection.
+        /// The albedo color.
         /// </summary>
-        public float Roughness
+        public float4 Emission
         {
-            get => _roughness;
+            get => _emission;
+
             set
             {
-                if (value != _roughness)
+                if (value != _emission)
                 {
-                    _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
+                    _emission = value;
+                    NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
                 }
             }
         }
-        private float _roughness;
+        private float4 _emission;
 
         /// <summary>
         /// Value used to blend between the metallic and the dielectric model.
@@ -217,6 +218,24 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class SpecularInput : ColorInput
     {
+        /// <summary>
+        /// The albedo color.
+        /// </summary>
+        public float4 Emission
+        {
+            get => _emission;
+
+            set
+            {
+                if (value != _emission)
+                {
+                    _emission = value;
+                    NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
+                }
+            }
+        }
+        private float4 _emission;
+
         /// <summary>
         /// The strength of the specular lighting.
         /// </summary>

@@ -408,9 +408,24 @@ namespace Fusee.Engine.Core
             {
                 Albedo = albedoColor,
                 Roughness = roughness
-
             };
             return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+        }
+
+        /// <summary>
+        /// Builds a simple metallic shader effect - used for metals or mirrors.
+        /// </summary>
+        /// <param name="albedoColor">The diffuse color the resulting effect.</param>
+        /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static DefaultSurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f)
+        {
+            var input = new ColorInput()
+            {
+                Albedo = albedoColor,
+                Roughness = roughness
+            };
+            return new DefaultSurfaceEffect(LightingSetupFlags.Glossy, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -432,7 +447,7 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseSpecular, input, FragShards.SurfOutBody_SpecularStd, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseSpecular, input, FragShards.SurfOutBody_DiffSpecularStd, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
