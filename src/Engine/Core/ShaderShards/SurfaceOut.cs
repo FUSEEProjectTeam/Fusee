@@ -219,7 +219,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
 
             if (setup.HasFlag(LightingSetupFlags.DiffuseOnly) || setup.HasFlag(LightingSetupFlags.DiffuseSpecular) || setup.HasFlag(LightingSetupFlags.Glossy))
-                dcl.Add($"  {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");            
+                dcl.Add($"  {GLSL.DecodeType(Roughness.Item1)} {Roughness.Item2};");
 
             if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
