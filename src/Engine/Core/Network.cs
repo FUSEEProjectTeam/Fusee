@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
             {
                 if (value == null)
                 {
-                    Diagnostics.Warn("No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
+                    Diagnostics.Verbose("No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
                     _networkImp = new DummyNetworkImp();
                 }
                 else
