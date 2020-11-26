@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Enables or disables Frustum Culling.
-        /// If we render with one or more cameras this value will be overwritten by <see cref="CameraComponent.FrustumCullingOn"/>.
+        /// If we render with one or more cameras this value will be overwritten by <see cref="Camera.FrustumCullingOn"/>.
         /// </summary>
         public bool DoFrumstumCulling = true;
 
@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core
                     Active = true,
                     Strength = 1.0f,
                     MaxDistance = 0.0f,
-                    Color = new float4(1.0f, 1.0f, 1.0f, 1f),
+                    Color = new float4(1f, 1f, 1f, 1f),
                     OuterConeAngle = 45f,
                     InnerConeAngle = 35f,
                     Type = LightType.Legacy,

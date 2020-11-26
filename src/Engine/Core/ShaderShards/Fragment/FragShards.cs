@@ -14,17 +14,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static readonly List<string> SurfOutBody_Color = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
-            "OUT.emission = IN.Emission;"
+            "OUT.roughness = IN.Roughness;"
         };
 
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_SpecularStd = new List<string>()
+        public static readonly List<string> SurfOutBody_DiffSpecular = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
             "OUT.shininess = IN.Shininess;",
+            "OUT.roughness = IN.Roughness;",
             "OUT.emission = IN.Emission;"
         };
 
@@ -60,10 +61,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static List<string> SurfOutBody_Textures(LightingSetupFlags lightingSetup)
         {
             var res = new List<string>();
-            if (lightingSetup.HasFlag(LightingSetupFlags.BlinnPhong))
+            if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly) || lightingSetup.HasFlag(LightingSetupFlags.Glossy))
+            {
+                res.Add("OUT.roughness = IN.Roughness;");
+            }
+            else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
                 res.Add("OUT.specularStrength = IN.SpecularStrength;");
                 res.Add("OUT.shininess = IN.Shininess;");
+                res.Add("OUT.roughness = IN.Roughness;");
+                res.Add("OUT.emission = IN.Emission;");
             }
             else if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
             {
@@ -73,19 +80,19 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add("OUT.specular = IN.Specular;");
                 res.Add("OUT.subsurface = IN.Subsurface;");
                 res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
+                res.Add("OUT.emission = IN.Emission;");
             }
 
             if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex))
             {
                 res.Add($"vec4 texCol = texture(IN.AlbedoTex, {VaryingNameDeclarations.TextureCoordinates} * IN.TexTiles);");
-                res.Add($"vec3 mix = mix(IN.Albedo.rgb, texCol.xyz, IN.AlbedoMix);");
-                res.Add("float luma = pow((0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b), 1.0/2.2);");
-                res.Add($"OUT.albedo = vec4(mix * luma, texCol.a);");
+                res.Add($"texCol = vec4(DecodeSRGB(texCol.rgb), texCol.a);");
+                res.Add("float linearLuminance = (0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b);");
+                res.Add($"vec3 mix = mix(IN.Albedo.rgb * linearLuminance, texCol.xyz, IN.AlbedoMix);");
+                res.Add($"OUT.albedo = vec4(mix, texCol.a);");
             }
             else
                 res.Add("OUT.albedo = IN.Albedo;");
-
-            res.Add($"OUT.emission = IN.Emission;");
 
             if (lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {

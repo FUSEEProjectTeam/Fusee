@@ -43,22 +43,39 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
+        /// Contains all methods for color management (gamma and from and to sRGB).
+        /// </summary>
+        /// <returns></returns>
+        public static string ColorManagementMethods()
+        {
+            var lighting = new List<string>
+            {
+                GammaCorrection(),
+                EncodeSRGB(),
+                DecodeSRGB()
+            };
+
+            return string.Join("\n", lighting);
+        }
+
+        /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="LightingSetupFlags"/> and the LightingCalculationMethod.
         /// </summary>
         /// <param name="setup">The <see cref="LightingSetupFlags"/> which is used to decide which lighting methods we need.</param>
         public static string AssembleLightingMethods(LightingSetupFlags setup)
         {
-            if (setup == LightingSetupFlags.Unlit)
-                return string.Empty;
-
-            var lighting = new List<string>();
+            var lighting = new List<string>
+            {
+                ColorManagementMethods()
+            };
 
             //Adds methods to the PS that calculate the single light components (diffuse, specular)
-            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
+            if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
-                lighting.Add(DiffuseComponent());
+                lighting.Add(LambertDiffuseComponent());
+                lighting.Add(OrenNayarDiffuseComponent());
                 lighting.Add(SpecularComponent());
             }
             else if (setup.HasFlag(LightingSetupFlags.BRDF))
@@ -68,14 +85,24 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 lighting.Add(SchlickFresnel());
                 lighting.Add(G1());
                 lighting.Add(GetF0());
-                lighting.Add(BRDFDiffuseComponent());
+                lighting.Add(DisneyDiffuseComponent());
                 lighting.Add(BRDFSpecularComponent());
             }
             else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
                 lighting.Add(AttenuationPointComponent());
                 lighting.Add(AttenuationConeComponent());
-                lighting.Add(DiffuseComponent());
+                lighting.Add(LambertDiffuseComponent());
+                lighting.Add(OrenNayarDiffuseComponent());
+            }
+            else if (setup.HasFlag(LightingSetupFlags.Glossy))
+            {
+                lighting.Add(AttenuationPointComponent());
+                lighting.Add(AttenuationConeComponent());
+                lighting.Add(SchlickFresnel());
+                lighting.Add(G1());
+                lighting.Add(GetF0());
+                lighting.Add(BRDFSpecularComponent());
             }
             else if (!setup.HasFlag(LightingSetupFlags.Unlit))
             {
@@ -90,13 +117,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Method for calculation the diffuse lighting component.
         /// </summary>
-        public static string DiffuseComponent()
+        public static string LambertDiffuseComponent()
         {
             var methodBody = new List<string>
             {
                 "return max(dot(N, L), 0.0);"
             };
-            return GLSL.CreateMethod(GLSL.Type.Float, "diffuseLighting",
+            return GLSL.CreateMethod(GLSL.Type.Float, "LambertDiffuseLighting",
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L")
@@ -105,9 +132,41 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         /// <summary>
         /// Method for calculation the diffuse lighting component.
+        /// See: http://glslsandbox.com/e#54592.0
+        /// </summary>
+        /// <returns></returns>
+        public static string OrenNayarDiffuseComponent()
+        {
+            var methodBody = new List<string>
+            {
+                "//OrenNayarBrdf",
+                "float LdotH = clamp(dot(L, normalize(L + V)), 0.0, 1.0);",
+                "float sigma2 = roughness * roughness;",
+                "float s = LdotH - NdotL * NdotV;",
+                "float A = 1. - .5 * (sigma2 / (((sigma2 + .33) + .000001)));",
+                "float B = .45 * sigma2 / ((sigma2 + .09) + .00001);",
+                "float ga = dot(V - N * NdotV, N - N * NdotL);",
+                "return albedo * max(0., NdotL) * (A + B * max(0., ga) * sqrt(max((1.0 - NdotV * NdotV) * (1.0 - NdotL * NdotL), 0.)) / max(NdotL, NdotV));"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "OrenNayarDiffuseLighting",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "albedo"),
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotL"),
+                    GLSL.CreateVar(GLSL.Type.Float, "NdotV"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "N"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "L"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "V"),
+                    GLSL.CreateVar(GLSL.Type.Float, "roughness"),
+                }, methodBody);
+        }
+
+        /// <summary>
+        /// Method for calculation the diffuse lighting component.
         /// Replaces the standard diffuse calculation with the one introduced in [Burley 2012, "Physically-Based Shading at Disney"].
         /// </summary>
-        public static string BRDFDiffuseComponent()
+        public static string DisneyDiffuseComponent()
         {
             var methodBody = new List<string>
             {
@@ -123,10 +182,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float Fss90 = LdotH * LdotH * roughness;",
                 "float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);",
                 "float ss = 1.25 * (Fss * (1.0 / max((NdotL + NdotV), 0.001) - 0.5) + 0.5);",
-                "return mix((albedo / PI) * (Fd * NdotL), (subsurfaceColor / PI) * ss, subsurface);"
-
+                "return mix((albedo) * Fd * NdotL, (subsurfaceColor) * ss, subsurface);"
             };
-            return GLSL.CreateMethod(GLSL.Type.Vec3, "diffuseLighting",
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "DisneyDiffuseLighting",
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "albedo"),
@@ -182,7 +240,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float denom = (NdotH * NdotH) * (alphaSqr - 1.0) + 1.0f;",
                 "D = alphaSqr / (PI * (denom * denom));",
                 "",
-                "// G (ometry - Schlick�s Approximation of Smith)",
+                "// G (ometry - Schlicks Approximation of Smith)",
                 "float r = roughness + 1.0;",
                 "float k = (r * r) / 8.0;",
                 "",
@@ -255,13 +313,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 "float F0 = abs((1.0 - ior) / (1.0 + ior));",
                 "F0 = F0 * F0;",
-                $"return mix(vec3(F0, F0, F0), albedo.rgb, surfOut.{SurfaceOut.Metallic.Item2});",
+                $"return mix(vec3(F0, F0, F0), albedo.rgb, metallic);",
             };
             return GLSL.CreateMethod(GLSL.Type.Vec3, "GetF0",
                  new[]
                  {
                      GLSL.CreateVar(GLSL.Type.Vec3, "albedo"),
-                     GLSL.CreateVar(GLSL.Type.Float, "ior")
+                     GLSL.CreateVar(GLSL.Type.Float, "ior"),
+                     GLSL.CreateVar(GLSL.Type.Float, "metallic")
                  }, methodBody);
         }
 
@@ -297,7 +356,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             return new List<string>
             {
-                $"vec3 V = normalize(-surfOut.position.xyz);",
+                $"vec3 V = normalize(-surfOut.{SurfaceOut.Pos.Item2}.xyz);",
                 "vec3 L = vec3(0.0, 0.0, 0.0);",
                 "if(light.lightType == 1)",
                 "{",
@@ -309,7 +368,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "}",
                 "else",
                 "{",
-                    $"L = normalize(light.position - surfOut.position.xyz);",
+                    $"L = normalize(light.position - surfOut.{SurfaceOut.Pos.Item2}.xyz);",
                 "}",
                 "",
                 "vec3 Idif = vec3(0);",
@@ -322,8 +381,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var res = new List<string>();
 
-            var attPtLight = "float att = attenuationPointComponent(surfOut.position.xyz, light.position, light.maxDistance);";
-            var attSpotLight = "float att = attenuationPointComponent(surfOut.position.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);";
+            var attPtLight = $"float att = attenuationPointComponent(surfOut.{SurfaceOut.Pos.Item2}.xyz, light.position, light.maxDistance);";
+            var attSpotLight = $"float att = attenuationPointComponent(surfOut.{SurfaceOut.Pos.Item2}.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);";
             var attParallel = "float att = 1.0; //no attenuation --> parallel or legacy light";
 
             res.Add(attParallel);
@@ -348,26 +407,29 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>();
 
-            if (setup.HasFlag(LightingSetupFlags.BlinnPhong))
+            if (!setup.HasFlag(LightingSetupFlags.Unlit))
             {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
-                methodBody.Add($"vec3 N = normalize(surfOut.normal);");
+                methodBody.Add($"vec3 N = normalize(surfOut.{SurfaceOut.Normal.Item2});");
+            }
 
-                methodBody.Add($"Idif = diffuseLighting(N, L) * surfOut.albedo.rgb;");
+            if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
+            {
+                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
 
-                methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.shininess);");
+                //methodBody.Add($"Idif = LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+
+                methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.{SurfaceOut.Shininess.Item2});");
                 methodBody.Add($"Ispe = vec3(specularTerm) * surfOut.specularStrength;");
 
                 methodBody.AddRange(Attenuation());
-                methodBody.Add("return  (Idif + Ispe + surfOut.emission.rgb) * att * lightStrength * light.intensities.rgb;");
+                methodBody.Add($"return  (Idif + Ispe + surfOut.{SurfaceOut.Emission.Item2}.rgb) * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.BRDF))
             {
-                methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-                methodBody.AddRange(ViewAndLightDir());
-                methodBody.Add($"vec3 N = normalize(surfOut.normal);");
-
                 methodBody.Add($"vec3 halfV = normalize(L + V);");
                 methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
                 methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
@@ -375,12 +437,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
                 methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
 
-                methodBody.Add($"vec3 F0 = GetF0(surfOut.albedo.rgb, surfOut.ior);");
-
+                methodBody.Add($"vec3 F0 = GetF0(surfOut.{SurfaceOut.Albedo.Item2}.rgb, surfOut.{SurfaceOut.IOR.Item2}, surfOut.{SurfaceOut.Metallic.Item2});");
                 methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
                 methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
 
-                methodBody.Add($"Idif = diffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2}, surfOut.subsurfaceColor.rgb);");
+                methodBody.Add($"Idif = DisneyDiffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2}, surfOut.{SurfaceOut.SubsurfaceColor.Item2}.rgb);");
                 methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
 
                 methodBody.Add($"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.");
@@ -389,26 +450,45 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add($"//Specular color, combining metallic and dielectric specular reflection.");
                 methodBody.Add($"//Metallic specular is affected by alebdo color, dielectric isn't!");
                 methodBody.Add($"vec3 specLayerDielectric = surfOut.{SurfaceOut.Specular.Item2} * Ispe;");
-                methodBody.Add($"vec3 specLayerMetallic = surfOut.{SurfaceOut.Metallic.Item2} * Ispe * surfOut.albedo.rgb;");
+                methodBody.Add($"vec3 specLayerMetallic = surfOut.{SurfaceOut.Metallic.Item2} * Ispe * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
                 methodBody.Add($"vec3 specLayer = clamp(specLayerDielectric + specLayerMetallic, 0.0, 1.0);");
 
                 methodBody.Add($"//Combining the layers...");
                 methodBody.Add($"res += (1.0 - F) * diffLayer;      // diffuse layer, affected by reflectivity");
                 methodBody.Add($"res += specLayer;                  // direct specular, not affected by reflectivity");
-                methodBody.Add($"res += + surfOut.emission.rgb;");
+                methodBody.Add($"res += surfOut.{SurfaceOut.Emission.Item2}.rgb;");
 
                 methodBody.AddRange(Attenuation());
                 methodBody.Add("return res * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
             {
-                methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-                methodBody.AddRange(ViewAndLightDir());
-                methodBody.Add($"vec3 N = normalize(surfOut.normal);");
-                methodBody.Add($"Idif = diffuseLighting(N, L) * surfOut.albedo.rgb;");
+                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+
                 methodBody.AddRange(Attenuation());
 
-                methodBody.Add("return Idif * att * lightStrength * light.intensities.rgb;");
+                methodBody.Add($"return Idif * att * lightStrength * light.intensities.rgb;");
+            }
+            else if (setup.HasFlag(LightingSetupFlags.Glossy))
+            {
+                methodBody.Add($"vec3 halfV = normalize(L + V);");
+                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
+                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
+                methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
+
+                //Glossy is a full metallic material with no diffuse component and a default IOR value
+                methodBody.Add($"vec3 F0 = GetF0(surfOut.{SurfaceOut.Albedo.Item2}.rgb, 1.45, 1.0);");
+                methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
+                methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
+
+                methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
+
+                methodBody.AddRange(Attenuation());
+                methodBody.Add($"return Ispe * surfOut.{SurfaceOut.Albedo.Item2}.rgb * att * lightStrength * light.intensities.rgb;");
             }
             else if (setup.HasFlag(LightingSetupFlags.Unlit))
                 methodBody.Add("return surfOut.albedo.rgb;");
@@ -462,7 +542,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "// then calculate lighting as usual",
             "vec4 lighting = vec4(0);",
             "",
-            "float ambientCo = 0.2;",
+            "float ambientCo = 0.1;",
             "vec4 ambient = vec4(0,0,0,1);",
             "vec4 diffuse = vec4(0,0,0,1);",
             "vec4 specular = vec4(0,0,0,1);",
@@ -532,10 +612,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             "if(decodedShadingModel == uint(2))",
             "{",
-                // diffuse 
-                "diffuse = vec4(vec3(diffuseLighting(normal, lightDir)), 1.0);",
-                "diffuse = diffuse * albedo;",
-
+                // diffuse
+                "if(specularVars.b > 0.0){",
+                    $"float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);",
+                    $"float NdotV = clamp(dot(normal, viewDir), 0.0, 1.0);",
+                    $"diffuse = vec4(OrenNayarDiffuseLighting(albedo.rgb, NdotL, NdotV, normal, lightDir, viewDir, specularVars.b), albedo.a);",
+                "}",
+                "else{",
+                    "diffuse = vec4(vec3(LambertDiffuseLighting(normal, lightDir)), 1.0);",
+                    "diffuse = diffuse * albedo;",
+                "}",
                 // specular
                 "float shininess = specularVars.g;",
                 "float specularStrength = specularVars.r;",
@@ -568,7 +654,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"float LdotH5 = SchlickFresnel(NdotV);",
                 $"vec3 F = F0 + (1.0 - F0) * LdotH5;",
 
-                "vec3 diff = diffuseLighting(albedo.rgb, NdotL, NdotV, LdotH, roughness, subsurface, subsurfaceColor);",
+                "vec3 diff = DisneyDiffuseLighting(albedo.rgb, NdotL, NdotV, LdotH, roughness, subsurface, subsurfaceColor);",
                 "vec3 spec = specularLighting(NdotL, NdotV, LdotH, NdotH, roughness, F);",
 
                 $"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.",
@@ -587,7 +673,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "else if(decodedShadingModel == uint(3))",
             "{",
                 // diffuse 
-                "diffuse = vec4(vec3(diffuseLighting(normal, lightDir)), 1.0);",
+                "diffuse = vec4(vec3(LambertDiffuseLighting(normal, lightDir)), 1.0);",
                 "res = diffuse * albedo;",
             "}",
             "else if(decodedShadingModel == uint(4))",
@@ -595,6 +681,26 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 // unlit
                 "res = albedo;",
             "}",
+            "else if(decodedShadingModel == uint(5))",
+            "{",
+                // glossy
+                "float roughness = specularVars.b;",
+                $"vec3 halfV = normalize(lightDir + viewDir);",
+                $"float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);",
+                $"float NdotH = clamp(dot(normal, halfV), 0.0, 1.0);",
+                $"float NdotV = clamp(dot(normal, viewDir), 0.0, 1.0);",
+                $"float VdotH = clamp(dot(viewDir, halfV), 0.0, 1.0);",
+                $"float LdotH = clamp(dot(lightDir, halfV), 0.0, 1.0);",
+
+                //Glossy is a full metallic material with no diffuse component and a default IOR value
+                $"vec3 F0 = mix(vec3(0.04, 0.04, 0.04), albedo.rgb, 1.0);",
+                $"float LdotH5 = SchlickFresnel(NdotV);",
+                $"vec3 F = F0 + (1.0 - F0) * LdotH5;",
+
+                "vec3 spec = specularLighting(NdotL, NdotV, LdotH, NdotH, roughness, F);",
+                "res = vec4(spec * albedo.rgb, 1.0);",
+            "}",
+
             });
 
             if (isCascaded && debugCascades)
@@ -617,9 +723,65 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "}",
             });
 
-            methodBody.Add($"{FragProperties.OutColorName} = lighting;");
+            //methodBody.Add($"{FragProperties.OutColorName} = vec4(GammaCorrection(lighting.rgb, 1.0/1.9), lighting.a);");
+            methodBody.Add($"{FragProperties.OutColorName} = vec4(EncodeSRGB(lighting.rgb), lighting.a);");
 
             return GLSL.MainMethod(methodBody);
+        }
+
+        /// <summary>
+        /// Converts a color from linear space to sRGB.
+        /// </summary>
+        public static string EncodeSRGB()
+        {
+            var methodBody = new List<string>
+            {
+                "vec3 a = 12.92 * linearRGB;",
+                "vec3 b = 1.055 * pow(linearRGB, vec3(1.0 / 2.4)) - 0.055;",
+                "vec3 c = step(vec3(0.0031308), linearRGB);",
+                "return mix(a, b, c);"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "EncodeSRGB",
+               new[]
+               {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "linearRGB")
+               }, methodBody);
+        }
+
+        /// <summary>
+        /// Converts a color from sRGB to linear space.
+        /// </summary>
+        public static string DecodeSRGB()
+        {
+            var methodBody = new List<string>
+            {
+                "vec3 a = screenRGB / 12.92;",
+                "vec3 b = pow((screenRGB + 0.055) / 1.055, vec3(2.4));",
+                "vec3 c = step(vec3(0.04045), screenRGB);",
+                "return mix(a, b, c);"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "DecodeSRGB",
+              new[]
+              {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "screenRGB")
+              }, methodBody);
+        }
+
+        /// <summary>
+        /// Method for gamma correction.
+        /// </summary>
+        public static string GammaCorrection()
+        {
+            var methodBody = new List<string> { "return pow(color, vec3(g));" };
+
+            return GLSL.CreateMethod(GLSL.Type.Vec3, "GammaCorrection",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Vec3, "color"),
+                    GLSL.CreateVar(GLSL.Type.Float, "g")
+                }, methodBody);
         }
 
         /// <summary>

@@ -1830,7 +1830,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     }
                     break;
                 case RenderState.BlendFactor:
-                    float4 col = ColorUint.FromRgba(value).Tofloat4();
+                    float4 col = (float4)ColorUint.FromRgba(value);
                     GL.BlendColor(col.r, col.g, col.b, col.a);
                     break;
 
