@@ -1,6 +1,3 @@
-﻿using System.Numerics;
-using System;
-
 namespace Fusee.Math.Core
 {
     /// <summary>

@@ -235,10 +235,7 @@ namespace Fusee.Math.Core
         /// Gets the length (magnitude) of the vector.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public float Length
-        {
-            get { return (float)System.Math.Sqrt(LengthSquared); }
-        }
+        public float Length => (float)System.Math.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -248,10 +245,7 @@ namespace Fusee.Math.Core
         /// Gets the length in 1-norm.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public float Length1
-        {
-            get { return (float)System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w); }
-        }
+        public float Length1 => (float)System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w);
 
         #endregion public float Length1
 
@@ -265,13 +259,7 @@ namespace Fusee.Math.Core
         /// for comparisons.
         /// </remarks>
         /// <see cref="Length"/>
-        public float LengthSquared
-        {
-            get
-            {
-                return x * x + y * y + z * z + w * w;
-            }
-        }
+        public float LengthSquared => x * x + y * y + z * z + w * w;
 
         #endregion public float LengthSquared
 
@@ -767,12 +755,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets and sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-        public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+        public float3 xyz { get => new float3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         #endregion Swizzle
 
@@ -926,7 +914,7 @@ namespace Fusee.Math.Core
         /// Returns a System.String that represents the current float4.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -938,7 +926,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -952,7 +940,7 @@ namespace Fusee.Math.Core
 
             char separator = M.GetNumericListSeparator(provider);
 
-            return String.Format(provider, "({1}{0} {2}{0} {3}{0} {4})", separator, x, y, z, w);
+            return string.Format(provider, "({1}{0} {2}{0} {3}{0} {4})", separator, x, y, z, w);
         }
 
         #endregion public override string ToString()
@@ -996,8 +984,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float r
         {
-            get { return x; }
-            set { x = value; }
+            get => x;
+            set => x = value;
         }
 
         /// <summary>
@@ -1005,8 +993,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float g
         {
-            get { return y; }
-            set { y = value; }
+            get => y;
+            set => y = value;
         }
 
         /// <summary>
@@ -1014,8 +1002,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float b
         {
-            get { return z; }
-            set { z = value; }
+            get => z;
+            set => z = value;
         }
 
         /// <summary>
@@ -1023,8 +1011,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float2 rg
         {
-            get { return xy; }
-            set { xy = value; }
+            get => xy;
+            set => xy = value;
         }
 
         /// <summary>
@@ -1032,8 +1020,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float3 rgb
         {
-            get { return xyz; }
-            set { xyz = value; }
+            get => xyz;
+            set => xyz = value;
         }
 
         /// <summary>
@@ -1041,8 +1029,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float a
         {
-            get { return w; }
-            set { w = value; }
+            get => w;
+            set => w = value;
         }
 
         #endregion Color
