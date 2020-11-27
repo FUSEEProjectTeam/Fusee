@@ -30,8 +30,8 @@ namespace Fusee.Engine.Core
         /// <seealso cref="Clear"/>
         public float4 ClearColor
         {
-            set => _rci.ClearColor = value;
-            get => _rci.ClearColor;
+            set { _rci.ClearColor = float4.SRgbFromLinearColor(value); }
+            get { return float4.LinearColorFromSRgb(_rci.ClearColor); }
         }
 
         /// <summary>

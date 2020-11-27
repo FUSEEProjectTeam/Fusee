@@ -383,10 +383,10 @@ namespace Fusee.Examples.Materials.Core
                                     (
                                         albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                         emissionColor: float4.Zero,
-                                        shininess: 256.0f,
                                         albedoTex: albedoTex,
                                         albedoMix: 1f,
                                         texTiles : float2.One,
+                                        shininess: 256.0f,
                                         specularStrength: 1.0f
                                     ),
                                     icosphereWithTangents
@@ -473,10 +473,10 @@ namespace Fusee.Examples.Materials.Core
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
-                                    shininess: 256.0f,
                                     albedoTex: albedoTex,
                                     albedoMix: 1f,
                                     texTiles:float2.One,
+                                    shininess: 256.0f,
                                     specularStrength: 1f),
                                     icosphereWithTangents
                                 }
@@ -493,10 +493,10 @@ namespace Fusee.Examples.Materials.Core
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
-                                    shininess: 256.0f,
                                     albedoTex: albedoTex,
                                     albedoMix: 1f,
                                     texTiles: float2.One,
+                                    shininess: 256.0f,
                                     specularStrength: 1.0f),
                                     icosphereWithTangents
                                 }
