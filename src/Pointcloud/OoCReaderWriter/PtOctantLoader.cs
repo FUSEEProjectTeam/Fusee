@@ -155,7 +155,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             WasSceneUpdated = false;
 
             if (_deltaTimeSinceLastUpdate < SceneUpdateTime)
-                _deltaTimeSinceLastUpdate += Time.RealDeltaTime*1000;
+                _deltaTimeSinceLastUpdate += Time.RealDeltaTime * 1000;
 
             else
             {
