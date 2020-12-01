@@ -3,13 +3,13 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.PointCloud.OoCReaderWriter
+namespace Fusee.Structures
 {
     /// <summary>
-    /// Octant implementation for rendering point clouds.
+    /// Octant implementation.
     /// </summary>
-    /// <typeparam name="TPoint"></typeparam>
-    public class PtOctant<TPoint> : IOctant<double3, double, TPoint>
+    /// <typeparam name="P">The type of the octants payload.</typeparam>
+    public class OctantD<P> : IOctant<double3, double, P>
     {
         /// <summary>
         ///The Resolution of an Octant is defined by the minimum distance (spacing) between points.
@@ -35,12 +35,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Children of this Octant. Must contain eight or null (leaf node) children.
         /// </summary>
-        public IOctant<double3, double, TPoint>[] Children { get; set; }
+        public IOctant<double3, double, P>[] Children { get; set; }
 
         /// <summary>
         /// The payload of this octant.
         /// </summary>
-        public List<TPoint> Payload { get; set; }
+        public List<P> Payload { get; set; }
 
         /// <summary>
         /// Is this octant a leaf node in the octree?
@@ -63,30 +63,30 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <param name="center">The center point of this octant, <see cref="IBucket{T, K}.Center"/>.</param>
         /// <param name="size">The size of this octant, <see cref="IBucket{T, K}.Size"/>. </param>
         /// <param name="children">The children of this octant - can be null.</param>
-        public PtOctant(double3 center, double size, IOctant<double3, double, TPoint>[] children = null)
+        public OctantD(double3 center, double size, IOctant<double3, double, P>[] children = null)
         {
             Center = center;
             Size = size;
 
             if (children == null)
-                Children = new IOctant<double3, double, TPoint>[8];
+                Children = new IOctant<double3, double, P>[8];
             else
                 Children = children;
 
-            Payload = new List<TPoint>();
+            Payload = new List<P>();
         }
 
         /// <summary>
         /// Creates a new instance of type PtOctant.
         /// </summary>
-        protected PtOctant() { }
+        protected OctantD() { }
 
-        public virtual IOctant<double3, double, TPoint> CreateChild(int posInParent)
+        public virtual IOctant<double3, double, P> CreateChild(int posInParent)
         {
             var childCenter = CalcCildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
-            var child = new PtOctant<TPoint>(childCenter, childRes)
+            var child = new OctantD<P>(childCenter, childRes)
             {
                 Resolution = Resolution / 2d,
                 Level = Level + 1
@@ -94,12 +94,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
             return child;
         }
 
-        internal double3 CalcCildCenterAtPos(int posInParent)
+        protected double3 CalcCildCenterAtPos(int posInParent)
         {
             return CalcCildCenterAtPos(posInParent, Size, Center);
         }
 
-        internal static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
+        public static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
         {
             double3 childCenter;
             var childsHalfSize = parentSize / 4d;
@@ -134,41 +134,5 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             return childCenter;
         }
-    }
-
-    public class PtOctantWrite<TPoint> : PtOctant<TPoint>
-    {
-        public PtGrid<TPoint> Grid;
-
-        public PtOctantWrite(double3 center, double size, IOctant<double3, double, TPoint>[] children = null)
-        {
-            Guid = Guid.NewGuid();
-
-            Center = center;
-            Size = size;
-
-            if (children == null)
-                Children = new IOctant<double3, double, TPoint>[8];
-            else
-                Children = children;
-
-            Payload = new List<TPoint>();
-        }
-
-        public override IOctant<double3, double, TPoint> CreateChild(int posInParent)
-        {
-            var childCenter = CalcCildCenterAtPos(posInParent);
-
-            var childRes = Size / 2d;
-            var child = new PtOctantWrite<TPoint>(childCenter, childRes)
-            {
-                Resolution = Resolution / 2d,
-                Level = Level + 1
-            };
-
-            child.Grid = new PtGrid<TPoint>();
-
-            return child;
-        }
-    }
+    }    
 }

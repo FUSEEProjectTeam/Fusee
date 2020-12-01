@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Pointcloud.OoCReaderWriter</RootNamespace>
+    <RootNamespace>Fusee.PointCloud.OoCReaderWriter</RootNamespace>
     <PackageId>Fusee.PointCloud.OoCReaderWriter</PackageId>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee PointCloud OoCReaderWriter</Description>

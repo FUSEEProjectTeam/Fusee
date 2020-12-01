@@ -203,7 +203,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             foreach (var cell in node.Grid.GridCells)
             {
                 if (cell != null)
-                    yield return ((PtGridCell<TPoint>)cell).Occupant;
+                    yield return ((GridCellD<TPoint>)cell).Payload;
             }
         }
 

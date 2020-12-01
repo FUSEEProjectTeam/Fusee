@@ -49,7 +49,7 @@ namespace Fusee.Examples.PcRendering.Desktop
             var ptType = AppSetupHelper.GetPtType(PtRenderingParams.PathToOocFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
-            var genericType = Type.GetType("Fusee.Pointcloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.Pointcloud.PointAccessorCollections");
+            var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
 
             var objectType = typeof(PcRendering<>);
             var objWithGenType = objectType.MakeGenericType(genericType);

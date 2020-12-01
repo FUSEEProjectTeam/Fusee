@@ -1,6 +1,7 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.Structures;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -49,7 +50,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var maxLvl = (int)jsonMaxLvl;
 
 
-            var root = new PtOctant<TPoint>(center, size);
+            var root = new OctantD<TPoint>(center, size);
             var octree = new PtOctree<TPoint>(root, ptAccessor, maxNoOfPointsInBucket)
             {
                 MaxLevel = maxLvl
@@ -120,7 +121,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             using (BinaryReader br = new BinaryReader(fileStream))
             {
-                CreateNode((PtOctant<TPoint>)octree.Root, br);
+                CreateNode((OctantD<TPoint>)octree.Root, br);
             }
 
             fileStream.Dispose();
@@ -175,7 +176,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                         var childSnc = CreateSncForChildNode(index);
                         var childOctantComp = childSnc.GetComponent<Octant>();
                         childOctantComp.Size = octantcomp.Size / 2;
-                        childOctantComp.Center = PtOctant<TPoint>.CalcCildCenterAtPos(index, octantcomp.Size, octantcomp.Center);
+                        childOctantComp.Center = OctantD<TPoint>.CalcCildCenterAtPos(index, octantcomp.Size, octantcomp.Center);
                         nodeSnc.Children.Add(childSnc);
                         NumberOfOctants++;
 
@@ -215,7 +216,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         /// <param name="node">The current node to process.</param>
         /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's children exist.</param>
-        private void CreateNode(PtOctant<TPoint> node, BinaryReader binaryReader)
+        private void CreateNode(OctantD<TPoint> node, BinaryReader binaryReader)
         {
             try
             {
@@ -237,7 +238,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                     if (childExists)
                     {
-                        PtOctant<TPoint> child = (PtOctant<TPoint>)node.CreateChild(index);
+                        OctantD<TPoint> child = (OctantD<TPoint>)node.CreateChild(index);
                         node.Children[index] = child;
                         CreateNode(child, binaryReader);
                     }

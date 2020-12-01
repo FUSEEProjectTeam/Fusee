@@ -1,5 +1,7 @@
 ﻿using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.Structures;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.OoCReaderWriter
@@ -8,164 +10,120 @@ namespace Fusee.PointCloud.OoCReaderWriter
     /// Data structure that filters points and determines which fall into the next octree level.
     /// </summary>
     /// <typeparam name="TPoint">Point type (<seealso cref="PointAccessor{TPoint}"/>)</typeparam>
-    public class PtGrid<TPoint>
+    public class PtGrid<TPoint> : GridD<TPoint>
     {
         /// <summary>
-        /// All grid cells as three dimensional array.
+        /// Allows access to point properties.
         /// </summary>
-        public PtGridCell<TPoint>[,,] GridCells;
+        public PointAccessor<TPoint> PtAccessor {get; internal set;}
 
-        private readonly List<int3> _neighbouCellIdxOffsets;
+        /// <summary>
+        /// A PtGrid is a property of an PtOctant - its parent octant.
+        /// </summary>
+        public PtOctantWrite<TPoint> ParentOctant { get; internal set; }
+
+        /// <summary>
+        /// Creates a new instance of type PtGrid. Will not create any GridCells.
+        /// </summary>
+        internal PtGrid(double3 center, double3 size) : base(center, size, 128, 128, 128){ }
 
         /// <summary>
         /// Creates a new instance of type PtGrid.
         /// </summary>
-        public PtGrid()
-        {
-            _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new PtGridCell<TPoint>[128, 128, 128];
-        }
-
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
+            : base(parentOctant.Center, new double3(parentOctant.Size, parentOctant.Size, parentOctant.Size), 128, 128, 128)
         {
-            _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new PtGridCell<TPoint>[128, 128, 128];
-
-            var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
-            ReadPointToGrid(ptAccessor, parentOctant, point, firstCenter);
+            PtAccessor = ptAccessor;
+            ParentOctant = parentOctant;
+            CreateCellForItem(GetPositionOfPayloadItem, point);
         }
 
+        /// <summary>
+        /// Creates a new instance of type PtGrid.
+        /// </summary>
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, List<TPoint> points)
+            : base(parentOctant.Center, new double3(parentOctant.Size, parentOctant.Size, parentOctant.Size), 128, 128, 128)
         {
-            _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
-            GridCells = new PtGridCell<TPoint>[128, 128, 128];
-
-            var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
+            PtAccessor = ptAccessor;
+            ParentOctant = parentOctant;
 
             for (int i = 0; i < points.Count; i++)
             {
                 TPoint pt = points[i];
-                ReadPointToGrid(ptAccessor, parentOctant, pt, firstCenter);
+                CreateCellForItem(GetPositionOfPayloadItem, pt);
                 points[i] = pt;
             }
         }
 
-        public static double3 CalcCenterOfUpperLeftCell(PtOctantWrite<TPoint> parentOctant)
+        public override void CreateCellForItem(Func<TPoint, double3> GetPositionOfPayloadItem, TPoint point)
         {
-            var parentHalfSize = parentOctant.Size / 2d;
-            var parentHalfRes = parentOctant.Resolution / 2d;
-            var lowerLeft = parentOctant.Center - new double3(parentHalfSize, parentHalfSize, parentHalfSize);
-            return new double3(lowerLeft.x + parentHalfRes, lowerLeft.y + parentHalfRes, lowerLeft.z + parentHalfRes);
-        }
-
-        //see https://math.stackexchange.com/questions/528501/how-to-determine-which-cell-in-a-grid-a-point-belongs-to
-        public void ReadPointToGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point, double3 firstCenter)
-        {
-            var halfSize = parentOctant.Size / 2d;
-            var translationVec = new double3(parentOctant.Center.x - halfSize, parentOctant.Center.y - halfSize, parentOctant.Center.z - halfSize); //translate to zero
-
-            var tPointPos = ptAccessor.GetPositionFloat3_64(ref point);
-
-            var x = tPointPos.x - translationVec.x;
-            var y = tPointPos.y - translationVec.y;
-            var z = tPointPos.z - translationVec.z;
-
-            var indexX = (int)((x * 128) / parentOctant.Size);
-            var indexY = (int)((y * 128) / parentOctant.Size);
-            var indexZ = (int)((z * 128) / parentOctant.Size);
-
-            var cell = GridCells[indexX, indexY, indexZ];
+            var tPointPos = GetPositionOfPayloadItem(point);
+            var cell = GetCellForPos(Size, Center, tPointPos, out var cellIdx);
 
             //Check if NN is too close - a point remains in the parent octant if the distance to the occupant of a neighbor cell is smaller than the neighbor cells' size.         
-            foreach (var idxOffset in _neighbouCellIdxOffsets)
+            foreach (var idxOffset in GetGridNeighbourIndices(new int3(-1, -1, -1)))
             {
-                //var neighbourCellIdx = new int3(indexX, indexY, indexZ) + idxOffset;
+                var neighbourCellIdx = new int3(cellIdx.x, cellIdx.y, cellIdx.z) + idxOffset;
 
-                var nIndexX = indexX + idxOffset.x;
-                var nIndexY = indexY + idxOffset.y;
-                var nIndexZ = indexZ + idxOffset.z;
-
-                if (nIndexX < 0 || nIndexX > 127)
+                if (neighbourCellIdx.x < 0 || neighbourCellIdx.x >= NumberOfGridCells.x)
                     continue;
-                if (nIndexY < 0 || nIndexY > 127)
+                if (neighbourCellIdx.y < 0 || neighbourCellIdx.y >= NumberOfGridCells.y)
                     continue;
-                if (nIndexZ < 0 || nIndexZ > 127)
+                if (neighbourCellIdx.z < 0 || neighbourCellIdx.z >= NumberOfGridCells.z)
                     continue;
 
-                var neighbourCell = GridCells[nIndexX, nIndexY, nIndexZ];
+                var neighbourCell = GridCells[neighbourCellIdx.x, neighbourCellIdx.y, neighbourCellIdx.z];
 
                 if (neighbourCell == null)
                     continue;
-
-                if ((tPointPos - ptAccessor.GetPositionFloat3_64(ref neighbourCell.Occupant)).Length < neighbourCell.Size) //neighbourCell.Size equals spacing/ resolution of the octant
+                
+                if ((tPointPos - GetPositionOfPayloadItem(neighbourCell.Payload)).Length < neighbourCell.Size.x) //neighbourCell.Size equals spacing/ resolution of the octant
                 {
-                    parentOctant.Payload.Add(point);
+                    ParentOctant.Payload.Add(point);
                     return;
                 }
             }
 
-            //create CridCell on demand
+            //Create CridCell on demand
             if (cell == null)
             {
-                var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
-                cell = new PtGridCell<TPoint>(center, parentOctant.Resolution)
+                var lowerLeftCenter = (Center - Size / 2d) + CellSize;
+                var center = lowerLeftCenter + (new double3(cellIdx.x * CellSize.x, cellIdx.y * CellSize.y, cellIdx.z * CellSize.z));
+                cell = new GridCellD<TPoint>(center, CellSize)
                 {
-                    Occupant = point
+                    Payload = point
                 };
 
-                GridCells[indexX, indexY, indexZ] = cell;
+                GridCells[cellIdx.x, cellIdx.y, cellIdx.z] = (GridCellD<TPoint>)cell;
             }
-            else if (cell.Occupant == null) //set or change cell occupant if necessary            
+            else if (cell.Payload == null) //set or change cell occupant if necessary
             {
-                cell.Occupant = point;
+                cell.Payload = point;
             }
             else
             {
-                var occupantDistToCenter = (ptAccessor.GetPositionFloat3_64(ref cell.Occupant) - cell.Center).Length;
+                var occupantDistToCenter = (GetPositionOfPayloadItem(cell.Payload) - cell.Center).Length;
                 var pointDistToCenter = (tPointPos - cell.Center).Length;
 
                 if (pointDistToCenter < occupantDistToCenter)
                 {
-                    parentOctant.Payload.Add(cell.Occupant);
-                    cell.Occupant = point;
+                    ParentOctant.Payload.Add(cell.Payload);
+                    cell.Payload = point;
                 }
                 else
-                    parentOctant.Payload.Add(point);
+                    ParentOctant.Payload.Add(point);
 
             }
-
         }
 
-        private static List<int3> GetGridNeighbourIndices(int dist)
+        /// <summary>
+        /// Returns the (x,y,z) coordinates of a payload item.
+        /// </summary>
+        /// <param name="pt">The point (payload item)</param>
+        /// <returns></returns>
+        public override double3 GetPositionOfPayloadItem(TPoint pt)
         {
-            var searchkernel = new List<int3>();
-            var startIdx = new int3(-dist, -dist, -dist);
-            var loopL = dist * 2;
-
-            for (var x = 0; x <= loopL; x++)
-            {
-                var xIndex = startIdx.x + x;
-
-                for (var y = 0; y <= loopL; y++)
-                {
-                    var yIndex = startIdx.y + y;
-
-                    for (var z = 0; z <= loopL; z++)
-                    {
-                        var zIndex = startIdx.z + z;
-
-                        //skip "inner" vertices
-                        if (System.Math.Abs(xIndex) == dist ||
-                            System.Math.Abs(yIndex) == dist ||
-                            System.Math.Abs(zIndex) == dist)
-                        {
-                            searchkernel.Add(new int3(xIndex, yIndex, zIndex));
-                        }
-                    }
-                }
-            }
-
-            return searchkernel;
+            return PtAccessor.GetPositionFloat3_64(ref pt);
         }
     }
 }

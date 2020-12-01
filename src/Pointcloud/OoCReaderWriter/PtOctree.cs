@@ -61,7 +61,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Constructor for creating an Octree that is suitable for creating files from it. 
         /// </summary>
-        public PtOctree(PtOctant<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
+        public PtOctree(OctantD<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
             PtAccessor = pa;
@@ -89,12 +89,10 @@ namespace Fusee.PointCloud.OoCReaderWriter
             if (MaxLevel < child.Level)
                 MaxLevel = child.Level;
 
-            var parentWrite = (PtOctantWrite<TPoint>)parent;
-            var firstCenter = PtGrid<TPoint>.CalcCenterOfUpperLeftCell(parentWrite);
-
             var childWrite = (PtOctantWrite<TPoint>)child;
-
-            childWrite.Grid.ReadPointToGrid(PtAccessor, childWrite, payload, firstCenter);
+            childWrite.Grid.PtAccessor = PtAccessor;
+            childWrite.Grid.ParentOctant = childWrite;
+            childWrite.Grid.CreateCellForItem(childWrite.Grid.GetPositionOfPayloadItem, payload);
         }
 
         /// <summary>
@@ -132,7 +130,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             foreach (var cell in octant.Grid.GridCells)
             {
                 if (cell == null) continue;
-                yield return ((PtGridCell<TPoint>)cell).Occupant;
+                yield return ((GridCellD<TPoint>)cell).Payload;
             }
         }
     }
