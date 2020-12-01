@@ -15,7 +15,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Allows access to point properties.
         /// </summary>
-        public PointAccessor<TPoint> PtAccessor {get; internal set;}
+        public PointAccessor<TPoint> PtAccessor { get; internal set; }
 
         /// <summary>
         /// A PtGrid is a property of an PtOctant - its parent octant.
@@ -25,7 +25,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Creates a new instance of type PtGrid. Will not create any GridCells.
         /// </summary>
-        internal PtGrid(double3 center, double3 size) : base(center, size, 128, 128, 128){ }
+        internal PtGrid(double3 center, double3 size) : base(center, size, 128, 128, 128) { }
 
         /// <summary>
         /// Creates a new instance of type PtGrid.
@@ -76,7 +76,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                 if (neighbourCell == null)
                     continue;
-                
+
                 if ((tPointPos - GetPositionOfPayloadItem(neighbourCell.Payload)).Length < neighbourCell.Size.x) //neighbourCell.Size equals spacing/ resolution of the octant
                 {
                     ParentOctant.Payload.Add(point);

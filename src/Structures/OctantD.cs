@@ -134,5 +134,5 @@ namespace Fusee.Structures
 
             return childCenter;
         }
-    }    
+    }
 }
