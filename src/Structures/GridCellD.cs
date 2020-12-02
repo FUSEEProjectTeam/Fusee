@@ -1,16 +1,15 @@
 ﻿using Fusee.Math.Core;
-using Fusee.Structures;
 
 namespace Fusee.Structures
 {
     /// <summary>
     /// The cell of a <see cref="GridD{P}"/>.
     /// </summary>
-    /// <typeparam name="O">The type of the point that occupies this cell.</typeparam>
+    /// <typeparam name="O">The type of the payload.</typeparam>
     public class GridCellD<O> : IBucket<double3, double3>
     {
         /// <summary>
-        /// The point that occupies this cell.
+        /// The payload.
         /// </summary>
         public O Payload { get; set; }
 

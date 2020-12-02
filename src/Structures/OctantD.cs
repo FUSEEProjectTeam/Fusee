@@ -1,5 +1,4 @@
-﻿using Fusee.Structures;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 
@@ -81,6 +80,11 @@ namespace Fusee.Structures
         /// </summary>
         protected OctantD() { }
 
+        /// <summary>
+        /// Creates a child octant at the given position in its parent octant.
+        /// </summary>
+        /// <param name="posInParent">The position in the parent octant.</param>
+        /// <returns></returns>
         public virtual IOctant<double3, double, P> CreateChild(int posInParent)
         {
             var childCenter = CalcCildCenterAtPos(posInParent);
@@ -94,11 +98,23 @@ namespace Fusee.Structures
             return child;
         }
 
+        /// <summary>
+        /// Returns the center of the child octant at the given position of the parent octant.
+        /// </summary>
+        /// <param name="posInParent">The position in the parent octant.</param>
+        /// <returns></returns>
         protected double3 CalcCildCenterAtPos(int posInParent)
         {
             return CalcCildCenterAtPos(posInParent, Size, Center);
         }
 
+        /// <summary>
+        /// Returns the center of the child octant at the given position of the parent octant from the parents center and size.
+        /// </summary>
+        /// <param name="posInParent">The position in the parent octant.</param>
+        /// <param name="parentSize">The size of the parent octant.</param>
+        /// <param name="parentCenter">The center of the parent octant.</param>
+        /// <returns></returns>
         public static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
         {
             double3 childCenter;

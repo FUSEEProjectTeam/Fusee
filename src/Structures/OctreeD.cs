@@ -4,6 +4,11 @@ using System.Collections.Generic;
 
 namespace Fusee.Structures
 {
+    /// <summary>
+    /// Tree data structure in which each internal node has up to eight children. 
+    /// Octrees are most often used to partition a three-dimensional space by recursively subdividing it into eight octants.
+    /// </summary>
+    /// <typeparam name="P">The type of an octants payload.</typeparam>
     public abstract class OctreeD<P>
     {
         /// <summary>

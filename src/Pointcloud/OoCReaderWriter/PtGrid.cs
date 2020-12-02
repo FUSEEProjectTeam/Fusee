@@ -30,31 +30,19 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Creates a new instance of type PtGrid.
         /// </summary>
-        public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
-            : base(parentOctant.Center, new double3(parentOctant.Size, parentOctant.Size, parentOctant.Size), 128, 128, 128)
-        {
-            PtAccessor = ptAccessor;
-            ParentOctant = parentOctant;
-            CreateCellForItem(GetPositionOfPayloadItem, point);
-        }
-
-        /// <summary>
-        /// Creates a new instance of type PtGrid.
-        /// </summary>
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, List<TPoint> points)
             : base(parentOctant.Center, new double3(parentOctant.Size, parentOctant.Size, parentOctant.Size), 128, 128, 128)
         {
             PtAccessor = ptAccessor;
             ParentOctant = parentOctant;
-
-            for (int i = 0; i < points.Count; i++)
-            {
-                TPoint pt = points[i];
-                CreateCellForItem(GetPositionOfPayloadItem, pt);
-                points[i] = pt;
-            }
+            CreateCells(points);
         }
 
+        /// <summary>
+        /// Creates a new <see cref="GridCellD{O}"/> for the given item.
+        /// </summary>
+        /// <param name="GetPositionOfPayloadItem">Method to retrieve the points coordinate.</param>
+        /// <param name="point">The generic point cloud point.</param>
         public override void CreateCellForItem(Func<TPoint, double3> GetPositionOfPayloadItem, TPoint point)
         {
             var tPointPos = GetPositionOfPayloadItem(point);
@@ -65,11 +53,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 var neighbourCellIdx = new int3(cellIdx.x, cellIdx.y, cellIdx.z) + idxOffset;
 
-                if (neighbourCellIdx.x < 0 || neighbourCellIdx.x >= NumberOfGridCells.x)
-                    continue;
-                if (neighbourCellIdx.y < 0 || neighbourCellIdx.y >= NumberOfGridCells.y)
-                    continue;
-                if (neighbourCellIdx.z < 0 || neighbourCellIdx.z >= NumberOfGridCells.z)
+                if (neighbourCellIdx.x < 0 || neighbourCellIdx.x >= NumberOfGridCells.x
+                    || neighbourCellIdx.y < 0 || neighbourCellIdx.y >= NumberOfGridCells.y
+                    || neighbourCellIdx.z < 0 || neighbourCellIdx.z >= NumberOfGridCells.z)
                     continue;
 
                 var neighbourCell = GridCells[neighbourCellIdx.x, neighbourCellIdx.y, neighbourCellIdx.z];
@@ -94,12 +80,10 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     Payload = point
                 };
 
-                GridCells[cellIdx.x, cellIdx.y, cellIdx.z] = (GridCellD<TPoint>)cell;
+                GridCells[cellIdx.x, cellIdx.y, cellIdx.z] = cell;
             }
             else if (cell.Payload == null) //set or change cell occupant if necessary
-            {
                 cell.Payload = point;
-            }
             else
             {
                 var occupantDistToCenter = (GetPositionOfPayloadItem(cell.Payload) - cell.Center).Length;
