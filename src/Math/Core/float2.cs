@@ -36,6 +36,16 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new float2.
         /// </summary>
+        /// <param name="val">This value will be set for the x and y component.</param>
+        public float2(float val)
+        {
+            x = val;
+            y = val;
+        }
+
+        /// <summary>
+        /// Constructs a new float2.
+        /// </summary>
         /// <param name="x">The x coordinate of the net float2.</param>
         /// <param name="y">The y coordinate of the net float2.</param>
         public float2(float x, float y)
@@ -102,13 +112,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public float Length
-        {
-            get
-            {
-                return (float)System.Math.Sqrt(LengthSquared);
-            }
-        }
+        public float Length => (float)System.Math.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -125,13 +129,7 @@ namespace Fusee.Math.Core
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
         /// </remarks>
-        public float LengthSquared
-        {
-            get
-            {
-                return x * x + y * y;
-            }
-        }
+        public float LengthSquared => x * x + y * y;
 
         #endregion public float LengthSquared
 
@@ -143,13 +141,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular right.
         /// </value>
-        public float2 PerpendicularRight
-        {
-            get
-            {
-                return new float2(y, -x);
-            }
-        }
+        public float2 PerpendicularRight => new float2(y, -x);
 
         #endregion public float2 PerpendicularRight
 
@@ -161,13 +153,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular left.
         /// </value>
-        public float2 PerpendicularLeft
-        {
-            get
-            {
-                return new float2(-y, x);
-            }
-        }
+        public float2 PerpendicularLeft => new float2(-y, x);
 
         #endregion public float2 PerpendicularLeft
 
@@ -488,6 +474,27 @@ namespace Fusee.Math.Core
 
         #endregion Dot
 
+        /// <summary>
+        /// Performs <see cref="M.Step(float, float)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        public static float2 Step(float2 edge, float2 val)
+        {
+            return new float2(M.Step(edge.x, val.x), M.Step(edge.y, val.y));
+        }
+
+        /// <summary>
+        /// Returns a float2 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The float3 to be raised to a power.</param>
+        /// <param name="exp">A float that specifies a power.</param>
+        /// <returns></returns>
+        public static float2 Pow(float2 val, float exp)
+        {
+            return new float2(MathF.Pow(val.r, exp), MathF.Pow(val.g, exp));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -503,6 +510,20 @@ namespace Fusee.Math.Core
         {
             a.x = blend * (b.x - a.x) + a.x;
             a.y = blend * (b.y - a.y) + a.y;
+            return a;
+        }
+
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        public static float2 Lerp(float2 a, float2 b, float2 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
             return a;
         }
 
@@ -603,12 +624,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
         /// </summary>
-        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
+        public float2 yx { get => new float2(y, x); set { y = value.x; x = value.y; } }
 
         #endregion Swizzle
 
@@ -772,7 +793,7 @@ namespace Fusee.Math.Core
         /// Returns a System.String that represents the current float2.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -784,7 +805,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -798,7 +819,7 @@ namespace Fusee.Math.Core
 
             char separator = M.GetNumericListSeparator(provider);
 
-            return String.Format(provider, "({1}{0} {2})", separator, x, y);
+            return string.Format(provider, "({1}{0} {2})", separator, x, y);
         }
 
         #endregion public override string ToString()
@@ -846,8 +867,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float r
         {
-            get { return x; }
-            set { x = value; }
+            get => x;
+            set => x = value;
         }
 
         /// <summary>
@@ -855,8 +876,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float g
         {
-            get { return y; }
-            set { y = value; }
+            get => y;
+            set => y = value;
         }
 
         /// <summary>
@@ -864,8 +885,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float2 rg
         {
-            get { return xy; }
-            set { xy = value; }
+            get => xy;
+            set => xy = value;
         }
 
         #endregion Color

@@ -1,4 +1,4 @@
-﻿using CommandLine;
+using CommandLine;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
@@ -138,7 +138,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                                 if (serversion != ourversion)
                                 {
-                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. If you experience unexpected behavior, try installing the corresponding player version. See https://fusee3d.org/wiki/Using-FUSEE-in-Visual-Studio-Code.html for help.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
                                 }
 
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
@@ -194,7 +194,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });

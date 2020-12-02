@@ -11,6 +11,8 @@ namespace Fusee.Serialization.V1
     [ProtoContract]
     [ProtoInclude(200, typeof(FusMaterialStandard))]
     [ProtoInclude(201, typeof(FusMaterialBRDF))]
+    [ProtoInclude(202, typeof(FusMaterialDiffuseBRDF))]
+    [ProtoInclude(203, typeof(FusMaterialGlossyBRDF))]
     public class FusMaterialBase : FusComponent, IEquatable<FusMaterialBase>
     {
         #region Albedo

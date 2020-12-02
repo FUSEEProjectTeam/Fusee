@@ -9,8 +9,6 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
@@ -21,8 +19,8 @@ namespace Fusee.Examples.GeometryEditing.Core
     [FuseeApplication(Name = "FUSEE Geometry Editing Example", Description = "Example App to show basic geometry editing in FUSEE")]
     public class GeometryEditing : RenderCanvas
     {
-        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0, 1.0f);
-        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f, 1.0f);
+        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0, 1.0f).LinearColorFromSRgb();
+        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f, 1.0f).LinearColorFromSRgb();
 
         // angle and camera variables
         private static float _angleHorz = M.PiOver6 * 2.0f, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom = 8, _xPos, _yPos;
@@ -402,7 +400,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
 
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor, float4.Zero, 0, 0));
+            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor, float4.Zero));
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);
