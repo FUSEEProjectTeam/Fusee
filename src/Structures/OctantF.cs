@@ -1,14 +1,14 @@
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 
 namespace Fusee.Structures
 {
     /// <summary>
-    /// Double-precision Octant implementation.
+    /// Single-precision Octant implementation.
     /// </summary>
     /// <typeparam name="P">The type of the octants payload.</typeparam>
-    public class OctantD<P> : IOctant<double3, double, P>
+    public class OctantF<P> : IOctant<double3, double, P>
     {
         /// <summary>
         ///The Resolution of an Octant is defined by the minimum distance (spacing) between points.
@@ -62,7 +62,7 @@ namespace Fusee.Structures
         /// <param name="center">The center point of this octant, <see cref="IBucket{T, K}.Center"/>.</param>
         /// <param name="size">The size of this octant, <see cref="IBucket{T, K}.Size"/>. </param>
         /// <param name="children">The children of this octant - can be null.</param>
-        public OctantD(double3 center, double size, IOctant<double3, double, P>[] children = null)
+        public OctantF(double3 center, double size, IOctant<double3, double, P>[] children = null)
         {
             Center = center;
             Size = size;
@@ -78,7 +78,7 @@ namespace Fusee.Structures
         /// <summary>
         /// Creates a new instance of type PtOctant.
         /// </summary>
-        protected OctantD() { }
+        protected OctantF() { }
 
         /// <summary>
         /// Creates a child octant at the given position in its parent octant.
@@ -90,7 +90,7 @@ namespace Fusee.Structures
             var childCenter = CalcCildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
-            var child = new OctantD<P>(childCenter, childRes)
+            var child = new OctantF<P>(childCenter, childRes)
             {
                 Resolution = Resolution / 2d,
                 Level = Level + 1
