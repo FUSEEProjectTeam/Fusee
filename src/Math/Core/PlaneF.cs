@@ -114,7 +114,6 @@ namespace Fusee.Math.Core
             return (float)System.Math.Acos(cosAlpha);
         }
 
-
         #region Plane-Box Intersection
 
         /// <summary>

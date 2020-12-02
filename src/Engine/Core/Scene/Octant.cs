@@ -6,7 +6,7 @@ using Fusee.Structures;
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
-    /// Component that allows a SceneNode to save information from a <see cref="Structures.Octant{T, K, P}"/>.
+    /// Component that allows a SceneNode to save information from a <see cref="IOctant{T, K, P}"/>.
     /// </summary>
     public class Octant : SceneComponent, IOctant<double3, double, Mesh>
     {
@@ -30,10 +30,19 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public double Size { get; set; }
 
+        /// <summary>
+        /// Is this octant a leaf node in the octree?
+        /// </summary>
         public bool IsLeaf { get; set; }
 
+        /// <summary>
+        /// Integer that defines this octants position (1 to 8) in its parent.
+        /// </summary>
         public int PosInParent { get; set; }
 
+        /// <summary>
+        /// The level of the octree this octant belongs to.
+        /// </summary>
         public int Level { get; set; }
 
         /// <summary>
@@ -98,6 +107,9 @@ namespace Fusee.Engine.Core.Scene
                 Children = children;
         }
 
+        /// <summary>
+        /// Create a new instance of type Octant.
+        /// </summary>
         public Octant() { }
 
         /// <summary>
@@ -119,7 +131,7 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this Octant.      
+        /// Checks if a viewing frustum lies within or intersects this Octant.
         /// </summary>
         /// <param name="plane">The plane to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
@@ -129,7 +141,7 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this Octant.      
+        /// Checks if a viewing frustum lies within or intersects this Octant.
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
@@ -149,6 +161,16 @@ namespace Fusee.Engine.Core.Scene
                 return false;
 
             return true;
+        }
+
+        /// <summary>
+        /// <see cref="IOctant{T, K, P}.CreateChild(int)"/>.
+        /// </summary>
+        /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
+        /// <returns></returns>
+        public IOctant<double3, double, Mesh> CreateChild(int atPosInParent)
+        {
+            throw new NotImplementedException();
         }
     }
 }

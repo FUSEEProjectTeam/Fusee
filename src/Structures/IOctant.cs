@@ -23,10 +23,10 @@ namespace Fusee.Structures
         /// <summary>
         /// Is this octant a leaf node in the octree?
         /// </summary>
-        public bool IsLeaf { get; }
+        public bool IsLeaf { get; set; }
 
         /// <summary>
-        /// Integer that defines this octants position in its parent.
+        /// Integer that defines this octants position (1 to 8) in its parent.
         /// </summary>
         public int PosInParent { get; }
 
@@ -34,5 +34,11 @@ namespace Fusee.Structures
         /// The level of the octree this octant belongs to.
         /// </summary>
         public int Level { get; }
+
+        /// <summary>
+        /// Instantiates a child octant at the given position.
+        /// </summary>
+        /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
+        public IOctant<T, K, P> CreateChild(int atPosInParent);
     }
 }
