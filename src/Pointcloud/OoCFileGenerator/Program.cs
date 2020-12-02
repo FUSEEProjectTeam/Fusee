@@ -1,14 +1,14 @@
+using Fusee.PointCloud.PointAccessorCollections;
 using System;
 using System.IO;
-using Fusee.PointCloud.PointAccessorCollections;
 
 namespace Fusee.PointCloud.OoCFileGenerator
 {
-    static class Program
+    internal static class Program
     {
         private static bool _fromHelp;
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             PointType ptType;
             string pathToFile;

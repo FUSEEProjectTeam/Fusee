@@ -1,5 +1,4 @@
 using Fusee.Base.Core;
-using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Structures;
 using Newtonsoft.Json.Linq;
@@ -50,7 +49,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             var nodesToWrite = new List<PtOctantWrite<TPoint>>();
 
-            octree.Traverse((IOctant<double3, double, TPoint> node) =>
+            octree.Traverse((OctantD<TPoint> node) =>
             {
                 var ptNode = (PtOctantWrite<TPoint>)node;
                 nodesToWrite.Add(ptNode);
@@ -73,31 +72,29 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <param name="octree">The source octree.</param>
         public void WriteHierarchy(PtOctree<TPoint> octree)
         {
-            using (BinaryWriter bw = new BinaryWriter(File.Open(_fileFolderPath + "\\octree.hierarchy", FileMode.OpenOrCreate)))
+            using BinaryWriter bw = new BinaryWriter(File.Open(_fileFolderPath + "\\octree.hierarchy", FileMode.OpenOrCreate));
+            octree.Traverse((OctantD<TPoint> node) =>
             {
-                octree.Traverse((IOctant<double3, double, TPoint> node) =>
-                {
                     // write loadable properties (in which file the node's content - i.e. points - are stored)
                     bw.Write(((PtOctantWrite<TPoint>)node).Guid.ToByteArray()); // 16 bytes
                     bw.Write(node.Level);
-                    bw.Write(node.IsLeaf);
+                bw.Write(node.IsLeaf);
                     //bw.Write(node.StreamPosition);
 
                     // write child indices (1 byte). For example: Octant has child 0 and 1: 2^0 + 2^1 = 3                   
                     byte childIndices = 0;
 
-                    int exp = 0;
-                    foreach (var childNode in node.Children)
-                    {
-                        if (childNode != null)
-                            childIndices += (byte)System.Math.Pow(2, exp);
+                int exp = 0;
+                foreach (var childNode in node.Children)
+                {
+                    if (childNode != null)
+                        childIndices += (byte)System.Math.Pow(2, exp);
 
-                        exp++;
-                    }
+                    exp++;
+                }
 
-                    bw.Write(childIndices);
-                });
-            }
+                bw.Write(childIndices);
+            });
         }
 
         /// <summary>
@@ -146,10 +143,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
             jsonObj.Add(ptType);
 
             //Write file
-            using (StreamWriter file = File.CreateText(_fileFolderPath + "/meta.json"))
-            {
-                file.Write(jsonObj.ToString());
-            }
+            using StreamWriter file = File.CreateText(_fileFolderPath + "/meta.json");
+            file.Write(jsonObj.ToString());
         }
 
         /// <summary>
@@ -203,7 +198,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             foreach (var cell in node.Grid.GridCells)
             {
                 if (cell != null)
-                    yield return ((GridCellD<TPoint>)cell).Payload;
+                    yield return cell.Payload;
             }
         }
 

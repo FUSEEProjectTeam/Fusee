@@ -73,7 +73,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         /// <param name="child">The octant to subdivide.</param>
         /// <returns></returns>
-        protected override bool SubdivTerminationCondition(IOctant<double3, double, TPoint> child)
+        protected override bool SubdivTerminationCondition(OctantD<TPoint> child)
         {
             return child.Payload.Count <= MaxNoOfPointsInBucket;
         }
@@ -84,7 +84,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <param name="parent">The parent octant.</param>
         /// <param name="child">The child octant a payload item falls into.</param>
         /// <param name="payload">The payload item.</param>
-        protected override void HandlePayload(IOctant<double3, double, TPoint> parent, IOctant<double3, double, TPoint> child, TPoint payload)
+        protected override void HandlePayload(OctantD<TPoint> parent, OctantD<TPoint> child, TPoint payload)
         {
             if (MaxLevel < child.Level)
                 MaxLevel = child.Level;
@@ -101,12 +101,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <param name="octant">The octant to subdivide.</param>
         /// <param name="pt">The point for which the child index is determined.</param>
         /// <returns></returns>
-        protected override int GetChildPosition(IOctant<double3, double, TPoint> octant, TPoint pt)
+        protected override int GetChildPosition(OctantD<TPoint> octant, TPoint pt)
         {
             var point = PtAccessor.GetPositionFloat3_64(ref pt);
 
             var halfSize = octant.Size / 2d;
-            var translationVec = new double3(octant.Center.x - halfSize, octant.Center.y - halfSize, octant.Center.z - halfSize); //translate to zero           
+            var translationVec = new double3(octant.Center.x - halfSize, octant.Center.y - halfSize, octant.Center.z - halfSize); //translate to zero
 
             var x = point.x - translationVec.x;
             var y = point.y - translationVec.y;
@@ -130,7 +130,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             foreach (var cell in octant.Grid.GridCells)
             {
                 if (cell == null) continue;
-                yield return ((GridCellD<TPoint>)cell).Payload;
+                yield return cell.Payload;
             }
         }
     }

@@ -63,8 +63,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Reads the meta.json and .hierarchy files and returns an octree.
         /// </summary>
-        /// <param name="effect">Shader effect the points shall be rendered with.</param>
-        /// <returns></returns>
         public SceneNode GetScene()
         {
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
@@ -96,7 +94,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     new Octant(center, size)
                     {
 
-                            PosInParent = -1, //root!                            
+                            PosInParent = -1, //root!
                             //Resolution = size/128
                         
                     }
@@ -121,7 +119,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             using (BinaryReader br = new BinaryReader(fileStream))
             {
-                CreateNode((OctantD<TPoint>)octree.Root, br);
+                CreateNode(octree.Root, br);
             }
 
             fileStream.Dispose();
@@ -147,7 +145,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Processes the current node with the given set of children as bit set.
         /// </summary>
-        /// <param name="node">The current node to process.</param>
+        /// <param name="nodeSnc">The current node to process.</param>
         /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's children exist.</param>
         private void CreateSceneNode(SceneNode nodeSnc, BinaryReader binaryReader)
         {
@@ -198,14 +196,11 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 {
                     new Octant()
                     {
-
                         PosInParent = posInParent
-
                     },
                     new Transform
                     {
-                        Scale = float3.One /** (float)(node.Size / parentSize)*/,
-                        //Translation = (float3) (node.Center - parentCenter)
+                        Scale = float3.One
                     },
                 }
             };
@@ -244,10 +239,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     }
                 }
             }
-            catch (EndOfStreamException)
-            {
-
-            }
+            catch (EndOfStreamException) { }
         }
     }
 }
