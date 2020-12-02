@@ -75,14 +75,14 @@ namespace Fusee.PointCloud.OoCReaderWriter
             using BinaryWriter bw = new BinaryWriter(File.Open(_fileFolderPath + "\\octree.hierarchy", FileMode.OpenOrCreate));
             octree.Traverse((OctantD<TPoint> node) =>
             {
-                    // write loadable properties (in which file the node's content - i.e. points - are stored)
-                    bw.Write(((PtOctantWrite<TPoint>)node).Guid.ToByteArray()); // 16 bytes
-                    bw.Write(node.Level);
+                // write loadable properties (in which file the node's content - i.e. points - are stored)
+                bw.Write(((PtOctantWrite<TPoint>)node).Guid.ToByteArray()); // 16 bytes
+                bw.Write(node.Level);
                 bw.Write(node.IsLeaf);
-                    //bw.Write(node.StreamPosition);
+                //bw.Write(node.StreamPosition);
 
-                    // write child indices (1 byte). For example: Octant has child 0 and 1: 2^0 + 2^1 = 3                   
-                    byte childIndices = 0;
+                // write child indices (1 byte). For example: Octant has child 0 and 1: 2^0 + 2^1 = 3                   
+                byte childIndices = 0;
 
                 int exp = 0;
                 foreach (var childNode in node.Children)

@@ -92,7 +92,7 @@ namespace Fusee.Structures
             DoTraverse(node, callback);
         }
 
-        private static void DoTraverse(OctantD<P> node, Action<OctantD< P>> callback)
+        private static void DoTraverse(OctantD<P> node, Action<OctantD<P>> callback)
         {
             var candidates = new Stack<OctantD<P>>();
             candidates.Push(node);
