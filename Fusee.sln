@@ -212,6 +212,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssetStorage", "AssetStorage", "{928043B9-4288-4E44-BBE8-DDC283EA41A9}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.AssetStorage.Desktop", "src\Tests\AssetStorage\Desktop\Fusee.Test.AssetStorage.Desktop.csproj", "{B8BDC307-D5C6-42A3-9D07-68D74723C97D}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SurfaceEffects", "SurfaceEffects", "{64A3E471-73D4-420D-9F9A-3A219660BF53}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SurfaceEffects.Core", "Examples\Complete\SurfaceEffects\Core\Fusee.Examples.SurfaceEffects.Core.csproj", "{16DF559F-0BB4-4FBB-A4E5-E53E65549B09}"
