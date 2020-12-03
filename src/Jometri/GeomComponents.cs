@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
+using System.Collections.Generic;
 
 namespace Fusee.Jometri
 {

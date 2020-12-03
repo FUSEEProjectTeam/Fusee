@@ -1,0 +1,209 @@
+syntax = "proto3";
+
+message AABBf {
+   float3 min = 1;
+   float3 max = 2;
+}
+message FusAnimation {
+   repeated FusAnimationTrack AnimationTracks = 3;
+}
+message FusAnimationKeyBase {
+   float Time = 1;
+   oneof subtype {
+      FusAnimationKeyDouble FusAnimationKeyDouble = 100;
+      FusAnimationKeyInt FusAnimationKeyInt = 101;
+      FusAnimationKeyFloat FusAnimationKeyFloat = 102;
+      FusAnimationKeyFloat2 FusAnimationKeyFloat2 = 103;
+      FusAnimationKeyFloat3 FusAnimationKeyFloat3 = 104;
+      FusAnimationKeyFloat4 FusAnimationKeyFloat4 = 105;
+   }
+}
+message FusAnimationKeyDouble {
+   double Value = 1;
+}
+message FusAnimationKeyFloat {
+   float Value = 1;
+}
+message FusAnimationKeyFloat2 {
+   float2 Value = 1;
+}
+message FusAnimationKeyFloat3 {
+   float3 Value = 1;
+}
+message FusAnimationKeyFloat4 {
+   float4 Value = 1;
+}
+message FusAnimationKeyInt {
+   int32 Value = 1;
+}
+message FusAnimationTrack {
+   FusComponent SceneComponent = 1;
+   string Property = 2;
+   TypeId TypeId = 3;
+   repeated FusAnimationKeyBase KeyFrames = 4;
+   LerpType LerpType = 5;
+}
+message FusBone {
+   string Name = 1;
+}
+message FusCamera {
+   bool ClearColor = 1;
+   bool ClearDepth = 2;
+   int32 Layer = 3;
+   float4 BackgroundColor = 4;
+   ProjectionMethod ProjectionMethod = 5;
+   float Fov = 6;
+   float2 ClippingPlanes = 7;
+   float4 Viewport = 8;
+   bool Active = 9;
+}
+message FusComponent {
+   string Name = 1;
+   oneof subtype {
+      FusTransform FusTransform = 100;
+      FusMesh FusMesh = 101;
+      FusMaterial FusMaterial = 102;
+      FusLight FusLight = 103;
+      FusWeight FusWeight = 104;
+      FusAnimation FusAnimation = 105;
+      FusBone FusBone = 106;
+      FusCamera FusCamera = 107;
+   }
+}
+message FusContents {
+   oneof subtype {
+      FusScene FusScene = 201;
+   }
+}
+message FusFile {
+   FusHeader Header = 1;
+   FusContents Contents = 2;
+}
+message FusHeader {
+   int32 FileVersion = 1;
+   string Generator = 2;
+   string CreatedBy = 3;
+   string CreationDate = 4;
+}
+message FusLight {
+   bool Active = 1;
+   float4 Color = 2;
+   float MaxDistance = 3;
+   float Strength = 4;
+   LightType Type = 5;
+   float OuterConeAngle = 6;
+   float InnerConeAngle = 7;
+}
+message FusMaterial {
+   MatChannelContainer Albedo = 1;
+   MatChannelContainer Specular = 2;
+   MatChannelContainer Emissive = 3;
+   NormapMapChannelContainer NormalMap = 4;
+   oneof subtype {
+      FusMaterialPBR FusMaterialPBR = 200;
+   }
+}
+message FusMaterialPBR {
+   float RoughnessValue = 1;
+   float FresnelReflectance = 2;
+   float DiffuseFraction = 3;
+}
+message FusMesh {
+   repeated float3 Vertices = 1;
+   repeated uint32 Colors = 2 [packed = false];
+   repeated float3 Normals = 3;
+   repeated float2 UVs = 4;
+   repeated float4 BoneWeights = 5;
+   repeated float4 BoneIndices = 6;
+   repeated uint32 Triangles = 7 [packed = false];
+   AABBf BoundingBox = 8;
+   repeated float4 Tangents = 9;
+   repeated float3 BiTangents = 10;
+   int32 MeshType = 11;
+}
+message FusNode {
+   string Name = 1;
+   repeated int32 Components = 2 [packed = false];
+   repeated FusNode Children = 3;
+}
+message FusScene {
+   repeated FusComponent ComponentList = 1;
+   repeated FusNode Children = 2;
+}
+message FusTransform {
+   float3 Translation = 1;
+   float3 Rotation = 2;
+   float3 Scale = 3;
+}
+message FusWeight {
+   repeated VertexWeightList WeightMap = 1;
+   repeated FusComponent Joints = 2;
+   repeated float4x4 BindingMatrices = 3;
+}
+enum LerpType {
+   Lerp = 0;
+   Slerp = 1;
+}
+enum LightType {
+   Point = 0;
+   Parallel = 1;
+   Spot = 2;
+   Legacy = 3;
+}
+message MatChannelContainer {
+   float4 Color = 1;
+   string Texture = 2;
+   float Mix = 3;
+   oneof subtype {
+      SpecularChannelContainer SpecularChannelContainer = 100;
+   }
+}
+message NormapMapChannelContainer {
+   string Texture = 1;
+   float Intensity = 2;
+}
+enum ProjectionMethod {
+   Perspective = 0;
+   Orthographic = 1;
+}
+message SpecularChannelContainer {
+   float Shininess = 1;
+   float Intensity = 2;
+}
+enum TypeId {
+   Double = 0;
+   Int = 1;
+   Float = 2;
+   Float2 = 3;
+   Float3 = 4;
+   Float4 = 5;
+   Bool = 6;
+}
+message VertexWeight {
+   int32 JointIndex = 1;
+   float Weight = 2;
+}
+message VertexWeightList {
+   repeated VertexWeight VertexWeights = 1;
+}
+message float2 {
+   float x = 1;
+   float y = 2;
+}
+message float3 {
+   float x = 1;
+   float y = 2;
+   float z = 3;
+}
+message float4 {
+   float x = 1;
+   float y = 2;
+   float z = 3;
+   float w = 4;
+}
+message float4x4 {
+   float4 Row0 = 1;
+   float4 Row1 = 2;
+   float4 Row2 = 3;
+   float4 Row3 = 4;
+}
