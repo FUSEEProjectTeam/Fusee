@@ -45,16 +45,23 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        private bool _isLoaded;
-
-        private async void LoadAssets()
+        // Init is called on startup.
+        public override void Init()
         {
+            _camTransform = new Transform()
+            {
+                Scale = float3.One,
+                Translation = float3.Zero
+            };
 
-            _gui = await GUIHelper.CreateDefaultGui(Width, Height, "FUSEE Deferred Example", CanvasRenderMode.Screen,
-                BtnLogoEnter, BtnLogoExit, BtnLogoDown);
+            _gui = CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
+
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
+            _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
+            _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
             _sponzaScene = AssetStorage.Get<SceneContainer>("sponza.fus");
@@ -158,8 +165,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
-
-            _isLoaded = true;
         }
 
         private bool _renderDeferred = true;
@@ -167,8 +172,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_isLoaded) return;
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

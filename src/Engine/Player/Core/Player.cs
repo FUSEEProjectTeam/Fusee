@@ -13,6 +13,7 @@ using Fusee.Xene;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.Effects;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Player.Core
 {
@@ -74,9 +75,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " on " + _scene.Header.CreationDate;
             }
 
-            _gui = await GUIHelper.CreateDefaultGui(Width, Height,
-                textToDisplay, _canvasRenderMode,
-                BtnLogoEnter, BtnLogoExit, BtnLogoDown).ConfigureAwait(false);
+            _gui = await CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -278,11 +277,11 @@ namespace Fusee.Engine.Player.Core
 
         }
 
-        private SceneContainer CreateGui()
+        private async Task<SceneContainer> CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
+            var vsTex = await AssetStorage.GetAsync<string>("texture.vert").ConfigureAwait(false);
+            var psTex = await AssetStorage.GetAsync<string>("texture.frag").ConfigureAwait(false);
+            var psText = await AssetStorage.GetAsync<string>("text.frag").ConfigureAwait(false);
 
             var btnFuseeLogo = new GUIButton
             {
@@ -292,7 +291,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png").ConfigureAwait(false));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
@@ -302,7 +301,7 @@ namespace Fusee.Engine.Player.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.                
+                //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f)),
                 float2.One);
             fuseeLogo.AddComponent(btnFuseeLogo);
