@@ -98,13 +98,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <seealso cref="LengthSquared" />
-        public double Length
-        {
-            get
-            {
-                return (double)System.Math.Sqrt(LengthSquared);
-            }
-        }
+        public double Length => (double)System.Math.Sqrt(LengthSquared);
 
         #endregion public double Length
 
@@ -121,13 +115,7 @@ namespace Fusee.Math.Core
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
         /// </remarks>
-        public double LengthSquared
-        {
-            get
-            {
-                return x * x + y * y;
-            }
-        }
+        public double LengthSquared => x * x + y * y;
 
         #endregion public double LengthSquared
 
@@ -139,13 +127,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular right.
         /// </value>
-        public double2 PerpendicularRight
-        {
-            get
-            {
-                return new double2(y, -x);
-            }
-        }
+        public double2 PerpendicularRight => new double2(y, -x);
 
         #endregion public double2 PerpendicularRight
 
@@ -157,13 +139,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular left.
         /// </value>
-        public double2 PerpendicularLeft
-        {
-            get
-            {
-                return new double2(-y, x);
-            }
-        }
+        public double2 PerpendicularLeft => new double2(-y, x);
 
         #endregion public double2 PerpendicularLeft
 
@@ -681,7 +657,7 @@ namespace Fusee.Math.Core
         /// Returns a System.String that represents the current double3.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -693,7 +669,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -707,7 +683,7 @@ namespace Fusee.Math.Core
 
             char separator = M.GetNumericListSeparator(provider);
 
-            return String.Format(provider, "({1}{0} {2})", separator, x, y);
+            return string.Format(provider, "({1}{0} {2})", separator, x, y);
         }
 
         #endregion public override string ToString()

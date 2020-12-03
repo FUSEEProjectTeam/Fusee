@@ -24,6 +24,11 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BlenderVisitor.py" />
+    <Compile Include="FusSceneWriter.py" />
+    <Compile Include="proto\FusSerialization_pb2.py" />
+    <Compile Include="SerializeData.py" />
+    <Compile Include="__init__.py" />
     <Compile Include="**\*.py" />
     <Content Include="**\*.proto" />
   </ItemGroup>
@@ -36,6 +41,9 @@
   <ItemGroup>
     <Folder Include="proto\" />
     <Folder Include="proto_src\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="proto_src\Readme.md" />
   </ItemGroup>
   <!-- Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /-->
   <!-- RE-GENERATING THE PROTBUF SERIALIZATION PYTHON CODE AND ZIPPING THE BLENDER ADDON DOES NOT WORK. PYTHON PROJECTS JUST DONT INVOKE THE BUILD TARGET. 

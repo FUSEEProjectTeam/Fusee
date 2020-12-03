@@ -1,6 +1,9 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
@@ -192,7 +195,7 @@ namespace Fusee.Engine.GUI
     public class CanvasNode : SceneNode
     {
         /// <summary>
-        /// Creates a SceneNode with the proper components and children for rendering a canvas.
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a canvas.
         /// </summary>
         /// <param name="name">The name of the canvas.</param>
         /// <param name="canvasRenderMode">Choose in which mode you want to render this canvas.</param>
@@ -223,10 +226,10 @@ namespace Fusee.Engine.GUI
     public class TextureNode : SceneNode
     {
         /// <summary>
-        /// Creates a SceneNode with the proper components and children for rendering a nine sliced texture.
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// By default the border thickness is calculated relative to a unit plane. For a thicker border set the border thickness to the desired value, 2 means a twice as thick border.
         /// </summary>
-        /// <param name="name">Name of the SceneNode.</param>
+        /// <param name="name">Name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
@@ -258,59 +261,58 @@ namespace Fusee.Engine.GUI
                 {
                     Name = name + "_XForm",
                 },
-               new ShaderEffect(new[]
+                new ShaderEffect(
+                        new FxPassDeclaration
                         {
-                            new EffectPassDeclaration
+                            VS = vs,
+                            PS = ps,
+                            StateSet = new RenderStateSet
                             {
-                                VS = vs,
-                                PS = ps,
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    SourceBlend = Blend.SourceAlpha,
-                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                    BlendOperation = BlendOperation.Add,
-                                    ZEnable = false
-                                }
+                                AlphaBlendEnable = true,
+                                SourceBlend = Blend.SourceAlpha,
+                                DestinationBlend = Blend.InverseSourceAlpha,
+                                BlendOperation = BlendOperation.Add,
+                                ZEnable = false
                             }
                         },
-                        new[]
+                        new IFxParamDeclaration[]
                         {
-                            new EffectParameterDeclaration
+                            new FxParamDeclaration<Texture>
                             {
-                                Name = "DiffuseTexture",
+                                Name = UniformNameDeclarations.AlbedoTexture,
                                 Value = tex
                             },
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                            new EffectParameterDeclaration {Name = "Tile", Value = tiles},
-                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                            new EffectParameterDeclaration
+                            new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
+                            new FxParamDeclaration<float2> {Name = "Tile", Value = tiles},
+                            new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
+                            new FxParamDeclaration<float4>
                             {
                                 Name = "borders",
                                 Value = borders
                             },
-                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
-                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
+                            new FxParamDeclaration<float4> {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.View, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity}
                         }),
                 new NineSlicePlane()
             };
         }
 
         /// <summary>
-        /// Creates a SceneNode with the proper components and children for rendering a nine sliced texture.
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// </summary>
-        /// <param name="name">Name of the SceneNode.</param>
+        /// <param name="name">Name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
+        /// <param name="diffuseTexTiles">The tiling of the diffuse texture.</param>
         /// <returns></returns>
         public TextureNode(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets)
+            MinMaxRect offsets, float2 diffuseTexTiles)
         {
             Name = name;
             Components = new List<SceneComponent>
@@ -325,41 +327,40 @@ namespace Fusee.Engine.GUI
                 {
                     Name = name + "_XForm",
                 },
-               new ShaderEffect(new[]
+                new ShaderEffect(
+                        new FxPassDeclaration
                         {
-                            new EffectPassDeclaration
+                            VS = vs,
+                            PS = ps,
+                            StateSet = new RenderStateSet
                             {
-                                VS = vs,
-                                PS = ps,
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    SourceBlend = Blend.SourceAlpha,
-                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                    BlendOperation = BlendOperation.Add,
-                                    ZEnable = false
-                                }
+                                AlphaBlendEnable = true,
+                                SourceBlend = Blend.SourceAlpha,
+                                DestinationBlend = Blend.InverseSourceAlpha,
+                                BlendOperation = BlendOperation.Add,
+                                ZEnable = false
                             }
                         },
-                        new[]
+                        new IFxParamDeclaration[]
                         {
-                            new EffectParameterDeclaration
+                            new FxParamDeclaration<Texture>
                             {
-                                Name = "DiffuseTexture",
+                                Name = UniformNameDeclarations.AlbedoTexture,
                                 Value = tex
                             },
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                            new FxParamDeclaration<float4> {Name = UniformNameDeclarations.Albedo, Value = float4.One},
+                            new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 1f},
+                            new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = diffuseTexTiles},
+                            new FxParamDeclaration<float4x4> {Name =UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                            new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
                         }),
-                new Core.Plane()
+                new Plane()
             };
         }
     }
 
     /// <summary>
-    /// Creates a SceneNode with the proper components and children for rendering text in the UI.
+    /// Creates a SceneNodeContainer with the proper components and children for rendering text in the UI.
     /// </summary>
     public class TextNode : SceneNode
     {
@@ -367,7 +368,7 @@ namespace Fusee.Engine.GUI
         /// Initializes a new instance of the <see cref="TextNode"/> class.
         /// </summary>
         /// <param name="text">The text you want to display.</param>
-        /// <param name="name">The name of the SceneNode.</param>
+        /// <param name="name">The name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use..</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
@@ -413,40 +414,43 @@ namespace Fusee.Engine.GUI
                 {
                     Components = new List<SceneComponent>()
                     {
-                       xFormText,
-                       new ShaderEffect(new[]
+                        xFormText,
+                        new ShaderEffect(
+                                new FxPassDeclaration
                                 {
-                                    new EffectPassDeclaration
+                                    VS = vs,
+                                    PS = ps,
+                                    StateSet = new RenderStateSet
                                     {
-                                        VS = vs,
-                                        PS = ps,
-                                        StateSet = new RenderStateSet
-                                        {
-                                            AlphaBlendEnable = true,
-                                            SourceBlend = Blend.SourceAlpha,
-                                            DestinationBlend = Blend.InverseSourceAlpha,
-                                            BlendOperation = BlendOperation.Add,
-                                            ZEnable = false
-                                        }
+                                        AlphaBlendEnable = true,
+                                        SourceBlend = Blend.SourceAlpha,
+                                        DestinationBlend = Blend.InverseSourceAlpha,
+                                        BlendOperation = BlendOperation.Add,
+                                        ZEnable = false
                                     }
                                 },
-                                new[]
+                                new IFxParamDeclaration[]
                                 {
-                                    new EffectParameterDeclaration
+                                    new FxParamDeclaration<Texture>
                                     {
-                                        Name = "DiffuseTexture",
+                                        Name = UniformNameDeclarations.AlbedoTexture,
                                         Value = new Texture(fontMap.Image)
                                     },
-                                    new EffectParameterDeclaration
-                                        {Name = "DiffuseColor", Value = color},
-                                    new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
-                                    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                    new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4>
+                                    {
+                                        Name = UniformNameDeclarations.Albedo, Value = color
+                                    },
+                                    new FxParamDeclaration<float> {Name = UniformNameDeclarations.AlbedoMix, Value = 0.0f},
+                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ITModelView, Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
+                                    new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
+                                    new FxParamDeclaration<float2> {Name = UniformNameDeclarations.DiffuseTextureTiles, Value = float2.One}
                                 }),
-                        textMesh
+                        textMesh,
                      }
                 }
             };
+
         }
     }
 }

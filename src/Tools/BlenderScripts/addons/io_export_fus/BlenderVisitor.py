@@ -225,11 +225,12 @@ class BlenderVisitor:
         hasEmissive = False
         hasMix = False
         hasBump = False
-        hasPBR = False
+        hasBRDF = False
+        hasRoughnessOnly = False
 
-        diffColor = None
-        diffTexture = None
-        diffMix = 1 
+        albedoColor = None
+        albedoTexture = None
+        albedoMix = 1 
 
         specColor = None
         specTexture = None
@@ -244,41 +245,64 @@ class BlenderVisitor:
         bumpTexture = None
         bumpIntensity = 1
 
-        pbrRoughnessValue = 0.2
-        pbrFresnelReflectance = 0.2
-        pbrDiffuseFraction = 0.2
+        roughnessVal = 0.3
+        metallicVal = 0.0
+        specularVal = 0.5
+        iorVal = 1.46
+        subsurfaceVal = 0.0
+        subsurfaceColorVal = None
 
         # Iterate over nodes of the material node tree
         for node in nodes:                    
             #### DIFFUSE
             if node.type == 'BSDF_DIFFUSE' and hasDiffuse == False:
                 hasDiffuse = True
+                hasRoughnessOnly = True
 
-                diffColor = node.inputs['Color'].default_value        # Color
+                albedoColor = node.inputs['Color'].default_value        # Color
+                roughnessVal = node.inputs['Roughness'].default_value
+                # check, if material has got textures. If so, get texture filepath
                 # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Color'].links
+                
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
-                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
-                        difftexture = basename
+                        fullpath, basename = GetPaths(
+                            node.inputs['Color'].links[0].from_node.image.filepath)
+                        albedoTexture = basename
+                        self.__textures.append(fullpath)
+
+                linksNorm = node.inputs['Normal'].links                
+                if len(linksNorm) > 0:
+                    if linksNorm[0].from_node.type == 'TEX_IMAGE':
+                        hasBump = True
+                        fullpath, basename = GetPaths(node.inputs['Normal'].links[0].from_node.image.filepath)
+                        bumpTexture = basename
                         self.__textures.append(fullpath)
 
             #### SPECULAR
             elif node.type == 'BSDF_GLOSSY' and hasSpecular == False:
-                hasSpecular = True
+                hasRoughnessOnly = True
+                hasDiffuse = False
 
-                specColor = node.inputs['Color'].default_value
-                # get material roughness and set the specularity = 1-roughness
-                roughness = node.inputs['Roughness'].default_value
-                specShininess = (1 - roughness) * 200       # multipy with factor 200 for tight specular light
-                if not hasMix:
-                    specIntensity = 1.0 - (roughness + 0.2)     # reduce intensity quite a bit
-                # Check, if material has got textures. If so, get texture filepath
+                albedoColor = node.inputs['Color'].default_value
+                roughnessVal = node.inputs['Roughness'].default_value                
+                
+                # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Color'].links
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
-                        fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
-                        specTexture = basename
+                        fullpath, basename = GetPaths(
+                            node.inputs['Color'].links[0].from_node.image.filepath)
+                        albedoTexture = basename
+                        self.__textures.append(fullpath)
+
+                linksNorm = node.inputs['Normal'].links
+                if len(linksNorm) > 0:
+                    if linksNorm[0].from_node.type == 'TEX_IMAGE':
+                        hasBump = True
+                        fullpath, basename = GetPaths(node.inputs['Normal'].links[0].from_node.image.filepath)
+                        bumpTexture = bumpTexture
                         self.__textures.append(fullpath)
 
             #### EMISSIVE
@@ -310,7 +334,7 @@ class BlenderVisitor:
             #### BUMP
             elif node.type == 'NORMAL_MAP':
                 hasBump = True
-                bumpIntensity =  node.inputs['Strength'].default_value / 10.0                         
+                bumpIntensity =  node.inputs['Strength'].default_value                         
                 links = node.inputs['Color'].links
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
@@ -333,45 +357,68 @@ class BlenderVisitor:
                 IOR = node.inputs['IOR'].default_value
                 
                 hasDiffuse = True
-                diffMix = 1
-                diffColor = baseColor
+                albedoMix = 1
+                albedoColor = baseColor
                 # check, if material has got textures. If so, get texture filepath
                 links = node.inputs['Base Color'].links
                 if len(links) > 0:
                     if links[0].from_node.type == 'TEX_IMAGE':
                         fullpath, basename = GetPaths(
                             node.inputs['Base Color'].links[0].from_node.image.filepath)
-                        diffTexture = basename
+                        albedoTexture = basename
+                        self.__textures.append(fullpath)
+                
+                # BSDF has no shininess-based specular calculation!
+              # hasSpecular = True
+              # specMix = 1
+                # get material color
+              # specColor = subsurfaceColor
+              # specShininess = (1 - roughness) * 200 # multiply with factor 100 for tight specular light
+              # specIntensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit               
+
+                linksNorm = node.inputs['Normal'].links
+                if len(linksNorm) > 0:
+                    if linksNorm[0].from_node.type == 'TEX_IMAGE':
+                        hasBump = True
+                        fullpath, basename = GetPaths(node.inputs['Normal'].links[0].from_node.image.filepath)
+                        bumpTexture = basename
                         self.__textures.append(fullpath)
 
-                hasSpecular = True
-                specMix = 1
-                # get material color
-                specColor = subsurfaceColor
-                specShininess = (1 - roughness) * 200 # multiply with factor 100 for tight specular light
-                specIntensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit
+                hasEmissive = True
+                emissColor = node.inputs['Emission'].default_value
 
-                # TODO: Bump and Emissive from BSDF_PRINCIPLED
-
-                hasPBR = True
-                pbrRoughnessValue = roughness
-                pbrFresnelReflectance = specular
-                pbrDiffuseFraction = metallic
+                hasBRDF = True
+                roughnessVal = roughness
+                metallicVal = metallic
+                specularVal = specular
+                iorVal = IOR
+                subsurfaceVal = subsurface
+                subsurfaceColorVal = subsurfaceColor
 
         if hasDiffuse:
             self.__fusWriter.BeginMaterial(matName)
-            self.__fusWriter.AddAlbedo(diffColor, diffTexture, diffMix)
+            self.__fusWriter.AddAlbedo(albedoColor, albedoTexture, albedoMix)
             if hasSpecular:
                 self.__fusWriter.AddSpecular(specColor, specTexture, specMix, specShininess, specIntensity)
             if hasEmissive:
                 self.__fusWriter.AddEmissive(emissColor, emissTexture, emissMix)
             if hasBump:
                 self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
-            if hasPBR:
-                self.__fusWriter.AddPBRMaterialSettings(pbrRoughnessValue, pbrFresnelReflectance, pbrDiffuseFraction)
+            if hasBRDF:
+                self.__fusWriter.AddBRDFMaterialSettings(roughnessVal, metallicVal, specularVal, iorVal, subsurfaceVal, subsurfaceColorVal)
+            if hasRoughnessOnly:
+                self.__fusWriter.AddRoughnessOnlyMaterialSettings(roughnessVal, False)
             self.__fusWriter.EndMaterial()
         else:
-            self.__AddDefaultMaterial()
+            if hasRoughnessOnly:
+                self.__fusWriter.BeginMaterial(matName)
+                self.__fusWriter.AddAlbedo(albedoColor, albedoTexture, albedoMix)                
+                if hasBump:
+                    self.__fusWriter.AddNormalMap(bumpTexture, bumpIntensity)
+                self.__fusWriter.AddRoughnessOnlyMaterialSettings(roughnessVal, True)
+                self.__fusWriter.EndMaterial()
+            else:
+                self.__AddDefaultMaterial()
 
     def __AddDefaultMaterial(self):
         if self.__fusWriter.TryReferenceMaterial(self.__defaultMatName):

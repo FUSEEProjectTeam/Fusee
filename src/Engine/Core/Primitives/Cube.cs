@@ -2,7 +2,7 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a simple wireframe cube geometry straight from the code.
@@ -48,8 +48,6 @@ namespace Fusee.Engine.Core
             };
         }
     }
-
-
 
     /// <summary>
     /// Creates a simple cube geometry straight from the code.

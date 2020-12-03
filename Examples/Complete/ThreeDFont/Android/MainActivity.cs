@@ -21,7 +21,7 @@ namespace Fusee.Examples.ThreeDFont.Android
 #if __ANDROID_11__
         HardwareAccelerated = false,
 #endif
-        ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
+        ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
     public class MainActivity : Activity
     {
         protected override void OnCreate(Bundle savedInstanceState)

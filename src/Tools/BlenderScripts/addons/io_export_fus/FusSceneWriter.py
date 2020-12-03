@@ -146,14 +146,15 @@ class FusSceneWriter:
         normalMap = material.get('NormalMap', None)
         if normalMap != None:
             self.AddNormalMap(normalMap.get('Texture', None), normalMap.get('Intensity', 1))
-        if 'RoughnessValue' in material or 'FresnelReflectance' in material or 'DiffuseFraction' in material:
-            self.AddPBRMaterialSettings(material.get('RoughnessValue', 0.2), material.get('FresnelReflectance', 0.2), material.get('DiffuseFraction', 0.2))
+        brdf = material.get('BRDF', None)
+        if brdf != None:
+            self.AddBRDFMaterialSettings(material.get('Roughness', 0.3), material.get('Metallic', 0.0), material.get('Specular', 0.5), material.get('IOR', 1.46), material.get('Subsurface', 0.0), material.get('SubsurfaceColor', None))
         self.EndMaterial()
 
     def BeginMaterial(self, name=None):
         if self.__curComponent == None:
             self.__curComponent, inx = self.AddComponent(name)
-            self.__curMaterial = self.__curComponent.FusMaterial
+            self.__curMaterial = self.__curComponent.FusMaterialBase
             self.__materialCache[name] = inx
         else:
             raise RuntimeError('Cannot begin a material component with another component not ended. Call EndXYZ() to close the currently open component.')
@@ -176,15 +177,15 @@ class FusSceneWriter:
     def AddSpecular(self, color, texture, mix, shininess, intensity):
         self.__checkMaterialOpen()
         if color != None:
-            self.__curMaterial.Specular.Color.x = color[0]
-            self.__curMaterial.Specular.Color.y = color[1]
-            self.__curMaterial.Specular.Color.z = color[2]
-            self.__curMaterial.Specular.Color.w = color[3]
+            self.__curMaterial.FusMaterialStandard.Specular.Color.x = color[0]
+            self.__curMaterial.FusMaterialStandard.Specular.Color.y = color[1]
+            self.__curMaterial.FusMaterialStandard.Specular.Color.z = color[2]
+            self.__curMaterial.FusMaterialStandard.Specular.Color.w = color[3]
         if texture != None:
-            self.__curMaterial.Specular.Texture = texture
-        self.__curMaterial.Specular.Mix = mix
-        self.__curMaterial.Specular.SpecularChannelContainer.Shininess = shininess
-        self.__curMaterial.Specular.SpecularChannelContainer.Intensity = intensity
+            self.__curMaterial.FusMaterialStandard.Specular.Texture = texture
+        self.__curMaterial.FusMaterialStandard.Specular.Mix = mix
+        self.__curMaterial.FusMaterialStandard.Specular.SpecularChannel.Shininess = shininess
+        self.__curMaterial.FusMaterialStandard.Specular.SpecularChannel.Strength = intensity
 
     def AddEmissive(self, color, texture, mix):
         self.__checkMaterialOpen()
@@ -203,11 +204,25 @@ class FusSceneWriter:
             self.__curMaterial.NormalMap.Texture = texture
         self.__curMaterial.NormalMap.Intensity = intensity
 
-    def AddPBRMaterialSettings(self, roughnessValue, fresnelReflectance, diffuseFraction):
+    def AddBRDFMaterialSettings(self, roughness, metallic, specular, ior, subsurface, subsurfaceColor):
         self.__checkMaterialOpen()
-        self.__curMaterial.FusMaterialPBR.RoughnessValue = roughnessValue
-        self.__curMaterial.FusMaterialPBR.FresnelReflectance = fresnelReflectance
-        self.__curMaterial.FusMaterialPBR.DiffuseFraction = diffuseFraction
+        self.__curMaterial.FusMaterialBRDF.BRDF.Roughness = roughness
+        self.__curMaterial.FusMaterialBRDF.BRDF.Metallic = metallic
+        self.__curMaterial.FusMaterialBRDF.BRDF.Specular = specular
+        self.__curMaterial.FusMaterialBRDF.BRDF.IOR = ior
+        self.__curMaterial.FusMaterialBRDF.BRDF.Subsurface = subsurface
+
+        if subsurfaceColor != None:
+            self.__curMaterial.FusMaterialBRDF.BRDF.SubsurfaceColor.x = subsurfaceColor[0]
+            self.__curMaterial.FusMaterialBRDF.BRDF.SubsurfaceColor.y = subsurfaceColor[1]
+            self.__curMaterial.FusMaterialBRDF.BRDF.SubsurfaceColor.z = subsurfaceColor[2]  
+
+    def AddRoughnessOnlyMaterialSettings(self, roughness, isGlossy):
+        self.__checkMaterialOpen()
+        if isGlossy:
+            self.__curMaterial.FusMaterialGlossyBRDF.Roughness = roughness;
+        else:
+            self.__curMaterial.FusMaterialDiffuseBRDF.Roughness = roughness;
 
     def EndMaterial(self):
         self.__checkMaterialOpen()

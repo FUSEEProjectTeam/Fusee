@@ -1,16 +1,13 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
-using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
-using Path = Fusee.Base.Common.Path;
-using System.Reflection;
-using System;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
+using Fusee.Serialization;
+using System;
+using System.IO;
+using System.Reflection;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Camera.Desktop
 {
@@ -40,7 +37,7 @@ namespace Fusee.Examples.Camera.Desktop
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
-                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });

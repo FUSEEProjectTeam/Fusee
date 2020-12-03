@@ -1,7 +1,4 @@
-﻿using ProtoBuf;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using ProtoBuf;
 
 namespace Fusee.Serialization
 {
@@ -34,6 +31,18 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(4)]
         public string CreationDate;
+
+        /// <summary>
+        /// The path this file was loaded from.
+        /// </summary>
+        [ProtoIgnore]
+        public string LoadPath;
+
+        /// <summary>
+        /// The filename this file was loaded from.
+        /// </summary>
+        [ProtoIgnore]
+        public string LoadFilename;
     }
 
 

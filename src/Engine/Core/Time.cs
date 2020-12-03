@@ -90,22 +90,22 @@
         public static long Frames => Instance.TimeFrames;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in milliseconds that is effected by the TimeScale (read only).
+        /// Provides the DeltaTime since the last frame in seconds that is effected by the TimeScale (read only).
         /// </summary>
         public float TimeDeltaTime => _deltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in milliseconds that is effected by the TimeScale (read only).
+        /// Provides the DeltaTime since the last frame in seconds that is effected by the TimeScale (read only).
         /// </summary>
         public static float DeltaTime => Instance.TimeDeltaTime;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in milliseconds that is unaffected by the TimeScale (read only).
+        /// Provides the DeltaTime since the last frame in seconds that is unaffected by the TimeScale (read only).
         /// </summary>
-        public float TimeRealDeltaTimeMs => _realDeltaTime;
+        public float TimeRealDeltaTime => _realDeltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in milliseconds that is unaffected by the TimeScale (read only).
+        /// Provides the DeltaTime since the last frame in seconds that is unaffected by the TimeScale (read only).
         /// </summary>
-        public static float RealDeltaTimeMs => Instance.TimeRealDeltaTimeMs;
+        public static float RealDeltaTime => Instance.TimeRealDeltaTime;
 
         /// <summary>
         /// Provides the passed time since start of the application effected by TimeScale (read only).
