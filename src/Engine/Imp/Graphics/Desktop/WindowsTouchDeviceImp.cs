@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Fusee.Engine.Common;
-using OpenTK;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {

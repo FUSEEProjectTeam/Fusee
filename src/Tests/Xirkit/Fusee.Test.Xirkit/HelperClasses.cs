@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using Fusee.Xirkit;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Fusee.Math.Core;
-using Fusee.Xirkit;
 
 namespace Fusee.Test.Xirkit
 {

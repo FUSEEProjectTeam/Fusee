@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
 using FileMode = System.IO.FileMode;
 using Path = Fusee.Base.Common.Path;
 

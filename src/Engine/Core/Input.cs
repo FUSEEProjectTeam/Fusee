@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {

@@ -1,7 +1,7 @@
-﻿using System;
-using Xunit;
+﻿using Fusee.Xirkit;
+using System;
 using System.Linq;
-using Fusee.Xirkit;
+using Xunit;
 using static Fusee.Test.Xirkit.HelperClasses;
 
 

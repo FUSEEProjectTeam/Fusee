@@ -1,13 +1,13 @@
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using Fusee.Engine.Common;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
-using Fusee.Engine.Common;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {

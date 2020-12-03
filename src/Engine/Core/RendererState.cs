@@ -1,6 +1,6 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core

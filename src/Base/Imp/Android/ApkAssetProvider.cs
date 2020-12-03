@@ -1,10 +1,10 @@
+using Android.Content;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Android.Content;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Base.Imp.Android

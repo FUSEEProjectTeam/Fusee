@@ -1,6 +1,6 @@
-﻿using System;
-using CommandLine;
+﻿using CommandLine;
 using Fusee.Tools.CmdLine.Verbs;
+using System;
 
 namespace Fusee.Tools.CmdLine
 {

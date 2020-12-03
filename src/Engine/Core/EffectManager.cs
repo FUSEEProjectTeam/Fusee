@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
