@@ -3,15 +3,15 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using static Fusee.Engine.Core.Input;
-using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static Fusee.Engine.Core.Input;
+using static Fusee.Engine.Core.Time;
 
 namespace FuseeApp
 {

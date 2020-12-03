@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Common
 {

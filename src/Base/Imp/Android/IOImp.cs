@@ -1,6 +1,6 @@
-﻿using System.IO;
-using Android.Content;
+﻿using Android.Content;
 using Fusee.Base.Common;
+using System.IO;
 
 namespace Fusee.Base.Imp.Android
 {
