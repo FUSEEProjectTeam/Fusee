@@ -12,9 +12,9 @@ jobs:
     - name: dotnet tool restore
       run: dotnet tool restore
     - name: dotnet format folder
-      run: dotnet tool run dotnet-format -f . --exclude src\Engine\Imp\Graphics\Shared
+      run: dotnet tool run dotnet-format . -f --exclude src\Engine\Imp\Graphics\Shared
     - name: dotnet format solution
-      run: dotnet tool run dotnet-format
+      run: dotnet tool run dotnet-format Fusee.sln
     - name: Commiting changes
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
