@@ -1,5 +1,5 @@
-﻿using Fusee.Math.Core;
-using Fusee.Base.Imp.Desktop;
+﻿using Fusee.Base.Imp.Desktop;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System;
 using System.IO;

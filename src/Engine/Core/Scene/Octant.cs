@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using Fusee.Structures;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Scene
 {
