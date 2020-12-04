@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using Lidgren.Network;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
-using Fusee.Engine.Common;
-using Lidgren.Network;
-
 using Timer = System.Timers.Timer;
 
 namespace Fusee.Engine.Imp.Network.Desktop

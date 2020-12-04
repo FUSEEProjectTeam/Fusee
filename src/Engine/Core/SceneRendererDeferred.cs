@@ -1,14 +1,14 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Core.Primitives;
 
 namespace Fusee.Engine.Core
 {

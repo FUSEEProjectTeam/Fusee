@@ -475,16 +475,13 @@ namespace Fusee.Math.Core
             {
                 if (q2.LengthSquared < M.EpsilonFloat)
                 {
-                    // Console.WriteLine("q1 and q2 have zero length");
                     return Identity;
                 }
-                // Console.WriteLine("q1 has zero length");
                 return q2;
             }
 
-            if ((q2.LengthSquared < M.EpsilonFloat))
+            if (q2.LengthSquared < M.EpsilonFloat)
             {
-                // Console.WriteLine("q2 has zero length");
                 return q1;
             }
 
@@ -493,13 +490,11 @@ namespace Fusee.Math.Core
             // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
             {
-                // Console.WriteLine("cosHalfAngle outside [-1, 1]");
                 return q1;
             }
 
             if (cosHalfAngle < 0.0f)
             {
-                // Console.WriteLine("cosHalfAngle < 0");
                 q2.xyz = -q2.xyz;
                 q2.w = -q2.w;
                 cosHalfAngle = -cosHalfAngle;
@@ -514,7 +509,6 @@ namespace Fusee.Math.Core
             // The following requires halfAngle to be at least 0.5 degrees.
             if (cosHalfAngle < 0.99995f)
             {
-                // Console.WriteLine("Proper Slerp for big angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle))+ "°");
                 // do proper slerp for big angles
                 var halfAngle = (float)System.Math.Acos(cosHalfAngle);
                 var sinHalfAngle = (float)System.Math.Sin(halfAngle);
@@ -525,7 +519,6 @@ namespace Fusee.Math.Core
             }
             else
             {
-                // Console.WriteLine("Simple lerp for small angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle)) + "°");
                 // do lerp if angle is really small.
                 blendA = 1.0f - blend;
                 blendB = blend;

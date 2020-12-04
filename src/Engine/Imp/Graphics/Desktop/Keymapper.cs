@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Engine.Common;
 using OpenTK.Input;
-using Fusee.Engine.Common;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {

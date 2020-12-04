@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
+using System.Collections.Generic;
 
 namespace Fusee.Serialization.V1
 {

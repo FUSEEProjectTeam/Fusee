@@ -1,6 +1,6 @@
+using Fusee.Xirkit;
 using System;
 using Xunit;
-using Fusee.Xirkit;
 using static Fusee.Test.Xirkit.HelperClasses;
 
 namespace Fusee.Test.Xirkit
