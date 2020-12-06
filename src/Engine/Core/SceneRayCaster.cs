@@ -126,7 +126,7 @@ namespace Fusee.Engine.Core
             }
 
             /// <summary>
-            /// The default constructor for the <see cref="RayCasterState" class, which registers state stacks for the model./>
+            /// The default constructor for the <see cref="RayCasterState"/> class, which registers state stacks for the model./>
             /// </summary>
             public RayCasterState()
             {
@@ -159,7 +159,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="origin">The origin of the ray (in world space).</param>
         /// <param name="direction">The direction of the ray (in world space).</param>
-        /// <returns>A collection of <see cref="RayCastRestult"/> that can be iterated over.</returns>
+        /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
         public IEnumerable<RayCastResult> RayCast(float3 origin, float3 direction)
         {
             Origin = origin;
