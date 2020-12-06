@@ -1,12 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.NormalMap.Core</RootNamespace>
-    <PackageId>Fusee.Examples.Bump.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
-    <OutputPath>D:\Dokumente\Git\Fusee\\\bin\Debug\Examples\NormalMap\Core\</OutputPath>
     <TargetFramework>netstandard2.1</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Examples\Bump\Core\</OutputPath>
   </PropertyGroup>

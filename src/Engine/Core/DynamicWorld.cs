@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using System;
+using System.Diagnostics;
 
 namespace Fusee.Engine.Core
 {

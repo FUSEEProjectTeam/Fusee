@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Runtime.InteropServices;
-using Fusee.Math.Core;
 
 namespace Fusee.Base.Common
 {
@@ -383,52 +383,53 @@ namespace Fusee.Base.Common
                 this.A = copyFrom[index + 3];
         }
 
-
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Engine.ColorUint"/> to <see cref="T:Fusee.Math.float3"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value. It is expected to be in SRgb color space - will be transformed to linear space in order to perform the lighting calculation correctly.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator float3(ColorUint value)
         {
-            return new float3((float)value.R / (float)byte.MaxValue, (float)value.G / (float)byte.MaxValue, (float)value.B / (float)byte.MaxValue);
+            return float3.LinearColorFromSRgb(Tofloat3(value));
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Engine.ColorUint"/> to <see cref="T:Fusee.Math.float4"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value. It is expected to be in SRgb color space - will be transformed to linear space in order to perform the lighting calculation correctly.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator float4(ColorUint value)
         {
-            return new float4((float)value.R / (float)byte.MaxValue, (float)value.G / (float)byte.MaxValue, (float)value.B / (float)byte.MaxValue, (float)value.A / (float)byte.MaxValue);
+            return float4.LinearColorFromSRgb(Tofloat4(value));
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Math.float3"/> to <see cref="T:Fusee.Engine.ColorUint"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator ColorUint(float3 value)
         {
+            value = value.SRgbFromLinearColor();
             return new ColorUint(value.x, value.y, value.z, 1f);
         }
 
         /// <summary>
         /// Performs an explicit conversion from <see cref="T:Fusee.Math.float4"/> to <see cref="T:Fusee.Engine.ColorUint"/>.
         /// </summary>
-        /// <param name="value">The value.</param>
+        /// <param name="value">The color value.</param>
         /// <returns>
         /// The result of the conversion.
         /// </returns>
         public static explicit operator ColorUint(float4 value)
         {
+            value = value.SRgbFromLinearColor();
             return new ColorUint(value.x, value.y, value.z, value.w);
         }
 
@@ -612,18 +613,6 @@ namespace Fusee.Base.Common
         }
 
         /// <summary>
-        /// Converts the color into a three component vector.
-        /// </summary>
-        /// <returns>
-        /// A three component vector containing the red, green, and blue components of the color.
-        /// </returns>
-        [Obsolete("Deprecated due to 'Impure Method Call Warning' and problems with JSIL. Use 'static float3 Tofloat3(ColorUint col)' instead!")]
-        public float3 Tofloat3()
-        {
-            return new float3((float)this.R / (float)byte.MaxValue, (float)this.G / (float)byte.MaxValue, (float)this.B / (float)byte.MaxValue);
-        }
-
-        /// <summary>
         /// Converts the Uint color into a three component vector.
         /// </summary>
         /// <param name="col">The color to convert.</param>
@@ -633,18 +622,6 @@ namespace Fusee.Base.Common
         public static float3 Tofloat3(ColorUint col)
         {
             return new float3((float)col.R / (float)byte.MaxValue, (float)col.G / (float)byte.MaxValue, (float)col.B / (float)byte.MaxValue);
-        }
-
-        /// <summary>
-        /// Converts the color into a four component vector.
-        /// </summary>
-        /// <returns>
-        /// A four component vector containing all four color components.
-        /// </returns>
-        [Obsolete("Deprecated due to 'Impure Method Call Warning' and problems with JSIL. Use 'static float3 Tofloat4(ColorUint col)' instead!")]
-        public float4 Tofloat4()
-        {
-            return new float4((float)this.R / (float)byte.MaxValue, (float)this.G / (float)byte.MaxValue, (float)this.B / (float)byte.MaxValue, (float)this.A / (float)byte.MaxValue);
         }
 
         /// <summary>

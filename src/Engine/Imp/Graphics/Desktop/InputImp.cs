@@ -1,10 +1,10 @@
-using System;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using OpenTK;
 using OpenTK.Input;
-using Fusee.Engine.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Core;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {

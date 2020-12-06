@@ -42,7 +42,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
             ErrorCode exitCode = ErrorCode.Success;
 
-            // Install or uninstall ? 
+            // Install or uninstall ?
             if (!Uninstall)
             {
                 // Install the Blender AddOn
@@ -274,20 +274,6 @@ namespace Fusee.Tools.CmdLine.Verbs
                 }
             }
 
-            /* Removed - no FolderBrowserDialog in DotNet Core. Plus, opening a user dialog makes fusee.exe batch-incompatible
-            // No Blender Installations found! Let the user pick Blender Path with file dialog!
-            if (!blenderDirs.Any())
-            {
-                Console.WriteLine("WARNING: Blender Installation not found!\nINPUT REQUIRED: Please select Blender installation folder to proceed.");
-                FolderBrowserDialog fbd = new FolderBrowserDialog();
-                if (fbd.ShowDialog() == DialogResult.OK)
-                {
-                    Console.WriteLine($"OK! Selected Blender installation path: {fbd.SelectedPath}");
-                    blenderDirs.Add(fbd.SelectedPath);
-                } // ERROR message will be shown @909 if no blender addon could be installed... 
-            }
-            */
-
             // Find addon sub-subdirectories
             List<string> addonDirs = new List<string>();
             foreach (var blenderDir in blenderDirs)
@@ -295,7 +281,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                 addonDirs.AddRange(Directory.EnumerateDirectories(blenderDir, "addon?", SearchOption.AllDirectories));
             }
 
-            // 
+            //
             List<string> realAddonDirs;
             if (InstType == InstallationType.User)
             {
@@ -317,7 +303,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                 realAddonDirs = addonDirs;
             }
 
-            // Reverse-Sort directories according to some sub-dir name containting the blender version (e.g. 2.79 in ...\blender\2.79\addons\) 
+            // Reverse-Sort directories according to some sub-dir name containting the blender version (e.g. 2.79 in ...\blender\2.79\addons\)
             // (Highest version number first)
             return realAddonDirs.OrderByDescending(dir =>
             {
@@ -325,7 +311,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                 foreach (var dirName in dir.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }).Reverse())
                 {
                     // Build a sortable number from the (maximum) first four version digits. Typically Blender versions contain only two digits.
-                    // Assume that digits are not bigger than 999 (e.g. Blender 2.999.111) 
+                    // Assume that digits are not bigger than 999 (e.g. Blender 2.999.111)
                     var digits = dirName.Split('.');
                     var digitCount = digits.Length > 4 ? 4 : digits.Length;
                     for (int iDigit = 0; iDigit < digitCount; iDigit++)

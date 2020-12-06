@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Fusee.Math.Core;
+using System.Diagnostics;
 using System.Reflection;
-using Fusee.Math.Core;
 
 namespace Fusee.Xirkit
 {

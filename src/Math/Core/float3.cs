@@ -42,6 +42,17 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new float3.
         /// </summary>
+        /// <param name="val">This value will be set for the x, y and z component.</param>
+        public float3(float val)
+        {
+            x = val;
+            y = val;
+            z = val;
+        }
+
+        /// <summary>
+        /// Constructs a new float3.
+        /// </summary>
         /// <param name="x">The x component of the float3.</param>
         /// <param name="y">The y component of the float3.</param>
         /// <param name="z">The z component of the float3.</param>
@@ -161,10 +172,7 @@ namespace Fusee.Math.Core
         /// The length.
         /// </value>
         /// <see cref="LengthSquared" />
-        public float Length
-        {
-            get { return (float)System.Math.Sqrt(LengthSquared); }
-        }
+        public float Length => (float)System.Math.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -181,10 +189,7 @@ namespace Fusee.Math.Core
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
         /// </remarks>
-        public float LengthSquared
-        {
-            get { return x * x + y * y + z * z; }
-        }
+        public float LengthSquared => x * x + y * y + z * z;
 
         #endregion public float LengthSquared
 
@@ -211,6 +216,28 @@ namespace Fusee.Math.Core
         }
 
         #endregion public NormalizeFast()
+
+        #region Color Conversion
+
+        /// <summary>
+        /// Converts this float3 - which is interpreted as a color - from linear color space to sRgb space.
+        /// </summary>
+        /// <returns></returns>
+        public float3 LinearColorFromSRgb()
+        {
+            return LinearColorFromSRgb(this);
+        }
+
+        /// <summary>
+        /// Converts this float3 - which is interpreted as a color - from sRgb space to linear color space.
+        /// </summary>
+        /// <returns></returns>
+        public float3 SRgbFromLinearColor()
+        {
+            return SRgbFromLinearColor(this);
+        }
+
+        #endregion
 
         /// <summary>
         /// Returns an array of floats with the three components of the vector.
@@ -613,6 +640,27 @@ namespace Fusee.Math.Core
 
         #endregion Cross
 
+        /// <summary>
+        /// Performs <see cref="M.Step(float, float)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        public static float3 Step(float3 edge, float3 val)
+        {
+            return new float3(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z));
+        }
+
+        /// <summary>
+        /// Returns a float3 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The float3 to be raised to a power.</param>
+        /// <param name="exp">A float that specifies a power.</param>
+        /// <returns></returns>
+        public static float3 Pow(float3 val, float exp)
+        {
+            return new float3(MathF.Pow(val.r, exp), MathF.Pow(val.g, exp), MathF.Pow(val.b, exp));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -629,6 +677,21 @@ namespace Fusee.Math.Core
             a.x = blend * (b.x - a.x) + a.x;
             a.y = blend * (b.y - a.y) + a.y;
             a.z = blend * (b.z - a.z) + a.z;
+            return a;
+        }
+
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        public static float3 Lerp(float3 a, float3 b, float3 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
+            a.z = blend.z * (b.z - a.z) + a.z;
             return a;
         }
 
@@ -777,6 +840,108 @@ namespace Fusee.Math.Core
 
         #endregion Rotate
 
+        #region Color Conversion
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="linearColor">The linear color value as <see cref="float3"/>.</param>
+        public static float3 SRgbFromLinearColor(float3 linearColor)
+        {
+            return new float3(SRgbToLinear(linearColor.x), SRgbToLinear(linearColor.y), SRgbToLinear(linearColor.z));
+        }
+
+        private static float SRgbToLinear(float input)
+        {
+            return input <= 0.0031308f ? input * 12.92f : 1.055f * MathF.Pow(input, 1f / 2.4f) - 0.055f;
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        public static float3 SRgbFromLinearColor(int r, int g, int b)
+        {
+            var val = new float3(r / 255f, g / 255f, b / 255f);
+            return SRgbFromLinearColor(val);
+        }
+
+        /// <summary>
+        ///Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFF" string.</param>
+        public static float3 SRgbFromLinearColor(string hex)
+        {
+            var rgb = Convert.ToUInt32(hex, 16);
+            return SRgbFromLinearColor(rgb);
+        }
+
+        /// <summary>
+        /// Converts a color value from linear to sRgb space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static float3 SRgbFromLinearColor(uint col)
+        {
+            var b = (byte)(col & byte.MaxValue);
+            var g = (byte)(col >> 8 & byte.MaxValue);
+            var r = (byte)(col >> 16 & byte.MaxValue);
+
+            return SRgbFromLinearColor(r, g, b);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="sRGBCol">The sRgb color value as <see cref="float3"/>.</param>
+        public static float3 LinearColorFromSRgb(float3 sRGBCol)
+        {
+            return new float3(LinearToSRgb(sRGBCol.x), LinearToSRgb(sRGBCol.y), LinearToSRgb(sRGBCol.z));
+        }
+
+        private static float LinearToSRgb(float input)
+        {
+            return input <= 0.04045f ? input / 12.92f : MathF.Pow((input + 0.055f) / 1.055f, 2.4f);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="r">The red color value in range 0 - 255.</param>
+        /// <param name="g">The green color value in range 0 - 255.</param>
+        /// <param name="b">The blue color value in range 0 - 255.</param>
+        public static float3 LinearColorFromSRgb(int r, int g, int b)
+        {
+            var val = new float3(r / 255f, g / 255f, b / 255f);
+            return LinearColorFromSRgb(val);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="hex">The color value as hex code in form of a "FFFFFF" string.</param>
+        public static float3 LinearColorFromSRgb(string hex)
+        {
+            var rgb = Convert.ToUInt32(hex, 16);
+            return LinearColorFromSRgb(rgb);
+        }
+
+        /// <summary>
+        /// Converts a color value from sRgb to linear space.
+        /// </summary>
+        /// <param name="col">The color value as uint.</param>
+        public static float3 LinearColorFromSRgb(uint col)
+        {
+            var b = (byte)(col & byte.MaxValue);
+            var g = (byte)(col >> 8 & byte.MaxValue);
+            var r = (byte)(col >> 16 & byte.MaxValue);
+
+            return LinearColorFromSRgb(r, g, b);
+        }
+
+        #endregion
+
         #endregion Static
 
         #region Swizzle
@@ -784,62 +949,62 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and z components of this instance.
         /// </summary>
-        public float2 xz { get { return new float2(x, z); } set { x = value.x; z = value.y; } }
+        public float2 xz { get => new float2(x, z); set { x = value.x; z = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
         /// </summary>
-        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
+        public float2 yx { get => new float2(y, x); set { y = value.x; x = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and z components of this instance.
         /// </summary>
-        public float2 yz { get { return new float2(y, z); } set { y = value.x; z = value.y; } }
+        public float2 yz { get => new float2(y, z); set { y = value.x; z = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the z and x components of this instance.
         /// </summary>
-        public float2 zx { get { return new float2(z, x); } set { z = value.x; x = value.y; } }
+        public float2 zx { get => new float2(z, x); set { z = value.x; x = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the z and y components of this instance.
         /// </summary>
-        public float2 zy { get { return new float2(z, y); } set { z = value.x; y = value.y; } }
+        public float2 zy { get => new float2(z, y); set { z = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-        public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+        public float3 xyz { get => new float3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
         /// </summary>
-        public float3 xzy { get { return new float3(x, z, y); } set { x = value.x; z = value.y; y = value.z; } }
+        public float3 xzy { get => new float3(x, z, y); set { x = value.x; z = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
         /// </summary>
-        public float3 yzx { get { return new float3(y, z, x); } set { y = value.x; z = value.y; x = value.z; } }
+        public float3 yzx { get => new float3(y, z, x); set { y = value.x; z = value.y; x = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, x and z components of this instance.
         /// </summary>
-        public float3 yxz { get { return new float3(y, x, z); } set { y = value.x; x = value.y; z = value.z; } }
+        public float3 yxz { get => new float3(y, x, z); set { y = value.x; x = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, x and y components of this instance.
         /// </summary>
-        public float3 zxy { get { return new float3(z, x, y); } set { z = value.x; x = value.y; y = value.z; } }
+        public float3 zxy { get => new float3(z, x, y); set { z = value.x; x = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, y and x components of this instance.
         /// </summary>
-        public float3 zyx { get { return new float3(z, y, x); } set { z = value.x; y = value.y; x = value.z; } }
+        public float3 zyx { get => new float3(z, y, x); set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion Swizzle
 
@@ -1008,7 +1173,7 @@ namespace Fusee.Math.Core
         /// Returns a System.String that represents the current float3.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -1020,7 +1185,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -1034,7 +1199,7 @@ namespace Fusee.Math.Core
 
             char separator = M.GetNumericListSeparator(provider);
 
-            return String.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
+            return string.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
         }
 
         #endregion public override string ToString()
@@ -1075,15 +1240,15 @@ namespace Fusee.Math.Core
 
         #endregion Overrides
 
-        #region Color
+        #region Color Swizzle
 
         /// <summary>
         /// The red component (same as x)
         /// </summary>
         public float r
         {
-            get { return x; }
-            set { x = value; }
+            get => x;
+            set => x = value;
         }
 
         /// <summary>
@@ -1091,8 +1256,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float g
         {
-            get { return y; }
-            set { y = value; }
+            get => y;
+            set => y = value;
         }
 
         /// <summary>
@@ -1100,8 +1265,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float b
         {
-            get { return z; }
-            set { z = value; }
+            get => z;
+            set => z = value;
         }
 
         #endregion Color

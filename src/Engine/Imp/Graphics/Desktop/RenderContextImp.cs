@@ -62,7 +62,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _blendEquationAlpha = (BlendEquationMode)blendEqA;
             _blendEquationRgb = (BlendEquationMode)blendEqRgb;
 
-            Diagnostics.Debug(GetHardwareDescription());
+            Diagnostics.Debug(GL.GetString(StringName.Vendor) + " - " + GL.GetString(StringName.Renderer) + " - " + GL.GetString(StringName.Version));
+            Diagnostics.Verbose(GL.GetString(StringName.Extensions));
         }
 
         #region Image data related Members
