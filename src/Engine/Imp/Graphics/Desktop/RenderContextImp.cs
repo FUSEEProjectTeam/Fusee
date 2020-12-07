@@ -1681,6 +1681,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         switch ((FillMode)value)
                         {
                             case FillMode.Point:
+                                if (!_isPtRenderingEnabled)
+                                {
+                                    _isPtRenderingEnabled = true;
+                                    GL.Enable(EnableCap.ProgramPointSize);
+                                    GL.Enable(EnableCap.PointSprite);
+                                    GL.Enable(EnableCap.VertexProgramPointSize);
+                                }
                                 pm = PolygonMode.Point;
                                 break;
                             case FillMode.Wireframe:

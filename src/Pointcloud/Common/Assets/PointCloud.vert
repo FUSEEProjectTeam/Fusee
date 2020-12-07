@@ -5,7 +5,7 @@ precision highp float;
 uniform vec2 ScreenParams;
 uniform int PointMode;
 uniform int PointSize;
-uniform int PointShape;
+
 uniform mat4 FUSEE_ITMV;
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_M;
@@ -221,14 +221,6 @@ void main(void)
 
 	vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz; //FUSEE_ITMV - normal matrix for transformation into world space;
 
-	//float pSize = round(PointSize / vClipPos.w);	 
-
-	//clamp(pSize, 1, PointSize);
-
-	//if(PointShape == 0 || PointShape == 1)
-	//gl_PointSize = pSize;
-	//	else
-	
 	float minPtSize = 1.0;
 	float ptSize = minPtSize;
 	float maxPtSize = 100.0;
@@ -266,10 +258,10 @@ void main(void)
 		}
 		//level of detail
 		case 3:
-		{			
+		{
 			float worldPtSize = float(PointSize) / (pow(2.0, float(getLevelOfDetail())));
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
-			break;			
+			break;
 		}	
 	}
 

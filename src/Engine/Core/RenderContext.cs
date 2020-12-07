@@ -1008,6 +1008,10 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
+                    var doRenderPoints = false;
+                    if (efType == typeof(PointCloudSurfaceEffect))
+                        doRenderPoints = true;
+
                     var surfEffect = (SurfaceEffect)ef;
 
                     var renderDependentShards = new List<KeyValuePair<ShardCategory, string>>();
@@ -1016,7 +1020,7 @@ namespace Fusee.Engine.Core
                     //May be difficult because we'd need to remove or add them (and only them) depending on the render method
                     if (fx == null) //effect was never build before
                     {
-                        surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup)));
+                        surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup, doRenderPoints)));
                         foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
                             surfEffect.ParamDecl.Add(dcl.Name, dcl);
                     }

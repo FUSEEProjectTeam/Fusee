@@ -410,12 +410,12 @@ namespace Fusee.Engine.Core
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static DefaultSurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f)
         {
-            var input = new ColorInput()
+            var input = new RoughnessInput()
             {
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.SurfOutBody_Roughness, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -620,12 +620,12 @@ namespace Fusee.Engine.Core
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static DefaultSurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f)
         {
-            var input = new ColorInput()
+            var input = new RoughnessInput()
             {
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.Glossy, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.Glossy, input, FragShards.SurfOutBody_Roughness, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>

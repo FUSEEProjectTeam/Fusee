@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(LightingSetupFlags setup)
+        public static string VertexMain(LightingSetupFlags setup, bool doRenderPoints)
         {
             var vertMainBody = new List<string>
             {
@@ -77,6 +77,9 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             }
 
             vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4({UniformNameDeclarations.Vertex}, 1.0);");
+
+            if (doRenderPoints)
+                vertMainBody.Add($"gl_PointSize = float({UniformNameDeclarations.PointSize});");
 
             //TODO: needed when bone animation is working (again)
             //vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
