@@ -5,10 +5,7 @@
     <AssemblyName>Fusee.Examples.Simple.Android</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <!-- Build into main FUSEE bin directory -->
-    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
-    <!-- Build into local bin directory -->
-    <!-- <BaseOutputPath>..\</BaseOutputPath> -->
+    <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
     <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -58,7 +55,7 @@
   <ItemGroup>
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
+    <PackageReference Include="protobuf-net" Version="3.0.62" />
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>

@@ -86,7 +86,7 @@ namespace Fusee.Engine.Core
                 var n = m.Normals[i];
                 var t = tan1[i];
 
-                // Gram-Schmidt orthogonalize
+                // Gram-Schmidt orthogonalization
                 var tangent = t - n * float3.Dot(n, t);
                 tangent = tangent.Normalize();
 

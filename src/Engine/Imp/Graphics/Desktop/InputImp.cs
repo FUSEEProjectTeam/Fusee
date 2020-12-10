@@ -1,10 +1,10 @@
-using System;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using OpenTK;
 using OpenTK.Input;
-using Fusee.Engine.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Core;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 
     /// <summary>
-    /// Implements a Gamepad Control option only works for XBox Gamepads
+    /// Implements a gamepad control option only works for XBox Gamepads
     /// </summary>
     /// /// <remarks>
     /// The current implementation does not fire the <see cref="RenderCanvasInputDriverImp.NewDeviceConnected"/> and  <see cref="RenderCanvasInputDriverImp.DeviceDisconnected"/>
@@ -157,7 +157,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
         internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
-        {        
+        {
             _gameWindow = window;
             DeviceID = deviceID;
 
@@ -312,7 +312,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns Type of ínput device.
+        /// Returns Type of input device.
         /// </summary>
         public DeviceCategory Category
         {
@@ -558,7 +558,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     {
         private GameWindow _gameWindow;
         private Keymapper _keymapper;
-        
+
         /// <summary>
         /// Should be called by the driver only.
         /// </summary>
@@ -706,12 +706,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>No return, always throws.</returns>
         public float GetAxis(int iAxisId)
         {
-            throw new InvalidOperationException($"Unsopported axis {iAxisId}. This device does not support any axis at all.");
+            throw new InvalidOperationException($"Unsupported axis {iAxisId}. This device does not support any axis at all.");
         }
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All keyboard buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to receive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>

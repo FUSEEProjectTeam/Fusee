@@ -1,13 +1,13 @@
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using Fusee.Engine.Common;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
-using Fusee.Engine.Common;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -203,7 +203,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Members
 
         /// <summary>
-        /// Presents the rendered result of this instance. The rendering buffers are flushed and the deltatime is recalculated.
+        /// Presents the rendered result of this instance. The rendering buffers are flushed and the delta time is recalculated.
         /// Call this function after rendering.
         /// </summary>
         public void Present()
@@ -220,7 +220,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public abstract void SetCursor(CursorType cursorType);
@@ -552,7 +552,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             else
             {
-                var oneScreenWidth = DisplayDevice.Default.Bounds.Width + 16; // TODO: Fix this. This +16 is strance behavior. Border should not make an impact to the width.
+                var oneScreenWidth = DisplayDevice.Default.Bounds.Width + 16; // TODO: Fix this. This +16 is strange behavior. Border should not make an impact to the width.
                 var oneScreenHeight = DisplayDevice.Default.Bounds.Height;
 
                 var width = oneScreenWidth * _videoWallMonitorsHor;
@@ -626,7 +626,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)

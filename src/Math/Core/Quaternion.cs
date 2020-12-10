@@ -53,8 +53,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float3 xyz
         {
-            get { return _xyz; }
-            set { _xyz = value; }
+            get => _xyz;
+            set => _xyz = value;
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float x
         {
-            get { return _xyz.x; }
-            set { _xyz.x = value; }
+            get => _xyz.x;
+            set => _xyz.x = value;
         }
 
         /// <summary>
@@ -71,8 +71,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float y
         {
-            get { return _xyz.y; }
-            set { _xyz.y = value; }
+            get => _xyz.y;
+            set => _xyz.y = value;
         }
 
         /// <summary>
@@ -80,8 +80,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float z
         {
-            get { return _xyz.z; }
-            set { _xyz.z = value; }
+            get => _xyz.z;
+            set => _xyz.z = value;
         }
 
         /// <summary>
@@ -89,8 +89,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float w
         {
-            get { return _w; }
-            set { _w = value; }
+            get => _w;
+            set => _w = value;
         }
 
         #endregion Properties
@@ -181,10 +181,7 @@ namespace Fusee.Math.Core
         ///     Gets the length (magnitude) of the quaternion.
         /// </summary>
         /// <seealso cref="LengthSquared" />
-        public float Length
-        {
-            get { return (float)System.Math.Sqrt(w * w + xyz.LengthSquared); }
-        }
+        public float Length => (float)System.Math.Sqrt(w * w + xyz.LengthSquared);
 
         #endregion public float Length
 
@@ -193,10 +190,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Gets the square of the quaternion length (magnitude).
         /// </summary>
-        public float LengthSquared
-        {
-            get { return w * w + xyz.LengthSquared; }
-        }
+        public float LengthSquared => w * w + xyz.LengthSquared;
 
         #endregion public float LengthSquared
 
@@ -481,16 +475,13 @@ namespace Fusee.Math.Core
             {
                 if (q2.LengthSquared < M.EpsilonFloat)
                 {
-                    // Console.WriteLine("q1 and q2 have zero length");
                     return Identity;
                 }
-                // Console.WriteLine("q1 has zero length");
                 return q2;
             }
 
-            if ((q2.LengthSquared < M.EpsilonFloat))
+            if (q2.LengthSquared < M.EpsilonFloat)
             {
-                // Console.WriteLine("q2 has zero length");
                 return q1;
             }
 
@@ -499,13 +490,11 @@ namespace Fusee.Math.Core
             // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
             {
-                // Console.WriteLine("cosHalfAngle outside [-1, 1]");
                 return q1;
             }
 
             if (cosHalfAngle < 0.0f)
             {
-                // Console.WriteLine("cosHalfAngle < 0");
                 q2.xyz = -q2.xyz;
                 q2.w = -q2.w;
                 cosHalfAngle = -cosHalfAngle;
@@ -520,7 +509,6 @@ namespace Fusee.Math.Core
             // The following requires halfAngle to be at least 0.5 degrees.
             if (cosHalfAngle < 0.99995f)
             {
-                // Console.WriteLine("Proper Slerp for big angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle))+ "°");
                 // do proper slerp for big angles
                 var halfAngle = (float)System.Math.Acos(cosHalfAngle);
                 var sinHalfAngle = (float)System.Math.Sin(halfAngle);
@@ -531,7 +519,6 @@ namespace Fusee.Math.Core
             }
             else
             {
-                // Console.WriteLine("Simple lerp for small angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle)) + "°");
                 // do lerp if angle is really small.
                 blendA = 1.0f - blend;
                 blendB = blend;
@@ -922,7 +909,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -934,7 +921,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return String.Format(provider, "V: {0} w: {1}", xyz.ToString(provider), w.ToString(provider));
+            return string.Format(provider, "V: {0} w: {1}", xyz.ToString(provider), w.ToString(provider));
         }
 
         #endregion public override string ToString()

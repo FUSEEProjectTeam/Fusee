@@ -74,7 +74,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Check if two vertex weights aren't the same
         /// </summary>       
-        public static bool operator !=(VertexWeight left, VertexWeight right) => !(left == right);      
+        public static bool operator !=(VertexWeight left, VertexWeight right) => !(left == right);
     }
 
 }

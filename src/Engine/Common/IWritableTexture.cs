@@ -1,10 +1,10 @@
 ﻿namespace Fusee.Engine.Common
 {
-   /// <summary>
-   /// Cross platform abstraction for a WritableTexture.
-   /// Use writable textures if you want to render into a texture.
-   /// Does NOT offer access to the pixel data.
-   /// </summary>
+    /// <summary>
+    /// Cross platform abstraction for a WritableTexture.
+    /// Use writable textures if you want to render into a texture.
+    /// Does NOT offer access to the pixel data.
+    /// </summary>
     public interface IWritableTexture : ITextureBase
     {
         /// <summary>
@@ -19,7 +19,7 @@
 
 
         /// <summary>
-        /// Specifies the texture's comparison function, see <see cref="TextureCompareFunc"/>.
+        /// Specifies the texture's comparison function.
         /// </summary>
         Compare CompareFunc { get; }
     }

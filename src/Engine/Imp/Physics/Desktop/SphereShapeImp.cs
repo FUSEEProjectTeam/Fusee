@@ -66,12 +66,12 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SphereShapeImp) BtSphereShape.UserObject;
+                var o = (SphereShapeImp)BtSphereShape.UserObject;
                 BtSphereShape.SetUnscaledRadius(value);
             }
         }
 
 
-        
+
     }
 }

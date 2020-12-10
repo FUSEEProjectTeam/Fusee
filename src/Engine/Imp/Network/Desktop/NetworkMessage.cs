@@ -32,7 +32,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         public INetworkConnection Sender { get; internal set; }
 
         /// <summary>
-        /// Gets the message's data dontent.
+        /// Gets the message's data content.
         /// </summary>
         /// <value>
         /// The <see cref="NetworkMsgType"/>.

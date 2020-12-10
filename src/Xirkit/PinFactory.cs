@@ -1,13 +1,13 @@
-﻿using System;
-using System.Reflection;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
-using Fusee.Math.Core;
+using System.Reflection;
 
 namespace Fusee.Xirkit
 {
     /// <summary>
     /// This class' static member function creates Pins depending on the type of the member (int, double, string, ...) and also 
-    /// depending on whether the memeber is a propery (with a setter and getter) or a simple field.
+    /// depending on whether the member is a property (with a setter and getter) or a simple field.
     /// </summary>
 
     static class PinFactory
@@ -128,7 +128,7 @@ namespace Fusee.Xirkit
                     fieldInfo = t.GetField(member);
                     if (fieldInfo == null)
                     {
-                        //TODO: change Exception to an apropriate exception type
+                        //TODO: change Exception to an appropriate exception type
                         throw new Exception(
                             "Neither a field nor a property named " + member + " exists");
                     }
@@ -146,7 +146,7 @@ namespace Fusee.Xirkit
 
                     if (!propertyInfo.CanRead)
                     {
-                        //TODO: change Exception to an apropriate exception type
+                        //TODO: change Exception to an appropriate exception type
                         throw new Exception(
                             "A property named " + member + " exists but we cannot read from it");
                     }
@@ -190,7 +190,8 @@ namespace Fusee.Xirkit
         // [JSIgnore] (ignoring it will generate an exception in JSIl-generated PinFactory constructor)
         private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
-        private static void InitConvMap()
+        //private static void InitConvMap()
+        static PinFactory()
         {
             // Look at http://msdn.microsoft.com/de-de/library/bb882516.aspx or 
             // google "anonymous functions c#" to see how to define the anonymous converter code.
@@ -243,19 +244,19 @@ namespace Fusee.Xirkit
             AddConverter<double, float4x4>(x => new float4x4((float)x, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From bool 
-            AddConverter<bool, int>(x => (x) ? 0 : 1);
-            AddConverter<bool, float>(x => (x) ? 0.0f : 1.0f);
-            AddConverter<bool, double>(x => (x) ? 0.0 : 1.0);
+            AddConverter<bool, int>(x => (x) ? 1 : 0);
+            AddConverter<bool, float>(x => (x) ? 1.0f : 0.0f);
+            AddConverter<bool, double>(x => (x) ? 1.0 : 0.0);
             AddConverter<bool, bool>(x => x);
             AddConverter<bool, string>(x => x.ToString());
-            AddConverter<bool, double2>(x => new double2((x) ? 0.0 : 1.0, 0));
-            AddConverter<bool, double3>(x => new double3((x) ? 0.0 : 1.0, 0, 0));
-            AddConverter<bool, double4>(x => new double4((x) ? 0.0 : 1.0, 0, 0, 1));
-            AddConverter<bool, double4x4>(x => new double4x4((x) ? 0.0 : 1.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
-            AddConverter<bool, float2>(x => new float2((x) ? 0.0f : 1.0f, 0));
-            AddConverter<bool, float3>(x => new float3((x) ? 0.0f : 1.0f, 0, 0));
-            AddConverter<bool, float4>(x => new float4((x) ? 0.0f : 1.0f, 0, 0, 1));
-            AddConverter<bool, float4x4>(x => new float4x4((x) ? 0.0f : 1.0f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<bool, double2>(x => new double2((x) ? 1.0 : 0.0, 0));
+            AddConverter<bool, double3>(x => new double3((x) ? 1.0 : 0.0, 0, 0));
+            AddConverter<bool, double4>(x => new double4((x) ? 1.0 : 0.0, 0, 0, 1));
+            AddConverter<bool, double4x4>(x => new double4x4((x) ? 1.0 : 0.0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<bool, float2>(x => new float2((x) ? 1.0f : 0.0f, 0));
+            AddConverter<bool, float3>(x => new float3((x) ? 1.0f : 0.0f, 0, 0));
+            AddConverter<bool, float4>(x => new float4((x) ? 1.0f : 0.0f, 0, 0, 1));
+            AddConverter<bool, float4x4>(x => new float4x4((x) ? 1.0f : 0.0f, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From string
             AddConverter<string, int>(x => int.Parse(x));
@@ -331,7 +332,7 @@ namespace Fusee.Xirkit
             AddConverter<float2, float2>(v => v);
             AddConverter<float2, float3>(v => new float3(v.x, v.y, 0));
             AddConverter<float2, float4>(v => new float4(v.x, v.y, 0, 1));
-            AddConverter<float2, double4x4>(v => new double4x4(v.x, v.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<float2, float4x4>(v => new float4x4(v.x, v.y, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float3
             AddConverter<float3, int>(v => (int)v.x);
@@ -346,7 +347,7 @@ namespace Fusee.Xirkit
             AddConverter<float3, float2>(v => new float2(v.x, v.y));
             AddConverter<float3, float3>(v => v);
             AddConverter<float3, float4>(v => new float4(v.x, v.y, (float)v.z, 1));
-            AddConverter<float3, double4x4>(v => new double4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
+            AddConverter<float3, float4x4>(v => new float4x4(v.x, v.y, v.z, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0));
 
             // From float4
             AddConverter<float4, int>(v => (int)v.x);
@@ -408,16 +409,16 @@ namespace Fusee.Xirkit
 
         private static Delegate LookupConverter(Type from, Type to)
         {
-            if (_convMap == null)
-                InitConvMap();
+            //if (_convMap == null)
+            //    InitConvMap();
 
             return _convMap[from][to];
         }
 
         private static bool CanConvert(Type from, Type to)
         {
-            if (_convMap == null)
-                InitConvMap();
+            //if (_convMap == null)
+            //    InitConvMap();
 
             Dictionary<Type, Delegate> dict;
             if (!_convMap.TryGetValue(from, out dict))

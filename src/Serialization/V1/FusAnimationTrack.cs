@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
+using System.Collections.Generic;
 
 namespace Fusee.Serialization.V1
 {
@@ -20,7 +20,7 @@ namespace Fusee.Serialization.V1
         /// <summary>
         /// The position of the key on the timeline.
         /// </summary>
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public float Time;
     }
 
@@ -43,7 +43,7 @@ namespace Fusee.Serialization.V1
     /// Animation key storing integer values.
     /// </summary>
     [ProtoContract]
-    public class FusAnimationKeyInt: FusAnimationKeyBase
+    public class FusAnimationKeyInt : FusAnimationKeyBase
     {
         /// <summary>
         /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
@@ -90,7 +90,7 @@ namespace Fusee.Serialization.V1
         /// <summary>
         /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public float3 Value;
     }
 
@@ -120,7 +120,7 @@ namespace Fusee.Serialization.V1
         /// <summary>
         /// Spherical interpolation. float3 are interpreted as Euler angles and interpolated in a shortest-path way using <see cref="Quaternion"/>s.
         /// </summary>
-        Slerp,  
+        Slerp,
     }
 
     /// <summary> 
@@ -159,13 +159,13 @@ namespace Fusee.Serialization.V1
         /// <summary>
         /// The name to the property/field to control. May be a dot-separated path to a sub-item (e.g. "Transform.Position.x").
         /// </summary>
-        [ProtoMember(2)] 
+        [ProtoMember(2)]
         public string Property;
 
         /// <summary>
         /// The type of the key-values stored in this animation track.
         /// </summary>
-        [ProtoMember(3)] 
+        [ProtoMember(3)]
         public TypeId TypeId;
 
         /// <summary>

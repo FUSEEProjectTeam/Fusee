@@ -1,46 +1,48 @@
 ﻿
+using Fusee.Math.Core;
+
 namespace Fusee.Serialization.V1
 {
     /// <summary>
     /// Defines the alignment in y direction.
     /// </summary>
-    public enum VerticalTextAlignment
+    public enum FusVerticalTextAlignment
     {
         /// <summary>
-        /// The text will be aligned to the top border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the top border of the enclosing MinMaxRect.
         /// </summary>
-        TOP,
+        Top,
 
         /// <summary>
-        /// The text will be aligned to the middle of vertical axis of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the middle of vertical axis of the enclosing MinMaxRect.
         /// </summary>
-        CENTER,
+        Center,
 
         /// <summary>
-        /// The text will be aligned to the bottom border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the bottom border of the enclosing MinMaxRect.
         /// </summary>
-        BOTTOM
+        Bottom
     }
 
     /// <summary>
     /// Defines the alignment in y direction.
     /// </summary>
-    public enum HorizontalTextAlignment
+    public enum FusHorizontalTextAlignment
     {
         /// <summary>
-        /// The text will be aligned to the left border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the left border of the enclosing MinMaxRect.
         /// </summary>
-        LEFT,
+        Left,
 
         /// <summary>
-        /// The text will be aligned to the center of vertical axis of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to the center of vertical axis of the enclosing MinMaxRect.
         /// </summary>
-        CENTER,
+        Center,
 
         /// <summary>
-        /// The text will be aligned to right border of the enclosing <see cref="MinMaxRect"/>.
+        /// The text will be aligned to right border of the enclosing MinMaxRect.
         /// </summary>
-        RIGHT
+        Right
     }
 
     /// <summary>
@@ -60,14 +62,14 @@ namespace Fusee.Serialization.V1
         public float Height;
 
         /// <summary>
-        /// The <see cref="HorizontalTextAlignment"/>.
+        /// The <see cref="FusHorizontalTextAlignment"/>.
         /// </summary>
-        public HorizontalTextAlignment HorizontalAlignment;
+        public FusHorizontalTextAlignment HorizontalAlignment;
 
         /// <summary>
-        /// The <see cref="VerticalTextAlignment"/>.
+        /// The <see cref="FusVerticalTextAlignment"/>.
         /// </summary>
-        public VerticalTextAlignment VerticalAlignment;
+        public FusVerticalTextAlignment VerticalAlignment;
     }
 
 }

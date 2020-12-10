@@ -1,8 +1,7 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Fusee.Math.Core;
 
 namespace Fusee.Base.Common
 {
@@ -13,9 +12,9 @@ namespace Fusee.Base.Common
     {
         internal enum SegmentType
         {
-            LINEAR,
-            CUBIC,
-            CONIC
+            Linear,
+            Cubic,
+            Conic
         }
         private static SegmentType Type { get; set; }
 
@@ -39,24 +38,24 @@ namespace Fusee.Base.Common
             {
                 if (partTags.Skip(i).Take(linearPattern.Length).SequenceEqual(linearPattern))
                 {
-                    Type = SegmentType.LINEAR;
+                    Type = SegmentType.Linear;
                     segments.Add(CreateCurveSegment(i, linearPattern, partVerts));
                 }
                 else if (partTags.Skip(i).Take(conicPattern.Length).SequenceEqual(conicPattern))
                 {
-                    Type = SegmentType.CONIC;
+                    Type = SegmentType.Conic;
                     segments.Add(CreateCurveSegment(i, conicPattern, partVerts));
                     i += 1;
                 }
                 else if (partTags.Skip(i).Take(cubicPattern.Length).SequenceEqual(cubicPattern))
                 {
-                    Type = SegmentType.CUBIC;
+                    Type = SegmentType.Cubic;
                     segments.Add(CreateCurveSegment(i, cubicPattern, partVerts));
                     i += 2;
                 }
                 else if (partTags.Skip(i).Take(conicVirtualPattern.Length).SequenceEqual(conicVirtualPattern))
                 {
-                    Type = SegmentType.CONIC;
+                    Type = SegmentType.Conic;
                     var count = 0;
                     var cs = CreateCurveSegment(i, conicVirtualPattern, partVerts);
 
@@ -133,21 +132,21 @@ namespace Fusee.Base.Common
             CurveSegment segment;
             switch (Type)
             {
-                case SegmentType.LINEAR:
+                case SegmentType.Linear:
                     segment = new LinearSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CONIC:
+                case SegmentType.Conic:
                     segment = new BezierConicSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CUBIC:
+                case SegmentType.Cubic:
                     segment = new BezierCubicSegment
                     {
                         Vertices = new List<float3>()
@@ -169,21 +168,21 @@ namespace Fusee.Base.Common
             CurveSegment segment;
             switch (Type)
             {
-                case SegmentType.LINEAR:
+                case SegmentType.Linear:
                     segment = new LinearSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CONIC:
+                case SegmentType.Conic:
                     segment = new BezierConicSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
-                case SegmentType.CUBIC:
+                case SegmentType.Cubic:
                     segment = new BezierCubicSegment
                     {
                         Vertices = new List<float3>()
@@ -210,7 +209,7 @@ namespace Fusee.Base.Common
                 //Constraint
                 if (i + 1 >= segments.Count) break;
 
-                //Checks whether two successive segments have the same interpolation Methode, if so combine them.
+                //Checks whether two successive segments have the same interpolation method, if so combine them.
                 if (segments[i].GetType() == segments[i + 1].GetType())
                 {
                     foreach (var vertex in segments[i + 1].Vertices)

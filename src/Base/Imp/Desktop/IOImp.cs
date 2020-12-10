@@ -1,5 +1,5 @@
-﻿using System.IO;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
+using System.IO;
 
 namespace Fusee.Base.Imp.Desktop
 {
@@ -18,7 +18,7 @@ namespace Fusee.Base.Imp.Desktop
         /// </returns>
         public Stream StreamFromFile(string path, Common.FileMode mode)
         {
-            return new FileStream(path, (System.IO.FileMode) mode);
+            return new FileStream(path, (System.IO.FileMode)mode);
         }
     }
 }

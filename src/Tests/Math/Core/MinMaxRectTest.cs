@@ -9,7 +9,7 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Min_Is0()
         {
-            var rect = MinMaxRect.FromCenterSize(new float2(1,1), new float2(2,2));
+            var rect = MinMaxRect.FromCenterSize(new float2(1, 1), new float2(2, 2));
 
             var actual = rect.Min;
 

@@ -15,10 +15,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float A
         {
-            get
-            {
-                return _a;
-            }
+            get => _a;
             set
             {
                 _a = value;
@@ -32,10 +29,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float B
         {
-            get
-            {
-                return _b;
-            }
+            get => _b;
             set
             {
                 _b = value;
@@ -49,10 +43,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float C
         {
-            get
-            {
-                return _c;
-            }
+            get => _c;
             set
             {
                 _c = value;
@@ -201,7 +192,8 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param> 
+        /// <param name="aabb">The axis aligned bounding box.</param>
+        /// </summary>
         private float BoxExtendInNormalDirection(AABBf aabb)
         {
             var boxExtend = aabb.Size * 0.5f;
@@ -210,7 +202,8 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param> 
+        /// <param name="obb">The object oriented bounding box.</param>
+        /// </summary>
         private float BoxExtendInNormalDirection(OBBf obb)
         {
             var transformationMat = obb.Rotation * float4x4.CreateTranslation(obb.Translation); //without scale!

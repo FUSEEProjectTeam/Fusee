@@ -168,42 +168,42 @@ namespace Fusee.Math.Core
         public const double EpsilonDouble = 1.11022302462516E-16d;
 
         /// <summary>
-        /// Defines the value of Pi as a <see cref="System.Single"/>.
+        /// Defines the value of Pi as a <see cref="float"/>.
         /// </summary>
         public const float Pi = 3.14159265358979f;
 
         /// <summary>
-        /// Defines the value of Pi divided by two as a <see cref="System.Single"/>.
+        /// Defines the value of Pi divided by two as a <see cref="float"/>.
         /// </summary>
         public const float PiOver2 = Pi / 2;
 
         /// <summary>
-        /// Defines the value of Pi divided by three as a <see cref="System.Single"/>.
+        /// Defines the value of Pi divided by three as a <see cref="float"/>.
         /// </summary>
         public const float PiOver3 = Pi / 3;
 
         /// <summary>
-        /// Defines the value of  Pi divided by four as a <see cref="System.Single"/>.
+        /// Defines the value of  Pi divided by four as a <see cref="float"/>.
         /// </summary>
         public const float PiOver4 = Pi / 4;
 
         /// <summary>
-        /// Defines the value of Pi divided by six as a <see cref="System.Single"/>.
+        /// Defines the value of Pi divided by six as a <see cref="float"/>.
         /// </summary>
         public const float PiOver6 = Pi / 6;
 
         /// <summary>
-        /// Defines the value of Pi multiplied by two as a <see cref="System.Single"/>.
+        /// Defines the value of Pi multiplied by two as a <see cref="float"/>.
         /// </summary>
         public const float TwoPi = 2 * Pi;
 
         /// <summary>
-        /// Defines the value of Pi multiplied by 3 and divided by two as a <see cref="System.Single"/>.
+        /// Defines the value of Pi multiplied by 3 and divided by two as a <see cref="float"/>.
         /// </summary>
         public const float ThreePiOver2 = 3 * Pi / 2;
 
         /// <summary>
-        /// Defines the value of E as a <see cref="System.Single"/>.
+        /// Defines the value of E as a <see cref="float"/>.
         /// </summary>
         public const float E = 2.71828182845904523536f;
 
@@ -867,11 +867,23 @@ namespace Fusee.Math.Core
 
         #endregion Equals
 
+        /// <summary>
+        /// Generates a step function by comparing "val" to "edge".
+        /// 0.0 is returned if "val" is smaller than "edge" and 1.0 is returned otherwise.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        /// <returns></returns>
+        public static float Step(float edge, float val)
+        {
+            return val < edge ? 0.0f : 1.0f;
+        }
+
         #endregion Public Members
 
         #region Internal Members
 
-        static internal char GetNumericListSeparator(IFormatProvider provider)
+        internal static char GetNumericListSeparator(IFormatProvider provider)
         {
             char numericSeparator = ',';
 

@@ -1,8 +1,8 @@
-﻿using Xunit;
+﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
-using Fusee.Math.Core;
 using System.Globalization;
+using Xunit;
 
 namespace Fusee.Test.Math.Core
 {
@@ -49,7 +49,7 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void This_GetWithIdx_IsValid()
         {
-            var actual = new float2(3, 7);          
+            var actual = new float2(3, 7);
 
             Assert.Equal(3, actual[0]);
 
@@ -71,10 +71,10 @@ namespace Fusee.Test.Math.Core
         [Theory]
         [MemberData(nameof(ThisException))]
         public void Invalid_GetWithIdx_Exception(int idx, string expected)
-        {    
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new float2(10,0)[idx]);
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new float2(10, 0)[idx]);
 
-            Assert.Equal(expected, actual.ParamName);           
+            Assert.Equal(expected, actual.ParamName);
         }
 
         [Theory]
@@ -161,7 +161,7 @@ namespace Fusee.Test.Math.Core
 
             var actual = vec.ToArray();
 
-            Assert.Equal(new float[] {1, 2}, actual);
+            Assert.Equal(new float[] { 1, 2 }, actual);
         }
 
         #endregion
@@ -318,11 +318,27 @@ namespace Fusee.Test.Math.Core
 
         #endregion
 
+        [Theory]
+        [MemberData(nameof(GetStep))]
+        public void Step(float2 edge, float2 val, float2 expected)
+        {
+            Assert.Equal(expected, float2.Step(edge, val));
+        }
+
         #region Lerp
 
         [Theory]
         [MemberData(nameof(GetLerp))]
         public void Lerp_TestLerp(float2 left, float2 right, float blend, float2 expected)
+        {
+            var actual = float2.Lerp(left, right, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetLerp2))]
+        public void Lerp_TestLerp2(float2 left, float2 right, float2 blend, float2 expected)
         {
             var actual = float2.Lerp(left, right, blend);
 
@@ -559,9 +575,9 @@ namespace Fusee.Test.Math.Core
 
         public static IEnumerable<object[]> GetNormalize()
         {
-            yield return new object[] {new float2(4, 0), new float2(1, 0)};
-            yield return new object[] {new float2(0, 4), new float2(0, 1)};
-            yield return new object[] {new float2(1, 1), new float2((float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5)) };
+            yield return new object[] { new float2(4, 0), new float2(1, 0) };
+            yield return new object[] { new float2(0, 4), new float2(0, 1) };
+            yield return new object[] { new float2(1, 1), new float2((float)System.Math.Sqrt(0.5), (float)System.Math.Sqrt(0.5)) };
         }
 
         public static IEnumerable<object[]> GetAddition()
@@ -569,9 +585,9 @@ namespace Fusee.Test.Math.Core
             var zero = new float2(0, 0);
             var one = new float2(1, 1);
 
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, one};
-            yield return new object[] {one, one, new float2(2, 2)};
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
+            yield return new object[] { one, one, new float2(2, 2) };
         }
 
         public static IEnumerable<object[]> GetSubtraction()
@@ -579,26 +595,26 @@ namespace Fusee.Test.Math.Core
             var zero = new float2(0, 0);
             var one = new float2(1, 1);
 
-            yield return new object[] {one, one, zero};
-            yield return new object[] {one, zero, one};
-            yield return new object[] {zero, one, -one};
+            yield return new object[] { one, one, zero };
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, -one };
         }
 
         public static IEnumerable<object[]> GetMultiply()
         {
             var one = new float2(1, 1);
 
-            yield return new object[] {one, 1, one};
-            yield return new object[] {one, 2, new float2(2, 2)};
-            yield return new object[] {one, 0, new float2(0, 0)};
+            yield return new object[] { one, 1, one };
+            yield return new object[] { one, 2, new float2(2, 2) };
+            yield return new object[] { one, 0, new float2(0, 0) };
         }
 
         public static IEnumerable<object[]> GetDivide()
         {
             var one = new float2(1, 1);
 
-            yield return new object[] {new float2(2, 2), 2, one};
-            yield return new object[] {one, 1, one};
+            yield return new object[] { new float2(2, 2), 2, one };
+            yield return new object[] { one, 1, one };
         }
 
         public static IEnumerable<object[]> GetComponentMin()
@@ -606,9 +622,9 @@ namespace Fusee.Test.Math.Core
             var one = new float2(1, 1);
             var zero = new float2(0, 0);
 
-            yield return new object[] {one, zero, zero};
-            yield return new object[] {zero, one, zero};
-            yield return new object[] {new float2(1, 0), new float2(0, 1), zero};
+            yield return new object[] { one, zero, zero };
+            yield return new object[] { zero, one, zero };
+            yield return new object[] { new float2(1, 0), new float2(0, 1), zero };
         }
 
         public static IEnumerable<object[]> GetComponentMax()
@@ -644,9 +660,9 @@ namespace Fusee.Test.Math.Core
             var one = new float2(1, 1);
             var zero = new float2(0, 0);
 
-            yield return new object[] {new float2(2, 2), zero, one, one};
-            yield return new object[] {new float2(-1, -1), zero, one, zero};
-            yield return new object[] {new float2(0.5f, 0.5f), zero, one, new float2(0.5f, 0.5f)};
+            yield return new object[] { new float2(2, 2), zero, one, one };
+            yield return new object[] { new float2(-1, -1), zero, one, zero };
+            yield return new object[] { new float2(0.5f, 0.5f), zero, one, new float2(0.5f, 0.5f) };
         }
 
         public static IEnumerable<object[]> GetLerp()
@@ -654,9 +670,19 @@ namespace Fusee.Test.Math.Core
             var one = new float2(1, 1);
             var zero = new float2(0, 0);
 
-            yield return new object[] {zero, one, 0.5f, new float2(0.5f, 0.5f)};
-            yield return new object[] {zero, one, 0, zero};
-            yield return new object[] {zero, one, 1, one};
+            yield return new object[] { zero, one, 0.5f, new float2(0.5f, 0.5f) };
+            yield return new object[] { zero, one, 0, zero };
+            yield return new object[] { zero, one, 1, one };
+        }
+
+        public static IEnumerable<object[]> GetLerp2()
+        {
+            var one = new float2(1, 1);
+            var zero = new float2(0, 0);
+
+            yield return new object[] { zero, one, new float2(0.5f, 0.5f), new float2(0.5f, 0.5f) };
+            yield return new object[] { zero, one, float2.Zero, zero };
+            yield return new object[] { zero, one, float2.One, one };
         }
 
         public static IEnumerable<object[]> GetBarycentric()
@@ -665,9 +691,17 @@ namespace Fusee.Test.Math.Core
             var x = new float2(1, 0);
             var y = new float2(0, 1);
 
-            yield return new object[] {zero, x, y, 0, 0, y};
-            yield return new object[] {zero, x, y, 1, 0, zero};
-            yield return new object[] {zero, x, y, 0, 1, x};
+            yield return new object[] { zero, x, y, 0, 0, y };
+            yield return new object[] { zero, x, y, 1, 0, zero };
+            yield return new object[] { zero, x, y, 0, 1, x };
+        }
+
+        public static IEnumerable<object[]> GetStep()
+        {
+            var x = new float2(2.222f, 2.222f);
+            var y = new float2(1.111f, 1.111f);
+            yield return new object[] { x, y, float2.Zero };
+            yield return new object[] { y, x, float2.One };
         }
 
         #endregion

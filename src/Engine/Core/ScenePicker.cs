@@ -184,7 +184,7 @@ namespace Fusee.Engine.Core
             private readonly CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
             private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             private readonly CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
-            private readonly StateStack<Cull> _cullMode = new StateStack<Cull>();
+            private readonly CollapsingStateStack<Cull> _cullMode = new CollapsingStateStack<Cull>();
 
             /// <summary>
             /// The registered model.
@@ -196,7 +196,7 @@ namespace Fusee.Engine.Core
             }
 
             /// <summary>
-            /// The registered ui rectangle.
+            /// The registered UI rectangle.
             /// </summary>
             public MinMaxRect UiRect
             {
@@ -223,7 +223,7 @@ namespace Fusee.Engine.Core
             }
 
             /// <summary>
-            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, ui rectangle, and canvas transform.
+            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for model, UI rectangle, and canvas transform, as well as cull mode.
             /// </summary>
             public PickerState()
             {
@@ -283,7 +283,6 @@ namespace Fusee.Engine.Core
             return Viserate();
         }
 
-
         #region Visitors
 
         /// <summary>
@@ -295,7 +294,7 @@ namespace Fusee.Engine.Core
         {
             _ctc = ctc;
 
-            if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
+            if (ctc.CanvasRenderMode == CanvasRenderMode.World)
             {
                 var newRect = new MinMaxRect
                 {
@@ -310,7 +309,7 @@ namespace Fusee.Engine.Core
                 State.UiRect = newRect;
             }
 
-            if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 var invProj = float4x4.Invert(_rc.Projection);
 
@@ -371,7 +370,7 @@ namespace Fusee.Engine.Core
         public void RenderRectTransform(RectTransform rtc)
         {
             MinMaxRect newRect;
-            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 newRect = new MinMaxRect
                 {
@@ -445,7 +444,7 @@ namespace Fusee.Engine.Core
             float scaleX;
             float scaleY;
 
-            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 //Undo parent scale
                 scaleX = 1 / State.UiRect.Size.x;
@@ -454,13 +453,13 @@ namespace Fusee.Engine.Core
                 //Calculate translation according to alignment
                 switch (xfc.HorizontalAlignment)
                 {
-                    case HorizontalTextAlignment.LEFT:
+                    case HorizontalTextAlignment.Left:
                         translationX = -State.UiRect.Size.x / 2;
                         break;
-                    case HorizontalTextAlignment.CENTER:
+                    case HorizontalTextAlignment.Center:
                         translationX = -xfc.Width / 2;
                         break;
-                    case HorizontalTextAlignment.RIGHT:
+                    case HorizontalTextAlignment.Right:
                         translationX = State.UiRect.Size.x / 2 - xfc.Width;
                         break;
                     default:
@@ -469,13 +468,13 @@ namespace Fusee.Engine.Core
 
                 switch (xfc.VerticalAlignment)
                 {
-                    case VerticalTextAlignment.TOP:
+                    case VerticalTextAlignment.Top:
                         translationY = State.UiRect.Size.y / 2;
                         break;
-                    case VerticalTextAlignment.CENTER:
+                    case VerticalTextAlignment.Center:
                         translationY = xfc.Height / 2;
                         break;
-                    case VerticalTextAlignment.BOTTOM:
+                    case VerticalTextAlignment.Bottom:
                         translationY = xfc.Height - (State.UiRect.Size.y / 2);
                         break;
                     default:
@@ -491,13 +490,13 @@ namespace Fusee.Engine.Core
                 //Calculate translation according to alignment by scaling the rectangle size
                 switch (xfc.HorizontalAlignment)
                 {
-                    case HorizontalTextAlignment.LEFT:
+                    case HorizontalTextAlignment.Left:
                         translationX = -State.UiRect.Size.x * invScaleFactor / 2;
                         break;
-                    case HorizontalTextAlignment.CENTER:
+                    case HorizontalTextAlignment.Center:
                         translationX = -xfc.Width / 2;
                         break;
-                    case HorizontalTextAlignment.RIGHT:
+                    case HorizontalTextAlignment.Right:
                         translationX = State.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
                         break;
                     default:
@@ -506,13 +505,13 @@ namespace Fusee.Engine.Core
 
                 switch (xfc.VerticalAlignment)
                 {
-                    case VerticalTextAlignment.TOP:
+                    case VerticalTextAlignment.Top:
                         translationY = State.UiRect.Size.y * invScaleFactor / 2;
                         break;
-                    case VerticalTextAlignment.CENTER:
+                    case VerticalTextAlignment.Center:
                         translationY = xfc.Height / 2;
                         break;
-                    case VerticalTextAlignment.BOTTOM:
+                    case VerticalTextAlignment.Bottom:
                         translationY = xfc.Height - (State.UiRect.Size.y * invScaleFactor / 2);
                         break;
                     default:
@@ -596,4 +595,3 @@ namespace Fusee.Engine.Core
 
     }
 }
-

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
+using System.Collections.Generic;
 
 namespace Fusee.Serialization.V1
 {
@@ -28,7 +28,7 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(3)]
         public List<float4x4> BindingMatrices = new List<float4x4>();
-   
+
     }
 
     /// <summary>

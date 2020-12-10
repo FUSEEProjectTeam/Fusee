@@ -1,12 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Math.Core;
 using System;
-using Fusee.Math.Core;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
 
     /// <summary>
-    /// Node for use in an Octree.
+    /// Node for use in an octree.
     /// </summary>
     /// <typeparam name="T">Defines the type of the payload.</typeparam>
     public class Octant<T> : Bucket<T>
@@ -50,7 +50,7 @@ namespace Fusee.Engine.Core
                 Children = new Octant<T>[8];
             else
                 Children = children;
-            
+
             Payload = payload;
         }
 
@@ -68,18 +68,18 @@ namespace Fusee.Engine.Core
             if (children == null)
                 Children = new Octant<T>[8];
             else
-                Children = children;            
+                Children = children;
         }
 
         /// <summary>
         /// Create a new instance of type Octant.
         /// </summary>
-        protected Octant(){}
+        protected Octant() { }
 
 
         ////TODO: duplicate code, clean up! The original is found in AABB.
         ///// <summary>
-        /////     Checks if a viewing frustrum lies within this AABB.
+        /////     Checks if a viewing frustum lies within this AABB.
         /////     If feeded with a projection matrix, the result of the clipping planes is in view space
         /////     If feeded with a projection view matrix, the clipping planes are given in model space
         ///// </summary>
@@ -87,7 +87,7 @@ namespace Fusee.Engine.Core
         ///// <returns>false if fully outside, true if inside or intersects</returns>
         //public bool Intersects(float4x4 vf)
         //{
-        //    // split the viewing frustrum in 6 planes
+        //    // split the viewing frustum in 6 planes
         //    // plane equation = ax + by + cz + d = 0;
         //    // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3 
         //    var planes = new double4[6];
@@ -154,5 +154,5 @@ namespace Fusee.Engine.Core
         //    return d - r;
         //}
 
-    }    
+    }
 }

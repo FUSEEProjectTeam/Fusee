@@ -115,23 +115,23 @@
         /// <summary>
         /// Unreliable = 1, Packets can get lost and the order doesn't have to be correct.
         /// </summary>
-        Unreliable = (byte) 1,
+        Unreliable = (byte)1,
         /// <summary>
-        /// Unrealiable Sequenced = 2, Packets can get lost, if an older(order) packet is received after a new one it(the older) is deleted.
+        /// Unreliable Sequenced = 2, Packets can get lost, if an older(order) packet is received after a new one it(the older) is deleted.
         /// </summary>
-        UnreliableSequenced = (byte) 2,
+        UnreliableSequenced = (byte)2,
         /// <summary>
-        /// Reliable Unordered = 3, Packets don't get lost andthe order doesnt have to be correct.
+        /// Reliable Unordered = 3, Packets don't get lost and the order doesn't have to be correct.
         /// </summary>
-        ReliableUnordered = (byte) 34,
+        ReliableUnordered = (byte)34,
         /// <summary>
         /// Reliable Sequenced = 4, Packets don't get lost, if an older(order) packet is received after a new one it(the older) is deleted. 
         /// </summary>
-        ReliableSequenced = (byte) 35,
+        ReliableSequenced = (byte)35,
         /// <summary>
-        /// Realiable Ordered = 5, Packets don't get lost and are always transmitted in correct order.
+        /// Reliable Ordered = 5, Packets don't get lost and are always transmitted in correct order.
         /// </summary>
-        ReliableOrdered = (byte) 67,
+        ReliableOrdered = (byte)67,
     }
 
     /// <summary>
@@ -202,7 +202,7 @@
     /// The Network message interface. 
     /// </summary>
     /// <remarks>
-    /// Implementation Tasks: In order to use this with own implementations own enums for MessageType, Connectionstatus and Network message type are required.
+    /// Implementation Tasks: In order to use this with own implementations own enums for MessageType, Connection status and Network message type are required.
     /// An implementation of <see cref="INetworkConnection"/> is required to identify the sender of the message.
     /// </remarks>
     public interface INetworkMsg
@@ -230,7 +230,7 @@
         INetworkConnection Sender { get; }
 
         /// <summary>
-        /// Gets the message's data dontent.
+        /// Gets the message's data content.
         /// </summary>
         /// <value>
         /// The message.

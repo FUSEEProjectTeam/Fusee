@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Math.Core;
+using System.Collections.Generic;
 using System.Linq;
-using Fusee.Math.Core;
 
 namespace Fusee.Jometri
 {
@@ -341,7 +341,7 @@ namespace Fusee.Jometri
 
             var alpha = tNumerator / denominator;
 
-            intersectionPoint = p1 + alpha*(p2-p1);
+            intersectionPoint = p1 + alpha * (p2 - p1);
             return true;
         }
 

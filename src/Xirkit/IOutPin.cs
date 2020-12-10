@@ -12,7 +12,7 @@ namespace Fusee.Xirkit
     public interface IOutPin
     {
         /// <summary>
-        /// Retrieves the type discription of the pin.
+        /// Retrieves the type description of the pin.
         /// </summary>
         /// <returns>The pin's type</returns>
         Type GetPinType();

@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
         /// Length, width and height of this Octant.
         /// </summary>
         public double Size { get; protected set; }
-        
+
 
         /// <summary>
         /// Creates a new instance of type Bucket.

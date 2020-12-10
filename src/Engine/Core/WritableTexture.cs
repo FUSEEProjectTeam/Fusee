@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
-        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
+        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.NearestMipmapLinear, TextureWrapMode wrapMode = TextureWrapMode.Repeat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             PixelFormat = colorFormat;
@@ -132,7 +132,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreatePosTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_POSITION, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.Position, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateAlbedoTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA), width, height, false, TextureFilterMode.Linear);
         }
 
         /// <summary>
@@ -154,7 +154,18 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateSpecularTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_SPECULAR, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.Specular, new ImagePixelFormat(ColorFormat.fRGBA16), width, height, false, TextureFilterMode.Linear);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save emissive color.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateEmissionTex(int width, int height)
+        {
+            return new WritableTexture(RenderTargetTextureTypes.Emission, new ImagePixelFormat(ColorFormat.RGB), width, height, false, TextureFilterMode.Linear);
         }
 
         /// <summary>
@@ -165,7 +176,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateNormalTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_NORMAL, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.Normal, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
@@ -176,20 +187,20 @@ namespace Fusee.Engine.Core
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
         /// <returns></returns>
-        public static WritableTexture CreateDepthTex(int width, int height, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
+        public static WritableTexture CreateDepthTex(int width, int height, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth24), width, height, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, compareMode, compareFunc);
+            return new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, compareMode, compareFunc);
         }
 
         /// <summary>
-        /// Create a texture that is intended to save ssao information.
+        /// Create a texture that is intended to save SSAO information.
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <returns></returns>
         public static WritableTexture CreateSSAOTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>

@@ -1,6 +1,3 @@
-﻿using System.Numerics;
-using System;
-
 namespace Fusee.Math.Core
 {
     /// <summary>
@@ -51,7 +48,7 @@ namespace Fusee.Math.Core
         /// <param name="right"></param>
         /// <returns></returns>
         public static bool operator !=(EigenF left, EigenF right) => !(left == right);
-      
+
     }
 
     /// <summary>

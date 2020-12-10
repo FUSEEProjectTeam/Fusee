@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
             set
             {
                 var o = (CollisionShape)_collisionShapeImp.UserObject;
-                o._collisionShapeImp.Margin = value; 
+                o._collisionShapeImp.Margin = value;
             }
         }
 

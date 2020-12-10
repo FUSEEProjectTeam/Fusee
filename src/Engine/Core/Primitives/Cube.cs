@@ -2,7 +2,7 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a simple wireframe cube geometry straight from the code.
@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public WireframeCube()
         {
-            MeshType = (int)OpenGLPrimitiveType.LINES;
+            MeshType = (int)OpenGLPrimitiveType.Lines;
             Vertices = new float3[]
             {
                 new float3(+0.5f, +0.5f, +0.5f),
@@ -48,8 +48,6 @@ namespace Fusee.Engine.Core
             };
         }
     }
-
-
 
     /// <summary>
     /// Creates a simple cube geometry straight from the code.

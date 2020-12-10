@@ -2,6 +2,7 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
@@ -31,12 +32,12 @@ namespace Fusee.Examples.Picking.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -48,7 +49,7 @@ namespace Fusee.Examples.Picking.Core
         private float2 _pickPos;
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -70,8 +71,6 @@ namespace Fusee.Examples.Picking.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -133,7 +132,6 @@ namespace Fusee.Examples.Picking.Core
             // Check
             if (_pick)
             {
-
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
                 RC.View = mtxCam * mtxRot;
@@ -145,16 +143,15 @@ namespace Fusee.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-
-                        var ef = _currentPick.Node.GetComponent<ShaderEffect>();
-                        ef.SetEffectParam(UniformNameDeclarations.AlbedoColor, _oldColor);
+                        var ef = _currentPick.Node.GetComponent<DefaultSurfaceEffect>();
+                        ef.SurfaceInput.Albedo = _oldColor;
                     }
 
                     if (newPick != null)
                     {
-                        var ef = newPick.Node.GetComponent<ShaderEffect>();
-                        _oldColor = (float4)ef.GetEffectParam(UniformNameDeclarations.AlbedoColor); // cast needed
-                        ef.SetEffectParam(UniformNameDeclarations.AlbedoColor, ColorUint.Tofloat4(ColorUint.LawnGreen));
+                        var ef = newPick.Node.GetComponent<DefaultSurfaceEffect>();
+                        _oldColor = ef.SurfaceInput.Albedo;
+                        ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
                     }
                     _currentPick = newPick;
                 }
@@ -178,7 +175,7 @@ namespace Fusee.Examples.Picking.Core
             }
             _guiRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
@@ -191,6 +188,10 @@ namespace Fusee.Examples.Picking.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
+
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -209,9 +210,10 @@ namespace Fusee.Examples.Picking.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -222,25 +224,30 @@ namespace Fusee.Examples.Picking.Core
                 "FUSEE Picking Example",
                 "ButtonText",
                 vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                psText,
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
                 }
-            );
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
+            };
 
             return new SceneContainer
             {
@@ -254,12 +261,16 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)
@@ -284,14 +295,9 @@ namespace Fusee.Examples.Picking.Core
                         Name = "Base",
                         Components = new List<SceneComponent>
                         {
-                            new Transform { Scale = float3.One },
-                            ShaderCodeBuilder.MakeShaderEffect(
-                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Red),
-                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                                        shininess: 4.0f,
-                                                        specularIntensity: 1.0f
-                                                        ),
-                            CreateCuboid(new float3(100, 20, 100))
+                           new Transform { Scale = float3.One },
+                           MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
+                           CreateCuboid(new float3(100, 20, 100))
                         },
                         Children = new ChildList
                         {
@@ -300,14 +306,9 @@ namespace Fusee.Examples.Picking.Core
                                 Name = "Arm01",
                                 Components = new List<SceneComponent>
                                 {
-                                    new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                     ShaderCodeBuilder.MakeShaderEffect(
-                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Green),
-                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                                        shininess: 4.0f,
-                                                        specularIntensity: 1.0f
-                                                        ),
-                                    CreateCuboid(new float3(20, 100, 20))
+                                   new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
+                                   MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green, float4.Zero, 4.0f, 1f),
+                                   CreateCuboid(new float3(20, 100, 20))
                                 },
                                 Children = new ChildList
                                 {
@@ -326,12 +327,7 @@ namespace Fusee.Examples.Picking.Core
                                                 Components = new List<SceneComponent>
                                                 {
                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    ShaderCodeBuilder.MakeShaderEffect(
-                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Yellow),
-                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                                        shininess: 4.0f,
-                                                        specularIntensity: 1.0f
-                                                        ),
+                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
                                                 Children = new ChildList
@@ -351,12 +347,7 @@ namespace Fusee.Examples.Picking.Core
                                                                 Components = new List<SceneComponent>
                                                                 {
                                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                     ShaderCodeBuilder.MakeShaderEffect(
-                                                                        albedoColor: ColorUint.Tofloat4(ColorUint.Blue),
-                                                                        specularColor: ColorUint.Tofloat4(ColorUint.White),
-                                                                        shininess: 4.0f,
-                                                                        specularIntensity: 1.0f
-                                                                        ),
+                                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }
                                                             },

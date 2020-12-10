@@ -323,8 +323,8 @@ namespace Fusee.Test.Math.Core
 
             var expectedRotMat = double4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
 
-            for(var i = 0; i < expectedRotMat.ToArray().Length; i++)
-                Assert.Equal(expectedRotMat.ToArray()[i], actual.ToArray()[i], 7); 
+            for (var i = 0; i < expectedRotMat.ToArray().Length; i++)
+                Assert.Equal(expectedRotMat.ToArray()[i], actual.ToArray()[i], 7);
         }
 
         #endregion

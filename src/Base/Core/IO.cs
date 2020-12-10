@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Fusee.Base.Common;
 
 namespace Fusee.Base.Core
 {

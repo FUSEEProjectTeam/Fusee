@@ -8,51 +8,55 @@
         /// <summary>
         /// Position texture.
         /// </summary>
-        G_POSITION,
+        Position,
 
         /// <summary>
         /// Albedo texture (specular reflection in alpha channel).
         /// </summary>
-        G_ALBEDO,
+        Albedo,
 
         /// <summary>
         /// Normal texture.
         /// </summary>
-        G_NORMAL,
+        Normal,
 
         /// <summary>
         /// Depth texture.
         /// </summary>
-        G_DEPTH,
+        Depth,
 
         /// <summary>
         /// SSAO texture (stores occlusion).
         /// </summary>
-        G_SSAO,
+        Ssao,
 
         /// <summary>
         /// Specular texture.
         /// </summary>
-        G_SPECULAR
+        Specular,
+
+        /// <summary>
+        /// Contains the emissive color.
+        /// </summary>
+        Emission
     }
 
     /// <summary>
     /// Common texture resolutions for render textures. The value is given in px.
     /// </summary>
-    [System.Flags]
     public enum TexRes
     {
         /// <summary>
         /// Create textures in low resolution.
         /// </summary>
-        LOW_RES = 1024,
+        Low = 1024,
         /// <summary>
         /// Create textures in middle resolution.
         /// </summary>
-        MID_RES = 2048,
+        Middle = 2048,
         /// <summary>
         /// Create textures in high resolution.
         /// </summary>
-        HIGH_RES = 4096,
+        High = 4096,
     }
 }

@@ -2,7 +2,7 @@ using Fusee.Engine.Common;
 using System;
 
 namespace Fusee.Engine.Core
-{    
+{
     /// <summary>
     /// Use this if you want to render into buffer object, associated with one or more textures.
     /// If only a single texture is needed, the usage of a <see cref="WritableTexture"/> as a render target is preferred.
@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core
 
         ///Order of textures in RenderTextures array is given by the corresponding enum.
         public IWritableTexture[] RenderTextures { get; private set; }
-        
+
         /// <summary>
         /// Handle of the corresponding G-Buffer. Used to dispose the object if it isn't needed anymore.
         /// </summary>
@@ -39,14 +39,14 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If the RenderTarget only contains a depth texture or a depth cube map, there will be no draw buffers.
         /// </summary>
-        public bool IsDepthOnly { get; set ; }        
+        public bool IsDepthOnly { get; set; }
 
         /// <summary>
         /// Creates a new instance of type "RenderTarget".
         /// </summary>
         /// <param name="texRes">Resolution of the created Textures.</param>
         public RenderTarget(TexRes texRes)
-        {           
+        {
             RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextureTypes)).Length];
             TextureResolution = texRes;
             IsDepthOnly = false;
@@ -77,8 +77,8 @@ namespace Fusee.Engine.Core
         /// Generates a position texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
         public void SetPositionTex()
-        {          
-            RenderTextures[(int)RenderTargetTextureTypes.G_POSITION] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Core
         /// </summary>       
         public void SetAlbedoSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -94,23 +94,23 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void SetNormalTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
         /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
+        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
+            RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
         }
 
         /// <summary>
-        /// Generates a ssao texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a SSAO texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>        
         public void SetSSAOTex()
-        { 
-            RenderTextures[(int)RenderTargetTextureTypes.G_SSAO] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -118,14 +118,22 @@ namespace Fusee.Engine.Core
         /// </summary>        
         public void SetSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
+        }
+
+        /// <summary>
+        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>        
+        public void SetEmissiveTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
         /// Public implementation of Dispose pattern callable by consumers.
         /// </summary>
         public void Dispose()
-        {            
+        {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -135,7 +143,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
-        {            
+        {
             if (Disposed)
                 return;
 
@@ -152,7 +160,7 @@ namespace Fusee.Engine.Core
         /// Deconstruction of the render target.
         /// </summary>
         ~RenderTarget()
-        {            
+        {
             Dispose(false);
         }
 

@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         ///     Plays this <see cref="IAudioStreamImp" />.
         /// </summary>
-        public void Play() { _asImp.Play();}
+        public void Play() { _asImp.Play(); }
 
         /// <summary>
         ///     Plays this <see cref="IAudioStreamImp" />.

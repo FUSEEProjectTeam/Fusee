@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Runtime.InteropServices;
 
@@ -304,7 +304,7 @@ namespace Fusee.Math.Core
             {
                 int hash = 17;
                 hash = hash * 23 + max.GetHashCode();
-                hash = hash * 23 + min.GetHashCode();                
+                hash = hash * 23 + min.GetHashCode();
                 return hash;
             }
         }

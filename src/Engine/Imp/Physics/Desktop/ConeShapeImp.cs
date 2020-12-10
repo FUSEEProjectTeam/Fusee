@@ -64,7 +64,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (ConeShapeImp) BtConeShape.UserObject;
+                var o = (ConeShapeImp)BtConeShape.UserObject;
                 o.BtConeShape.ConeUpIndex = value;
             }
         }

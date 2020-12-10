@@ -1,11 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.Materials.Core</RootNamespace>
-    <PackageId>Fusee.Examples.Materials.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Examples\Materials\Core\</OutputPath>
   </PropertyGroup>
 

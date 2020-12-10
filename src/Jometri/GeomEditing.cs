@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Math.Core;
 
 namespace Fusee.Jometri
 {
@@ -13,7 +13,7 @@ namespace Fusee.Jometri
         #region Insert new vertex
 
         /// <summary>
-        /// Inserts a new Vertex between two given exsisting Vertices.
+        /// Inserts a new Vertex between two given existing Vertices.
         /// </summary>
         /// <param name="geometry">The Geometry to insert a Vertex.</param>
         /// <param name="p">Handle of Vertex one.</param>
@@ -60,7 +60,7 @@ namespace Fusee.Jometri
             var next1 = geometry.GetHalfEdgeByHandle(he2.NextHalfEdge);
             var next2 = geometry.GetHalfEdgeByHandle(he1.NextHalfEdge);
 
-            //change Handels
+            //change handles
             he1.TwinHalfEdge = newHalfEdge1.Handle;
             newHalfEdge1.TwinHalfEdge = he1.Handle;
             newHalfEdge1.NextHalfEdge = he2.NextHalfEdge;
@@ -79,7 +79,7 @@ namespace Fusee.Jometri
             newHalfEdge1.IncidentFace = he2.IncidentFace;
             newHalfEdge2.IncidentFace = he1.IncidentFace;
 
-            //replace exsisnting Edges
+            //replace existing Edges
             geometry.ReplaceHalfEdge(he1);
             geometry.ReplaceHalfEdge(he2);
 
@@ -100,7 +100,7 @@ namespace Fusee.Jometri
         /// <summary>
         /// Inserts a pair of HalfEdges between two (non adjacent) vertices of a Face.
         /// </summary>
-        /// <param name="geometry">The Geometry to insert a dignonal</param>
+        /// <param name="geometry">The Geometry to insert a diagonal.</param>
         /// <param name="p">First Vertex handle.</param>
         /// <param name="q">Second Vertex handle.</param>
         /// <exception cref="Exception"></exception>
@@ -133,7 +133,7 @@ namespace Fusee.Jometri
             geometry.DictHalfEdges.Add(newFromP.Handle, newFromP);
             geometry.DictHalfEdges.Add(newFromQ.Handle, newFromQ);
 
-            //Assign new sucessor to previous HalfEdges from p and q & assign new predecessor for qStartHe and pStartHe.
+            //Assign new successor to previous HalfEdges from p and q & assign new predecessor for qStartHe and pStartHe.
             var prevHeP = geometry.GetHalfEdgeByHandle(pStartHe.PrevHalfEdge);
             var prevHeQ = geometry.GetHalfEdgeByHandle(qStartHe.PrevHalfEdge);
 
@@ -254,19 +254,19 @@ namespace Fusee.Jometri
         /// Insets a Face with a given offset. The new, center Face has the same Handle as the original Face.
         /// </summary>
         /// <param name="geometry">The geometry on which to perform a face inset.</param>
-        /// <param name="faceHandle">The Handle of the face, the new one will be inseted to.</param>
+        /// <param name="faceHandle">The Handle of the face, the new one will be inserted to.</param>
         /// <param name="insetOffset">The offset of the inset in percent. Use values between 0 and 1. A value of 0.5f means 50% of the original face remains.</param>
         /// <returns>Returns the geometry with edited faces.</returns>
         public static Geometry InsetFace(this Geometry geometry, int faceHandle, float insetOffset)
         {
-            if (insetOffset >= 1) throw new ArgumentException("insetOffset can not be greate or equal to 1.");
+            if (insetOffset >= 1) throw new ArgumentException("insetOffset can not be greater or equal to 1.");
             if (insetOffset <= 0) throw new ArgumentException("insetOffset can not be smaller or equal to 0.");
 
             var face = geometry.GetFaceByHandle(faceHandle);
             var allFaceVertices = geometry.GetFaceVertices(faceHandle).ToList();
             var meanPos = GeometricOperations.GetVerticesMeanPos(allFaceVertices);
 
-            //Dict sotres countEdges; [0] = edge1.handle, [1] = edge2twin.handle, [2] = edge3.handle, [3] = vertex.Handle
+            //Dict stores countEdges; [0] = edge1.handle, [1] = edge2twin.handle, [2] = edge3.handle, [3] = vertex.Handle
             var edgeStorage = new Dictionary<int, int[]>();
 
             var countEdges = 0;
