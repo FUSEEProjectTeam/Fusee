@@ -4,7 +4,7 @@
     <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Fusee Engine Imp Graphics Android</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Imp.Graphics.Android</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 

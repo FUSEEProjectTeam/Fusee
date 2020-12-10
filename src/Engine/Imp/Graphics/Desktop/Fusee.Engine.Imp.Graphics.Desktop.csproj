@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Fusee Engine Imp Graphics Desktop</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Imp.Graphics.Desktop</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 

@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <Description>Fusee Serialization</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Serialization</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
