@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+SET NUGET_BUILD=true
+
 dotnet >NUL 2>NUL
 IF %ERRORLEVEL% EQU 9009 GOTO ERRORDOTNET
 
