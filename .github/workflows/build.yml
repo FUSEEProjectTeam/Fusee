@@ -68,18 +68,21 @@ jobs:
       run: dotnet build -c Release-Desktop Fusee.sln
 
     - name: Upload Player-Artifact
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: fusee-desktop-${{ matrix.os }}-player
         path: bin/Release/Player/Desktop/
 
     - name: Upload Tool-Artifacts
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: fusee-desktop-${{ matrix.os }}-tools
         path: bin/Release/Tools/
 
     - name: Upload Example-Artifacts
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: fusee-desktop-${{ matrix.os }}-examples
