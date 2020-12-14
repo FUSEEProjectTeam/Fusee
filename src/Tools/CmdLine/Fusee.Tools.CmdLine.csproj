@@ -101,7 +101,7 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)/ext/protobuf/Python/**/*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Exec Timeout="120000" Command="dotnet &quot;$(FuseeEngineRoot)/bin/$(Configuration)/Tools/CmdLine/fusee.dll&quot; protoschema -o &quot;$(BlenderAddonSourcePath)/proto/FusSerialization.proto&quot;" />
+    <Exec Timeout="120000" Command="dotnet &quot;$(FuseeEngineRoot)/bin/$(Configuration)/Tools/CmdLine/$(TargetFramework)/fusee.dll&quot; protoschema -o &quot;$(BlenderAddonSourcePath)/proto/FusSerialization.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for FusSerialization.proto -->
     <Exec WorkingDirectory="$(BlenderAddonSourcePath)/proto" Command="&quot;$(protoc_executable)&quot; --proto_path=&quot;$(protoc_tools)&quot; --proto_path=&quot;$(BlenderAddonSourcePath)/proto&quot; --python_out=&quot;$(BlenderAddonSourcePath)/proto&quot; &quot;$(BlenderAddonSourcePath)/proto/FusSerialization.proto&quot;" />
