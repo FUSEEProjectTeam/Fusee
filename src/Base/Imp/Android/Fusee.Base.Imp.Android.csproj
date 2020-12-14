@@ -1,6 +1,6 @@
-<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
+﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.22">
   <PropertyGroup>
-    <TargetFramework>MonoAndroid81</TargetFramework>
+    <TargetFramework>MonoAndroid90</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
     <Description>Fusee Base Imp Android</Description>
     <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Android</OutputPath>
