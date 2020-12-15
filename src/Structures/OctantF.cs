@@ -87,7 +87,7 @@ namespace Fusee.Structures
         /// <returns></returns>
         public virtual IOctant<double3, double, P> CreateChild(int posInParent)
         {
-            var childCenter = CalcCildCenterAtPos(posInParent);
+            var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
             var child = new OctantF<P>(childCenter, childRes)
@@ -103,9 +103,9 @@ namespace Fusee.Structures
         /// </summary>
         /// <param name="posInParent">The position in the parent octant.</param>
         /// <returns></returns>
-        protected double3 CalcCildCenterAtPos(int posInParent)
+        protected double3 CalcChildCenterAtPos(int posInParent)
         {
-            return CalcCildCenterAtPos(posInParent, Size, Center);
+            return CalcChildCenterAtPos(posInParent, Size, Center);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Fusee.Structures
         /// <param name="parentSize">The size of the parent octant.</param>
         /// <param name="parentCenter">The center of the parent octant.</param>
         /// <returns></returns>
-        public static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
+        public static double3 CalcChildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
         {
             double3 childCenter;
             var childsHalfSize = parentSize / 4d;
