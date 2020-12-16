@@ -8,7 +8,7 @@ namespace Fusee.Structures
     /// Single-precision Octant implementation.
     /// </summary>
     /// <typeparam name="P">The type of the octants payload.</typeparam>
-    public class OctantF<P> : IOctant<double3, double, P>
+    public class OctantF<P> : IOctant<float3, float, P>
     {
         /// <summary>
         ///The Resolution of an Octant is defined by the minimum distance (spacing) between points.
@@ -24,17 +24,17 @@ namespace Fusee.Structures
         /// <summary>
         /// Center of this Bucket in world space coordinates.
         /// </summary>
-        public double3 Center { get; set; }
+        public float3 Center { get; set; }
 
         /// <summary>
         /// Length, width and height of this Octant.
         /// </summary>
-        public double Size { get; set; }
+        public float Size { get; set; }
 
         /// <summary>
         /// Children of this Octant. Must contain eight or null (leaf node) children.
         /// </summary>
-        public IOctant<double3, double, P>[] Children { get; set; }
+        public IOctant<float3, float, P>[] Children { get; set; }
 
         /// <summary>
         /// The payload of this octant.
@@ -62,13 +62,13 @@ namespace Fusee.Structures
         /// <param name="center">The center point of this octant, <see cref="IBucket{T, K}.Center"/>.</param>
         /// <param name="size">The size of this octant, <see cref="IBucket{T, K}.Size"/>. </param>
         /// <param name="children">The children of this octant - can be null.</param>
-        public OctantF(double3 center, double size, IOctant<double3, double, P>[] children = null)
+        public OctantF(float3 center, float size, IOctant<float3, float, P>[] children = null)
         {
             Center = center;
             Size = size;
 
             if (children == null)
-                Children = new IOctant<double3, double, P>[8];
+                Children = new IOctant<float3, float, P>[8];
             else
                 Children = children;
 
@@ -85,14 +85,14 @@ namespace Fusee.Structures
         /// </summary>
         /// <param name="posInParent">The position in the parent octant.</param>
         /// <returns></returns>
-        public virtual IOctant<double3, double, P> CreateChild(int posInParent)
+        public virtual IOctant<float3, float, P> CreateChild(int posInParent)
         {
             var childCenter = CalcChildCenterAtPos(posInParent);
 
-            var childRes = Size / 2d;
+            var childRes = Size / 2f;
             var child = new OctantF<P>(childCenter, childRes)
             {
-                Resolution = Resolution / 2d,
+                Resolution = Resolution / 2f,
                 Level = Level + 1
             };
             return child;
@@ -103,7 +103,7 @@ namespace Fusee.Structures
         /// </summary>
         /// <param name="posInParent">The position in the parent octant.</param>
         /// <returns></returns>
-        protected double3 CalcChildCenterAtPos(int posInParent)
+        protected float3 CalcChildCenterAtPos(int posInParent)
         {
             return CalcChildCenterAtPos(posInParent, Size, Center);
         }
@@ -115,40 +115,73 @@ namespace Fusee.Structures
         /// <param name="parentSize">The size of the parent octant.</param>
         /// <param name="parentCenter">The center of the parent octant.</param>
         /// <returns></returns>
-        public static double3 CalcChildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
+        public static float3 CalcChildCenterAtPos(int posInParent, float parentSize, float3 parentCenter)
         {
-            double3 childCenter;
-            var childsHalfSize = parentSize / 4d;
+            float3 childCenter;
+            var childsHalfSize = parentSize / 4f;
             switch (posInParent)
             {
                 default:
                 case 0:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
+                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
                     break;
                 case 1:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
+                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
                     break;
                 case 2:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
+                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
                     break;
                 case 3:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
+                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
                     break;
                 case 4:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
+                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
                     break;
                 case 5:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
+                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
                     break;
                 case 6:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
+                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
                     break;
                 case 7:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
+                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
                     break;
             }
 
             return childCenter;
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneF plane)
+        {
+            return plane.InsideOrIntersecting(Center, Size);
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
+        {
+            if (!frustum.Near.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(Center, Size))
+                return false;
+
+            return true;
         }
     }
 }

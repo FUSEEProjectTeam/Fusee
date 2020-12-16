@@ -131,39 +131,6 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this Octant.
-        /// </summary>
-        /// <param name="plane">The plane to test against.</param>
-        /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingPlane(PlaneD plane)
-        {
-            return plane.InsideOrIntersecting(Center, Size);
-        }
-
-        /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this Octant.
-        /// </summary>
-        /// <param name="frustum">The frustum to test against.</param>
-        /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(FrustumD frustum)
-        {
-            if (!frustum.Near.InsideOrIntersecting(Center, Size))
-                return false;
-            if (!frustum.Far.InsideOrIntersecting(Center, Size))
-                return false;
-            if (!frustum.Left.InsideOrIntersecting(Center, Size))
-                return false;
-            if (!frustum.Right.InsideOrIntersecting(Center, Size))
-                return false;
-            if (!frustum.Top.InsideOrIntersecting(Center, Size))
-                return false;
-            if (!frustum.Bottom.InsideOrIntersecting(Center, Size))
-                return false;
-
-            return true;
-        }
-
-        /// <summary>
         /// <see cref="IOctant{T, K, P}.CreateChild(int)"/>.
         /// </summary>
         /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
