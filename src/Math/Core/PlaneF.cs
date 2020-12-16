@@ -168,7 +168,7 @@ namespace Fusee.Math.Core
         {
             var r = BoxExtendInNormalDirection(size);
 
-            //Distance from aabb center to plane
+            //Distance from center to plane
             var s = SignedDistanceFromPoint(center);
 
             //Completely inside

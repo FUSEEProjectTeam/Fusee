@@ -100,6 +100,7 @@ namespace Fusee.Structures
             while (candidates.Count > 0)
             {
                 node = candidates.Pop();
+                if (callback == null) throw new NullReferenceException("The parameter 'callback' cannot be null!");
                 callback(node);
 
                 // add children as candidates
