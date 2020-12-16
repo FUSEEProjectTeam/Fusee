@@ -231,7 +231,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Test whether a <see cref="OBBd"/> intersects this plane.
+        /// Test whether a <see cref="OBBf"/> intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
         /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
         /// because FUSEE defines a point with a negative signed distance to be inside.
