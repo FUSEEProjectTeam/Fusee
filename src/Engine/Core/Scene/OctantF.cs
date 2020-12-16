@@ -8,12 +8,12 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Component that allows a SceneNode to save information from a <see cref="IOctant{T, K, P}"/>.
     /// </summary>
-    public class Octant : SceneComponent, IOctant<double3, double, Mesh>
+    public class OctantF : SceneComponent, IOctant<float3, float, Mesh>
     {
         /// <summary>
         /// Children of this Octant. Must contain eight or null (leaf node) children.
         /// </summary>
-        public IOctant<double3, double, Mesh>[] Children { get; set; }
+        public IOctant<float3, float, Mesh>[] Children { get; set; }
 
         /// <summary>
         /// The payload of this octant.
@@ -23,12 +23,12 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Center of this Bucket in world space coordinates.
         /// </summary>
-        public double3 Center { get; set; }
+        public float3 Center { get; set; }
 
         /// <summary>
         /// Length, width and height of this Octant.
         /// </summary>
-        public double Size { get; set; }
+        public float Size { get; set; }
 
         /// <summary>
         /// Is this octant a leaf node in the octree?
@@ -77,13 +77,13 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="size"></param>
         /// <param name="children"></param>
         /// <param name="payload"></param>
-        public Octant(double3 center, double size, List<Mesh> payload, IOctant<double3, double, Mesh>[] children = null)
+        public OctantF(float3 center, float size, List<Mesh> payload, IOctant<float3, float, Mesh>[] children = null)
         {
             Center = center;
             Size = size;
 
             if (children == null)
-                Children = new IOctant<double3, double, Mesh>[8];
+                Children = new IOctant<float3, float, Mesh>[8];
             else
                 Children = children;
 
@@ -96,13 +96,13 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="center"></param>
         /// <param name="size"></param>
         /// <param name="children"></param>
-        public Octant(double3 center, double size, IOctant<double3, double, Mesh>[] children = null)
+        public OctantF(float3 center, float size, IOctant<float3, float, Mesh>[] children = null)
         {
             Center = center;
             Size = size;
 
             if (children == null)
-                Children = new IOctant<double3, double, Mesh>[8];
+                Children = new IOctant<float3, float, Mesh>[8];
             else
                 Children = children;
         }
@@ -110,12 +110,12 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Create a new instance of type Octant.
         /// </summary>
-        public Octant() { }
+        public OctantF() { }
 
         /// <summary>
-        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
+        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(float3, int, float)"/>.
         /// </summary>
-        public double ProjectedScreenSize { get; private set; }
+        public float ProjectedScreenSize { get; private set; }
 
         /// <summary>
         /// Calculates the size, projected into screen space.
@@ -123,11 +123,11 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="camPos">Position of the camera.</param>
         /// <param name="screenHeight">Hight of the canvas.</param>
         /// <param name="fov">Field of view.</param>
-        public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
+        public void ComputeScreenProjectedSize(float3 camPos, int screenHeight, float fov)
         {
             var distance = (Center - camPos).Length;
             var slope = (float)System.Math.Tan(fov / 2f);
-            ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
+            ProjectedScreenSize = screenHeight / 2f * Size / (slope * distance);
         }
 
         /// <summary>
@@ -135,9 +135,42 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
         /// <returns></returns>
-        public IOctant<double3, double, Mesh> CreateChild(int atPosInParent)
+        public IOctant<float3, float, Mesh> CreateChild(int atPosInParent)
         {
             throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneF plane)
+        {
+            return plane.InsideOrIntersecting(Center, Size);
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
+        {
+            if (!frustum.Near.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(Center, Size))
+                return false;
+
+            return true;
         }
     }
 }
