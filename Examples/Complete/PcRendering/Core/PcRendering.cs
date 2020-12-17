@@ -383,7 +383,7 @@ namespace Fusee.Examples.PcRendering.Core
             //create Scene from octree structure
             var root = OocFileReader.GetScene();
 
-            var ptOctantComp = root.GetComponent<Octant>();
+            var ptOctantComp = root.GetComponent<OctantD>();
             InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
 
             _scene.Children.Add(root);
@@ -398,7 +398,7 @@ namespace Fusee.Examples.PcRendering.Core
             var byteSize = OocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
 
-            var ptRootComponent = root.GetComponent<Octant>();
+            var ptRootComponent = root.GetComponent<OctantD>();
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
 
