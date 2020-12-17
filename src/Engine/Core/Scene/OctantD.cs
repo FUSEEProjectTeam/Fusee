@@ -172,5 +172,38 @@ namespace Fusee.Engine.Core.Scene
 
             return true;
         }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneF plane)
+        {
+            return plane.InsideOrIntersecting((float3)Center, (float)Size);
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
+        {
+            if (!frustum.Near.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+
+            return true;
+        }
     }
 }
