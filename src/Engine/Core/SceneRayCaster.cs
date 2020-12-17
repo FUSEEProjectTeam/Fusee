@@ -88,7 +88,7 @@ namespace Fusee.Engine.Core
         public float3 WorldPos => float4x4.TransformPerspective(Model, ModelPos);
 
         /// <summary>
-        /// Returns the (absolute) distance between ray origin and the intersection.
+        /// Returns the distance between ray origin and the intersection.
         /// </summary>
         public float DistanceFromOrigin;
     }
@@ -206,24 +206,25 @@ namespace Fusee.Engine.Core
                 // Distance between "Origin" and the plane abc when following the Direction.
                 var distance = -float3.Dot(Origin - a, n) / float3.Dot(Direction, n);
 
-                if (distance < 0) return;
-
-                // Position of the intersection point between ray and plane.
-                var point = Origin + Direction * distance;
-
-                if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
+                if (distance > 0)
                 {
-                    YieldItem(new RayCastResult
+                    // Position of the intersection point between ray and plane.
+                    var point = Origin + Direction * distance;
+
+                    if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
                     {
-                        Mesh = mesh,
-                        Node = CurrentNode,
-                        Triangle = i,
-                        Model = State.Model,
-                        U = u,
-                        V = v,
-                        DistanceFromOrigin = System.Math.Abs(distance)
-                    });
-                }
+                        YieldItem(new RayCastResult
+                        {
+                            Mesh = mesh,
+                            Node = CurrentNode,
+                            Triangle = i,
+                            Model = State.Model,
+                            U = u,
+                            V = v,
+                            DistanceFromOrigin = distance
+                        });
+                    }
+                }                
             }
         }
 
