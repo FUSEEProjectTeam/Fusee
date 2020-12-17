@@ -91,7 +91,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                         Scale = float3.One,
                         //Translation = (float3) center
                     },
-                    new Octant(center, size)
+                    new OctantD(center, size)
                     {
 
                             PosInParent = -1, //root!
@@ -151,7 +151,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         {
             try
             {
-                var octantcomp = nodeSnc.GetComponent<Octant>();
+                var octantcomp = nodeSnc.GetComponent<OctantD>();
 
                 // loadable properties
                 byte[] guidBytes = new byte[16];
@@ -172,9 +172,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     if (childExists)
                     {
                         var childSnc = CreateSncForChildNode(index);
-                        var childOctantComp = childSnc.GetComponent<Octant>();
+                        var childOctantComp = childSnc.GetComponent<OctantD>();
                         childOctantComp.Size = octantcomp.Size / 2;
-                        childOctantComp.Center = OctantD<TPoint>.CalcCildCenterAtPos(index, octantcomp.Size, octantcomp.Center);
+                        childOctantComp.Center = OctantD<TPoint>.CalcChildCenterAtPos(index, octantcomp.Size, octantcomp.Center);
                         nodeSnc.Children.Add(childSnc);
                         NumberOfOctants++;
 
@@ -194,7 +194,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 Components = new List<SceneComponent>
                 {
-                    new Octant()
+                    new OctantD()
                     {
                         PosInParent = posInParent
                     },

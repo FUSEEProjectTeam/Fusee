@@ -26,7 +26,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         public override IOctant<double3, double, TPoint> CreateChild(int posInParent)
         {
-            var childCenter = CalcCildCenterAtPos(posInParent);
+            var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
             var child = new PtOctantWrite<TPoint>(childCenter, childRes)
