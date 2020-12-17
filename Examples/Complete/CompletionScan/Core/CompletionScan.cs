@@ -2,8 +2,10 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -28,13 +30,10 @@ namespace Fusee.Examples.CompletionScan.Core
 
         private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
-        private ScenePicker _scenePicker;
 
         private SceneNode _sphere;
         private Texture _texture;
-        private ShaderEffect _shader;
-
-        private bool _keys;
+        private DefaultSurfaceEffect _shader;
 
         private const float ZNear = 0.1f;
         private const float ZFar = 1000;
@@ -43,22 +42,15 @@ namespace Fusee.Examples.CompletionScan.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-        private PickResult _currentPick;
-        private bool _pick;
-        private float2 _pickPos;
-
-
-        private Transform _modelCamTransform;
         private Transform _mainCamTransform;
         private Transform _sndCamTransform;
         private Transform _guiCamTransform;
-        private readonly Fusee.Engine.Core.Scene.Camera _modelCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 5, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
@@ -72,15 +64,14 @@ namespace Fusee.Examples.CompletionScan.Core
         private float3 _rotAxis;
         private float3 _rotPivot;
 
+        private bool _pick;
+        private SceneRayCaster _sceneRayCaster;
+        private Transform _modelCamTransform;
 
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
-            _modelCam.Viewport = new float4(0, 0, 100, 100);
-            _modelCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
-            _modelCam.Layer = -1;
-
             _mainCam.Viewport = new float4(0, 0, 50, 100);
             _mainCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _mainCam.Layer = 10;
@@ -103,15 +94,15 @@ namespace Fusee.Examples.CompletionScan.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Create the sphere model
-            _scene = AssetStorage.Get<SceneContainer>("sphere_highpoly.fus");
+            _scene = AssetStorage.Get<SceneContainer>("sphere.fus");
 
             _sphere = _scene.Children[0];
-            _shader = _sphere.GetComponent<ShaderEffect>();
+            _shader = _sphere.GetComponent<DefaultSurfaceEffect>();
 
             ImageData image = AssetStorage.Get<ImageData>("green.png");
             _texture = new Texture(image);
 
-            _shader.SetEffectParam("AlbedoTexture", _texture);
+            _shader.SetFxParam("SurfaceInput.AlbedoTex", _texture);
 
             // Set up cameras
             _modelCamTransform = new Transform()
@@ -127,8 +118,7 @@ namespace Fusee.Examples.CompletionScan.Core
                 Components = new List<SceneComponent>()
                 {
                     _modelCamTransform,
-                    _modelCam,
-                    ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10),
+                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
                     new Cube(),
 
                 },
@@ -136,6 +126,7 @@ namespace Fusee.Examples.CompletionScan.Core
                 {
                     new SceneNode()
                     {
+                        Name = "ModelCamChild",
                         Components = new List<SceneComponent>()
                         {
                             new Transform()
@@ -145,6 +136,19 @@ namespace Fusee.Examples.CompletionScan.Core
                             },
                             new Cube()
                         }
+                    },
+                    new SceneNode()
+                    {
+                        Name = "Line",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Line(new List<float3>()
+                            {
+                                new float3(0, 0, 100),
+                                new float3(0, 0, -100)
+                            }, 0.1f),
+                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Black, float4.Zero, 4.0f, 1f),
+                        }
                     }
                 }
             };
@@ -152,14 +156,14 @@ namespace Fusee.Examples.CompletionScan.Core
             _mainCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
-                Translation = new float3(0, 1, -30),
+                Translation = new float3(0, 0, -30),
                 Scale = float3.One
             };
 
             _sndCamTransform = new Transform()
             {
                 Rotation = new float3(0, M.Pi, 0),
-                Translation = new float3(0, 1, 30),
+                Translation = new float3(0, 0, 30),
                 Scale = float3.One
             };
 
@@ -192,19 +196,14 @@ namespace Fusee.Examples.CompletionScan.Core
             _scene.Children.Add(cam1);
             _scene.Children.Add(cam2);
 
-            // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _sceneRayCaster = new SceneRayCaster(_scene);
 
-            
-            // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
 
             _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
             _rotPivot = _scene.Children[1].GetComponent<Transform>().Translation;
-
-            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -218,8 +217,6 @@ namespace Fusee.Examples.CompletionScan.Core
             // Mouse and keyboard movement
             if (Mouse.LeftButton)
             {
-                _keys = false;
-
                 _valHorzMain = Mouse.XVel * 0.003f * DeltaTime;
                 _valVertMain = Mouse.YVel * 0.003f * DeltaTime;
 
@@ -230,60 +227,56 @@ namespace Fusee.Examples.CompletionScan.Core
 
                 _modelCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
-            else if (Keyboard.GetKey(KeyCodes.Space))
-            {
+
+
+            if (Keyboard.IsKeyUp(KeyCodes.Space))
                 _pick = true;
-                _pickPos = new float2(Width / 2, Height / 2);
-            }
-            else if (Mouse.MiddleButton)
-            {
-                _pick = true;
-                _pickPos = Mouse.Position;
-            }
             else
-            {
                 _pick = false;
-            }
 
             // Check
             if (_pick)
             {
-                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
+                float3 origin = _modelCamTransform.Translation;
+                float3 direction = float4x4.Transform(_modelCamTransform.Matrix(), new float3(0, 0, 1));
 
-                RC.View = _modelCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_modelCamTransform.Matrix());
+                Console.WriteLine("Origin: " + origin);
+                Console.WriteLine("Direction: " + direction);
 
-                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
-
-                if (newPick != null)
+                var newPick = _sceneRayCaster.RayCast(origin, direction).ToList().OrderBy(rr => rr.DistanceFromOrigin);
+                foreach (var hit in newPick)
                 {
-                    int x = (int)(_texture.Width * newPick.UV.x);
-                    int y = (int)(_texture.Height * newPick.UV.y);
+                    Console.WriteLine(hit.Node.Name + ": " + hit.DistanceFromOrigin);
 
-                    _texture.Blt(x - 50, y - 50, AssetStorage.Get<ImageData>("red.png"), 0, 0, 100, 100);
-
-                    var cube = new SceneNode()
+                    if (hit.Node.Name.Equals("Sphere"))
                     {
-                        Name = "Cube",
-                        Components = new List<SceneComponent>()
+                        Console.WriteLine("Spawning Cube");
+                        var cube = new SceneNode()
                         {
-                            new Transform()
+                            Name = "Cube",
+                            Components = new List<SceneComponent>()
                             {
-                                Rotation = float3.Zero,
-                                Translation = newPick.WorldPos,
-                                Scale = new float3(0.1f, 0.1f, 0.1f)
-                            },
-                            ShaderCodeBuilder.MakeShaderEffect(new float4(0,0,1,1), float4.One, 10),
-                            new Cube(),
+                                new Transform()
+                                {
+                                    Rotation = float3.Zero,
+                                    Translation = hit.WorldPos,
+                                    Scale = new float3(0.2f, 0.2f, 0.2f)
+                                },
+                                MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
+                                new Cube()
+                            }
+                        };
+                        _scene.Children.Add(cube);
 
-                        }
-                    };
-
-                    _scene.Children.Add(cube);
+                        Console.WriteLine("Coloring Texture");
+                        int x = (int)(_texture.Width * hit.UV.x);
+                        int y = (int)(_texture.Height * hit.UV.y);
+                        _texture.Blt(x - 50, y - 50, AssetStorage.Get<ImageData>("red.png"), 0, 0, 100, 100);
+                    }
                 }
-
                 _pick = false;
             }
-            
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -314,9 +307,10 @@ namespace Fusee.Examples.CompletionScan.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -328,12 +322,12 @@ namespace Fusee.Examples.CompletionScan.Core
                 "ButtonText",
                 vsTex,
                 psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             var canvas = new CanvasNode(
                 "Canvas",
@@ -369,12 +363,16 @@ namespace Fusee.Examples.CompletionScan.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam(UniformNameDeclarations.AlbedoColor, float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)
