@@ -97,6 +97,8 @@
     </ProjectReference>
     <ProjectReference Include="..\..\SurfaceEffects\Core\Fusee.Examples.SurfaceEffects.Core.csproj">
       <Project>{e23994a2-8da9-408a-877a-71e7168fe25d}</Project>
+    <ProjectReference Include="..\Core\Fusee.Examples.SurfaceEffects.Core.csproj">
+      <Project>{16df559f-0bb4-4fbb-a4e5-e53e65549b09}</Project>
       <Name>Fusee.Examples.SurfaceEffects.Core</Name>
     </ProjectReference>
   </ItemGroup>
