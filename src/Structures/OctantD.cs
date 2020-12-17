@@ -87,7 +87,7 @@ namespace Fusee.Structures
         /// <returns></returns>
         public virtual IOctant<double3, double, P> CreateChild(int posInParent)
         {
-            var childCenter = CalcCildCenterAtPos(posInParent);
+            var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
             var child = new OctantD<P>(childCenter, childRes)
@@ -103,9 +103,9 @@ namespace Fusee.Structures
         /// </summary>
         /// <param name="posInParent">The position in the parent octant.</param>
         /// <returns></returns>
-        protected double3 CalcCildCenterAtPos(int posInParent)
+        protected double3 CalcChildCenterAtPos(int posInParent)
         {
-            return CalcCildCenterAtPos(posInParent, Size, Center);
+            return CalcChildCenterAtPos(posInParent, Size, Center);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Fusee.Structures
         /// <param name="parentSize">The size of the parent octant.</param>
         /// <param name="parentCenter">The center of the parent octant.</param>
         /// <returns></returns>
-        public static double3 CalcCildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
+        public static double3 CalcChildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
         {
             double3 childCenter;
             var childsHalfSize = parentSize / 4d;
@@ -149,6 +149,39 @@ namespace Fusee.Structures
             }
 
             return childCenter;
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneD plane)
+        {
+            return plane.InsideOrIntersecting(Center, Size);
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumD frustum)
+        {
+            if (!frustum.Near.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(Center, Size))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(Center, Size))
+                return false;
+
+            return true;
         }
     }
 }

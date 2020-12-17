@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Component that allows a SceneNode to save information from a <see cref="IOctant{T, K, P}"/>.
     /// </summary>
-    public class Octant : SceneComponent, IOctant<double3, double, Mesh>
+    public class OctantD : SceneComponent, IOctant<double3, double, Mesh>
     {
         /// <summary>
         /// Children of this Octant. Must contain eight or null (leaf node) children.
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="size"></param>
         /// <param name="children"></param>
         /// <param name="payload"></param>
-        public Octant(double3 center, double size, List<Mesh> payload, IOctant<double3, double, Mesh>[] children = null)
+        public OctantD(double3 center, double size, List<Mesh> payload, IOctant<double3, double, Mesh>[] children = null)
         {
             Center = center;
             Size = size;
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="center"></param>
         /// <param name="size"></param>
         /// <param name="children"></param>
-        public Octant(double3 center, double size, IOctant<double3, double, Mesh>[] children = null)
+        public OctantD(double3 center, double size, IOctant<double3, double, Mesh>[] children = null)
         {
             Center = center;
             Size = size;
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Create a new instance of type Octant.
         /// </summary>
-        public Octant() { }
+        public OctantD() { }
 
         /// <summary>
         /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
@@ -126,8 +126,18 @@ namespace Fusee.Engine.Core.Scene
         public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
         {
             var distance = (Center - camPos).Length;
-            var slope = (float)System.Math.Tan(fov / 2f);
+            var slope = (float)System.Math.Tan(fov / 2d);
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
+        }
+
+        /// <summary>
+        /// <see cref="IOctant{T, K, P}.CreateChild(int)"/>.
+        /// </summary>
+        /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
+        /// <returns></returns>
+        public IOctant<double3, double, Mesh> CreateChild(int atPosInParent)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -164,13 +174,36 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// <see cref="IOctant{T, K, P}.CreateChild(int)"/>.
+        /// Checks if a viewing frustum lies within or intersects this Octant.
         /// </summary>
-        /// <param name="atPosInParent">The <see cref="PosInParent"/> the new child has.</param>
-        /// <returns></returns>
-        public IOctant<double3, double, Mesh> CreateChild(int atPosInParent)
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(PlaneF plane)
         {
-            throw new NotImplementedException();
+            return plane.InsideOrIntersecting((float3)Center, (float)Size);
+        }
+
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this Octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
+        {
+            if (!frustum.Near.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting((float3)Center, (float)Size))
+                return false;
+
+            return true;
         }
     }
 }

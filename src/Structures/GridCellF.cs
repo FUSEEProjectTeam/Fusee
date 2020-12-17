@@ -3,7 +3,7 @@
 namespace Fusee.Structures
 {
     /// <summary>
-    /// The cell of a <see cref="GridD{P}"/>.
+    /// The cell of a <see cref="GridF{P}"/>.
     /// </summary>
     /// <typeparam name="O">The type of the payload.</typeparam>
     public class GridCellF<O> : IBucket<float3, float3>
