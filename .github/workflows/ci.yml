@@ -49,6 +49,8 @@ jobs:
       run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
     - name: Serialization V1
       run: dotnet test -c Release src/Tests/Serialization/Fusee.Serialization.Test/Fusee.Test.Serialization.V1.csproj
+    - name: AssetStorage
+      run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Test.AssetStorage.Desktop.csproj
     - name: Xene
       run: dotnet test -c Release src/Tests/Xene/Fusee.Xene.Test/Fusee.Test.Xene.csproj
     - name: Xirkit
