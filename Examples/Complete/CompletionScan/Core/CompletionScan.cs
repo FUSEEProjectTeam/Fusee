@@ -48,11 +48,15 @@ namespace Fusee.Examples.CompletionScan.Core
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-        private Transform _mainCamTransform;
-        private Transform _sndCamTransform;
+        private Transform _modelCamTransform;
+        private Transform _fromCamTransform;
+        private Transform _backCamTransform;
+        private Transform _rotCamTransform;
         private Transform _guiCamTransform;
-        private readonly Fusee.Engine.Core.Scene.Camera _mainCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
-        private readonly Fusee.Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _modelCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _frontCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _backCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
+        private readonly Fusee.Engine.Core.Scene.Camera _rotCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Perspective, 1, 100, M.PiOver4);
         private readonly Fusee.Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
 
         private float _anlgeHorzMain;
@@ -60,25 +64,35 @@ namespace Fusee.Examples.CompletionScan.Core
         private float _valHorzMain;
         private float _valVertMain;
 
+        private float _angleHorzCam;
+
         private readonly float _rotAngle = M.PiOver4;
         private float3 _rotAxis;
         private float3 _rotPivot;
 
         private bool _pick;
         private SceneRayCaster _sceneRayCaster;
-        private Transform _modelCamTransform;
+        
 
 
         // Init is called on startup.
         public override void Init()
         {
-            _mainCam.Viewport = new float4(0, 0, 50, 100);
-            _mainCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
-            _mainCam.Layer = 10;
+            _frontCam.Viewport = new float4(0, 50, 50, 50);
+            _frontCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _frontCam.Layer = 10;
 
-            _sndCam.Viewport = new float4(50, 0, 50, 100);
-            _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
-            _sndCam.Layer = 10;
+            _backCam.Viewport = new float4(50, 50, 50, 50);
+            _backCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _backCam.Layer = 10;
+
+            _modelCam.Viewport = new float4(0, 0, 50, 50);
+            _modelCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _modelCam.Layer = 10;
+
+            _rotCam.Viewport = new float4(50, 0, 50, 50);
+            _rotCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _rotCam.Layer = 10;
 
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
@@ -99,7 +113,7 @@ namespace Fusee.Examples.CompletionScan.Core
             _sphere = _scene.Children[0];
             _shader = _sphere.GetComponent<DefaultSurfaceEffect>();
 
-            ImageData image = AssetStorage.Get<ImageData>("green.png");
+            ImageData image = AssetStorage.Get<ImageData>("red.png");
             _texture = new Texture(image);
 
             _shader.SetFxParam("SurfaceInput.AlbedoTex", _texture);
@@ -119,6 +133,7 @@ namespace Fusee.Examples.CompletionScan.Core
                 {
                     _modelCamTransform,
                     MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
+                    _modelCam,
                     new Cube(),
 
                 },
@@ -153,48 +168,71 @@ namespace Fusee.Examples.CompletionScan.Core
                 }
             };
 
-            _mainCamTransform = _guiCamTransform = new Transform()
+            _fromCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 0, -30),
                 Scale = float3.One
             };
 
-            _sndCamTransform = new Transform()
+            _backCamTransform = new Transform()
             {
                 Rotation = new float3(0, M.Pi, 0),
                 Translation = new float3(0, 0, 30),
                 Scale = float3.One
             };
+ 
+            _rotCamTransform = new Transform()
+            {
+                Rotation = new float3(0, 0, 0),
+                Translation = new float3(0, 20, 30),
+                Scale = float3.One
+            };
+            var initialPos = float4x4.LookAt(_rotCamTransform.Translation, float3.Zero, float3.UnitY);
+            _rotCamTransform.Rotate(initialPos.RotationComponent());
 
             var cam1 = new SceneNode()
             {
-                Name = "MainCam",
+                Name = "FrontCam",
                 Components = new List<SceneComponent>()
                 {
-                    _mainCamTransform,
-                    _mainCam,
+                    _fromCamTransform,
+                    _frontCam,
                 }
             };
 
             var cam2 = new SceneNode()
             {
-                Name = "SndCam",
+                Name = "BackCam",
                 Components = new List<SceneComponent>()
                 {
-                    _sndCamTransform,
-                    _sndCam,
+                    _backCamTransform,
+                    _backCam,
                 }
             };
 
+            var cam3 = new SceneNode()
+            {
+                Name = "RotationCam",
+                Components = new List<SceneComponent>()
+                {
+                    _rotCamTransform,
+                    _rotCam,
+                }
+            };
+
+            
+
             _anlgeHorzMain = _modelCamTransform.Rotation.y;
             _angleVertMain = _modelCamTransform.Rotation.x;
+            _angleHorzCam = _rotCamTransform.Rotation.y;
 
             _gui = CreateGui();
 
             _scene.Children.Add(modelCam);
             _scene.Children.Add(cam1);
             _scene.Children.Add(cam2);
+            _scene.Children.Add(cam3);
 
             _sceneRenderer = new SceneRendererForward(_scene);
             _sceneRayCaster = new SceneRayCaster(_scene);
@@ -228,11 +266,14 @@ namespace Fusee.Examples.CompletionScan.Core
                 _modelCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-
             if (Keyboard.IsKeyUp(KeyCodes.Space))
                 _pick = true;
             else
                 _pick = false;
+
+
+            _rotCamTransform.RotateAround(float3.Zero, new float3(0, DeltaTime * 0.1f, 0));
+
 
             // Check
             if (_pick)
@@ -248,7 +289,7 @@ namespace Fusee.Examples.CompletionScan.Core
                 {
                     Console.WriteLine(hit.Node.Name + ": " + hit.DistanceFromOrigin);
 
-                    if (hit.Node.Name.Equals("Sphere"))
+                    if (hit.DistanceFromOrigin > 5)
                     {
                         Console.WriteLine("Spawning Cube");
                         var cube = new SceneNode()
@@ -271,7 +312,7 @@ namespace Fusee.Examples.CompletionScan.Core
                         Console.WriteLine("Coloring Texture");
                         int x = (int)(_texture.Width * hit.UV.x);
                         int y = (int)(_texture.Height * hit.UV.y);
-                        _texture.Blt(x - 50, y - 50, AssetStorage.Get<ImageData>("red.png"), 0, 0, 100, 100);
+                        _texture.Blt(x - 50, y - 50, AssetStorage.Get<ImageData>("green.png"), 0, 0, 100, 100);
                     }
                 }
                 _pick = false;
