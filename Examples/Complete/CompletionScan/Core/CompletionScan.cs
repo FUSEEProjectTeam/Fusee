@@ -235,7 +235,7 @@ namespace Fusee.Examples.CompletionScan.Core
             _scene.Children.Add(cam3);
 
             _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRayCaster = new SceneRayCaster(_scene);
+            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Counterclockwise);
 
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);

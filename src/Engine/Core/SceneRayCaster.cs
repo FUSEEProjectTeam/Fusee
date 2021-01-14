@@ -108,6 +108,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float3 Direction { get; private set; }
 
+        /// <summary>
+        /// The <see cref="Cull"/> mode to use by the SceneRayCaster
+        /// </summary>
+        public Cull CullMode { get; private set; }
+
         #region State
         /// <summary>
         /// The raycaster state upon scene traversal.
@@ -139,10 +144,10 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new SceneRayCaster.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to use.</param>
-        public SceneRayCaster(SceneContainer scene)
+        public SceneRayCaster(SceneContainer scene, Cull cullMode = Cull.None)
             : base(scene.Children)
         {
-
+            CullMode = cullMode;
         }
 
         /// <summary>
@@ -206,12 +211,15 @@ namespace Fusee.Engine.Core
                 // Distance between "Origin" and the plane abc when following the Direction.
                 var distance = -float3.Dot(Origin - a, n) / float3.Dot(Direction, n);
 
-                if (distance > 0)
-                {
-                    // Position of the intersection point between ray and plane.
-                    var point = Origin + Direction * distance;
+                if (distance < 0)
+                    continue;
 
-                    if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
+                // Position of the intersection point between ray and plane.
+                var point = Origin + Direction * distance;
+
+                if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
+                {
+                    if (CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (CullMode == Cull.Clockwise))
                     {
                         YieldItem(new RayCastResult
                         {
@@ -224,7 +232,7 @@ namespace Fusee.Engine.Core
                             DistanceFromOrigin = distance
                         });
                     }
-                }                
+                }
             }
         }
 
