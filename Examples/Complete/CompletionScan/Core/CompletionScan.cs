@@ -72,8 +72,10 @@ namespace Fusee.Examples.CompletionScan.Core
 
         private bool _pick;
         private SceneRayCaster _sceneRayCaster;
-        
 
+        private float _dist = 0.2f;
+        private int _rings = 4;
+        private int _size = 10;
 
         // Init is called on startup.
         public override void Init()
@@ -181,7 +183,7 @@ namespace Fusee.Examples.CompletionScan.Core
                 Translation = new float3(0, 0, 30),
                 Scale = float3.One
             };
- 
+
             _rotCamTransform = new Transform()
             {
                 Rotation = new float3(0, 0, 0),
@@ -221,8 +223,6 @@ namespace Fusee.Examples.CompletionScan.Core
                 }
             };
 
-            
-
             _anlgeHorzMain = _modelCamTransform.Rotation.y;
             _angleVertMain = _modelCamTransform.Rotation.x;
             _angleHorzCam = _rotCamTransform.Rotation.y;
@@ -235,7 +235,7 @@ namespace Fusee.Examples.CompletionScan.Core
             _scene.Children.Add(cam3);
 
             _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Counterclockwise);
+            _sceneRayCaster = new SceneRayCaster(_scene);
 
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -281,40 +281,8 @@ namespace Fusee.Examples.CompletionScan.Core
                 float3 origin = _modelCamTransform.Translation;
                 float3 direction = float4x4.Transform(_modelCamTransform.Matrix(), new float3(0, 0, 1));
 
-                Console.WriteLine("Origin: " + origin);
-                Console.WriteLine("Direction: " + direction);
+                CastArea(origin, direction);
 
-                var newPick = _sceneRayCaster.RayCast(origin, direction).ToList().OrderBy(rr => rr.DistanceFromOrigin);
-                foreach (var hit in newPick)
-                {
-                    Console.WriteLine(hit.Node.Name + ": " + hit.DistanceFromOrigin);
-
-                    if (hit.DistanceFromOrigin > 5)
-                    {
-                        Console.WriteLine("Spawning Cube");
-                        var cube = new SceneNode()
-                        {
-                            Name = "Cube",
-                            Components = new List<SceneComponent>()
-                            {
-                                new Transform()
-                                {
-                                    Rotation = float3.Zero,
-                                    Translation = hit.WorldPos,
-                                    Scale = new float3(0.2f, 0.2f, 0.2f)
-                                },
-                                MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
-                                new Cube()
-                            }
-                        };
-                        _scene.Children.Add(cube);
-
-                        Console.WriteLine("Coloring Texture");
-                        int x = (int)(_texture.Width * hit.UV.x);
-                        int y = (int)(_texture.Height * hit.UV.y);
-                        _texture.Blt(x - 50, y - 50, AssetStorage.Get<ImageData>("green.png"), 0, 0, 100, 100);
-                    }
-                }
                 _pick = false;
             }
 
@@ -324,6 +292,66 @@ namespace Fusee.Examples.CompletionScan.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
+        }
+
+        private void CastArea(float3 origin, float3 direction)
+        {
+            var newPick = _sceneRayCaster.RayCast(origin, direction).ToList();
+
+            for (int i = 1; i <= _rings; i++)
+            {
+                var dist = _dist * i;
+
+                var top = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(0, dist, 0)));
+                var bottom = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(0, -dist, 0)));
+                var left = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(-dist, 0, 0)));
+                var right = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(dist, 0, 0)));
+
+                var topRight = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(dist, dist, 0)));
+                var topLeft = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(-dist, dist, 0)));
+                var bottomRight = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(dist, -dist, 0)));
+                var bottomLeft = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(-dist, -dist, 0)));
+
+                newPick.AddRange(_sceneRayCaster.RayCast(top, direction));
+                newPick.AddRange(_sceneRayCaster.RayCast(bottom, direction));
+                newPick.AddRange(_sceneRayCaster.RayCast(left, direction));
+                newPick.AddRange(_sceneRayCaster.RayCast(right, direction));
+
+                newPick.AddRange(_sceneRayCaster.RayCast(topRight, direction));
+                newPick.AddRange(_sceneRayCaster.RayCast(topLeft, direction));
+                newPick.AddRange(_sceneRayCaster.RayCast(bottomRight, direction));
+                newPick.AddRange(_sceneRayCaster.RayCast(bottomLeft, direction));
+
+            }
+
+            var size = _size;
+
+            foreach (var hit in newPick)
+            {
+                if (hit.DistanceFromOrigin > 5)
+                {
+                    var cube = new SceneNode()
+                    {
+                        Name = "Cube",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = hit.WorldPos,
+                                Scale = new float3(0.2f, 0.2f, 0.2f)
+                            },
+                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
+                            new Cube()
+                        }
+                    };
+                    _scene.Children.Add(cube);
+
+                    int x = (int)(_texture.Width * hit.UV.x);
+                    int y = (int)(_texture.Height * hit.UV.y);
+                    _texture.Blt(x - size / 2, y - size / 2, AssetStorage.Get<ImageData>("green.png"), 0, 0, size, size);
+                }
+            }
         }
 
         private SceneContainer CreateGui()
