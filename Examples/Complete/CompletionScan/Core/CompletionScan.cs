@@ -74,7 +74,7 @@ namespace Fusee.Examples.CompletionScan.Core
         private SceneRayCaster _sceneRayCaster;
 
         private float _dist = 0.2f;
-        private int _rings = 4;
+        private int _rings = 3;
         private int _size = 10;
 
         // Init is called on startup.
@@ -301,27 +301,27 @@ namespace Fusee.Examples.CompletionScan.Core
             for (int i = 1; i <= _rings; i++)
             {
                 var dist = _dist * i;
+                var rays = System.Math.Pow(2, i + 1);
+                var angle = 360 / rays;
 
-                var top = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(0, dist, 0)));
-                var bottom = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(0, -dist, 0)));
-                var left = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(-dist, 0, 0)));
-                var right = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(dist, 0, 0)));
+                //Debug.WriteLine("Distance: " + dist);
+                //Debug.WriteLine("Rays: " + rays);
+                //Debug.WriteLine("Angle: " + angle);
 
-                var topRight = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(dist, dist, 0)));
-                var topLeft = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(-dist, dist, 0)));
-                var bottomRight = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(dist, -dist, 0)));
-                var bottomLeft = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(-dist, -dist, 0)));
+                var top = float3.Add(origin, new float3(0, dist, 0));
+                for (int j = 1; j < rays; j++)
+                {
+                    var point = float4x4.Transform(_modelCamTransform.Matrix(), float3.Rotate(new float3(0, 0, (float)(j * angle)), top, true));
+                    newPick.AddRange(_sceneRayCaster.RayCast(point, direction));
 
+                    //Debug.Write("Circle " + i + " Ray " + j + " ");
+                    //Debug.WriteLine(point);
+                }
+
+                top = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(0, dist, 0)));
                 newPick.AddRange(_sceneRayCaster.RayCast(top, direction));
-                newPick.AddRange(_sceneRayCaster.RayCast(bottom, direction));
-                newPick.AddRange(_sceneRayCaster.RayCast(left, direction));
-                newPick.AddRange(_sceneRayCaster.RayCast(right, direction));
-
-                newPick.AddRange(_sceneRayCaster.RayCast(topRight, direction));
-                newPick.AddRange(_sceneRayCaster.RayCast(topLeft, direction));
-                newPick.AddRange(_sceneRayCaster.RayCast(bottomRight, direction));
-                newPick.AddRange(_sceneRayCaster.RayCast(bottomLeft, direction));
-
+                
+                //Debug.WriteLine("Circle: " + i + " Top: " + top);
             }
 
             var size = _size;
