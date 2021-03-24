@@ -20,6 +20,12 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The vertex attribute name.
         /// </summary>
         public const string Vertex = "fuVertex";
+
+        /// <summary>
+        /// The second vertex attribute name.
+        /// </summary>
+        public const string Vertex1 = "fuVertex1";
+
         /// <summary>
         /// The color attribute name.
         /// </summary>
@@ -29,6 +35,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The normal attribute name.
         /// </summary>
         public const string Normal = "fuNormal";
+
+        /// <summary>
+        /// The second normal attribute name.
+        /// </summary>
+        public const string Normal1 = "fuNormal1";
 
         /// <summary>
         /// The uv attribute name.

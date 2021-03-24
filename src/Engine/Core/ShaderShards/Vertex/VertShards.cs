@@ -18,11 +18,28 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         };
 
         /// <summary>
+        /// Additional shard for storing second position and normal information.
+        /// </summary>
+        public static List<string> SufOutBody_PosNormAnimation = new List<string>()
+        {
+            "OUT.position = vec4(fuVertex * PercentPerVertex + fuVertex1 * PercentPerVertex1, 1.0);",
+            "OUT.normal = fuNormal * PercentPerVertex + fuNormal1 * PercentPerVertex1;",
+        };
+
+        /// <summary>
         /// Standard shard for storing position information.
         /// </summary>
         public static List<string> SufOutBody_Pos = new List<string>()
         {
             "OUT.position = vec4(fuVertex, 1.0);"
+        };
+
+        /// <summary>
+        /// Additional shard for storing second position information.
+        /// </summary>
+        public static List<string> SufOutBody_PosAnimation = new List<string>()
+        {
+            "OUT.position = vec4(fuVertex * PercentPerVertex + fuVertex1 * PercentPerVertex1, 1.0);"
         };
     }
 }

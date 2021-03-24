@@ -11,6 +11,11 @@
         public static readonly int VertexAttribLocation = 0;
 
         /// <summary>
+        /// The second vertex attribute location index.
+        /// </summary>
+        public static readonly int Vertex1AttribLocation = 8;
+
+        /// <summary>
         /// The color attribute location index.
         /// </summary>
         public static readonly int ColorAttribLocation = 1;
@@ -19,6 +24,11 @@
         /// The normal attribute location index.
         /// </summary>
         public static readonly int NormalAttribLocation = 2;
+
+        /// <summary>
+        /// The second normal attribute location index.
+        /// </summary>
+        public static readonly int Normal1AttribLocation = 9;
 
         /// <summary>
         /// The uv attribute location index.

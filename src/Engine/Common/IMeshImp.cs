@@ -34,6 +34,19 @@ namespace Fusee.Engine.Common
         bool VerticesSet { get; }
 
         /// <summary>
+        /// Implementation Task: Invalidates the second vertices of the mesh, e.g. reset the Vertex1BufferObject of this instance by setting it to 0.
+        /// </summary>
+        void InvalidateVertices1();
+
+        /// <summary>
+        /// Implementation Tasks: Get a value indicating whether [second vertices set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if Vertex1BufferObject is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool Vertices1Set { get; }
+
+        /// <summary>
         /// Implementation Tasks: Invalidates the normals of the mesh, e.g. reset the NormalBufferObject of this instance by setting it to 0.
         /// </summary>
         void InvalidateNormals();
@@ -45,6 +58,19 @@ namespace Fusee.Engine.Common
         ///   <c>true</c> if NormalBufferObject is not 0; otherwise, <c>false</c>.
         /// </value>
         bool NormalsSet { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the second normals of the mesh, e.g. reset the Normal1BufferObject of this instance by setting it to 0.
+        /// </summary>
+        void InvalidateNormals1();
+
+        /// <summary>
+        /// Implementation Tasks: Gets a value indicating whether [second normals set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if Normal1BufferObject is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool Normals1Set { get; }
 
         /// <summary>
         /// Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.

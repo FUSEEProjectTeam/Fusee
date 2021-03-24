@@ -543,9 +543,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
+            GL.BindAttribLocation(program, AttributeLocations.Vertex1AttribLocation, UniformNameDeclarations.Vertex1);
             GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
             GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
             GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
+            GL.BindAttribLocation(program, AttributeLocations.Normal1AttribLocation, UniformNameDeclarations.Normal1);
             GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
@@ -1103,6 +1105,31 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Binds the second vertices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices">The vertices.</param>
+        /// <exception cref="ArgumentException">Vertices must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetVertices1(IMeshImp mr, float3[] vertices)
+        {
+            if (vertices == null || vertices.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+
+            int vertsBytes = vertices.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).Vertex1BufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).Vertex1BufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).Vertex1BufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
+        }
+
+        /// <summary>
         /// Binds the tangents onto the GL Render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1171,6 +1198,31 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.GenBuffers(1, out ((MeshImp)mr).NormalBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
+            if (vboBytes != normsBytes)
+                throw new ApplicationException(String.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
+        }
+
+        /// <summary>
+        /// Binds the second normals onto the GL Render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="normals">The normals.</param>
+        /// <exception cref="ArgumentException">Normals must not be null or empty</exception>
+        /// <exception cref="ApplicationException"></exception>
+        public void SetNormals1(IMeshImp mr, float3[] normals)
+        {
+            if (normals == null || normals.Length == 0)
+            {
+                throw new ArgumentException("Second Normals must not be null or empty");
+            }
+
+            int normsBytes = normals.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).Normal1BufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).Normal1BufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).Normal1BufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
@@ -1317,7 +1369,27 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveVertices1(IMeshImp mr)
+        {
+            GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
+            ((MeshImp)mr).InvalidateVertices();
+        } 
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
+        {
+            GL.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
+            ((MeshImp)mr).InvalidateNormals();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveNormals1(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
             ((MeshImp)mr).InvalidateNormals();
@@ -1405,6 +1477,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
+            if (((MeshImp)mr).Vertex1BufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(AttributeLocations.Vertex1AttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).Vertex1BufferObject);
+                GL.VertexAttribPointer(AttributeLocations.Vertex1AttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            }
             if (((MeshImp)mr).ColorBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.ColorAttribLocation);
@@ -1423,6 +1501,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.EnableVertexAttribArray(AttributeLocations.NormalAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            }
+            if (((MeshImp)mr).Normal1BufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(AttributeLocations.Normal1AttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).Normal1BufferObject);
+                GL.VertexAttribPointer(AttributeLocations.Normal1AttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
             if (((MeshImp)mr).TangentBufferObject != 0)
             {
@@ -1510,10 +1594,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (((MeshImp)mr).VertexBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.VertexAttribLocation);
+            if (((MeshImp)mr).Vertex1BufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.Vertex1AttribLocation);
             if (((MeshImp)mr).ColorBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.ColorAttribLocation);
             if (((MeshImp)mr).NormalBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.NormalAttribLocation);
+            if (((MeshImp)mr).Normal1BufferObject != 0)
+                GL.DisableVertexAttribArray(AttributeLocations.Normal1AttribLocation);
             if (((MeshImp)mr).UVBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.UvAttribLocation);
             if (((MeshImp)mr).TangentBufferObject != 0)

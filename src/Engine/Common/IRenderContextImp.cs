@@ -371,6 +371,14 @@ namespace Fusee.Engine.Common
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
         /// <summary>
+        /// Binds the second vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="vertices1">The second vertices.</param>
+        /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
+        void SetVertices1(IMeshImp mesh, float3[] vertices1);
+
+        /// <summary>
         /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -395,6 +403,14 @@ namespace Fusee.Engine.Common
         /// <param name="normals">The normals.</param>
         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
         void SetNormals(IMeshImp mr, float3[] normals);
+
+        /// <summary>
+        /// Binds the second normals onto the GL render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="normals1">The second normals.</param>
+        /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
+        void SetNormals1(IMeshImp mr, float3[] normals1);
 
         /// <summary>
         /// Binds the UV coordinates onto the GL render context and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -454,7 +470,19 @@ namespace Fusee.Engine.Common
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
         /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveVertices1(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
         void RemoveNormals(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveNormals1(IMeshImp mesh);
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.

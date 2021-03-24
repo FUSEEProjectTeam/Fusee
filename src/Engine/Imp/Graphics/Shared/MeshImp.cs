@@ -25,7 +25,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #region Internal Fields
 
         internal int VertexBufferObject;
+        internal int Vertex1BufferObject;
         internal int NormalBufferObject;
+        internal int Normal1BufferObject;
         internal int ColorBufferObject;
         internal int UVBufferObject;
         internal int BoneIndexBufferObject;
@@ -55,6 +57,21 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public bool VerticesSet { get { return VertexBufferObject != 0; } }
 
         /// <summary>
+        /// Invalidates the second vertices.
+        /// </summary>
+        public void InvalidateVertices1()
+        {
+            Vertex1BufferObject = 0;
+        }
+        /// <summary>
+        /// Gets a value indicating whether [second vertices set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [vertices set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool Vertices1Set { get { return Vertex1BufferObject != 0; } }
+
+        /// <summary>
         /// Invalidates the normals.
         /// </summary>
         public void InvalidateNormals()
@@ -65,9 +82,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Gets a value indicating whether [normals set].
         /// </summary>
         /// <value>
-        ///   <c>true</c> if [normals set]; otherwise, <c>false</c>.
+        ///   <c>true</c> if [second normals set]; otherwise, <c>false</c>.
         /// </value>
         public bool NormalsSet { get { return NormalBufferObject != 0; } }
+
+        /// <summary>
+        /// Invalidates the second normals.
+        /// </summary>
+        public void InvalidateNormals1()
+        {
+            Normal1BufferObject = 0;
+        }
+        /// <summary>
+        /// Gets a value indicating whether [second normals set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [second normals set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool Normals1Set { get { return Normal1BufferObject != 0; } }
 
         /// <summary>
         /// Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.

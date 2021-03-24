@@ -18,6 +18,11 @@ namespace Fusee.Engine.Core
         Vertices,
 
         /// <summary>
+        /// The field <see cref="Mesh.Vertices1"/> changed.
+        /// </summary>
+        Vertices1,
+
+        /// <summary>
         /// The field <see cref="Mesh.Triangles"/> changed.
         /// </summary>
         Triangles,
@@ -31,6 +36,11 @@ namespace Fusee.Engine.Core
         /// The field <see cref="Mesh.Normals"/> changed.
         /// </summary>
         Normals,
+
+        /// <summary>
+        /// The field <see cref="Mesh.Normals1"/> changed.
+        /// </summary>
+        Normals1,
 
         /// <summary>
         /// The field <see cref="Mesh.UVs"/> changed.

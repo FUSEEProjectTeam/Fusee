@@ -174,7 +174,7 @@ namespace Fusee.Engine.Core.Effects
             FxShaderAttribute shaderAttribute;
             FxShardAttribute shardAttribute;
 
-            foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+            foreach (var prop in t.GetProperties())
             {
                 var attribs = prop.GetCustomAttributes().ToList();
 

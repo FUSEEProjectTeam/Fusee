@@ -34,7 +34,9 @@ namespace Fusee.Engine.Core.Scene
 
         private float3[] _biTangents;
         private float3[] _vertices;
+        private float3[] _vertices1;
         private float3[] _normals;
+        private float3[] _normals1;
 
         private float2[] _uvs;
 
@@ -67,6 +69,31 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if vertices are set; otherwise, <c>false</c>.
         /// </value>
         public bool VerticesSet => _vertices?.Length > 0;
+
+        /// <summary>
+        /// Gets and sets the second vertices.
+        /// </summary>
+        /// <value>
+        /// The second vertices.
+        /// </value>
+        public float3[] Vertices1
+        {
+            get => _vertices1;
+            set
+            {
+                _vertices1 = value;
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Vertices1));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether second vertices are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if second vertices are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool Vertices1Set => _vertices1?.Length > 0;
 
         /// <summary>
         /// Gets a value indicating whether tangents are set.
@@ -133,6 +160,31 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if normals are set; otherwise, <c>false</c>.
         /// </value>
         public bool NormalsSet => _normals?.Length > 0;
+
+        /// <summary>
+        /// Gets and sets the normals.
+        /// </summary>
+        /// <value>
+        /// The normals..
+        /// </value>
+        public float3[] Normals1
+        {
+            get => _normals1;
+            set
+            {
+                _normals1 = value;
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Normals1));
+            }
+        }
+        /// <summary>
+        /// Gets a value indicating whether second normals are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if second normals are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool Normals1Set => _normals1?.Length > 0;
+        
 
         /// <summary>
         /// Gets and sets the UV-coordinates.

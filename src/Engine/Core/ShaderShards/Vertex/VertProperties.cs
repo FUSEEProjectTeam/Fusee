@@ -17,7 +17,9 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             var vertProps = new List<string>
             {
                 GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex),
+                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex1),
                 GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Normal),
+                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Normal1),
                 GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.TextureCoordinates),
 
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor),

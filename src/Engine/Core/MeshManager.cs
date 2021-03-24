@@ -18,8 +18,14 @@ namespace Fusee.Engine.Core
             if (meshImp.VerticesSet)
                 _renderContextImp.RemoveVertices(meshImp);
 
+            if (meshImp.Vertices1Set)
+                _renderContextImp.RemoveVertices1(meshImp);
+
             if (meshImp.NormalsSet)
                 _renderContextImp.RemoveNormals(meshImp);
+
+            if (meshImp.Normals1Set)
+                _renderContextImp.RemoveNormals1(meshImp);
 
             if (meshImp.ColorsSet)
                 _renderContextImp.RemoveColors(meshImp);
@@ -68,6 +74,10 @@ namespace Fusee.Engine.Core
                     _renderContextImp.SetVertices(toBeUpdatedMeshImp, mesh.Vertices);
                     mesh.BoundingBox = new AABBf(mesh.Vertices);
                     break;
+                case MeshChangedEnum.Vertices1:
+                    _renderContextImp.SetVertices1(toBeUpdatedMeshImp, mesh.Vertices1);
+                    //mesh.BoundingBox = new AABBf(mesh.Vertices);
+                    break;
                 case MeshChangedEnum.Triangles:
                     _renderContextImp.SetTriangles(toBeUpdatedMeshImp, mesh.Triangles);
                     break;
@@ -76,6 +86,9 @@ namespace Fusee.Engine.Core
                     break;
                 case MeshChangedEnum.Normals:
                     _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
+                    break;
+                case MeshChangedEnum.Normals1:
+                    _renderContextImp.SetNormals1(toBeUpdatedMeshImp, mesh.Normals1);
                     break;
                 case MeshChangedEnum.Uvs:
                     _renderContextImp.SetUVs(toBeUpdatedMeshImp, mesh.UVs);
@@ -104,11 +117,17 @@ namespace Fusee.Engine.Core
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);
 
+            if (mesh.Vertices1Set)
+                _renderContextImp.SetVertices1(meshImp, mesh.Vertices1);
+
             if (mesh.UVsSet)
                 _renderContextImp.SetUVs(meshImp, mesh.UVs);
 
             if (mesh.NormalsSet)
                 _renderContextImp.SetNormals(meshImp, mesh.Normals);
+
+            if (mesh.Normals1Set)
+                _renderContextImp.SetNormals1(meshImp, mesh.Normals1);
 
             if (mesh.ColorsSet)
                 _renderContextImp.SetColors(meshImp, mesh.Colors);
