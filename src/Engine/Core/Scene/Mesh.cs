@@ -184,7 +184,7 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if second normals are set; otherwise, <c>false</c>.
         /// </value>
         public bool Normals1Set => _normals1?.Length > 0;
-        
+
 
         /// <summary>
         /// Gets and sets the UV-coordinates.

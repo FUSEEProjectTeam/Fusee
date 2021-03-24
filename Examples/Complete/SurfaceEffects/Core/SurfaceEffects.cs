@@ -125,7 +125,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 subsurface: 1.0f
             );
 
-            
+
 
             _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
@@ -140,7 +140,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
-  
+
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {

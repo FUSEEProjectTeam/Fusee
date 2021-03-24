@@ -1373,7 +1373,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
             ((MeshImp)mr).InvalidateVertices();
-        } 
+        }
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.

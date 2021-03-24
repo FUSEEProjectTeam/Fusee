@@ -17,8 +17,9 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Uniform)]
-        public float PercentPerVertex {
-            get 
+        public float PercentPerVertex
+        {
+            get
             {
                 return _percentPerVertex;
             }
@@ -59,7 +60,7 @@ namespace Fusee.Engine.Core.Effects
         public VertexAnimationSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutFragBody, List<string> SufOutBody_PosNormAnimation, RenderStateSet rendererStates = null)
             : base(lightingSetup, input, surfOutFragBody, SufOutBody_PosNormAnimation, rendererStates)
         {
-            
+
         }
     }
 }
