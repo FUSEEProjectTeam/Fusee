@@ -1,8 +1,6 @@
 ﻿using Fusee.Math.Core;
 using ProtoBuf;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Serialization.V1
 {
@@ -11,7 +9,7 @@ namespace Fusee.Serialization.V1
     /// </summary>
     /// <seealso cref="Fusee.Serialization.V1.FusComponent" />
     /// TODO (MR): Check if we need some more or if this suffice or is even too much
-    public class FusOctant : FusComponent
+    public class FusOctantF : FusComponent
     {
         /// <summary>
         /// Defines the position in the parent octant.
@@ -35,13 +33,13 @@ namespace Fusee.Serialization.V1
         /// Center in world space.
         /// </summary>
         [ProtoMember(3)]
-        public double3 Center;
+        public float3 Center;
 
         /// <summary>
         /// Length of on side of the cubical node.
         /// </summary>
         [ProtoMember(4)]
-        public double Size;
+        public float Size;
 
         /// <summary>
         /// Defines if the node is a leaf node.

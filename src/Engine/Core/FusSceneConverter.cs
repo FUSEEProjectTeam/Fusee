@@ -528,22 +528,48 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="cc"></param>
         [VisitMethod]
-        public void ConvOctant(FusOctant cc)
+        public void ConvOctant(FusOctantD cc)
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            _currentNode.AddComponent(new Octant
+            _currentNode.AddComponent(
+            new OctantD(cc.Center, cc.Size)
             {
-                Center = cc.Center,
-                Guid = cc.Guid,
                 IsLeaf = cc.IsLeaf,
                 Level = cc.Level,
+                PosInParent = cc.PosInParent,
+
+                Guid = cc.Guid,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
                 PosInHierarchyTex = cc.PosInHierarchyTex,
+                VisibleChildIndices = cc.VisibleChildIndices,
+                WasLoaded = cc.WasLoaded
+            });
+        }
+
+        /// <summary>
+        /// Converts the octant.
+        /// </summary>
+        /// <param name="cc"></param>
+        [VisitMethod]
+        public void ConvOctant(FusOctantF cc)
+        {
+            if (_currentNode.Components == null)
+                _currentNode.Components = new List<SceneComponent>();
+
+            _currentNode.AddComponent(
+            new OctantF(cc.Center, cc.Size)
+            {
+                IsLeaf = cc.IsLeaf,
+                Level = cc.Level,
                 PosInParent = cc.PosInParent,
-                Size = cc.Size,
+
+                Guid = cc.Guid,
+                Name = cc.Name,
+                NumberOfPointsInNode = cc.NumberOfPointsInNode,
+                PosInHierarchyTex = cc.PosInHierarchyTex,
                 VisibleChildIndices = cc.VisibleChildIndices,
                 WasLoaded = cc.WasLoaded
             });
@@ -1192,11 +1218,34 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="oct"></param>
         [VisitMethod]
-        public void ConvOctant(Octant oct)
+        public void ConvOctant(OctantD oct)
         {
-            _currentNode.AddComponent(new FusOctant
+            _currentNode.AddComponent(new FusOctantD
             {
-                Center = oct.Center,
+                Center = new double3(oct.Center.x, oct.Center.y, oct.Center.z),
+                Guid = oct.Guid,
+                IsLeaf = oct.IsLeaf,
+                Level = oct.Level,
+                Name = oct.Name,
+                NumberOfPointsInNode = oct.NumberOfPointsInNode,
+                PosInHierarchyTex = oct.PosInHierarchyTex,
+                PosInParent = oct.PosInParent,
+                Size = oct.Size,
+                VisibleChildIndices = oct.VisibleChildIndices,
+                WasLoaded = oct.WasLoaded
+            });
+        }
+
+        /// <summary>
+        /// Converts the octant.
+        /// </summary>
+        /// <param name="oct"></param>
+        [VisitMethod]
+        public void ConvOctant(OctantF oct)
+        {
+            _currentNode.AddComponent(new FusOctantF
+            {
+                Center = new float3(oct.Center.x, oct.Center.y, oct.Center.z),
                 Guid = oct.Guid,
                 IsLeaf = oct.IsLeaf,
                 Level = oct.Level,
