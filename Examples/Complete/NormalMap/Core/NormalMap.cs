@@ -69,7 +69,7 @@ namespace Fusee.Examples.NormalMap.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"));
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"));
 
-            var normalMappingEffect = MakeEffect.FromDiffuseSpecularTexture(float4.One, float4.Zero, 85, albedoTex, normalTex, 1.0f, new float2(2, 2), 0.2f, 0.3f);
+            var normalMappingEffect = MakeEffect.FromDiffuseSpecularTexture(float4.One, float4.Zero, albedoTex, normalTex, 1.0f, new float2(2, 2), 85, 0.2f, 0.3f);
             normalMappingEffect.RendererStates.AlphaBlendEnable = true;
             normalMappingEffect.RendererStates.SourceBlend = Blend.SourceAlpha;
             normalMappingEffect.RendererStates.DestinationBlend = Blend.InverseSourceAlpha;

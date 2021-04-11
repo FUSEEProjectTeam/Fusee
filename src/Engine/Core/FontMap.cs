@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
+using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {

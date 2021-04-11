@@ -1,7 +1,7 @@
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
@@ -880,11 +880,12 @@ namespace Fusee.Engine.Core
                         _buttonsDown.Add(b.Key);
                     else
                         _buttonsUp.Add(b.Key);
-                }
 
-                _buttonsToListen[b.Key] = b.Value;
-                ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[b.Key], Pressed = b.Value });
+                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[b.Key], Pressed = b.Value });
+                    _buttonsToListen[b.Key] = b.Value;
+                }
             }
+
             _buttonsToListenJustChanged.Clear();
         }
         /// <summary>

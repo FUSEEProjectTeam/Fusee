@@ -1,20 +1,20 @@
-using System.IO;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Fusee.Base.Core;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
+using System.IO;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Examples.Camera.Android
 {

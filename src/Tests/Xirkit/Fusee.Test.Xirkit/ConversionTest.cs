@@ -1,8 +1,8 @@
-﻿using System;
-using Xunit;
-using System.Collections.Generic;
+﻿using Fusee.Math.Core;
 using Fusee.Xirkit;
-using Fusee.Math.Core;
+using System;
+using System.Collections.Generic;
+using Xunit;
 using static Fusee.Test.Xirkit.HelperClasses;
 
 namespace Fusee.Test.Xirkit

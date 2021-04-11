@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
         public int Triangle;
 
         /// <summary>
-        /// The u, v coordinates.
+        /// The barycentric u, v coordinates within the picked triangle.
         /// </summary>
         public float U, V;
 
@@ -169,6 +169,7 @@ namespace Fusee.Engine.Core
             private readonly CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
             private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             private readonly CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
+            private readonly CollapsingStateStack<Cull> _cullMode = new CollapsingStateStack<Cull>();
 
             /// <summary>
             /// The registered model.
@@ -198,13 +199,23 @@ namespace Fusee.Engine.Core
             }
 
             /// <summary>
-            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, UI rectangle, and canvas transform.
+            /// The registered cull mode.
+            /// </summary>
+            public Cull CullMode
+            {
+                get => _cullMode.Tos;
+                set => _cullMode.Tos = value;
+            }
+
+            /// <summary>
+            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for model, UI rectangle, and canvas transform, as well as cull mode.
             /// </summary>
             public PickerState()
             {
                 RegisterState(_model);
                 RegisterState(_uiRect);
                 RegisterState(_canvasXForm);
+                RegisterState(_cullMode);
             }
         };
 
@@ -239,6 +250,7 @@ namespace Fusee.Engine.Core
             base.InitState();
             State.Model = float4x4.Identity;
             State.CanvasXForm = float4x4.Identity;
+            State.CullMode = _rc != null ? (Cull)_rc.GetRenderState(RenderState.CullMode) : Cull.None;
         }
 
         /// <summary>
@@ -536,17 +548,25 @@ namespace Fusee.Engine.Core
                 // Point-in-Triangle-Test
                 if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out var u, out var v))
                 {
-                    YieldItem(new PickResult
+                    var pickPos = float3.Barycentric(a.xyz, b.xyz, c.xyz, u, v);
+
+                    if (pickPos.z >= -1 && pickPos.z <= 1)
                     {
-                        Mesh = mesh,
-                        Node = CurrentNode,
-                        Triangle = i,
-                        Model = State.Model,
-                        View = View,
-                        Projection = Projection,
-                        U = u,
-                        V = v
-                    });
+                        if (State.CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (State.CullMode == Cull.Clockwise))
+                        {
+                            YieldItem(new PickResult
+                            {
+                                Mesh = mesh,
+                                Node = CurrentNode,
+                                Triangle = i,
+                                Model = State.Model,
+                                View = View,
+                                Projection = Projection,
+                                U = u,
+                                V = v
+                            });
+                        }
+                    }
                 }
             }
         }

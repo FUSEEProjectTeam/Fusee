@@ -8,6 +8,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
@@ -63,24 +64,24 @@ namespace Fusee.Examples.SurfaceEffects.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
 
-            var lightingFlags = LightingSetupFlags.BlinnPhong | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
+            var lightingFlags = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
             _testFx = new DefaultSurfaceEffect(
-                lightingFlags, new TextureInput(),
+                lightingFlags, new TextureInputSpecular(),
                 Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(lightingFlags),
                 Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
 
             _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
 
-            ((TextureInput)_testFx.SurfaceInput).AlbedoTex = albedoTex;
-            ((TextureInput)_testFx.SurfaceInput).NormalTex = normalTex;
-            ((TextureInput)_testFx.SurfaceInput).AlbedoMix = 1.0f;
-            ((TextureInput)_testFx.SurfaceInput).Shininess = 5f;
-            ((TextureInput)_testFx.SurfaceInput).SpecularStrength = 1f;
-            ((TextureInput)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
+            ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoTex = albedoTex;
+            ((TextureInputSpecular)_testFx.SurfaceInput).NormalTex = normalTex;
+            ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoMix = 1.0f;
+            ((TextureInputSpecular)_testFx.SurfaceInput).Shininess = 5f;
+            ((TextureInputSpecular)_testFx.SurfaceInput).SpecularStrength = 1f;
+            ((TextureInputSpecular)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f),
+                albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(0, 0, 0, 0),
                 roughness: 0.2f,
                 metallic: 1,
@@ -91,18 +92,19 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             _paint_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(0.0f, 231f / 256f, 1f, 1.0f),
+                //ColorUint.Greenery, 
+                new float4(float4.LinearColorFromSRgb(0x708828FF)),
                 emissionColor: new float4(),
                 roughness: 0.05f,
                 metallic: 0,
                 specular: 1f,
                 ior: 1.46f,
                 subsurface: 0
-            );
+            ); ;
 
             _rubber_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f),
+                albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(),
                 roughness: 1.0f,
                 metallic: 0,
@@ -113,7 +115,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             _subsurf_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f),
+                albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(),
                 roughness: 0.508f,
                 metallic: 0,
@@ -265,7 +267,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
+                (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
@@ -299,7 +301,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
             effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 

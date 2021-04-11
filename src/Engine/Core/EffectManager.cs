@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -13,11 +13,6 @@ namespace Fusee.Engine.Core
 
         private readonly Dictionary<Suid, Effect> _allEffects = new Dictionary<Suid, Effect>();
 
-        private void Remove(Effect ef)
-        {
-            _rc.RemoveShader(ef);
-        }
-
         private void EffectChanged(object sender, EffectManagerEventArgs args)
         {
             if (args == null || sender == null) return;
@@ -28,7 +23,7 @@ namespace Fusee.Engine.Core
             switch (args.Changed)
             {
                 case UniformChangedEnum.Dispose:
-                    Remove(senderSF);
+                    _effectsToBeDeleted.Push(senderSF);
                     break;
                 case UniformChangedEnum.Update:
                     _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedUniformName, args.ChangedUniformValue);
@@ -74,7 +69,7 @@ namespace Fusee.Engine.Core
                 // remove one Effect from _allEffects
                 _allEffects.Remove(tmPop.SessionUniqueIdentifier);
                 // Remove one Effect from Memory
-                Remove(tmPop);
+                _rc.RemoveShader(tmPop);
             }
         }
 

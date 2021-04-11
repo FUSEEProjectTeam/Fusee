@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using SFML.Audio;
+using SFML.System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Fusee.Engine.Common;
-using SFML.Audio;
-using SFML.System;
 
 namespace Fusee.Engine.Imp.Sound.Desktop
 {

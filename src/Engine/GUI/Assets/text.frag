@@ -14,6 +14,14 @@ uniform float AlbedoMix;
 
 out vec4 outColor;
 
+vec3 EncodeSRgb(vec3 linearRGB)
+{
+    vec3 a = 12.92 * linearRGB;
+    vec3 b = 1.055 * pow(linearRGB, vec3(1.0 / 2.4)) - 0.055;
+    vec3 c = step(vec3(0.0031308), linearRGB);
+    return mix(a, b, c);
+}
+
 void main()
 {
 	vec3 N = normalize(vMVNormal);
@@ -26,5 +34,7 @@ void main()
     objCol = vec4(mixCol, texCol.a);
     vec4 Idif = vec4(max(dot(N, L), 0.0) * lightColor, 1.0);
 
-	outColor = Idif * objCol;
+    vec4 linearOutCol = Idif * objCol;
+
+	outColor = vec4(EncodeSRgb(linearOutCol.rgb), linearOutCol.a);
 }

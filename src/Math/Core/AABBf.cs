@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -155,10 +155,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        public float3 Size
-        {
-            get { return (max - min); }
-        }
+        public float3 Size => (max - min);
 
         /// <summary>
         ///     Check if this AABB intersects with another

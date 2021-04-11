@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
             {
                 if (value == null)
                 {
-                    Diagnostics.Warn("No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
+                    Diagnostics.Verbose("No Network implementation set. To enable Network functionality inject an appropriate implementation of INetworkImp in your platform specific application main module.");
                     _networkImp = new DummyNetworkImp();
                 }
                 else

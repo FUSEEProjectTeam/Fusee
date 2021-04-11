@@ -55,7 +55,7 @@ namespace Fusee.Base.Common
     public delegate bool AssetChecker(string id);
 
     /// <summary>
-    /// Structure containing an asset handler - typically used by implementation projects knowing how 
+    /// Structure containing an asset handler - typically used by implementation projects knowing how
     /// to decode an asset of a given type using a serialization format (e.g. a stream or a memory location)
     /// defined by the platform.
     /// </summary>
@@ -66,19 +66,19 @@ namespace Fusee.Base.Common
         /// </summary>
         public Type ReturnedType;
         /// <summary>
-        /// A method capable of decoding an asset into the returned type from 
+        /// A method capable of decoding an asset into the returned type from
         /// the opaque storage.
         /// </summary>
         public AssetDecoder Decoder;
 
         /// <summary>
-        /// A method capable of decoding an asset into the returned type from 
+        /// A method capable of decoding an asset into the returned type from
         /// the opaque storage.
         /// </summary>
         public AssetDecoderAsync DecoderAsync;
 
         /// <summary>
-        /// A method delivering a boolean value if an asset with the given id will be 
+        /// A method delivering a boolean value if an asset with the given id will be
         /// handled by the decoder.
         /// </summary>
         public AssetChecker Checker;
@@ -90,10 +90,10 @@ namespace Fusee.Base.Common
     /// <remarks>
     /// In a normal world, a good design would separate the many aspects of asset acquisition (storage,
     /// serialization, codec, asynchronicity). Unfortunately, in JavaScript-Land, it's all mixed (or should I say messed) up.
-    /// You tell the JavaScript API "get me an image" and JavaScript magically loads the raw image 
-    /// data, converts it to a two-dimensional pixel array and calls a user-provided callback when its all done. 
-    /// No way to replace a single step by something self-provided. 
-    /// So this is FUSEE's pitiful approach for an asset acquisition abstraction which is capable of 
+    /// You tell the JavaScript API "get me an image" and JavaScript magically loads the raw image
+    /// data, converts it to a two-dimensional pixel array and calls a user-provided callback when its all done.
+    /// No way to replace a single step by something self-provided.
+    /// So this is FUSEE's pitiful approach for an asset acquisition abstraction which is capable of
     /// being implemented by poorly designed JavaScript APIs.
     /// </remarks>
     public interface IAssetProvider
@@ -143,14 +143,14 @@ namespace Fusee.Base.Common
 
         // TODO: prepare for asynchronous handling
         /// <summary>
-        /// Asynchronous get method. 
+        /// Asynchronous get method.
         /// </summary>
         /// <param name="id">The identifier string.</param>
         /// <param name="getCallback">Code to call when the loading is done.</param>
         /// <remarks>
         /// The design doesn't follow any of the standard .NET asynchronous patterns like APM, EAP, or TAP.
         /// It's close to JavaScript where you just provide an "onLoad" decoder that's called when the object
-        /// is retrieved and decoded. This is to enable AssetProviders to be implemented using standard 
+        /// is retrieved and decoded. This is to enable AssetProviders to be implemented using standard
         /// JavaScript DOM objects like Image. See the article
         /// <a href="https://msdn.microsoft.com/en-us/library/hh873178(v=vs.110).aspx">Interop with Other Asynchronous Patterns and Types</a>
         /// to get an idea how to map this pattern, which is similar to APM (albeit simpler), to the currently en-vogue TAP (async/await) pattern.
