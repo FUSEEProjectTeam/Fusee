@@ -176,7 +176,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderTransform(Transform transform)
         {
-            State.Model *= transform.Matrix();
+            State.Model *= transform.Matrix;
         }
 
         /// <summary>
