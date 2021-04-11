@@ -159,19 +159,34 @@ namespace Fusee.Test.Serialization.V1
                     Assert.Equal(mesh.BiTangents, ((FusMesh)fusFileComp).BiTangents);
                 }
 
-                if (gtComp is Octant octant)
+                if (gtComp is OctantD octantD)
                 {
-                    Assert.Equal(octant.Name, ((FusOctant)fusFileComp).Name);
-                    Assert.Equal(octant.Center, ((FusOctant)fusFileComp).Center);
-                    Assert.Equal(octant.Guid, ((FusOctant)fusFileComp).Guid);
-                    Assert.Equal(octant.IsLeaf, ((FusOctant)fusFileComp).IsLeaf);
-                    Assert.Equal(octant.Level, ((FusOctant)fusFileComp).Level);
-                    Assert.Equal(octant.NumberOfPointsInNode, ((FusOctant)fusFileComp).NumberOfPointsInNode);
-                    Assert.Equal(octant.PosInHierarchyTex, ((FusOctant)fusFileComp).PosInHierarchyTex);
-                    Assert.Equal(octant.PosInParent, ((FusOctant)fusFileComp).PosInParent);
-                    Assert.Equal(octant.Size, ((FusOctant)fusFileComp).Size);
-                    Assert.Equal(octant.VisibleChildIndices, ((FusOctant)fusFileComp).VisibleChildIndices);
-                    Assert.Equal(octant.WasLoaded, ((FusOctant)fusFileComp).WasLoaded);
+                    Assert.Equal(octantD.Name, ((FusOctantD)fusFileComp).Name);
+                    Assert.Equal(octantD.Center, ((FusOctantD)fusFileComp).Center);
+                    Assert.Equal(octantD.Guid, ((FusOctantD)fusFileComp).Guid);
+                    Assert.Equal(octantD.IsLeaf, ((FusOctantD)fusFileComp).IsLeaf);
+                    Assert.Equal(octantD.Level, ((FusOctantD)fusFileComp).Level);
+                    Assert.Equal(octantD.NumberOfPointsInNode, ((FusOctantD)fusFileComp).NumberOfPointsInNode);
+                    Assert.Equal(octantD.PosInHierarchyTex, ((FusOctantD)fusFileComp).PosInHierarchyTex);
+                    Assert.Equal(octantD.PosInParent, ((FusOctantD)fusFileComp).PosInParent);
+                    Assert.Equal(octantD.Size, ((FusOctantD)fusFileComp).Size);
+                    Assert.Equal(octantD.VisibleChildIndices, ((FusOctantD)fusFileComp).VisibleChildIndices);
+                    Assert.Equal(octantD.WasLoaded, ((FusOctantD)fusFileComp).WasLoaded);
+                }
+
+                if (gtComp is OctantF octantF)
+                {
+                    Assert.Equal(octantF.Name, ((FusOctantF)fusFileComp).Name);
+                    Assert.Equal(octantF.Center, ((FusOctantF)fusFileComp).Center);
+                    Assert.Equal(octantF.Guid, ((FusOctantF)fusFileComp).Guid);
+                    Assert.Equal(octantF.IsLeaf, ((FusOctantF)fusFileComp).IsLeaf);
+                    Assert.Equal(octantF.Level, ((FusOctantF)fusFileComp).Level);
+                    Assert.Equal(octantF.NumberOfPointsInNode, ((FusOctantF)fusFileComp).NumberOfPointsInNode);
+                    Assert.Equal(octantF.PosInHierarchyTex, ((FusOctantF)fusFileComp).PosInHierarchyTex);
+                    Assert.Equal(octantF.PosInParent, ((FusOctantF)fusFileComp).PosInParent);
+                    Assert.Equal(octantF.Size, ((FusOctantF)fusFileComp).Size);
+                    Assert.Equal(octantF.VisibleChildIndices, ((FusOctantF)fusFileComp).VisibleChildIndices);
+                    Assert.Equal(octantF.WasLoaded, ((FusOctantF)fusFileComp).WasLoaded);
                 }
 
                 if (gtComp is Weight weight)
@@ -358,19 +373,34 @@ namespace Fusee.Test.Serialization.V1
                     Assert.Equal(mesh.BiTangents, ((Mesh)sceneFileComp).BiTangents);
                 }
 
-                if (gtComp is Octant octant)
+                if (gtComp is OctantD octantD)
                 {
-                    Assert.Equal(octant.Name, ((Octant)sceneFileComp).Name);
-                    Assert.Equal(octant.Center, ((Octant)sceneFileComp).Center);
-                    Assert.Equal(octant.Guid, ((Octant)sceneFileComp).Guid);
-                    Assert.Equal(octant.IsLeaf, ((Octant)sceneFileComp).IsLeaf);
-                    Assert.Equal(octant.Level, ((Octant)sceneFileComp).Level);
-                    Assert.Equal(octant.NumberOfPointsInNode, ((Octant)sceneFileComp).NumberOfPointsInNode);
-                    Assert.Equal(octant.PosInHierarchyTex, ((Octant)sceneFileComp).PosInHierarchyTex);
-                    Assert.Equal(octant.PosInParent, ((Octant)sceneFileComp).PosInParent);
-                    Assert.Equal(octant.Size, ((Octant)sceneFileComp).Size);
-                    Assert.Equal(octant.VisibleChildIndices, ((Octant)sceneFileComp).VisibleChildIndices);
-                    Assert.Equal(octant.WasLoaded, ((Octant)sceneFileComp).WasLoaded);
+                    Assert.Equal(octantD.Name, ((OctantD)sceneFileComp).Name);
+                    Assert.Equal(octantD.Center, ((OctantD)sceneFileComp).Center);
+                    Assert.Equal(octantD.Guid, ((OctantD)sceneFileComp).Guid);
+                    Assert.Equal(octantD.IsLeaf, ((OctantD)sceneFileComp).IsLeaf);
+                    Assert.Equal(octantD.Level, ((OctantD)sceneFileComp).Level);
+                    Assert.Equal(octantD.NumberOfPointsInNode, ((OctantD)sceneFileComp).NumberOfPointsInNode);
+                    Assert.Equal(octantD.PosInHierarchyTex, ((OctantD)sceneFileComp).PosInHierarchyTex);
+                    Assert.Equal(octantD.PosInParent, ((OctantD)sceneFileComp).PosInParent);
+                    Assert.Equal(octantD.Size, ((OctantD)sceneFileComp).Size);
+                    Assert.Equal(octantD.VisibleChildIndices, ((OctantD)sceneFileComp).VisibleChildIndices);
+                    Assert.Equal(octantD.WasLoaded, ((OctantD)sceneFileComp).WasLoaded);
+                }
+
+                if (gtComp is OctantF octantF)
+                {
+                    Assert.Equal(octantF.Name, ((OctantF)sceneFileComp).Name);
+                    Assert.Equal(octantF.Center, ((OctantF)sceneFileComp).Center);
+                    Assert.Equal(octantF.Guid, ((OctantF)sceneFileComp).Guid);
+                    Assert.Equal(octantF.IsLeaf, ((OctantF)sceneFileComp).IsLeaf);
+                    Assert.Equal(octantF.Level, ((OctantF)sceneFileComp).Level);
+                    Assert.Equal(octantF.NumberOfPointsInNode, ((OctantF)sceneFileComp).NumberOfPointsInNode);
+                    Assert.Equal(octantF.PosInHierarchyTex, ((OctantF)sceneFileComp).PosInHierarchyTex);
+                    Assert.Equal(octantF.PosInParent, ((OctantF)sceneFileComp).PosInParent);
+                    Assert.Equal(octantF.Size, ((OctantF)sceneFileComp).Size);
+                    Assert.Equal(octantF.VisibleChildIndices, ((OctantF)sceneFileComp).VisibleChildIndices);
+                    Assert.Equal(octantF.WasLoaded, ((OctantF)sceneFileComp).WasLoaded);
                 }
 
                 if (gtComp is Weight weight)
@@ -552,17 +582,30 @@ namespace Fusee.Test.Serialization.V1
                            Type = LightType.Point
 
                        },
-                       new Octant
+                       new OctantD(double3.One, 20)
                        {
-                           Center = double3.One,
+                            IsLeaf = false,
+                            Level = 10,
+                            PosInParent = 5,
+
                            Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
-                           IsLeaf = false,
-                           Level = 10,
-                           Name = "MyOctant",
+                           Name = "MyOctantD",
                            NumberOfPointsInNode = 2,
                            PosInHierarchyTex = 0,
-                           PosInParent = 5,
-                           Size = 20,
+                           VisibleChildIndices = 1,
+                           WasLoaded = true
+                       },
+
+                       new OctantF(float3.One, 20)
+                       {
+                            IsLeaf = false,
+                            Level = 10,
+                            PosInParent = 5,
+
+                           Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
+                           Name = "MyOctantF",
+                           NumberOfPointsInNode = 2,
+                           PosInHierarchyTex = 0,
                            VisibleChildIndices = 1,
                            WasLoaded = true
                        },
