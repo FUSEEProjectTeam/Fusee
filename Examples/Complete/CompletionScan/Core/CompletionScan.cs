@@ -3,9 +3,9 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -320,7 +320,7 @@ namespace Fusee.Examples.CompletionScan.Core
 
                 top = float4x4.Transform(_modelCamTransform.Matrix(), float3.Add(origin, new float3(0, dist, 0)));
                 newPick.AddRange(_sceneRayCaster.RayCast(top, direction));
-                
+
                 //Debug.WriteLine("Circle: " + i + " Top: " + top);
             }
 
