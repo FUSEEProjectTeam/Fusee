@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core
         public IEnumerable<RayCastResult> RayCast(float3 origin, float3 direction)
         {
             Origin = origin;
-            Direction = direction;
+            Direction = float3.Normalize(direction);
             return Viserate();
         }
 
@@ -219,7 +219,7 @@ namespace Fusee.Engine.Core
 
                 if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
                 {
-                    if (CullMode == Cull.None || float2.IsTriangleCW(a.xy, b.xy, c.xy) == (CullMode == Cull.Clockwise))
+                    if (CullMode == Cull.None || (CullMode == Cull.Clockwise) == (float3.Dot(n, Direction) < 0) )
                     {
                         YieldItem(new RayCastResult
                         {
