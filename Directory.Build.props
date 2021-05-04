@@ -37,9 +37,8 @@
     <!--
     Suppress warnings
     1701 and 1702 is standard.
-    NU1701: Package restore of OpenTK 3.1 with net462 - remove after update to OpenTK 4
     -->
-    <NoWarn>1701;1702;NU1701</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -987,7 +987,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                GL.GetFloat(GetPName.ColorClearValue, out Vector4 ret);
+                GL.GetFloat(GetPName.ColorClearValue, out OpenTK.Mathematics.Vector4 ret);
                 return new float4(ret.X, ret.Y, ret.Z, ret.W);
             }
             set { GL.ClearColor(value.x, value.y, value.z, value.w); }

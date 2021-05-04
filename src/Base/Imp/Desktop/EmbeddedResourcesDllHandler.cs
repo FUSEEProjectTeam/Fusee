@@ -43,10 +43,13 @@ namespace Fusee.Base.Imp.Desktop
                 // See if the file exists, avoid rewriting it if not necessary
                 string dllPath = Path.Combine(dirName, dllName);
 
-                using (var fileStream = File.Create(dllPath))
+                if (!File.Exists(dllPath))
                 {
-                    resourceStream.Seek(0, SeekOrigin.Begin);
-                    resourceStream.CopyTo(fileStream);
+                    using (var fileStream = File.Create(dllPath))
+                    {
+                        resourceStream.Seek(0, SeekOrigin.Begin);
+                        resourceStream.CopyTo(fileStream);
+                    }
                 }
 
                 IntPtr h = LoadLibrary(dllPath);
