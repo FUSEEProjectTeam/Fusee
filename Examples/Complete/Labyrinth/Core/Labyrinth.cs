@@ -485,8 +485,8 @@ namespace Fusee.Examples.Labyrinth.Core
                 else
                 {
                     _mtxCam = float4x4.LookAt(_head.Translation.x - _cam.x * M.Sin(_angle), _head.Translation.y + _cam.y, _head.Translation.z - _cam.z * M.Cos(_angle), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                    _head.Rotation = new float3(_head.Rotation.x, + _angle, _head.Rotation.z);
-                    _bodytrans.Rotation = new float3(0, - _angle, 0);
+                    _head.Rotation = new float3(_head.Rotation.x, +_angle, _head.Rotation.z);
+                    _bodytrans.Rotation = new float3(0, -_angle, 0);
                     _movement = true;
                 }
                 RC.View = _mtxCam;
@@ -503,7 +503,7 @@ namespace Fusee.Examples.Labyrinth.Core
                     _moveX = Keyboard.WSAxis * _speed * DeltaTime;
                     _moveZ = Keyboard.ADAxis * _speed * DeltaTime;
 
-                    if (_moveX!= 0 && (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D)))
+                    if (_moveX != 0 && (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D)))
                     {
                         _head.Translation.x += _moveX * M.Sin(_angle);
                         _head.Translation.z += _moveX * M.Cos(_angle);
@@ -513,7 +513,7 @@ namespace Fusee.Examples.Labyrinth.Core
                     }
 
                     // AD Axis
-                    
+
                     if (_moveZ != 0 && (!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S)))
                     {
                         _head.Translation.x += _moveZ * M.Cos(_angle);
@@ -894,7 +894,7 @@ namespace Fusee.Examples.Labyrinth.Core
             {
                 for (int i = 5; i < img.Width; i += x)
                 {
-                    if (GetPixel(img, j, i).Equals(new ColorUint(0,0,0,255)))
+                    if (GetPixel(img, j, i).Equals(new ColorUint(0, 0, 0, 255)))
                     {
                         image[posY, posX] = 1;
                     }
@@ -970,6 +970,6 @@ namespace Fusee.Examples.Labyrinth.Core
 
             //}
 
-        }   
+        }
     }
 }
