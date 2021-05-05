@@ -28,7 +28,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private BlendingFactorSrc _blendSrcAlpha;
         private BlendingFactorDest _blendDstAlpha;
 
-        private bool _isCullEnabled;        
+        private bool _isCullEnabled;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
@@ -69,11 +69,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (compareMode)
             {
-                case TextureCompareMode.NONE:
-                    return TextureCompareMode.NONE;
+                case TextureCompareMode.None:
+                    return TextureCompareMode.None;
 
-                case Common.TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE:
-                    return TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE;
+                case Common.TextureCompareMode.CompareRefToTexture:
+                    return TextureCompareMode.CompareRefToTexture;
 
                 default:
                     throw new ArgumentException("Invalid compare mode.");
@@ -86,33 +86,33 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             switch (filterMode)
             {
-                case TextureFilterMode.NEAREST:
+                case TextureFilterMode.Nearest:
                     minFilter = TextureMinFilter.Nearest;
                     magFilter = TextureMagFilter.Nearest;
                     break;
 
                 default:
-                case TextureFilterMode.LINEAR:
+                case TextureFilterMode.Linear:
                     minFilter = TextureMinFilter.Linear;
                     magFilter = TextureMagFilter.Linear;
                     break;
 
-                case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
+                case TextureFilterMode.NearestMipmapNearest:
                     minFilter = TextureMinFilter.NearestMipmapNearest;
                     magFilter = TextureMagFilter.Nearest;
                     break;
 
-                case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
+                case TextureFilterMode.LinearMipmapNearest:
                     minFilter = TextureMinFilter.LinearMipmapNearest;
                     magFilter = TextureMagFilter.Linear;
                     break;
 
-                case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
+                case TextureFilterMode.NearestMipmapLinear:
                     minFilter = TextureMinFilter.NearestMipmapLinear;
                     magFilter = TextureMagFilter.Nearest;
                     break;
 
-                case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
+                case TextureFilterMode.LinearMipmapLinear:
                     minFilter = TextureMinFilter.LinearMipmapLinear;
                     magFilter = TextureMagFilter.Linear;
                     break;
@@ -126,18 +126,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
             switch (wrapMode)
             {
                 default:
-                case Common.TextureWrapMode.REPEAT:
+                case Common.TextureWrapMode.Repeat:
                     return OpenTK.Graphics.ES30.TextureWrapMode.Repeat;
 
-                case Common.TextureWrapMode.MIRRORED_REPEAT:
+                case Common.TextureWrapMode.MirroredRepeat:
                     return OpenTK.Graphics.ES30.TextureWrapMode.MirroredRepeat;
 
-                case Common.TextureWrapMode.CLAMP_TO_EDGE:
+                case Common.TextureWrapMode.ClampToEdge:
                     return OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge;
 
-                case Common.TextureWrapMode.CLAMP_TO_BORDER:
+                case Common.TextureWrapMode.ClampToBorder:
                     {
-#warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge is set instead.
+                        Diagnostics.Warn("TextureWrapMode.ClampToBorder is not supported on Android. OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge is set instead.");
                         return OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge;
                     }
             }
@@ -176,12 +176,38 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        private TextureComponentCount GetTexTureComponentCount(ITextureBase tex)
+        {
+            switch (tex.PixelFormat.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    return TextureComponentCount.Rgba;
+                case ColorFormat.RGB:
+                    return TextureComponentCount.Rgb;
+                case ColorFormat.Intensity:
+                    return TextureComponentCount.Alpha;
+                case ColorFormat.uiRgb8:
+                    return TextureComponentCount.Rgb8ui;
+                case ColorFormat.fRGB32:
+                    return TextureComponentCount.Rgb32f;
+                case ColorFormat.fRGB16:
+                    return TextureComponentCount.Rgb16f;
+                case ColorFormat.fRGBA16:
+                    return TextureComponentCount.Rgba16f;
+                case ColorFormat.Depth16:
+                    return TextureComponentCount.DepthComponent16;
+                case ColorFormat.Depth24:
+                    return TextureComponentCount.DepthComponent24;
+                default:
+                    throw new ArgumentException("Unsupported color format!");
+            }
+        }
+
         /*TODO: OpenTK 30ES does not seem to support other PixelInternalFormats other than Rgba, Rgb, Alpha, Luminance,
         even though OpenGL 30es seems to do so (https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexImage2D.xhtml).
         After some research it seems the OpenTK 30es branch suffers due to the development of OpenTK 40es....
         Furthermore it doesn't seem possible to attach a depth texture to a framebuffer (DEPTH_ATTACHMENT), therefore we need to render depth into a COLOR_ATTACHMENT and create a Depth render buffer.
         This is bound to create a overhead.*/
-
         private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
         {
             PixelInternalFormat internalFormat;
@@ -244,6 +270,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
                     break;
+                case ColorFormat.fRGBA16:
+                    // SHOULD:
+                    //internalFormat = (PixelInternalFormat)SizedInternalFormat.Rgb16f;
+                    //format = PixelFormat.Rgb;
+                    //pxType = PixelType.Float;
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.UnsignedByte;
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -255,6 +290,39 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 InternalFormat = internalFormat,
                 PxType = pxType
             };
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableArrayTexture img)
+        {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2DArray, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
+            GL.TexImage3D(TextureTarget3D.Texture2DArray, 0, GetTexTureComponentCount(img), img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
+            if (img.DoGenerateMipMaps)
+                GL.GenerateMipmap(TextureTarget.Texture2DArray);
+
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2DArray, TextureParameterName.TextureWrapT, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
         }
 
         /// <summary>
@@ -307,11 +375,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var pxInfo = GetTexturePixelInfo(img);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
-           
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -320,7 +388,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
-            Diagnostics.Debug(GL.GetErrorCode());
+            //Diagnostics.Debug(GL.GetErrorCode());
 
             return texID;
         }
@@ -343,10 +411,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var pxInfo = GetTexturePixelInfo(img);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
@@ -359,7 +427,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
-            Diagnostics.Debug(GL.GetErrorCode());
+            //Diagnostics.Debug(GL.GetErrorCode());
 
             return texID;
         }
@@ -381,6 +449,33 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
                 format, PixelType.UnsignedByte, img.PixelData);
+        }
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureFilterMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="filterMode">The new filter mode.</param>
+        public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
+            var glMinMagFilter = GetMinMagFilter(filterMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)glMinMagFilter.Item1);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)glMinMagFilter.Item2);
+        }
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="Common.TextureWrapMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        ///<param name="wrapMode">The new wrap mode.</param>
+        public void SetTextureWrapMode(ITextureHandle tex, Common.TextureWrapMode wrapMode)
+        {
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
+            var glWrapMode = GetWrapMode(wrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
         }
 
         /// <summary>
@@ -410,7 +505,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.DeleteFramebuffers(1, ref texHandle.FrameBufferHandle);
             }
 
-            // TODO: (dd) ?? TBD
             if (texHandle.DepthRenderBufferHandle != -1)
             {
                 GL.DeleteRenderbuffers(1, ref texHandle.DepthRenderBufferHandle);
@@ -438,8 +532,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </exception>
         public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
-            if (gs != null)
-                Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");
+            if (!string.IsNullOrEmpty(gs))
+                Diagnostics.Warn("Geometry Shaders are unsupported");
 
             int statusCode;
             StringBuilder info = new StringBuilder(512);
@@ -475,13 +569,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
-            GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.Color);
+            GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
             GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
             GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
-            GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.TangentAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
-            GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
 
             GL.LinkProgram(program);
             return new ShaderHandleImp { Handle = program };
@@ -610,9 +704,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     case ActiveUniformType.SamplerCubeShadow:
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
-
+                    case ActiveUniformType.Sampler2DArray:
+                        paramInfo.Type = typeof(IWritableArrayTexture);
+                        break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
                 }
 
                 paramList.Add(paramInfo);
@@ -692,8 +788,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
             unsafe
             {
                 var mF = (float*)(&val);
-                // Row order notation
-                // GL.UniformMatrix4(((ShaderParam) param).handle, 1, false, mF);
 
                 // Column order notation
                 GL.UniformMatrix4(((ShaderParam)param).handle, 1, true, mF);
@@ -746,20 +840,23 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (texTarget)
             {
-                case TextureType.TEXTURE1D:
+                case TextureType.Texture1D:
                     Diagnostics.Error("Xamarin OpenTK ES31 does not support Texture1D.");
                     break;
-                case TextureType.TEXTURE2D:
+                case TextureType.Texture2D:
                     GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE3D:
+                case TextureType.Texture3D:
                     GL.BindTexture(TextureTarget.Texture3D, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.TEXTURE_CUBE_MAP:
+                case TextureType.TextureCubeMap:
                     GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
                     break;
-                default:
+                case TextureType.ArrayTexture:
+                    GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
+                default:
+                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
         }
 
@@ -951,7 +1048,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping.
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
         /// </summary>
@@ -991,7 +1088,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
             if (vboBytes != vertsBytes)
-                throw new ApplicationException(String.Format(
+                throw new ApplicationException(string.Format(
                     "Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
 
@@ -1363,12 +1460,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.TRIANGLES:
+                    case OpenGLPrimitiveType.Triangles:
                     default:
                         GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.POINT:
+                    case OpenGLPrimitiveType.Points:
                         // enable gl_PointSize to set the point size
                         GL.Enable(EnableCap.DepthTest);
                         //GL.Enable(EnableCap.DepthTest);
@@ -1377,27 +1474,27 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         GL.DrawElements(BeginMode.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LINES:
+                    case OpenGLPrimitiveType.Lines:
                         GL.DrawElements(BeginMode.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LINE_LOOP:
+                    case OpenGLPrimitiveType.LineLoop:
                         GL.DrawElements(BeginMode.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LINE_STRIP:
+                    case OpenGLPrimitiveType.LineStrip:
                         GL.DrawElements(BeginMode.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.PATCHES:
+                    case OpenGLPrimitiveType.Patches:
                         throw new NotSupportedException("Patches is no valid primitive type within OpenGL ES 3.0");
-                    case OpenGLPrimitiveType.QUAD_STRIP:
+                    case OpenGLPrimitiveType.QuadStrip:
                         throw new NotSupportedException("Quad strip is no valid primitive type within OpenGL ES 3.0");
-                    case OpenGLPrimitiveType.TRIANGLE_FAN:
+                    case OpenGLPrimitiveType.TriangleFan:
                         GL.DrawElements(BeginMode.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.TRIANGLE_STRIP:
+                    case OpenGLPrimitiveType.TriangleStrip:
                         GL.DrawElements(BeginMode.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
@@ -1428,7 +1525,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
@@ -1489,7 +1586,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     return BlendOperation.ReverseSubtract;
 
                 default:
-                    throw new ArgumentOutOfRangeException("bom");
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
             }
         }
 
@@ -1733,7 +1830,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     }
                     break;
                 case RenderState.BlendFactor:
-                    float4 col = ColorUint.FromRgba(value).Tofloat4();
+                    float4 col = (float4)ColorUint.FromRgba(value);
                     GL.BlendColor(col.r, col.g, col.b, col.a);
                     break;
 
@@ -1931,6 +2028,48 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Renders into the given layer of the array texture.
+        /// </summary>
+        /// <param name="tex">The array texture.</param>
+        /// <param name="layer">The layer to render to.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == -1)
+            {
+                GL.GenFramebuffers(1, out int fBuffer);
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
+
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
+                {
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
+                }
+                else
+                {
+                    GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.None });
+                    GL.ReadBuffer(ReadBufferMode.None);
+                }
+            }
+            else
+            {
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+                GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texHandle).TexHandle);
+                GL.FramebufferTextureLayer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0, layer);
+            }
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+        }
+
+        /// <summary>
         /// Renders into the given textures of the RenderTarget.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
@@ -1996,7 +2135,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int depthCnt = 0;
 
-            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
+            var depthTexPos = (int)RenderTargetTextureTypes.Depth;
 
             if (!renderTarget.IsDepthOnly)
             {
@@ -2041,7 +2180,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>       
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>
         public void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0)
         {
             ChangeFramebufferTexture2D(renderTarget, attachment, 0, isDepthTex);
@@ -2053,7 +2192,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
         /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
-        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>        
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>
         /// <param name="texHandle">The gpu handle of the texture.</param>
         public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
@@ -2120,20 +2259,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (capability)
             {
-                case HardwareCapability.CAN_RENDER_DEFFERED:
+                case HardwareCapability.CanRenderDeferred:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
 
-                case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
+                case HardwareCapability.CanUseGeometryShaders:
                     return 0U; //Android uses OpenGL es, where no geometry shaders can be used.
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
         }
 
-        /// <summary> 
+        /// <summary>
         /// Returns a human readable description of the underlying graphics hardware. This implementation reports GL_VENDOR, GL_RENDERER, GL_VERSION and GL_EXTENSIONS.
-        /// </summary> 
-        /// <returns></returns> 
+        /// </summary>
+        /// <returns></returns>
         public string GetHardwareDescription()
         {
             return "Vendor: " + GL.GetString(StringName.Vendor) + "\nRenderer: " + GL.GetString(StringName.Renderer) + "\nVersion: " + GL.GetString(StringName.Version) + "\nExtensions: " + GL.GetString(StringName.Extensions);

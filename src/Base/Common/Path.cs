@@ -15,22 +15,22 @@ namespace Fusee.Base.Common
         /// The alternative directory separator character ('/' on windows).
         /// </summary>
         public static readonly char AltDirectorySeparatorChar;
-        
+
         /// <summary>
         /// The directory separator character ('\' on windows, '/' on most other platforms).
         /// </summary>
         public static readonly char DirectorySeparatorChar;
-        
+
         /// <summary>
         /// The path separator character (';' on most platforms)
         /// </summary>
         public static readonly char PathSeparator;
-        
+
         /// <summary>
         /// The directory separator as a string.
         /// </summary>
         internal static readonly string DirectorySeparatorStr;
-        
+
         /// <summary>
         /// The volume separator character (':' on windows).
         /// </summary>
@@ -201,7 +201,7 @@ namespace Fusee.Base.Common
         /// <summary>
         /// Extracts the directory name from a given path (which is potentially a path to a file).
         /// </summary>
-        /// <param name="path">The path to extrect from.</param>
+        /// <param name="path">The path to extract the directory name from.</param>
         /// <returns>The directory name.</returns>
         /// <exception cref="System.ArgumentException">
         /// Invalid path
@@ -378,7 +378,7 @@ namespace Fusee.Base.Common
         /// Determines whether the specified path has an extension.
         /// </summary>
         /// <param name="path">The path.</param>
-        /// <returns>true if the path has an extenstion, otherwise false.</returns>
+        /// <returns>true if the path has an extension, otherwise false.</returns>
         /// <exception cref="System.ArgumentException">Illegal characters in path.</exception>
         public static bool HasExtension(string path)
         {
@@ -534,7 +534,7 @@ namespace Fusee.Base.Common
         }
 
 
-        // required for FileIOPermission (and most proibably reusable elsewhere too)
+        // required for FileIOPermission (and most probably reusable elsewhere too)
         // both path MUST be "full paths"
         internal static bool IsPathSubsetOf(string subset, string path)
         {
@@ -646,7 +646,7 @@ namespace Fusee.Base.Common
             if (path3 == null)
                 throw new ArgumentNullException("path3");
 
-            return Combine(new[] {path1, path2, path3});
+            return Combine(new[] { path1, path2, path3 });
         }
 
         /// <summary>
@@ -680,7 +680,7 @@ namespace Fusee.Base.Common
             if (path4 == null)
                 throw new ArgumentNullException("path4");
 
-            return Combine(new[] {path1, path2, path3, path4});
+            return Combine(new[] { path1, path2, path3, path4 });
         }
 
         internal static void Validate(string path)

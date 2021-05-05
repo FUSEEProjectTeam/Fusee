@@ -15,10 +15,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float A
         {
-            get
-            {
-                return _a;
-            }
+            get => _a;
             set
             {
                 _a = value;
@@ -32,10 +29,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float B
         {
-            get
-            {
-                return _b;
-            }
+            get => _b;
             set
             {
                 _b = value;
@@ -49,10 +43,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float C
         {
-            get
-            {
-                return _c;
-            }
+            get => _c;
             set
             {
                 _c = value;
@@ -123,7 +114,6 @@ namespace Fusee.Math.Core
             return (float)System.Math.Acos(cosAlpha);
         }
 
-
         #region Plane-Box Intersection
 
         /// <summary>
@@ -140,6 +130,20 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Test whether a cuboid intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// </summary>
+        /// <param name="center">The center of the cuboid.</param>
+        /// <param name="size">The width, height and length of the cuboid.</param>
+        public bool Intersects(float3 center, float3 size)
+        {
+            var r = BoxExtendInNormalDirection(size);
+            var s = SignedDistanceFromPoint(center);
+
+            return System.Math.Abs(s) <= r;
+        }
+
+        /// <summary>
         /// Test whether a <see cref="OBBf"/> intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
         /// </summary>
@@ -150,6 +154,56 @@ namespace Fusee.Math.Core
             var s = SignedDistanceFromPoint(obb.Center);
 
             return System.Math.Abs(s) <= r;
+        }
+
+        /// <summary>
+        /// Test whether a cuboid intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
+        /// because FUSEE defines a point with a negative signed distance to be inside.
+        /// </summary>
+        /// <param name="center">The center of the cuboid.</param>
+        /// <param name="size">The width, height and length of the cuboid.</param>
+        public bool InsideOrIntersecting(float3 center, float3 size)
+        {
+            var r = BoxExtendInNormalDirection(size);
+
+            //Distance from center to plane
+            var s = SignedDistanceFromPoint(center);
+
+            //Completely inside
+            if (s <= -r)
+                return true;
+            //Completely outside
+            else if (r <= s)
+                return false;
+            //else intersecting
+            return true;
+        }
+
+        /// <summary>
+        /// Test whether a cuboid intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
+        /// because FUSEE defines a point with a negative signed distance to be inside.
+        /// </summary>
+        /// <param name="center">The center of the cuboid.</param>
+        /// <param name="size">The width, height and length of the cuboid.</param>
+        public bool InsideOrIntersecting(float3 center, float size)
+        {
+            var r = BoxExtendInNormalDirection(size);
+
+            //Distance from aabb center to plane
+            var s = SignedDistanceFromPoint(center);
+
+            //Completely inside
+            if (s <= -r)
+                return true;
+            //Completely outside
+            else if (r <= s)
+                return false;
+            //else intersecting
+            return true;
         }
 
         /// <summary>
@@ -177,7 +231,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Test whether a <see cref="AABBf"/> intersects this plane.
+        /// Test whether a <see cref="OBBf"/> intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
         /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
         /// because FUSEE defines a point with a negative signed distance to be inside.
@@ -200,8 +254,29 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Calculates the projection interval radius of an cuboid onto line L(t) = cuboid.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// <param name="size">The width, height and length of a cuboid.</param>
+        /// </summary>
+        private double BoxExtendInNormalDirection(float3 size)
+        {
+            var boxExtend = size * 0.5f;
+            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
+        }
+
+        /// <summary>
+        /// Calculates the projection interval radius of an cuboid onto line L(t) = cuboid.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// <param name="size">The width, height and length of a cuboid.</param>
+        /// </summary>
+        private double BoxExtendInNormalDirection(float size)
+        {
+            var boxExtend = size * 0.5f;
+            return boxExtend * System.Math.Abs(Normal.x) + boxExtend * System.Math.Abs(Normal.y) + boxExtend * System.Math.Abs(Normal.z);
+        }
+
+        /// <summary>
         /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param> 
+        /// <param name="aabb">The axis aligned bounding box.</param>
+        /// </summary>
         private float BoxExtendInNormalDirection(AABBf aabb)
         {
             var boxExtend = aabb.Size * 0.5f;
@@ -210,7 +285,8 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param> 
+        /// <param name="obb">The object oriented bounding box.</param>
+        /// </summary>
         private float BoxExtendInNormalDirection(OBBf obb)
         {
             var transformationMat = obb.Rotation * float4x4.CreateTranslation(obb.Translation); //without scale!

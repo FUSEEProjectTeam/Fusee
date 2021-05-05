@@ -1,7 +1,7 @@
 ﻿namespace Fusee.Engine.Common
 {
     /// <summary>
-    ///     A struct for saving character information needed for proccesing a font.
+    ///     A struct for saving character information needed for processing a font.
     /// </summary>
     public struct CharInfoStruct
     {
@@ -47,7 +47,7 @@
     }
 
     /// <summary>
-    ///     Interface for a font object to save informationen needed for proccesing a font.
+    ///     Interface for a font object to save information needed for processing a font.
     /// </summary>
     public interface IFont
     {

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (line.StartsWith("vt"))
                 {
-                    // Vertext texcoord.
+                    // Vertex texcoord.
                     string tmp = line.Substring(3);
 
                     string[] values = FilteredSplit(tmp, null);
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
 
                     g.AddNormal(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            -Double_Parse(values[2]))); // convert to lefthanded
+                                            -Double_Parse(values[2]))); // convert to left-handed
                 }
                 else if (line.StartsWith("v"))
                 {
@@ -82,7 +82,7 @@ namespace Fusee.Engine.Core
 
                     g.AddVertex(new double3(Double_Parse(values[0]),
                                             Double_Parse(values[1]),
-                                            -Double_Parse(values[2]))); // convert to lefthanded
+                                            -Double_Parse(values[2]))); // convert to left-handed
                 }
                 else if (line.StartsWith("f"))
                 {
@@ -178,7 +178,7 @@ namespace Fusee.Engine.Core
             }
 
             if (!g.HasNormals)
-                g.CreateNormals(80*3.141592/180.0);
+                g.CreateNormals(80 * 3.141592 / 180.0);
             return g;
         }
 

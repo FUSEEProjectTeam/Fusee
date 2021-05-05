@@ -42,6 +42,7 @@ namespace Fusee.Engine.Common
         /// <param name="transA">The trans a.</param>
         /// <param name="transB">The trans b.</param>
         void CalculateTransforms(float4x4 transA, float4x4 transB);
+
         /// <summary>
         /// Gets the calculated transform a.
         /// </summary>
@@ -49,6 +50,7 @@ namespace Fusee.Engine.Common
         /// The calculated transform a.
         /// </value>
         float4x4 CalculatedTransformA { get; }
+
         /// <summary>
         /// Gets the calculated transform b.
         /// </summary>
@@ -137,13 +139,14 @@ namespace Fusee.Engine.Common
         /// The lower angular limit.
         /// </value>
         float LowerAngularLimit { get; set; }
+
         /// <summary>
         /// Gets and sets the lower lin limit.
         /// </summary>
         /// <value>
         /// The lower lin limit.
         /// </value>
-        float LowerLinLimit { get; set;}
+        float LowerLinLimit { get; set; }
 
         /// <summary>
         /// Gets and sets the maximum angular motor force.
@@ -274,7 +277,7 @@ namespace Fusee.Engine.Common
         /// <value>
         ///   <c>true</c> if [solve angular limit]; otherwise, <c>false</c>.
         /// </value>
-        bool SolveAngularLimit { get;}
+        bool SolveAngularLimit { get; }
         /// <summary>
         /// Gets a value indicating whether [solve lin limit].
         /// </summary>

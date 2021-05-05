@@ -84,7 +84,7 @@ namespace Fusee.Engine.Core
         /// The y movement.
         /// </value>
         public float YDPad => GetAxis(_yDPadId);
-        
+
 
 
         /// <summary>

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Common
 {
@@ -46,7 +46,6 @@ namespace Fusee.Engine.Common
         /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
         /// </summary>
         void DisableDepthClamp();
-
 
         /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
@@ -285,13 +284,27 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Updates the given region of a texture with the passed image data.
         /// </summary>
-        /// <param name="tex">The tex.</param>
+        /// <param name="tex">The texture.</param>
         /// <param name="img">The image.</param>
         /// <param name="startX">The start x.</param>
         /// <param name="startY">The start y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height);
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureFilterMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="filterMode">The new filter mode.</param>
+        void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode);
+
+        /// <summary>
+        /// Sets the textures filter mode (<see cref="TextureWrapMode"/> at runtime.
+        /// </summary>
+        /// <param name="tex">The handle of the texture.</param>
+        /// <param name="wrapMode">The new wrap mode.</param>
+        void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -302,6 +315,12 @@ namespace Fusee.Engine.Common
         /// </remarks>
         /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
         ITextureHandle CreateTexture(ITexture img);
+
+        /// <summary>
+        /// Creates a new cube map and binds it to the shader.
+        /// </summary>        
+        /// <param name="img">An <see cref="IWritableArrayTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(IWritableArrayTexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
@@ -364,7 +383,7 @@ namespace Fusee.Engine.Common
         /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name = "bitangents">THe bitangents.</param>
+        /// <param name = "bitangents">The bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
         void SetBiTangents(IMeshImp mr, float3[] bitangents);
@@ -487,7 +506,7 @@ namespace Fusee.Engine.Common
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
         /// <param name="height">vertical size (in pixels) of the output region.</param>
         /// <remarks>
-        /// Setting the Viewport limits the rendering output to the specified rectangular region.
+        /// Setting the viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
         void Viewport(int x, int y, int width, int height);
 
@@ -533,7 +552,7 @@ namespace Fusee.Engine.Common
         /// Gets the content of the buffer.
         /// </summary>
         /// <param name="quad">The quad.</param>
-        /// <param name="texId">The tex identifier.</param>
+        /// <param name="texId">The texture identifier.</param>
         void GetBufferContent(Rectangle quad, ITextureHandle texId);
 
         /// <summary>
@@ -577,22 +596,13 @@ namespace Fusee.Engine.Common
         /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle);
 
-        /*
-         * TODO: NO tangent space normal maps at this time...
-         * 
-         * http://gamedev.stackexchange.com/a/72806/44105
-         * 
         /// <summary>
-        /// This method is a replacement for SetVertices, SetUVs and SetNormals. Taking all three
-        /// vertex information arrays a the same time, an implementation can additionally calculate
-        /// tangent and bitangent information as well. 
+        /// Renders into the given layer of the array texture.
         /// </summary>
-        /// <param name="meshImp">The mesh implementation to operate on.</param>
-        /// <param name="vertices">The array of vertices</param>
-        /// <param name="uVs">The texture coordinate array</param>
-        /// <param name="normals">The normals</param>
-        void SetVertexData(IMeshImp meshImp, float3[] vertices, float2[] uVs, float3[] normals);
-         * */
+        /// <param name="tex">The array texture.</param>
+        /// <param name="layer">The layer to render to.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle);
 
         /// <summary>
         /// Retrieves a sub-image of the given region.
@@ -635,12 +645,12 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Checks if deferred rendering with frame buffer objects is possible
         /// </summary>
-        CAN_RENDER_DEFFERED,
+        CanRenderDeferred,
 
         /// <summary>
         /// Checks if geometry shaders can be used.
         /// </summary>
-        CAN_USE_GEOMETRY_SHADERS
+        CanUseGeometryShaders
     }
 
     /// <summary>
@@ -651,51 +661,51 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES.
         /// </summary>
-        TRIANGLES = 0,
+        Triangles = 0,
 
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES_STRIP.
         /// </summary>
-        TRIANGLE_STRIP,
+        TriangleStrip,
 
         /// <summary>
         /// Relates to OpenGl GL_TRIANGLES_FAN.
         /// </summary>
-        TRIANGLE_FAN,
+        TriangleFan,
 
         /// <summary>
         /// Relates to OpenGl GL_QUADS.
         /// </summary>
-        QUADS,
+        Quads,
 
         /// <summary>
         /// Relates to OpenGl GL_QUADS_STRIP.
         /// </summary>
-        QUAD_STRIP,
+        QuadStrip,
 
         /// <summary>
         /// Relates to OpenGl GL_POINTS.
         /// </summary>
-        POINT,
+        Points,
 
         /// <summary>
         /// Relates to OpenGl GL_LINES.
         /// </summary>
-        LINES,
+        Lines,
 
         /// <summary>
         /// Relates to OpenGl GL_LINE_STRIP.
         /// </summary>
-        LINE_STRIP,
+        LineStrip,
 
         /// <summary>
         /// Relates to OpenGl GL_LINE_LOOP.
         /// </summary>
-        LINE_LOOP,
+        LineLoop,
 
         /// <summary>
         /// Relates to OpenGl GL_PATCHES.
         /// </summary>
-        PATCHES
+        Patches
     }
 }

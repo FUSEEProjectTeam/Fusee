@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using SharpFont;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Fusee.Base.Imp.Desktop
 {
@@ -110,7 +110,7 @@ namespace Fusee.Base.Imp.Desktop
             var curve = new Curve();
 
             _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
-            
+
             curve.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
             var pointTags = _face.Glyph.Outline.Tags;
@@ -118,11 +118,11 @@ namespace Fusee.Base.Imp.Desktop
 
             //Freetype contours are defined by their end points.
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
-            
+
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
 
-            //Writes points of a freetyp contour into a CurvePart,
+            //Writes points of a freetype contour into a CurvePart,
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
@@ -180,9 +180,9 @@ namespace Fusee.Base.Imp.Desktop
                 pixelData = new byte[bmp.BufferData.Length];
                 Array.Copy(bmp.BufferData, pixelData, bmp.BufferData.Length);
             }
-            
-             ImageData ret = new ImageData(pixelData, bmp.Width, bmp.Rows,
-                new ImagePixelFormat(ColorFormat.Intensity));
+
+            ImageData ret = new ImageData(pixelData, bmp.Width, bmp.Rows,
+               new ImagePixelFormat(ColorFormat.Intensity));
 
             bitmapLeft = _face.Glyph.BitmapLeft;
             bitmapTop = _face.Glyph.BitmapTop;
@@ -225,7 +225,7 @@ namespace Fusee.Base.Imp.Desktop
 
     internal class SplitToCurvePartHelper
     {
-        #region Methodes
+        #region Methods
         public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);

@@ -19,7 +19,7 @@ namespace Fusee.Test.Math.Core
         {
             var planeOne = new PlaneD() { A = -0.5, B = 0, C = 0.5, D = 0 };
             var planeTwo = new PlaneD() { A = 0.5, B = 0, C = 0.5, D = 0 };
-            
+
             Assert.Equal(planeOne.AngleBetween(planeTwo), System.Math.PI / 2);
         }
 

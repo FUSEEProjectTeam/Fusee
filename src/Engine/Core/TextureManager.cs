@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
@@ -45,10 +46,32 @@ namespace Fusee.Engine.Core
                             textureDataEventArgs.Height);
                     }
                     break;
+                case TextureChangedEnum.FilterModeChanged:
+                    _renderContextImp.SetTextureFilterMode(toBeUpdatedTextureHandle, ((ITextureBase)sender).FilterMode);
+                    break;
+                case TextureChangedEnum.WrapModeChanged:
+                    _renderContextImp.SetTextureWrapMode(toBeUpdatedTextureHandle, ((ITextureBase)sender).WrapMode);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException($"Invalid argument: {textureDataEventArgs.ChangedEnum}");
             }
         }
 
         private ITextureHandle RegisterNewTexture(WritableCubeMap texture)
+        {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, textureHandle);
+
+            return textureHandle;
+
+        }
+
+        private ITextureHandle RegisterNewTexture(WritableArrayTexture texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
             ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
@@ -92,13 +115,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a new Instance of TextureManager. Th instance is handling the memory allocation and deallocation on the GPU by observing Texture.cs objects.
         /// </summary>
-        /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See <see cref="RegisterNewTexture"/>.</param>
+        /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation.</param>
         public TextureManager(IRenderContextImp renderContextImp)
         {
             _renderContextImp = renderContextImp;
         }
 
-        public ITextureHandle GetTextureHandleFromTexture(Texture texture)
+        public ITextureHandle GetTextureHandle(Texture texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out ITextureHandle foundTextureHandle))
             {
@@ -107,7 +130,7 @@ namespace Fusee.Engine.Core
             return foundTextureHandle;
         }
 
-        public ITextureHandle GetWritableCubeMapHandleFromTexture(WritableCubeMap texture)
+        public ITextureHandle GetTextureHandle(WritableCubeMap texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
             {
@@ -116,7 +139,16 @@ namespace Fusee.Engine.Core
             return foundTextureHandle;
         }
 
-        public ITextureHandle GetWritableTextureHandleFromTexture(WritableTexture texture)
+        public ITextureHandle GetTextureHandle(WritableArrayTexture texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
+            {
+                return RegisterNewTexture(texture);
+            }
+            return foundTextureHandle;
+        }
+
+        public ITextureHandle GetTextureHandle(WritableTexture texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
             {

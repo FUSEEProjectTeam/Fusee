@@ -122,7 +122,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.DampingDirAngular = value;
             }
         }
@@ -160,7 +160,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.DampingLimAngular = value;
             }
         }
@@ -179,7 +179,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.DampingLimLin = value;
             }
         }
@@ -295,7 +295,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.LowerAngularLimit = value;
             }
         }
@@ -314,7 +314,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.LowerLinLimit = value;
             }
         }
@@ -334,7 +334,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.MaxAngularMotorForce = value;
             }
         }
@@ -373,7 +373,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.PoweredAngularMotor = value;
             }
         }
@@ -412,7 +412,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.RestitutionDirAngular = value;
             }
         }
@@ -519,7 +519,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="frameB">The frame b.</param>
         public void SetFrames(float4x4 frameA, float4x4 frameB)
         {
-            var o = (SliderConstraintImp) _sci.UserObject;
+            var o = (SliderConstraintImp)_sci.UserObject;
             o._sci.SetFrames(Translator.Float4X4ToBtMatrix(frameA), Translator.Float4X4ToBtMatrix(frameB));
         }
 
@@ -538,7 +538,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.SoftnessDirAngular = value;
             }
         }
@@ -650,7 +650,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             {
                 var retval = _sci.SolveAngularLimit;
                 return retval;
-            }  
+            }
         }
         /// <summary>
         /// Gets a value indicating whether [solve lin limit].
@@ -682,7 +682,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.TargetAngularMotorVelocity = value;
             }
         }
@@ -736,7 +736,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (SliderConstraintImp) _sci.UserObject;
+                var o = (SliderConstraintImp)_sci.UserObject;
                 o._sci.UpperAngularLimit = value;
             }
         }

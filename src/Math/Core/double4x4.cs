@@ -138,12 +138,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The determinant of this matrix
         /// </summary>
-        public double Determinant
-        {
-            get
-            {
-                return
-                    Row0.x * Row1.y * Row2.z * Row3.w - Row0.x * Row1.y * Row2.w * Row3.z + Row0.x * Row1.z * Row2.w * Row3.y -
+        public double Determinant => Row0.x * Row1.y * Row2.z * Row3.w - Row0.x * Row1.y * Row2.w * Row3.z + Row0.x * Row1.z * Row2.w * Row3.y -
                     Row0.x * Row1.z * Row2.y * Row3.w
                     + Row0.x * Row1.w * Row2.y * Row3.z - Row0.x * Row1.w * Row2.z * Row3.y - Row0.y * Row1.z * Row2.w * Row3.x +
                     Row0.y * Row1.z * Row2.x * Row3.w
@@ -155,26 +150,18 @@ namespace Fusee.Math.Core
                     Row0.w * Row1.x * Row2.z * Row3.y
                     - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
                     Row0.w * Row1.z * Row2.y * Row3.x;
-            }
-        }
 
         /// <summary>
         /// Returns the trace of this matrix
         /// </summary>
-        public double Trace
-        {
-            get
-            {
-                return Row0.x + Row1.y + Row2.z + Row3.w;
-            }
-        }
+        public double Trace => Row0.x + Row1.y + Row2.z + Row3.w;
 
         /// <summary>
         /// The first column of this matrix
         /// </summary>
         public double4 Column0
         {
-            get { return new double4(Row0.x, Row1.x, Row2.x, Row3.x); }
+            get => new double4(Row0.x, Row1.x, Row2.x, Row3.x);
             set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
         }
 
@@ -183,7 +170,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column1
         {
-            get { return new double4(Row0.y, Row1.y, Row2.y, Row3.y); }
+            get => new double4(Row0.y, Row1.y, Row2.y, Row3.y);
             set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
         }
 
@@ -192,7 +179,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column2
         {
-            get { return new double4(Row0.z, Row1.z, Row2.z, Row3.z); }
+            get => new double4(Row0.z, Row1.z, Row2.z, Row3.z);
             set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
         }
 
@@ -201,7 +188,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column3
         {
-            get { return new double4(Row0.w, Row1.w, Row2.w, Row3.w); }
+            get => new double4(Row0.w, Row1.w, Row2.w, Row3.w);
             set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
         }
 
@@ -210,8 +197,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M11
         {
-            get { return Row0.x; }
-            set { Row0.x = value; }
+            get => Row0.x;
+            set => Row0.x = value;
         }
 
         /// <summary>
@@ -219,8 +206,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M12
         {
-            get { return Row0.y; }
-            set { Row0.y = value; }
+            get => Row0.y;
+            set => Row0.y = value;
         }
 
         /// <summary>
@@ -228,8 +215,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M13
         {
-            get { return Row0.z; }
-            set { Row0.z = value; }
+            get => Row0.z;
+            set => Row0.z = value;
         }
 
         /// <summary>
@@ -237,8 +224,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M14
         {
-            get { return Row0.w; }
-            set { Row0.w = value; }
+            get => Row0.w;
+            set => Row0.w = value;
         }
 
         /// <summary>
@@ -246,8 +233,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M21
         {
-            get { return Row1.x; }
-            set { Row1.x = value; }
+            get => Row1.x;
+            set => Row1.x = value;
         }
 
         /// <summary>
@@ -255,8 +242,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M22
         {
-            get { return Row1.y; }
-            set { Row1.y = value; }
+            get => Row1.y;
+            set => Row1.y = value;
         }
 
         /// <summary>
@@ -264,8 +251,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M23
         {
-            get { return Row1.z; }
-            set { Row1.z = value; }
+            get => Row1.z;
+            set => Row1.z = value;
         }
 
         /// <summary>
@@ -273,8 +260,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M24
         {
-            get { return Row1.w; }
-            set { Row1.w = value; }
+            get => Row1.w;
+            set => Row1.w = value;
         }
 
         /// <summary>
@@ -282,8 +269,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M31
         {
-            get { return Row2.x; }
-            set { Row2.x = value; }
+            get => Row2.x;
+            set => Row2.x = value;
         }
 
         /// <summary>
@@ -291,8 +278,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M32
         {
-            get { return Row2.y; }
-            set { Row2.y = value; }
+            get => Row2.y;
+            set => Row2.y = value;
         }
 
         /// <summary>
@@ -300,8 +287,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M33
         {
-            get { return Row2.z; }
-            set { Row2.z = value; }
+            get => Row2.z;
+            set => Row2.z = value;
         }
 
         /// <summary>
@@ -309,8 +296,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M34
         {
-            get { return Row2.w; }
-            set { Row2.w = value; }
+            get => Row2.w;
+            set => Row2.w = value;
         }
 
         /// <summary>
@@ -318,8 +305,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M41
         {
-            get { return Row3.x; }
-            set { Row3.x = value; }
+            get => Row3.x;
+            set => Row3.x = value;
         }
 
         /// <summary>
@@ -327,8 +314,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M42
         {
-            get { return Row3.y; }
-            set { Row3.y = value; }
+            get => Row3.y;
+            set => Row3.y = value;
         }
 
         /// <summary>
@@ -336,8 +323,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M43
         {
-            get { return Row3.z; }
-            set { Row3.z = value; }
+            get => Row3.z;
+            set => Row3.z = value;
         }
 
         /// <summary>
@@ -345,8 +332,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M44
         {
-            get { return Row3.w; }
-            set { Row3.w = value; }
+            get => Row3.w;
+            set => Row3.w = value;
         }
 
         /// <summary>
@@ -355,11 +342,7 @@ namespace Fusee.Math.Core
         /// <remarks>
         /// The offset part of the matrix consists of the M14, M24 and M34 components (in row major order notation).
         /// </remarks>
-        public double3 Offset
-        {
-            get { return new double3(Row0.w, Row1.w, Row2.w); }
-            // No setter here - might be too confusing
-        }
+        public double3 Offset => new double3(Row0.w, Row1.w, Row2.w);
 
         #endregion Properties
 
@@ -1644,7 +1627,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider provider)
         {
@@ -1656,7 +1639,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return String.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
+            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -1697,17 +1680,12 @@ namespace Fusee.Math.Core
 
         #region IEquatable<Matrix4> Members       
 
-         /// <summary>
-         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
-         /// </summary>       
-        public bool IsAffine
-        {
-            get
-            {
+        /// <summary>
+        /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
+        /// </summary>       
+        public bool IsAffine =>
                 // Column order notation
-                return (Row3 == double4.UnitW);
-            }
-        }
+                (Row3 == double4.UnitW);
 
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
         /// <param name="other">A matrix to compare with this matrix.</param>

@@ -47,10 +47,10 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The UI is embedded into the 3D world.
         /// </summary>
-        WORLD,
+        World,
         /// <summary>
         /// The UI should be overlaid onto the 2D screen.
         /// </summary>
-        SCREEN
+        Screen
     }
 }

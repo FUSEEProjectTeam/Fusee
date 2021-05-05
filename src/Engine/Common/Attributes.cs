@@ -36,7 +36,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         public FuseeApplicationAttribute()
         {
-            
+
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Fusee.Engine.Imp.Network.Desktop
 {
-    // Not documented because this class is not approved yet.
     class Compression
     {
         public static byte[] SerializeAndCompress(object obj)

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>Fusee.App.$ext_safeprojectname$.Core</AssemblyName>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>..\bin\Core</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fusee.Core" Version="0.9.1" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- Suppress warning NU1701: Package restore of OpenTK 3.1 with net462 - remove after update to OpenTK 4 -->
+    <NoWarn>NU1701</NoWarn>
+  </PropertyGroup>
+</Project>

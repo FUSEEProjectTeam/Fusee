@@ -1,6 +1,6 @@
-﻿using System;
-using Fusee.Xene;
+﻿using Fusee.Xene;
 using ProtoBuf;
+using System;
 
 namespace Fusee.Serialization.V1
 {
@@ -11,7 +11,7 @@ namespace Fusee.Serialization.V1
 
     [ProtoInclude(100, typeof(FusTransform))]
     [ProtoInclude(101, typeof(FusMesh))]
-    [ProtoInclude(102, typeof(FusMaterial))]
+    [ProtoInclude(102, typeof(FusMaterialBase))]
     [ProtoInclude(103, typeof(FusLight))]
     [ProtoInclude(104, typeof(FusWeight))]
     [ProtoInclude(105, typeof(FusAnimation))]

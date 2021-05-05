@@ -357,11 +357,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Initializes a new instance of the <see cref="RenderCanvasGameView"/> class.
         /// </summary>
         /// <param name="renderCanvasImp">The render canvas implementation.</param>
-        /// <param name="antiAliasing">if set to <c>true</c> perform antialiasing.</param>
+        /// <param name="antialiasing">if set to <c>true</c> perform antialiasing.</param>
         /// <param name="context">The Android context.</param>
         /// <param name="attrs">An Android View attribute set.</param>
         /// <param name="run"></param>
-        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antiAliasing, Context context, IAttributeSet attrs, Action run) :
+        public RenderCanvasGameView(RenderCanvasImp renderCanvasImp, bool antialiasing, Context context, IAttributeSet attrs, Action run) :
             base(context, attrs)
         {
             _renderCanvasImp = renderCanvasImp;
@@ -373,30 +373,37 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #region Overrides
 
+        private bool _wasLoaded = false;
+
         protected override void OnLoad(EventArgs e)
         {
-            // Check for necessary capabilities
-            string version = GL.GetString(All.Version);
-
-            int major = version[0];
-            // int minor = (int)version[2];
-
-            if (major < 2)
+            if (!_wasLoaded)
             {
-                throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
+                // Check for necessary capabilities
+                string version = GL.GetString(All.Version);
+
+                int major = version[0];
+                // int minor = (int)version[2];
+
+                if (major < 2)
+                {
+                    throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
+                }
+
+                GL.ClearColor(0, 0.3f, 0.1f, 1);
+
+                GL.Enable(All.DepthTest);
+                GL.Enable(All.CullFace);
+
+                // Use VSync!
+                // Context.SwapInterval = 1;
+                _run?.Invoke();
+
+                _renderCanvasImp.DoInit();
+                _stopwatch.Start();
+
+                _wasLoaded = true;
             }
-
-            GL.ClearColor(0, 0.3f, 0.1f, 1);
-
-            GL.Enable(All.DepthTest);
-            GL.Enable(All.CullFace);
-
-            // Use VSync!
-            // Context.SwapInterval = 1;
-            _run?.Invoke();
-
-            _renderCanvasImp.DoInit();
-            _stopwatch.Start();
         }
 
         protected override void OnUnload(EventArgs e)
@@ -420,9 +427,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 _renderCanvasImp.DoRender();
         }
 
-        // This method is called every time the context needs
-        // to be recreated. Use it to set any egl-specific settings
-        // prior to context creation
+        // This method is called every time the context needs to be recreated. 
+        //Use it to set any egl-specific settings prior to context creation.
         protected override void CreateFrameBuffer()
         {
             ContextRenderingApi = GLVersion.ES3;

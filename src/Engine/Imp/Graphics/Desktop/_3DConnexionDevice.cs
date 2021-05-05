@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion;
+using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Runtime.InteropServices;
-using Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion;
+using System.Threading;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
 {
@@ -629,7 +629,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         //}
 
         #region IDisposable Member
-            
+
         /// <summary>
         /// Disposes of the device.
         /// </summary>

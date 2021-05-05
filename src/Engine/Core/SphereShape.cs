@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Gats and sets the local scaling of the sphere shape.
+        /// Gets and sets the local scaling of the sphere shape.
         /// </summary>
         public override float3 LocalScaling
         {
@@ -53,10 +53,10 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (SphereShape) _sphereShapeImp.UserObject;
+                var o = (SphereShape)_sphereShapeImp.UserObject;
                 o._sphereShapeImp.Radius = value;
             }
         }
-        
+
     }
 }

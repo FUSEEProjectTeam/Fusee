@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core
             {
                 if (value == null)
                 {
-                    Diagnostics.Warn("WARNING: No Audio implementation set. To enable Audio functionality inject an appropriate implementation of IAudioImp in your platform specific application main module.");
+                    Diagnostics.Verbose("WARNING: No Audio implementation set. To enable Audio functionality inject an appropriate implementation of IAudioImp in your platform specific application main module.");
                     _audioImp = new DummyAudioImp();
                 }
                 else
@@ -55,11 +55,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Loads an audiofile.
+        /// Loads an audio file.
         /// </summary>
         /// <param name="fileName">Path to the file.</param>
-        /// <param name="streaming"><c>true</c> if the audiofile shall be streamed; otherwise, <c>false</c>.</param>
-        /// <returns>The audiofile as an <see cref="IAudioStreamImp"/></returns>
+        /// <param name="streaming"><c>true</c> if the audio file shall be streamed; otherwise, <c>false</c>.</param>
+        /// <returns>The audio file as an <see cref="IAudioStreamImp"/></returns>
         public IAudioStreamImp LoadFile(string fileName, bool streaming = false)
         {
             return _audioImp.LoadFile(fileName, streaming);

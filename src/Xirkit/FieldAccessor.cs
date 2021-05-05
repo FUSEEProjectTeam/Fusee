@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Fusee.Math.Core;
+using System.Diagnostics;
 using System.Reflection;
-using Fusee.Math.Core;
 
 namespace Fusee.Xirkit
 {
@@ -45,13 +45,13 @@ namespace Fusee.Xirkit
         public T Get(object o)
         {
             // NOTE: no checking done here.
-            return (T) _fieldInfo.GetValue(o);
+            return (T)_fieldInfo.GetValue(o);
         }
     }
 
     /// <summary>
     /// Member Accessor implementation specialized on accessing fields where the type of the pin and the actual type of the field are different.
-    /// The accsessor performs the conversion operation specefied when performing its set or get operations.
+    /// The accessor performs the conversion operation specified when performing its set or get operations.
     /// </summary>
     /// <typeparam name="TPin">The type of the pin.</typeparam>
     /// <typeparam name="TObj">The type of the field.</typeparam>

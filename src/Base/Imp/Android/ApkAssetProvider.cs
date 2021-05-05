@@ -1,14 +1,17 @@
+using Android.Content;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
 using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Android.Content;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Base.Imp.Android
 {
+    /// <summary>
+    /// <see cref="StreamAssetProvider"/> implementation for the Android platform
+    /// </summary>
     public class ApkAssetProvider : StreamAssetProvider
     {
         Context _androidContext;
@@ -47,7 +50,7 @@ namespace Fusee.Base.Imp.Android
                         case ".jpeg":
                         case ".png":
                         case ".bmp":
-                            return await FileDecoder.LoadImageAsync((Stream)storage);
+                            return await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false);
                     }
                     return null;
                 },
@@ -117,11 +120,19 @@ namespace Fusee.Base.Imp.Android
             return _androidContext.Assets.List(dir).Contains(file);
         }
 
-        protected override Task<Stream> GetStreamAsync(string id)
+        /// <summary>
+        /// Creates a stream for the asset identified by id using <see cref="FileStream"/>
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>
+        /// A valid stream for reading if the asset ca be retrieved. null otherwise.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        protected override Stream GetStreamAsync(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return Task.Factory.StartNew(() => _androidContext.Assets.Open(id));
+            return _androidContext.Assets.Open(id);
         }
 
         protected override Task<bool> CheckExistsAsync(string id)

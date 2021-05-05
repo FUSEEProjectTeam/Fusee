@@ -1,4 +1,6 @@
-﻿namespace Fusee.Serialization
+﻿using Fusee.Serialization.V1;
+
+namespace Fusee.Serialization
 {
     /// <summary>
     /// <para>
@@ -11,7 +13,7 @@
     /// binary format.
     /// </para>
     /// <para>
-    /// Serialized FUSEE scenegraphs are stored in *.fus files. 
+    /// Serialized FUSEE scene graphs are stored in *.fus files. 
     /// </para>
     /// <para>
     /// In Addition Protobuf.net's Serializer class can
@@ -22,26 +24,26 @@
     /// </para>
     /// <para>
     /// The three
-    /// main building block types for scenegraphs are 
+    /// main building block types for scene graphs are 
     /// <list type="bullet">
     ///   <item>
-    ///     <term><see cref="SceneContainer"/></term>
+    ///     <term><see cref="FusScene"/></term>
     ///     <description>
     ///       Root object of each .fus file. Contains a file header
     ///       and a list of root nodes.</description>
     ///   </item>
     ///   <item>
-    ///     <term><see cref="SceneNodeContainer"/></term>
+    ///     <term><see cref="FusNode"/></term>
     ///     <description>
     ///       Instances of this type (called nodes) make up the hierarchy of objects.
     ///       Each node contains a list of child nodes and a list of components.
     ///     </description>
     ///   </item>
     ///   <item>
-    ///     <term><see cref="SceneComponentContainer"/></term>
+    ///     <term><see cref="FusComponent"/></term>
     ///     <description>
     ///       Instances of this type (called components) store the scene's payload. 
-    ///       Various component types (inherited from <see cref="SceneComponentContainer"/>)
+    ///       Various component types (inherited from <see cref="FusComponent"/>)
     ///       exist to keep the different components a scene is made of.
     ///     </description>
     ///   </item>

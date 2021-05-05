@@ -12,7 +12,7 @@ namespace Fusee.Xene
         // Unfortunate construct, but there seems no other way. What we really needed here is a MixIn to make 
         // a INode or SceneContainer implement IEnumerable (afterwards). All C# offers us is to 
         // define ExtensionMethods returning an IEnumerable<>.
-        // Thus we need some class to implement that. Here it is - tada:
+        // Thus we need some class to implement that:
         internal class SceneNodeEnumerable<TNodeToFind, TNode, TComponent> : IEnumerable<TNodeToFind>
             where TNodeToFind : TNode
             where TNode : class, INode
@@ -298,7 +298,6 @@ namespace Fusee.Xene
 
     }
 
-
     /// <summary>
     /// Allows various searches over scene graphs. 
     /// This class can be used directly but will be more commonly used by calling one 
@@ -405,7 +404,6 @@ namespace Fusee.Xene
             }
         }
     }
-
 
     /// <summary>
     /// Base class serving for various searches over scene graphs. See the list of derived classes.

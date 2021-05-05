@@ -43,7 +43,7 @@ namespace Fusee.Serialization.V1
         /// <summary>
         /// Returns all components of this node
         /// </summary>
-        public IEnumerable<IComponent> EnumComponents => Components.Select(idx => Scene?.ComponentList[idx]);
+        public IEnumerable<IComponent> EnumComponents => Components?.Select(idx => Scene?.ComponentList[idx]);
 
         /// <summary>
         /// Adds a component to this node's list of components. Internally the component is 

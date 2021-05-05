@@ -344,16 +344,16 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void CovarianceMatrixSingle_IsValid()
         {
-            var val = new List<float3> 
-            { 
-                new float3(90, 60, 90), new float3(90, 90, 30), 
-                new float3(60, 60, 60), new float3(60, 60, 90), new float3(30, 30, 30) 
+            var val = new List<float3>
+            {
+                new float3(90, 60, 90), new float3(90, 90, 30),
+                new float3(60, 60, 60), new float3(60, 60, 90), new float3(30, 30, 30)
             };
 
             var centroid = M.CalculateCentroid(val);
             var actual = M.CreateCovarianceMatrix(centroid, val);
 
-            var expected = new float4x4(new float4(504, 360, 180, 0), new float4(360, 360, 0, 0), new float4(180, 0, 720, 0), new float4(0,0,0,1));
+            var expected = new float4x4(new float4(504, 360, 180, 0), new float4(360, 360, 0, 0), new float4(180, 0, 720, 0), new float4(0, 0, 0, 1));
 
             Assert.Equal(expected, actual);
         }
@@ -413,7 +413,7 @@ namespace Fusee.Test.Math.Core
                 new float3(0.621058f, 0.172964f, 0.764441f),
             };
 
-            for(int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; i++)
             {
                 const int precision = 3;
                 Assert.Equal(expectedVals[i], actual.Values[i], precision);
@@ -421,7 +421,7 @@ namespace Fusee.Test.Math.Core
                 Assert.Equal(expectedVectors[i].y, actual.Vectors[i].y, precision);
                 Assert.Equal(expectedVectors[i].z, actual.Vectors[i].z, precision);
             }
-           
+
         }
 
         /// <summary>       
@@ -512,7 +512,6 @@ namespace Fusee.Test.Math.Core
             Assert.Equal(new double3(0.5, 0.5, 0.5), M.CalculateCentroid(data));
         }
         #endregion
-
 
         #region BinomialCoefficient
         [Fact]
@@ -651,6 +650,14 @@ namespace Fusee.Test.Math.Core
         public void Clamp_IsMinIsMax_double(double x, double min, double max)
         {
             Assert.Equal(1, M.Clamp(x, min, max));
+        }
+
+        [Theory]
+        [InlineData(2.222f, 1.111f, 0.0f)]
+        [InlineData(1.111f, 2.222f, 1.0f)]
+        public void Step(float edge, float val, float expected)
+        {
+            Assert.Equal(expected, M.Step(edge, val));
         }
 
         #endregion

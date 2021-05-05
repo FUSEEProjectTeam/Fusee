@@ -1,8 +1,8 @@
-﻿using System;
+﻿using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Core.Scene;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -29,9 +29,9 @@ namespace Fusee.Engine.Core
         private static void ConvertToMesh(Jometri.Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
             var faces = geometry.GetAllFaces().ToList();
-            if(faces[0].Handle == 1)
+            if (faces[0].Handle == 1)
                 faces.RemoveAt(0);
-            
+
             var triangleCount = faces.Count;
             var vertCount = triangleCount * 3;
 
@@ -54,8 +54,8 @@ namespace Fusee.Engine.Core
                 {
                     verts.Add(vertex.VertData.Pos);
 
-                    if(face.FaceData.FaceNormal == float3.Zero)
-                        geometry.SetFaceNormal(geometry.GetFaceOuterVertices(face.Handle).ToList(),face);
+                    if (face.FaceData.FaceNormal == float3.Zero)
+                        geometry.SetFaceNormal(geometry.GetFaceOuterVertices(face.Handle).ToList(), face);
 
                     normals.Add(face.FaceData.FaceNormal);
                 }

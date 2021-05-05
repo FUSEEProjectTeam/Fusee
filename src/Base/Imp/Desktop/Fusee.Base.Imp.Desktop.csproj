@@ -1,13 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
-    <PackageId>Fusee.Base.Imp.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <Description>Fusee Base Imp Desktop</Description>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
@@ -16,10 +11,6 @@
     <EmbeddedResource Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
@@ -30,5 +21,11 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.2" />
   </ItemGroup>
 </Project>

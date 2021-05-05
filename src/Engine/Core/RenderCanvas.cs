@@ -1,7 +1,7 @@
-using System;
-using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using System;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -140,11 +140,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Whether or not the app is initialized.
-        /// </summary>
-        protected bool _appInitialized;
-
-        /// <summary>
         /// Initializes the canvas for the rendering loop.
         /// </summary>
         public void InitCanvas()
@@ -166,13 +161,11 @@ namespace Fusee.Engine.Core
             Network.Instance.NetworkImp = NetworkImplementor;
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
-            CanvasImplementor.Init += async delegate { await Init(); _appInitialized = true; };
+            CanvasImplementor.Init += delegate { Init(); };
             CanvasImplementor.UnLoad += delegate { DeInit(); };
 
             CanvasImplementor.Render += delegate
             {
-                if (!_appInitialized) return; // let init() finish!
-
                 // pre-rendering
                 Network.Instance.OnUpdateFrame();
                 Input.Instance.PreRender();
@@ -215,9 +208,8 @@ namespace Fusee.Engine.Core
         ///     Override this method in inherited classes of RenderCanvas to apply initialization code. Typically, an application
         ///     will call one-time initialization code on the render context (<see cref="RC" />) to set render states.
         /// </remarks>
-        public virtual async Task<bool> Init()
+        public virtual void Init()
         {
-            return false;
         }
 
         /// <summary>
@@ -247,7 +239,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Set the cursor (the mouse pointer image) to one of the pre-defined types
+        ///     Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)

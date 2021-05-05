@@ -1,6 +1,8 @@
 ﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using Microsoft.Win32;
@@ -238,7 +240,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new TreeComponentItem
             {
                 Name = "Material PBR Component",
-                Desc = $"{sfx.Name}, Diffuse: {sfx.GetEffectParam(UniformNameDeclarations.AlbedoColor)}, Specular: {sfx.GetEffectParam(UniformNameDeclarations.AlbedoColor)}"
+                Desc = $"{sfx.Name}, Diffuse: {sfx.GetFxParam<float4>(UniformNameDeclarations.Albedo)}, Specular: {sfx.GetFxParam<float4>(UniformNameDeclarations.Albedo)}"
             });
         }
 
@@ -251,7 +253,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new TreeComponentItem
             {
                 Name = "Camera Component",
-                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
+                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 
@@ -413,7 +415,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Material Component",
-                Desc = $"{sfx.Name}, Diffuse: {sfx.GetEffectParam(UniformNameDeclarations.AlbedoColor)}, Specular: {sfx.GetEffectParam(UniformNameDeclarations.SpecularColor)}"
+                Desc = $"{sfx.Name}, Diffuse: {sfx.GetFxParam<float4>(UniformNameDeclarations.Albedo)}"
             });
         }
 
@@ -550,4 +552,3 @@ namespace Fusee.Tools.FusViewer.ViewModel
 
 
 }
-

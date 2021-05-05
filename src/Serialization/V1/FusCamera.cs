@@ -4,7 +4,7 @@ using ProtoBuf;
 namespace Fusee.Serialization.V1
 {
     /// <summary>
-    /// Used to define the Projection method of a <see cref="Camera"/>. Defines how the projection matrix is calculated.
+    /// Used to define the Projection method of a <see cref="FusCamera"/>. Defines how the projection matrix is calculated.
     /// </summary>
     public enum ProjectionMethod
     {
@@ -86,6 +86,3 @@ namespace Fusee.Serialization.V1
         public bool Active = true;
     }
 }
-
-
-    

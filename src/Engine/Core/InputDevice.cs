@@ -1,7 +1,7 @@
+using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core
             // the other way (poll a listenable axis / listen to a pollable axis).
             foreach (var axisImpDescription in _inpDevImp.AxisImpDesc)
             {
-                // Keep track of IDs (to keep them uniqe)
+                // Keep track of IDs (to keep them unique)
                 int axisId = axisImpDescription.AxisDesc.Id;
                 if (axisId > _nextAxisId)
                     _nextAxisId = axisId;
@@ -128,7 +128,7 @@ namespace Fusee.Engine.Core
 
         internal void Reconnect(IInputDeviceImp deviceImp)
         {
-            if (_isConnected) throw  new InvalidOperationException($"Cannot reconnect already connected input device (connected to {_inpDevImp.Desc}). Disconnect first.");
+            if (_isConnected) throw new InvalidOperationException($"Cannot reconnect already connected input device (connected to {_inpDevImp.Desc}). Disconnect first.");
             if (deviceImp == null) throw new ArgumentNullException(nameof(deviceImp));
 
             _inpDevImp = deviceImp;
@@ -147,7 +147,7 @@ namespace Fusee.Engine.Core
                 {
                     // Inform axes-to-listen about the new value (the disconnected device won't do it)...
                     // Do NOT inform axes-to-poll here since they will be informed in PreRender anyway.
-                    AxisValueChanged(this, new AxisValueChangedArgs {Axis = _axes[axisId], Value = 0});
+                    AxisValueChanged(this, new AxisValueChangedArgs { Axis = _axes[axisId], Value = 0 });
                 }
                 _axesToListen[axisId] = 0;
             }
@@ -163,7 +163,7 @@ namespace Fusee.Engine.Core
                 {
                     // Inform buttons-to-listen about the new value (the disconnected device won't do it)...
                     // Do NOT inform buttons-to-poll here since they will be informed in PreRender anyway.
-                    ButtonValueChanged(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed  = false });
+                    ButtonValueChanged(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed = false });
                 }
                 _buttonsToListen[buttonId] = false;
             }
@@ -203,7 +203,7 @@ namespace Fusee.Engine.Core
         /// parameter can be used in user dialogs to identify devices.
         /// </summary>
         /// <value>
-        /// The deivce description.
+        /// The device description.
         /// </value>
         public string Desc => _inpDevImp.Desc;
 
@@ -245,7 +245,7 @@ namespace Fusee.Engine.Core
             if (_axes.TryGetValue(axisId, out desc))
                 return desc;
 
-            throw new InvalidOperationException($"Cannot retrieve axis information for unknon axis {axisId}.");
+            throw new InvalidOperationException($"Cannot retrieve axis information for unknown axis {axisId}.");
         }
 
         /// <summary>
@@ -274,8 +274,8 @@ namespace Fusee.Engine.Core
             }
 
             return value;
-        }        
-        
+        }
+
         /// <summary>
         ///     Gets the value currently present at the given axis. Without considering the deadzone.
         /// </summary>
@@ -377,7 +377,7 @@ namespace Fusee.Engine.Core
             if (_buttons.TryGetValue(buttonId, out desc))
                 return desc;
 
-            throw new InvalidOperationException($"Cannot retrieve button information for unknon button {buttonId}.");
+            throw new InvalidOperationException($"Cannot retrieve button information for unknown button {buttonId}.");
         }
 
         /// <summary>
@@ -415,7 +415,7 @@ namespace Fusee.Engine.Core
         /// </returns>
         public bool IsButtonDown(int buttonId)
         {
-            if (!_buttons.ContainsKey(buttonId)) throw new InvalidOperationException($"IsButtonDown called for unknon button {buttonId}.");
+            if (!_buttons.ContainsKey(buttonId)) throw new InvalidOperationException($"IsButtonDown called for unknown button {buttonId}.");
 
             return _buttonsDown.Contains(buttonId);
         }
@@ -431,7 +431,7 @@ namespace Fusee.Engine.Core
         /// </returns>
         public bool IsButtonUp(int buttonId)
         {
-            if (!_buttons.ContainsKey(buttonId)) throw new InvalidOperationException($"IsButtonDown called for unknon button {buttonId}.");
+            if (!_buttons.ContainsKey(buttonId)) throw new InvalidOperationException($"IsButtonDown called for unknown button {buttonId}.");
 
             return _buttonsUp.Contains(buttonId);
         }
@@ -473,13 +473,13 @@ namespace Fusee.Engine.Core
         /// To register your own axis you need to provide a working <see cref="AxisValueCalculator"/>. This method
         /// is called whenever the axis value needs to be present.
         /// Any state the calculation depends upon should be queried from existing axes presented by the input device 
-        /// or "statically" stored in the closure around the calculator. The methodes
+        /// or "statically" stored in the closure around the calculator. The methods
         /// <list type="bullet"></list>
         /// <item><see cref="RegisterSingleButtonAxis"/></item>
         /// <item><see cref="RegisterTwoButtonAxis"/></item>
         /// <item><see cref="RegisterVelocityAxis"/></item>
         /// </remarks>
-        /// provide pre-defined calculators for certain purposes.
+        /// provide predefined calculators for certain purposes.
         public void RegisterCalculatedAxis(AxisDescription calculatedAxisDescription, AxisValueCalculator calculator, float initialValue = 0)
         {
             if (calculatedAxisDescription.Id < _nextAxisId)
@@ -509,7 +509,7 @@ namespace Fusee.Engine.Core
         /// <param name="origAxisId">The original axis identifier.</param>
         /// <param name="triggerButtonId">If a valid id is passed, the derived axis only produces values if the specified button is pressed. The velocity is only
         /// calculated based on the axis value when the trigger button is pressed. This allows touch velocities to always start with a speed of zero when the touch starts (e.g. the 
-        /// button identifying that a touchpoint has contact). Otherwise touch velocites would become huge between two click-like touches on different screen locations. 
+        /// button identifying that a touchpoint has contact). Otherwise touch velocities would become huge between two click-like touches on different screen locations. 
         /// If this parameter is 0 (zero), the derived axis will always be calculated based on the original axis only.</param>
         /// <param name="velocityAxisId">The derived axis identifier. Note this value must be bigger than all existing axis Ids. Leave this value
         /// zero to have a new identifier calculated automatically.</param>
@@ -554,7 +554,7 @@ namespace Fusee.Engine.Core
                 bool closureOffLastTime = true;
                 calculator = delegate (float deltaTime)
                 {
-                    if (deltaTime <= float.Epsilon) // avoid infinite velocites
+                    if (deltaTime <= float.Epsilon) // avoid infinite velocities
                         return 0;
 
                     if (!GetButton(triggerButtonId))
@@ -580,7 +580,7 @@ namespace Fusee.Engine.Core
                 float closureLastValue = GetAxis(origAxisId);
                 calculator = delegate (float deltaTime)
                 {
-                    if (deltaTime <= float.Epsilon) // avoid infinite velocites
+                    if (deltaTime <= float.Epsilon) // avoid infinite velocities
                         return 0;
 
                     float newVal = GetAxis(origAxisId);
@@ -625,7 +625,7 @@ namespace Fusee.Engine.Core
         /// <param name="name">The name of the new axis.</param>
         /// <returns>The axis description of the newly created calculated axis.</returns>
         /// <remarks>
-        ///   Button axes are useful to simulate a trigger or thrust panel with the help of individual buttons. There is a user-defineable acceleration and 
+        ///   Button axes are useful to simulate a trigger or thrust panel with the help of individual buttons. There is a user-definable acceleration and 
         ///   deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
         public AxisDescription RegisterSingleButtonAxis(int origButtonId, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.2f, float rampDownTime = 0.2f, int buttonAxisId = 0, string name = null)
@@ -638,14 +638,14 @@ namespace Fusee.Engine.Core
 
             // Ramp cannot be 90° as this would require special case handling
             if (rampUpTime <= float.MinValue)
-                rampUpTime = 2*float.MinValue;
+                rampUpTime = 2 * float.MinValue;
             if (rampDownTime <= float.MinValue)
-                rampDownTime = 2*float.MinValue;
+                rampDownTime = 2 * float.MinValue;
 
             bool closureLastBtnState = GetButton(origButtonId);
             float closureLastAxisValue = 0;
             float closureAnimDirection = 0;
-            AxisValueCalculator calculator = delegate(float deltaTime)
+            AxisValueCalculator calculator = delegate (float deltaTime)
             {
                 float ret;
                 bool newBtnState = GetButton(origButtonId);
@@ -658,7 +658,7 @@ namespace Fusee.Engine.Core
 
                 if (closureAnimDirection > 0)
                 {
-                    ret = closureLastAxisValue + deltaTime/rampUpTime;
+                    ret = closureLastAxisValue + deltaTime / rampUpTime;
                     if (ret >= 1)
                     {
                         closureAnimDirection = 0;
@@ -667,7 +667,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (closureAnimDirection < 0)
                 {
-                    ret = closureLastAxisValue - deltaTime/rampDownTime;
+                    ret = closureLastAxisValue - deltaTime / rampDownTime;
                     if (ret < 0)
                     {
                         closureAnimDirection = 0;
@@ -689,7 +689,13 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id, Name = name ?? $"{origButtonDesc.Name} Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = 0.0f
+                Id = id,
+                Name = name ?? $"{origButtonDesc.Name} Axis",
+                Bounded = AxisBoundedType.Constant,
+                Direction = direction,
+                Nature = AxisNature.Speed,
+                MaxValueOrAxis = 1.0f,
+                MinValueOrAxis = 0.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -713,10 +719,10 @@ namespace Fusee.Engine.Core
         /// </returns>
         /// <remarks>
         /// Button axes are useful to simulate one axis of a joypad or a joystick with the help of two individual buttons. One button acts as pushing the 
-        /// joystick into the positve direction along the given axis by animating the axis' value to 1 and the a second button acts as pushing the joystick 
+        /// joystick into the positive direction along the given axis by animating the axis' value to 1 and the a second button acts as pushing the joystick 
         /// into the negative direction by animating the value to -1. Releasing both buttons will animate the value to 0. Pushing both buttons simultaneously
         /// will stop the animation and keep the value at its current amount.
-        /// There is a user-defineable acceleration and deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
+        /// There is a user-definable acceleration and deceleration period, so a simulation resulting on this input delivers a feeling of inertance.
         /// </remarks>
         public AxisDescription RegisterTwoButtonAxis(int origButtonIdNegative, int origButtonIdPositive, AxisDirection direction = AxisDirection.Unknown, float rampUpTime = 0.15f, float rampDownTime = 0.35f, int buttonAxisId = 0, string name = null)
         {
@@ -735,16 +741,16 @@ namespace Fusee.Engine.Core
 
             // Ramp cannot be 90° as this would require special case handling
             if (rampUpTime <= float.MinValue)
-                rampUpTime = 2*float.MinValue;
+                rampUpTime = 2 * float.MinValue;
             if (rampDownTime <= float.MinValue)
-                rampDownTime = 2*float.MinValue;
+                rampDownTime = 2 * float.MinValue;
 
 
             bool closureLastBtnStatePos = GetButton(origButtonIdPositive);
             bool closureLastBtnStateNeg = GetButton(origButtonIdNegative);
             float closureLastAxisValue = 0;
             float closureAnimDirection = 0;
-            AxisValueCalculator calculator = delegate(float deltaTime)
+            AxisValueCalculator calculator = delegate (float deltaTime)
             {
                 float ret;
                 bool newBtnStatePos = GetButton(origButtonIdPositive);
@@ -759,7 +765,7 @@ namespace Fusee.Engine.Core
                 if (newBtnStateNeg != closureLastBtnStateNeg)
                 {
                     // The state of the button has changed
-                    closureAnimDirection = - ((newBtnStateNeg ? 1 : 0) - (closureLastBtnStateNeg ? 1 : 0));
+                    closureAnimDirection = -((newBtnStateNeg ? 1 : 0) - (closureLastBtnStateNeg ? 1 : 0));
                     closureLastBtnStateNeg = newBtnStateNeg;
                 }
 
@@ -775,7 +781,7 @@ namespace Fusee.Engine.Core
 
                 if (closureAnimDirection > 0)
                 {
-                    ret = closureLastAxisValue + deltaTime/animTime;
+                    ret = closureLastAxisValue + deltaTime / animTime;
                     if (ret >= animGoal)
                     {
                         closureAnimDirection = 0;
@@ -784,7 +790,7 @@ namespace Fusee.Engine.Core
                 }
                 else if (closureAnimDirection < 0)
                 {
-                    ret = closureLastAxisValue - deltaTime/animTime;
+                    ret = closureLastAxisValue - deltaTime / animTime;
                     if (ret <= animGoal)
                     {
                         closureAnimDirection = 0;
@@ -806,7 +812,13 @@ namespace Fusee.Engine.Core
 
             var calculatedAxisDesc = new AxisDescription
             {
-                Id = id, Name = name ?? $"{origButtonDescPos.Name} {origButtonDescNeg.Name} Axis", Bounded = AxisBoundedType.Constant, Direction = direction, Nature = AxisNature.Speed, MaxValueOrAxis = 1.0f, MinValueOrAxis = -1.0f
+                Id = id,
+                Name = name ?? $"{origButtonDescPos.Name} {origButtonDescNeg.Name} Axis",
+                Bounded = AxisBoundedType.Constant,
+                Direction = direction,
+                Nature = AxisNature.Speed,
+                MaxValueOrAxis = 1.0f,
+                MinValueOrAxis = -1.0f
             };
 
             RegisterCalculatedAxis(calculatedAxisDesc, calculator);
@@ -837,13 +849,13 @@ namespace Fusee.Engine.Core
 
                     if (_axesToPoll[axisId] != curVal)
                     {
-                        AxisValueChanged(this, new AxisValueChangedArgs {Axis = _axes[axisId], Value = curVal});
+                        AxisValueChanged(this, new AxisValueChangedArgs { Axis = _axes[axisId], Value = curVal });
                         _axesToPoll[axisId] = curVal;
                     }
                 }
             }
 
-            // Do this for all polled buttons no matter if a listener is registered to maintain IsKeyDown/IsKeyUp funtionality
+            // Do this for all polled buttons no matter if a listener is registered to maintain IsKeyDown/IsKeyUp functionality
             foreach (var buttonId in _buttonsToPoll.Keys.ToArray()) // ToArray: get the list up-front because we will change the _buttonsToPoll dictionary during iteration
             {
                 var curVal = _inpDevImp.GetButton(buttonId);
@@ -854,7 +866,7 @@ namespace Fusee.Engine.Core
                     else
                         _buttonsUp.Add(buttonId);
 
-                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs {Button = _buttons[buttonId], Pressed = curVal});
+                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[buttonId], Pressed = curVal });
                     _buttonsToPoll[buttonId] = curVal;
                 }
             }
@@ -868,11 +880,12 @@ namespace Fusee.Engine.Core
                         _buttonsDown.Add(b.Key);
                     else
                         _buttonsUp.Add(b.Key);
-                }
 
-                _buttonsToListen[b.Key] = b.Value;
-                ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs {Button = _buttons[b.Key], Pressed = b.Value});
+                    ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _buttons[b.Key], Pressed = b.Value });
+                    _buttonsToListen[b.Key] = b.Value;
+                }
             }
+
             _buttonsToListenJustChanged.Clear();
         }
         /// <summary>
