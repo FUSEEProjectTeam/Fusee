@@ -300,7 +300,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             get
             {
-                return GLFW.GetGamepadName(DeviceID);
+                try
+                {
+                    return GLFW.GetGamepadName(DeviceID);
+                }
+                catch
+                {
+                    return "No gamepad connected";
+                }
             }
         }
         /// <summary>
@@ -479,11 +486,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             JoystickState state = _gameWindow.JoystickStates[DeviceID];
             if (state != null)
-                return state.GetAxis(iAxisId);
-
+            {
+                try
+                {
+                    return state.GetAxis(iAxisId);
+                }
+                catch
+                {
+                    return 0;
+                }
+            }
             return 0;
-
-            //throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
         }
 
         /// <summary>
@@ -493,11 +506,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             JoystickState state = _gameWindow.JoystickStates[DeviceID];
             if (state != null)
-                return state.IsButtonDown(iButtonId);
-
+            {
+                try
+                {
+                    return state.IsButtonDown(iButtonId);
+                }
+                catch
+                {
+                    return false;
+                }
+            }
             return false;
-
-            //throw new InvalidOperationException($"Unknown button {iButtonId}. Cannot get value for unknown button.");
         }
     }
 
