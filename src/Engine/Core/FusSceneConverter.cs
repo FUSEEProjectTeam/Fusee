@@ -299,10 +299,10 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(new Transform
             {
-                Translation = t.Translation,
+                TranslationVector = t.Translation,
                 Name = t.Name,
-                Rotation = t.Rotation,
-                Scale = t.Scale
+                RotationEuler = t.Rotation,
+                ScaleVector = t.Scale
             });
         }
 
@@ -992,10 +992,10 @@ namespace Fusee.Engine.Core
         {
             _currentNode.AddComponent(new FusTransform
             {
-                Translation = t.Translation,
+                Translation = t.TranslationVector,
                 Name = t.Name,
-                Rotation = t.Rotation,
-                Scale = t.Scale
+                Rotation = t.RotationEuler,
+                Scale = t.ScaleVector
             });
         }
 

@@ -440,7 +440,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="xyz">Translation amount as float3.</param>
         public static void Translate(this Transform tc, float3 xyz)
         {
-            tc.Translation += xyz;
+            tc.TranslationVector += xyz;
         }
 
         /// <summary>
@@ -461,7 +461,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="space">Rotation in reference to model or world space.</param>
         public static void Rotate(this Transform tc, float3 xyz, Space space = Space.Model)
         {
-            Rotate(tc, float4x4.CreateRotationYXZ(xyz), space);
+            Rotate(tc, float4x4.CreateRotationZXY(xyz), space);
         }
 
         /// <summary>
@@ -483,11 +483,11 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="angles"></param>
         public static void RotateAround(this Transform tc, float3 center, float3 angles)
         {
-            var pos = tc.Translation;
-            var addRotationMtx = float4x4.CreateRotationYXZ(angles); // get the desired rotation
+            var pos = tc.TranslationVector;
+            var addRotationMtx = float4x4.CreateRotationZXY(angles); // get the desired rotation
             var dir = pos - center; // find current direction relative to center
             dir = addRotationMtx * dir; // rotate the direction
-            tc.Translation = center + dir; // define new position
+            tc.TranslationVector = center + dir; // define new position
 
             // rotate object to keep looking at the center:
             var currentRotationMtx = tc.RotationMatrix;
@@ -532,13 +532,13 @@ namespace Fusee.Engine.Core.Scene
             if ((angleVert >= M.TwoPi && angleVert > 0f) || angleVert <= -M.TwoPi)
                 angleVert %= M.TwoPi;
 
-            var camForward = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitZ;
-            var camRight = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitX;
+            var camForward = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitX;
 
-            tc.Translation += camForward * inputWSAxis * speed;
-            tc.Translation += camRight * inputADAxis * speed;
+            tc.TranslationVector += camForward * inputWSAxis * speed;
+            tc.TranslationVector += camRight * inputADAxis * speed;
 
-            tc.Rotation = new float3(angleVert, angleHorz, 0);
+            tc.RotationEuler = new float3(angleVert, angleHorz, 0);
         }
 
         /// <summary>

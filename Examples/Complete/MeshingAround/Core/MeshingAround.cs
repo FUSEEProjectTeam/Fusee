@@ -98,9 +98,9 @@ namespace Fusee.Examples.MeshingAround.Core
 
             Transform parentTrans = new Transform
             {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(0, 0, 0)
+                RotationEuler = float3.Zero,
+                ScaleVector = float3.One,
+                TranslationVector = new float3(0, 0, 0)
             };
 
             parentNode.Components.Add(parentTrans);
@@ -116,9 +116,9 @@ namespace Fusee.Examples.MeshingAround.Core
 
             Transform tranC = new Transform
             {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(0, 0, 0)
+                RotationEuler = float3.Zero,
+                ScaleVector = float3.One,
+                TranslationVector = new float3(0, 0, 0)
             };
 
             sceneNodeCOne.Components.Add(tranC);
@@ -134,9 +134,9 @@ namespace Fusee.Examples.MeshingAround.Core
             };
             Transform tranCube = new Transform
             {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(-2, -1, 0)
+                RotationEuler = float3.Zero,
+                ScaleVector = float3.One,
+                TranslationVector = new float3(-2, -1, 0)
             };
 
             sceneNodeCCube.Components.Add(tranCube);
@@ -152,9 +152,9 @@ namespace Fusee.Examples.MeshingAround.Core
             };
             Transform tranTri = new Transform
             {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(1.5f, -1, 0)
+                RotationEuler = float3.Zero,
+                ScaleVector = float3.One,
+                TranslationVector = new float3(1.5f, -1, 0)
             };
 
             sceneNodeCTri.Components.Add(tranTri);

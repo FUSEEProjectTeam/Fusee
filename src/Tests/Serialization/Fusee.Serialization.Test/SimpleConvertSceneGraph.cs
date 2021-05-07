@@ -36,9 +36,9 @@ namespace Fusee.Test.Serialization.V1
                 if (gtComp is Transform t)
                 {
                     Assert.Equal((t).Name, ((FusTransform)fusFileComp).Name);
-                    Assert.Equal((t).Rotation, ((FusTransform)fusFileComp).Rotation);
-                    Assert.Equal((t).Scale, ((FusTransform)fusFileComp).Scale);
-                    Assert.Equal((t).Translation, ((FusTransform)fusFileComp).Translation);
+                    Assert.Equal((t).RotationEuler, ((FusTransform)fusFileComp).Rotation);
+                    Assert.Equal((t).ScaleVector, ((FusTransform)fusFileComp).Scale);
+                    Assert.Equal((t).TranslationVector, ((FusTransform)fusFileComp).Translation);
                 }
 
                 if (gtComp is Bone bone)
@@ -261,9 +261,9 @@ namespace Fusee.Test.Serialization.V1
                 if (gtComp is Transform t)
                 {
                     Assert.Equal(t.Name, ((Transform)sceneFileComp).Name);
-                    Assert.Equal(t.Rotation, ((Transform)sceneFileComp).Rotation);
-                    Assert.Equal(t.Scale, ((Transform)sceneFileComp).Scale);
-                    Assert.Equal(t.Translation, ((Transform)sceneFileComp).Translation);
+                    Assert.Equal(t.RotationEuler, ((Transform)sceneFileComp).RotationEuler);
+                    Assert.Equal(t.ScaleVector, ((Transform)sceneFileComp).ScaleVector);
+                    Assert.Equal(t.TranslationVector, ((Transform)sceneFileComp).TranslationVector);
                 }
 
                 if (gtComp is Bone bone)
@@ -532,7 +532,7 @@ namespace Fusee.Test.Serialization.V1
                                Min = float2.One
                            }
                        },
-                       new Transform { Scale = new float3(100, 20, 100) },
+                       new Transform { ScaleVector = new float3(100, 20, 100) },
                        new Bone
                        {
                            Name = "MyBone"
@@ -620,7 +620,7 @@ namespace Fusee.Test.Serialization.V1
                             Name = "Arm01",
                             Components = new List<SceneComponent>
                             {
-                                new Transform {Translation=new float3(0, 60, 0),  Scale = new float3(20, 100, 20) },
+                                new Transform {TranslationVector=new float3(0, 60, 0),  ScaleVector = new float3(20, 100, 20) },
                                 MakeEffect.FromDiffuseSpecular(
                                     albedoColor: (float4)ColorUint.Green,
                                     emissionColor: float4.Zero,
@@ -639,7 +639,7 @@ namespace Fusee.Test.Serialization.V1
                                         {
                                             Name = "MyBone2"
                                         },
-                                        new Transform {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
+                                        new Transform {TranslationVector=new float3(-20, 40, 0),  RotationEuler = new float3(0.35f, 0, 0), ScaleVector = float3.One},
                                     },
                                     Children = new ChildList
                                     {
@@ -648,7 +648,7 @@ namespace Fusee.Test.Serialization.V1
                                             Name = "Arm02",
                                             Components = new List<SceneComponent>
                                             {
-                                                new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
+                                                new Transform {TranslationVector=new float3(0, 40, 0),  ScaleVector = new float3(20, 100, 20) },
                                                 MakeEffect.FromDiffuseSpecular(
                                                     albedoColor: (float4)ColorUint.Yellow,
                                                     emissionColor: float4.Zero,
@@ -663,7 +663,7 @@ namespace Fusee.Test.Serialization.V1
                                                     Name = "Arm03Rot",
                                                     Components = new List<SceneComponent>
                                                     {
-                                                        new Transform {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
+                                                        new Transform {TranslationVector=new float3(20, 40, 0),  RotationEuler = new float3(0.25f, 0, 0), ScaleVector = float3.One},
                                                     },
                                                     Children = new ChildList
                                                     {
@@ -672,7 +672,7 @@ namespace Fusee.Test.Serialization.V1
                                                             Name = "Arm03",
                                                             Components = new List<SceneComponent>
                                                             {
-                                                                new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
+                                                                new Transform {TranslationVector=new float3(0, 40, 0),  ScaleVector = new float3(20, 100, 20) },
                                                                 MakeEffect.FromDiffuseSpecular(
                                                                                     albedoColor: (float4)ColorUint.Blue,
                                                                                     emissionColor: float4.Zero,

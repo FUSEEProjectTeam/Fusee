@@ -263,7 +263,7 @@ namespace Fusee.Examples.UI.Core
                         {
                             new Transform()
                             {
-                                Translation = new float3(0,0,0)
+                                TranslationVector = new float3(0,0,0)
                             }
                         },
                         Children = new ChildList()

@@ -468,7 +468,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Builds a simple shader effect with diffuse component.
         /// </summary>
-        /// <param name="albedoColor">The albedo color of the resulting effect.</param
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="normalTex">The normal map.</param>
@@ -678,7 +678,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Builds a simple shader effect with diffuse component.
         /// </summary>
-        /// <param name="albedoColor">The albedo color of the resulting effect.</param
+        /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="normalTex">The normal map.</param>

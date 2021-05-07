@@ -389,15 +389,15 @@ namespace Fusee.Math.Core
             if (axis.LengthSquared < M.EpsilonFloat)
                 return Identity;
 
-            if (axis.LengthSquared > 1f)
-                return Identity;
+            //if (axis.LengthSquared > 1f)
+            //    return Identity;
 
             var result = Identity;
 
             angle *= 0.5f;
             axis = axis.Normalize();
-            result.xyz = axis * (float)System.Math.Sin(angle);
-            result.w = (float)System.Math.Cos(angle);
+            result.xyz = axis * MathF.Sin(angle);
+            result.w = MathF.Cos(angle);
 
             return Normalize(result);
         }
@@ -571,10 +571,15 @@ namespace Fusee.Math.Core
             var c3 = (float)System.Math.Cos(e.z * 0.5f);
 
             // Formula to construct a new Quaternion based on Euler Angles.
-            var x = c1 * s2 * c3 - s1 * c2 * s3;
-            var z = s1 * s2 * c3 + c1 * c2 * s3;
-            var y = s1 * c2 * c3 + c1 * s2 * s3;
-            var w = c1 * c2 * c3 - s1 * s2 * s3;
+            var x = c1 * s2 * c3 + s1 * c2 * s3;
+            var y = s1 * c2 * c3 - c1 * s2 * s3;
+            var z = c1 * c2 * s3 - s1 * s2 * c3;
+            var w = c1 * c2 * c3 + s1 * s2 * s3;
+
+            //var x = c1 * s2 * c3 - s1 * c2 * s3;
+            //var y = s1 * c2 * c3 + c1 * s2 * s3;
+            //var z = s1 * s2 * c3 + c1 * c2 * s3;
+            //var w = c1 * c2 * c3 - s1 * s2 * s3;
 
             return new Quaternion(x, y, z, w);
         }
@@ -678,11 +683,15 @@ namespace Fusee.Math.Core
                 x = (float)System.Math.Atan2(2 * (q.x * q.w - q.y * q.z), 1 - 2 * sqX - 2 * sqZ);
             }
 
-            // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
-            while (y >= M.TwoPi)
-                y -= M.TwoPi;
-            while (y <= -M.TwoPi)
-                y += M.TwoPi;
+            x %= M.TwoPi;
+            y %= M.TwoPi;
+            z %= M.TwoPi;
+
+            //// Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
+            //while (y >= M.TwoPi)
+            //    y -= M.TwoPi;
+            //while (y <= -M.TwoPi)
+            //    y += M.TwoPi;
 
             if (inDegrees)
             {
@@ -782,6 +791,60 @@ namespace Fusee.Math.Core
             q.w = (float)(System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + float3.Dot(from, to));
 
             q = q.Normalize();
+
+            return q;
+        }
+
+        /// <summary>
+        /// Build a quaternion from a rotation matrix
+        /// </summary>
+        /// <param name="mtx"></param>
+        /// <returns></returns>
+        public static Quaternion FromRotationMatrix(float4x4 mtx)
+        {
+            mtx = mtx.RotationComponent();
+            var t = mtx.M11 + mtx.M22 + mtx.M33;
+            var q = new Quaternion();
+
+            if (t > 0.0f)
+            {
+                var s = MathF.Sqrt(t + 1.0f);
+                q.w = s * 0.5f;
+                s = 0.5f / s;
+                q.x = (mtx.M23 - mtx.M32) * -s;
+                q.y = (mtx.M31 - mtx.M13) * -s;
+                q.z = (mtx.M12 - mtx.M21) * -s;
+            }
+            else
+            {
+                if (mtx.M11 >= mtx.M22 && mtx.M11 >= mtx.M33)
+                {
+                    var s = MathF.Sqrt(1.0f + mtx.M11 - mtx.M22 - mtx.M33);
+                    var invS = 0.5f / s;
+                    q.x = 0.5f * s;
+                    q.y = (mtx.M12 + mtx.M21) * -invS;
+                    q.z = (mtx.M13 + mtx.M31) * -invS;
+                    q.w = (mtx.M23 - mtx.M32) * -invS;
+                }
+                else if (mtx.M22 > mtx.M33)
+                {
+                    var s = MathF.Sqrt(1.0f + mtx.M22 - mtx.M11 - mtx.M33);
+                    var invS = 0.5f / s;
+                    q.x = (mtx.M21 + mtx.M12) * -invS;
+                    q.y = 0.5f * s;
+                    q.z = (mtx.M32 + mtx.M23) * -invS;
+                    q.w = (mtx.M31 - mtx.M13) * -invS;
+                }
+                else
+                {
+                    var s = MathF.Sqrt(1.0f + mtx.M33 - mtx.M11 - mtx.M22);
+                    var invS = 0.5f / s;
+                    q.x = (mtx.M31 + mtx.M13) * -invS;
+                    q.y = (mtx.M32 + mtx.M23) * -invS;
+                    q.z = 0.5f * s;
+                    q.w = (mtx.M12 - mtx.M21) * -invS;
+                }
+            }
 
             return q;
         }

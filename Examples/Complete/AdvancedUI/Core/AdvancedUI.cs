@@ -77,9 +77,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                             new Transform()
                             {
                                 Name = "SphereTransform",
-                                Rotation = new float3(0,0,0),
-                                Translation = new float3(0,0,0),
-                                Scale = new float3(1, 1, 1)
+                                RotationEuler = new float3(0,0,0),
+                                TranslationVector = new float3(0,0,0),
+                                ScaleVector = new float3(1, 1, 1)
                             },
                             MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1).LinearColorFromSRgb(), float4.Zero, paperTex, 1.0f, float2.One, 20, 0.5f)                            
                             //sphere
@@ -92,9 +92,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                             new Transform()
                             {
                                 Name = "LineTransform",
-                                Rotation = new float3(0,0,0),
-                                Translation = new float3(0,0,0),
-                                Scale = new float3(1, 1, 1)
+                                RotationEuler = new float3(0,0,0),
+                                TranslationVector = new float3(0,0,0),
+                                ScaleVector = new float3(1, 1, 1)
                             },
                             MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1, 1).LinearColorFromSRgb(), float4.Zero, 20, 1.0f),
                             line

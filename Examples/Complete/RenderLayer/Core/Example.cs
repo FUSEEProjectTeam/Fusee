@@ -50,69 +50,69 @@ namespace Fusee.Examples.RenderLayerEx.Core
 
             // 1st Level
             var n1 = new SceneNode();
-            n1.AddComponent(new Transform { Translation = new float3(0, -4, 0) });
+            n1.AddComponent(new Transform { TranslationVector = new float3(0, -4, 0) });
             _scene.Children.Add(n1);
             var n2 = new SceneNode();
-            n2.AddComponent(new Transform { Translation = new float3(0, 0, 0) });
+            n2.AddComponent(new Transform { TranslationVector = new float3(0, 0, 0) });
             _scene.Children.Add(n2);
             var n3 = new SceneNode();
-            n3.AddComponent(new Transform { Translation = new float3(0, 4, 0) });
+            n3.AddComponent(new Transform { TranslationVector = new float3(0, 4, 0) });
             _scene.Children.Add(n3);
 
             // Rockets Bottom Row
             var c11 = new SceneNode();
             c11.AddComponent(rla);
-            c11.AddComponent(new Transform { Translation = new float3(-2, 0, 0) });
+            c11.AddComponent(new Transform { TranslationVector = new float3(-2, 0, 0) });
             c11.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n1.Children.Add(c11);
             var c12 = new SceneNode();
             c12.AddComponent(rl1);
-            c12.AddComponent(new Transform { Translation = new float3(0, 0, 0) });
+            c12.AddComponent(new Transform { TranslationVector = new float3(0, 0, 0) });
             c12.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n1.Children.Add(c12);
             var c13 = new SceneNode();
             c13.AddComponent(rla);
-            c13.AddComponent(new Transform { Translation = new float3(2, 0, 0) });
+            c13.AddComponent(new Transform { TranslationVector = new float3(2, 0, 0) });
             c13.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n1.Children.Add(c13);
 
             // Rockets Middle Row
             var c21 = new SceneNode();
             c21.AddComponent(rl2);
-            c21.AddComponent(new Transform { Translation = new float3(-2, 0, 0) });
+            c21.AddComponent(new Transform { TranslationVector = new float3(-2, 0, 0) });
             c21.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n2.Children.Add(c21);
             var c22 = new SceneNode();
             c22.AddComponent(rln);
-            c22.AddComponent(new Transform { Translation = new float3(0, 0, 0) });
+            c22.AddComponent(new Transform { TranslationVector = new float3(0, 0, 0) });
             c22.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n2.Children.Add(c22);
             var c23 = new SceneNode();
             c23.AddComponent(rl2);
-            c23.AddComponent(new Transform { Translation = new float3(2, 0, 0) });
+            c23.AddComponent(new Transform { TranslationVector = new float3(2, 0, 0) });
             c23.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n2.Children.Add(c23);
 
             // Rockets Top Row
             var c31 = new SceneNode();
             c31.AddComponent(rla);
-            c31.AddComponent(new Transform { Translation = new float3(-2, 0, 0) });
+            c31.AddComponent(new Transform { TranslationVector = new float3(-2, 0, 0) });
             c31.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n3.Children.Add(c31);
             var c32 = new SceneNode();
             c32.AddComponent(rl1);
-            c32.AddComponent(new Transform { Translation = new float3(0, 0, 0) });
+            c32.AddComponent(new Transform { TranslationVector = new float3(0, 0, 0) });
             c32.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n3.Children.Add(c32);
             var c33 = new SceneNode();
             c33.AddComponent(rla);
-            c33.AddComponent(new Transform { Translation = new float3(2, 0, 0) });
+            c33.AddComponent(new Transform { TranslationVector = new float3(2, 0, 0) });
             c33.Children.Add(new SceneNode { Components = { rocketTransform, grayShEf, grayMesh, greenShEf, greenMesh, whiteShEf, whiteMesh } });
             n3.Children.Add(c33);
 
             // Cameras
             var cam = new SceneNode();
-            cam.AddComponent(new Transform { Translation = new float3(0, 1.7f, -16), Rotation = new float3(0, 0, 0) });
+            cam.AddComponent(new Transform { TranslationVector = new float3(0, 1.7f, -16), RotationEuler = new float3(0, 0, 0) });
 
             var cam1 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4)
             {

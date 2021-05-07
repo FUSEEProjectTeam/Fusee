@@ -295,7 +295,7 @@ namespace Fusee.Examples.Picking.Core
                         Name = "Base",
                         Components = new List<SceneComponent>
                         {
-                           new Transform { Scale = float3.One },
+                           new Transform { ScaleVector = float3.One },
                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
                            CreateCuboid(new float3(100, 20, 100))
                         },
@@ -306,7 +306,7 @@ namespace Fusee.Examples.Picking.Core
                                 Name = "Arm01",
                                 Components = new List<SceneComponent>
                                 {
-                                   new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
+                                   new Transform {TranslationVector=new float3(0, 60, 0),  ScaleVector = float3.One },
                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green, float4.Zero, 4.0f, 1f),
                                    CreateCuboid(new float3(20, 100, 20))
                                 },
@@ -317,7 +317,7 @@ namespace Fusee.Examples.Picking.Core
                                         Name = "Arm02Rot",
                                         Components = new List<SceneComponent>
                                         {
-                                            new Transform {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
+                                            new Transform {TranslationVector=new float3(-20, 40, 0),  RotationEuler = new float3(0.35f, 0, 0), ScaleVector = float3.One},
                                         },
                                         Children = new ChildList
                                         {
@@ -326,7 +326,7 @@ namespace Fusee.Examples.Picking.Core
                                                 Name = "Arm02",
                                                 Components = new List<SceneComponent>
                                                 {
-                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
+                                                    new Transform {TranslationVector=new float3(0, 40, 0),  ScaleVector = float3.One },
                                                     MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
@@ -337,7 +337,7 @@ namespace Fusee.Examples.Picking.Core
                                                         Name = "Arm03Rot",
                                                         Components = new List<SceneComponent>
                                                         {
-                                                            new Transform {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
+                                                            new Transform {TranslationVector=new float3(20, 40, 0),  RotationEuler = new float3(0.25f, 0, 0), ScaleVector = float3.One},
                                                         },
                                                         Children = new ChildList
                                                         {
@@ -346,7 +346,7 @@ namespace Fusee.Examples.Picking.Core
                                                                 Name = "Arm03",
                                                                 Components = new List<SceneComponent>
                                                                 {
-                                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
+                                                                    new Transform {TranslationVector=new float3(0, 40, 0),  ScaleVector = float3.One },
                                                                     MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }
