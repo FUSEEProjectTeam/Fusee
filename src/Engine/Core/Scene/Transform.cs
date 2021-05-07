@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core.Scene
                 if (TranslationMatrix != value)
                 {
                     _translationMtx = float4x4.TranslationDecomposition(value);
-                    
+
                     _matrixDirty = true;
                     _translationVecDirty = true;
                 }
@@ -164,7 +164,7 @@ namespace Fusee.Engine.Core.Scene
                 if (ScaleMatrix != value)
                 {
                     _scaleMtx = float4x4.ScaleDecomposition(value);
-                    
+
                     _matrixDirty = true;
                     _scaleVecDirty = true;
                 }
@@ -238,7 +238,7 @@ namespace Fusee.Engine.Core.Scene
         public float3 ScaleVector
         {
             get
-            {   
+            {
                 if (_scaleVecDirty)
                 {
                     _scaleVec = float4x4.GetScale(_scaleMtx);

@@ -330,21 +330,21 @@ namespace Fusee.Test.Scene.Components
 
         public static IEnumerable<object[]> GetEQM()
         {
-            // X 90°
+            // X 90ï¿½
             yield return new object[]
             {
                 new float3(M.PiOver2, 0, 0),
                 new Quaternion(0.7071068f, 0, 0, 0.7071068f),
                 new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)
             };
-            // X 45° 
+            // X 45ï¿½ 
             yield return new object[]
             {
                 new float3(M.PiOver4, 0, 0),
                 new Quaternion(0.3826835f, 0, 0, 0.9238795f),
                 new float4x4(1, 0, 0, 0, 0, 0.7071067f, -0.7071068f, 0, 0, 0.7071068f, 0.7071067f, 0, 0, 0, 0, 1)
             };
-            // X 135°
+            // X 135ï¿½
             yield return new object[]
             {
                 new float3(M.PiOver4 * 3, 0, 0),
@@ -352,21 +352,21 @@ namespace Fusee.Test.Scene.Components
                 new float4x4(1, 0, 0, 0, 0, -0.7071067f, -0.7071068f, 0, 0, 0.7071068f, -0.7071067f, 0, 0, 0, 0, 1)
             };
 
-            // Y 90°
+            // Y 90ï¿½
             yield return new object[]
             {
                 new float3(0, M.PiOver2, 0),
                 new Quaternion(0, 0.7071068f, 0, 0.7071068f),
                 new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1)
             };
-            // Y 45°
+            // Y 45ï¿½
             yield return new object[]
             {
                 new float3(0, M.PiOver4, 0),
                 new Quaternion(0, 0.3826835f, 0, 0.9238795f),
                 new float4x4(0.7071067f, 0, 0.7071068f, 0, 0, 1, 0, 0, -0.7071068f, 0, 0.7071067f, 0, 0, 0, 0, 1)
             };
-            // Y 135°
+            // Y 135ï¿½
             yield return new object[]
             {
                 new float3(0, M.PiOver4 * 3, 0),
@@ -374,21 +374,21 @@ namespace Fusee.Test.Scene.Components
                 new float4x4(-0.7071067f, 0, 0.7071068f, 0, 0, 1, 0, 0, -0.7071068f, 0, -0.7071067f, 0, 0, 0, 0, 1)
             };
 
-            // Z 90°
+            // Z 90ï¿½
             yield return new object[]
             {
                 new float3(0, 0, M.PiOver2),
                 new Quaternion(0, 0, 0.7071068f, 0.7071068f),
                 new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
             };
-            // Z 45°
+            // Z 45ï¿½
             yield return new object[]
             {
                 new float3(0, 0, M.PiOver4),
                 new Quaternion(0, 0, 0.3826835f, 0.9238795f),
                 new float4x4(0.7071067f, -0.7071068f, 0, 0, 0.7071068f, 0.7071067f, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
             };
-            // Z 135°
+            // Z 135ï¿½
             yield return new object[]
             {
                 new float3(0, 0, M.PiOver4 * 3),
@@ -396,21 +396,21 @@ namespace Fusee.Test.Scene.Components
                 new float4x4(-0.7071067f, -0.7071068f, 0, 0, 0.7071068f, -0.7071067f, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
             };
 
-            // X&Y 45°
+            // X&Y 45ï¿½
             yield return new object[]
             {
                 new float3(M.PiOver4, M.PiOver4, 0),
                 new Quaternion(0.3535534f, 0.3535534f, -0.1464466f, 0.8535534f),
                 new float4x4(0.7071067f, 0.5f, 0.5f, 0, 0, 0.7071067f, -0.7071068f, 0, -0.7071068f, 0.5f, 0.5f, 0, 0, 0, 0, 1)
             };
-            // X&Z 45°
+            // X&Z 45ï¿½
             yield return new object[]
             {
                 new float3(M.PiOver4, 0, M.PiOver4),
                 new Quaternion(0.3535534f, -0.1464466f, 0.3535534f, 0.8535534f),
                 new float4x4(0.7071067f, -0.7071068f, 0, 0, 0.5f, 0.5f, -0.7071068f, 0, 0.5f, 0.5f, 0.7071067f, 0, 0, 0, 0, 1)
             };
-            // Y&Z 45°
+            // Y&Z 45ï¿½
             yield return new object[]
             {
                 new float3(0, M.PiOver4, M.PiOver4),
@@ -418,7 +418,7 @@ namespace Fusee.Test.Scene.Components
                 new float4x4(0.5f, -0.5f, 0.7071068f, 0, 0.7071068f, 0.7071067f, 0, 0, -0.5f, 0.5f, 0.7071067f, 0, 0, 0, 0, 1)
             };
 
-            // X&Y&Z 45°
+            // X&Y&Z 45ï¿½
             yield return new object[]
             {
                 new float3(M.PiOver4, M.PiOver4, M.PiOver4),
