@@ -58,7 +58,7 @@
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
-	  <PackageReference Include="Fusee.Android" Version="0.10.1.0" />
+	  <PackageReference Include="Fusee.Android" Version="0.10.2.0" />
 	  <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
   <!-- Assets -->
