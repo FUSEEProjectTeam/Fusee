@@ -739,6 +739,23 @@ namespace Fusee.Math.Core
             v = (d11 * d20 - d01 * d21) / denom;
         }
 
+        /// <summary>
+        /// Checks if the given point is inside the given triangle (a, b, c). Returns the barycentric coordinates using <see cref="GetBarycentric"/>.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">the point to test.</param>
+        /// <param name="u">The resulting barycentric u coordinate (weight for vertex a).</param>
+        /// <param name="v">The resulting barycentric v coordinate (weight for vertex b).</param>
+        /// <returns>True if the point is inside the triangle a, b, c. Otherwise returns false.</returns>
+        public static bool PointInTriangle(float3 a, float3 b, float3 c, float3 point, out float u, out float v)
+        {
+            GetBarycentric(a, b, c, point, out u, out v);
+
+            return u >= 0 && v >= 0 && u + v <= 1;
+        }
+
         #endregion Barycentric
 
         #region CalculateAngle

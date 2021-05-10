@@ -74,12 +74,17 @@ namespace Fusee.Engine.Core
         protected Animation _animation;
 
         /// <summary>
-        /// The Scene, containing the scene that gets rendered.
+        /// The <see cref="SceneContainer"/>, containing the scene that gets rendered.
         /// </summary>
         protected SceneContainer _sc;
 
         /// <summary>
-        /// The RenderContext, used to render the scene. This will be ignored if cameras are used.
+        /// The <see cref="SceneContainer"/>, containing the scene that gets rendered.
+        /// </summary>
+        public SceneContainer SC { get => _sc; }
+
+        /// <summary>
+        /// The <see cref="RenderContext"/>, used to render the scene. This will be ignored if cameras are used.
         /// </summary>
         protected RenderContext _rc;
 
@@ -658,7 +663,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="ptOctant"></param>
         [VisitMethod]
-        public void RenderPtOctant(Octant ptOctant)
+        public void RenderOctant(OctantD ptOctant)
         {
             _state.Effect.SetFxParam("OctantLevel", ptOctant.Level);
         }

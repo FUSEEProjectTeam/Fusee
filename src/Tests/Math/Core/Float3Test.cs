@@ -1,8 +1,8 @@
-using System;
-using Xunit;
-using System.Collections.Generic;
 using Fusee.Math.Core;
+using System;
+using System.Collections.Generic;
 using System.Globalization;
+using Xunit;
 
 namespace Fusee.Test.Math.Core
 {
@@ -436,6 +436,20 @@ namespace Fusee.Test.Math.Core
             Assert.Equal(vExpected, vActual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetBarycentric))]
+        public void PointInTriangle_CornersInTriangle(float3 a, float3 b, float3 c, float uExpected, float vExpected, float3 point)
+        {
+            Assert.True(float3.PointInTriangle(a, b, c, point, out var uActual, out var vActual));
+        }
+
+        [Theory]
+        [MemberData(nameof(GetPointInTriangle_Outside))]
+        public void PointInTriangle_IsNotIntriangle(float3 a, float3 b, float3 c, float3 point)
+        {
+            Assert.False(float3.PointInTriangle(a, b, c, point, out var u, out var v));
+        }
+
         #endregion
 
         #region CalculateAngle
@@ -860,6 +874,17 @@ namespace Fusee.Test.Math.Core
             yield return new object[] { x, y, z, 0, 0, z };
             yield return new object[] { x, y, z, 1, 0, x };
             yield return new object[] { x, y, z, 0, 1, y };
+        }
+
+        public static IEnumerable<object[]> GetPointInTriangle_Outside()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            yield return new object[] { x, y, z, new float3(1, 1, 0) };
+            yield return new object[] { x, y, z, new float3(0, 1, 1) };
+            yield return new object[] { x, y, z, new float3(1, 0, 1) };
         }
 
         public static IEnumerable<object[]> GetEuler()

@@ -1,7 +1,7 @@
-﻿using System.Diagnostics;
-using BulletSharp;
+﻿using BulletSharp;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
+using System.Diagnostics;
 
 namespace Fusee.Engine.Imp.Physics.Desktop
 {

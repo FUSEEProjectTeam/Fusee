@@ -1,6 +1,6 @@
-﻿using System;
-using Fusee.Xene;
+﻿using Fusee.Xene;
 using ProtoBuf;
+using System;
 
 namespace Fusee.Serialization.V1
 {

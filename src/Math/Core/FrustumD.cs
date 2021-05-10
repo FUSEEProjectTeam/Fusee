@@ -6,37 +6,37 @@ namespace Fusee.Math.Core
     /// <summary>
     /// Describes a frustum by using six <see cref="PlaneF"/>s. 
     /// </summary>
-    public class Frustum
+    public class FrustumD
     {
         /// <summary>
         /// The near plane of the frustum.
         /// </summary>
-        public PlaneF Near { get; private set; }
+        public PlaneD Near { get; private set; }
 
         /// <summary>
         /// The far plane of the frustum.
         /// </summary>
-        public PlaneF Far { get; private set; }
+        public PlaneD Far { get; private set; }
 
         /// <summary>
         /// The left plane of the frustum.
         /// </summary>
-        public PlaneF Left { get; private set; }
+        public PlaneD Left { get; private set; }
 
         /// <summary>
         /// The right plane of the frustum.
         /// </summary>
-        public PlaneF Right { get; private set; }
+        public PlaneD Right { get; private set; }
 
         /// <summary>
         /// The top plane of the frustum.
         /// </summary>
-        public PlaneF Top { get; private set; }
+        public PlaneD Top { get; private set; }
 
         /// <summary>
         /// The bottom plane of the frustum.
         /// </summary>
-        public PlaneF Bottom { get; private set; }
+        public PlaneD Bottom { get; private set; }
 
         /// <summary>
         /// (Re)Calculates the frustum planes.
@@ -49,7 +49,7 @@ namespace Fusee.Math.Core
         public void CalculateFrustumPlanes(float4x4 mat)
         {
             // left
-            var left = new PlaneF()
+            var left = new PlaneD()
             {
                 A = mat.M41 + mat.M11,
                 B = mat.M42 + mat.M12,
@@ -58,7 +58,7 @@ namespace Fusee.Math.Core
             };
 
             // right
-            var right = new PlaneF()
+            var right = new PlaneD()
             {
                 A = mat.M41 - mat.M11,
                 B = mat.M42 - mat.M12,
@@ -68,7 +68,7 @@ namespace Fusee.Math.Core
 
 
             // bottom
-            var bottom = new PlaneF()
+            var bottom = new PlaneD()
             {
                 A = mat.M41 + mat.M21,
                 B = mat.M42 + mat.M22,
@@ -78,7 +78,7 @@ namespace Fusee.Math.Core
 
 
             // top
-            var top = new PlaneF()
+            var top = new PlaneD()
             {
                 A = mat.M41 - mat.M21,
                 B = mat.M42 - mat.M22,
@@ -88,7 +88,7 @@ namespace Fusee.Math.Core
 
 
             // near
-            var near = new PlaneF()
+            var near = new PlaneD()
             {
                 A = mat.M41 + mat.M31,
                 B = mat.M42 + mat.M32,
@@ -98,7 +98,7 @@ namespace Fusee.Math.Core
 
 
             // far
-            var far = new PlaneF()
+            var far = new PlaneD()
             {
                 A = mat.M41 - mat.M31,
                 B = mat.M42 - mat.M32,

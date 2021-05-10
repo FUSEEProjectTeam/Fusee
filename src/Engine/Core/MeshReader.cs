@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
+using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {

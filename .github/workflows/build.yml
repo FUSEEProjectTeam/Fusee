@@ -25,17 +25,20 @@ jobs:
       matrix:
         os: [ 'windows-latest' ]
     runs-on: ${{ matrix.os }}
-    
+
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: Math
       run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
-      
+
     - name: Serialization V1
       run: dotnet test -c Release src/Tests/Serialization/Fusee.Serialization.Test/Fusee.Test.Serialization.V1.csproj
-      
+
+    - name: Assets
+      run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Test.AssetStorage.Desktop.csproj
+
     - name: Xene
       run: dotnet test -c Release src/Tests/Xene/Fusee.Xene.Test/Fusee.Test.Xene.csproj
 
@@ -93,9 +96,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-      
+
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
-      
+
     - name: Build with MSBuild
       run: msbuild Fusee.sln -r -p:Configuration=Release-Android

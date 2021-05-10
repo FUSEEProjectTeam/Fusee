@@ -20,7 +20,7 @@ namespace Fusee.Base.Imp.Desktop
         /// <returns>An ImageData object with all necessary information.</returns>
         public static Task<ImageData> LoadImageAsync(Stream file)
         {
-            return Task.Factory.StartNew(() => LoadImage(file));
+            return Task.FromResult(LoadImage(file));
         }
 
         /// <summary>

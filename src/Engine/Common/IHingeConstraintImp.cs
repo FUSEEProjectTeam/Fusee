@@ -1,5 +1,5 @@
-using System;
 using Fusee.Math.Core;
+using System;
 
 namespace Fusee.Engine.Common
 {

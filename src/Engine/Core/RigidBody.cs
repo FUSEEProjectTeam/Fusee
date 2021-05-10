@@ -1,7 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
+using System;
+using System.Diagnostics;
 
 namespace Fusee.Engine.Core
 {

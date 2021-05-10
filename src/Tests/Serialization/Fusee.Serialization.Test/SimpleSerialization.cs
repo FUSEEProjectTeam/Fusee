@@ -1,10 +1,10 @@
-using System;
-using Xunit;
 using Fusee.Math.Core;
+using Fusee.Serialization;
+using Fusee.Serialization.V1;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Fusee.Serialization.V1;
-using Fusee.Serialization;
+using Xunit;
 
 namespace Fusee.Test.Serialization.V1
 {
