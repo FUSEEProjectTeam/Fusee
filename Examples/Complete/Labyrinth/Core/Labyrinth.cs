@@ -2,7 +2,10 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -95,7 +98,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private SceneContainer CreateScene()
         {
@@ -113,10 +116,9 @@ namespace Fusee.Examples.Labyrinth.Core
                 Components = new List<SceneComponent>
                 {
                     // TRANSFROM COMPONENT
-                    mazeTransform,
-                    // SHADER EFFECT COMPONENT
-                    cornerstone.GetComponent<ShaderEffect>(),
+                    mazeTransform
                 },
+                Name = "maze",
                 Children = new ChildList()
             };
 
@@ -134,7 +136,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _cornerbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    cornerstone.GetComponent<ShaderEffect>(),
+                                    cornerstone.GetComponent<DefaultSurfaceEffect>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
                             Name = "Cornerstone" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -152,7 +154,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallXbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallX.GetComponent<ShaderEffect>(),
+                                    wallX.GetComponent<DefaultSurfaceEffect>(),
                                     wallX.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -170,7 +172,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallZbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallZ.GetComponent<ShaderEffect>(),
+                                    wallZ.GetComponent<DefaultSurfaceEffect>(),
                                     wallZ.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -188,7 +190,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
                                     },
-                                    head.GetComponent<ShaderEffect>(),
+                                    head.GetComponent<DefaultSurfaceEffect>(),
                                     head.GetComponent<Mesh>()
                                 },
                             Name = "Head",
@@ -216,7 +218,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                             {
                                                 Translation = new float3(0,0,0)
                                             },
-                                            ball.GetComponent<ShaderEffect>(),
+                                            ball.GetComponent<DefaultSurfaceEffect>(),
                                             ball.GetComponent<Mesh>()
                                         },
                                     Name = "Body",
@@ -239,7 +241,8 @@ namespace Fusee.Examples.Labyrinth.Core
                                         Scale = new float3(_length, 1, _height),
                                         Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
                                     },
-                                    ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
+                                    //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
+                                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1), new float4(0, 0, 0, 1)),
                                     _ground
                                 },
                 Name = "Ground"
@@ -256,7 +259,7 @@ namespace Fusee.Examples.Labyrinth.Core
         }
 
         // Init is called on startup.
-        async public override Task<bool> Init()
+        public override void Init()
         {
             _timeMap = new FontMap(_fontLato, 24);
             _gui = CreateGui();
@@ -290,8 +293,6 @@ namespace Fusee.Examples.Labyrinth.Core
             _head = _scene.Children.FindNodes(node => node.Name == "Head")?.FirstOrDefault()?.GetTransform();
             _body = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetTransform();
             _bodytrans = _scene.Children.FindNodes(node => node.Name == "Bodytrans")?.FirstOrDefault()?.GetTransform();
-
-            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -360,6 +361,7 @@ namespace Fusee.Examples.Labyrinth.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
 
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
@@ -377,46 +379,48 @@ namespace Fusee.Examples.Labyrinth.Core
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                // Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
-                // Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                // In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                // Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                //Define Offset and therefor the size of the element.
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var guiLatoBlack = new FontMap(_fontLato, 18);
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                "FUSEE Labyrinth Example",
+                "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                psText,
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             // Create stopwatch
             var timer = new TextNode(
                 "00:00.00",
                 "Timer",
                 vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_RIGHT),
+                psText,
+                UIElementPosition.GetAnchors(AnchorPos.TopTopRight),
                 new MinMaxRect
                 {
                     Min = new float2(-2, 0),
                     Max = new float2(-0.3f, -1)
                 },
                  _timeMap,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.RIGHT,
-                VerticalTextAlignment.CENTER
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Right,
+                VerticalTextAlignment.Center
             );
 
             _timertext = timer.GetComponentsInChildren<GUIText>().FirstOrDefault();
@@ -451,13 +455,18 @@ namespace Fusee.Examples.Labyrinth.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
+
 
         public void BtnLogoDown(CodeComponent sender)
         {
@@ -726,6 +735,7 @@ namespace Fusee.Examples.Labyrinth.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
 
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
@@ -742,48 +752,49 @@ namespace Fusee.Examples.Labyrinth.Core
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
-                psTex,
-                // Set the diffuse texture you want to use.
+                psText,
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
-                // Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                // In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                // Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                //Define Offset and therefor the size of the element.
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 18);
+            var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                psText,
+                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER);
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center);
 
             var endtime = new TextNode(
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",
                 vsTex,
-                psTex,
-                UIElementPosition.GetAnchors(AnchorPos.MIDDLE),
+                psText,
+                UIElementPosition.GetAnchors(AnchorPos.Middle),
                 new MinMaxRect
                 {
                     Min = new float2(0.01f, 0),
                     Max = new float2(0, 0.01f)
                 },
                  _winMap,
-                ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.CENTER,
-                VerticalTextAlignment.CENTER
+                (float4)ColorUint.Greenery,
+                HorizontalTextAlignment.Center,
+                VerticalTextAlignment.Center
             );
 
             var canvas = new CanvasNode(
