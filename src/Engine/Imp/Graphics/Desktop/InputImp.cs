@@ -906,7 +906,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (iAxisId)
             {
                 case (int)MouseAxes.Wheel:
-                    return 0;
+                    return _gameWindow.MouseState.Scroll.Y;
                 case (int)MouseAxes.MinX:
                     return 0;
                 case (int)MouseAxes.MaxX:
