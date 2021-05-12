@@ -2,18 +2,18 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using static Fusee.Engine.Core.Input;
-using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
+using Fusee.Xirkit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fusee.Engine.Core.Scene;
-using Fusee.Xirkit;
+using static Fusee.Engine.Core.Input;
+using static Fusee.Engine.Core.Time;
 
 
 
@@ -49,7 +49,7 @@ namespace Fusee.Examples.Starkiller.Core
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-        
+
 
         private SceneContainer CreateScene()
         {
@@ -73,7 +73,7 @@ namespace Fusee.Examples.Starkiller.Core
             return sc;
         }
 
-       
+
         private SceneNode AddHierarchy(SceneContainer searchTarget, string searchName, string hierarchyName)
         {
             List<SceneNode> projectiles = searchTarget.Children.FindNodes(n => n.Name.Contains(searchName)).ToList();
@@ -100,15 +100,15 @@ namespace Fusee.Examples.Starkiller.Core
             RC.ClearColor = new float4(0, 0, 0, 0);
 
             //Wrap a SceneRenderer around the model.
-            
+
 
             _gui = await CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _scene = CreateScene();
-            
+
             _sceneRenderer = new SceneRendererForward(_scene);
-           
+
             return true;
         }
 
@@ -127,8 +127,8 @@ namespace Fusee.Examples.Starkiller.Core
 
             if (Keyboard.IsKeyDown(KeyCodes.Enter))
             {
-                if(!gamestart)
-                gamestart = true;
+                if (!gamestart)
+                    gamestart = true;
                 Leben = 3;
             }
             if (Leben > 0 && gamestart)
@@ -138,7 +138,7 @@ namespace Fusee.Examples.Starkiller.Core
                 bewegungHorizontal += 0.7f * Keyboard.ADAxis;
                 float bewegungVertikal = _schiff.GetTransform().Translation.y;
                 bewegungVertikal += 0.7f * Keyboard.WSAxis;
-                
+
                 _schiff.GetTransform().Translation.x = bewegungHorizontal;
                 _schiff.GetTransform().Translation.y = bewegungVertikal;
                 _schiff.GetTransform().Translation.z = 15;
@@ -223,22 +223,22 @@ namespace Fusee.Examples.Starkiller.Core
                     //Schiff Kollision 
                     for (var k = 0; k < _meteors.Children.Count; k++)
                     {
-                       
+
                         var SchiffAABBf = _schiff.GetTransform().Matrix() * _schiff.GetMesh().BoundingBox;
-                        
-
-                        
-                        var MeteorsAABBf =_meteors.Children[k].GetTransform().Matrix() * _meteors.Children[k].GetMesh().BoundingBox;
-                        
 
 
-                        if(MeteorsAABBf.Intersects(SchiffAABBf))
+
+                        var MeteorsAABBf = _meteors.Children[k].GetTransform().Matrix() * _meteors.Children[k].GetMesh().BoundingBox;
+
+
+
+                        if (MeteorsAABBf.Intersects(SchiffAABBf))
                         {
                             _schiff.GetTransform().Translation.x = 0;
                             _schiff.GetTransform().Translation.y = 0;
                             _schiff.GetTransform().Translation.z = -100;
                             Leben -= 1;
-                            if(Leben == 0)
+                            if (Leben == 0)
                             {
                                 gamestart = false;
                                 Highscore = 0;
@@ -252,7 +252,7 @@ namespace Fusee.Examples.Starkiller.Core
 
                 }
             }
-          
+
 
             //Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -341,12 +341,12 @@ namespace Fusee.Examples.Starkiller.Core
                 _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
             }
 
-             void BtnLogoExit(CodeComponent sender)
+            void BtnLogoExit(CodeComponent sender)
             {
                 _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>().SetEffectParam("DiffuseColor", float4.One);
             }
 
-             void BtnLogoDown(CodeComponent sender)
+            void BtnLogoDown(CodeComponent sender)
             {
                 OpenLink("http://fusee3d.org");
             }
@@ -367,7 +367,7 @@ namespace Fusee.Examples.Starkiller.Core
 
 
 
-            //0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
+            //0.25*PI Rad -> 45ï¿½ Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
 
             //Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
 
