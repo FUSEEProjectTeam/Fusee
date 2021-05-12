@@ -5,20 +5,20 @@ precision highp float;
 in vec2 vUV;
 uniform vec2 ScreenParams;
 uniform vec3[KERNEL_LENGTH] SSAOKernel;
-uniform sampler2D G_POSITION;
-uniform sampler2D G_NORMAL;
+uniform sampler2D Position;
+uniform sampler2D Normal;
 uniform sampler2D NoiseTex;
 uniform mat4 FUSEE_P;
-out vec4 G_SSAO;
+out vec4 Ssao;
 
 void main() 
 {
-	vec3 Normal = texture(G_NORMAL, vUV).rgb;
+	vec3 Normal = texture(Normal, vUV).rgb;
 
     if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)
         discard;
 
-    vec3 FragPos = texture(G_POSITION, vUV).xyz;
+    vec3 FragPos = texture(Position, vUV).xyz;
 
     float radius = 5.0;
     float occlusion = 0.0;
@@ -44,7 +44,7 @@ void main()
         // get sample depth:
         // ----- EXPENSIVE TEXTURE LOOKUP - graphics card workload goes up and frame rate goes down the nearer the camera is to the model.
         // keyword: dependent texture look up, see also: https://stackoverflow.com/questions/31682173/strange-performance-behaviour-with-ssao-algorithm-using-opengl-and-glsl
-		float sampleDepth = texture(G_POSITION, offset.xy).z;           
+		float sampleDepth = texture(Position, offset.xy).z;           
 
         // range check & accumulate:
         float rangeCheck = smoothstep(0.0, 1.0, radius / abs(FragPos.z - sampleDepth));
@@ -53,5 +53,5 @@ void main()
 
     occlusion = clamp(1.0 - (occlusion / float(KERNEL_LENGTH)), 0.0, 1.0);           
 
-    G_SSAO = vec4(occlusion, occlusion, occlusion, 1.0);
+    Ssao = vec4(occlusion, occlusion, occlusion, 1.0);
 }

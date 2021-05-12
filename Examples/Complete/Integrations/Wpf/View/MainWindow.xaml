@@ -1,0 +1,54 @@
+﻿<Window x:Class="Fusee.Examples.Integrations.Wpf.View.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Fusee.Examples.Integrations.Wpf.View"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="200" Width="200">
+    <Grid>
+
+        <StackPanel>
+            <GroupBox Header="Move">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="5*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Padding="5,0,5,0" TextAlignment="Right" Text="X" />
+                    <Slider Grid.Row="0" Grid.Column="1" Value="{Binding Position.X}" Minimum="-10" Maximum="10" IsSnapToTickEnabled="True" TickFrequency="0.01" />
+                    <TextBox Grid.Row="0" Grid.Column="2" Padding="5,0,5,0" Text="{Binding Position.X}" IsEnabled="False" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Padding="5,0,5,0" TextAlignment="Right" Text="Y" />
+                    <Slider Grid.Row="1" Grid.Column="1" Value="{Binding Position.Y}" Minimum="-10" Maximum="10" IsSnapToTickEnabled="True" TickFrequency="0.01" />
+                    <TextBox Grid.Row="1" Grid.Column="2" Padding="5,0,5,0" Text="{Binding Position.Y}" IsEnabled="False" />
+                    <TextBlock Grid.Row="2" Grid.Column="0" Padding="5,0,5,0" TextAlignment="Right" Text="Z" />
+                    <Slider Grid.Row="2" Grid.Column="1" Value="{Binding Position.Z}" Minimum="-10" Maximum="10" IsSnapToTickEnabled="True" TickFrequency="0.01" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Padding="5,0,5,0" Text="{Binding Position.Z}" IsEnabled="False" />
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Debug">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Padding="5,0,5,0" TextAlignment="Right" Text="Fps" />
+                    <TextBox Grid.Row="0" Grid.Column="1" Padding="5,0,5,0" Text="{Binding Fps.Fps}" Width="40" HorizontalAlignment="Left" IsEnabled="False" />
+                    <TextBlock Grid.Row="1" Grid.Column="0" Padding="5,0,5,0" TextAlignment="Right" Text="VSync" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" Padding="5,0,5,0" IsChecked="{Binding VSync.VSync}" IsEnabled="False"/>
+                </Grid>
+            </GroupBox>
+        </StackPanel>
+        
+    </Grid>
+</Window>

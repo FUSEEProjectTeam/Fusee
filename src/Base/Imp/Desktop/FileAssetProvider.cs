@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
 using FileMode = System.IO.FileMode;
 using Path = Fusee.Base.Common.Path;
 
@@ -41,7 +41,9 @@ namespace Fusee.Base.Imp.Desktop
         {
             _baseDirs = new List<string>();
             if (baseDirs == null)
+            {
                 _baseDirs.Add(AppDomain.CurrentDomain.BaseDirectory);
+            }
             else
             {
                 foreach (var baseDir in baseDirs)
@@ -100,7 +102,7 @@ namespace Fusee.Base.Imp.Desktop
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
-                Decoder = (string id, object storage) =>
+                Decoder = (string _, object storage) =>
                 {
                     string ret;
                     using (var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true))
@@ -111,12 +113,8 @@ namespace Fusee.Base.Imp.Desktop
                 },
                 DecoderAsync = async (string _, object storage) =>
                 {
-                    string ret;
-                    using (var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true))
-                    {
-                        ret = await sr.ReadToEndAsync().ConfigureAwait(false);
-                    }
-                    return ret;
+                    using var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true);
+                    return await sr.ReadToEndAsync().ConfigureAwait(false);
                 },
                 Checker = _ => true // If it's there, we can handle it...
             });
@@ -142,7 +140,7 @@ namespace Fusee.Base.Imp.Desktop
             if (File.Exists(id))
                 return new FileStream(id, FileMode.Open);
 
-            // At last, look at the specifie base directories
+            // At last, look at the specified base directories
             foreach (var baseDir in _baseDirs)
             {
                 string path = Path.Combine(baseDir, id);
@@ -185,29 +183,28 @@ namespace Fusee.Base.Imp.Desktop
         /// Create an async stream for the asset identified by id.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
-        /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a filestream to the asset.</returns>
-        protected override async Task<Stream> GetStreamAsync(string id)
+        /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a file stream to the asset.</returns>
+        protected override Stream GetStreamAsync(string id)
         {
-            return await Task<Stream>.Factory.StartNew(() => { 
-                if (id == null) throw new ArgumentNullException(nameof(id));
+            if (id == null) throw new ArgumentNullException(nameof(id));
 
-                // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
-                if (Path.IsPathRooted(id))
-                    return new FileStream(id, FileMode.Open);
+            // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
+            if (Path.IsPathRooted(id))
+                return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
 
-                // Path seems relative. First see if the file exists at the current working directory
-                if (File.Exists(id))
-                    return new FileStream(id, FileMode.Open);
+            // Path seems relative. First see if the file exists at the current working directory
+            if (File.Exists(id))
+                return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
 
-                // At last, look at the specifie base directories
-                foreach (var baseDir in _baseDirs)
-                {
-                    string path = Path.Combine(baseDir, id);
-                    if (File.Exists(path))
-                        return new FileStream(path, FileMode.Open);
-                }
-                return null;
-            });
+            // At last, look at the specified base directories
+            foreach (var baseDir in _baseDirs)
+            {
+                string path = Path.Combine(baseDir, id);
+                if (File.Exists(path))
+                    return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
+            }
+            return null;
+
         }
 
         /// <summary>
@@ -215,28 +212,26 @@ namespace Fusee.Base.Imp.Desktop
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return true if a stream can be created.</returns>
-        protected override async Task<bool> CheckExistsAsync(string id)
+        protected override Task<bool> CheckExistsAsync(string id)
         {
-            return await Task.Factory.StartNew(() =>
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) directly check its presence
+            if (Path.IsPathRooted(id))
+                return Task.FromResult(File.Exists(id));
+
+            // Path seems relative. First see if the file exists at the current working directory
+            if (File.Exists(id))
+                return Task.FromResult(true);
+
+            foreach (var baseDir in _baseDirs)
             {
-                if (id == null) throw new ArgumentNullException(nameof(id));
+                string path = Path.Combine(baseDir, id);
+                if (File.Exists(path))
+                    return Task.FromResult(true);
+            }
 
-                // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) directly check its presence
-                if (Path.IsPathRooted(id))
-                    return File.Exists(id);
-
-                // Path seems relative. First see if the file exists at the current working directory
-                if (File.Exists(id))
-                    return true;
-
-                foreach (var baseDir in _baseDirs)
-                {
-                    string path = Path.Combine(baseDir, id);
-                    if (File.Exists(path))
-                        return true;
-                }
-                return false;
-            });
+            return Task.FromResult(false);
         }
     }
 }

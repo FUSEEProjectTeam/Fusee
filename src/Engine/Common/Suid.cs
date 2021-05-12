@@ -52,7 +52,7 @@ namespace Fusee.Engine.Common
         /// <param name="left"></param>
         /// <param name="right"></param>      
         public static bool operator ==(Suid left, Suid right) => left.Equals(right);
-      
+
         /// <summary>
         /// Checks if two suids are equal
         /// </summary>

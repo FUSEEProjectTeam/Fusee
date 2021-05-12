@@ -1,12 +1,11 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using Lidgren.Network;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
-using Fusee.Engine.Common;
-using Lidgren.Network;
-
 using Timer = System.Timers.Timer;
 
 namespace Fusee.Engine.Imp.Network.Desktop
@@ -103,14 +102,14 @@ namespace Fusee.Engine.Imp.Network.Desktop
             IncomingMsg = new List<INetworkMsg>();
 
             _config = new NetConfigValues
-                          {
-                              SysType = SysType.None,
-                              DefaultPort = 14242,
-                              Discovery = false,
-                              ConnectOnDiscovery = false,
-                              DiscoveryTimeout = 5000,
-                              RedirectPackets = false,
-                          };
+            {
+                SysType = SysType.None,
+                DefaultPort = 14242,
+                Discovery = false,
+                ConnectOnDiscovery = false,
+                DiscoveryTimeout = 5000,
+                RedirectPackets = false,
+            };
 
             // _netConfig.RedirectedPacketsList.CollectionChanged += PackageCapture;
             Connections = new List<INetworkConnection>();
@@ -142,7 +141,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
             // peerID
             var random = new Random();
             _peerID = random.Next(0, 100);
-            
+
             switch (_config.SysType)
             {
                 case SysType.Peer:
@@ -216,10 +215,10 @@ namespace Fusee.Engine.Imp.Network.Desktop
         }
 
         /// <summary>
-        /// Gets the local ip. Do not use this often due to performance reasons.
+        /// Gets the local IP. Do not use this often due to performance reasons.
         /// </summary>
         /// <returns>
-        /// The local ip as a string.
+        /// The local IP as a string.
         /// </returns>
         public string GetLocalIp()
         {
@@ -245,13 +244,13 @@ namespace Fusee.Engine.Imp.Network.Desktop
 
                     Connections.AddRange(
                         _netServer.Connections.Select(
-                            connection => new NetworkConnection {Connection = connection, NetworkImp = this}));
+                            connection => new NetworkConnection { Connection = connection, NetworkImp = this }));
 
                     break;
             }
 
             // event OnConnectionUpdate
-            var newConnection = new NetworkConnection {Connection = senderConnection, NetworkImp = this};
+            var newConnection = new NetworkConnection { Connection = senderConnection, NetworkImp = this };
 
             if (ConnectionUpdate != null)
                 ConnectionUpdate(lastStatus, newConnection);
@@ -261,8 +260,8 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// Opens the connection.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <param name="ip">The ip.</param>
-        /// <returns>True if connection was succesfully opened.</returns>
+        /// <param name="ip">The IP.</param>
+        /// <returns>True if connection was successfully opened.</returns>
         public bool OpenConnection(SysType type, IPEndPoint ip)
         {
             return OpenConnection(type, ip.Address.ToString(), ip.Port);
@@ -274,7 +273,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// <param name="type">The type of the system (only peer or client are supported).</param>
         /// <param name="host">The host. Example: 129.12.12.12</param>
         /// <param name="port">The port.</param>
-        /// <returns>True if connection was succesfully opened.</returns>
+        /// <returns>True if connection was successfully opened.</returns>
         public bool OpenConnection(SysType type, string host, int port)
         {
             NetConnection connection = null;
@@ -326,13 +325,13 @@ namespace Fusee.Engine.Imp.Network.Desktop
                 case SysType.Peer:
                     foreach (var con in _netPeer.Connections)
                         con.Disconnect("Disconnecting");
-                        
+
                     break;
 
                 case SysType.Client:
                     foreach (var con in _netClient.Connections)
                         con.Disconnect("Disconnecting");
-                    
+
                     break;
 
                 case SysType.Server:
@@ -375,7 +374,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// <param name="msg">The Message in byte[].</param>
         /// <param name="msgDelivery">The <see cref="MessageDelivery" />.</param>
         /// <param name="msgChannel">The message channel.</param>
-        /// <returns>True if the message was sent succesfully.</returns>
+        /// <returns>True if the message was sent successfully.</returns>
         public bool SendMessage(byte[] msg, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
@@ -394,7 +393,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
                     var sendMsgClient = _netClient.CreateMessage();
                     sendMsgClient.Write(msg);
 
-                    sendResult = _netClient.SendMessage(sendMsgClient, (NetDeliveryMethod) msgDelivery, msgChannel);
+                    sendResult = _netClient.SendMessage(sendMsgClient, (NetDeliveryMethod)msgDelivery, msgChannel);
                     return (sendResult == NetSendResult.Sent);
 
                 case SysType.Server:
@@ -417,7 +416,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// <param name="connection">The connection.</param>
         /// <param name="msgDelivery">The  <see cref="MessageDelivery"/>.</param>
         /// <param name="msgChannel">The message channel.</param>
-        /// <returns>True if the message was sent succesfully.</returns>
+        /// <returns>True if the message was sent successfully.</returns>
         public bool SendMessage(byte[] msg, NetConnection connection, MessageDelivery msgDelivery, int msgChannel)
         {
             // _netConfig.RedirectPackets = true;
@@ -529,7 +528,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
             switch (msg.MessageType)
             {
                 case NetIncomingMessageType.StatusChanged:
-                    Status.LastStatus = (ConnectionStatus) msg.ReadByte();
+                    Status.LastStatus = (ConnectionStatus)msg.ReadByte();
 
                     switch (Status.LastStatus)
                     {
@@ -558,20 +557,20 @@ namespace Fusee.Engine.Imp.Network.Desktop
                     }
 
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Status = Status.LastStatus,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Status = Status.LastStatus,
+                        Sender = new NetworkConnection { Connection = msg.SenderConnection }
+                    };
 
                 case NetIncomingMessageType.DiscoveryRequest:
-                        SendDiscoveryResponse(msg.SenderEndPoint);
+                    SendDiscoveryResponse(msg.SenderEndPoint);
 
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection { Connection = msg.SenderConnection }
+                    };
 
                 case NetIncomingMessageType.DiscoveryResponse:
                     var discoveryID = msg.ReadString();
@@ -586,36 +585,36 @@ namespace Fusee.Engine.Imp.Network.Desktop
                         _discoveryTimeout.Dispose();
 
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {_remoteEndPoint = msg.SenderEndPoint},
-                            Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = discoveryID}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection { _remoteEndPoint = msg.SenderEndPoint },
+                        Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = discoveryID }
+                    };
 
                 case NetIncomingMessageType.Data:
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
-                            Message =
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection { Connection = msg.SenderConnection },
+                        Message =
                                 new NetworkMsgType
-                                    {
-                                        MsgType = MsgDataTypes.Bytes,
-                                        ReadBytes = msg.ReadBytes(msg.LengthBytes),
-                                        MsgChannel = msg.SequenceChannel
-                                    }
-                        };
+                                {
+                                    MsgType = MsgDataTypes.Bytes,
+                                    ReadBytes = msg.ReadBytes(msg.LengthBytes),
+                                    MsgChannel = msg.SequenceChannel
+                                }
+                    };
 
                 case NetIncomingMessageType.DebugMessage:
                 case NetIncomingMessageType.VerboseDebugMessage:
                 case NetIncomingMessageType.WarningMessage:
                 case NetIncomingMessageType.ErrorMessage:
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection(),
-                            Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = msg.ReadString()}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection(),
+                        Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = msg.ReadString() }
+                    };
             }
 
             return null;

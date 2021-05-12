@@ -47,7 +47,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (HingeConstraintImp) _hci.UserObject;
+                var o = (HingeConstraintImp)_hci.UserObject;
                 o._hci.EnableMotor = value;
             }
         }
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="maxMotorImpulse">The maximum motor impulse.</param>
         public void EnableAngularMotor(bool enableMotor, float targetVelocity, float maxMotorImpulse)
         {
-            var o = (HingeConstraintImp) _hci.UserObject;
+            var o = (HingeConstraintImp)_hci.UserObject;
             o._hci.EnableAngularMotor(enableMotor, targetVelocity, maxMotorImpulse);
         }
 
@@ -70,7 +70,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="dt">The dt.</param>
         public void SetMotorTarget(Quaternion qAinB, float dt)
         {
-            var o = (HingeConstraintImp) _hci.UserObject;
+            var o = (HingeConstraintImp)_hci.UserObject;
             o._hci.SetMotorTarget(Translator.QuaternionToBtQuaternion(qAinB), dt);
         }
         /// <summary>
@@ -80,7 +80,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="dt">The dt.</param>
         public void SetMotorTarget(float targetAngle, float dt)
         {
-            var o = (HingeConstraintImp) _hci.UserObject;
+            var o = (HingeConstraintImp)_hci.UserObject;
             o._hci.SetMotorTarget(targetAngle, dt);
         }
 
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
             set
             {
-                var o = (HingeConstraintImp) _hci.UserObject;
+                var o = (HingeConstraintImp)_hci.UserObject;
                 o._hci.MaxMotorImpulse = value;
             }
         }
@@ -182,7 +182,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <param name="axisInA">The axis in a.</param>
         public void SetAxis(float3 axisInA)
         {
-            var o = (HingeConstraintImp) _hci.UserObject;
+            var o = (HingeConstraintImp)_hci.UserObject;
             _hci.SetAxis(Translator.Float3ToBtVector3(axisInA));
         }
 
@@ -192,7 +192,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         /// <returns></returns>
         public float GetHingeAngle()
         {
-            var retval =  _hci.GetHingeAngle();
+            var retval = _hci.GetHingeAngle();
             return retval;
         }
         /// <summary>

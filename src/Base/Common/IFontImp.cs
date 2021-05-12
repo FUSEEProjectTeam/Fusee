@@ -3,7 +3,7 @@
 namespace Fusee.Base.Common
 {
     /// <summary>
-    /// A struct for saving character information needed for proccesing a font.
+    /// A struct for saving character information needed for processing a font.
     /// </summary>
     public struct GlyphInfo
     {

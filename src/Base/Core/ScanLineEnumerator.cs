@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using Fusee.Base.Common;
 
 namespace Fusee.Base.Core
 {
@@ -32,7 +32,7 @@ namespace Fusee.Base.Core
         public bool MoveNext()
         {
             int totalHeight = _ySrc + _height;
-            if(_currentPosition < totalHeight)
+            if (_currentPosition < totalHeight)
             {
                 _currentPosition++;
                 return true;

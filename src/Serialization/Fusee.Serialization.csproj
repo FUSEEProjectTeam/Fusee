@@ -1,25 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Serialization</RootNamespace>
-    <PackageId>Fusee.Serialization</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
-      <MonoWasmLinkSkip>protobuf-net</MonoWasmLinkSkip>
-
-  </PropertyGroup>
-
-  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Description>Fusee Serialization</Description>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-      <Reference Include="protobuf-net.Core">
-          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
-      </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="..\Xene\Fusee.Xene.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
   </ItemGroup>
 </Project>

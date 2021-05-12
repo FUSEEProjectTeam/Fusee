@@ -10,7 +10,7 @@ namespace Fusee.Serialization.V1
     /// The Position and Direction of a Light gets calculated internally, depending on the parent transform components, found in the scene graph.
     /// </summary>
     [ProtoContract]
-    public class FusLight: FusComponent
+    public class FusLight : FusComponent
     {
         /// <summary>
         /// Represents the light status.

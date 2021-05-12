@@ -45,14 +45,13 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a noise texture with size 4x4.
+        /// Creates a noise texture.
         /// </summary>
-        /// <param name="noiseSize">Number of random values used to rotate the sample kernel.</param>
+        /// <param name="texSize">Width and height of the texture. </param>
         /// <returns></returns>
-        public static Texture CreateNoiseTex(int noiseSize)
+        public static Texture CreateNoiseTex(int texSize)
         {
-            var texSize = 4;
-            var ssaoNoise = SSAONoise(noiseSize);
+            var ssaoNoise = SSAONoise(texSize * texSize);
             var pxData = new List<byte>(); //4 bytes per float, 3 floats per float3
 
             for (int i = 0; i < ssaoNoise.Length; i++)
@@ -67,7 +66,7 @@ namespace Fusee.Engine.Core
                 pxData.AddRange(bytesZ);
             }
 
-            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)), true, Common.TextureFilterMode.NEAREST);
+            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)), true, Common.TextureFilterMode.Nearest);
         }
 
         private static float3[] SSAONoise(int noiseSize) //should be a multiple of 4...

@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var retval =_iCTConstraintImp.AFrame;
+                var retval = _iCTConstraintImp.AFrame;
                 return retval;
             }
         }

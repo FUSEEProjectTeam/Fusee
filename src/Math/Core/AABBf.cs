@@ -1,4 +1,4 @@
-﻿using ProtoBuf;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -155,10 +155,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        public float3 Size
-        {
-            get { return (max - min); }
-        }
+        public float3 Size => (max - min);
 
         /// <summary>
         ///     Check if this AABB intersects with another
@@ -189,7 +186,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(Frustum frustum)
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
         {
             if (!frustum.Near.InsideOrIntersecting(this))
                 return false;
@@ -242,7 +239,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Operator override for equality.
         /// </summary>
-        /// <param name="left">The plane.</param>
+        /// <param name="left">The AABBf.</param>
         /// <param name="right">The scalar value.</param>        
         public static bool operator ==(AABBf left, AABBf right)
         {
@@ -252,7 +249,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Operator override for inequality.
         /// </summary>
-        /// <param name="left">The plane.</param>
+        /// <param name="left">The AABBf.</param>
         /// <param name="right">The scalar value.</param>
         public static bool operator !=(AABBf left, AABBf right)
         {
@@ -260,20 +257,20 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Indicates whether this plane is equal to another object.
+        /// Indicates whether this AABBf is equal to another object.
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBf"/>.</param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
 
             var other = (AABBf)obj;
             return max.Equals(other.max) && min.Equals(other.min);
         }
 
         /// <summary>
-        /// Generates a hash code for this plane.
+        /// Generates a hash code for this AABBf.
         /// </summary>
         public override int GetHashCode()
         {

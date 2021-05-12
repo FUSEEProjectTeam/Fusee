@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using SharpFont;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Fusee.Base.Imp.Android
 {
@@ -89,10 +89,10 @@ namespace Fusee.Base.Imp.Android
             _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
 
             ret.CharCode = c;
-            ret.AdvanceX = (float) _face.Glyph.Advance.X;
-            ret.AdvanceY = (float) _face.Glyph.Advance.Y;
+            ret.AdvanceX = (float)_face.Glyph.Advance.X;
+            ret.AdvanceY = (float)_face.Glyph.Advance.Y;
 
-            ret.Width = (float) _face.Glyph.Metrics.Width;
+            ret.Width = (float)_face.Glyph.Metrics.Width;
             ret.Height = (float)_face.Glyph.Metrics.Height;
 
             return ret;
@@ -120,7 +120,7 @@ namespace Fusee.Base.Imp.Android
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
 
-            //Writes points of a freetyp contour into a CurvePart,
+            //Writes points of a freetype contour into a CurvePart,
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
@@ -203,7 +203,7 @@ namespace Fusee.Base.Imp.Android
             var leftInx = _face.GetCharIndex(leftC);
             var rightInx = _face.GetCharIndex(rightC);
 
-            return (float) _face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
+            return (float)_face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace Fusee.Base.Imp.Android
 
     internal class SplitToCurvePartHelper
     {
-        #region Methodes
+        #region Methods
         public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);

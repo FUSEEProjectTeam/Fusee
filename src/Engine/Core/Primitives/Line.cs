@@ -2,7 +2,7 @@
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a polygonal line.

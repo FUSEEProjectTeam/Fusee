@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
 
@@ -27,12 +28,17 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// State of the <see cref="ShaderEffect"/>.
         /// </summary>
-        protected CollapsingStateStack<ShaderEffect> _effect = new CollapsingStateStack<ShaderEffect>();
+        protected CollapsingStateStack<Effect> _effect = new CollapsingStateStack<Effect>();
 
         /// <summary>
         /// State of the <see cref="RenderStateSet"/>.
         /// </summary>
         protected CollapsingStateStack<RenderStateSet> _renderStates = new CollapsingStateStack<RenderStateSet>();
+
+        /// <summary>
+        /// State of the <see cref="RenderLayer"/>.
+        /// </summary>
+        protected CollapsingStateStack<RenderLayer> _renderLayer = new CollapsingStateStack<RenderLayer>();
 
         /// <summary>
         /// Gets and sets the top of stack of the Render states state stack.
@@ -73,10 +79,19 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets and sets the shader effect.
         /// </summary>
-        public ShaderEffect Effect
+        public Effect Effect
         {
             set => _effect.Tos = value;
             get => _effect.Tos;
+        }
+
+        /// <summary>
+        /// Gets and sets the RenderLayer.
+        /// </summary>
+        public RenderLayer RenderLayer
+        {
+            set => _renderLayer.Tos = value;
+            get => _renderLayer.Tos;
         }
 
         /// <summary>
@@ -89,6 +104,7 @@ namespace Fusee.Engine.Core
             RegisterState(_effect);
             RegisterState(_uiRect);
             RegisterState(_renderStates);
+            RegisterState(_renderLayer);
         }
     }
 }

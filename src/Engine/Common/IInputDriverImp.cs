@@ -25,14 +25,14 @@ namespace Fusee.Engine.Common
         public string Id;
 
         /// <summary>
-        /// The human-readable description string of the device just disconntected.
+        /// The human-readable description string of the device that just disconnected.
         /// </summary>
         public string Desc;
     }
 
 
     /// <summary>
-    /// Implementations of this interface represent a piece of software capabable of connecting to 
+    /// Implementations of this interface represent a piece of software capable of connecting to 
     /// one or more input devices (<see cref="IInputDeviceImp"/>. Members of this interface allow access to the devices.
     /// </summary>
     /// <remarks>

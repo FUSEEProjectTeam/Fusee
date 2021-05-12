@@ -9,29 +9,39 @@
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
     <Product>FUSEE</Product>
-    <Version>0.7.7.0</Version>
-    <AssemblyVersion>0.7.7.0</AssemblyVersion>
-    <FileVersion>0.7.7.0</FileVersion>
-    <PackageVersion>0.7.7.0</PackageVersion>
+    <Version>0.10.2.0</Version>
+    <AssemblyVersion>0.10.2.0</AssemblyVersion>
+    <FileVersion>0.10.2.0</FileVersion>
+    <PackageVersion>0.10.2.0</PackageVersion>
     <Copyright>Copyright © 2013-today</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
     <PackageIcon>images\icon.png</PackageIcon>
+    <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
 
     <TieredCompilation>false</TieredCompilation>
 
+    <!--<Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
+    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>-->
+
+    <PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
+
+    <ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
+    
     <!--
     Suppress warnings
     1701 and 1702 is standard.
-    NU1701: Package restore of OpenTK 3.1 with net462 - remove after update to OpenTK 4
     -->
-    <NoWarn>1701;1702;NU1701</NoWarn>
+    <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true'" />
+    <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true' AND !$(AssemblyName.Contains('Example'))" />
   </ItemGroup>
 </Project>

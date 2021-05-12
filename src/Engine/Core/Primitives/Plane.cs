@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Core.Primitives
 {
     /// <summary>
     /// Creates a simple plane geometry straight from the code.
@@ -52,4 +52,3 @@ namespace Fusee.Engine.Core
 
     }
 }
-

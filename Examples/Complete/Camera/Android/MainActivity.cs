@@ -1,40 +1,40 @@
-using System.IO;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Fusee.Base.Core;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
+using System.IO;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Examples.Camera.Android
 {
-	[Activity (Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
+    [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
 		HardwareAccelerated=false,
 #endif
-		ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
-	public class MainActivity : Activity
-	{
-		protected override void OnCreate (Bundle savedInstanceState)
-		{
-			base.OnCreate (savedInstanceState);
+        ConfigurationChanges = ConfigChanges.KeyboardHidden | ConfigChanges.ScreenSize | ConfigChanges.Orientation, LaunchMode = LaunchMode.SingleTask)]
+    public class MainActivity : Activity
+    {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
             RequestWindowFeature(WindowFeatures.NoTitle);
-		    if (SupportedOpenGLVersion() >= 3)
-		    {
-		        // SetContentView(new LibPaintingView(ApplicationContext, null));
+            if (SupportedOpenGLVersion() >= 3)
+            {
+                // SetContentView(new LibPaintingView(ApplicationContext, null));
 
-		        // Inject Fusee.Engine.Base InjectMe dependencies
-		        IO.IOImp = new IOImp(ApplicationContext);
+                // Inject Fusee.Engine.Base InjectMe dependencies
+                IO.IOImp = new IOImp(ApplicationContext);
 
                 var fap = new Fusee.Base.Imp.Android.ApkAssetProvider(ApplicationContext);
                 fap.RegisterTypeHandler(
@@ -79,20 +79,20 @@ namespace Fusee.Examples.Camera.Android
 
                 var app = new Core.CameraExample();
 
-		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
-		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
-		        app.CanvasImplementor = rci;
-		        app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
+                // Inject Fusee.Engine InjectMe dependencies (hard coded)
+                RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                app.CanvasImplementor = rci;
+                app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 
-		        SetContentView(rci.View);
+                SetContentView(rci.View);
 
-		        Engine.Core.Input.AddDriverImp(
-		            new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
-		        // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
-		        // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
-		    }
-		    else
-		    {
+                Engine.Core.Input.AddDriverImp(
+                    new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
+                // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
+                // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
+            }
+            else
+            {
                 Toast.MakeText(ApplicationContext, "Hardware does not support OpenGL ES 3.0 - Aborting...", ToastLength.Long);
                 Log.Info("@string/app_name", "Hardware does not support OpenGL ES 3.0 - Aborting...");
             }

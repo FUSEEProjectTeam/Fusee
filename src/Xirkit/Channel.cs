@@ -40,9 +40,9 @@ namespace Fusee.Xirkit
 
         // The _value at a certain time in the channel
         private TValue _value;
-        
+
         /// <summary>
-        /// Initializes a new instance of the <see cref="Channel{TValue}"/> class. Adds one defaul Keyframe and the right Lerpfunction.
+        /// Initializes a new instance of the <see cref="Channel{TValue}"/> class. Adds one default Keyframe and the right Lerpfunction.
         /// </summary>
         /// <param name="timeChanged">The time changed.</param>
         /// <param name="lerpFunc">The lerp function.</param>
@@ -134,18 +134,18 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// Removes a keyframe at a speciffic time (time = key).
+        /// Removes a keyframe at a specific time (time = key).
         /// </summary>
         /// <param name="time">The time of the keyframe that has to be removed.</param>
         public void RemoveKeyframe(float time)
         {
             for (int i = 0; i < _timeline.Count; i++)
             {
-                if(_timeline[i].Time == time)
+                if (_timeline[i].Time == time)
                     _timeline.RemoveAt(i);
                 _timeline.Sort(_comparer);
             }
-            
+
         }
 
         /// <summary>
@@ -162,14 +162,14 @@ namespace Fusee.Xirkit
 
                 for (int next = 1; next < _timeline.Count; next++)
                 {
-                    if (_timeline.ElementAt(next - 1).Time <= time &&  time < _timeline.ElementAt(next).Time)
+                    if (_timeline.ElementAt(next - 1).Time <= time && time < _timeline.ElementAt(next).Time)
                     {
                         keyValue = _lerpIt(_timeline.ElementAt(next - 1).Value, _timeline.ElementAt(next).Value, _timeline.ElementAt(next).Time - _timeline.ElementAt(next - 1).Time, time - _timeline.ElementAt(next - 1).Time);
                         break;
                     }
                 }
             }
-            else 
+            else
             {
                 // Diagnostics.Log("Timeline is empty. Using default value");
                 keyValue = default(TValue);
@@ -185,7 +185,7 @@ namespace Fusee.Xirkit
         /// <returns>true = there is a keyframe with the same key | false = there no keyframe with the same key</returns>
         private bool ContainsKey(Keyframe<TValue> keyframe)
         {
-            for (int i = 0;i<_timeline.Count;i++)
+            for (int i = 0; i < _timeline.Count; i++)
             {
                 if (keyframe.Time == _timeline[i].Time)
                 {

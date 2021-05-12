@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Math.Core;
 
 namespace Fusee.Jometri
 {
@@ -13,10 +13,10 @@ namespace Fusee.Jometri
         #region Creating Primitives  
 
         /// <summary>
-        /// Creates and returns a Cuboid as DCEL with the given dimensions, centred in the wolrds coordinate system.
+        /// Creates and returns a Cuboid as DCEL with the given dimensions, centered in the world coordinate system.
         /// </summary>
         /// <param name="dimensionX">Width in X-dimension.</param>
-        /// <param name="dimensionY">Height in Y-dimenison.</param>
+        /// <param name="dimensionY">Height in Y-dimension.</param>
         /// <param name="dimensionZ">Depth in Z-dimension.</param>
         /// <returns></returns>
         public static Geometry CreateCuboidGeometry(float dimensionX, float dimensionY, float dimensionZ)
@@ -69,7 +69,7 @@ namespace Fusee.Jometri
             var verrticalAngleStep = System.Math.PI / verticalResolution; // t
 
             var currentLatitudeVerticesHandles = new int[horizontalResolution];
-            var lastLaitudeVerticesHandles = new int[horizontalResolution]; //stores last vertices to connect them later with the next latidute vertices
+            var lastlatitudeVerticesHandles = new int[horizontalResolution]; //stores last vertices to connect them later with the next latitude vertices
 
             for (var i = 1; i < verticalResolution + 1; i++)
             {
@@ -188,8 +188,8 @@ namespace Fusee.Jometri
 
                         h4.OriginVertex = currentLatitudeVerticesHandles[j];
                         h3.OriginVertex = j == horizontalResolution - 1 ? currentLatitudeVerticesHandles[0] : currentLatitudeVerticesHandles[j + 1];
-                        h2.OriginVertex = j == horizontalResolution - 1 ? lastLaitudeVerticesHandles[0] : lastLaitudeVerticesHandles[j + 1];
-                        h1.OriginVertex = lastLaitudeVerticesHandles[j];
+                        h2.OriginVertex = j == horizontalResolution - 1 ? lastlatitudeVerticesHandles[0] : lastlatitudeVerticesHandles[j + 1];
+                        h1.OriginVertex = lastlatitudeVerticesHandles[j];
 
                         var currentVertex = sphere.GetVertexByHandle(currentLatitudeVerticesHandles[j]);
                         currentVertex.IncidentHalfEdge = h4.Handle;
@@ -260,7 +260,7 @@ namespace Fusee.Jometri
                     if (i > 1)
                     {
                         var h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
-                        var lastVertex = sphere.GetVertexByHandle(lastLaitudeVerticesHandles[j]);
+                        var lastVertex = sphere.GetVertexByHandle(lastlatitudeVerticesHandles[j]);
                         var topH1 = sphere.GetHalfEdgeByHandle(lastVertex.IncidentHalfEdge);
                         while (true)
                         {
@@ -275,7 +275,7 @@ namespace Fusee.Jometri
 
                 }
 
-                Array.Copy(currentLatitudeVerticesHandles, lastLaitudeVerticesHandles,
+                Array.Copy(currentLatitudeVerticesHandles, lastlatitudeVerticesHandles,
                     currentLatitudeVerticesHandles.Length);
             }
             sphere.DictVertices.Add(northPole.Handle, northPole);
@@ -294,15 +294,15 @@ namespace Fusee.Jometri
         /// <summary>
         /// Creates and returns a cone with the given dimensions.
         /// </summary>
-        /// <param name="baseRadius">The radiaus of the base circle.</param>
+        /// <param name="baseRadius">The radius of the base circle.</param>
         /// <param name="dimensionY">The height of the cone.</param>
-        /// <param name="sliceCount">The horizontal resulotion of the base circle. Min value is 3. For a basic cone 15.</param>
+        /// <param name="sliceCount">The horizontal resolution of the base circle. Min value is 3. For a basic cone 15.</param>
         /// <returns></returns>
         public static Geometry CreateConeGeometry(float baseRadius, float dimensionY, int sliceCount)
         {
             //check input
             if (sliceCount < 3) sliceCount = 3;
-            if (baseRadius <= 0 || dimensionY <= 0) throw new ArgumentException("You can not input paramaters <= 0");
+            if (baseRadius <= 0 || dimensionY <= 0) throw new ArgumentException("You can not input parameters <= 0");
 
             var cone = new Geometry();
             var northPole = new Vertex(cone.CreateVertHandleId(), new float3(0, dimensionY / 2, 0));
@@ -413,11 +413,11 @@ namespace Fusee.Jometri
                 lastH3 = h3;
                 lastVertex = tempVertex;
             }
-            //add south and northpole
+            //add south and north pole
             cone.DictVertices.Add(southPole.Handle, southPole);
             cone.DictVertices.Add(northPole.Handle, northPole);
 
-            //create last 2 traingles
+            //create last 2 triangles
             var firstVertex = cone.GetVertexByHandle(firstHandles[0]);
             var firtstH1 = cone.GetHalfEdgeByHandle(firstHandles[1]);
             var firstH4 = cone.GetHalfEdgeByHandle(firstHandles[2]);
@@ -500,7 +500,7 @@ namespace Fusee.Jometri
             positions[4] = new float3(0, yPos, 0);
 
             var baseFace = new Face(6) { OuterHalfEdge = 4 };
-            //create nad add vertices 
+            //create and add vertices 
             for (var i = 0; i < 5; i++)
             {
                 Vertex current = new Vertex(pyramid.CreateVertHandleId(), positions[i]);

@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Math.Core;
+using System.Collections.Generic;
 using System.Linq;
-using Fusee.Math.Core;
 
 namespace Fusee.Jometri
 {
@@ -39,7 +39,7 @@ namespace Fusee.Jometri
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <param name="faceHandle">The handle of the face to extrude.</param>
-        /// <param name="offset">How far the face shoul get ertuded.</param>
+        /// <param name="offset">How far the face should get extruded.</param>
         /// <returns></returns>
         public static Geometry ExtrudeFace(this Geometry geometry, int faceHandle, float offset)
         {
@@ -186,11 +186,11 @@ namespace Fusee.Jometri
 
         private static void CreateTopSurface(Geometry geometry, float zOffset, bool exturdeAlongNormal)
         {
-            //Clone frontface.
+            //Clone front face.
             var backface = geometry.CloneGeometry();
 
             if (!exturdeAlongNormal)
-                //Add zOffset to each vertex coord.
+                //Add zOffset to each vertex coordinate.
                 UpdateVertexZCoord(backface, zOffset);
             else
             {
@@ -382,7 +382,7 @@ namespace Fusee.Jometri
                 first.DictHalfEdges.Add(halfEdge.Handle, halfEdge);
             }
 
-            //Write content of second undbounded face into the first - delete second unbounded face
+            //Write content of second unbounded face into the first - delete second unbounded face
             var firstUnbounded = first.DictFaces[first.DictFaces.Keys.Min()];
             var secUnbounded = second.DictFaces[second.DictFaces.Keys.Min()];
             firstUnbounded.InnerHalfEdges.AddRange(secUnbounded.InnerHalfEdges);

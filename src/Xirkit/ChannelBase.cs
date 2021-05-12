@@ -25,6 +25,6 @@
         /// <summary>
         /// Retrieves the overall duration of this channel.
         /// </summary>
-        public abstract  float Duration { get; }
+        public abstract float Duration { get; }
     }
 }

@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (HingeConstraint) _iHConstraintImp.UserObject;
+                var o = (HingeConstraint)_iHConstraintImp.UserObject;
                 o._iHConstraintImp.AngularOnly = value;
             }
         }
@@ -37,13 +37,13 @@ namespace Fusee.Engine.Core
 
         public void EnableAngularMotor(bool enableMotor, float targetVelocity, float maxMotorImpulse)
         {
-            var o = (HingeConstraint) _iHConstraintImp.UserObject;
+            var o = (HingeConstraint)_iHConstraintImp.UserObject;
             o._iHConstraintImp.EnableAngularMotor(enableMotor, targetVelocity, maxMotorImpulse);
         }
 
         public void SetMotorTarget(Quaternion qAinB, float dt)
         {
-            var o = (HingeConstraint) _iHConstraintImp.UserObject;
+            var o = (HingeConstraint)_iHConstraintImp.UserObject;
             o._iHConstraintImp.SetMotorTarget(qAinB, dt);
         }
 
@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                var o = (HingeConstraint) _iHConstraintImp.UserObject;
+                var o = (HingeConstraint)_iHConstraintImp.UserObject;
                 o._iHConstraintImp.MaxMotorImpulse = value;
             }
         }

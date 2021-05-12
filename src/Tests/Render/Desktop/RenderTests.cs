@@ -28,29 +28,29 @@ namespace Fusee.Test.Render.Desktop
             output.WriteLine(percent.ToString());
         }
 
+        //[Fact]
+        //public void BoneAnimationTest()
+        //{
+        //    Program.Example = new Fusee.Examples.Bone.Core.Bone();
+        //    Program.Init("BoneAnimationTest.png");
+
+        //    var referenceIm = new Bitmap(@"References\BoneAnimation.png");
+        //    var testIm = new Bitmap("BoneAnimationTest.png");
+
+        //    var percent = CompareImage(referenceIm, testIm);
+
+        //    Assert.InRange(percent, 0.99f, 1f);
+        //    output.WriteLine(percent.ToString());
+        //}
+
         [Fact]
-        public void BoneAnimationTest()
+        public void NormalMappingTest()
         {
-            Program.Example = new Fusee.Examples.Bone.Core.Bone();
-            Program.Init("BoneAnimationTest.png");
-
-            var referenceIm = new Bitmap(@"References\BoneAnimation.png");
-            var testIm = new Bitmap("BoneAnimationTest.png");
-
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.99f, 1f);
-            output.WriteLine(percent.ToString());
-        }
-
-        [Fact]
-        public void BumpMappingTest()
-        {
-            Program.Example = new Fusee.Examples.NormalMap.Core.NormalMap();
-            Program.Init("BumpMappingTest.png");
+            Program.Example = new Examples.NormalMap.Core.NormalMap();
+            Program.Init("NormalMappingTest.png");
 
             var referenceIm = new Bitmap(@"References\BumpMapping.png");
-            var testIm = new Bitmap("BumpMappingTest.png");
+            var testIm = new Bitmap("NormalMappingTest.png");
 
             var percent = CompareImage(referenceIm, testIm);
 
@@ -118,20 +118,20 @@ namespace Fusee.Test.Render.Desktop
             output.WriteLine(percent.ToString());
         }
 
-        [Fact]
-        public void SimpleDeferredTest()
-        {
-            Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
-            Program.Init("SimpleDeferredTest.png");
+        //[Fact]
+        //public void SimpleDeferredTest()
+        //{
+        //    Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
+        //    Program.Init("SimpleDeferredTest.png");
 
-            var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
-            var testIm = new Bitmap("SimpleDeferredTest.png");
+        //    var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
+        //    var testIm = new Bitmap("SimpleDeferredTest.png");
 
-            var percent = CompareImage(referenceIm, testIm);
+        //    var percent = CompareImage(referenceIm, testIm);
 
-            Assert.InRange(percent, 0.01f, 1f);
-            output.WriteLine(percent.ToString());
-        }
+        //    Assert.InRange(percent, 0.01f, 1f);
+        //    output.WriteLine(percent.ToString());
+        //}
 
         [Fact]
         public void ThreeDFontTest()

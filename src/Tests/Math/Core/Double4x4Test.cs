@@ -655,7 +655,7 @@ namespace Fusee.Test.Math.Core
             var actual = mat.Invert();
 
             Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
-        }            
+        }
 
         [Fact]
         public void InvertAffine_Static()

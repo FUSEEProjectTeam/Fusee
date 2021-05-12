@@ -8,9 +8,9 @@ in vec3 vMVNormal;
 in vec2 vUV;
 in vec4 fragBorders;
 
-uniform sampler2D DiffuseTexture;
-uniform vec4 DiffuseColor;
-uniform float DiffuseMix;
+uniform sampler2D AlbedoTexture;
+uniform vec4 Albedo;
+uniform float AlbedoMix;
 uniform vec2 Tile;
 
 out vec4 outColor;
@@ -64,7 +64,7 @@ void main()
 			float uvX = bringInRange(p1.x , p1.x + width / Tile.x, p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
-			outColor = vec4(texture(DiffuseTexture, vec2(uvX , uvY)) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0);
+			outColor = vec4(texture(AlbedoTexture, vec2(uvX , uvY)) * AlbedoMix) * Albedo *  max(dot(N, L), 0.0);
 		}
 		//Last tile
 		else if(currentTileX == Tile.x) 
@@ -72,7 +72,7 @@ void main()
 			float uvX = bringInRange(p1.x + (width * (currentTileX / Tile.x)), p1.x + width, p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
-			outColor = vec4(texture(DiffuseTexture, vec2(uvX, uvY)) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0);	
+			outColor = vec4(texture(AlbedoTexture, vec2(uvX, uvY)) * AlbedoMix) * Albedo *  max(dot(N, L), 0.0);	
 		}
 		//Every tile inbetween
 		else 
@@ -80,9 +80,9 @@ void main()
 			float uvX = bringInRange( p1.x + (width * (currentTileX / Tile.x)), p1.x + (width * ((currentTileX + 1.0) / Tile.x)), p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
-			outColor = vec4(texture(DiffuseTexture, vec2(uvX , uvY)) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0);
+			outColor = vec4(texture(AlbedoTexture, vec2(uvX , uvY)) * AlbedoMix) * Albedo *  max(dot(N, L), 0.0);
 		}	
 	}
 	else
-		outColor = vec4(texture(DiffuseTexture,vUV) * DiffuseMix)* DiffuseColor *  max(dot(N, L), 0.0);	
+		outColor = vec4(texture(AlbedoTexture,vUV) * AlbedoMix)* Albedo *  max(dot(N, L), 0.0);	
 }

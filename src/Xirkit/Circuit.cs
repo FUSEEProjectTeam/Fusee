@@ -102,23 +102,23 @@ namespace Fusee.Xirkit
         }
 
         /// <summary>
-        /// This method is defunkt since a user has no idea of what to specify at "pos".
+        /// This method is defunct since a user has no idea of what to specify at "pos".
         /// </summary>
         /// <param name="pos">The position.</param>
         public void DeleteRoot(int pos)
         {
-            throw new NotImplementedException("This method is defunkt since a user has no idea of what to specify at pos");
+            throw new NotImplementedException("This method is defunct since a user has no idea of what to specify at pos");
             //_rootList[pos].RemoveAllPins();
             //_rootList.RemoveAt(pos);
         }
 
         /// <summary>
-        /// This method is defunkt since a user has no idea of what to specify at "pos".
+        /// This method is defunct since a user has no idea of what to specify at "pos".
         /// </summary>
         /// <param name="pos">The position.</param>
         public void DeleteNode(int pos)
         {
-            throw new NotImplementedException("This method is defunkt since a user has no idea of what to specify at pos");
+            throw new NotImplementedException("This method is defunct since a user has no idea of what to specify at pos");
             //_nodeList[pos].RemoveAllPins();
             //_nodeList.RemoveAt(pos);
         }

@@ -1,11 +1,12 @@
-using System;
-using Xunit;
 using Fusee.Math.Core;
+using Fusee.Serialization;
+using Fusee.Serialization.V1;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using Fusee.Serialization.V1;
+using Xunit;
 
-namespace Fusee.Serialization.Test
+namespace Fusee.Test.Serialization.V1
 {
     public class SimpleSerialization
     {
@@ -40,10 +41,10 @@ namespace Fusee.Serialization.Test
                 Translation = new float3(0, 0, 0)
             });
 
-            ((FusScene)file.Contents).Children[0].AddComponent(new FusMaterial
+            ((FusScene)file.Contents).Children[0].AddComponent(new FusMaterialStandard
             {
-                Albedo = new MatChannelContainer { Color = new float4(0.1f, 0.2f, 0.3f, 1) },
-                Specular = new SpecularChannelContainer { Color = new float4(0.1f, 0.2f, 0.3f, 1), Shininess = 1 },
+                Albedo = new AlbedoChannel { Color = new float4(0.1f, 0.2f, 0.3f, 1) },
+                Specular = new SpecularChannel { Color = new float4(0.1f, 0.2f, 0.3f, 1), Shininess = 1 },
             });
 
             ((FusScene)file.Contents).Children[0].AddComponent(SimpleMeshes.CreateCuboid(new float3(10, 2, 10)));
@@ -187,4 +188,3 @@ namespace Fusee.Serialization.Test
     }
 
 }
-
