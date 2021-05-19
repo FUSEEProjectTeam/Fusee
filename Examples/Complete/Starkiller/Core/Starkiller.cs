@@ -106,7 +106,7 @@ namespace Fusee.Examples.Starkiller.Core
 
 
             // Create the interaction handler
-            
+
             _scene = CreateScene();
             _gui = CreateGui();
             _sih = new SceneInteractionHandler(_gui);
@@ -362,7 +362,7 @@ namespace Fusee.Examples.Starkiller.Core
         {
             OpenLink("http://fusee3d.org");
         }
-        
+
         public void SetProjectionAndViewport()
 
         {
