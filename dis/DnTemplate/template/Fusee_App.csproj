@@ -15,9 +15,6 @@
     <PackageReference Include="Fusee.Desktop" Version="0.8.2" />
     <PackageReference Include="Fusee.Desktop" Version="0.9.0" />
     <PackageReference Include="Fusee.Desktop" Version="0.9.1" />
+    <PackageReference Include="Fusee.Desktop" Version="0.10.2.0" />
   </ItemGroup>
-  <PropertyGroup>
-    <!-- Suppress warning NU1701: Package restore of OpenTK 3.1 with net462 - remove after update to OpenTK 4 -->
-    <NoWarn>NU1701</NoWarn>
-  </PropertyGroup>
 </Project>
