@@ -308,8 +308,6 @@ namespace Fusee.Examples.PcRendering.Core
             return false;
         }
 
-
-
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
@@ -425,7 +423,6 @@ namespace Fusee.Examples.PcRendering.Core
 
             if (OocLoader.RootNode != null)
                 _scene.Children.Remove(OocLoader.RootNode);
-
         }
 
         public void ResetCamera()

@@ -373,7 +373,6 @@ namespace Fusee.Examples.PcRendering.WPF
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
                 inactiveBorder.Visibility = Visibility.Collapsed;
             }
-
         }
 
         private void DeleteFile_Button_Click(object sender, RoutedEventArgs e)

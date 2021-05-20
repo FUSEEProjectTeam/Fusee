@@ -22,7 +22,6 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
