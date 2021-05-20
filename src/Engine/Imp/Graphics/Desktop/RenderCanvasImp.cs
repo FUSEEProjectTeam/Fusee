@@ -4,6 +4,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Diagnostics;
 using System.Drawing;
@@ -24,6 +25,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int _videoWallMonitorsHor;
         private int _videoWallMonitorsVert;
         private bool _windowBorderHidden = false;
+
+        /// <summary>
+        /// Window handle for the window the engine renders to.
+        /// </summary>
+        public IWindowHandle WindowHandle { get; }
 
         /// <summary>
         /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
@@ -187,8 +193,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public RenderCanvasImp(Icon appIcon)
         {
             //TODO: Select correct monitor
-            MonitorInfo mon;
-            Monitors.TryGetMonitorInfo(0, out mon);
+            Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
 
             int width = 1280;
             int height = 720;
@@ -207,6 +212,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
+
+            WindowHandle = new WindowHandle()
+            {
+                Handle = _gameWindow.Handle
+            };
 
             _gameWindow.CenterWindow();
         }
@@ -227,6 +237,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
+
+            WindowHandle = new WindowHandle()
+            {
+                Handle = _gameWindow.Handle
+            };
+
             _gameWindow.IsVisible = false;
             _gameWindow.MakeCurrent();
         }
@@ -519,6 +535,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     GL.Disable(EnableCap.Blend);
                 }
+            }
+        }
+
+        public IntPtr Handle
+        {
+            get
+            {
+                IntPtr hwnd;
+                unsafe
+                {
+                    hwnd = GLFW.GetWin32Window(WindowPtr);
+                }
+                return hwnd;
             }
         }
 
