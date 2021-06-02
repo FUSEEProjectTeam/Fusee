@@ -88,7 +88,7 @@ namespace Fusee.Engine.Core
         public float3 WorldPos => float4x4.TransformPerspective(Model, ModelPos);
 
         /// <summary>
-        /// Returns the (absolute) distance between ray origin and the intersection.
+        /// Returns the distance between ray origin and the intersection.
         /// </summary>
         public float DistanceFromOrigin;
     }
@@ -99,14 +99,14 @@ namespace Fusee.Engine.Core
     public class SceneRayCaster : Viserator<RayCastResult, SceneRayCaster.RayCasterState, SceneNode, SceneComponent>
     {
         /// <summary>
-        /// The origin of the ray (in world space).
+        /// The <see cref="Rayf"/> to check intersections with.
         /// </summary>
-        public float3 Origin { get; private set; }
+        public Rayf Ray { get; private set; }
 
         /// <summary>
-        /// The direction of the ray (in world space).
+        /// The <see cref="Cull"/> mode to use by the SceneRayCaster
         /// </summary>
-        public float3 Direction { get; private set; }
+        public Cull CullMode { get; private set; }
 
         #region State
         /// <summary>
@@ -139,10 +139,10 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new SceneRayCaster.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to use.</param>
-        public SceneRayCaster(SceneContainer scene)
+        public SceneRayCaster(SceneContainer scene, Cull cullMode = Cull.None)
             : base(scene.Children)
         {
-
+            CullMode = cullMode;
         }
 
         /// <summary>
@@ -160,10 +160,9 @@ namespace Fusee.Engine.Core
         /// <param name="origin">The origin of the ray (in world space).</param>
         /// <param name="direction">The direction of the ray (in world space).</param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
-        public IEnumerable<RayCastResult> RayCast(float3 origin, float3 direction)
+        public IEnumerable<RayCastResult> RayCast(Rayf ray)
         {
-            Origin = origin;
-            Direction = direction;
+            Ray = ray;
             return Viserate();
         }
 
@@ -188,6 +187,8 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
+            if (!mesh.BoundingBox.IntersectRay(Ray)) return;
+
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // Vertices of the picked triangle in world space
@@ -204,28 +205,34 @@ namespace Fusee.Engine.Core
                 var n = float3.Normalize(float3.Cross(a - c, b - c));
 
                 // Distance between "Origin" and the plane abc when following the Direction.
-                var distance = -float3.Dot(Origin - a, n) / float3.Dot(Direction, n);
+                var distance = -float3.Dot(Ray.Origin - a, n) / float3.Dot(Ray.Direction, n);
 
-                if (distance < 0) return;
+                if (distance < 0)
+                    continue;
 
                 // Position of the intersection point between ray and plane.
-                var point = Origin + Direction * distance;
+                var point = Ray.Origin + Ray.Direction * distance;
 
                 if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
                 {
-                    YieldItem(new RayCastResult
+                    if (CullMode == Cull.None || (CullMode == Cull.Clockwise) == (float3.Dot(n, Ray.Direction) < 0) )
                     {
-                        Mesh = mesh,
-                        Node = CurrentNode,
-                        Triangle = i,
-                        Model = State.Model,
-                        U = u,
-                        V = v,
-                        DistanceFromOrigin = System.Math.Abs(distance)
-                    });
+                        YieldItem(new RayCastResult
+                        {
+                            Mesh = mesh,
+                            Node = CurrentNode,
+                            Triangle = i,
+                            Model = State.Model,
+                            U = u,
+                            V = v,
+                            DistanceFromOrigin = distance
+                        });
+                    }
                 }
             }
         }
+
+
 
         #endregion
     }

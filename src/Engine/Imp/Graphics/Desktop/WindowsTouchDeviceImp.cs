@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using OpenTK;
+using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -352,12 +353,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private float GetWindowWidth()
         {
-            return _gameWindow.Width;
+            return _gameWindow.Size.X;
         }
 
         private float GetWindowHeight()
         {
-            return _gameWindow.Height;
+            return _gameWindow.Size.Y;
         }
         #endregion
 
@@ -433,7 +434,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public WindowsTouchInputDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
-            _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
+            _handle = new HandleRef(_gameWindow, _gameWindow.Context.WindowPtr);
             ConnectWindowsEvents();
             _tpAxisDescs = new Dictionary<int, AxisImpDescription>(_nTouchPointsSupported * 2 + 5);
             _activeTouchpoints = new Dictionary<int, int>(_nTouchPointsSupported);
