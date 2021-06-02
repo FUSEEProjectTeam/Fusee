@@ -99,14 +99,9 @@ namespace Fusee.Engine.Core
     public class SceneRayCaster : Viserator<RayCastResult, SceneRayCaster.RayCasterState, SceneNode, SceneComponent>
     {
         /// <summary>
-        /// The origin of the ray (in world space).
+        /// The <see cref="Rayf"/> to check intersections with.
         /// </summary>
-        public float3 Origin { get; private set; }
-
-        /// <summary>
-        /// The direction of the ray (in world space).
-        /// </summary>
-        public float3 Direction { get; private set; }
+        public Rayf Ray { get; private set; }
 
         /// <summary>
         /// The <see cref="Cull"/> mode to use by the SceneRayCaster
@@ -165,10 +160,9 @@ namespace Fusee.Engine.Core
         /// <param name="origin">The origin of the ray (in world space).</param>
         /// <param name="direction">The direction of the ray (in world space).</param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
-        public IEnumerable<RayCastResult> RayCast(float3 origin, float3 direction)
+        public IEnumerable<RayCastResult> RayCast(Rayf ray)
         {
-            Origin = origin;
-            Direction = float3.Normalize(direction);
+            Ray = ray;
             return Viserate();
         }
 
@@ -193,6 +187,8 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
+            if (!mesh.BoundingBox.IntersectRay(Ray)) return;
+
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // Vertices of the picked triangle in world space
@@ -209,17 +205,17 @@ namespace Fusee.Engine.Core
                 var n = float3.Normalize(float3.Cross(a - c, b - c));
 
                 // Distance between "Origin" and the plane abc when following the Direction.
-                var distance = -float3.Dot(Origin - a, n) / float3.Dot(Direction, n);
+                var distance = -float3.Dot(Ray.Origin - a, n) / float3.Dot(Ray.Direction, n);
 
                 if (distance < 0)
                     continue;
 
                 // Position of the intersection point between ray and plane.
-                var point = Origin + Direction * distance;
+                var point = Ray.Origin + Ray.Direction * distance;
 
                 if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
                 {
-                    if (CullMode == Cull.None || (CullMode == Cull.Clockwise) == (float3.Dot(n, Direction) < 0) )
+                    if (CullMode == Cull.None || (CullMode == Cull.Clockwise) == (float3.Dot(n, Ray.Direction) < 0) )
                     {
                         YieldItem(new RayCastResult
                         {
@@ -235,6 +231,8 @@ namespace Fusee.Engine.Core
                 }
             }
         }
+
+
 
         #endregion
     }
