@@ -215,7 +215,7 @@ namespace Fusee.Engine.Core
 
                 if (float3.PointInTriangle(a, b, c, point, out float u, out float v))
                 {
-                    if (CullMode == Cull.None || (CullMode == Cull.Clockwise) == (float3.Dot(n, Ray.Direction) < 0) )
+                    if (CullMode == Cull.None || (CullMode == Cull.Clockwise) == (float3.Dot(n, Ray.Direction) < 0))
                     {
                         YieldItem(new RayCastResult
                         {
