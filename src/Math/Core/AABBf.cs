@@ -215,6 +215,37 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Checks if a given ray originates in, or intersects this AABB.
+        /// </summary>
+        /// <param name="ray">The ray to test against.</param>
+        /// <returns></returns>
+        public bool IntersectRay(Rayf ray)
+        {
+            if (this.Intersects(ray.Origin))
+                return true;
+
+            float t1 = (min[0] - ray.Origin[0]) * ray.Inverse[0];
+            float t2 = (max[0] - ray.Origin[0]) * ray.Inverse[0];
+
+            float tmin = M.Min(t1, t2);
+            float tmax = M.Max(t1, t2);
+
+            for (int i = 1; i < 3; i++)
+            {
+                t1 = (min[i] - ray.Origin[i]) * ray.Inverse[i];
+                t2 = (max[i] - ray.Origin[i]) * ray.Inverse[i];
+
+                t1 = float.IsNaN(t1) ? 0.0f : t1;
+                t2 = float.IsNaN(t2) ? 0.0f : t2;
+
+                tmin = M.Max(tmin, M.Min(t1, t2));
+                tmax = M.Min(tmax, M.Max(t1, t2));
+            }
+
+            return tmax >= M.Max(tmin, 0.0);
+        }
+
+        /// <summary>
         /// Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
