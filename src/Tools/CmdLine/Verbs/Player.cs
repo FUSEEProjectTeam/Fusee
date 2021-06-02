@@ -181,12 +181,18 @@ namespace Fusee.Tools.CmdLine.Verbs
                     ReturnedType = typeof(Font),
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return await Task.FromResult(false).ConfigureAwait(false);
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) }).ConfigureAwait(false);
+                    },
+                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
+
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
@@ -196,7 +202,12 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                         return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
-                    Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return await Task.FromResult(false).ConfigureAwait(false);
+                        return await Task.FromResult(FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id)).ConfigureAwait(false);
+                    },
+                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);

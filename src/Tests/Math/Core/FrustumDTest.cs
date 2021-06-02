@@ -5,11 +5,11 @@ using Xunit;
 
 namespace Fusee.Test.Math.Core
 {
-    public class FrustumTest
+    public class FrustumDTest
     {
         [Theory]
         [MemberData(nameof(GetFrustumPlanes))]
-        public void CalculateFrustumPlanes_IsFrustumPlanes(PlaneF actual, PlaneF expected)
+        public void CalculateFrustumPlanes_IsFrustumPlanes(PlaneD actual, PlaneD expected)
         {
             Assert.Equal(expected, actual);
         }
@@ -18,7 +18,7 @@ namespace Fusee.Test.Math.Core
         public void CalculateFrustumCorners_IsFrustumCorners()
         {
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
-            var actualCorners = Frustum.CalculateFrustumCorners(projection).ToList();
+            var actualCorners = FrustumD.CalculateFrustumCorners(projection).ToList();
 
             var expectedCorners = new List<float3>()
             {
@@ -46,17 +46,17 @@ namespace Fusee.Test.Math.Core
         public static IEnumerable<object[]> GetFrustumPlanes()
         {
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
-            var frustum = new Frustum();
+            var frustum = new FrustumD();
             frustum.CalculateFrustumPlanes(projection);
 
-            var left = new PlaneF() { A = -0.5f, B = 0, C = -0.5f, D = 0 };
-            var right = new PlaneF() { A = 0.5f, B = 0, C = -0.5f, D = 0 };
+            var left = new PlaneD() { A = -0.5f, B = 0, C = -0.5f, D = 0 };
+            var right = new PlaneD() { A = 0.5f, B = 0, C = -0.5f, D = 0 };
 
-            var near = new PlaneF() { A = 0, B = 0, C = -1, D = -2 };
-            var far = new PlaneF() { A = 0, B = 0, C = 1, D = 10 };
+            var near = new PlaneD() { A = 0, B = 0, C = -1, D = -2 };
+            var far = new PlaneD() { A = 0, B = 0, C = 1, D = 10 };
 
-            var top = new PlaneF() { A = 0, B = 0.5f, C = -0.5f, D = 0 };
-            var bottom = new PlaneF() { A = 0, B = -0.5f, C = -0.5f, D = 0 };
+            var top = new PlaneD() { A = 0, B = 0.5f, C = -0.5f, D = 0 };
+            var bottom = new PlaneD() { A = 0, B = -0.5f, C = -0.5f, D = 0 };
 
             yield return new object[] { near.Normalize(), frustum.Near.Normalize() };
             yield return new object[] { far.Normalize(), frustum.Far.Normalize() };
