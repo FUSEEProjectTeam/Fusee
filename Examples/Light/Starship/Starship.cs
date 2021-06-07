@@ -2,29 +2,27 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using Fusee.Xirkit;
+using OpenTK.Graphics.ES20;
+using OpenTK.Graphics.OpenGL;
+using Starship.Data;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Xml.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
-using System;
-using System.IO;
-
-using System.Collections.Generic;
-using System.Linq;
-using System.ComponentModel;
-using Fusee.Xirkit;
-using System.Text;
-
-using System.Security.Cryptography;
-using OpenTK.Graphics.OpenGL;
-using System.Threading;
-using OpenTK.Graphics.ES20;
-using Fusee.Engine.Core.Effects;
-using Starship.Data;
-using System.Xml.Serialization;
 
 
 
@@ -164,7 +162,7 @@ namespace FuseeApp
         private float4 _color;
 
         private int _div;
-       
+
 
 
 
@@ -306,8 +304,8 @@ namespace FuseeApp
         {
 
             // Clear the backbuffer
-            
-            
+
+
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
@@ -323,7 +321,7 @@ namespace FuseeApp
                 _itemStatus = 0;
             }
 
-            if(_itemStatus == 3)
+            if (_itemStatus == 3)
             {
                 _appStartTime -= 3;
                 _itemStatus = 6;    //Status 6 ist leer, nur da, dass 3 nicht mehrmals ausgeführt wird
@@ -332,7 +330,7 @@ namespace FuseeApp
             {
                 _speedIncrItem = 0.95f;
             }
-            else if(_itemStatus == 0)
+            else if (_itemStatus == 0)
             {
                 _speedIncrItem = 1.0526f;
                 if (_itemOrbMesh != null)
@@ -346,7 +344,7 @@ namespace FuseeApp
             }
 
 
-            if(_itemStatus == 5)
+            if (_itemStatus == 5)
             {
                 if (_laser == false)
                 {
@@ -359,7 +357,7 @@ namespace FuseeApp
 
 
 
-                if(_itemTimer <= _playTime + 2 /*&& _starshipScene.Children.FindNodes(node => node.Name == "Laserbeam") != null*/)
+                if (_itemTimer <= _playTime + 2 /*&& _starshipScene.Children.FindNodes(node => node.Name == "Laserbeam") != null*/)
                 {
                     _starshipScene.Children.Remove(_laserbeam);
                 }
@@ -385,7 +383,8 @@ namespace FuseeApp
             }
             else if (_itemStatus == 4)
             {
-                _starshipScene.Children.FindNodes(node => node.Name == "Chassis")?.FirstOrDefault()?.GetComponent<DefaultSurfaceEffect>().SetFxParam("SurfaceInput.Albedo", new float4(1, 0, 1, 1));            }
+                _starshipScene.Children.FindNodes(node => node.Name == "Chassis")?.FirstOrDefault()?.GetComponent<DefaultSurfaceEffect>().SetFxParam("SurfaceInput.Albedo", new float4(1, 0, 1, 1));
+            }
             else
             {
                 _starshipScene.Children.FindNodes(node => node.Name == "Chassis")?.FirstOrDefault()?.GetComponent<DefaultSurfaceEffect>().SetFxParam("SurfaceInput.Albedo", _color);
@@ -436,9 +435,9 @@ namespace FuseeApp
                 _newItemTrench.GetTransform().Translation.z = 99;
                 TrenchParent.Children.Add(_currentItemTrench);
                 TrenchParent.Children.Add(_newItemTrench);
-            }    
-            
-            if(_newEnvTrench.GetTransform().Translation.z <= _currentEnvTrenchTrans)
+            }
+
+            if (_newEnvTrench.GetTransform().Translation.z <= _currentEnvTrenchTrans)
             {
                 TrenchParent.Children.Remove(_currentEnvTrench);
                 TrenchParent.Children.Remove(_newEnvTrench);
@@ -536,7 +535,7 @@ namespace FuseeApp
 
                 }
             }
-            else if ( status == 2)
+            else if (status == 2)
             {
                 if (Keyboard.IsKeyDown(KeyCodes.Enter))
                 {
@@ -597,8 +596,8 @@ namespace FuseeApp
                         //    carTrans.Translation.z -= (float)_carSpeed;
                         //}
 
-                       for(int k = 0; k < CarTrenchParent.Children.Count(); k++)
-                       {
+                        for (int k = 0; k < CarTrenchParent.Children.Count(); k++)
+                        {
                             var carTrenchTrans = CarTrenchParent.Children.ElementAt(k).GetTransform();
                             carTrenchTrans.Translation.z -= (float)_speed * 0.25f;       //?????????????????????????
 
@@ -756,7 +755,7 @@ namespace FuseeApp
                                     ObtainItem(_shipBox, itemHitbox);
                                 }
                             }
-                       }
+                        }
                     }
                 }
             }
@@ -815,7 +814,7 @@ namespace FuseeApp
 
                 if (_oldPosY < _newPosY)
                 {
-                    _starshipTrans.Rotation.x = M.SmoothStep(-(_counterUD + 0.2f) / 0.3f) /** 1.57f*/ -M.PiOver2;// 1.5f; //-0.167f;
+                    _starshipTrans.Rotation.x = M.SmoothStep(-(_counterUD + 0.2f) / 0.3f) /** 1.57f*/ - M.PiOver2;// 1.5f; //-0.167f;
                 }
                 else if (_oldPosY > _newPosY)
                 {
@@ -861,11 +860,11 @@ namespace FuseeApp
                 _uiStartRenderer.Render(RC);
                 _sihS.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             }
-            else if(status == 1)
+            else if (status == 1)
             {
                 _uiGameRenderer.Render(RC);
             }
-            else if(status == 2)
+            else if (status == 2)
             {
                 _uiGameRenderer.Render(RC);
                 _uiDeathRenderer.Render(RC);
@@ -1074,7 +1073,7 @@ namespace FuseeApp
 
         private void TryAgain()
         {
-            ReloadScene();            
+            ReloadScene();
             StartGame();
         }
 
@@ -1115,10 +1114,10 @@ namespace FuseeApp
         //Timer wird gestartet
         private float StartTimer(float appStartTime)
         {
-            return RealTimeSinceStart - appStartTime;        
+            return RealTimeSinceStart - appStartTime;
         }
-    
-       
+
+
 
         private void Collision(AABBf _shipBox, AABBf cubeHitbox)
         {
@@ -1127,7 +1126,7 @@ namespace FuseeApp
 
                 Console.WriteLine("Boom!");
                 Death();
-            }  
+            }
         }
 
         private void ShieldCollision(AABBf _shipBox, AABBf cubeHitbox)
@@ -1138,8 +1137,8 @@ namespace FuseeApp
                 DeactivateMesh(_cubeObst);
 
                 _itemTimer = _playTime + 0.2f;
-                
-            }     
+
+            }
         }
 
         private void LaserCollision(AABBf _laserHitbox, AABBf cubeHitbox)
@@ -1159,11 +1158,11 @@ namespace FuseeApp
 
             for (int m = 0; m < obstacle.Children.Count(); m++)
             {
-                if(obstacle.Children.ElementAt(m).GetMesh() != null)
+                if (obstacle.Children.ElementAt(m).GetMesh() != null)
                 {
                     obstacle.Children.ElementAt(m).GetMesh().Active = false;
                 }
-                if(obstacle.Children.ElementAt(m).Children.Count() > 0)
+                if (obstacle.Children.ElementAt(m).Children.Count() > 0)
                 {
                     DeactivateMesh(obstacle.Children.ElementAt(m));
                 }
@@ -1191,12 +1190,12 @@ namespace FuseeApp
         private void ObtainItem(AABBf _shipBox, AABBf itemHitbox)
         {
             if (itemHitbox.Intersects(_shipBox.Center))
-            {               
+            {
                 _itemOrbMesh.Active = false;
-                
+
                 _random0 = new Random();
                 _itemStatus = _random0.Next(1, 6);    //hier random item 1-x
-                if(_itemStatus != 2 && _itemStatus != 3)
+                if (_itemStatus != 2 && _itemStatus != 3)
                 {
                     _itemTimer = _playTime + 3;//(float)speed * 60 / playTime;
                 }
@@ -1223,9 +1222,9 @@ namespace FuseeApp
             _ldrbrdText.Text = "Leaderboard";
             for (int m = 0; m < 10; m++)
             {
-                _ldrbrdText.Text += "\n" +  Math.Round((ScoresList[m].topTime), 3).ToString();
+                _ldrbrdText.Text += "\n" + Math.Round((ScoresList[m].topTime), 3).ToString();
             }
-            
+
         }
 
 
@@ -1245,7 +1244,7 @@ namespace FuseeApp
                 }
                 else
                 {
-                    for(int j = 0; j < insn.Children.ElementAt(i).Children.Count(); j++)
+                    for (int j = 0; j < insn.Children.ElementAt(i).Children.Count(); j++)
                     {
 
                     }
@@ -1269,7 +1268,7 @@ namespace FuseeApp
 
         private void Faster()
         {
-            _fasterSpeedIncr *= ((double)1 + (double)(1/ (double)(_div)));
+            _fasterSpeedIncr *= ((double)1 + (double)(1 / (double)(_div)));
             //_fasterSpeedIncr *= 1.2f;
             _div++;
         }
@@ -1278,9 +1277,9 @@ namespace FuseeApp
         {
             var blub = new Leaderboard();
             var ser = new XmlSerializer(typeof(Leaderboard));
-            
 
-            if(!File.Exists("Leaderboard.xml"))
+
+            if (!File.Exists("Leaderboard.xml"))
             {
                 blub.Scores = new List<Score>
                 {
@@ -1292,7 +1291,7 @@ namespace FuseeApp
                 File.WriteAllText("Leaderboard.xml", TextWriter.ToString());
                 TextWriter.Dispose();
             }
-           
+
             TextReader reader = new StreamReader("Leaderboard.xml");
             object obj = ser.Deserialize(reader);
             blub = (Leaderboard)obj;
@@ -1300,7 +1299,7 @@ namespace FuseeApp
 
             for (int k = 0; k < blub.Scores.Count(); k++)
             {
-                
+
                 if (currentScore >= blub.Scores.ElementAt(k).topTime)
                 {
                     blub.Scores.Insert(k, new Score(currentScore));
@@ -1310,7 +1309,7 @@ namespace FuseeApp
             ScoresList = blub.Scores;
             reader.Dispose();
 
-            for (int l = 0; l < blub.Scores.Count() && l < 10 ; l++)
+            for (int l = 0; l < blub.Scores.Count() && l < 10; l++)
             {
                 Console.WriteLine(blub.Scores[l].topTime);
             }

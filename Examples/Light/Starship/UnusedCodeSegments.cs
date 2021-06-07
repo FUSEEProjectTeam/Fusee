@@ -8,7 +8,7 @@ public class Class1
     //private GUIButton _btnRetry;
     //private float2 _btnRetryPosition;
     public Class1()
-	{
+    {
         //UI für Start mit Button
         //private SceneContainer CreateUIStart() 
         //{
