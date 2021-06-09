@@ -127,6 +127,8 @@ namespace Fusee.Examples.Starkiller.Core
 
             RC.View = float4x4.CreateTranslation(0, -20, 50) * float4x4.CreateRotationX(-5 * M.Pi / 180);
 
+            var schiffTranslation = _schiff.GetTransform().TranslationVector;
+
             if (Keyboard.IsKeyDown(KeyCodes.Enter))
             {
                 if (!gamestart)
@@ -136,29 +138,33 @@ namespace Fusee.Examples.Starkiller.Core
             if (Leben > 0 && gamestart)
             {
                 ////Bewegung des Schiffs
-                float bewegungHorizontal = _schiff.GetTransform().Translation.x;
+                float bewegungHorizontal = schiffTranslation.x;
                 bewegungHorizontal += 0.7f * Keyboard.ADAxis;
-                float bewegungVertikal = _schiff.GetTransform().Translation.y;
+                float bewegungVertikal = schiffTranslation.y;
                 bewegungVertikal += 0.7f * Keyboard.WSAxis;
 
-                _schiff.GetTransform().Translation.x = bewegungHorizontal;
-                _schiff.GetTransform().Translation.y = bewegungVertikal;
-                _schiff.GetTransform().Translation.z = 15;
+                schiffTranslation.x = bewegungHorizontal;
+                schiffTranslation.y = bewegungVertikal;
+                schiffTranslation.z = 15;
 
                 //Bewegung der Meteoriten
                 foreach (var m in _meteors.Children)
                 {
+                    var mTransform = m.GetTransform();
+                    var mTranslation = mTransform.TranslationVector;
+                    var mRotation = mTransform.RotationEuler;
 
-                    var trans = m.GetTransform();
-
-                    if (trans.Translation.z < -200)
+                    if (mTranslation.z < -200)
                     {
-                        trans.Translation.z = 2000;
+                        mTranslation.z = 2000;
                     }
 
-                    trans.Translation.z -= (430 - (m.GetMesh().BoundingBox.Size.Length * MeteorSpeedFactor)) * DeltaTime;
-                    trans.Rotation.y += 1 * DeltaTime;
-                    trans.Rotation.z += 1 * DeltaTime;
+                    mTranslation.z -= (430 - (m.GetMesh().BoundingBox.Size.Length * MeteorSpeedFactor)) * DeltaTime;
+                    mRotation.y += 1 * DeltaTime;
+                    mRotation.z += 1 * DeltaTime;
+
+                    mTransform.TranslationVector = mTranslation;
+                    mTransform.RotationEuler = mRotation;
                 }
 
                 //abfeuern des einzelnen Projektils + Platzierung vor dem Raumschiff
@@ -169,9 +175,13 @@ namespace Fusee.Examples.Starkiller.Core
                         if (!abgefeuert[i])
                         {
                             abgefeuert[i] = true;
-                            _projectiles.Children[i].GetTransform().Translation.x = _schiff.GetTransform().Translation.x;
-                            _projectiles.Children[i].GetTransform().Translation.y = _schiff.GetTransform().Translation.y;
-                            _projectiles.Children[i].GetTransform().Translation.z = _schiff.GetTransform().Translation.z + 5;
+
+                            var projectileTranslation = _projectiles.Children[i].GetTransform().TranslationVector;
+                            projectileTranslation.x = schiffTranslation.x;
+                            projectileTranslation.y = schiffTranslation.y;
+                            projectileTranslation.z = schiffTranslation.z + 5;
+                            _projectiles.Children[i].GetTransform().TranslationVector = projectileTranslation;
+
                             break;
                         }
                     }
@@ -182,13 +192,17 @@ namespace Fusee.Examples.Starkiller.Core
                 {
                     if (abgefeuert[i])
                     {
-                        _projectiles.Children[i].GetTransform().Translation.z += DeltaTime * 300;
+                        var projectileTranslation = _projectiles.Children[i].GetTransform().TranslationVector;
 
-                        if (_projectiles.Children[i].GetTransform().Translation.z > 500)
+                        projectileTranslation.z += DeltaTime * 300;
+
+                        if (projectileTranslation.z > 500)
                         {
-                            _projectiles.Children[i].GetTransform().Translation.z = -50;
+                            projectileTranslation.z = -50;
                             abgefeuert[i] = false;
                         }
+
+                        _projectiles.Children[i].GetTransform().TranslationVector = projectileTranslation;
                     }
 
                 }
@@ -198,47 +212,54 @@ namespace Fusee.Examples.Starkiller.Core
                 {
                     if (abgefeuert[i])
                     {
-                        var centerX = _projectiles.Children[i].GetMesh().BoundingBox.Center.x + _projectiles.Children[i].GetTransform().Translation.x;
-                        var centerY = _projectiles.Children[i].GetMesh().BoundingBox.Center.y + _projectiles.Children[i].GetTransform().Translation.y;
-                        var centerZ = _projectiles.Children[i].GetMesh().BoundingBox.Center.z + _projectiles.Children[i].GetTransform().Translation.z;
+                        var projectileTranslation = _projectiles.Children[i].GetTransform().TranslationVector;
+
+                        var centerX = _projectiles.Children[i].GetMesh().BoundingBox.Center.x + projectileTranslation.x;
+                        var centerY = _projectiles.Children[i].GetMesh().BoundingBox.Center.y + projectileTranslation.y;
+                        var centerZ = _projectiles.Children[i].GetMesh().BoundingBox.Center.z + projectileTranslation.z;
 
                         for (var j = 0; j < _meteors.Children.Count; j++)
                         {
+                            var meteorTranslation = _meteors.Children[j].GetTransform().TranslationVector;
 
-                            var minX = _meteors.Children[j].GetMesh().BoundingBox.min.x + _meteors.Children[j].GetTransform().Translation.x;
-                            var maxX = _meteors.Children[j].GetMesh().BoundingBox.max.x + _meteors.Children[j].GetTransform().Translation.x;
-                            var minY = _meteors.Children[j].GetMesh().BoundingBox.min.y + _meteors.Children[j].GetTransform().Translation.y;
-                            var maxY = _meteors.Children[j].GetMesh().BoundingBox.max.y + _meteors.Children[j].GetTransform().Translation.y;
-                            var minZ = _meteors.Children[j].GetMesh().BoundingBox.min.z + _meteors.Children[j].GetTransform().Translation.z;
-                            var maxZ = _meteors.Children[j].GetMesh().BoundingBox.max.z + _meteors.Children[j].GetTransform().Translation.z;
+                            var minX = _meteors.Children[j].GetMesh().BoundingBox.min.x + meteorTranslation.x;
+                            var maxX = _meteors.Children[j].GetMesh().BoundingBox.max.x + meteorTranslation.x;
+                            var minY = _meteors.Children[j].GetMesh().BoundingBox.min.y + meteorTranslation.y;
+                            var maxY = _meteors.Children[j].GetMesh().BoundingBox.max.y + meteorTranslation.y;
+                            var minZ = _meteors.Children[j].GetMesh().BoundingBox.min.z + meteorTranslation.z;
+                            var maxZ = _meteors.Children[j].GetMesh().BoundingBox.max.z + meteorTranslation.z;
 
                             if (minX <= centerX && centerX <= maxX && minY <= centerY && centerY <= maxY && minZ <= centerZ && centerZ <= maxZ)
                             {
                                 abgefeuert[i] = false;
-                                _projectiles.Children[i].GetTransform().Translation.z = -50;
-                                _meteors.Children[j].GetTransform().Translation.z = -100;
+                                projectileTranslation.z = -50;
+                                meteorTranslation.z = -100;
                                 Highscore += 100;
                             }
+
+                            _meteors.Children[j].GetTransform().TranslationVector = meteorTranslation;
                         }
+
+                        _projectiles.Children[i].GetTransform().TranslationVector = projectileTranslation;
                     }
 
                     //Schiff Kollision 
                     for (var k = 0; k < _meteors.Children.Count; k++)
                     {
 
-                        var SchiffAABBf = _schiff.GetTransform().Matrix() * _schiff.GetMesh().BoundingBox;
+                        var SchiffAABBf = _schiff.GetTransform().Matrix * _schiff.GetMesh().BoundingBox;
 
 
 
-                        var MeteorsAABBf = _meteors.Children[k].GetTransform().Matrix() * _meteors.Children[k].GetMesh().BoundingBox;
+                        var MeteorsAABBf = _meteors.Children[k].GetTransform().Matrix * _meteors.Children[k].GetMesh().BoundingBox;
 
 
 
                         if (MeteorsAABBf.Intersects(SchiffAABBf))
                         {
-                            _schiff.GetTransform().Translation.x = 0;
-                            _schiff.GetTransform().Translation.y = 0;
-                            _schiff.GetTransform().Translation.z = -100;
+                            schiffTranslation.x = 0;
+                            schiffTranslation.y = 0;
+                            schiffTranslation.z = -100;
                             Leben -= 1;
                             if (Leben == 0)
                             {
@@ -255,6 +276,7 @@ namespace Fusee.Examples.Starkiller.Core
                 }
             }
 
+            _schiff.GetTransform().TranslationVector = schiffTranslation;
 
             //Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
