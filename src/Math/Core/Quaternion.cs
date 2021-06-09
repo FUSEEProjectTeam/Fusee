@@ -563,10 +563,10 @@ namespace Fusee.Math.Core
 
             s.x = MathF.Sin(e.x * 0.5f);
             c.x = MathF.Cos(e.x * 0.5f);
-                      
+
             s.y = MathF.Sin(e.y * 0.5f);
             c.y = MathF.Cos(e.y * 0.5f);
-                      
+
             s.z = MathF.Sin(e.z * 0.5f);
             c.z = MathF.Cos(e.z * 0.5f);
 
