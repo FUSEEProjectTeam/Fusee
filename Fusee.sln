@@ -248,6 +248,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{87F19962-A219-45D7-AB71-C0E3618CCF41}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Test.Scene.Components", "src\Tests\Scene\Components\Fusee.Test.Scene.Components\Fusee.Test.Scene.Components.csproj", "{45F790CB-C1C5-4CC3-AAB2-788696BC65E4}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameWindow", "GameWindow", "{ED2FBF72-1E63-4DDE-8646-9008F2BF3CAC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tests.GameWindow.Desktop", "Fusee.Tests.GameWindow.Desktop\Fusee.Tests.GameWindow.Desktop.csproj", "{D081028B-EA5A-4D3F-9C8C-B0E6AE602844}"
