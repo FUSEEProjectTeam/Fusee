@@ -508,7 +508,7 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void ToString_InvariantCulture()
         {
-            string s = "V: (0.5709415, 0.1675188, 0.16751876) w: 0.7860666";
+            string s = "V: (0.5709415, 0.1675188, 0.1675188) w: 0.7860666";
             Quaternion q = Quaternion.EulerToQuaternion(float3.One);
 
             Assert.Equal(s, q.ToString(CultureInfo.InvariantCulture));
@@ -517,7 +517,7 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void ToString_CultureDE()
         {
-            string s = "V: (0,5709415; 0,1675188; 0,16751876) w: 0,7860666";
+            string s = "V: (0,5709415; 0,1675188; 0,1675188) w: 0,7860666";
             Quaternion q = Quaternion.EulerToQuaternion(float3.One);
 
             Assert.Equal(s, q.ToString(new CultureInfo("de-DE")));

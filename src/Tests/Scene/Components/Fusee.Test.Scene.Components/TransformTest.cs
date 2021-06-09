@@ -2,6 +2,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 namespace Fusee.Test.Scene.Components
@@ -13,15 +14,17 @@ namespace Fusee.Test.Scene.Components
         {
             var t = new Transform();
 
-            t.Matrix = float4x4.Identity;
-            Assert.Equal(float4x4.Identity, t.TranslationMatrix);
-            Assert.Equal(float4x4.Identity, t.RotationMatrix);
-            Assert.Equal(float4x4.Identity, t.ScaleMatrix);
-
+            // Set matrix, check components to be the correct value
             t.Matrix = float4x4.CreateTranslation(1, 2, 3) * float4x4.CreateRotationZXY(3, 2, 1) * float4x4.Scale(2);
             Assert.Equal(float4x4.CreateTranslation(1, 2, 3), t.TranslationMatrix);
             Assert.Equal(float4x4.CreateRotationZXY(3, 2, 1), t.RotationMatrix);
             Assert.Equal(float4x4.Scale(2), t.ScaleMatrix);
+
+            // Set matrix to identity, check components to be identity
+            t.Matrix = float4x4.Identity;
+            Assert.Equal(float4x4.Identity, t.TranslationMatrix);
+            Assert.Equal(float4x4.Identity, t.RotationMatrix);
+            Assert.Equal(float4x4.Identity, t.ScaleMatrix);
         }
 
         [Fact]
@@ -185,245 +188,141 @@ namespace Fusee.Test.Scene.Components
             Assert.Equal(Quaternion.EulerToQuaternion(new float3(3, 2, 1)), t.RotationQuaternion);
         }
 
-        [Theory]
-        [MemberData(nameof(GetEQM))]
-        public void RotationConversionEulerToQuaternion(float3 euler, Quaternion quaternion, float4x4 matrix)
-        {
-            var comparisonfactor = 1E-05;
-
-            var valid = false;
-
-            var fq = Quaternion.EulerToQuaternion(euler);
-            var uq = quaternion;
-
-            if (MathF.Abs(fq.x - uq.x) < comparisonfactor &&
-                MathF.Abs(fq.y - uq.y) < comparisonfactor &&
-                MathF.Abs(fq.z - uq.z) < comparisonfactor &&
-                MathF.Abs(fq.w - uq.w) < comparisonfactor)
-                valid = true;
-
-            Assert.True(valid);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetEQM))]
-        public void RotationConversionQuaternionToEuler(float3 euler, Quaternion quaternion, float4x4 matrix)
-        {
-            var comparisonfactor = 1E-05;
-
-            var valid = false;
-
-            var fe = Quaternion.QuaternionToEuler(quaternion);
-            var ue = euler;
-
-            if (MathF.Abs(fe.x - ue.x) < comparisonfactor &&
-                MathF.Abs(fe.y - ue.y) < comparisonfactor &&
-                MathF.Abs(fe.z - ue.z) < comparisonfactor)
-                valid = true;
-
-            Assert.True(valid);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetEQM))]
-        public void RotationConversionEulerToMatrix(float3 euler, Quaternion quaternion, float4x4 matrix)
-        {
-            var comparisonfactor = 1E-06;
-
-            var valid = false;
-
-            var fm = float4x4.CreateRotationZXY(euler);
-            var um = matrix;
-
-            if (MathF.Abs(fm.M11 - um.M11) < comparisonfactor &&
-                MathF.Abs(fm.M12 - um.M12) < comparisonfactor &&
-                MathF.Abs(fm.M13 - um.M13) < comparisonfactor &&
-                MathF.Abs(fm.M14 - um.M14) < comparisonfactor &&
-                MathF.Abs(fm.M21 - um.M21) < comparisonfactor &&
-                MathF.Abs(fm.M22 - um.M22) < comparisonfactor &&
-                MathF.Abs(fm.M23 - um.M23) < comparisonfactor &&
-                MathF.Abs(fm.M24 - um.M24) < comparisonfactor &&
-                MathF.Abs(fm.M31 - um.M31) < comparisonfactor &&
-                MathF.Abs(fm.M32 - um.M32) < comparisonfactor &&
-                MathF.Abs(fm.M33 - um.M33) < comparisonfactor &&
-                MathF.Abs(fm.M34 - um.M34) < comparisonfactor &&
-                MathF.Abs(fm.M41 - um.M41) < comparisonfactor &&
-                MathF.Abs(fm.M42 - um.M42) < comparisonfactor &&
-                MathF.Abs(fm.M43 - um.M43) < comparisonfactor &&
-                MathF.Abs(fm.M44 - um.M44) < comparisonfactor)
-                valid = true;
-
-            Assert.True(valid);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetEQM))]
-        public void RotationConversionMatrixToEuler(float3 euler, Quaternion quaternion, float4x4 matrix)
-        {
-            var comparisonfactor = 1E-06;
-
-            var valid = false;
-
-            var fe = float4x4.RotMatToEuler(matrix);
-            var ue = euler;
-
-            if (MathF.Abs(fe.x - ue.x) < comparisonfactor &&
-                MathF.Abs(fe.y - ue.y) < comparisonfactor &&
-                MathF.Abs(fe.z - ue.z) < comparisonfactor)
-                valid = true;
-
-            Assert.True(valid);
-        }
-
-
-        [Theory]
-        [MemberData(nameof(GetEQM))]
-        public void RotationConversionQuaternionToMatrix(float3 euler, Quaternion quaternion, float4x4 matrix)
-        {
-            var comparisonfactor = 1E-06;
-
-            var valid = false;
-
-            var fm = Quaternion.ToRotMat(quaternion);
-            var um = matrix;
-
-            if (MathF.Abs(fm.M11 - um.M11) < comparisonfactor &&
-                MathF.Abs(fm.M12 - um.M12) < comparisonfactor &&
-                MathF.Abs(fm.M13 - um.M13) < comparisonfactor &&
-                MathF.Abs(fm.M14 - um.M14) < comparisonfactor &&
-                MathF.Abs(fm.M21 - um.M21) < comparisonfactor &&
-                MathF.Abs(fm.M22 - um.M22) < comparisonfactor &&
-                MathF.Abs(fm.M23 - um.M23) < comparisonfactor &&
-                MathF.Abs(fm.M24 - um.M24) < comparisonfactor &&
-                MathF.Abs(fm.M31 - um.M31) < comparisonfactor &&
-                MathF.Abs(fm.M32 - um.M32) < comparisonfactor &&
-                MathF.Abs(fm.M33 - um.M33) < comparisonfactor &&
-                MathF.Abs(fm.M34 - um.M34) < comparisonfactor &&
-                MathF.Abs(fm.M41 - um.M41) < comparisonfactor &&
-                MathF.Abs(fm.M42 - um.M42) < comparisonfactor &&
-                MathF.Abs(fm.M43 - um.M43) < comparisonfactor &&
-                MathF.Abs(fm.M44 - um.M44) < comparisonfactor)
-                valid = true;
-
-            Assert.True(valid);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetEQM))]
-        public void RotationConversionMatrixToQuaternion(float3 euler, Quaternion quaternion, float4x4 matrix)
-        {
-            var comparisonfactor = 1E-06;
-
-            var valid = false;
-
-            var fq = Quaternion.FromRotationMatrix(matrix);
-            var uq = quaternion;
-
-            if (MathF.Abs(fq.x - uq.x) < comparisonfactor &&
-                MathF.Abs(fq.y - uq.y) < comparisonfactor &&
-                MathF.Abs(fq.z - uq.z) < comparisonfactor &&
-                MathF.Abs(fq.w - uq.w) < comparisonfactor)
-                valid = true;
-
-            Assert.True(valid);
-        }
 
         public static IEnumerable<object[]> GetEQM()
         {
-            // X 90�
+            // 1. - X: 45, Y: 0, Z: 0
             yield return new object[]
             {
-                new float3(M.PiOver2, 0, 0),
-                new Quaternion(0.7071068f, 0, 0, 0.7071068f),
-                new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)
+new float3(0.7853982f, 0f, 0f),
+new Quaternion(0.3826835f, 0f, 0f, 0.9238795f),
+new float4x4(1f, 0f, 0f, 0f, 0f, 0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f)
             };
-            // X 45� 
+            // 2. - X: 90, Y: 0, Z: 0
             yield return new object[]
             {
-                new float3(M.PiOver4, 0, 0),
-                new Quaternion(0.3826835f, 0, 0, 0.9238795f),
-                new float4x4(1, 0, 0, 0, 0, 0.7071067f, -0.7071068f, 0, 0, 0.7071068f, 0.7071067f, 0, 0, 0, 0, 1)
+new float3(1.570796f, 0f, 0f),
+new Quaternion(0.7071068f, 0f, 0f, 0.7071068f),
+new float4x4(1f, 0f, 0f, 0f, 0f, 5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f)
             };
-            // X 135�
+            // 3. - X: 135, Y: 0, Z: 0
             yield return new object[]
             {
-                new float3(M.PiOver4 * 3, 0, 0),
-                new Quaternion(0.9238795f, 0, 0, 0.3826834f),
-                new float4x4(1, 0, 0, 0, 0, -0.7071067f, -0.7071068f, 0, 0, 0.7071068f, -0.7071067f, 0, 0, 0, 0, 1)
+new float3(2.356194f, 0f, 0f),
+new Quaternion(0.9238795f, 0f, 0f, 0.3826834f),
+new float4x4(1f, 0f, 0f, 0f, 0f, -0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f)
             };
-
-            // Y 90�
+            // 4. - X: 180, Y: 0, Z: 0
             yield return new object[]
             {
-                new float3(0, M.PiOver2, 0),
-                new Quaternion(0, 0.7071068f, 0, 0.7071068f),
-                new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1)
+new float3(3.141593f, 0f, 0f),
+new Quaternion(1f, 0f, 0f, -4.371139E-08f),
+new float4x4(1f, 0f, 0f, 0f, 0f, -1f, 8.742278E-08f, 0f, 0f, -8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f)
             };
-            // Y 45�
+            // 5. - X: 360, Y: 0, Z: 0
             yield return new object[]
             {
-                new float3(0, M.PiOver4, 0),
-                new Quaternion(0, 0.3826835f, 0, 0.9238795f),
-                new float4x4(0.7071067f, 0, 0.7071068f, 0, 0, 1, 0, 0, -0.7071068f, 0, 0.7071067f, 0, 0, 0, 0, 1)
+new float3(6.283185f, 0f, 0f),
+new Quaternion(-8.742278E-08f, 0f, 0f, -1f),
+new float4x4(1f, 0f, 0f, 0f, 0f, 1f, -1.748456E-07f, 0f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f)
             };
-            // Y 135�
+            // 6. - X: 540, Y: 0, Z: 0
             yield return new object[]
             {
-                new float3(0, M.PiOver4 * 3, 0),
-                new Quaternion(0, 0.9238795f, 0, 0.3826834f),
-                new float4x4(-0.7071067f, 0, 0.7071068f, 0, 0, 1, 0, 0, -0.7071068f, 0, -0.7071067f, 0, 0, 0, 0, 1)
+new float3(9.424778f, 0f, 0f),
+new Quaternion(-1f, 0f, 0f, 1.192488E-08f),
+new float4x4(1f, 0f, 0f, 0f, 0f, -1f, 2.384976E-08f, 0f, 0f, -2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f)
             };
-
-            // Z 90�
+            // 7. - X: 0, Y: 45, Z: 0
             yield return new object[]
             {
-                new float3(0, 0, M.PiOver2),
-                new Quaternion(0, 0, 0.7071068f, 0.7071068f),
-                new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+new float3(0f, 0.7853982f, 0f),
+new Quaternion(0f, 0.3826835f, 0f, 0.9238795f),
+new float4x4(0.7071067f, 0f, 0.7071068f, 0f, 0f, 1f, 0f, 0f, -0.7071068f, 0f, 0.7071067f, 0f, 0f, 0f, 0f, 1f)
             };
-            // Z 45�
+            // 8. - X: 0, Y: 90, Z: 0
             yield return new object[]
             {
-                new float3(0, 0, M.PiOver4),
-                new Quaternion(0, 0, 0.3826835f, 0.9238795f),
-                new float4x4(0.7071067f, -0.7071068f, 0, 0, 0.7071068f, 0.7071067f, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+new float3(0f, 1.570796f, 0f),
+new Quaternion(0f, 0.7071068f, 0f, 0.7071068f),
+new float4x4(5.960464E-08f, 0f, 0.9999999f, 0f, 0f, 1f, 0f, 0f, -0.9999999f, 0f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f)
             };
-            // Z 135�
+            // 9. - X: 0, Y: 135, Z: 0
             yield return new object[]
             {
-                new float3(0, 0, M.PiOver4 * 3),
-                new Quaternion(0, 0, 0.9238795f, 0.3826834f),
-                new float4x4(-0.7071067f, -0.7071068f, 0, 0, 0.7071068f, -0.7071067f, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+new float3(0f, 2.356194f, 0f),
+new Quaternion(0f, 0.9238795f, 0f, 0.3826834f),
+new float4x4(-0.7071067f, 0f, 0.7071068f, 0f, 0f, 1f, 0f, 0f, -0.7071068f, 0f, -0.7071067f, 0f, 0f, 0f, 0f, 1f)
             };
-
-            // X&Y 45�
+            // 10. - X: 0, Y: 180, Z: 0
             yield return new object[]
             {
-                new float3(M.PiOver4, M.PiOver4, 0),
-                new Quaternion(0.3535534f, 0.3535534f, -0.1464466f, 0.8535534f),
-                new float4x4(0.7071067f, 0.5f, 0.5f, 0, 0, 0.7071067f, -0.7071068f, 0, -0.7071068f, 0.5f, 0.5f, 0, 0, 0, 0, 1)
+new float3(0f, 3.141593f, 0f),
+new Quaternion(0f, 1f, 0f, -4.371139E-08f),
+new float4x4(-1f, 0f, -8.742278E-08f, 0f, 0f, 1f, 0f, 0f, 8.742278E-08f, 0f, -1f, 0f, 0f, 0f, 0f, 1f)
             };
-            // X&Z 45�
+            // 11. - X: 0, Y: 360, Z: 0
             yield return new object[]
             {
-                new float3(M.PiOver4, 0, M.PiOver4),
-                new Quaternion(0.3535534f, -0.1464466f, 0.3535534f, 0.8535534f),
-                new float4x4(0.7071067f, -0.7071068f, 0, 0, 0.5f, 0.5f, -0.7071068f, 0, 0.5f, 0.5f, 0.7071067f, 0, 0, 0, 0, 1)
+new float3(0f, 6.283185f, 0f),
+new Quaternion(0f, -8.742278E-08f, 0f, -1f),
+new float4x4(1f, 0f, 1.748456E-07f, 0f, 0f, 1f, 0f, 0f, -1.748456E-07f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
             };
-            // Y&Z 45�
+            // 12. - X: 0, Y: 540, Z: 0
             yield return new object[]
             {
-                new float3(0, M.PiOver4, M.PiOver4),
-                new Quaternion(0.1464466f, 0.3535534f, 0.3535534f, 0.8535534f),
-                new float4x4(0.5f, -0.5f, 0.7071068f, 0, 0.7071068f, 0.7071067f, 0, 0, -0.5f, 0.5f, 0.7071067f, 0, 0, 0, 0, 1)
+new float3(0f, 9.424778f, 0f),
+new Quaternion(0f, -1f, 0f, 1.192488E-08f),
+new float4x4(-1f, 0f, -2.384976E-08f, 0f, 0f, 1f, 0f, 0f, 2.384976E-08f, 0f, -1f, 0f, 0f, 0f, 0f, 1f)
             };
-
-            // X&Y&Z 45�
+            // 13. - X: 0, Y: 0, Z: 45
             yield return new object[]
             {
-                new float3(M.PiOver4, M.PiOver4, M.PiOver4),
-                new Quaternion(0.4619398f, 0.1913417f, 0.1913417f, 0.8446232f),
-                new float4x4(0.8535534f, -0.1464466f, 0.5f, 0, 0.5f, 0.5f, -0.7071069f, 0, -0.1464466f, 0.8535535f, 0.5f, 0, 0, 0, 0, 1)
+new float3(0f, 0f, 0.7853982f),
+new Quaternion(0f, 0f, 0.3826835f, 0.9238795f),
+new float4x4(0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, 0.7071067f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
+            };
+            // 14. - X: 0, Y: 0, Z: 90
+            yield return new object[]
+            {
+new float3(0f, 0f, 1.570796f),
+new Quaternion(0f, 0f, 0.7071068f, 0.7071068f),
+new float4x4(5.960464E-08f, -0.9999999f, 0f, 0f, 0.9999999f, 5.960464E-08f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
+            };
+            // 15. - X: 0, Y: 0, Z: 135
+            yield return new object[]
+            {
+new float3(0f, 0f, 2.356194f),
+new Quaternion(0f, 0f, 0.9238795f, 0.3826834f),
+new float4x4(-0.7071067f, -0.7071068f, 0f, 0f, 0.7071068f, -0.7071067f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
+            };
+            // 16. - X: 0, Y: 0, Z: 180
+            yield return new object[]
+            {
+new float3(0f, 0f, 3.141593f),
+new Quaternion(0f, 0f, 1f, -4.371139E-08f),
+new float4x4(-1f, 8.742278E-08f, 0f, 0f, -8.742278E-08f, -1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
+            };
+            // 17. - X: 0, Y: 0, Z: 360
+            yield return new object[]
+            {
+new float3(0f, 0f, 6.283185f),
+new Quaternion(0f, 0f, -8.742278E-08f, -1f),
+new float4x4(1f, -1.748456E-07f, 0f, 0f, 1.748456E-07f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
+            };
+            // 18. - X: 0, Y: 0, Z: 540
+            yield return new object[]
+            {
+new float3(0f, 0f, 9.424778f),
+new Quaternion(0f, 0f, -1f, 1.192488E-08f),
+new float4x4(-1f, 2.384976E-08f, 0f, 0f, -2.384976E-08f, -1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
+            };
+            // 19. - X: 0, Y: 0, Z: 0
+            yield return new object[]
+            {
+new float3(0f, 0f, 0f),
+new Quaternion(0f, 0f, 0f, 1f),
+new float4x4(1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f, 0f, 0f, 0f, 0f, 1f)
             };
         }
     }
