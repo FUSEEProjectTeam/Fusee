@@ -60,6 +60,7 @@
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
     <PackageReference Include="protobuf-net" Version="3.0.73" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>

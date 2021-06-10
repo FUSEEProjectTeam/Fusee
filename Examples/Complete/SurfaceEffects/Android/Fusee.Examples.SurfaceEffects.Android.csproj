@@ -56,6 +56,7 @@
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
     <PackageReference Include="protobuf-net" Version="3.0.73" />
+    <PackageReference Include="protobuf-net" Version="3.0.101" />
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
@@ -95,8 +96,8 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\SurfaceEffects\Core\Fusee.Examples.SurfaceEffects.Core.csproj">
-      <Project>{e23994a2-8da9-408a-877a-71e7168fe25d}</Project>
+    <ProjectReference Include="..\Core\Fusee.Examples.SurfaceEffects.Core.csproj">
+      <Project>{16df559f-0bb4-4fbb-a4e5-e53e65549b09}</Project>
       <Name>Fusee.Examples.SurfaceEffects.Core</Name>
     </ProjectReference>
   </ItemGroup>

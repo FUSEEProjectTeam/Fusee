@@ -186,7 +186,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(Frustum frustum)
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
         {
             if (!frustum.Near.InsideOrIntersecting(this))
                 return false;
@@ -215,6 +215,37 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Checks if a given ray originates in, or intersects this AABB.
+        /// </summary>
+        /// <param name="ray">The ray to test against.</param>
+        /// <returns></returns>
+        public bool IntersectRay(Rayf ray)
+        {
+            if (this.Intersects(ray.Origin))
+                return true;
+
+            float t1 = (min[0] - ray.Origin[0]) * ray.Inverse[0];
+            float t2 = (max[0] - ray.Origin[0]) * ray.Inverse[0];
+
+            float tmin = M.Min(t1, t2);
+            float tmax = M.Max(t1, t2);
+
+            for (int i = 1; i < 3; i++)
+            {
+                t1 = (min[i] - ray.Origin[i]) * ray.Inverse[i];
+                t2 = (max[i] - ray.Origin[i]) * ray.Inverse[i];
+
+                t1 = float.IsNaN(t1) ? 0.0f : t1;
+                t2 = float.IsNaN(t2) ? 0.0f : t2;
+
+                tmin = M.Max(tmin, M.Min(t1, t2));
+                tmax = M.Min(tmax, M.Max(t1, t2));
+            }
+
+            return tmax >= M.Max(tmin, 0.0);
+        }
+
+        /// <summary>
         /// Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
@@ -239,7 +270,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Operator override for equality.
         /// </summary>
-        /// <param name="left">The plane.</param>
+        /// <param name="left">The AABBf.</param>
         /// <param name="right">The scalar value.</param>        
         public static bool operator ==(AABBf left, AABBf right)
         {
@@ -249,7 +280,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Operator override for inequality.
         /// </summary>
-        /// <param name="left">The plane.</param>
+        /// <param name="left">The AABBf.</param>
         /// <param name="right">The scalar value.</param>
         public static bool operator !=(AABBf left, AABBf right)
         {
@@ -257,20 +288,20 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Indicates whether this plane is equal to another object.
+        /// Indicates whether this AABBf is equal to another object.
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBf"/>.</param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
 
             var other = (AABBf)obj;
             return max.Equals(other.max) && min.Equals(other.min);
         }
 
         /// <summary>
-        /// Generates a hash code for this plane.
+        /// Generates a hash code for this AABBf.
         /// </summary>
         public override int GetHashCode()
         {
