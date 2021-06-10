@@ -10,7 +10,6 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Integrations.Wpf.View
 {

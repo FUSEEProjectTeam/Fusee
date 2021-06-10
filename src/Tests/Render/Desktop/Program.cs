@@ -6,8 +6,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Test.Render.Desktop
 {

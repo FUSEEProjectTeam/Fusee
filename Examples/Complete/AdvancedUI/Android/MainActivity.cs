@@ -13,7 +13,6 @@ using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.AdvancedUI.Android
 {

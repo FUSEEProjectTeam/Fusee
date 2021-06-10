@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using FileMode = System.IO.FileMode;
-using Path = System.IO.Path;
 
 namespace Fusee.Base.Imp.Desktop
 {

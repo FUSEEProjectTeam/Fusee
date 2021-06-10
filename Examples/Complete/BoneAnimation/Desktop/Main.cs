@@ -7,7 +7,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Bone.Desktop
 {

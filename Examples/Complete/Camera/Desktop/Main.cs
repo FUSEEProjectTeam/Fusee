@@ -7,7 +7,6 @@ using Fusee.Serialization;
 using System;
 using System.IO;
 using System.Reflection;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.Camera.Desktop
 {
