@@ -545,7 +545,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 IntPtr hwnd;
                 unsafe
                 {
-                    hwnd = GLFW.GetWin32Window(WindowPtr);
+                    hwnd = this.Context.WindowPtr;
                 }
                 return hwnd;
             }
