@@ -40,7 +40,8 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
-    <PackageReference Include="Google.Protobuf.Tools" Version="3.17.2" />
+    <!-- Do not update Google.Protobuf.Tools without testing a clean built Blender addon -->
+    <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
