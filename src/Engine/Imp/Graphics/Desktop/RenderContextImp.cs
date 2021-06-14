@@ -31,6 +31,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private bool _isPtRenderingEnabled;
         private bool _isLineSmoothEnabled;
 
+#if DEBUG
+        private static DebugProc _openGlDebugDelegate;
+#endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -39,6 +43,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             _textureCountPerShader = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
+
+#if DEBUG
+            GL.Enable(EnableCap.DebugOutput);
+            GL.Enable(EnableCap.DebugOutputSynchronous);
+
+            _openGlDebugDelegate = new DebugProc(openGLDebugCallback);
+
+            GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
+            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DontCare, 0, new int[0], true);
+#endif
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
@@ -65,6 +79,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             Diagnostics.Debug(GL.GetString(StringName.Vendor) + " - " + GL.GetString(StringName.Renderer) + " - " + GL.GetString(StringName.Version));
             Diagnostics.Verbose(GL.GetString(StringName.Extensions));
         }
+
+#if DEBUG
+        private static void openGLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            Diagnostics.Debug($"{System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message, length)}\n\tid:{id} severity:{severity} type:{type} source:{source}\n");
+        }
+#endif
 
         #region Image data related Members
 
