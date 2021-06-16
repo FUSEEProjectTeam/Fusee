@@ -51,7 +51,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _openGlDebugDelegate = new DebugProc(openGLDebugCallback);
 
             GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
-            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DontCare, 0, new int[0], true);
+            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, new int[0], false);
 #endif
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
