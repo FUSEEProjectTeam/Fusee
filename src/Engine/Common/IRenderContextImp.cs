@@ -1,4 +1,4 @@
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
@@ -11,6 +11,11 @@ namespace Fusee.Engine.Common
     /// </summary>
     public interface IRenderContextImp
     {
+        /// <summary>
+        /// Constant id that describes the renderer. This can be used in shaders to do platform dependent things.
+        /// </summary>
+        FuseePlatformId FuseePlatformId { get; }
+
         /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>

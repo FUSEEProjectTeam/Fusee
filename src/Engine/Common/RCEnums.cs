@@ -632,4 +632,17 @@ namespace Fusee.Engine.Common
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming
     }
+
+    /// <summary>
+    /// Describes the platform of the current renderer. This can be used in shaders to do platform dependent things.
+    /// </summary>
+    public enum FuseePlatformId : int
+    {
+#pragma warning disable 1591
+        Undefined = 0,
+        Desktop = 1,
+        Android = 2,
+        Wasm = 3
+#pragma warning restore 1591
+    }
 }

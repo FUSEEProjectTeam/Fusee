@@ -17,6 +17,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
+        /// <summary>
+        /// Constant id that describes the renderer. This can be used in shaders to do platform dependent things.
+        /// </summary>
+        public FuseePlatformId FuseePlatformId { get; } = FuseePlatformId.Desktop;
+
         private int _textureCountPerShader;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
@@ -581,6 +586,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            GL.BindAttribLocation(program, AttributeLocations.FuseePlatformIdLocation, UniformNameDeclarations.FuseePlatformId);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
