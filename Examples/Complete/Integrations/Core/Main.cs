@@ -144,15 +144,15 @@ namespace Fusee.Examples.Integrations.Core
 
         public void ChangeRocketX(float x)
         {
-            rocketTransform.TranslationVector = new float3(x, rocketTransform.TranslationVector.y, rocketTransform.TranslationVector.z);
+            rocketTransform.Translation = new float3(x, rocketTransform.Translation.y, rocketTransform.Translation.z);
         }
         public void ChangeRocketY(float y)
         {
-            rocketTransform.TranslationVector = new float3(rocketTransform.TranslationVector.x, y, rocketTransform.TranslationVector.z);
+            rocketTransform.Translation = new float3(rocketTransform.Translation.x, y, rocketTransform.Translation.z);
         }
         public void ChangeRocketZ(float z)
         {
-            rocketTransform.TranslationVector = new float3(rocketTransform.TranslationVector.x, rocketTransform.TranslationVector.y, z);
+            rocketTransform.Translation = new float3(rocketTransform.Translation.x, rocketTransform.Translation.y, z);
         }
 
         private SceneContainer CreateGui()

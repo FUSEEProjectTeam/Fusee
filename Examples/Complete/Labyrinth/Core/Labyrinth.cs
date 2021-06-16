@@ -134,7 +134,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                 {
                                     new Transform
                                     {
-                                        TranslationVector = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _cornerbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
+                                        Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _cornerbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
                                     cornerstone.GetComponent<DefaultSurfaceEffect>(),
                                     cornerstone.GetComponent<Mesh>()
@@ -152,7 +152,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                 {
                                     new Transform
                                     {
-                                        TranslationVector = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallXbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
+                                        Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallXbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
                                     wallX.GetComponent<DefaultSurfaceEffect>(),
                                     wallX.GetComponent<Mesh>()
@@ -170,7 +170,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                 {
                                     new Transform
                                     {
-                                        TranslationVector = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallZbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
+                                        Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallZbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
                                     wallZ.GetComponent<DefaultSurfaceEffect>(),
                                     wallZ.GetComponent<Mesh>()
@@ -188,7 +188,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                 {
                                     new Transform
                                     {
-                                        TranslationVector = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
+                                        Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
                                     },
                                     head.GetComponent<DefaultSurfaceEffect>(),
                                     head.GetComponent<Mesh>()
@@ -203,7 +203,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                     new Transform
                                         {
-                                            TranslationVector = new float3(0,0,0)
+                                            Translation = new float3(0,0,0)
                                         },
                                     },
                                 Name = "Bodytrans",
@@ -216,7 +216,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                         {
                                         new Transform
                                             {
-                                                TranslationVector = new float3(0,0,0)
+                                                Translation = new float3(0,0,0)
                                             },
                                             ball.GetComponent<DefaultSurfaceEffect>(),
                                             ball.GetComponent<Mesh>()
@@ -238,8 +238,8 @@ namespace Fusee.Examples.Labyrinth.Core
                                 {
                                     new Transform
                                     {
-                                        ScaleVector = new float3(_length, 1, _height),
-                                        TranslationVector = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
+                                        Scale = new float3(_length, 1, _height),
+                                        Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
                                     },
                                     //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
                                     MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1), new float4(0, 0, 0, 1)),
@@ -493,9 +493,9 @@ namespace Fusee.Examples.Labyrinth.Core
                 }
                 else
                 {
-                    _mtxCam = float4x4.LookAt(_head.TranslationVector.x - _cam.x * M.Sin(_angle), _head.TranslationVector.y + _cam.y, _head.TranslationVector.z - _cam.z * M.Cos(_angle), _head.TranslationVector.x, _head.TranslationVector.y, _head.TranslationVector.z, 0, 1, 0);
-                    _head.RotationEuler = new float3(_head.RotationEuler.x, +_angle, _head.RotationEuler.z);
-                    _bodytrans.RotationEuler = new float3(0, -_angle, 0);
+                    _mtxCam = float4x4.LookAt(_head.Translation.x - _cam.x * M.Sin(_angle), _head.Translation.y + _cam.y, _head.Translation.z - _cam.z * M.Cos(_angle), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
+                    _head.Rotation = new float3(_head.Rotation.x, +_angle, _head.Rotation.z);
+                    _bodytrans.Rotation = new float3(0, -_angle, 0);
                     _movement = true;
                 }
                 RC.View = _mtxCam;
@@ -503,8 +503,8 @@ namespace Fusee.Examples.Labyrinth.Core
                 if (_movement)
                 {
                     // Get old positions of the head
-                    _oldX = _head.TranslationVector.x;
-                    _oldY = _head.TranslationVector.z;
+                    _oldX = _head.Translation.x;
+                    _oldY = _head.Translation.z;
 
                     // move the ball
 
@@ -514,10 +514,10 @@ namespace Fusee.Examples.Labyrinth.Core
 
                     if (_moveX != 0 && (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D)))
                     {
-                        var headTranslation = _head.TranslationVector;
+                        var headTranslation = _head.Translation;
                         headTranslation.x += _moveX * M.Sin(_angle);
                         headTranslation.z += _moveX * M.Cos(_angle);
-                        _head.TranslationVector = headTranslation;
+                        _head.Translation = headTranslation;
 
                         _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
                     }
@@ -526,10 +526,10 @@ namespace Fusee.Examples.Labyrinth.Core
 
                     if (_moveZ != 0 && (!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S)))
                     {
-                        var headTranslation = _head.TranslationVector;
+                        var headTranslation = _head.Translation;
                         headTranslation.x += _moveZ * M.Cos(_angle);
                         headTranslation.z -= _moveZ * M.Sin(_angle);
-                        _head.TranslationVector = headTranslation;
+                        _head.Translation = headTranslation;
                         _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
                     }
                 }
@@ -538,7 +538,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
         public void Collision()
         {
-            var headTranslation = _head.TranslationVector;
+            var headTranslation = _head.Translation;
 
             // Changes the ballbmp when the character moves around
             if (_translation[_ballbmp[0], _ballbmp[1]].x <= headTranslation.x)
@@ -704,7 +704,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 }
             }
 
-            _head.TranslationVector = headTranslation;
+            _head.Translation = headTranslation;
         }
 
         // Check for win

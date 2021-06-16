@@ -47,9 +47,9 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="scale"></param>
         public Transform(float3 translation, float3 rotation, float3 scale)
         {
-            TranslationVector = translation;
-            RotationEuler = rotation;
-            ScaleVector = scale;
+            Translation = translation;
+            Rotation = rotation;
+            Scale = scale;
         }
 
         /// <summary>
@@ -60,9 +60,9 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="scale"></param>
         public Transform(float3 translation, Quaternion rotation, float3 scale)
         {
-            TranslationVector = translation;
+            Translation = translation;
             RotationQuaternion = rotation;
-            ScaleVector = scale;
+            Scale = scale;
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The translation (position) of the node.
         /// </summary>
-        public float3 TranslationVector
+        public float3 Translation
         {
             get
             {
@@ -192,7 +192,7 @@ namespace Fusee.Engine.Core.Scene
             }
             set
             {
-                if (TranslationVector != value)
+                if (Translation != value)
                 {
                     _translationVec = value;
                     _translationMtx = float4x4.CreateTranslation(value);
@@ -204,9 +204,9 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// The rotation (orientation) of the node.
+        /// The rotation (orientation) of the node. Rotation is in euler angles as radiant. Rotation order is ZXY.
         /// </summary>
-        public float3 RotationEuler
+        public float3 Rotation
         {
             get
             {
@@ -220,7 +220,7 @@ namespace Fusee.Engine.Core.Scene
             }
             set
             {
-                if (RotationEuler != value)
+                if (Rotation != value)
                 {
                     _rotationVec = value;
                     _rotationMtx = float4x4.CreateRotationZXY(value);
@@ -235,7 +235,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The scale (size) of the node.
         /// </summary>
-        public float3 ScaleVector
+        public float3 Scale
         {
             get
             {
@@ -249,7 +249,7 @@ namespace Fusee.Engine.Core.Scene
             }
             set
             {
-                if (ScaleVector != value)
+                if (Scale != value)
                 {
                     _scaleVec = value;
                     _scaleMtx = float4x4.CreateScale(value);
@@ -295,40 +295,5 @@ namespace Fusee.Engine.Core.Scene
         }
 
         #endregion Cached Quaternion Operations
-
-        #region Deprecated, remove with 0.12
-        //TODO: Remove with 0.12
-
-        /// <summary>
-        /// The translation (position) of the node.
-        /// </summary>
-        [System.Obsolete("Translation is deprecated, please use TranslationVector instead. This poperty will be removed with 0.12.")]
-        public float3 Translation
-        {
-            get => TranslationVector;
-            set => TranslationVector = value;
-        }
-
-        /// <summary>
-        /// The rotation (orientation) of the node.
-        /// </summary>
-        [System.Obsolete("Rotation is deprecated, please use RotationEuler instead. This property will be removed with 0.12.")]
-        public float3 Rotation
-        {
-            get => RotationEuler;
-            set => RotationEuler = value;
-        }
-
-        /// <summary>
-        /// The scale (size) of the node.
-        /// </summary>
-        [System.Obsolete("Scale is deprecated, please use ScaleVector instead. This property will be removed with 0.12.")]
-        public float3 Scale
-        {
-            get => ScaleVector;
-            set => ScaleVector = value;
-        }
-
-        #endregion Deprecated, remove with 0.11
     }
 }

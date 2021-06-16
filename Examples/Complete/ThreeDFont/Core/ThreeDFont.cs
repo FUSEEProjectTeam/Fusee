@@ -65,9 +65,9 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             var parentTrans = new Transform
             {
-                RotationEuler = float3.Zero,
-                ScaleVector = new float3(0.01f, 0.01f, 0.01f),
-                TranslationVector = new float3(0, 0, 10)
+                Rotation = float3.Zero,
+                Scale = new float3(0.01f, 0.01f, 0.01f),
+                Translation = new float3(0, 0, 10)
             };
 
             parentNode.Components.Add(parentTrans);
@@ -84,9 +84,9 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             var tranCVlad = new Transform
             {
-                RotationEuler = float3.Zero,
-                ScaleVector = float3.One,
-                TranslationVector = new float3(0, 2000, 0)
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(0, 2000, 0)
             };
 
             sceneNodeCVlad.Components.Add(tranCVlad);
@@ -103,9 +103,9 @@ namespace Fusee.Examples.ThreeDFont.Core
             };
             var tranCLato = new Transform
             {
-                RotationEuler = float3.Zero,
-                ScaleVector = float3.One,
-                TranslationVector = new float3(0, 0, 0)
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(0, 0, 0)
             };
 
             sceneNodeCLato.Components.Add(tranCLato);
@@ -122,9 +122,9 @@ namespace Fusee.Examples.ThreeDFont.Core
             };
             var tranCGnu = new Transform
             {
-                RotationEuler = float3.Zero,
-                ScaleVector = float3.One,
-                TranslationVector = new float3(0, -2000, 0)
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(0, -2000, 0)
             };
 
             sceneNodeCGnu.Components.Add(tranCGnu);

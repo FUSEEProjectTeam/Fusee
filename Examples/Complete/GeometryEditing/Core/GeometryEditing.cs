@@ -65,9 +65,9 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             Transform parentTrans = new Transform
             {
-                RotationEuler = float3.Zero,
-                ScaleVector = float3.One,
-                TranslationVector = new float3(0, 0, 0)
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(0, 0, 0)
             };
             _parentNode.Components.Add(parentTrans);
 
@@ -164,7 +164,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (_isTranslating)
             {
                 float3 worldPos = new float3(Mouse.Velocity.x * .0001f, Mouse.Velocity.y * -.0001f, Mouse.WheelVel * .001f);
-                _selectedNode.GetTransform().TranslationVector += worldPos.xyz;
+                _selectedNode.GetTransform().Translation += worldPos.xyz;
 
                 if (Mouse.LeftButton)
                 {
@@ -179,7 +179,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             }
             if (_isScaling)
             {
-                _selectedNode.GetTransform().ScaleVector += new float3(Mouse.Velocity.y, Mouse.Velocity.y, Mouse.Velocity.y) * .0001f;
+                _selectedNode.GetTransform().Scale += new float3(Mouse.Velocity.y, Mouse.Velocity.y, Mouse.Velocity.y) * .0001f;
                 if (Mouse.LeftButton)
                 {
                     _isScaling = false;
@@ -394,9 +394,9 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
             Transform translationComponent = new Transform
             {
-                RotationEuler = float3.Zero,
-                ScaleVector = new float3(1, 1, 1),
-                TranslationVector = position
+                Rotation = float3.Zero,
+                Scale = new float3(1, 1, 1),
+                Translation = position
             };
 
             sceneNodeContainer.Components.Add(translationComponent);

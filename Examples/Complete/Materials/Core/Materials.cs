@@ -79,7 +79,7 @@ namespace Fusee.Examples.Materials.Core
                             new Transform
                             {
                                 Name = "TextTransform",
-                                TranslationVector = new float3(-15, 2.5f, 0)
+                                Translation = new float3(-15, 2.5f, 0)
                             }
                         },
                         Children = new ChildList
@@ -118,7 +118,7 @@ namespace Fusee.Examples.Materials.Core
                             new Transform
                             {
                                 Name = "TextTransform",
-                                TranslationVector = new float3(-10, 2.5f, 0)
+                                Translation = new float3(-10, 2.5f, 0)
                             }
                         },
                         Children = new ChildList
@@ -143,7 +143,7 @@ namespace Fusee.Examples.Materials.Core
                             new Transform
                             {
                                 Name = "TextTransform",
-                                TranslationVector = new float3(-5, 2.5f, 0)
+                                Translation = new float3(-5, 2.5f, 0)
                             }
                         },
                         Children = new ChildList
@@ -168,7 +168,7 @@ namespace Fusee.Examples.Materials.Core
                             new Transform
                             {
                                 Name = "TextTransform",
-                                TranslationVector = new float3(0, 2.5f, 0)
+                                Translation = new float3(0, 2.5f, 0)
                             }
                         },
                         Children = new ChildList
@@ -208,7 +208,7 @@ namespace Fusee.Examples.Materials.Core
                             new Transform
                             {
                                 Name = "TextTransform",
-                                TranslationVector = new float3(5, 2.5f, 0)
+                                Translation = new float3(5, 2.5f, 0)
                             }
                         },
                         Children = new ChildList
@@ -233,7 +233,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "TextTransform",
-                                        TranslationVector = new float3(10, 2.5f, 0)
+                                        Translation = new float3(10, 2.5f, 0)
                                     }
                                 },
                                 Children = new ChildList
@@ -273,7 +273,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "TextTransform",
-                                        TranslationVector = new float3(15, 3, 0)
+                                        Translation = new float3(15, 3, 0)
                                     }
                                 },
                                 Children = new ChildList
@@ -330,7 +330,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "complete",
-                                        TranslationVector = new float3(-15, 0, 0)
+                                        Translation = new float3(-15, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularTexture(
                                         albedoColor : (float4.One * 0.25f).LinearColorFromSRgb(),
@@ -360,7 +360,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "albedo and specular",
-                                        TranslationVector = new float3(-10, 0, 0)
+                                        Translation = new float3(-10, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecular(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
@@ -377,7 +377,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "albedo, specular, albedo texture",
-                                        TranslationVector = new float3(-5, 0, 0)
+                                        Translation = new float3(-5, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture
                                     (
@@ -432,7 +432,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "specular texture - not impl.",
-                                        TranslationVector = new float3(0, 0, 0)
+                                        Translation = new float3(0, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, 85, 0.5f),
                                     icosphereWithTangents
@@ -445,7 +445,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "normal map",
-                                        TranslationVector = new float3(5, 0, 0)
+                                        Translation = new float3(5, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularTexture(
                                             albedoColor: (float4.One * 0.25f).LinearColorFromSRgb(),
@@ -468,7 +468,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "albedo, emissive - not impl.",
-                                        TranslationVector = new float3(10, 0, 0)
+                                        Translation = new float3(10, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
@@ -488,7 +488,7 @@ namespace Fusee.Examples.Materials.Core
                                     new Transform
                                     {
                                         Name = "albedo, emissive, emissive texture - not impl.",
-                                        TranslationVector = new float3(15, 0, 0)
+                                        Translation = new float3(15, 0, 0)
                                     },
                                     MakeEffect.FromDiffuseSpecularAlbedoTexture(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),

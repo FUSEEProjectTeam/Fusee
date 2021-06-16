@@ -226,7 +226,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new TreeComponentItem
             {
                 Name = "Transform Component",
-                Desc = $"{transform.Name}, Scale: {transform.ScaleVector}, Rotation: {transform.RotationEuler}, Translation: {transform.TranslationVector}"
+                Desc = $"{transform.Name}, Scale: {transform.Scale}, Rotation: {transform.Rotation}, Translation: {transform.Translation}"
             });
         }
 
@@ -401,7 +401,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Transform Component",
-                Desc = $"{transform.Name}, Scale: {transform.ScaleVector}, Rotation: {transform.RotationEuler}, Translation: {transform.TranslationVector}"
+                Desc = $"{transform.Name}, Scale: {transform.Scale}, Rotation: {transform.Rotation}, Translation: {transform.Translation}"
             });
         }
 

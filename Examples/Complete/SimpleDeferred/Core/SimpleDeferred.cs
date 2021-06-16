@@ -50,8 +50,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
         {
             _camTransform = new Transform()
             {
-                ScaleVector = float3.One,
-                TranslationVector = float3.Zero
+                Scale = float3.One,
+                Translation = float3.Zero
             };
 
             _gui = CreateGui();
@@ -72,7 +72,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var blueLight = new Light() { Type = LightType.Spot, Color = new float4(0.6f, 0.8f, 1, 1), MaxDistance = 180, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.0000001f };
             var greenLight = new Light() { Type = LightType.Point, Color = new float4(0.8f, 1.0f, 0.6f, 1), Strength = 1f, MaxDistance = 50, Active = true, IsCastingShadows = true, Bias = 0.1f };
 
-            _sunTransform = new Transform() { TranslationVector = new float3(0, 100, 0), RotationEuler = new float3(M.DegreesToRadians(90), 0, 0), ScaleVector = new float3(100, 100, 100) };
+            _sunTransform = new Transform() { Translation = new float3(0, 100, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(100, 100, 100) };
 
             var aLotOfLights = new ChildList
             {
@@ -90,7 +90,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "blueLight",
                     Components = new List<SceneComponent>()
                     {
-                        new Transform(){ TranslationVector = new float3(-100, 25, 36), RotationEuler = new float3(M.DegreesToRadians(180), 0, 0)},
+                        new Transform(){ Translation = new float3(-100, 25, 36), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
                         blueLight,
                     }
                 },
@@ -99,7 +99,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "redLight1",
                     Components = new List<SceneComponent>()
                     {
-                        new Transform(){ TranslationVector = new float3(-49, 15, 15)},
+                        new Transform(){ Translation = new float3(-49, 15, 15)},
                         redLight,
                     }
                 },
@@ -108,7 +108,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "redLight2",
                     Components = new List<SceneComponent>()
                     {
-                        new Transform(){ TranslationVector = new float3(-49, 15, -15)},
+                        new Transform(){ Translation = new float3(-49, 15, -15)},
                         redLight,
                     }
                 },
@@ -117,7 +117,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "redLight3",
                     Components = new List<SceneComponent>()
                     {
-                        new Transform(){ TranslationVector = new float3(54, 15, 15)},
+                        new Transform(){ Translation = new float3(54, 15, 15)},
                         redLight,
                     }
                 },
@@ -126,7 +126,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "redLight4",
                     Components = new List<SceneComponent>()
                     {
-                        new Transform(){ TranslationVector = new float3(54, 15, -15)},
+                        new Transform(){ Translation = new float3(54, 15, -15)},
                         redLight,
                     }
                 },
@@ -135,7 +135,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "greenLight",
                     Components = new List<SceneComponent>()
                     {
-                        new Transform(){ TranslationVector = new float3(0, 25, 0)},
+                        new Transform(){ Translation = new float3(0, 25, 0)},
                         greenLight,
                     }
                 },
@@ -185,7 +185,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             //_sunTransform.RotateAround(new float3(0, 0, 0), float3.UnitX, M.DegreesToRadians(0.5f) * Time.DeltaTime * 50);
 
-            var deg = (M.RadiansToDegrees(_sunTransform.RotationEuler.x)) - 90;
+            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
             if (deg < 0)
                 deg = (360 + deg);
 

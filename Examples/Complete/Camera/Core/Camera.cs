@@ -66,9 +66,9 @@ namespace Fusee.Examples.Camera.Core
 
             _mainCamTransform = _guiCamTransform = new Transform()
             {
-                RotationEuler = float3.Zero,
-                TranslationVector = new float3(0, 1, -30),
-                ScaleVector = new float3(1, 1, 1)
+                Rotation = float3.Zero,
+                Translation = new float3(0, 1, -30),
+                Scale = new float3(1, 1, 1)
             };
 
             _gui = CreateGui();
@@ -105,8 +105,8 @@ namespace Fusee.Examples.Camera.Core
                         {
                             new Transform()
                             {
-                                ScaleVector = new float3(0.5f, 0.5f, 1f),
-                                TranslationVector = new float3(0,0, 1f)
+                                Scale = new float3(0.5f, 0.5f, 1f),
+                                Translation = new float3(0,0, 1f)
                             },
                             new Cube()
                         }
@@ -116,9 +116,9 @@ namespace Fusee.Examples.Camera.Core
 
             _sndCamTransform = new Transform()
             {
-                RotationEuler = new float3(M.PiOver6, 0, 0),//float3.Zero,
-                TranslationVector = new float3(10, 40, -60),
-                ScaleVector = float3.One
+                Rotation = new float3(M.PiOver6, 0, 0),//float3.Zero,
+                Translation = new float3(10, 40, -60),
+                Scale = float3.One
             };
 
             SceneNode cam1 = new SceneNode()
@@ -131,10 +131,10 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            _anlgeHorznd = _sndCamTransform.RotationEuler.y;
-            _angleVertSnd = _sndCamTransform.RotationEuler.x;
-            _anlgeHorzMain = _mainCamTransform.RotationEuler.y;
-            _angleVertMain = _mainCamTransform.RotationEuler.x;
+            _anlgeHorznd = _sndCamTransform.Rotation.y;
+            _angleVertSnd = _sndCamTransform.Rotation.x;
+            _anlgeHorzMain = _mainCamTransform.Rotation.y;
+            _angleVertMain = _mainCamTransform.Rotation.x;
 
             // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");

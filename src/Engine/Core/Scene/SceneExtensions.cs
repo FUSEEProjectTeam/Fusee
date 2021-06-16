@@ -440,7 +440,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="xyz">Translation amount as float3.</param>
         public static void Translate(this Transform tc, float3 xyz)
         {
-            tc.TranslationVector += xyz;
+            tc.Translation += xyz;
         }
 
         /// <summary>
@@ -483,11 +483,11 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="angles"></param>
         public static void RotateAround(this Transform tc, float3 center, float3 angles)
         {
-            var pos = tc.TranslationVector;
+            var pos = tc.Translation;
             var addRotationMtx = float4x4.CreateRotationZXY(angles); // get the desired rotation
             var dir = pos - center; // find current direction relative to center
             dir = addRotationMtx * dir; // rotate the direction
-            tc.TranslationVector = center + dir; // define new position
+            tc.Translation = center + dir; // define new position
 
             // rotate object to keep looking at the center:
             var currentRotationMtx = tc.RotationMatrix;
@@ -535,10 +535,10 @@ namespace Fusee.Engine.Core.Scene
             var camForward = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitZ;
             var camRight = float4x4.CreateRotationXY(new float2(angleVert, angleHorz)) * float3.UnitX;
 
-            tc.TranslationVector += camForward * inputWSAxis * speed;
-            tc.TranslationVector += camRight * inputADAxis * speed;
+            tc.Translation += camForward * inputWSAxis * speed;
+            tc.Translation += camRight * inputADAxis * speed;
 
-            tc.RotationEuler = new float3(angleVert, angleHorz, 0);
+            tc.Rotation = new float3(angleVert, angleHorz, 0);
         }
 
         /// <summary>
