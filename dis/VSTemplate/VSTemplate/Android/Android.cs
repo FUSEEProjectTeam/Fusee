@@ -14,7 +14,6 @@ using Fusee.Serialization;
 using System;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.App.$ext_safeprojectname$.Android
 {

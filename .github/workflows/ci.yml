@@ -1,84 +1,89 @@
-name: Build
+name: CI
 
 on:
   push:
     branches:
     - master
     - develop
-    - release/*
-    - hotfix/*
   pull_request:
     branches:
     - master
     - develop
-    - release/*
-    - hotfix/*
-
+  workflow_dispatch:
+  
 jobs:
+  lint:
+    runs-on: windows-latest
+    name: Linting
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    steps:
+    - uses: actions/checkout@v2
+    - name: dotnet tool restore
+      run: dotnet tool restore
+    - name: dotnet format folder
+      run: dotnet tool run dotnet-format -f . --exclude src\Engine\Imp\Graphics\Shared
+    - name: dotnet format solution
+      run: dotnet tool run dotnet-format Fusee.sln
+    - name: Commiting changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Linting
+
   tests:
     name: Tests
+    needs: [lint]
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'windows-latest' ]
+        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
     runs-on: ${{ matrix.os }}
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
     - name: Math
       run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
-
     - name: Serialization V1
       run: dotnet test -c Release src/Tests/Serialization/Fusee.Serialization.Test/Fusee.Test.Serialization.V1.csproj
-
-    - name: Assets
+    - name: AssetStorage
       run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Test.AssetStorage.Desktop.csproj
-
     - name: Xene
       run: dotnet test -c Release src/Tests/Xene/Fusee.Xene.Test/Fusee.Test.Xene.csproj
-
     - name: Xirkit
       run: dotnet test -c Release src/Tests/Xirkit/Fusee.Test.Xirkit/Fusee.Test.Xirkit.csproj
-
     - name: Xirkit Nested Access
       run: dotnet test -c Release src/Tests/Xirkit/Fusee.Xirkit.NestedAccess.Test/Fusee.Test.Xirkit.NestedAccess.csproj
 
   builddesktop:
     needs: [tests]
-    name: Desktop
+    name: Build Desktop
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'windows-latest', 'ubuntu-latest' ]
+        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
     runs-on: ${{ matrix.os }}
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
-
     - name: Upload Player-Artifact
       uses: actions/upload-artifact@v2
       with:
         name: fusee-desktop-${{ matrix.os }}-player
         path: bin/Release/Player/Desktop/
-
     - name: Upload Tool-Artifacts
       uses: actions/upload-artifact@v2
       with:
         name: fusee-desktop-${{ matrix.os }}-tools
         path: bin/Release/Tools/
-
     - name: Upload Example-Artifacts
       uses: actions/upload-artifact@v2
       with:
@@ -86,19 +91,39 @@ jobs:
         path: bin/Release/Examples/**/Desktop/
 
   buildandroid:
-    name: Android
+    name: Build Android
     needs: [tests]
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
     runs-on: windows-latest
-
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
-
     - name: Build with MSBuild
       run: msbuild Fusee.sln -r -p:Configuration=Release-Android
+
+  codeanalysis:
+    name: CodeQL
+    needs: [builddesktop]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp', 'python' ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
+      - name: Build Release-Desktop
+        run: dotnet build -c Release-Desktop Fusee.sln
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1

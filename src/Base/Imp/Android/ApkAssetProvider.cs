@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Base.Imp.Android
 {

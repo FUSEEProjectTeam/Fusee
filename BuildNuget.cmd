@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+SET NUGET_BUILD=true
+
 dotnet >NUL 2>NUL
 IF %ERRORLEVEL% EQU 9009 GOTO ERRORDOTNET
 
@@ -32,7 +34,7 @@ dotnet pack dis\DnTemplate\DnTemplate.csproj -c Release -o bin\Release\nuget
 msbuild dis\VSTemplate\VSTemplate.sln -t:restore,build -p:Configuration=Release
 copy /Y dis\VSTemplate\VSTemplate\bin\Release\ProjectTemplates\CSharp\1033\Fusee.Template.VS.zip bin\Release\nuget\ >nul
 copy /Y dis\VSTemplate\VSIX\bin\Release\Fusee.Template.VS.vsix bin\Release\nuget\ >nul
-tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\BlenderScripts\addons *
+tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\netcoreapp3.1\BlenderScripts\addons *
 goto END
 
 :ERRORDOTNET

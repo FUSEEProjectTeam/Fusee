@@ -5,7 +5,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Test.GameWindow.Desktop
 {
