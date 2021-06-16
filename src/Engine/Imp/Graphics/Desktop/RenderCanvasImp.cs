@@ -545,7 +545,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 IntPtr hwnd;
                 unsafe
                 {
-                    hwnd = GLFW.GetWin32Window(WindowPtr);
+                    hwnd = this.Context.WindowPtr;
                 }
                 return hwnd;
             }
@@ -629,7 +629,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             base.OnUpdateFrame(args);
 
-            if (KeyboardState.IsKeyDown(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11))
+            if (KeyboardState.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11))
                 WindowState = (WindowState != OpenTK.Windowing.Common.WindowState.Fullscreen) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal;
         }
 
