@@ -1065,6 +1065,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             //throw new NotImplementedException("Depth clamping isn't implemented yet!");
         }
 
+        public void SetVertexArrayObject(IMeshImp mr)
+        {
+            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
+        }
+
         /// <summary>
         /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>

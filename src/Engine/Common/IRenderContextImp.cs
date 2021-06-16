@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
@@ -361,6 +361,12 @@ namespace Fusee.Engine.Common
         /// or-operator (|) to combine several buffers to clear.
         /// </remarks>
         void Clear(ClearFlags flags);
+
+        /// <summary>
+        /// Binds the VertexArrayPbject onto the GL render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        void SetVertexArrayObject(IMeshImp mr);
 
         /// <summary>
         /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
