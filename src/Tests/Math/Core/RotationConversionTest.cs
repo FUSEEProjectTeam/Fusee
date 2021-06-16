@@ -203,55 +203,57 @@ namespace Fusee.Test.Math.Core
         /// using System.IO;
         /// using UnityEngine;
         /// 
-        /// public class GenFusTests : MonoBehaviour
-        /// {
-        ///     float[] baseAngles = new float[] { 0, 0.1f, 1, 33, 45, 60, 90, 135, 180, 270, 360, 540, 585, -33, -90, -540 };
-        ///     List<Vector3> eulerList = new List<Vector3>();
-        ///     string text;
-        ///     void Start()
+        /// public class QTest : MonoBehaviour
         ///     {
-        ///         for (int i = 0; i < baseAngles.Length; i++)
+        ///         float[] baseAngles = new float[] { 0, 0.1f, 1, 45, 90, 180, 270, 360, 585, -90, -540 };
+        ///         List<Vector3> eulerList = new List<Vector3>();
+        ///         string text;
+        ///         void Start()
         ///         {
-        ///             for (int j = 0; j < baseAngles.Length; j++)
+        ///             System.Threading.Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        /// 
+        ///             for (int i = 0; i < baseAngles.Length; i++)
         ///             {
-        ///                 for (int k = 0; k < baseAngles.Length; k++)
+        ///                 for (int j = 0; j < baseAngles.Length; j++)
         ///                 {
-        ///                     eulerList.Add(new Vector3(baseAngles[k], baseAngles[j], baseAngles[i]));
+        ///                     for (int k = 0; k < baseAngles.Length; k++)
+        ///                     {
+        ///                         eulerList.Add(new Vector3(baseAngles[k], baseAngles[j], baseAngles[i]));
+        ///                     }
         ///                 }
         ///             }
+        /// 
+        ///             for (int i = 1; i <= eulerList.Count; i++)
+        ///             {
+        ///                 var e = eulerList[i - 1];
+        ///                 var q = Quaternion.Euler(e);
+        ///                 var m = Matrix4x4.Rotate(q);
+        ///                 var e2 = q.eulerAngles;
+        /// 
+        ///                 text += $"// {i}. - X: {e.x}, Y: {e.y}, Z: {e.z}\n";
+        ///                 text += "yield return new object[]\n{\n";
+        /// 
+        ///                 text += $"\t\t\t\t\"X: {e.x}, Y: {e.y}, Z: {e.z}\",\n";
+        ///                 text += $"\t\t\t\t{e.ToFus()},\n";
+        ///                 text += $"\t\t\t\t{q.ToFus()},\n";
+        ///                 text += $"\t\t\t\t{m.ToFus()},\n";
+        ///                 text += $"\t\t\t\t{e2.ToFus()}\n";
+        /// 
+        ///                 text += "};\n";
+        ///             }
+        ///             File.WriteAllText("blub.txt", text);
         ///         }
-        /// 
-        ///         for (int i = 1; i <= eulerList.Count; i++)
-        ///         {
-        ///             var e = eulerList[i - 1];
-        ///             var q = Quaternion.Euler(e);
-        ///             var m = Matrix4x4.Rotate(q);
-        ///             var e2 = q.eulerAngles;
-        /// 
-        ///             text += $"// {i}. - X: {e.x.ToString(CultureInfo.InvariantCulture)}, Y: {e.y.ToString(CultureInfo.InvariantCulture)}, Z: {e.z.ToString(CultureInfo.InvariantCulture)}\n";
-        ///             text += "yield return new object[]\n{\n";
-        /// 
-        ///             text += $"\t\t\t\t\"X: {e.x}, Y: {e.y}, Z: {e.z}\",\n";
-        ///             text += $"\t\t\t\t{e.ToFus()},\n";
-        ///             text += $"\t\t\t\t{q.ToFus()},\n";
-        ///             text += $"\t\t\t\t{m.ToFus()},\n";
-        ///             text += $"\t\t\t\t{e2.ToFus()}\n";
-        /// 
-        ///             text += "};\n";
-        ///         }
-        ///         File.WriteAllText("blub.txt", text);
         ///     }
-        /// }
         /// 
-        /// public static class MyExtensions
-        /// {
-        ///     public static string ToFus(this Vector3 v)
-        ///     { return $"new float3({(v.x * Mathf.Deg2Rad).ToString(CultureInfo.InvariantCulture)}f, {(v.y * Mathf.Deg2Rad).ToString(CultureInfo.InvariantCulture)}f, {(v.z * Mathf.Deg2Rad).ToString(CultureInfo.InvariantCulture)}f)"; }
-        ///     public static string ToFus(this Quaternion q)
-        ///     { return $"new Quaternion({q.x.ToString(CultureInfo.InvariantCulture)}f, {q.y.ToString(CultureInfo.InvariantCulture)}f, {q.z.ToString(CultureInfo.InvariantCulture)}f, {q.w.ToString(CultureInfo.InvariantCulture)}f)"; }
-        ///     public static string ToFus(this Matrix4x4 m)
-        ///     { return $"new float4x4({m.m00.ToString(CultureInfo.InvariantCulture)}f, {m.m01.ToString(CultureInfo.InvariantCulture)}f, {m.m02.ToString(CultureInfo.InvariantCulture)}f, {m.m03.ToString(CultureInfo.InvariantCulture)}f, {m.m10.ToString(CultureInfo.InvariantCulture)}f, {m.m11.ToString(CultureInfo.InvariantCulture)}f, {m.m12.ToString(CultureInfo.InvariantCulture)}f, {m.m13.ToString(CultureInfo.InvariantCulture)}f, {m.m20.ToString(CultureInfo.InvariantCulture)}f, {m.m21.ToString(CultureInfo.InvariantCulture)}f, {m.m22.ToString(CultureInfo.InvariantCulture)}f, {m.m23.ToString(CultureInfo.InvariantCulture)}f, {m.m30.ToString(CultureInfo.InvariantCulture)}f, {m.m31.ToString(CultureInfo.InvariantCulture)}f, {m.m32.ToString(CultureInfo.InvariantCulture)}f, {m.m33.ToString(CultureInfo.InvariantCulture)}f)"; }
-        /// }
+        ///     public static class MyExtensions
+        ///     {
+        ///         public static string ToFus(this Vector3 v)
+        ///         { return $"new float3({v.x * Mathf.Deg2Rad}f, {v.y * Mathf.Deg2Rad}f, {v.z * Mathf.Deg2Rad}f)"; }
+        ///         public static string ToFus(this Quaternion q)
+        ///         { return $"new Quaternion({q.x}f, {q.y}f, {q.z}f, {q.w}f)"; }
+        ///         public static string ToFus(this Matrix4x4 m)
+        ///         { return $"new float4x4({m.m00}f, {m.m01}f, {m.m02}f, {m.m03}f, {m.m10}f, {m.m11}f, {m.m12}f, {m.m13}f, {m.m20}f, {m.m21}f, {m.m22}f, {m.m23}f, {m.m30}f, {m.m31}f, {m.m32}f, {m.m33}f)"; }
+        ///     }
         /// :EOF
         /// </summary>
         /// <returns></returns>
