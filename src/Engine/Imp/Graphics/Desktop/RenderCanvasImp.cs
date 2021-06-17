@@ -562,7 +562,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="height">The height.</param>
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
         public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)
-            : base(GameWindowSettings.Default, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core })
+            : base(GameWindowSettings.Default, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
         {
             _renderCanvasImp = renderCanvasImp;
 
