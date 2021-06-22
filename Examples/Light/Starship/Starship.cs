@@ -1220,7 +1220,7 @@ namespace FuseeApp
             _start = false;
             status = 2;
             _ldrbrdText.Text = "Leaderboard";
-            for (int m = 0; m < 10; m++)
+            for (int m = 0; m < ScoresList.Count && m < 10; m++)
             {
                 _ldrbrdText.Text += "\n" + Math.Round((ScoresList[m].topTime), 3).ToString();
             }
