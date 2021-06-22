@@ -4,6 +4,7 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Fusee.Engine.Core
 {
@@ -145,6 +146,20 @@ namespace Fusee.Engine.Core
             {
                 var mat = View * Model;
                 return float4x4.TransformPerspective(mat, ModelPos);
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        public float2 UV
+        {
+            get
+            {
+                float2 uva = Mesh.UVs[Mesh.Triangles[Triangle]];
+                float2 uvb = Mesh.UVs[Mesh.Triangles[Triangle + 1]];
+                float2 uvc = Mesh.UVs[Mesh.Triangles[Triangle + 2]];
+
+                return float2.Barycentric(uva, uvb, uvc, U, V);
             }
         }
     }
@@ -520,7 +535,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderTransform(Transform transform)
         {
-            State.Model *= transform.Matrix();
+            State.Model *= transform.Matrix;
             _rc.Model = State.Model;
         }
 

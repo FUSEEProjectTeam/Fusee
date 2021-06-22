@@ -4,7 +4,7 @@
     <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
    
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
       
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
@@ -26,10 +26,6 @@
 
     <TieredCompilation>false</TieredCompilation>
 
-    <!--<Deterministic>true</Deterministic>
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">True</ContinuousIntegrationBuild>
-    <ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">True</ContinuousIntegrationBuild>-->
-
     <PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
 
     <ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
@@ -41,7 +37,15 @@
     <NoWarn>1701;1702</NoWarn>
   </PropertyGroup>
 
+  <!-- This enables deterministic builds when building NuGet and when running on GitHub Actions or Azure DevOps -->
+  <PropertyGroup Condition="'$(NUGET_BUILD)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">
+    <Deterministic>True</Deterministic>
+    <ContinuousIntegrationBuild>True</ContinuousIntegrationBuild>
+    <DeterministicSourcePaths>True</DeterministicSourcePaths>
+  </PropertyGroup>
+  
   <ItemGroup>
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
     <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true' AND !$(AssemblyName.Contains('Example'))" />
   </ItemGroup>
 </Project>

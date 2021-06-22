@@ -628,9 +628,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="xy">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationYX(float2 xy)
+        public static float4x4 CreateRotationXY(float2 xy)
         {
-            return CreateRotationYX(xy.x, xy.y);
+            return CreateRotationXY(xy.x, xy.y);
         }
 
         /// <summary>
@@ -639,7 +639,7 @@ namespace Fusee.Math.Core
         /// <param name="x">counter-clockwise angles in radians.</param>
         /// <param name="y">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationYX(float x, float y)
+        public static float4x4 CreateRotationXY(float x, float y)
         {
             return CreateRotationY(y) * CreateRotationX(x);
         }
@@ -649,9 +649,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="yz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationYZ(float2 yz)
+        public static float4x4 CreateRotationZY(float2 yz)
         {
-            return CreateRotationYZ(yz.x, yz.y);
+            return CreateRotationZY(yz.x, yz.y);
         }
 
         /// <summary>
@@ -660,7 +660,7 @@ namespace Fusee.Math.Core
         /// <param name="y">counter-clockwise angles in radians.</param>
         /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationYZ(float y, float z)
+        public static float4x4 CreateRotationZY(float y, float z)
         {
             return CreateRotationY(y) * CreateRotationZ(z);
         }
@@ -670,9 +670,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="xz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationXZ(float2 xz)
+        public static float4x4 CreateRotationZX(float2 xz)
         {
-            return CreateRotationXZ(xz.x, xz.y);
+            return CreateRotationZX(xz.x, xz.y);
         }
 
         /// <summary>
@@ -681,7 +681,7 @@ namespace Fusee.Math.Core
         /// <param name="x">counter-clockwise angles in radians.</param>
         /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationXZ(float x, float z)
+        public static float4x4 CreateRotationZX(float x, float z)
         {
             return CreateRotationX(x) * CreateRotationZ(z);
         }
@@ -691,9 +691,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="xyz">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationYXZ(float3 xyz)
+        public static float4x4 CreateRotationZXY(float3 xyz)
         {
-            return CreateRotationYXZ(xyz.x, xyz.y, xyz.z);
+            return CreateRotationZXY(xyz.x, xyz.y, xyz.z);
         }
 
         /// <summary>
@@ -703,7 +703,7 @@ namespace Fusee.Math.Core
         /// <param name="y">counter-clockwise angles in radians.</param>
         /// <param name="z">counter-clockwise angles in radians.</param>
         /// <returns></returns>
-        public static float4x4 CreateRotationYXZ(float x, float y, float z)
+        public static float4x4 CreateRotationZXY(float x, float y, float z)
         {
             return CreateRotationY(y) * CreateRotationX(x) * CreateRotationZ(z);
         }

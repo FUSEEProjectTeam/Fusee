@@ -17,11 +17,11 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>portable</DebugType>
     <Optimize>False</Optimize>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -96,14 +96,13 @@
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Examples.RenderLayer.Core.csproj">
-      <Project>{e23994a2-8da9-408a-877a-71e7168fe25d}</Project>
+      <Project>{bb9b240b-9b6f-4aa1-8d9f-01c9c894c230}</Project>
       <Name>Fusee.Examples.RenderLayer.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->
   <ItemGroup>
     <Compile Include="MainActivity.cs" />
-    <Compile Include="Resources\Resource.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml">

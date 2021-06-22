@@ -159,6 +159,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </value>
         public View View => _gameView;
 
+        /// <summary>
+        /// Window handle for the window the engine renders to.
+        /// </summary>
+        public IWindowHandle WindowHandle { get; }
+
         internal RenderCanvasGameView _gameView;
 
         #endregion Fields
@@ -171,6 +176,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public RenderCanvasImp(Context context, IAttributeSet attrs, Action run)
         {
             _gameView = new RenderCanvasGameView(this, true, context, attrs, run);
+            WindowHandle = new WindowHandle() { WinId = _gameView.WindowId };
         }
 
         /// <summary>
