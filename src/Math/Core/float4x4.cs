@@ -1560,131 +1560,238 @@ namespace Fusee.Math.Core
         /// Calculate the inverse of the given matrix.
         /// If you are unsure whether the matrix is invertible, check it with IsInvertable() first.
         /// </summary>
-        /// <param name="mat">The matrix to invert.</param>
+        /// <param name="matrix">The matrix to invert.</param>
         /// <returns>The inverse of the given matrix.</returns>
-        public static float4x4 Invert(float4x4 mat)
+        public static float4x4 Invert(in float4x4 matrix)
         {
-            if (mat == Identity || mat == Zero) return mat;
+#if NET5_0_OR_GREATER
+            float4x4 result;
 
-            if (!IsInvertable(mat, out float det))
-                throw new ArgumentException("Matrix isn't invertible.");
+            if (Sse3.IsSupported)
+            {
+                InvertSse3(in matrix, out result);
+            }
+            else
+            {
+                Invert(in matrix, out result);
+            }
 
-            if (mat.IsAffine)
-                return InvertAffine(mat);
+            return result;
+#else
+            Invert(in matrix, out float4x4 result);
 
-            mat = mat.Transpose();
-
-            var tmp0 = mat.M33 * mat.M44;
-            var tmp1 = mat.M34 * mat.M43;
-            var tmp2 = mat.M32 * mat.M44;
-            var tmp3 = mat.M34 * mat.M42;
-            var tmp4 = mat.M32 * mat.M43;
-            var tmp5 = mat.M33 * mat.M42;
-            var tmp6 = mat.M31 * mat.M44;
-            var tmp7 = mat.M34 * mat.M41;
-            var tmp8 = mat.M31 * mat.M43;
-            var tmp9 = mat.M33 * mat.M41;
-            var tmp10 = mat.M31 * mat.M42;
-            var tmp11 = mat.M32 * mat.M41;
-
-            // calculate first 8 elements (cofactors)
-            var m11 = tmp0 * mat.M22 + tmp3 * mat.M23 + tmp4 * mat.M24;
-            m11 -= tmp1 * mat.M22 + tmp2 * mat.M23 + tmp5 * mat.M24;
-            var m12 = tmp1 * mat.M21 + tmp6 * mat.M23 + tmp9 * mat.M24;
-            m12 -= tmp0 * mat.M21 + tmp7 * mat.M23 + tmp8 * mat.M24;
-            var m13 = tmp2 * mat.M21 + tmp7 * mat.M22 + tmp10 * mat.M24;
-            m13 -= tmp3 * mat.M21 + tmp6 * mat.M22 + tmp11 * mat.M24;
-            var m14 = tmp5 * mat.M21 + tmp8 * mat.M22 + tmp11 * mat.M23;
-            m14 -= tmp4 * mat.M21 + tmp9 * mat.M22 + tmp10 * mat.M23;
-            var m21 = tmp1 * mat.M12 + tmp2 * mat.M13 + tmp5 * mat.M14;
-            m21 -= tmp0 * mat.M12 + tmp3 * mat.M13 + tmp4 * mat.M14;
-            var m22 = tmp0 * mat.M11 + tmp7 * mat.M13 + tmp8 * mat.M14;
-            m22 -= tmp1 * mat.M11 + tmp6 * mat.M13 + tmp9 * mat.M14;
-            var m23 = tmp3 * mat.M11 + tmp6 * mat.M12 + tmp11 * mat.M14;
-            m23 -= tmp2 * mat.M11 + tmp7 * mat.M12 + tmp10 * mat.M14;
-            var m24 = tmp4 * mat.M11 + tmp9 * mat.M12 + tmp10 * mat.M13;
-            m24 -= tmp5 * mat.M11 + tmp8 * mat.M12 + tmp11 * mat.M13;
-
-            // calculate pairs for second 8 elements (cofactors)
-            tmp0 = mat.M13 * mat.M24;
-            tmp1 = mat.M14 * mat.M23;
-            tmp2 = mat.M12 * mat.M24;
-            tmp3 = mat.M14 * mat.M22;
-            tmp4 = mat.M12 * mat.M23;
-            tmp5 = mat.M13 * mat.M22;
-            tmp6 = mat.M11 * mat.M24;
-            tmp7 = mat.M14 * mat.M21;
-            tmp8 = mat.M11 * mat.M23;
-            tmp9 = mat.M13 * mat.M21;
-            tmp10 = mat.M11 * mat.M22;
-            tmp11 = mat.M12 * mat.M21;
-
-            // calculate second 8 elements (cofactors)
-            var m31 = tmp0 * mat.M42 + tmp3 * mat.M43 + tmp4 * mat.M44;
-            m31 -= tmp1 * mat.M42 + tmp2 * mat.M43 + tmp5 * mat.M44;
-            var m32 = tmp1 * mat.M41 + tmp6 * mat.M43 + tmp9 * mat.M44;
-            m32 -= tmp0 * mat.M41 + tmp7 * mat.M43 + tmp8 * mat.M44;
-            var m33 = tmp2 * mat.M41 + tmp7 * mat.M42 + tmp10 * mat.M44;
-            m33 -= tmp3 * mat.M41 + tmp6 * mat.M42 + tmp11 * mat.M44;
-            var m34 = tmp5 * mat.M41 + tmp8 * mat.M42 + tmp11 * mat.M43;
-            m34 -= tmp4 * mat.M41 + tmp9 * mat.M42 + tmp10 * mat.M43;
-            var m41 = tmp2 * mat.M33 + tmp5 * mat.M34 + tmp1 * mat.M32;
-            m41 -= tmp4 * mat.M34 + tmp0 * mat.M32 + tmp3 * mat.M33;
-            var m42 = tmp8 * mat.M34 + tmp0 * mat.M31 + tmp7 * mat.M33;
-            m42 -= tmp6 * mat.M33 + tmp9 * mat.M34 + tmp1 * mat.M31;
-            var m43 = tmp6 * mat.M32 + tmp11 * mat.M34 + tmp3 * mat.M31;
-            m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
-            var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
-            m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
-
-            var invDet = 1 / det;
-            mat = new float4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
-                                invDet * m21, invDet * m22, invDet * m23, invDet * m24,
-                                invDet * m31, invDet * m32, invDet * m33, invDet * m34,
-                                invDet * m41, invDet * m42, invDet * m43, invDet * m44);
-
-            return mat;
+            return result;
+#endif
         }
 
-        /// <summary>
-        /// Calculate the inverse of a given matrix which represents an affine transformation.
-        /// </summary>
-        /// <param name="mat">The matrix to invert.</param>
-        /// <returns>The inverse of the given matrix.</returns>
-        public static float4x4 InvertAffine(float4x4 mat)
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void InvertSse3(in float4x4 matrix, out float4x4 result)
         {
-            //1. Save translation and scale
-            var translVec = mat.Translation();
-            var invScaleX = 1 / mat.Column0.xyz.Length;
-            var invScaleY = 1 / mat.Column1.xyz.Length;
-            var invScaleZ = 1 / mat.Column2.xyz.Length;
+            // Original derivation and implementation can be found here:
+            // https://lxjk.github.io/2017/09/03/Fast-4x4-Matrix-Inverse-with-SSE-SIMD-Explained.html
+            // found via OpenTK
 
-            //2. Get rotation only 
+            Vector128<float> row0;
+            Vector128<float> row1;
+            Vector128<float> row2;
+            Vector128<float> row3;
 
-            //2.1 Eliminate translation
-            mat.Column3 = float4.UnitW;
+            fixed (float* m = &matrix.Row0.x)
+            {
+                row0 = Sse.LoadVector128(m);
+                row1 = Sse.LoadVector128(m + 4);
+                row2 = Sse.LoadVector128(m + 8);
+                row3 = Sse.LoadVector128(m + 12);
+            }
 
-            //2.2 Eliminate scale
-            mat.Column0 /= mat.Column0.Length;
-            mat.Column1 /= mat.Column1.Length;
-            mat.Column2 /= mat.Column2.Length;
+            var A = Sse.MoveLowToHigh(row0, row1);
+            var B = Sse.MoveHighToLow(row1, row0);
+            var C = Sse.MoveLowToHigh(row2, row3);
+            var D = Sse.MoveHighToLow(row3, row2);
 
-            //3. Invert rotation part
-            mat = mat.Transpose();
+            const byte Shuffle_0202 = 0b1000_1000;
+            const byte Shuffle_1313 = 0b1101_1101;
 
-            //4. Invert scale
-            mat.Column0 *= invScaleX;
-            mat.Column1 *= invScaleY;
-            mat.Column2 *= invScaleZ;
+            var detSub = Sse.Subtract(
+                Sse.Multiply(
+                    Sse.Shuffle(row0, row2, Shuffle_0202),
+                    Sse.Shuffle(row1, row3, Shuffle_1313)),
+                Sse.Multiply(
+                    Sse.Shuffle(row0, row2, Shuffle_1313),
+                    Sse.Shuffle(row1, row3, Shuffle_0202)));
 
-            //5. Invert translation
-            var invTranslation = mat * (-1 * translVec);
+            const byte Shuffle_0000 = 0b0000_0000;
+            const byte Shuffle_1111 = 0b0101_0101;
+            const byte Shuffle_2222 = 0b1010_1010;
+            const byte Shuffle_3333 = 0b1111_1111;
 
-            mat.M14 = invTranslation.x;
-            mat.M24 = invTranslation.y;
-            mat.M34 = invTranslation.z;
+            var detA = Sse2.Shuffle(detSub.AsInt32(), Shuffle_0000).AsSingle();
+            var detB = Sse2.Shuffle(detSub.AsInt32(), Shuffle_1111).AsSingle();
+            var detC = Sse2.Shuffle(detSub.AsInt32(), Shuffle_2222).AsSingle();
+            var detD = Sse2.Shuffle(detSub.AsInt32(), Shuffle_3333).AsSingle();
 
-            return mat;
+            const byte Shuffle_3300 = 0b0000_1111;
+            const byte Shuffle_1122 = 0b1010_0101;
+            const byte Shuffle_2301 = 0b0100_1110;
+
+            var D_C = Sse.Subtract(
+                Sse.Multiply(Sse2.Shuffle(D.AsInt32(), Shuffle_3300).AsSingle(), C),
+                Sse.Multiply(
+                    Sse2.Shuffle(D.AsInt32(), Shuffle_1122).AsSingle(),
+                    Sse2.Shuffle(C.AsInt32(), Shuffle_2301).AsSingle()));
+
+            var A_B = Sse.Subtract(
+                Sse.Multiply(Sse2.Shuffle(A.AsInt32(), Shuffle_3300).AsSingle(), B),
+                Sse.Multiply(
+                    Sse2.Shuffle(A.AsInt32(), Shuffle_1122).AsSingle(),
+                    Sse2.Shuffle(B.AsInt32(), Shuffle_2301).AsSingle()));
+
+            const byte Shuffle_0303 = 0b1100_1100;
+            const byte Shuffle_1032 = 0b1011_0001;
+            const byte Shuffle_2121 = 0b0110_0110;
+
+            var X_ = Sse.Subtract(
+                Sse.Multiply(detD, A),
+                Sse.Add(
+                    Sse.Multiply(B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0303).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(B.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
+
+            var W_ = Sse.Subtract(
+                Sse.Multiply(detA, D),
+                Sse.Add(
+                    Sse.Multiply(C, Sse2.Shuffle(A_B.AsInt32(), Shuffle_0303).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(C.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
+
+            var detM = Sse.Multiply(detA, detD);
+
+            const byte Shuffle_3030 = 0b0011_0011;
+
+            var Y_ = Sse.Subtract(
+                Sse.Multiply(detB, C),
+                Sse.Subtract(
+                    Sse.Multiply(D, Sse2.Shuffle(A_B.AsInt32(), Shuffle_3030).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(D.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
+
+            var Z_ = Sse.Subtract(
+                Sse.Multiply(detC, B),
+                Sse.Subtract(
+                    Sse.Multiply(A, Sse2.Shuffle(D_C.AsInt32(), Shuffle_3030).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(A.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
+
+            detM = Sse.Add(detM, Sse.Multiply(detB, detC));
+
+            const byte Shuffle_0213 = 0b1101_1000;
+
+            var tr = Sse.Multiply(A_B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0213).AsSingle());
+            tr = Sse3.HorizontalAdd(tr, tr);
+            tr = Sse3.HorizontalAdd(tr, tr);
+
+            detM = Sse.Subtract(detM, tr);
+
+            if (MathF.Abs(detM.GetElement(0)) < float.Epsilon)
+            {
+                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+            }
+
+            var adjSignMask = Vector128.Create(1.0f, -1.0f, -1.0f, 1.0f);
+
+            var rDetM = Sse.Divide(adjSignMask, detM);
+
+            X_ = Sse.Multiply(X_, rDetM);
+            Y_ = Sse.Multiply(Y_, rDetM);
+            Z_ = Sse.Multiply(Z_, rDetM);
+            W_ = Sse.Multiply(W_, rDetM);
+
+            const byte Shuffle_3131 = 0b0111_0111;
+            const byte Shuffle_2020 = 0b0010_0010;
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row0.x)
+            {
+                Sse.Store(r + 0, Sse.Shuffle(X_, Y_, Shuffle_3131));
+                Sse.Store(r + 4, Sse.Shuffle(X_, Y_, Shuffle_2020));
+                Sse.Store(r + 8, Sse.Shuffle(Z_, W_, Shuffle_3131));
+                Sse.Store(r + 12, Sse.Shuffle(Z_, W_, Shuffle_2020));
+            }
+        }
+#endif
+        private static void Invert(in float4x4 matrix, out float4x4 result)
+        {
+            // Original implementation can be found here:
+            // https://github.com/dotnet/runtime/blob/79ae74f5ca5c8a6fe3a48935e85bd7374959c570/src/libraries/System.Private.CoreLib/src/System/Numerics/Matrix4x4.cs#L1556
+            // found via OpenTK
+
+            var mat = matrix;
+
+            float a = mat.M11, b = mat.M21, c = mat.M31, d = mat.M41;
+            float e = mat.M12, f = mat.M22, g = mat.M32, h = mat.M42;
+            float i = mat.M13, j = mat.M23, k = mat.M33, l = mat.M43;
+            float m = mat.M14, n = mat.M24, o = mat.M34, p = mat.M44;
+
+            float kp_lo = k * p - l * o;
+            float jp_ln = j * p - l * n;
+            float jo_kn = j * o - k * n;
+            float ip_lm = i * p - l * m;
+            float io_km = i * o - k * m;
+            float in_jm = i * n - j * m;
+
+            float a11 = +(f * kp_lo - g * jp_ln + h * jo_kn);
+            float a12 = -(e * kp_lo - g * ip_lm + h * io_km);
+            float a13 = +(e * jp_ln - f * ip_lm + h * in_jm);
+            float a14 = -(e * jo_kn - f * io_km + g * in_jm);
+
+            float det = a * a11 + b * a12 + c * a13 + d * a14;
+
+            if (MathF.Abs(det) < float.Epsilon)
+            {
+                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+            }
+
+            float invDet = 1.0f / det;
+
+            result.Row0 = new float4(a11, a12, a13, a14) * invDet;
+
+            result.Row1 = new float4(
+                -(b * kp_lo - c * jp_ln + d * jo_kn),
+                +(a * kp_lo - c * ip_lm + d * io_km),
+                -(a * jp_ln - b * ip_lm + d * in_jm),
+                +(a * jo_kn - b * io_km + c * in_jm)) * invDet;
+
+            float gp_ho = g * p - h * o;
+            float fp_hn = f * p - h * n;
+            float fo_gn = f * o - g * n;
+            float ep_hm = e * p - h * m;
+            float eo_gm = e * o - g * m;
+            float en_fm = e * n - f * m;
+
+            result.Row2 = new float4(
+                +(b * gp_ho - c * fp_hn + d * fo_gn),
+                -(a * gp_ho - c * ep_hm + d * eo_gm),
+                +(a * fp_hn - b * ep_hm + d * en_fm),
+                -(a * fo_gn - b * eo_gm + c * en_fm)) * invDet;
+
+            float gl_hk = g * l - h * k;
+            float fl_hj = f * l - h * j;
+            float fk_gj = f * k - g * j;
+            float el_hi = e * l - h * i;
+            float ek_gi = e * k - g * i;
+            float ej_fi = e * j - f * i;
+
+            result.Row3 = new float4(
+                -(b * gl_hk - c * fl_hj + d * fk_gj),
+                +(a * gl_hk - c * el_hi + d * ek_gi),
+                -(a * fl_hj - b * el_hi + d * ej_fi),
+                +(a * fk_gj - b * ek_gi + c * ej_fi)) * invDet;
         }
 
         #endregion Invert Functions
