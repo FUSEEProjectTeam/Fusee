@@ -1398,57 +1398,138 @@ namespace Fusee.Math.Core
         /// <returns>A new instance that is the result of the multiplication</returns>
         public static float4x4 Mult(in float4x4 left, in float4x4 right)
         {
-            if (left == Identity) return right;
-            if (right == Identity) return left;
-            if (left == Zero || right == Zero) return Zero;
-
+#if NET5_0_OR_GREATER
             float4x4 result;
 
-            if (left.IsAffine && right.IsAffine)
+            if (Sse.IsSupported)
             {
-                result = new float4x4(
-                    left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
-                    left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
-                    left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
-                    left.M11 * right.M14 + left.M12 * right.M24 + left.M13 * right.M34 + left.M14,
-
-                    left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31,
-                    left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32,
-                    left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33,
-                    left.M21 * right.M14 + left.M22 * right.M24 + left.M23 * right.M34 + left.M24,
-
-                    left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31,
-                    left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32,
-                    left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33,
-                    left.M31 * right.M14 + left.M32 * right.M24 + left.M33 * right.M34 + left.M34,
-
-                    0, 0, 0, 1);
+                MultSse(in left, in right, out result);
             }
             else
             {
-                result = new float4x4(
-                    left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31 + left.M14 * right.M41,
-                    left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32 + left.M14 * right.M42,
-                    left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33 + left.M14 * right.M43,
-                    left.M11 * right.M14 + left.M12 * right.M24 + left.M13 * right.M34 + left.M14 * right.M44,
-
-                    left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31 + left.M24 * right.M41,
-                    left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32 + left.M24 * right.M42,
-                    left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33 + left.M24 * right.M43,
-                    left.M21 * right.M14 + left.M22 * right.M24 + left.M23 * right.M34 + left.M24 * right.M44,
-
-                    left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31 + left.M34 * right.M41,
-                    left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32 + left.M34 * right.M42,
-                    left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33 + left.M34 * right.M43,
-                    left.M31 * right.M14 + left.M32 * right.M24 + left.M33 * right.M34 + left.M34 * right.M44,
-
-                    left.M41 * right.M11 + left.M42 * right.M21 + left.M43 * right.M31 + left.M44 * right.M41,
-                    left.M41 * right.M12 + left.M42 * right.M22 + left.M43 * right.M32 + left.M44 * right.M42,
-                    left.M41 * right.M13 + left.M42 * right.M23 + left.M43 * right.M33 + left.M44 * right.M43,
-                    left.M41 * right.M14 + left.M42 * right.M24 + left.M43 * right.M34 + left.M44 * right.M44);
+                Mult(in left, in right, out result);
             }
 
             return result;
+#else
+            Mult(in left, in right, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        private static unsafe void MultSse(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            Vector128<float> leftrow0;
+            Vector128<float> leftrow1;
+            Vector128<float> leftrow2;
+            Vector128<float> leftrow3;
+
+            fixed (float* m = &left.Row0.x)
+            {
+                leftrow0 = Sse.LoadVector128(m + 0);
+                leftrow1 = Sse.LoadVector128(m + 4);
+                leftrow2 = Sse.LoadVector128(m + 8);
+                leftrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> rightrow0;
+            Vector128<float> rightrow1;
+            Vector128<float> rightrow2;
+            Vector128<float> rightrow3;
+
+            fixed (float* m = &right.Row0.x)
+            {
+                rightrow0 = Sse.LoadVector128(m + 0);
+                rightrow1 = Sse.LoadVector128(m + 4);
+                rightrow2 = Sse.LoadVector128(m + 8);
+                rightrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            var resultrow0 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xFF), rightrow3)));
+
+            var resultrow1 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xFF), rightrow3)));
+
+            var resultrow2 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xFF), rightrow3)));
+
+            var resultrow3 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xFF), rightrow3)));
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row0.x)
+            {
+                Sse.Store(r + 0, resultrow0);
+                Sse.Store(r + 4, resultrow1);
+                Sse.Store(r + 8, resultrow2);
+                Sse.Store(r + 12, resultrow3);
+            }
+        }
+#endif
+
+        private static void Mult(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            float leftM11 = left.Row0.x;
+            float leftM12 = left.Row0.y;
+            float leftM13 = left.Row0.z;
+            float leftM14 = left.Row0.w;
+            float leftM21 = left.Row1.x;
+            float leftM22 = left.Row1.y;
+            float leftM23 = left.Row1.z;
+            float leftM24 = left.Row1.w;
+            float leftM31 = left.Row2.x;
+            float leftM32 = left.Row2.y;
+            float leftM33 = left.Row2.z;
+            float leftM34 = left.Row2.w;
+            float leftM41 = left.Row3.x;
+            float leftM42 = left.Row3.y;
+            float leftM43 = left.Row3.z;
+            float leftM44 = left.Row3.w;
+            float rightM11 = right.Row0.x;
+            float rightM12 = right.Row0.y;
+            float rightM13 = right.Row0.z;
+            float rightM14 = right.Row0.w;
+            float rightM21 = right.Row1.x;
+            float rightM22 = right.Row1.y;
+            float rightM23 = right.Row1.z;
+            float rightM24 = right.Row1.w;
+            float rightM31 = right.Row2.x;
+            float rightM32 = right.Row2.y;
+            float rightM33 = right.Row2.z;
+            float rightM34 = right.Row2.w;
+            float rightM41 = right.Row3.x;
+            float rightM42 = right.Row3.y;
+            float rightM43 = right.Row3.z;
+            float rightM44 = right.Row3.w;
+
+            result.Row0.x = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
+            result.Row0.y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
+            result.Row0.z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
+            result.Row0.w = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
+            result.Row1.x = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
+            result.Row1.y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
+            result.Row1.z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
+            result.Row1.w = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
+            result.Row2.x = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
+            result.Row2.y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
+            result.Row2.z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
+            result.Row2.w = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
+            result.Row3.x = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
+            result.Row3.y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
+            result.Row3.z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
+            result.Row3.w = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
         }
 
         #endregion Multiply Functions
