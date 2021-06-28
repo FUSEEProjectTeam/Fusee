@@ -1226,12 +1226,81 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Add(in float4x4 left, in float4x4 right)
         {
-            return new float4x4(left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M14 + right.M14,
-                                left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M24 + right.M24,
-                                left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33, left.M34 + right.M34,
-                                left.M41 + right.M41, left.M42 + right.M42, left.M43 + right.M43, left.M44 + right.M44);
+#if NET5_0_OR_GREATER
+            float4x4 result;
+
+            if (Sse.IsSupported)
+            {
+                AddSse(in left, in right, out result);
+            }
+            else
+            {
+                Add(in left, in right, out result);
+            }
+
+            return result;
+#else
+            Add(in left, in right, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        private static unsafe void AddSse(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            Vector128<float> leftrow0;
+            Vector128<float> leftrow1;
+            Vector128<float> leftrow2;
+            Vector128<float> leftrow3;
+
+            fixed (float* m = &left.Row0.x)
+            {
+                leftrow0 = Sse.LoadVector128(m + 0);
+                leftrow1 = Sse.LoadVector128(m + 4);
+                leftrow2 = Sse.LoadVector128(m + 8);
+                leftrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> rightrow0;
+            Vector128<float> rightrow1;
+            Vector128<float> rightrow2;
+            Vector128<float> rightrow3;
+
+            fixed (float* m = &right.Row0.x)
+            {
+                rightrow0 = Sse.LoadVector128(m + 0);
+                rightrow1 = Sse.LoadVector128(m + 4);
+                rightrow2 = Sse.LoadVector128(m + 8);
+                rightrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            var resultrow0 = Sse.Add(leftrow0, rightrow0);
+            var resultrow1 = Sse.Add(leftrow1, rightrow1);
+            var resultrow2 = Sse.Add(leftrow2, rightrow2);
+            var resultrow3 = Sse.Add(leftrow3, rightrow3);
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row0.x)
+            {
+                Sse.Store(r + 0, resultrow0);
+                Sse.Store(r + 4, resultrow1);
+                Sse.Store(r + 8, resultrow2);
+                Sse.Store(r + 12, resultrow3);
+            }
+        }
+#endif
+
+        private static void Add(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            result.Row0 = left.Row0 + right.Row0;
+            result.Row1 = left.Row1 + right.Row1;
+            result.Row2 = left.Row2 + right.Row2;
+            result.Row3 = left.Row3 + right.Row3;
         }
 
         /// <summary>
@@ -1240,12 +1309,81 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the subtraction.</param>
         /// <param name="right">The right operand of the subtraction.</param>
         /// <returns>A new instance that is the result of the subtraction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Subtract(in float4x4 left, in float4x4 right)
         {
-            return new float4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
-                                left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
-                                left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33, left.M34 - right.M34,
-                                left.M41 - right.M41, left.M42 - right.M42, left.M43 - right.M43, left.M44 - right.M44);
+#if NET5_0_OR_GREATER
+            float4x4 result;
+
+            if (Sse.IsSupported)
+            {
+                SubtractSse(in left, in right, out result);
+            }
+            else
+            {
+                Subtract(in left, in right, out result);
+            }
+
+            return result;
+#else
+            Subtract(in left, in right, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        private static unsafe void SubtractSse(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            Vector128<float> leftrow0;
+            Vector128<float> leftrow1;
+            Vector128<float> leftrow2;
+            Vector128<float> leftrow3;
+
+            fixed (float* m = &left.Row0.x)
+            {
+                leftrow0 = Sse.LoadVector128(m + 0);
+                leftrow1 = Sse.LoadVector128(m + 4);
+                leftrow2 = Sse.LoadVector128(m + 8);
+                leftrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> rightrow0;
+            Vector128<float> rightrow1;
+            Vector128<float> rightrow2;
+            Vector128<float> rightrow3;
+
+            fixed (float* m = &right.Row0.x)
+            {
+                rightrow0 = Sse.LoadVector128(m + 0);
+                rightrow1 = Sse.LoadVector128(m + 4);
+                rightrow2 = Sse.LoadVector128(m + 8);
+                rightrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            var resultrow0 = Sse.Subtract(leftrow0, rightrow0);
+            var resultrow1 = Sse.Subtract(leftrow1, rightrow1);
+            var resultrow2 = Sse.Subtract(leftrow2, rightrow2);
+            var resultrow3 = Sse.Subtract(leftrow3, rightrow3);
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row0.x)
+            {
+                Sse.Store(r + 0, resultrow0);
+                Sse.Store(r + 4, resultrow1);
+                Sse.Store(r + 8, resultrow2);
+                Sse.Store(r + 12, resultrow3);
+            }
+        }
+#endif
+
+        private static void Subtract(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            result.Row0 = left.Row0 - right.Row0;
+            result.Row1 = left.Row1 - right.Row1;
+            result.Row2 = left.Row2 - right.Row2;
+            result.Row3 = left.Row3 - right.Row3;
         }
 
         #endregion Elementary Arithmetic Functions
