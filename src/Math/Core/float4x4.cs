@@ -975,18 +975,18 @@ namespace Fusee.Math.Core
         {
             float4x4 result;
 
-            if (fovy <= 0 || fovy > System.Math.PI)
-                throw new ArgumentOutOfRangeException("fovy");
+            if (fovy <= 0 || fovy > MathF.PI)
+                throw new ArgumentOutOfRangeException(nameof(fovy));
             if (aspect <= 0)
-                throw new ArgumentOutOfRangeException("aspect");
+                throw new ArgumentOutOfRangeException(nameof(aspect));
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
-            float yMax = zNear * (float)System.Math.Tan(0.5f * fovy);
+            float yMax = zNear * MathF.Tan(0.5f * fovy);
             float yMin = -yMax;
             float xMin = yMin * aspect;
             float xMax = yMax * aspect;
@@ -1030,11 +1030,11 @@ namespace Fusee.Math.Core
             float4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             float x = (2.0f * zNear) / (right - left);
             float y = (2.0f * zNear) / (top - bottom);
@@ -1075,11 +1075,11 @@ namespace Fusee.Math.Core
             float4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             float x = (2.0f * zNear) / (right - left);
             float y = (2.0f * zNear) / (top - bottom);
