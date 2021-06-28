@@ -440,14 +440,6 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
-        /// <summary>
-        /// Converts this instance into its inverse.
-        /// </summary>
-        public float4x4 InvertAffine()
-        {
-            return InvertAffine(this);
-        }
-
         #endregion public Invert()
 
         #region public Transpose()

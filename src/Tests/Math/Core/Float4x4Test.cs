@@ -1,4 +1,4 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -654,16 +654,6 @@ namespace Fusee.Test.Math.Core
             var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.Invert();
-
-            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
-        }
-
-        [Fact]
-        public void InvertAffine_Static()
-        {
-            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
-
-            var actual = mat.InvertAffine();
 
             Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
