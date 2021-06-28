@@ -46,7 +46,9 @@ namespace Fusee.Math.Core
     /// </remarks>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
+#pragma warning disable IDE1006 // Naming Styles
     public struct float4x4 : IEquatable<float4x4>
+#pragma warning restore IDE1006 // Naming Styles
     {
         #region Fields
 
@@ -2370,7 +2372,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare tresult.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is float4x4))
                 return false;
