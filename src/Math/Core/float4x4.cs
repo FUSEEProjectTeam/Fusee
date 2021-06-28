@@ -888,8 +888,7 @@ namespace Fusee.Math.Core
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
         /// <returns>The resulting float4x4 instance.</returns>
-        public static float4x4 CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear,
-                                                         float zFar)
+        public static float4x4 CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result = new float4x4();
 
@@ -919,8 +918,7 @@ namespace Fusee.Math.Core
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
         /// <returns>The resulting float4x4 instance.</returns>
-        public static float4x4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear,
-                                                           float zFar)
+        public static float4x4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result = new float4x4();
 
