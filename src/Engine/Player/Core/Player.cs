@@ -61,7 +61,7 @@ namespace Fusee.Engine.Player.Core
         {
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile).ConfigureAwait(false);
+            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
             // Initialize the information text line.
             var textToDisplay = "FUSEE 3D Scene";
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " on " + _scene.Header.CreationDate;
             }
 
-            _gui = await CreateGui();
+            _gui = CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -277,11 +277,11 @@ namespace Fusee.Engine.Player.Core
 
         }
 
-        private async Task<SceneContainer> CreateGui()
+        private SceneContainer CreateGui()
         {
-            var vsTex = await AssetStorage.GetAsync<string>("texture.vert").ConfigureAwait(false);
-            var psTex = await AssetStorage.GetAsync<string>("texture.frag").ConfigureAwait(false);
-            var psText = await AssetStorage.GetAsync<string>("text.frag").ConfigureAwait(false);
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
+            var psText = AssetStorage.Get<string>("text.frag");
 
             var btnFuseeLogo = new GUIButton
             {
@@ -291,7 +291,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png").ConfigureAwait(false));
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,

@@ -557,80 +557,25 @@ namespace Fusee.Math.Core
                 e = new float3(rX, rY, rZ);
             }
 
-            // Calculating the Sine and Cosine for each half angle.
-            // YAW/HEADING
-            var s1 = (float)System.Math.Sin(e.y * 0.5f);
-            var c1 = (float)System.Math.Cos(e.y * 0.5f);
+            var q = new Quaternion();
 
-            // PITCH/ATTITUDE
-            var s2 = (float)System.Math.Sin(e.x * 0.5f);
-            var c2 = (float)System.Math.Cos(e.x * 0.5f);
+            float3 s, c;
 
-            // ROLL/BANK
-            var s3 = (float)System.Math.Sin(e.z * 0.5f);
-            var c3 = (float)System.Math.Cos(e.z * 0.5f);
+            s.x = MathF.Sin(e.x * 0.5f);
+            c.x = MathF.Cos(e.x * 0.5f);
 
-            // Formula to construct a new Quaternion based on Euler Angles.
-            var x = c1 * s2 * c3 - s1 * c2 * s3;
-            var z = s1 * s2 * c3 + c1 * c2 * s3;
-            var y = s1 * c2 * c3 + c1 * s2 * s3;
-            var w = c1 * c2 * c3 - s1 * s2 * s3;
+            s.y = MathF.Sin(e.y * 0.5f);
+            c.y = MathF.Cos(e.y * 0.5f);
 
-            return new Quaternion(x, y, z, w);
-        }
+            s.z = MathF.Sin(e.z * 0.5f);
+            c.z = MathF.Cos(e.z * 0.5f);
 
-        //TODO: Figure out why this is here!
-        /// <summary>
-        /// Gets the euler angles from a given quaternion.
-        /// </summary>
-        /// <param name="quat">The quaternion.</param>
-        /// <returns></returns>
-        public static float3 FromQuatToEuler(Quaternion quat)
-        {
-            float sqw = quat.w * quat.w;
-            float sqx = quat.x * quat.x;
-            float sqy = quat.y * quat.y;
-            float sqz = quat.z * quat.z;
-            float unit = sqx + sqy + sqz + sqw; // if normalized this is one, otherwise it is the correction factor
-            float test = quat.x * quat.w - quat.y * quat.z;
-            float3 v = new float3();
+            q.x = s.x * c.y * c.z + s.y * s.z * c.x;
+            q.y = s.y * c.x * c.z - s.x * s.z * c.y;
+            q.z = s.z * c.x * c.y - s.x * s.y * c.z;
+            q.w = c.x * c.y * c.z + s.y * s.z * s.x;
 
-            if (test > 0.4995f * unit)
-            { // singularity at north pole
-                v.y = M.RadiansToDegrees((float)(2f * System.Math.Atan2(quat.y, quat.x)));
-                v.x = M.RadiansToDegrees((float)(System.Math.PI / 2f));
-                v.z = 0;
-                return NormalizeAngles(v);
-            }
-            if (test < -0.4995f * unit)
-            { // singularity at south pole
-                v.y = M.RadiansToDegrees((float)(-2f * System.Math.Atan2(quat.y, quat.x)));
-                v.x = M.RadiansToDegrees((float)(-System.Math.PI / 2));
-                v.z = 0;
-                return NormalizeAngles(v);
-            }
-            Quaternion q = new Quaternion(quat.w, quat.z, quat.x, quat.y);
-            v.y = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.w + 2f * q.y * q.z, 1 - 2f * (q.z * q.z + q.w * q.w)));  // Yaw
-            v.x = M.RadiansToDegrees((float)System.Math.Asin(2f * (q.x * q.z - q.w * q.y)));                                        // Pitch
-            v.z = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.y + 2f * q.z * q.w, 1 - 2f * (q.y * q.y + q.z * q.z)));  // Roll
-            return NormalizeAngles(v);
-        }
-
-        private static float3 NormalizeAngles(float3 angles)
-        {
-            angles.x = NormalizeAngle(angles.x);
-            angles.y = NormalizeAngle(angles.y);
-            angles.z = NormalizeAngle(angles.z);
-            return angles;
-        }
-
-        private static float NormalizeAngle(float angle)
-        {
-            while (angle > 360)
-                angle -= 360;
-            while (angle < 0)
-                angle += 360;
-            return angle;
+            return q;
         }
 
         /// <summary>
@@ -646,52 +591,93 @@ namespace Fusee.Math.Core
         /// </remarks>
         public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
         {
+            // Ref: 3D Math Primer for Graphics and Game Development SE, Page 290 - Listing 8.6, ISBN 978-1-56881-723-1
+
+            float3 euler;
             q = q.Normalize();
 
-            float test = 2.0f * (q.x * q.y + q.z * q.w);
+            var sp = -2 * (q.y * q.z - q.w * q.x);
 
-            float x;
-            float y;
-            float z;
+            if (MathF.Abs(sp) > 0.99999f)
+            {
+                euler.x = M.PiOver2 * sp;
 
-            if (M.Equals(test, 1.0f))
-            {
-                y = 2.0f * (float)System.Math.Atan2(q.x, q.w);
-                x = 0;
-                z = M.Pi / 2;
-            }
-            else if (M.Equals(test, -1.0f))
-            {
-                y = -2.0f * (float)System.Math.Atan2(q.x, q.w);
-                x = 0;
-                z = M.Pi / -2;
+                euler.y = MathF.Atan2(-q.x * q.z + q.w * q.y, 0.5f - q.y * q.y - q.z * q.z);
+                euler.z = 0;
             }
             else
             {
-                var sqX = q.x * q.x;
-                var sqY = q.y * q.y;
-                var sqZ = q.z * q.z;
-                var sqW = q.w * q.w;
-
-                y = (float)System.Math.Atan2(2 * (q.y * q.w - q.x * q.z), 1 - 2 * sqY - 2 * sqZ);
-                z = (float)System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
-                x = (float)System.Math.Atan2(2 * (q.x * q.w - q.y * q.z), 1 - 2 * sqX - 2 * sqZ);
+                euler.x = MathF.Asin(sp);
+                euler.y = MathF.Atan2(q.x * q.z + q.w * q.y, 0.5f - q.x * q.x - q.y * q.y);
+                euler.z = MathF.Atan2(q.x * q.y + q.w * q.z, 0.5f - q.x * q.x - q.z * q.z);
             }
-
-            // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
-            while (y >= M.TwoPi)
-                y -= M.TwoPi;
-            while (y <= -M.TwoPi)
-                y += M.TwoPi;
 
             if (inDegrees)
             {
-                x = M.RadiansToDegrees(x);
-                y = M.RadiansToDegrees(y);
-                z = M.RadiansToDegrees(z);
+                euler.x = M.RadiansToDegrees(euler.x);
+                euler.y = M.RadiansToDegrees(euler.y);
+                euler.z = M.RadiansToDegrees(euler.z);
             }
 
-            return new float3(x, y, z);
+            return euler;
+        }
+
+        /// <summary>
+        /// Build a quaternion from a rotation matrix
+        /// </summary>
+        /// <param name="mtx"></param>
+        /// <returns></returns>
+        public static Quaternion FromRotationMatrix(float4x4 mtx)
+        {
+            mtx = mtx.RotationComponent();
+            var t = mtx.Trace - 1;
+            var q = new Quaternion();
+
+            if (t > 0f)
+            {
+                var s = MathF.Sqrt(t + 1) * 2;
+                var invS = 1f / s;
+
+                q.w = s * 0.25f;
+                q.x = (mtx.Row2.y - mtx.Row1.z) * invS;
+                q.y = (mtx.Row0.z - mtx.Row2.x) * invS;
+                q.z = (mtx.Row1.x - mtx.Row0.y) * invS;
+            }
+            else
+            {
+                if (mtx.Row0.x > mtx.Row1.y && mtx.Row0.x > mtx.Row2.z)
+                {
+                    var s = MathF.Sqrt(1 + mtx.Row0.x - mtx.Row1.y - mtx.Row2.z) * 2;
+                    var invS = 1f / s;
+
+                    q.w = (mtx.Row2.y - mtx.Row1.z) * invS;
+                    q.x = s * 0.25f;
+                    q.y = (mtx.Row0.y + mtx.Row1.x) * invS;
+                    q.z = (mtx.Row0.z + mtx.Row2.x) * invS;
+                }
+                else if (mtx.Row1.y > mtx.Row2.z)
+                {
+                    var s = MathF.Sqrt(1 + mtx.Row1.y - mtx.Row0.x - mtx.Row2.z) * 2;
+                    var invS = 1f / s;
+
+                    q.w = (mtx.Row0.z - mtx.Row2.x) * invS;
+                    q.x = (mtx.Row0.y + mtx.Row1.x) * invS;
+                    q.y = s * 0.25f;
+                    q.z = (mtx.Row1.z + mtx.Row2.y) * invS;
+                }
+                else
+                {
+                    var s = MathF.Sqrt(1 + mtx.Row2.z - mtx.Row0.x - mtx.Row1.y) * 2;
+                    var invS = 1f / s;
+
+                    q.w = (mtx.Row1.x - mtx.Row0.y) * invS;
+                    q.x = (mtx.Row0.z + mtx.Row2.x) * invS;
+                    q.y = (mtx.Row1.z + mtx.Row2.y) * invS;
+                    q.z = s * 0.25f;
+                }
+            }
+
+            return q;
         }
 
         /// <summary>
