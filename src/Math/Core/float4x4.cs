@@ -542,8 +542,8 @@ namespace Fusee.Math.Core
         /// <returns>A matrix instance.</returns>
         public static float4x4 CreateFromAxisAngle(float3 axis, float angle)
         {
-            var cos = (float)System.Math.Cos(-angle);
-            var sin = (float)System.Math.Sin(-angle);
+            var cos = MathF.Cos(-angle);
+            var sin = MathF.Sin(-angle);
             var t = 1.0f - cos;
 
             axis = axis.Normalize();
@@ -567,10 +567,10 @@ namespace Fusee.Math.Core
         /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationX(float angle)
         {
-            float4x4 result = new float4x4();
+            float4x4 result;
 
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
             result.Row0 = float4.UnitX;
             result.Row1 = new float4(0.0f, cos, -sin, 0.0f);
@@ -587,10 +587,10 @@ namespace Fusee.Math.Core
         /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationY(float angle)
         {
-            float4x4 result = new float4x4();
+            float4x4 result;
 
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
             result.Row0 = new float4(cos, 0.0f, sin, 0.0f);
             result.Row1 = float4.UnitY;
@@ -607,10 +607,10 @@ namespace Fusee.Math.Core
         /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationZ(float angle)
         {
-            float4x4 result = new float4x4();
+            float4x4 result;
 
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
             result.Row0 = new float4(cos, -sin, 0.0f, 0.0f);
             result.Row1 = new float4(sin, cos, 0.0f, 0.0f);
@@ -754,28 +754,28 @@ namespace Fusee.Math.Core
             var parity = 1; //parity of axis permutation (even=0, odd=1) - 'n' in original code
 
             int i = (int)axis.x, j = (int)axis.y, k = (int)axis.z;
-            var cy = System.Math.Sqrt(System.Math.Pow(mat[i][i], 2.0) + System.Math.Pow(mat[i][j], 2.0));
+            var cy = MathF.Sqrt(MathF.Pow(mat[i][i], 2.0f) + MathF.Pow(mat[i][j], 2.0f));
 
             var FLT_EPSILON = 1.192092896e-07F;
 
             if (cy > 16.0f * FLT_EPSILON)
             {
-                eul1[i] = (float)System.Math.Atan2(mat[j][k], mat[k][k]);
-                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
-                eul1[k] = (float)System.Math.Atan2(mat[i][j], mat[i][i]);
+                eul1[i] = MathF.Atan2(mat[j][k], mat[k][k]);
+                eul1[j] = MathF.Atan2(-mat[i][k], cy);
+                eul1[k] = MathF.Atan2(mat[i][j], mat[i][i]);
 
-                eul2[i] = (float)System.Math.Atan2(-mat[j][k], -mat[k][k]);
-                eul2[j] = (float)System.Math.Atan2(-mat[i][k], -cy);
-                eul2[k] = (float)System.Math.Atan2(-mat[i][j], -mat[i][i]);
+                eul2[i] = MathF.Atan2(-mat[j][k], -mat[k][k]);
+                eul2[j] = MathF.Atan2(-mat[i][k], -cy);
+                eul2[k] = MathF.Atan2(-mat[i][j], -mat[i][i]);
             }
             else
             {
-                eul1[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
-                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul1[i] = MathF.Atan2(-mat[k][j], mat[j][j]);
+                eul1[j] = MathF.Atan2(-mat[i][k], cy);
                 eul1[k] = 0;
 
-                eul2[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
-                eul2[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul2[i] = MathF.Atan2(-mat[k][j], mat[j][j]);
+                eul2[j] = MathF.Atan2(-mat[i][k], cy);
                 eul2[k] = 0;
             }
 
@@ -805,8 +805,8 @@ namespace Fusee.Math.Core
 
             RotMatToEuler2(m, ref eul1, ref eul2);
 
-            d1 = System.Math.Abs(eul1[0]) + System.Math.Abs(eul1[1]) + System.Math.Abs(eul1[2]);
-            d2 = System.Math.Abs(eul2[0]) + System.Math.Abs(eul2[1]) + System.Math.Abs(eul2[2]);
+            d1 = MathF.Abs(eul1[0]) + MathF.Abs(eul1[1]) + MathF.Abs(eul1[2]);
+            d2 = MathF.Abs(eul2[0]) + MathF.Abs(eul2[1]) + MathF.Abs(eul2[2]);
 
             /* return best, which is just the one with lowest values it in */
             return d1 > d2 ? new float3(eul2[0], eul2[1], eul2[2]) : new float3(eul1[0], eul1[1], eul1[2]);
@@ -964,7 +964,7 @@ namespace Fusee.Math.Core
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
-        /// <item>fovy is zero, less than zero or larger than Math.PI</item>
+        /// <item>fovy is zero, less than zero or larger than MathF.PI</item>
         /// <item>aspect is negative or zero</item>
         /// <item>zNear is negative or zero</item>
         /// <item>zFar is negative or zero</item>
