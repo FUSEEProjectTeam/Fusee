@@ -1801,11 +1801,102 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Calculate the transpose of the given matrix
         /// </summary>
-        /// <param name="mat">The matrix to transpose</param>
+        /// <param name="matrix">The matrix to transpose</param>
         /// <returns>The transpose of the given matrix</returns>
-        public static float4x4 Transpose(float4x4 mat)
+        /// 
+        public static float4x4 Transpose(float4x4 matrix)
         {
-            return new float4x4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
+#if NET5_0_OR_GREATER
+            float4x4 result;
+
+            if (Sse.IsSupported)
+            {
+                TransposeSse(in matrix, out result);
+            }
+            else
+            {
+                Transpose(in matrix, out result);
+            }
+
+            return result;
+#else
+            Transpose(in matrix, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        private static unsafe void TransposeSse(in float4x4 matrix, out float4x4 result)
+        {
+            Vector128<float> row0;
+            Vector128<float> row1;
+            Vector128<float> row2;
+            Vector128<float> row3;
+
+            fixed (float* m = &matrix.Row0.x)
+            {
+                row0 = Sse.LoadVector128(m + 0);
+                row1 = Sse.LoadVector128(m + 4);
+                row2 = Sse.LoadVector128(m + 8);
+                row3 = Sse.LoadVector128(m + 12);
+            }
+
+            var l12 = Sse.UnpackLow(row0, row1);
+            var l34 = Sse.UnpackLow(row2, row3);
+            var h12 = Sse.UnpackHigh(row0, row1);
+            var h34 = Sse.UnpackHigh(row2, row3);
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row0.x)
+            {
+                Sse.Store(r + 0, Sse.MoveLowToHigh(l12, l34));
+                Sse.Store(r + 4, Sse.MoveHighToLow(l34, l12));
+                Sse.Store(r + 8, Sse.MoveLowToHigh(h12, h34));
+                Sse.Store(r + 12,Sse.MoveHighToLow(h34, h12));
+            }
+        }
+#endif
+
+        private static void Transpose(in float4x4 matrix, out float4x4 result)
+        {
+            float m11 = matrix.Row0.x;
+            float m12 = matrix.Row0.y;
+            float m13 = matrix.Row0.z;
+            float m14 = matrix.Row0.w;
+            float m21 = matrix.Row1.x;
+            float m22 = matrix.Row1.y;
+            float m23 = matrix.Row1.z;
+            float m24 = matrix.Row1.w;
+            float m31 = matrix.Row2.x;
+            float m32 = matrix.Row2.y;
+            float m33 = matrix.Row2.z;
+            float m34 = matrix.Row2.w;
+            float m41 = matrix.Row3.x;
+            float m42 = matrix.Row3.y;
+            float m43 = matrix.Row3.z;
+            float m44 = matrix.Row3.w;
+
+            result = new float4x4()
+            {
+                M11 = m11,
+                M12 = m21,
+                M13 = m31,
+                M14 = m41,
+                M21 = m12,
+                M22 = m22,
+                M23 = m32,
+                M24 = m42,
+                M31 = m13,
+                M32 = m23,
+                M33 = m33,
+                M34 = m43,
+                M41 = m14,
+                M42 = m24,
+                M43 = m34,
+                M44 = m44
+            };
         }
 
         #endregion Transpose
