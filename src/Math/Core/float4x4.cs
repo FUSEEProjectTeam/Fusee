@@ -2213,7 +2213,7 @@ namespace Fusee.Math.Core
         /// <returns>A new float4x4 which holds the result of the multiplication</returns>
         public static float4x4 operator +(float4x4 left, float4x4 right)
         {
-            return Add(left, right);
+            return Add(in left, in right);
         }
 
         /// <summary>
@@ -2224,7 +2224,7 @@ namespace Fusee.Math.Core
         /// <returns>A new float2x2 which holds the result of the multiplication</returns>
         public static float4x4 operator -(float4x4 left, float4x4 right)
         {
-            return Subtract(left, right);
+            return Subtract(in left, in right);
         }
 
         /// <summary>
@@ -2235,7 +2235,7 @@ namespace Fusee.Math.Core
         /// <returns>A new Matrix44 which holds the result of the multiplication</returns>
         public static float4x4 operator *(float4x4 left, float4x4 right)
         {
-            return Mult(left, right);
+            return Mult(in left, in right);
         }
 
         /// <summary>
