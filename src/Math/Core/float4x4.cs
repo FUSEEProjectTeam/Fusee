@@ -1946,11 +1946,96 @@ namespace Fusee.Math.Core
         /// <returns>A new <see cref="float3"/> instance containing the result.</returns>
         public static float3 Transform(float4x4 matrix, float3 vector)
         {
-            float w = (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + matrix.M44;
-            return new float3(
-                ((matrix.M11 * vector.x) + (matrix.M12 * vector.y) + (matrix.M13 * vector.z) + matrix.M14) / w,
-                ((matrix.M21 * vector.x) + (matrix.M22 * vector.y) + (matrix.M23 * vector.z) + matrix.M24) / w,
-                ((matrix.M31 * vector.x) + (matrix.M32 * vector.y) + (matrix.M33 * vector.z) + matrix.M34) / w);
+#if NET5_0_OR_GREATER
+            float3 result;
+
+            if (Sse.IsSupported)
+            {
+                TransformSse(in matrix, in vector, out result);
+            }
+            else
+            {
+                Transform(in matrix, in vector, out result);
+            }
+
+            return result;
+#else
+            Transform(in matrix, in vector, out float3 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        private static unsafe void TransformSse(in float4x4 matrix, in float3 vector, out float3 result)
+        {
+            Vector128<float> row0;
+            Vector128<float> row1;
+            Vector128<float> row2;
+            Vector128<float> row3;
+
+            fixed (float* m = &matrix.Row0.x)
+            {
+                row0 = Sse.LoadVector128(m + 0);
+                row1 = Sse.LoadVector128(m + 4);
+                row2 = Sse.LoadVector128(m + 8);
+                row3 = Sse.LoadVector128(m + 12);
+            }
+
+            var l12 = Sse.UnpackLow(row0, row1);
+            var l34 = Sse.UnpackLow(row2, row3);
+            var h12 = Sse.UnpackHigh(row0, row1);
+            var h34 = Sse.UnpackHigh(row2, row3);
+
+            var col0 = Sse.MoveLowToHigh(l12, l34);
+            var col1 = Sse.MoveHighToLow(l34, l12);
+            var col2 = Sse.MoveLowToHigh(h12, h34);
+            var col3 = Sse.MoveHighToLow(h34, h12);
+
+            Vector128<float> vec;
+
+            fixed (float* m = &vector.x)
+            {
+                vec = Sse.LoadVector128(m);
+            }
+
+            const byte Shuffle_0000 = 0x00;
+            const byte Shuffle_1111 = 0x55;
+            const byte Shuffle_2222 = 0xAA;
+            const byte Shuffle_3333 = 0xFF;
+
+            var vX = Sse.Shuffle(vec, vec, Shuffle_0000);
+            var vY = Sse.Shuffle(vec, vec, Shuffle_1111);
+            var vZ = Sse.Shuffle(vec, vec, Shuffle_2222);
+
+            var res = Sse.Divide(Sse.Add(Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(l12, l34), vX),
+                                                 Sse.Multiply(Sse.MoveHighToLow(l34, l12), vY)),
+                                         Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(h12, h34), vZ),
+                                                 Sse.MoveHighToLow(h34, h12))),
+                                 Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_0000), vX),
+                                                 Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_1111), vY)),
+                                         Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_2222), vZ),
+                                                 Sse.Shuffle(row3, row3, Shuffle_3333))));
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.x)
+            {
+                Sse.Store(r + 0, res);
+            }
+        }
+#endif
+
+        private static void Transform(in float4x4 matrix, in float3 vector, out float3 result)
+        {
+            var mat = matrix;
+            var vec = vector;
+
+            float w = (mat.M41 * vec.x) + (mat.M42 * vec.y) + (mat.M43 * vec.z) + mat.M44;
+
+            result.x = ((mat.M11 * vec.x) + (mat.M12 * vec.y) + (mat.M13 * vec.z) + mat.M14) / w;
+            result.y = ((mat.M21 * vec.x) + (mat.M22 * vec.y) + (mat.M23 * vec.z) + mat.M24) / w;
+            result.z = ((mat.M31 * vec.x) + (mat.M32 * vec.y) + (mat.M33 * vec.z) + mat.M34) / w;
         }
 
         /// <summary>
