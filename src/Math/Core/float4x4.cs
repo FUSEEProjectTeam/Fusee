@@ -1,7 +1,12 @@
 using ProtoBuf;
 using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif
 
 namespace Fusee.Math.Core
 {
