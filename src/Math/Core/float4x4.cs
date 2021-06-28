@@ -1238,6 +1238,7 @@ namespace Fusee.Math.Core
         }
 
 #if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void AddSse(in float4x4 left, in float4x4 right, out float4x4 result)
         {
             Vector128<float> leftrow0;
@@ -1283,6 +1284,7 @@ namespace Fusee.Math.Core
         }
 #endif
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Add(in float4x4 left, in float4x4 right, out float4x4 result)
         {
             result.Row0 = left.Row0 + right.Row0;
@@ -1321,6 +1323,7 @@ namespace Fusee.Math.Core
         }
 
 #if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void SubtractSse(in float4x4 left, in float4x4 right, out float4x4 result)
         {
             Vector128<float> leftrow0;
@@ -1366,6 +1369,7 @@ namespace Fusee.Math.Core
         }
 #endif
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Subtract(in float4x4 left, in float4x4 right, out float4x4 result)
         {
             result.Row0 = left.Row0 - right.Row0;
@@ -1384,6 +1388,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Mult(in float4x4 left, in float4x4 right)
         {
 #if NET5_0_OR_GREATER
@@ -1407,6 +1412,7 @@ namespace Fusee.Math.Core
         }
 
 #if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void MultSse(in float4x4 left, in float4x4 right, out float4x4 result)
         {
             Vector128<float> leftrow0;
@@ -1467,6 +1473,7 @@ namespace Fusee.Math.Core
         }
 #endif
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Mult(in float4x4 left, in float4x4 right, out float4x4 result)
         {
             float leftM11 = left.Row0.x;
@@ -1550,6 +1557,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="matrix">The matrix to invert.</param>
         /// <returns>The inverse of the given matrix.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Invert(in float4x4 matrix)
         {
 #if NET5_0_OR_GREATER
@@ -1713,6 +1721,8 @@ namespace Fusee.Math.Core
             }
         }
 #endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Invert(in float4x4 matrix, out float4x4 result)
         {
             // Original implementation can be found here:
@@ -1791,7 +1801,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="matrix">The matrix to transpose</param>
         /// <returns>The transpose of the given matrix</returns>
-        /// 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Transpose(float4x4 matrix)
         {
 #if NET5_0_OR_GREATER
@@ -1815,6 +1825,7 @@ namespace Fusee.Math.Core
         }
 
 #if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void TransposeSse(in float4x4 matrix, out float4x4 result)
         {
             Vector128<float> row0;
@@ -1847,6 +1858,7 @@ namespace Fusee.Math.Core
         }
 #endif
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Transpose(in float4x4 matrix, out float4x4 result)
         {
             float m11 = matrix.Row0.x;
@@ -1932,6 +1944,7 @@ namespace Fusee.Math.Core
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float3"/> instance.</param>
         /// <returns>A new <see cref="float3"/> instance containing the result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float3 Transform(float4x4 matrix, float3 vector)
         {
 #if NET5_0_OR_GREATER
@@ -1955,6 +1968,7 @@ namespace Fusee.Math.Core
         }
 
 #if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static unsafe void TransformSse(in float4x4 matrix, in float3 vector, out float3 result)
         {
             Vector128<float> row0;
@@ -2014,6 +2028,7 @@ namespace Fusee.Math.Core
         }
 #endif
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Transform(in float4x4 matrix, in float3 vector, out float3 result)
         {
             var mat = matrix;
