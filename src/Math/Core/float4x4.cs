@@ -1560,6 +1560,8 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Invert(in float4x4 matrix)
         {
+            if (matrix == Identity || matrix == Zero) return matrix;
+
 #if NET5_0_OR_GREATER
             float4x4 result;
 
