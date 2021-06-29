@@ -1,6 +1,6 @@
-<Project Sdk="Microsoft.NET.Sdk" >
+﻿<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Imp.Network.Desktop</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
