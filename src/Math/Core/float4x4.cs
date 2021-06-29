@@ -2389,7 +2389,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare tresult.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object? obj)
+        public override readonly bool Equals(object? obj)
         {
             if (!(obj is float4x4))
                 return false;
@@ -2415,13 +2415,78 @@ namespace Fusee.Math.Core
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
         /// <param name="other">A matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
-        public bool Equals(float4x4 other)
+        public readonly bool Equals(float4x4 other)
         {
-            return
-                Row0 == other.Row0 &&
-                Row1 == other.Row1 &&
-                Row2 == other.Row2 &&
-                Row3 == other.Row3;
+#if NET5_0_OR_GREATER
+            bool result;
+
+            if (Sse.IsSupported)
+            {
+                EqualsSse(in other, out result);
+            }
+            else
+            {
+                Equals(in other, out result);
+            }
+
+            return result;
+#else
+            Equals(in other, out bool result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        public readonly unsafe void EqualsSse(in float4x4 other, out bool result)
+        {
+
+            Vector128<float> thisrow0;
+            Vector128<float> thisrow1;
+            Vector128<float> thisrow2;
+            Vector128<float> thisrow3;
+
+            fixed (float* m = &this.Row0.x)
+            {
+                thisrow0 = Sse.LoadVector128(m);
+                thisrow1 = Sse.LoadVector128(m + 4);
+                thisrow2 = Sse.LoadVector128(m + 8);
+                thisrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> otherrow0;
+            Vector128<float> otherrow1;
+            Vector128<float> otherrow2;
+            Vector128<float> otherrow3;
+
+            fixed (float* m = &other.Row0.x)
+            {
+                otherrow0 = Sse.LoadVector128(m);
+                otherrow1 = Sse.LoadVector128(m + 4);
+                otherrow2 = Sse.LoadVector128(m + 8);
+                otherrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            result = false;
+
+            var e = Vector128.Create(float.Epsilon);
+
+            var r = Sse.And(Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow0, otherrow0), Sse.Min(thisrow0, otherrow0)), e),
+                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow1, otherrow1), Sse.Min(thisrow1, otherrow1)), e)),
+                            Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow2, otherrow2), Sse.Min(thisrow2, otherrow2)), e),
+                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow3, otherrow3), Sse.Min(thisrow3, otherrow3)), e)));
+
+            if (float.IsNaN(r.GetElement(0)) && float.IsNaN(r.GetElement(1)) && float.IsNaN(r.GetElement(2)) && float.IsNaN(r.GetElement(3)))
+                result = true;
+        }
+#endif
+
+        public readonly void Equals(in float4x4 other, out bool result)
+        {
+            result = Row0 == other.Row0 &&
+                     Row1 == other.Row1 &&
+                     Row2 == other.Row2 &&
+                     Row3 == other.Row3;
         }
 
         #endregion IEquatable<float4x4> Members
