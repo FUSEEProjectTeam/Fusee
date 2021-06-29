@@ -2438,7 +2438,7 @@ namespace Fusee.Math.Core
         }
 
 #if NET5_0_OR_GREATER
-        public readonly unsafe void EqualsSse(in float4x4 other, out bool result)
+        private readonly unsafe void EqualsSse(in float4x4 other, out bool result)
         {
 
             Vector128<float> thisrow0;
@@ -2481,7 +2481,7 @@ namespace Fusee.Math.Core
         }
 #endif
 
-        public readonly void Equals(in float4x4 other, out bool result)
+        private readonly void Equals(in float4x4 other, out bool result)
         {
             result = Row0 == other.Row0 &&
                      Row1 == other.Row1 &&
