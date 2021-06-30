@@ -165,6 +165,10 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         public const string BonesArray = Bones + ArrayPostfix;
 
+        /// <summary>
+        /// The bones array including the postfix.
+        /// </summary>
+        public const string FuseePlatformId = "FUSEE_PLATFORM_ID";
 
         #endregion
 

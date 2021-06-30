@@ -12,6 +12,11 @@ namespace Fusee.Engine.Common
     public interface IRenderContextImp
     {
         /// <summary>
+        /// Constant id that describes the renderer. This can be used in shaders to do platform dependent things.
+        /// </summary>
+        FuseePlatformId FuseePlatformId { get; }
+
+        /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>
         /// <value>
@@ -361,6 +366,12 @@ namespace Fusee.Engine.Common
         /// or-operator (|) to combine several buffers to clear.
         /// </remarks>
         void Clear(ClearFlags flags);
+
+        /// <summary>
+        /// Binds the VertexArrayPbject onto the GL render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        void SetVertexArrayObject(IMeshImp mr);
 
         /// <summary>
         /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.

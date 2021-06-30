@@ -101,6 +101,9 @@ namespace Fusee.Engine.Core
             var meshImp = _renderContextImp.CreateMeshImp();
 
             // Begin Setup GPU Buffers / allocate GPU memory
+
+            _renderContextImp.SetVertexArrayObject(meshImp);
+
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);
 
