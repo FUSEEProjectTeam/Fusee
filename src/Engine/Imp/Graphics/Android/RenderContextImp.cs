@@ -17,6 +17,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
+        /// <summary>
+        /// Constant id that describes the renderer. This can be used in shaders to do platform dependent things.
+        /// </summary>
+        public FuseePlatformId FuseePlatformId { get; } = FuseePlatformId.Android;
+
         private int _textureCountPerShader;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
         private readonly Context _androidContext;
@@ -1061,6 +1066,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
         /// </summary>
         public void DisableDepthClamp()
+        {
+            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
+        }
+
+        public void SetVertexArrayObject(IMeshImp mr)
         {
             //throw new NotImplementedException("Depth clamping isn't implemented yet!");
         }
