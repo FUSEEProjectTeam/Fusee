@@ -178,7 +178,7 @@ namespace Fusee.Examples.Camera.Core
                 _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out float4 viewport) * float4x4.Invert(_mainCamTransform.Matrix());
+            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out float4 viewport) * float4x4.Invert(_mainCamTransform.Matrix);
             _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
 
             FrustumF frustum = new FrustumF();
@@ -219,7 +219,7 @@ namespace Fusee.Examples.Camera.Core
                     //We only perform the test for meshes that do have a calculated - non-zero sized - bounding box.
                     if (mesh.BoundingBox.Size != float3.Zero)
                     {
-                        AABBf worldSpaceBoundingBox = node.GetComponent<Transform>().Matrix() * mesh.BoundingBox;
+                        AABBf worldSpaceBoundingBox = node.GetComponent<Transform>().Matrix * mesh.BoundingBox;
                         if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
                         {
                             mesh.Active = false;

@@ -433,7 +433,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderTransform(Transform transform)
         {
-            _state.Model *= transform.Matrix();
+            _state.Model *= transform.Matrix;
             _rc.Model = _state.Model;
         }
 

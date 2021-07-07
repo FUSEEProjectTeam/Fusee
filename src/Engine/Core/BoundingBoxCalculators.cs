@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnTransform(Transform transform)
         {
-            _state.ModelView *= transform.Matrix();
+            _state.ModelView *= transform.Matrix;
         }
 
         /// <summary>
@@ -226,7 +226,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnTransform(Transform transform)
         {
-            _state.ModelView *= transform.Matrix();
+            _state.ModelView *= transform.Matrix;
         }
 
         /// <summary>

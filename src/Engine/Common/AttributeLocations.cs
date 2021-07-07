@@ -44,5 +44,10 @@
         /// The bone index attribute location index.
         /// </summary>
         public static readonly int BoneIndexAttribLocation = 7;
+
+        /// <summary>
+        /// The Fusee platform id attribute location index.
+        /// </summary>
+        public static readonly int FuseePlatformIdLocation = 8;
     }
 }

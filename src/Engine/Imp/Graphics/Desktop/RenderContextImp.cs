@@ -17,6 +17,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
+        /// <summary>
+        /// Constant id that describes the renderer. This can be used in shaders to do platform dependent things.
+        /// </summary>
+        public FuseePlatformId FuseePlatformId { get; } = FuseePlatformId.Desktop;
+
         private int _textureCountPerShader;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
@@ -31,6 +36,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private bool _isPtRenderingEnabled;
         private bool _isLineSmoothEnabled;
 
+#if DEBUG
+        private static DebugProc _openGlDebugDelegate;
+#endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -39,6 +48,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             _textureCountPerShader = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
+
+#if DEBUG
+            GL.Enable(EnableCap.DebugOutput);
+            GL.Enable(EnableCap.DebugOutputSynchronous);
+
+            _openGlDebugDelegate = new DebugProc(openGLDebugCallback);
+
+            GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
+            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, new int[0], false);
+#endif
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
@@ -63,8 +82,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _blendEquationRgb = (BlendEquationMode)blendEqRgb;
 
             Diagnostics.Debug(GL.GetString(StringName.Vendor) + " - " + GL.GetString(StringName.Renderer) + " - " + GL.GetString(StringName.Version));
-            Diagnostics.Verbose(GL.GetString(StringName.Extensions));
+#if DEBUG
+            var numExtensions = GL.GetInteger(GetPName.NumExtensions);
+            var extensions = new string[numExtensions];
+
+            for (int i = 0; i < numExtensions; i++)
+            {
+                extensions[i] = GL.GetString(StringNameIndexed.Extensions, i);
+            }
+
+            Diagnostics.Verbose(string.Join(';', extensions));
+#endif
         }
+
+#if DEBUG
+        private static void openGLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        {
+            Diagnostics.Debug($"{System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message, length)}\n\tid:{id} severity:{severity} type:{type} source:{source}\n");
+        }
+#endif
 
         #region Image data related Members
 
@@ -191,8 +227,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
-                    internalFormat = PixelInternalFormat.Alpha;
-                    format = PixelFormat.Alpha;
+                    internalFormat = PixelInternalFormat.R8;
+                    format = PixelFormat.Red;
                     pxType = PixelType.UnsignedByte;
 
                     break;
@@ -535,7 +571,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int program = GL.CreateProgram();
             GL.AttachShader(program, fragmentObject);
 
-            if (gs != null)
+            if (!string.IsNullOrEmpty(gs))
                 GL.AttachShader(program, geometryObject);
 
             GL.AttachShader(program, vertexObject);
@@ -549,6 +585,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
             GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            GL.BindAttribLocation(program, AttributeLocations.FuseePlatformIdLocation, UniformNameDeclarations.FuseePlatformId);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
@@ -1077,6 +1114,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Binds the VertexArrayObject onto the GL Render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        public void SetVertexArrayObject(IMeshImp mr)
+        {
+            if (((MeshImp)mr).VertexArrayObject == 0)
+                ((MeshImp)mr).VertexArrayObject = GL.GenVertexArray();
+
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+        }
+
+        /// <summary>
         /// Binds the vertices onto the GL Render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1398,6 +1447,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
+
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.VertexAttribLocation);
@@ -1518,6 +1569,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.DisableVertexAttribArray(AttributeLocations.TangentAttribLocation);
             if (((MeshImp)mr).BitangentBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.TangentAttribLocation);
+
+            GL.BindVertexArray(0);
         }
 
         /// <summary>

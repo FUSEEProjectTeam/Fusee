@@ -16,7 +16,6 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Engine.Player.Android
 {
