@@ -214,7 +214,7 @@ namespace Fusee.Examples.PcRendering.Core
                     float speed = DeltaTime * 12;
 
                     _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
-                    _camTransform.Translation.y += velPos.y * speed;
+                    _camTransform.Translation += new float3(0, velPos.y * speed, 0);
                 }
                 else
                 {

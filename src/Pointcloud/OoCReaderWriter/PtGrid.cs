@@ -46,7 +46,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         public override void CreateCellForItem(Func<TPoint, double3> GetPositionOfPayloadItem, TPoint point)
         {
             var tPointPos = GetPositionOfPayloadItem(point);
-            var cell = GetCellForPos(Size, Center, tPointPos, out var cellIdx);
+            var cell = TryGetCellForPos(Size, Center, tPointPos, out var cellIdx);
 
             //Check if NN is too close - a point remains in the parent octant if the distance to the occupant of a neighbor cell is smaller than the neighbor cells' size.         
             foreach (var idxOffset in GetGridNeighbourIndices(new int3(-1, -1, -1)))
@@ -58,7 +58,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     || neighbourCellIdx.z < 0 || neighbourCellIdx.z >= NumberOfGridCells.z)
                     continue;
 
-                var neighbourCell = GridCells[neighbourCellIdx.x, neighbourCellIdx.y, neighbourCellIdx.z];
+                GridCellsDict.TryGetValue(new int3(neighbourCellIdx.x, neighbourCellIdx.y, neighbourCellIdx.z), out var neighbourCell);
 
                 if (neighbourCell == null)
                     continue;
@@ -73,19 +73,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
             //Create CridCell on demand
             if (cell == null)
             {
-                var lowerLeftCenter = (Center - Size / 2d) + CellSize;
-                var center = lowerLeftCenter + (new double3(cellIdx.x * CellSize.x, cellIdx.y * CellSize.y, cellIdx.z * CellSize.z));
-                cell = new GridCellD<TPoint>(center, CellSize)
-                {
-                    Payload = point
-                };
-
-                GridCells[cellIdx.x, cellIdx.y, cellIdx.z] = cell;
+                CreateCell(cellIdx);
+                GridCellsDict[cellIdx].Payload = point;
             }
-            else if (cell.Payload == null) //set or change cell occupant if necessary
-                cell.Payload = point;
             else
             {
+                //Check if the occupant must be changed
                 var occupantDistToCenter = (GetPositionOfPayloadItem(cell.Payload) - cell.Center).Length;
                 var pointDistToCenter = (tPointPos - cell.Center).Length;
 
@@ -96,7 +89,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 }
                 else
                     ParentOctant.Payload.Add(point);
-
             }
         }
 

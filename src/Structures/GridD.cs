@@ -11,9 +11,9 @@ namespace Fusee.Structures
     public abstract class GridD<P>
     {
         /// <summary>
-        /// All grid cells as three dimensional array.
+        /// All grid cells as Dictionary, using the three dimensional index as key.
         /// </summary>
-        public GridCellD<P>[,,] GridCells { get; set; }
+        public Dictionary<int3, GridCellD<P>> GridCellsDict { get; set; }
 
         /// <summary>
         /// The number of grid cells in each dimension.
@@ -58,7 +58,7 @@ namespace Fusee.Structures
             Center = center;
             NumberOfGridCells = new int3(noOfCellsX, noOfCellsY, noOfCellsZ);
             CellSize = new double3(size.x / noOfCellsX, size.y / noOfCellsY, size.z / noOfCellsZ);
-            GridCells = new GridCellD<P>[noOfCellsX, noOfCellsY, noOfCellsZ];
+            GridCellsDict = new Dictionary<int3, GridCellD<P>>();
         }
 
         /// <summary>
@@ -68,18 +68,32 @@ namespace Fusee.Structures
         {
             var lowerLeftCenter = Center - Size / 2d;
 
-            for (var x = 0; x < GridCells.GetLength(0); x++)
+            for (var x = 0; x < NumberOfGridCells.x; x++)
             {
-                for (var y = 0; y < GridCells.GetLength(1); y++)
+                for (var y = 0; y < NumberOfGridCells.y; y++)
                 {
-                    for (var z = 0; z < GridCells.GetLength(2); z++)
+                    for (var z = 0; z < NumberOfGridCells.z; z++)
                     {
-                        var cellCenter = new double3(lowerLeftCenter.x + (x * CellSize.x), lowerLeftCenter.y + (x * CellSize.y), lowerLeftCenter.z + (x * CellSize.z));
-                        GridCells[x, y, z] = new GridCellD<P>(cellCenter, CellSize);
+                        var cellCenter = new double3(lowerLeftCenter.x + (x * CellSize.x), lowerLeftCenter.y + (y * CellSize.y), lowerLeftCenter.z + (z * CellSize.z));
+                        GridCellsDict.Add(new int3(x, y, z), new GridCellD<P>(cellCenter, CellSize));
                     }
                 }
             }
+        }
 
+        /// <summary>
+        /// Creates the cell for a given index with default(P) as Payload.
+        /// </summary>
+        /// <param name="idx">The index.</param>
+        public void CreateCell(int3 idx)
+        {
+            var lowerLeftCenter = (Center - Size / 2d) + CellSize;
+            var center = lowerLeftCenter + (new double3(idx.x * CellSize.x, idx.y * CellSize.y, idx.z * CellSize.z));
+            var cell = new GridCellD<P>(center, CellSize)
+            {
+                Payload = default
+            };
+            GridCellsDict.Add(new int3(idx.x, idx.y, idx.z), cell);
         }
 
         /// <summary>
@@ -114,7 +128,7 @@ namespace Fusee.Structures
         /// <param name="gridCenter">The center of the grid.</param>
         /// <param name="pos">The position to get the cell for.</param>
         /// <param name="cellIdx">The index of the GridCell this point falls into.</param>
-        public GridCellD<P> GetCellForPos(double3 gridSize, double3 gridCenter, double3 pos, out int3 cellIdx)
+        public GridCellD<P> TryGetCellForPos(double3 gridSize, double3 gridCenter, double3 pos, out int3 cellIdx)
         {
             var newPos = pos - (gridCenter - (gridSize / 2d));
 
@@ -122,14 +136,15 @@ namespace Fusee.Structures
             var indexY = (int)((newPos.y * NumberOfGridCells.y) / gridSize.y);
             var indexZ = (int)((newPos.z * NumberOfGridCells.z) / gridSize.z);
 
-            if (indexX < 0 || indexX >= GridCells.GetLength(0) ||
-                indexY < 0 || indexY >= GridCells.GetLength(1) ||
-                indexZ < 0 || indexZ >= GridCells.GetLength(2))
+            if (indexX < 0 || indexX >= NumberOfGridCells.x ||
+                indexY < 0 || indexY >= NumberOfGridCells.y ||
+                indexZ < 0 || indexZ >= NumberOfGridCells.z)
                 throw new ArgumentOutOfRangeException($"Position {pos} does not lie inside the grid!");
 
             cellIdx = new int3(indexX, indexY, indexZ);
 
-            return GridCells[indexX, indexY, indexZ];
+            GridCellsDict.TryGetValue(cellIdx, out var cell);
+            return cell;
         }
 
         /// <summary>

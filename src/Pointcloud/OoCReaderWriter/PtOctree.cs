@@ -127,10 +127,10 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         private static IEnumerable<TPoint> GetPointsFromGrid(PtOctantWrite<TPoint> octant)
         {
-            foreach (var cell in octant.Grid.GridCells)
+            foreach (var cell in octant.Grid.GridCellsDict)
             {
-                if (cell == null) continue;
-                yield return cell.Payload;
+                if (cell.Value == null) continue;
+                yield return cell.Value.Payload;
             }
         }
     }
