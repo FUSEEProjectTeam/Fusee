@@ -56,25 +56,25 @@ namespace Fusee.Math.Core
         /// Top row of the matrix
         /// </summary>
         [ProtoMember(1)]
-        public float4 Row0;
+        public float4 Row1;
 
         /// <summary>
         /// 2nd row of the matrix
         /// </summary>
         [ProtoMember(2)]
-        public float4 Row1;
+        public float4 Row2;
 
         /// <summary>
         /// 3rd row of the matrix
         /// </summary>
         [ProtoMember(3)]
-        public float4 Row2;
+        public float4 Row3;
 
         /// <summary>
         /// Bottom row of the matrix
         /// </summary>
         [ProtoMember(4)]
-        public float4 Row3;
+        public float4 Row4;
 
         /// <summary>
         /// The identity matrix
@@ -93,47 +93,47 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        /// <param name="row0">Top row of the matrix</param>
-        /// <param name="row1">Second row of the matrix</param>
-        /// <param name="row2">Third row of the matrix</param>
-        /// <param name="row3">Bottom row of the matrix</param>
-        public float4x4(float4 row0, float4 row1, float4 row2, float4 row3)
+        /// <param name="row1">Top row of the matrix</param>
+        /// <param name="row2">Second row of the matrix</param>
+        /// <param name="row3">Third row of the matrix</param>
+        /// <param name="row4">Bottom row of the matrix</param>
+        public float4x4(float4 row1, float4 row2, float4 row3, float4 row4)
         {
-            Row0 = row0;
             Row1 = row1;
             Row2 = row2;
             Row3 = row3;
+            Row4 = row4;
         }
 
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        /// <param name="m00">First item of the first row of the matrix.</param>
-        /// <param name="m01">Second item of the first row of the matrix.</param>
-        /// <param name="m02">Third item of the first row of the matrix.</param>
-        /// <param name="m03">Fourth item of the first row of the matrix.</param>
-        /// <param name="m10">First item of the second row of the matrix.</param>
-        /// <param name="m11">Second item of the second row of the matrix.</param>
-        /// <param name="m12">Third item of the second row of the matrix.</param>
-        /// <param name="m13">Fourth item of the second row of the matrix.</param>
-        /// <param name="m20">First item of the third row of the matrix.</param>
-        /// <param name="m21">Second item of the third row of the matrix.</param>
-        /// <param name="m22">Third item of the third row of the matrix.</param>
-        /// <param name="m23">First item of the third row of the matrix.</param>
-        /// <param name="m30">Fourth item of the fourth row of the matrix.</param>
-        /// <param name="m31">Second item of the fourth row of the matrix.</param>
-        /// <param name="m32">Third item of the fourth row of the matrix.</param>
-        /// <param name="m33">Fourth item of the fourth row of the matrix.</param>
+        /// <param name="m11">First item of the first row of the matrix.</param>
+        /// <param name="m12">Second item of the first row of the matrix.</param>
+        /// <param name="m13">Third item of the first row of the matrix.</param>
+        /// <param name="m14">Fourth item of the first row of the matrix.</param>
+        /// <param name="m21">First item of the second row of the matrix.</param>
+        /// <param name="m22">Second item of the second row of the matrix.</param>
+        /// <param name="m23">Third item of the second row of the matrix.</param>
+        /// <param name="m24">Fourth item of the second row of the matrix.</param>
+        /// <param name="m31">First item of the third row of the matrix.</param>
+        /// <param name="m32">Second item of the third row of the matrix.</param>
+        /// <param name="m33">Third item of the third row of the matrix.</param>
+        /// <param name="m34">First item of the third row of the matrix.</param>
+        /// <param name="m41">Fourth item of the fourth row of the matrix.</param>
+        /// <param name="m42">Second item of the fourth row of the matrix.</param>
+        /// <param name="m43">Third item of the fourth row of the matrix.</param>
+        /// <param name="m44">Fourth item of the fourth row of the matrix.</param>
         public float4x4(
-            float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33)
+            float m11, float m12, float m13, float m14,
+            float m21, float m22, float m23, float m24,
+            float m31, float m32, float m33, float m34,
+            float m41, float m42, float m43, float m44)
         {
-            Row0 = new float4(m00, m01, m02, m03);
-            Row1 = new float4(m10, m11, m12, m13);
-            Row2 = new float4(m20, m21, m22, m23);
-            Row3 = new float4(m30, m31, m32, m33);
+            Row1 = new float4(m11, m12, m13, m14);
+            Row2 = new float4(m21, m22, m23, m24);
+            Row3 = new float4(m31, m32, m33, m34);
+            Row4 = new float4(m41, m42, m43, m44);
         }
 
         /// <summary>
@@ -142,10 +142,10 @@ namespace Fusee.Math.Core
         /// <param name="d4x4">The double4x4 to copy components from.</param>
         public float4x4(double4x4 d4x4)
         {
-            Row0 = (float4)d4x4.Row0;
             Row1 = (float4)d4x4.Row1;
             Row2 = (float4)d4x4.Row2;
             Row3 = (float4)d4x4.Row3;
+            Row4 = (float4)d4x4.Row4;
         }
 
         /// <summary>
@@ -154,10 +154,10 @@ namespace Fusee.Math.Core
         /// <param name="f3x3">The float3x3 matrix to copy components from.</param>
         public float4x4(float3x3 f3x3)
         {
-            Row0 = new float4(f3x3.Row0, 0);
             Row1 = new float4(f3x3.Row1, 0);
             Row2 = new float4(f3x3.Row2, 0);
-            Row3 = new float4(0, 0, 0, 1);
+            Row3 = new float4(f3x3.Row3, 0);
+            Row4 = new float4(0, 0, 0, 1);
         }
 
         #endregion Constructors
@@ -169,58 +169,58 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The determinant of this matrix
         /// </summary>
-        public float Determinant => Row0.x * Row1.y * Row2.z * Row3.w - Row0.x * Row1.y * Row2.w * Row3.z + Row0.x * Row1.z * Row2.w * Row3.y -
-                    Row0.x * Row1.z * Row2.y * Row3.w
-                    + Row0.x * Row1.w * Row2.y * Row3.z - Row0.x * Row1.w * Row2.z * Row3.y - Row0.y * Row1.z * Row2.w * Row3.x +
-                    Row0.y * Row1.z * Row2.x * Row3.w
-                    - Row0.y * Row1.w * Row2.x * Row3.z + Row0.y * Row1.w * Row2.z * Row3.x - Row0.y * Row1.x * Row2.z * Row3.w +
-                    Row0.y * Row1.x * Row2.w * Row3.z
-                    + Row0.z * Row1.w * Row2.x * Row3.y - Row0.z * Row1.w * Row2.y * Row3.x + Row0.z * Row1.x * Row2.y * Row3.w -
-                    Row0.z * Row1.x * Row2.w * Row3.y
-                    + Row0.z * Row1.y * Row2.w * Row3.x - Row0.z * Row1.y * Row2.x * Row3.w - Row0.w * Row1.x * Row2.y * Row3.z +
-                    Row0.w * Row1.x * Row2.z * Row3.y
-                    - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
-                    Row0.w * Row1.z * Row2.y * Row3.x;
+        public float Determinant => Row1.x * Row2.y * Row3.z * Row4.w - Row1.x * Row2.y * Row3.w * Row4.z + Row1.x * Row2.z * Row3.w * Row4.y -
+                    Row1.x * Row2.z * Row3.y * Row4.w
+                    + Row1.x * Row2.w * Row3.y * Row4.z - Row1.x * Row2.w * Row3.z * Row4.y - Row1.y * Row2.z * Row3.w * Row4.x +
+                    Row1.y * Row2.z * Row3.x * Row4.w
+                    - Row1.y * Row2.w * Row3.x * Row4.z + Row1.y * Row2.w * Row3.z * Row4.x - Row1.y * Row2.x * Row3.z * Row4.w +
+                    Row1.y * Row2.x * Row3.w * Row4.z
+                    + Row1.z * Row2.w * Row3.x * Row4.y - Row1.z * Row2.w * Row3.y * Row4.x + Row1.z * Row2.x * Row3.y * Row4.w -
+                    Row1.z * Row2.x * Row3.w * Row4.y
+                    + Row1.z * Row2.y * Row3.w * Row4.x - Row1.z * Row2.y * Row3.x * Row4.w - Row1.w * Row2.x * Row3.y * Row4.z +
+                    Row1.w * Row2.x * Row3.z * Row4.y
+                    - Row1.w * Row2.y * Row3.z * Row4.x + Row1.w * Row2.y * Row3.x * Row4.z - Row1.w * Row2.z * Row3.x * Row4.y +
+                    Row1.w * Row2.z * Row3.y * Row4.x;
 
         /// <summary>
         /// Returns the trace of this matrix
         /// </summary>
-        public float Trace => Row0.x + Row1.y + Row2.z + Row3.w;
+        public float Trace => Row1.x + Row2.y + Row3.z + Row4.w;
 
         /// <summary>
         /// The first column of this matrix
         /// </summary>
-        public float4 Column0
+        public float4 Column1
         {
-            get => new float4(Row0.x, Row1.x, Row2.x, Row3.x);
-            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
+            get => new float4(Row1.x, Row2.x, Row3.x, Row4.x);
+            set { Row1.x = value.x; Row2.x = value.y; Row3.x = value.z; Row4.x = value.w; }
         }
 
         /// <summary>
         /// The second column of this matrix
         /// </summary>
-        public float4 Column1
+        public float4 Column2
         {
-            get => new float4(Row0.y, Row1.y, Row2.y, Row3.y);
-            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
+            get => new float4(Row1.y, Row2.y, Row3.y, Row4.y);
+            set { Row1.y = value.x; Row2.y = value.y; Row3.y = value.z; Row4.y = value.w; }
         }
 
         /// <summary>
         /// The third column of this matrix
         /// </summary>
-        public float4 Column2
+        public float4 Column3
         {
-            get => new float4(Row0.z, Row1.z, Row2.z, Row3.z);
-            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
+            get => new float4(Row1.z, Row2.z, Row3.z, Row4.z);
+            set { Row1.z = value.x; Row2.z = value.y; Row3.z = value.z; Row4.z = value.w; }
         }
 
         /// <summary>
         /// The fourth column of this matrix
         /// </summary>
-        public float4 Column3
+        public float4 Column4
         {
-            get => new float4(Row0.w, Row1.w, Row2.w, Row3.w);
-            set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
+            get => new float4(Row1.w, Row2.w, Row3.w, Row4.w);
+            set { Row1.w = value.x; Row2.w = value.y; Row3.w = value.z; Row4.w = value.w; }
         }
 
         /// <summary>
@@ -228,8 +228,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M11
         {
-            get => Row0.x;
-            set => Row0.x = value;
+            get => Row1.x;
+            set => Row1.x = value;
         }
 
         /// <summary>
@@ -237,8 +237,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M12
         {
-            get => Row0.y;
-            set => Row0.y = value;
+            get => Row1.y;
+            set => Row1.y = value;
         }
 
         /// <summary>
@@ -246,8 +246,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M13
         {
-            get => Row0.z;
-            set => Row0.z = value;
+            get => Row1.z;
+            set => Row1.z = value;
         }
 
         /// <summary>
@@ -255,8 +255,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M14
         {
-            get => Row0.w;
-            set => Row0.w = value;
+            get => Row1.w;
+            set => Row1.w = value;
         }
 
         /// <summary>
@@ -264,8 +264,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M21
         {
-            get => Row1.x;
-            set => Row1.x = value;
+            get => Row2.x;
+            set => Row2.x = value;
         }
 
         /// <summary>
@@ -273,8 +273,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M22
         {
-            get => Row1.y;
-            set => Row1.y = value;
+            get => Row2.y;
+            set => Row2.y = value;
         }
 
         /// <summary>
@@ -282,8 +282,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M23
         {
-            get => Row1.z;
-            set => Row1.z = value;
+            get => Row2.z;
+            set => Row2.z = value;
         }
 
         /// <summary>
@@ -291,8 +291,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M24
         {
-            get => Row1.w;
-            set => Row1.w = value;
+            get => Row2.w;
+            set => Row2.w = value;
         }
 
         /// <summary>
@@ -300,8 +300,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M31
         {
-            get => Row2.x;
-            set => Row2.x = value;
+            get => Row3.x;
+            set => Row3.x = value;
         }
 
         /// <summary>
@@ -309,8 +309,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M32
         {
-            get => Row2.y;
-            set => Row2.y = value;
+            get => Row3.y;
+            set => Row3.y = value;
         }
 
         /// <summary>
@@ -318,8 +318,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M33
         {
-            get => Row2.z;
-            set => Row2.z = value;
+            get => Row3.z;
+            set => Row3.z = value;
         }
 
         /// <summary>
@@ -327,8 +327,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M34
         {
-            get => Row2.w;
-            set => Row2.w = value;
+            get => Row3.w;
+            set => Row3.w = value;
         }
 
         /// <summary>
@@ -336,8 +336,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M41
         {
-            get => Row3.x;
-            set => Row3.x = value;
+            get => Row4.x;
+            set => Row4.x = value;
         }
 
         /// <summary>
@@ -345,8 +345,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M42
         {
-            get => Row3.y;
-            set => Row3.y = value;
+            get => Row4.y;
+            set => Row4.y = value;
         }
 
         /// <summary>
@@ -354,8 +354,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M43
         {
-            get => Row3.z;
-            set => Row3.z = value;
+            get => Row4.z;
+            set => Row4.z = value;
         }
 
         /// <summary>
@@ -363,8 +363,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M44
         {
-            get => Row3.w;
-            set => Row3.w = value;
+            get => Row4.w;
+            set => Row4.w = value;
         }
 
         /// <summary>
@@ -393,10 +393,10 @@ namespace Fusee.Math.Core
             {
                 return i switch
                 {
-                    0 => Row0[j],
-                    1 => Row1[j],
-                    2 => Row2[j],
-                    3 => Row3[j],
+                    0 => Row1[j],
+                    1 => Row2[j],
+                    2 => Row3[j],
+                    3 => Row4[j],
                     _ => throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type"),
                 };
             }
@@ -405,19 +405,19 @@ namespace Fusee.Math.Core
                 switch (i)
                 {
                     case 0:
-                        Row0[j] = value;
-                        break;
-
-                    case 1:
                         Row1[j] = value;
                         break;
 
-                    case 2:
+                    case 1:
                         Row2[j] = value;
                         break;
 
-                    case 3:
+                    case 2:
                         Row3[j] = value;
+                        break;
+
+                    case 3:
+                        Row4[j] = value;
                         break;
 
                     default:
@@ -565,10 +565,10 @@ namespace Fusee.Math.Core
             var cos = MathF.Cos(angle);
             var sin = MathF.Sin(angle);
 
-            result.Row0 = float4.UnitX;
-            result.Row1 = new float4(0.0f, cos, -sin, 0.0f);
-            result.Row2 = new float4(0.0f, sin, cos, 0.0f);
-            result.Row3 = float4.UnitW;
+            result.Row1 = float4.UnitX;
+            result.Row2 = new float4(0.0f, cos, -sin, 0.0f);
+            result.Row3 = new float4(0.0f, sin, cos, 0.0f);
+            result.Row4 = float4.UnitW;
 
             return result;
         }
@@ -585,10 +585,10 @@ namespace Fusee.Math.Core
             var cos = MathF.Cos(angle);
             var sin = MathF.Sin(angle);
 
-            result.Row0 = new float4(cos, 0.0f, sin, 0.0f);
-            result.Row1 = float4.UnitY;
-            result.Row2 = new float4(-sin, 0.0f, cos, 0.0f);
-            result.Row3 = float4.UnitW;
+            result.Row1 = new float4(cos, 0.0f, sin, 0.0f);
+            result.Row2 = float4.UnitY;
+            result.Row3 = new float4(-sin, 0.0f, cos, 0.0f);
+            result.Row4 = float4.UnitW;
 
             return result;
         }
@@ -605,10 +605,10 @@ namespace Fusee.Math.Core
             var cos = MathF.Cos(angle);
             var sin = MathF.Sin(angle);
 
-            result.Row0 = new float4(cos, -sin, 0.0f, 0.0f);
-            result.Row1 = new float4(sin, cos, 0.0f, 0.0f);
-            result.Row2 = float4.UnitZ;
-            result.Row3 = float4.UnitW;
+            result.Row1 = new float4(cos, -sin, 0.0f, 0.0f);
+            result.Row2 = new float4(sin, cos, 0.0f, 0.0f);
+            result.Row3 = float4.UnitZ;
+            result.Row4 = float4.UnitW;
 
             return result;
         }
@@ -790,7 +790,7 @@ namespace Fusee.Math.Core
         public static float3 RotMatToEuler(float4x4 rotMat)
         {
             //Matrix is being handled as a multi-dimensional array to ensure that the rotation order can be changed easily in the future.
-            var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
+            var m = new[] { rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray(), rotMat.Row4.ToArray() };
 
             var eul1 = new float[3];
             var eul2 = new float[3];
@@ -1122,10 +1122,10 @@ namespace Fusee.Math.Core
         public static float4x4 Scale(float x, float y, float z)
         {
             float4x4 result;
-            result.Row0 = float4.UnitX * x;
-            result.Row1 = float4.UnitY * y;
-            result.Row2 = float4.UnitZ * z;
-            result.Row3 = float4.UnitW;
+            result.Row1 = float4.UnitX * x;
+            result.Row2 = float4.UnitY * y;
+            result.Row3 = float4.UnitZ * z;
+            result.Row4 = float4.UnitW;
             return result;
         }
 
@@ -1246,7 +1246,7 @@ namespace Fusee.Math.Core
             Vector128<float> leftrow2;
             Vector128<float> leftrow3;
 
-            fixed (float* m = &left.Row0.x)
+            fixed (float* m = &left.Row1.x)
             {
                 leftrow0 = Sse.LoadVector128(m + 0);
                 leftrow1 = Sse.LoadVector128(m + 4);
@@ -1259,7 +1259,7 @@ namespace Fusee.Math.Core
             Vector128<float> rightrow2;
             Vector128<float> rightrow3;
 
-            fixed (float* m = &right.Row0.x)
+            fixed (float* m = &right.Row1.x)
             {
                 rightrow0 = Sse.LoadVector128(m + 0);
                 rightrow1 = Sse.LoadVector128(m + 4);
@@ -1274,7 +1274,7 @@ namespace Fusee.Math.Core
 
             Unsafe.SkipInit(out result);
 
-            fixed (float* r = &result.Row0.x)
+            fixed (float* r = &result.Row1.x)
             {
                 Sse.Store(r + 0, resultrow0);
                 Sse.Store(r + 4, resultrow1);
@@ -1287,10 +1287,10 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Add(in float4x4 left, in float4x4 right, out float4x4 result)
         {
-            result.Row0 = left.Row0 + right.Row0;
             result.Row1 = left.Row1 + right.Row1;
             result.Row2 = left.Row2 + right.Row2;
             result.Row3 = left.Row3 + right.Row3;
+            result.Row4 = left.Row4 + right.Row4;
         }
 
         /// <summary>
@@ -1331,7 +1331,7 @@ namespace Fusee.Math.Core
             Vector128<float> leftrow2;
             Vector128<float> leftrow3;
 
-            fixed (float* m = &left.Row0.x)
+            fixed (float* m = &left.Row1.x)
             {
                 leftrow0 = Sse.LoadVector128(m + 0);
                 leftrow1 = Sse.LoadVector128(m + 4);
@@ -1344,7 +1344,7 @@ namespace Fusee.Math.Core
             Vector128<float> rightrow2;
             Vector128<float> rightrow3;
 
-            fixed (float* m = &right.Row0.x)
+            fixed (float* m = &right.Row1.x)
             {
                 rightrow0 = Sse.LoadVector128(m + 0);
                 rightrow1 = Sse.LoadVector128(m + 4);
@@ -1359,7 +1359,7 @@ namespace Fusee.Math.Core
 
             Unsafe.SkipInit(out result);
 
-            fixed (float* r = &result.Row0.x)
+            fixed (float* r = &result.Row1.x)
             {
                 Sse.Store(r + 0, resultrow0);
                 Sse.Store(r + 4, resultrow1);
@@ -1372,10 +1372,10 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Subtract(in float4x4 left, in float4x4 right, out float4x4 result)
         {
-            result.Row0 = left.Row0 - right.Row0;
             result.Row1 = left.Row1 - right.Row1;
             result.Row2 = left.Row2 - right.Row2;
             result.Row3 = left.Row3 - right.Row3;
+            result.Row4 = left.Row4 - right.Row4;
         }
 
         #endregion Elementary Arithmetic Functions
@@ -1420,7 +1420,7 @@ namespace Fusee.Math.Core
             Vector128<float> leftrow2;
             Vector128<float> leftrow3;
 
-            fixed (float* m = &left.Row0.x)
+            fixed (float* m = &left.Row1.x)
             {
                 leftrow0 = Sse.LoadVector128(m + 0);
                 leftrow1 = Sse.LoadVector128(m + 4);
@@ -1433,7 +1433,7 @@ namespace Fusee.Math.Core
             Vector128<float> rightrow2;
             Vector128<float> rightrow3;
 
-            fixed (float* m = &right.Row0.x)
+            fixed (float* m = &right.Row1.x)
             {
                 rightrow0 = Sse.LoadVector128(m + 0);
                 rightrow1 = Sse.LoadVector128(m + 4);
@@ -1463,7 +1463,7 @@ namespace Fusee.Math.Core
 
             Unsafe.SkipInit(out result);
 
-            fixed (float* r = &result.Row0.x)
+            fixed (float* r = &result.Row1.x)
             {
                 Sse.Store(r + 0, resultrow0);
                 Sse.Store(r + 4, resultrow1);
@@ -1476,55 +1476,55 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Mult(in float4x4 left, in float4x4 right, out float4x4 result)
         {
-            float leftM11 = left.Row0.x;
-            float leftM12 = left.Row0.y;
-            float leftM13 = left.Row0.z;
-            float leftM14 = left.Row0.w;
-            float leftM21 = left.Row1.x;
-            float leftM22 = left.Row1.y;
-            float leftM23 = left.Row1.z;
-            float leftM24 = left.Row1.w;
-            float leftM31 = left.Row2.x;
-            float leftM32 = left.Row2.y;
-            float leftM33 = left.Row2.z;
-            float leftM34 = left.Row2.w;
-            float leftM41 = left.Row3.x;
-            float leftM42 = left.Row3.y;
-            float leftM43 = left.Row3.z;
-            float leftM44 = left.Row3.w;
-            float rightM11 = right.Row0.x;
-            float rightM12 = right.Row0.y;
-            float rightM13 = right.Row0.z;
-            float rightM14 = right.Row0.w;
-            float rightM21 = right.Row1.x;
-            float rightM22 = right.Row1.y;
-            float rightM23 = right.Row1.z;
-            float rightM24 = right.Row1.w;
-            float rightM31 = right.Row2.x;
-            float rightM32 = right.Row2.y;
-            float rightM33 = right.Row2.z;
-            float rightM34 = right.Row2.w;
-            float rightM41 = right.Row3.x;
-            float rightM42 = right.Row3.y;
-            float rightM43 = right.Row3.z;
-            float rightM44 = right.Row3.w;
+            float leftM11 = left.Row1.x;
+            float leftM12 = left.Row1.y;
+            float leftM13 = left.Row1.z;
+            float leftM14 = left.Row1.w;
+            float leftM21 = left.Row2.x;
+            float leftM22 = left.Row2.y;
+            float leftM23 = left.Row2.z;
+            float leftM24 = left.Row2.w;
+            float leftM31 = left.Row3.x;
+            float leftM32 = left.Row3.y;
+            float leftM33 = left.Row3.z;
+            float leftM34 = left.Row3.w;
+            float leftM41 = left.Row4.x;
+            float leftM42 = left.Row4.y;
+            float leftM43 = left.Row4.z;
+            float leftM44 = left.Row4.w;
+            float rightM11 = right.Row1.x;
+            float rightM12 = right.Row1.y;
+            float rightM13 = right.Row1.z;
+            float rightM14 = right.Row1.w;
+            float rightM21 = right.Row2.x;
+            float rightM22 = right.Row2.y;
+            float rightM23 = right.Row2.z;
+            float rightM24 = right.Row2.w;
+            float rightM31 = right.Row3.x;
+            float rightM32 = right.Row3.y;
+            float rightM33 = right.Row3.z;
+            float rightM34 = right.Row3.w;
+            float rightM41 = right.Row4.x;
+            float rightM42 = right.Row4.y;
+            float rightM43 = right.Row4.z;
+            float rightM44 = right.Row4.w;
 
-            result.Row0.x = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
-            result.Row0.y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
-            result.Row0.z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
-            result.Row0.w = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
-            result.Row1.x = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
-            result.Row1.y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
-            result.Row1.z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
-            result.Row1.w = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
-            result.Row2.x = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
-            result.Row2.y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
-            result.Row2.z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
-            result.Row2.w = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
-            result.Row3.x = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
-            result.Row3.y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
-            result.Row3.z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
-            result.Row3.w = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
+            result.Row1.x = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
+            result.Row1.y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
+            result.Row1.z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
+            result.Row1.w = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
+            result.Row2.x = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
+            result.Row2.y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
+            result.Row2.z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
+            result.Row2.w = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
+            result.Row3.x = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
+            result.Row3.y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
+            result.Row3.z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
+            result.Row3.w = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
+            result.Row4.x = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
+            result.Row4.y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
+            result.Row4.z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
+            result.Row4.w = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
         }
 
         #endregion Multiply Functions
@@ -1595,7 +1595,7 @@ namespace Fusee.Math.Core
             Vector128<float> row2;
             Vector128<float> row3;
 
-            fixed (float* m = &matrix.Row0.x)
+            fixed (float* m = &matrix.Row1.x)
             {
                 row0 = Sse.LoadVector128(m);
                 row1 = Sse.LoadVector128(m + 4);
@@ -1714,7 +1714,7 @@ namespace Fusee.Math.Core
 
             Unsafe.SkipInit(out result);
 
-            fixed (float* r = &result.Row0.x)
+            fixed (float* r = &result.Row1.x)
             {
                 Sse.Store(r + 0, Sse.Shuffle(X_, Y_, Shuffle_3131));
                 Sse.Store(r + 4, Sse.Shuffle(X_, Y_, Shuffle_2020));
@@ -1759,9 +1759,9 @@ namespace Fusee.Math.Core
 
             float invDet = 1.0f / det;
 
-            result.Row0 = new float4(a11, a12, a13, a14) * invDet;
+            result.Row1 = new float4(a11, a12, a13, a14) * invDet;
 
-            result.Row1 = new float4(
+            result.Row2 = new float4(
                 -(b * kp_lo - c * jp_ln + d * jo_kn),
                 +(a * kp_lo - c * ip_lm + d * io_km),
                 -(a * jp_ln - b * ip_lm + d * in_jm),
@@ -1774,7 +1774,7 @@ namespace Fusee.Math.Core
             float eo_gm = e * o - g * m;
             float en_fm = e * n - f * m;
 
-            result.Row2 = new float4(
+            result.Row3 = new float4(
                 +(b * gp_ho - c * fp_hn + d * fo_gn),
                 -(a * gp_ho - c * ep_hm + d * eo_gm),
                 +(a * fp_hn - b * ep_hm + d * en_fm),
@@ -1787,7 +1787,7 @@ namespace Fusee.Math.Core
             float ek_gi = e * k - g * i;
             float ej_fi = e * j - f * i;
 
-            result.Row3 = new float4(
+            result.Row4 = new float4(
                 -(b * gl_hk - c * fl_hj + d * fk_gj),
                 +(a * gl_hk - c * el_hi + d * ek_gi),
                 -(a * fl_hj - b * el_hi + d * ej_fi),
@@ -1835,7 +1835,7 @@ namespace Fusee.Math.Core
             Vector128<float> row2;
             Vector128<float> row3;
 
-            fixed (float* m = &matrix.Row0.x)
+            fixed (float* m = &matrix.Row1.x)
             {
                 row0 = Sse.LoadVector128(m + 0);
                 row1 = Sse.LoadVector128(m + 4);
@@ -1850,7 +1850,7 @@ namespace Fusee.Math.Core
 
             Unsafe.SkipInit(out result);
 
-            fixed (float* r = &result.Row0.x)
+            fixed (float* r = &result.Row1.x)
             {
                 Sse.Store(r + 0, Sse.MoveLowToHigh(l12, l34));
                 Sse.Store(r + 4, Sse.MoveHighToLow(l34, l12));
@@ -1863,22 +1863,22 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Transpose(in float4x4 matrix, out float4x4 result)
         {
-            float m11 = matrix.Row0.x;
-            float m12 = matrix.Row0.y;
-            float m13 = matrix.Row0.z;
-            float m14 = matrix.Row0.w;
-            float m21 = matrix.Row1.x;
-            float m22 = matrix.Row1.y;
-            float m23 = matrix.Row1.z;
-            float m24 = matrix.Row1.w;
-            float m31 = matrix.Row2.x;
-            float m32 = matrix.Row2.y;
-            float m33 = matrix.Row2.z;
-            float m34 = matrix.Row2.w;
-            float m41 = matrix.Row3.x;
-            float m42 = matrix.Row3.y;
-            float m43 = matrix.Row3.z;
-            float m44 = matrix.Row3.w;
+            float m11 = matrix.Row1.x;
+            float m12 = matrix.Row1.y;
+            float m13 = matrix.Row1.z;
+            float m14 = matrix.Row1.w;
+            float m21 = matrix.Row2.x;
+            float m22 = matrix.Row2.y;
+            float m23 = matrix.Row2.z;
+            float m24 = matrix.Row2.w;
+            float m31 = matrix.Row3.x;
+            float m32 = matrix.Row3.y;
+            float m33 = matrix.Row3.z;
+            float m34 = matrix.Row3.w;
+            float m41 = matrix.Row4.x;
+            float m42 = matrix.Row4.y;
+            float m43 = matrix.Row4.z;
+            float m44 = matrix.Row4.w;
 
             result = new float4x4()
             {
@@ -1978,7 +1978,7 @@ namespace Fusee.Math.Core
             Vector128<float> row2;
             Vector128<float> row3;
 
-            fixed (float* m = &matrix.Row0.x)
+            fixed (float* m = &matrix.Row1.x)
             {
                 row0 = Sse.LoadVector128(m + 0);
                 row1 = Sse.LoadVector128(m + 4);
@@ -2166,9 +2166,9 @@ namespace Fusee.Math.Core
         {
             var scale = float3.One;
 
-            scale.x = mat.Column0.Length;
-            scale.y = mat.Column1.Length;
-            scale.z = mat.Column2.Length;
+            scale.x = mat.Column1.Length;
+            scale.y = mat.Column2.Length;
+            scale.z = mat.Column3.Length;
 
             return scale;
         }
@@ -2201,10 +2201,10 @@ namespace Fusee.Math.Core
         /// <returns>The rounded matrix.</returns>
         public static float4x4 Round(float4x4 mat)
         {
-            return new float4x4(float4.Round(mat.Row0),
-                                float4.Round(mat.Row1),
+            return new float4x4(float4.Round(mat.Row1),
                                 float4.Round(mat.Row2),
-                                float4.Round(mat.Row3));
+                                float4.Round(mat.Row3),
+                                float4.Round(mat.Row4));
         }
 
         #endregion Round
@@ -2364,7 +2364,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
+            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider), Row4.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -2377,7 +2377,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
+            return Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode() ^ Row4.GetHashCode();
         }
 
         #endregion public override int GetHashCode()
@@ -2410,7 +2410,7 @@ namespace Fusee.Math.Core
         /// </summary>       
         public bool IsAffine =>
                 // Column order notation
-                (Row3 == float4.UnitW);
+                (Row4 == float4.UnitW);
 
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
         /// <param name="other">A matrix to compare with this matrix.</param>
@@ -2446,7 +2446,7 @@ namespace Fusee.Math.Core
             Vector128<float> thisrow2;
             Vector128<float> thisrow3;
 
-            fixed (float* m = &this.Row0.x)
+            fixed (float* m = &this.Row1.x)
             {
                 thisrow0 = Sse.LoadVector128(m);
                 thisrow1 = Sse.LoadVector128(m + 4);
@@ -2459,7 +2459,7 @@ namespace Fusee.Math.Core
             Vector128<float> otherrow2;
             Vector128<float> otherrow3;
 
-            fixed (float* m = &other.Row0.x)
+            fixed (float* m = &other.Row1.x)
             {
                 otherrow0 = Sse.LoadVector128(m);
                 otherrow1 = Sse.LoadVector128(m + 4);
@@ -2483,10 +2483,10 @@ namespace Fusee.Math.Core
 
         private readonly void Equals(in float4x4 other, out bool result)
         {
-            result = Row0 == other.Row0 &&
-                     Row1 == other.Row1 &&
+            result = Row1 == other.Row1 &&
                      Row2 == other.Row2 &&
-                     Row3 == other.Row3;
+                     Row3 == other.Row3 &&
+                     Row4 == other.Row4;
         }
 
         #endregion IEquatable<float4x4> Members

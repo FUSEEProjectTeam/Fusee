@@ -47,7 +47,7 @@ namespace Fusee.Jometri
             var changeOfBasisMat = new float3x3(row1, row2, row3);
 
             //In an orthonormal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
-            var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
+            var transposeMat = new float3x3(changeOfBasisMat.Row1, changeOfBasisMat.Row2, changeOfBasisMat.Row3);
             transposeMat = transposeMat.Transpose();
 
             var newVert = transposeMat * vertPos;

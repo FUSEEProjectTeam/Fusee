@@ -591,10 +591,10 @@ namespace Fusee.Math.Core
         /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
         public static EigenF Diagonalizer(float4x4 A)
         {
-            var row0 = new double4(A.Row0.x, A.Row0.y, A.Row0.z, A.Row0.w);
-            var row1 = new double4(A.Row1.x, A.Row1.y, A.Row1.z, A.Row1.w);
-            var row2 = new double4(A.Row2.x, A.Row2.y, A.Row2.z, A.Row2.w);
-            var row3 = new double4(A.Row3.x, A.Row3.y, A.Row3.z, A.Row3.w);
+            var row0 = new double4(A.Row1.x, A.Row1.y, A.Row1.z, A.Row1.w);
+            var row1 = new double4(A.Row2.x, A.Row2.y, A.Row2.z, A.Row2.w);
+            var row2 = new double4(A.Row3.x, A.Row3.y, A.Row3.z, A.Row3.w);
+            var row3 = new double4(A.Row4.x, A.Row4.y, A.Row4.z, A.Row4.w);
 
             var res = Diagonalizer(new double4x4(row0, row1, row2, row3));
 
@@ -672,7 +672,7 @@ namespace Fusee.Math.Core
                     D.M22,
                     D.M33
                 },
-                Vectors = new double3[] { vectorMat.Row0.xyz, vectorMat.Row1.xyz, vectorMat.Row2.xyz }
+                Vectors = new double3[] { vectorMat.Row1.xyz, vectorMat.Row2.xyz, vectorMat.Row3.xyz }
             };
         }
 

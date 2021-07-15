@@ -805,9 +805,9 @@ namespace Fusee.Engine.Core
             {
                 lightRes.Rotation = new float4x4
                 (
-                    new float4(_rc.InvView.Row0.xyz, 0),
                     new float4(_rc.InvView.Row1.xyz, 0),
                     new float4(_rc.InvView.Row2.xyz, 0),
+                    new float4(_rc.InvView.Row3.xyz, 0),
                     float4.UnitW
                  );
             }

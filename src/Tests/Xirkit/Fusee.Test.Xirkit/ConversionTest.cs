@@ -574,8 +574,8 @@ namespace Fusee.Test.Xirkit
         public void ConvertFromDouble4x4(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
             text = d4x4.ToString();
-            d4 = d4x4.Row0;
-            f4 = f4x4.Row0;
+            d4 = d4x4.Row1;
+            f4 = f4x4.Row1;
 
             ConverterClass source = new ConverterClass();
             ConverterClass expected = new ConverterClass();
@@ -778,8 +778,8 @@ namespace Fusee.Test.Xirkit
         public void ConvertFromFloat4x4(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
             text = f4x4.ToString();
-            d4 = d4x4.Row0;
-            f4 = f4x4.Row0;
+            d4 = d4x4.Row1;
+            f4 = f4x4.Row1;
 
             ConverterClass source = new ConverterClass();
             ConverterClass expected = new ConverterClass();

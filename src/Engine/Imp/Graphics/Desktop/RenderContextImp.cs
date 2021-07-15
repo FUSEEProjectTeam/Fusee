@@ -833,10 +833,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             for (var i = 0; i < val.Length; i++)
             {
-                tmpArray[i * 4] = val[i].Column0;
-                tmpArray[i * 4 + 1] = val[i].Column1;
-                tmpArray[i * 4 + 2] = val[i].Column2;
-                tmpArray[i * 4 + 3] = val[i].Column3;
+                tmpArray[i * 4] = val[i].Column1;
+                tmpArray[i * 4 + 1] = val[i].Column2;
+                tmpArray[i * 4 + 2] = val[i].Column3;
+                tmpArray[i * 4 + 3] = val[i].Column4;
             }
 
             fixed (float4* pMtx = &tmpArray[0])

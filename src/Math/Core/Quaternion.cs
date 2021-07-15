@@ -639,40 +639,40 @@ namespace Fusee.Math.Core
                 var invS = 1f / s;
 
                 q.w = s * 0.25f;
-                q.x = (mtx.Row2.y - mtx.Row1.z) * invS;
-                q.y = (mtx.Row0.z - mtx.Row2.x) * invS;
-                q.z = (mtx.Row1.x - mtx.Row0.y) * invS;
+                q.x = (mtx.Row3.y - mtx.Row2.z) * invS;
+                q.y = (mtx.Row1.z - mtx.Row3.x) * invS;
+                q.z = (mtx.Row2.x - mtx.Row1.y) * invS;
             }
             else
             {
-                if (mtx.Row0.x > mtx.Row1.y && mtx.Row0.x > mtx.Row2.z)
+                if (mtx.Row1.x > mtx.Row2.y && mtx.Row1.x > mtx.Row3.z)
                 {
-                    var s = MathF.Sqrt(1 + mtx.Row0.x - mtx.Row1.y - mtx.Row2.z) * 2;
+                    var s = MathF.Sqrt(1 + mtx.Row1.x - mtx.Row2.y - mtx.Row3.z) * 2;
                     var invS = 1f / s;
 
-                    q.w = (mtx.Row2.y - mtx.Row1.z) * invS;
+                    q.w = (mtx.Row3.y - mtx.Row2.z) * invS;
                     q.x = s * 0.25f;
-                    q.y = (mtx.Row0.y + mtx.Row1.x) * invS;
-                    q.z = (mtx.Row0.z + mtx.Row2.x) * invS;
+                    q.y = (mtx.Row1.y + mtx.Row2.x) * invS;
+                    q.z = (mtx.Row1.z + mtx.Row3.x) * invS;
                 }
-                else if (mtx.Row1.y > mtx.Row2.z)
+                else if (mtx.Row2.y > mtx.Row3.z)
                 {
-                    var s = MathF.Sqrt(1 + mtx.Row1.y - mtx.Row0.x - mtx.Row2.z) * 2;
+                    var s = MathF.Sqrt(1 + mtx.Row2.y - mtx.Row1.x - mtx.Row3.z) * 2;
                     var invS = 1f / s;
 
-                    q.w = (mtx.Row0.z - mtx.Row2.x) * invS;
-                    q.x = (mtx.Row0.y + mtx.Row1.x) * invS;
+                    q.w = (mtx.Row1.z - mtx.Row3.x) * invS;
+                    q.x = (mtx.Row1.y + mtx.Row2.x) * invS;
                     q.y = s * 0.25f;
-                    q.z = (mtx.Row1.z + mtx.Row2.y) * invS;
+                    q.z = (mtx.Row2.z + mtx.Row3.y) * invS;
                 }
                 else
                 {
-                    var s = MathF.Sqrt(1 + mtx.Row2.z - mtx.Row0.x - mtx.Row1.y) * 2;
+                    var s = MathF.Sqrt(1 + mtx.Row3.z - mtx.Row1.x - mtx.Row2.y) * 2;
                     var invS = 1f / s;
 
-                    q.w = (mtx.Row1.x - mtx.Row0.y) * invS;
-                    q.x = (mtx.Row0.z + mtx.Row2.x) * invS;
-                    q.y = (mtx.Row1.z + mtx.Row2.y) * invS;
+                    q.w = (mtx.Row2.x - mtx.Row1.y) * invS;
+                    q.x = (mtx.Row1.z + mtx.Row3.x) * invS;
+                    q.y = (mtx.Row2.z + mtx.Row3.y) * invS;
                     q.z = s * 0.25f;
                 }
             }
