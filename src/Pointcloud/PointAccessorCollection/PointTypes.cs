@@ -27,7 +27,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position float3.
     /// </summary>
-    public struct Pos32
+    public class Pos32
     {
         public float3 Position;
     }
@@ -35,7 +35,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position double3.
     /// </summary>
-    public struct Pos64
+    public class Pos64
     {
         public double3 Position;
     }
@@ -43,7 +43,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, color, intensity.
     /// </summary>
-    public struct Pos64Col32IShort
+    public class Pos64Col32IShort
     {
         public double3 Position;
         public float3 Color;
@@ -53,7 +53,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, intensity.
     /// </summary>
-    public struct Pos64IShort
+    public class Pos64IShort
     {
         public double3 Position;
         public ushort Intensity;
@@ -62,7 +62,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, color.
     /// </summary>
-    public struct Pos64Col32
+    public class Pos64Col32
     {
         public double3 Position;
         public float3 Color;
@@ -71,7 +71,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, color of the classification.
     /// </summary>
-    public struct Pos64Label8
+    public class Pos64Label8
     {
         public double3 Position;
         public byte Label;
@@ -80,7 +80,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, normal, color, intensity.
     /// </summary>
-    public struct Pos64Nor32Col32IShort
+    public class Pos64Nor32Col32IShort
     {
         public double3 Position;
         public float3 Normal;
@@ -91,7 +91,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, normal, intensity.
     /// </summary>
-    public struct Pos64Nor32IShort
+    public class Pos64Nor32IShort
     {
         public double3 Position;
         public float3 Normal;
@@ -101,7 +101,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, normal, color.
     /// </summary>
-    public struct Pos64Nor32Col32
+    public class Pos64Nor32Col32
     {
         public double3 Position;
         public float3 Normal;

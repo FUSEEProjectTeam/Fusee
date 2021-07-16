@@ -88,12 +88,15 @@ namespace Fusee.Structures
         public void CreateCell(int3 idx)
         {
             var lowerLeftCenter = (Center - Size / 2d) + CellSize;
-            var center = lowerLeftCenter + (new double3(idx.x * CellSize.x, idx.y * CellSize.y, idx.z * CellSize.z));
-            var cell = new GridCellD<P>(center, CellSize)
+            lowerLeftCenter.x += idx.x * CellSize.x;
+            lowerLeftCenter.y += idx.y * CellSize.y;
+            lowerLeftCenter.z += idx.z * CellSize.z;
+
+            var cell = new GridCellD<P>(lowerLeftCenter, CellSize)
             {
                 Payload = default
             };
-            GridCellsDict.Add(new int3(idx.x, idx.y, idx.z), cell);
+            GridCellsDict.Add(idx, cell);
         }
 
         /// <summary>

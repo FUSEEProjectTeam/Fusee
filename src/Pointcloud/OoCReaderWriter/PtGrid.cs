@@ -27,6 +27,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         internal PtGrid(double3 center, double3 size) : base(center, size, 128, 128, 128) { }
 
+        private static int3 _minusOne = new int3(-1, -1, -1);
+
         /// <summary>
         /// Creates a new instance of type PtGrid.
         /// </summary>
@@ -49,16 +51,17 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var cell = TryGetCellForPos(Size, Center, tPointPos, out var cellIdx);
 
             //Check if NN is too close - a point remains in the parent octant if the distance to the occupant of a neighbor cell is smaller than the neighbor cells' size.         
-            foreach (var idxOffset in GetGridNeighbourIndices(new int3(-1, -1, -1)))
+            
+            foreach (var idxOffset in GetGridNeighbourIndices(_minusOne))
             {
-                var neighbourCellIdx = new int3(cellIdx.x, cellIdx.y, cellIdx.z) + idxOffset;
+                var neighbourCellIdx = cellIdx + idxOffset;
 
                 if (neighbourCellIdx.x < 0 || neighbourCellIdx.x >= NumberOfGridCells.x
                     || neighbourCellIdx.y < 0 || neighbourCellIdx.y >= NumberOfGridCells.y
                     || neighbourCellIdx.z < 0 || neighbourCellIdx.z >= NumberOfGridCells.z)
                     continue;
 
-                GridCellsDict.TryGetValue(new int3(neighbourCellIdx.x, neighbourCellIdx.y, neighbourCellIdx.z), out var neighbourCell);
+                GridCellsDict.TryGetValue(neighbourCellIdx, out var neighbourCell);
 
                 if (neighbourCell == null)
                     continue;
