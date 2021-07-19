@@ -6,6 +6,13 @@ using System.Collections.Generic;
 
 namespace Fusee.PointCloud.OoCReaderWriter
 {
+    /// <summary>
+    /// Tree data structure in which each internal node has up to eight children. 
+    /// Octrees are most often used to partition a three-dimensional space by recursively subdividing it into eight octants.
+    /// See <see cref="OctreeD{P}"/>
+    /// This subclass is used for point cloud rendering. It has the additional fields <see cref="MaxNoOfPointsInBucket"/> and <see cref="PtAccessor"/>.
+    /// </summary>
+    /// <typeparam name="TPoint">The type of an octants payload.</typeparam>
     public class PtOctree<TPoint> : OctreeD<TPoint>
     {
         /// <summary>

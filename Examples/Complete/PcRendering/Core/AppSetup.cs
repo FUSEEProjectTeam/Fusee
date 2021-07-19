@@ -22,11 +22,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64
+                                PtAcc = new Pos64_Accessor()
 
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64>(pathToFile);
@@ -41,11 +40,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32IShort>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64Col32IShort_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort
+                                PtAcc = new Pos64Col32IShort_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64Col32IShort>(pathToFile);
                         };
@@ -59,11 +57,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64IShort>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64IShort)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64IShort_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64IShort
+                                PtAcc = new Pos64IShort_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64IShort>(pathToFile);
                         };
@@ -77,11 +74,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Col32)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64Col32_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Col32
+                                PtAcc = new Pos64Col32_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64Col32>(pathToFile);
                         };
@@ -95,11 +91,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Label8>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Label8>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Label8)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64Label8_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Label8
+                                PtAcc = new Pos64Label8_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64Label8>(pathToFile);
                         };
@@ -113,11 +108,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32IShort)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64Nor32Col32IShort_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32IShort
+                                PtAcc = new Pos64Nor32Col32IShort_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64Nor32Col32IShort>(pathToFile);
                         };
@@ -131,11 +125,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32IShort>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Nor32IShort)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64Nor32IShort_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32IShort
+                                PtAcc = new Pos64Nor32IShort_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64Nor32IShort>(pathToFile);
                         };
@@ -149,11 +142,10 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32>(pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32)
                             {
                                 PointThreshold = pointThreshold,
-                                PtAcc = new Pos64Nor32Col32_Accessor(),
-                                GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32
+                                PtAcc = new Pos64Nor32Col32_Accessor()
                             };
                             appImp.OocFileReader = new PointCloud.OoCReaderWriter.PtOctreeFileReader<Pos64Nor32Col32>(pathToFile);
                         };

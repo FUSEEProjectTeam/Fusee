@@ -60,7 +60,15 @@ namespace Fusee.Examples.PcRendering.Core
         private float _maxPinchSpeed;
 
         private float3 _initCamPos;
-        public float3 InitCameraPos { get => _initCamPos; private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } }
+        public float3 InitCameraPos 
+        { 
+            get => _initCamPos; 
+            private set 
+            { 
+                _initCamPos = value; 
+                OocLoader.InitCamPos = new double3(_initCamPos.x, _initCamPos.y, _initCamPos.z); 
+            } 
+        }
 
         private bool _isTexInitialized = false;
 

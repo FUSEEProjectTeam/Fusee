@@ -10,10 +10,17 @@ using System.IO;
 
 namespace Fusee.PointCloud.OoCReaderWriter
 {
+    /// <summary>
+    /// Reads the point cloud files created by the OoCFileGeneration tool into a renderable Scene.
+    /// </summary>
+    /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
     public class PtOctreeFileReader<TPoint>
     {
         private readonly string _fileFolderPath;
 
+        /// <summary>
+        /// Number of octants/nodes that are currently loaded.
+        /// </summary>
         public int NumberOfOctants { get; private set; }
 
         /// <summary>
@@ -88,20 +95,16 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 {
                     new Transform
                     {
-                        Scale = float3.One,
-                        //Translation = (float3) center
+                        Scale = float3.One
                     },
                     new OctantD(center, size)
                     {
-
-                            PosInParent = -1, //root!
-                            //Resolution = size/128
-                        
+                        PosInParent = -1, //root!
                     }
 
                 }
             };
-            //scene.Children.Add(rootSnc);
+
             NumberOfOctants++;
 
             ReadHierarchyToScene(rootSnc);

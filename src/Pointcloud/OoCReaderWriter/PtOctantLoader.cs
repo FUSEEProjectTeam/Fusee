@@ -15,11 +15,20 @@ using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.OoCReaderWriter
 {
+    /// <summary>
+    /// Class that manages the out of core (on demand) loading of point clouds.
+    /// </summary>
+    /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
     public class PtOctantLoader<TPoint> where TPoint : new()
     {
+        /// <summary>
+        /// Provides access to properties of different point types.
+        /// </summary>
         public PointAccessor<TPoint> PtAcc;
-        public Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode;
 
+        /// <summary>
+        /// Is set to true internally when all visible nodes are loaded.
+        /// </summary>
         public bool WasSceneUpdated { get; private set; } = true;
 
         /// <summary>
@@ -27,9 +36,20 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         public bool IsUserMoving = false;
 
+        /// <summary>
+        /// The <see cref="RenderContext"/> the app uses.
+        /// Needed to determine the field of view and the camera position.
+        /// </summary>
         public RenderContext RC;
+
+        /// <summary>
+        /// 1D Texture that stores info that is needed by the vertex shader when rendering with adaptive point size.
+        /// </summary>
         public Texture VisibleOctreeHierarchyTex;
 
+        /// <summary>
+        /// The root node of the octree that is used to render the point cloud.
+        /// </summary>
         public SceneNode RootNode
         {
             get => _rootNode;
@@ -40,20 +60,25 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 _determinedAsVisible = new Dictionary<Guid, SceneNode>();
 
                 var fov = (float)RC.ViewportWidth / RC.ViewportHeight;
-                var camPosD = new double3(InitCamPos.x, InitCamPos.y, InitCamPos.z);
 
                 _rootNode = value;
 
                 // gets pixel radius of the node
-                RootNode.GetComponent<OctantD>().ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+                RootNode.GetComponent<OctantD>().ComputeScreenProjectedSize(InitCamPos, RC.ViewportHeight, fov);
                 _initRootScreenProjSize = (float)RootNode.GetComponent<OctantD>().ProjectedScreenSize;
                 _minScreenProjectedSize = _initRootScreenProjSize * _minProjSizeModifier;
             }
         }
+        private SceneNode _rootNode;
 
+        /// <summary>
+        /// The number of points that are currently visible.
+        /// </summary>
         public int NumberOfVisiblePoints { get; private set; }
 
-        private float _minProjSizeModifier = 1 / 3f;
+        /// <summary>
+        /// Changes the minimum size of octants. If an octant is smaller it won't be rendered.
+        /// </summary>
         public float MinProjSizeModifier
         {
             get => _minProjSizeModifier;
@@ -65,22 +90,10 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
         }
 
-        private SceneNode _rootNode;
-
-        public float3 InitCamPos;
-
-        private Dictionary<Guid, SceneNode> _nodesToRender;                                                                         // Visible AND loaded nodes - updated per traversal. Created from _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded);
-
-        private ConcurrentDictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                                                         // Visible AND loaded meshes.
-
-        private SortedDictionary<double, SceneNode> _nodesOrderedByProjectionSize;                                                  // For traversal purposes only.
-        private Dictionary<Guid, SceneNode> _determinedAsVisible = new Dictionary<Guid, SceneNode>();                               // All visible nodes in screen projected size order - cleared in every traversal.
-        private readonly Dictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded = new Dictionary<Guid, SceneNode>();           // Visible but unloaded nodes - cleared in every traversal.
-        private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new ConcurrentDictionary<Guid, SceneNode>();   //nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
-
-        private readonly WireframeCube wfc = new WireframeCube();
-        private readonly DefaultSurfaceEffect _wfcEffect = (DefaultSurfaceEffect)MakeEffect.Default;
-
+        /// <summary>
+        /// The initial camera position.
+        /// </summary>
+        public double3 InitCamPos;
 
         /// <summary>
         /// The path to the folder that holds the file.
@@ -92,13 +105,30 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         public int PointThreshold = 1000000;
 
+        private float _minProjSizeModifier = 1 / 3f;
+
+        private Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> _getMeshsForNode;
+
         private float _initRootScreenProjSize;
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
         private float _minScreenProjectedSize;
 
-        private readonly int SceneUpdateTime = 300; // in ms
         private float _deltaTimeSinceLastUpdate;
+
+        private Dictionary<Guid, SceneNode> _nodesToRender;                                                                         // Visible AND loaded nodes - updated per traversal. Created from _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded);
+
+        private ConcurrentDictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                                                         // Visible AND loaded meshes.
+
+        private SortedDictionary<double, SceneNode> _nodesOrderedByProjectionSize;                                                  // For traversal purposes only.
+        private Dictionary<Guid, SceneNode> _determinedAsVisible = new Dictionary<Guid, SceneNode>();                               // All visible nodes in screen projected size order - cleared in every traversal.
+        
+        private readonly Dictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded = new Dictionary<Guid, SceneNode>();           // Visible but unloaded nodes - cleared in every traversal.
+        private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new ConcurrentDictionary<Guid, SceneNode>();   //nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
+
+        private readonly WireframeCube wfc = new WireframeCube();
+        private readonly DefaultSurfaceEffect _wfcEffect = (DefaultSurfaceEffect)MakeEffect.Default;
+        private readonly int _sceneUpdateTime = 300; // in ms
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
@@ -109,11 +139,13 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
         /// <param name="rc">The <see cref="RenderContext"/> that is used.</param>
-        public PtOctantLoader(string fileFolderPath, RenderContext rc)
+        /// <param name="getMeshsForNode">Encapsulates a method that has a <see cref="PointAccessor{TPoint}"/>, and a list of point cloud points and as parameters. Returns a collection of <see cref="Mesh"/>es for a Octant.</param>
+        public PtOctantLoader(string fileFolderPath, RenderContext rc, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> getMeshsForNode)
         {
             _nodesToRender = new Dictionary<Guid, SceneNode>();
             _loadedMeshs = new ConcurrentDictionary<Guid, IEnumerable<Mesh>>();
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;
+            _getMeshsForNode = getMeshsForNode;
             RC = rc;
 
             FileFolderPath = fileFolderPath;
@@ -130,7 +162,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     Parallel.For(0, orderdToLoad.Count,
                     index =>
                     {
-                        LoadNode(GetMeshsForNode, PtAcc, ref orderdToLoad);
+                        LoadNode(PtAcc, ref orderdToLoad);
                     });
                 }
             });
@@ -140,14 +172,14 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        /// <param name="ptSizeMode">The <see cref="PointSizeMode"./></param>
+        /// <param name="ptSizeMode">The <see cref="PointSizeMode"/>.</param>
         /// <param name="depthPassEf">Shader effect used in the depth pass in eye dome lighting.</param>
         /// <param name="colorPassEf">Shader effect that is accountable for rendering the color pass.</param>       
         public void UpdateScene(PointSizeMode ptSizeMode, ShaderEffect depthPassEf, ShaderEffect colorPassEf)
         {
             WasSceneUpdated = false;
 
-            if (_deltaTimeSinceLastUpdate < SceneUpdateTime)
+            if (_deltaTimeSinceLastUpdate < _sceneUpdateTime)
                 _deltaTimeSinceLastUpdate += Time.RealDeltaTime * 1000;
 
             else
@@ -233,7 +265,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         /// <summary>
         /// Traverses the scene nodes the point cloud is stored in and searches for visible nodes in screen-projected-size order.
-        /// </summary>        
+        /// </summary>
         private void TraverseByProjectedSizeOrder()
         {
             NumberOfVisiblePoints = 0;
@@ -323,7 +355,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 _nodesOrderedByProjectionSize.Add(ptOctantChildComp.ProjectedScreenSize, node);
         }
 
-        private void LoadNode(Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor, ref ConcurrentDictionary<Guid, SceneNode> orderdToLoad)
+        private void LoadNode(PointAccessor<TPoint> ptAccessor, ref ConcurrentDictionary<Guid, SceneNode> orderdToLoad)
         {
             var kvp = orderdToLoad.First();
             var node = kvp.Value;
@@ -333,7 +365,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 var pts = LoadPointsForNode(ptAccessor, ptOctantComp);
                 ptOctantComp.NumberOfPointsInNode = pts.Count;
-                var meshes = GetMeshsForNode(ptAccessor, pts);
+                var meshes = _getMeshsForNode(ptAccessor, pts);
                 _loadedMeshs.AddOrUpdate(ptOctantComp.Guid, meshes, (key, val) => val);
             }
 
@@ -512,6 +544,5 @@ namespace Fusee.PointCloud.OoCReaderWriter
             //replace PixelData with new contents
             tex.Blt(0, 0, visibleOctantsImgData);
         }
-
     }
 }

@@ -11,9 +11,18 @@ using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.OoCReaderWriter
 {
+    /// <summary>
+    /// Contains methods to write a converted Point Cloud to the hard drive.
+    /// Files that will be generated:
+    /// .hierarchy: The binary encoded octree hierarchy. Contains information about the octree and the point type of the point cloud.
+    /// meta.json: Contains the meta data of the point cloud
+    /// .node: contains information about an octant and its payload.
+    /// </summary>
+    /// <typeparam name="TPoint">The type of the point cloud points."/></typeparam>
     public class PtOctreeFileWriter<TPoint>
     {
         private readonly string _fileFolderPath;
+        private readonly Dictionary<Guid, FileStream> _fileStreams = new Dictionary<Guid, FileStream>();
 
         /// <summary>
         /// Creates a new instance of type PtOctantFileWriter.
@@ -25,8 +34,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             if (!Directory.Exists(_fileFolderPath)) Directory.CreateDirectory(_fileFolderPath);
         }
-
-        public Dictionary<Guid, FileStream> FileStreams = new Dictionary<Guid, FileStream>();
 
         /// <summary>
         /// Creates all files (meta.json, .hierarchy and .node).
@@ -53,7 +60,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 var ptNode = (PtOctantWrite<TPoint>)node;
                 nodesToWrite.Add(ptNode);
-                FileStreams.Add(ptNode.Guid, File.Create(GetPathToFile(ptNode)));
+                _fileStreams.Add(ptNode.Guid, File.Create(GetPathToFile(ptNode)));
             });
             Diagnostics.Debug("-------------- Traverse tree: " + watch.ElapsedMilliseconds + "ms.");
 
@@ -162,7 +169,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             if (points.Count == 0)
                 return;
 
-            var stream = FileStreams[node.Guid];
+            var stream = _fileStreams[node.Guid];
 
             using (stream)
             {
