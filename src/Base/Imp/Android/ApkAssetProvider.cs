@@ -127,11 +127,11 @@ namespace Fusee.Base.Imp.Android
         /// A valid stream for reading if the asset ca be retrieved. null otherwise.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        protected override Stream GetStreamAsync(string id)
+        protected override async Task<Stream> GetStreamAsync(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            return _androidContext.Assets.Open(id);
+            return await Task.FromResult(_androidContext.Assets.Open(id));
         }
 
         protected override Task<bool> CheckExistsAsync(string id)
