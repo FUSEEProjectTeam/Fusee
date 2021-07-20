@@ -21,7 +21,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public static EventHandler<int> OnMouseUp;
         public static EventHandler<float2> OnMouseMove;
         public static EventHandler<float> OnMouseWheel;
-             
+
         [JSInvokable("OnKeyDown")]
         public static void KeyDown(int btn)
         {
@@ -49,7 +49,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         [JSInvokable("OnMouseMove")]
         public static void MouseMove(float x, float y)
         {
-            OnMouseMove?.Invoke(null, new float2(x,y));
+            OnMouseMove?.Invoke(null, new float2(x, y));
         }
 
         [JSInvokable("OnMouseWheel")]
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         // Deserialzation of EventArgs seems to be broken
-        
+
         [JSInvokable("OnTouchStart")]
         public static void TouchStart(TouchEventArgs args)
         {
@@ -70,14 +70,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         [JSInvokable("OnTouchEnd")]
         public static void TouchEnd(TouchEventArgs delta)
         {
-           
+
         }
 
 
         [JSInvokable("OnTouchCancel")]
         public static void TouchCancel(TouchEventArgs delta)
         {
-           
+
         }
 
 

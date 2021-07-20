@@ -234,7 +234,7 @@ namespace Fusee.Base.Core
             if (_minLogLevelDebug <= logLevel || Console.Out == null) // when there is no console present (android, wasm, etc. log anything to debug output
                 System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
-            
+
         }
 
         /// <summary>
