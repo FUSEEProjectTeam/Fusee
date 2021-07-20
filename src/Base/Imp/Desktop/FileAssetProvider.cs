@@ -183,7 +183,7 @@ namespace Fusee.Base.Imp.Desktop
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a file stream to the asset.</returns>
-        protected override Stream GetStreamAsync(string id)
+        protected override async Task<Stream> GetStreamAsync(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
