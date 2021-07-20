@@ -30,7 +30,7 @@ namespace Fusee.Examples.Simple.Blazor
 
             // Disable text logging as this is not supported for platform: web
             //Diagnostics.SetMinTextFileLoggingSeverityLevel(Diagnostics.SeverityLevel.None);
-            
+
 
             base.Run();
 

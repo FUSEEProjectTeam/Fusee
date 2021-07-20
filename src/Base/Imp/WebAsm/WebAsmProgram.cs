@@ -57,7 +57,7 @@ namespace Fusee.Base.Imp.WebAsm
 
             var windowWidth = window.GetObjectProperty<int>(runtime, "innerWidth");
             var windowHeight = window.GetObjectProperty<int>(runtime, "innerHeight");
-           
+
             var canvas = HtmlHelper.AddCanvas(runtime, divCanvasName, canvasName, windowWidth, windowHeight);
             mainExecutable.Init(canvas, runtime, CanvasColor);
             mainExecutable.Run();
@@ -111,19 +111,19 @@ namespace Fusee.Base.Imp.WebAsm
             canvas.InvokeVoid("addEventListener", "dblclick", new Action<IJSInProcessObjectReference>((o) =>
            {
                using var d = Runtime.GetGlobalObject<IJSInProcessObjectReference>("document");
-               
-                   var canvasObject = d.Invoke<IJSInProcessObjectReference>("getElementById", canvasName);
 
-                   RequestFullscreen(canvasObject);
+               var canvasObject = d.Invoke<IJSInProcessObjectReference>("getElementById", canvasName);
 
-                   var width = canvasObject.GetObjectProperty<int>("clientWidth");
-                   var height = canvasObject.GetObjectProperty<int>("clientHeight");
+               RequestFullscreen(canvasObject);
 
-                   SetNewCanvasSize(canvasObject, width, height);
+               var width = canvasObject.GetObjectProperty<int>("clientWidth");
+               var height = canvasObject.GetObjectProperty<int>("clientHeight");
 
-                   // call fusee resize
-                   mainExecutable.Resize(width, height);
-               
+               SetNewCanvasSize(canvasObject, width, height);
+
+               // call fusee resize
+               mainExecutable.Resize(width, height);
+
 
                o.Dispose();
            }), false);
@@ -145,7 +145,7 @@ namespace Fusee.Base.Imp.WebAsm
             mainExecutable.Draw();
         }
 
-        
+
         private void RequestAnimationFrame()
         {
             if (window == null)

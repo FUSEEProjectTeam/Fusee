@@ -95,14 +95,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             //    throw new PlatformNotSupportedException(
             //        $"The context '{contextType}' is not supported in this browser");
             //}
-            
+
             gl = ((IJSInProcessObjectReference)canvas).Invoke<IJSObjectReference>("getContext", contextType, contextAttributes);
         }
 
         //public bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
 
         public static bool IsVerbosityEnabled { get; set; } = false;
-       
+
         protected bool CheckWindowPropertyExists(string property)
         {
             var window = runtime.GetGlobalObject<IJSObjectReference>("window");
@@ -323,7 +323,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         //  //// TODO(MR): managed to native via javscript (implement & test)
         //  ////using var nativeArray = Uint8Array.From(source);
         //  GLTexImage2D(target, level, internalformat, width, height, border, format, type, source.ToArray());
-    
+
         //}
 
         public void TexImage2D(

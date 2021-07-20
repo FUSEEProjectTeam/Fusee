@@ -50,7 +50,7 @@ namespace Fusee.Engine.GUI
 
             if (!_isAttached)
             {
-                if(Input.Mouse != null)
+                if (Input.Mouse != null)
                     Input.Mouse.ButtonValueChanged += OnMouse;
                 if (Input.Touch != null)
                     Input.Touch.ButtonValueChanged += OnMouse; //ToDo: Define OnTouch()

@@ -12,7 +12,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         internal WebGLUniformLocation handle;
     }
 
-    public class  ShaderHandleImp : IShaderHandle
+    public class ShaderHandleImp : IShaderHandle
     {
         internal WebGLProgram Handle;
     }
