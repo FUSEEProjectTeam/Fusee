@@ -5,10 +5,23 @@ using System.Collections.Generic;
 
 namespace Fusee.PointCloud.OoCReaderWriter
 {
+    /// <summary>
+    /// Node/Bucket data structure that is used in a <see cref="PtOctree{TPoint}"/>. Needed to save a point cloud into a file format that can be used for out of core rendering.
+    /// </summary>
+    /// <typeparam name="TPoint">The type pf the point cloud points.</typeparam>
     public class PtOctantWrite<TPoint> : OctantD<TPoint>
     {
+        /// <summary>
+        /// Grid data structure used to distribute points in the octree.
+        /// </summary>
         public PtGrid<TPoint> Grid;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="PtOctantWrite{TPoint}"/>.
+        /// </summary>
+        /// <param name="center">The center of this octant.</param>
+        /// <param name="size">The size (in all three dimensions) of this octant.</param>
+        /// <param name="children">The octants child octants.</param>
         public PtOctantWrite(double3 center, double size, IOctant<double3, double, TPoint>[] children = null)
         {
             Guid = Guid.NewGuid();
@@ -24,6 +37,11 @@ namespace Fusee.PointCloud.OoCReaderWriter
             Payload = new List<TPoint>();
         }
 
+        /// <summary>
+        /// Creates a child at the given position. 
+        /// </summary>
+        /// <param name="posInParent">The new octants position in its parent.</param>
+        /// <returns></returns>
         public override IOctant<double3, double, TPoint> CreateChild(int posInParent)
         {
             var childCenter = CalcChildCenterAtPos(posInParent);

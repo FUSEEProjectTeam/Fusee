@@ -7,27 +7,9 @@ using System.Runtime.InteropServices;
 namespace Fusee.PointCloud.Common
 {
     /// <summary>
-    ///     Every point cloud needs a point accessor
-    /// </summary>
-    /// <example>
-    /// 
-    /// internal class PointType
-    /// {
-    ///     public float3 Position;
-    ///     public float3 Normal;
-    /// }
-    /// 
-    /// internal class MyPointAccessor : PointAccessor<PointType>
-    /// {     
-    ///     public override bool HasNormalFloat3_32 => true;
-    ///     public override ref float3 GetNormalFloat3_32(PointType point)
-    ///     {
-    ///         return ref point.Normal;
-    ///     }
-    /// } 
-    /// 
-    /// </example>
-    /// <typeparam name="TPoint"></typeparam>
+    /// Every point cloud needs a point accessor. Provides access to the point parameters like position or color.
+    /// </summary>    
+    /// <typeparam name="TPoint">The generic point type.</typeparam>
     public class PointAccessor<TPoint>
     {
         #region PointT_Member

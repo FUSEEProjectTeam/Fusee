@@ -5,14 +5,18 @@ using Fusee.PointCloud.Common;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace Fusee.PointCloud.PointAccessorCollections
 {
     /// <summary>
-    /// For every <see cref="PointType"/> this class defines a method that returns a Mesh which can hold point cloud points.
+    /// This class defines a method for every <see cref="PointType"/>, that returns a Mesh which can hold point cloud points.
     /// </summary>
     public static class MeshFromOocFile
     {
+        /// <summary>
+        /// Returns meshes for point clouds that only have position information in double precision.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64(PointAccessor<Pos64> ptAccessor, List<Pos64> points)
         {
             var allPoints = new List<double3>();
@@ -50,6 +54,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Col32IShort"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Col32IShort(PointAccessor<Pos64Col32IShort> ptAccessor, List<Pos64Col32IShort> points)
         {
             var allPoints = new List<double3>();
@@ -93,6 +102,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64IShort"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64IShort(PointAccessor<Pos64IShort> ptAccessor, List<Pos64IShort> points)
         {
             var allPoints = new List<double3>();
@@ -131,6 +145,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Label8"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Label8(PointAccessor<Pos64Label8> ptAccessor, List<Pos64Label8> points)
         {
             var allPoints = new List<double3>();
@@ -174,6 +193,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
         {
             var allPoints = new List<double3>();
@@ -213,6 +237,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32IShort"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Nor32Col32IShort(PointAccessor<Pos64Nor32Col32IShort> ptAccessor, List<Pos64Nor32Col32IShort> points)
         {
             var allPoints = new List<double3>();
@@ -259,6 +288,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Nor32IShort"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Nor32IShort(PointAccessor<Pos64Nor32IShort> ptAccessor, List<Pos64Nor32IShort> points)
         {
             var allPoints = new List<double3>();
@@ -301,6 +335,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
             return allMeshes;
         }
 
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Nor32Col32(PointAccessor<Pos64Nor32Col32> ptAccessor, List<Pos64Nor32Col32> points)
         {
             var allPoints = new List<double3>();
