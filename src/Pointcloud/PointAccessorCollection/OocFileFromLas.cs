@@ -15,6 +15,14 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public static class OocFileFromLas
     {
+        /// <summary>
+        /// Converts the point cloud and saves the files (meta.json, .hierarchy and .node files).
+        /// </summary>
+        /// <param name="ptType">The type of the point cloud points (<see cref="PointType"/>).</param>
+        /// <param name="pathToFile">Path of the original point cloud file.</param>
+        /// <param name="pathToFolder">Path where the new files will be saved.</param>
+        /// <param name="maxNoOfPointsInBucket">Number of points that a bucket/octant can hold. If additional point would fall into it they fall into the next level instead.</param>
+        /// <param name="doExchangeXZ">Bool that determines if the y and z coordinates of the points should be exchanged.</param>
         public static void CreateFilesForPtType(PointType ptType, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket, bool doExchangeXZ)
         {
             switch (ptType)

@@ -9,7 +9,7 @@ using System.Linq;
 namespace Fusee.PointCloud.PointAccessorCollections
 {
     /// <summary>
-    /// Fore every point type: Define a Method that returns a Mesh.
+    /// For every <see cref="PointType"/> this class defines a method that returns a Mesh which can hold point cloud points.
     /// </summary>
     public static class MeshFromOocFile
     {

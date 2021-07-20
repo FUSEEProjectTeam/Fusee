@@ -7,6 +7,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// Abbreviations:
     /// 32: float
     /// 64: double
+    /// 8: ushort
     /// Pos: position
     /// Col: Color
     /// I: Intensity
@@ -14,13 +15,37 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public enum PointType
     {
+        /// <summary>
+        /// Position only (double)
+        /// </summary>
         Pos64,
+        /// <summary>
+        /// Position (double), Color (float), Intensity (short)
+        /// </summary>
         Pos64Col32IShort,
+        /// <summary>
+        /// Position (double), Intensity (short)
+        /// </summary>
         Pos64IShort,
+        /// <summary>
+        /// Position (double), Color (float)
+        /// </summary>
         Pos64Col32,
+        /// <summary>
+        /// Position (double), Label (ushort)
+        /// </summary>
         Pos64Label8,
+        /// <summary>
+        /// Position (double), Normal (float), Color (float), Intensity (short)
+        /// </summary>
         Pos64Nor32Col32IShort,
+        /// <summary>
+        /// Position (double), Normal (float), Intensity (short)
+        /// </summary>
         Pos64Nor32IShort,
+        /// <summary>
+        /// Position (double), Normal (float), Color (float)
+        /// </summary>
         Pos64Nor32Col32
     }
 
@@ -29,6 +54,9 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos32
     {
+        /// <summary>
+        /// The points coordinate in 3D space.
+        /// </summary>
         public float3 Position;
     }
 
@@ -37,6 +65,9 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64
     {
+        /// <summary>
+        /// The points coordinate in 3D space.
+        /// </summary>
         public double3 Position;
     }
 
@@ -45,8 +76,17 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64Col32IShort
     {
+        /// <summary>
+        /// The points coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The points rgb color.
+        /// </summary>
         public float3 Color;
+        /// <summary>
+        /// The points intensity (gray scale).
+        /// </summary>
         public ushort Intensity;
     }
 
@@ -55,7 +95,13 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64IShort
     {
+        /// <summary>
+        /// The points coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The points intensity (gray scale).
+        /// </summary>
         public ushort Intensity;
     }
 
@@ -64,7 +110,13 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64Col32
     {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The point's rgb color.
+        /// </summary>
         public float3 Color;
     }
 
@@ -73,7 +125,13 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64Label8
     {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The point's class label.
+        /// </summary>
         public byte Label;
     }
 
@@ -82,9 +140,21 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64Nor32Col32IShort
     {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The point's normal vector.
+        /// </summary>
         public float3 Normal;
+        /// <summary>
+        /// The point's rgb color.
+        /// </summary>
         public float3 Color;
+        /// <summary>
+        /// The point's intensity (gray scale).
+        /// </summary>
         public ushort Intensity;
     }
 
@@ -93,8 +163,17 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64Nor32IShort
     {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The point's normal vector.
+        /// </summary>
         public float3 Normal;
+        /// <summary>
+        /// The point's intensity (gray scale).
+        /// </summary>
         public ushort Intensity;
     }
 
@@ -103,8 +182,17 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// </summary>
     public class Pos64Nor32Col32
     {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
         public double3 Position;
+        /// <summary>
+        /// The point's normal vector.
+        /// </summary>
         public float3 Normal;
+        /// <summary>
+        /// The point's rgb color.
+        /// </summary>
         public float3 Color;
     }
 }
