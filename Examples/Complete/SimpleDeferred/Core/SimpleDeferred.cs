@@ -172,7 +172,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         }
 
         // Init is called on startup.
-        public override  void Init()
+        public override void Init()
         {
             Load();
         }

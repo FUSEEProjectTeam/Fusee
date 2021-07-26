@@ -339,7 +339,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             var err = gl2.GetError();
-            if(err != 0)
+            if (err != 0)
                 Console.WriteLine($"Create Texture gl2 error {err}");
 
             return texID;
@@ -2138,8 +2138,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
-              throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
-                  $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
+                throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
+                    $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
 
             gl2.Clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
@@ -2175,8 +2175,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     var texHandle = texHandles[i];
                     if (texHandle == null)
                     {
-                      attachments.Add(NONE);
-                      continue;
+                        attachments.Add(NONE);
+                        continue;
                     }
 
                     if (i == depthTexPos)

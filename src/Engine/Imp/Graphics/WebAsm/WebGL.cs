@@ -2132,11 +2132,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             {
                 ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2D", parameter, source);
             }
-            else if(type == FLOAT)
+            else if (type == FLOAT)
             {
                 ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DFloat", parameter, source);
             }
-            else if(type == UNSIGNED_INT)
+            else if (type == UNSIGNED_INT)
             {
                 ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DInt", parameter, source);
             }
