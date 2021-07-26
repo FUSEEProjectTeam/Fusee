@@ -2128,13 +2128,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public void GLTexImage2D(uint target, int level, int internalformat, int width, int height, int border, uint format, uint type, Array source)
         {
             var parameter = new int[] { (int)target, level, internalformat, width, height, border, (int)format, (int)type };
-            if (type != FLOAT)
+            if (type == UNSIGNED_BYTE)
             {
                 ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2D", parameter, source);
             }
-            else
+            else if(type == FLOAT)
             {
                 ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DFloat", parameter, source);
+            }
+            else if(type == UNSIGNED_INT)
+            {
+                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DInt", parameter, source);
             }
         }
 

@@ -169,17 +169,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case ColorFormat.Depth24:
                     internalFormat = DEPTH_COMPONENT24;
                     format = DEPTH_COMPONENT;
-                    pxType = FLOAT;
+                    pxType = UNSIGNED_INT;
                     break;
                 case ColorFormat.Depth16:
                     internalFormat = DEPTH_COMPONENT16;
                     format = DEPTH_COMPONENT;
-                    pxType = FLOAT;
+                    pxType = UNSIGNED_INT;
                     break;
                 case ColorFormat.uiRgb8:
                     internalFormat = RGBA8UI;
                     format = RGBA;
-                    pxType = UNSIGNED_BYTE;
+                    pxType = UNSIGNED_INT;
                     break;
                 case ColorFormat.fRGB32:
                     internalFormat = RGB32F;
@@ -189,7 +189,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 case ColorFormat.fRGB16:
                     internalFormat = RGB16F;
                     format = RGB;
-                    pxType = FLOAT;
+                    pxType = HALF_FLOAT;
                     break;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
@@ -278,7 +278,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
-            var err = gl2.GetError();
             var id = gl2.CreateTexture();
 
             gl2.BindTexture(TEXTURE_2D, id);
@@ -290,7 +289,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
 
-            //var dataToInt  = img.PixelData.Select(x => (int)x).ToArray();
             gl2.TexImage2D(TEXTURE_2D, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
 
             if (img.DoGenerateMipMaps && img.PixelFormat.ColorFormat != ColorFormat.Intensity)
@@ -332,13 +330,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, magFilter);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)NEAREST);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)NEAREST);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            var err = gl2.GetError();
+            if(err != 0)
+                Console.WriteLine($"Create Texture gl2 error {err}");
 
             return texID;
         }
@@ -2136,11 +2138,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
-                throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
-                    $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
+              throw new Exception($"Error creating Framebuffer: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)};" +
+                  $"DepthBuffer set? {renderTarget.DepthBufferHandle != null}");
             }
 
-            gl2.Clear(DEPTH_CLEAR_VALUE | COLOR_CLEAR_VALUE);
+            gl2.Clear(COLOR_BUFFER_BIT | DEPTH_BUFFER_BIT);
         }
 
         private WebGLRenderbuffer CreateDepthRenderBuffer(int width, int height)
@@ -2173,8 +2175,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     var texHandle = texHandles[i];
                     if (texHandle == null)
                     {
-                        attachments.Add(NONE);
-                        continue;
+                      attachments.Add(NONE);
+                      continue;
                     }
 
                     if (i == depthTexPos)
@@ -2190,6 +2192,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 }
 
                 gl2.DrawBuffers(attachments.ToArray());
+
+                Console.WriteLine($"GL error {gl2.GetError()}");
             }
             else //If a frame-buffer only has a depth texture we don't need draw buffers
             {

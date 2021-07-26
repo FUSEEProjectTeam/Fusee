@@ -10,6 +10,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -32,14 +33,14 @@ namespace Fusee.Engine.Core
         /// <param name="screenParams">The width and height of the screen.</param>
         // see: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-        public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
+        public async static Task<ShaderEffect> FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
         {
             return new ShaderEffect(
 
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
-                PS = AssetStorage.Get<string>("FXAA.frag"),
+                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
+                PS = await AssetStorage.GetAsync<string>("FXAA.frag"),
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -60,13 +61,13 @@ namespace Fusee.Engine.Core
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
         /// <param name="noiseTexSize">Width and height of the noise texture.</param>
-        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
+        public async static Task<ShaderEffect> SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
         {
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var ps = AssetStorage.Get<string>("SSAO.frag");
+            var ps = await AssetStorage.GetAsync<string>("SSAO.frag");
 
             if (kernelLength != 64)
             {
@@ -79,7 +80,7 @@ namespace Fusee.Engine.Core
 
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
                 PS = ps,
                 StateSet = new RenderStateSet
                 {
@@ -106,10 +107,10 @@ namespace Fusee.Engine.Core
         /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
         /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>
-        public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
+        public async static Task<ShaderEffect> SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var frag = AssetStorage.Get<string>("SimpleBlur.frag");
+            var frag = await AssetStorage.GetAsync<string>("SimpleBlur.frag");
             float blurKernelSize;
             switch (ssaoRenderTex.Width)
             {
@@ -135,7 +136,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
                 PS = frag,
                 StateSet = new RenderStateSet
                 {
@@ -159,7 +160,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        public async static Task<ShaderEffect> DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -181,7 +182,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
                 PS = CreateDeferredLightingPixelShader(lc),
                 StateSet = new RenderStateSet
                 {
@@ -206,7 +207,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public async static Task<ShaderEffect> DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -225,7 +226,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
                 PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
                 StateSet = new RenderStateSet
                 {
@@ -245,7 +246,7 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
         /// </summary>
         /// <returns></returns>
-        public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
+        public async static Task<ShaderEffect> ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
@@ -259,9 +260,9 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
-                GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
-                PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
+                VS = await AssetStorage.GetAsync<string>("ShadowCubeMap.vert"),
+                GS = await AssetStorage.GetAsync<string>("ShadowCubeMap.geom"),
+                PS = await AssetStorage.GetAsync<string>("ShadowCubeMap.frag"),
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -278,13 +279,13 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
         /// </summary>
         /// <returns></returns>
-        public static ShaderEffect ShadowMapEffect()
+        public async static Task<ShaderEffect> ShadowMapEffect()
         {
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("ShadowMap.vert"),
-                PS = AssetStorage.Get<string>("ShadowMap.frag"),
+                VS = await AssetStorage.GetAsync<string>("ShadowMap.vert"),
+                PS = await AssetStorage.GetAsync<string>("ShadowMap.frag"),
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,

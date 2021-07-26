@@ -57,6 +57,8 @@ function customTexImage2D(params, source) {
 
 function customTexImage2DFloat(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+    const extension = gl2.getExtension('EXT_color_buffer_half_float');
+    console.log(extension);
 
     // extract setting params from array
     const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
@@ -72,9 +74,34 @@ function customTexImage2DFloat(params, source) {
     const format = parameter[6];
     const type = parameter[7];
 
-    const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 8);
+    const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 4);
     const length = Blazor.platform.getArrayLength(source);
     const data = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);
+    gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
+}
+
+function customTexImage2DInt(params, source) {
+    const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+    const extension = gl2.getExtension('EXT_color_buffer_half_float');
+    console.log(extension);
+
+    // extract setting params from array
+    const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
+    const paramLength = Blazor.platform.getArrayLength(params);
+    var parameter = new Int32Array(Module.HEAPU8.buffer, paramPtr, paramLength);
+
+    const target = parameter[0];
+    const level = parameter[1];
+    const internalformat = parameter[2];
+    const width = parameter[3];
+    const height = parameter[4];
+    const border = parameter[5];
+    const format = parameter[6];
+    const type = parameter[7];
+
+    const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 4);
+    const length = Blazor.platform.getArrayLength(source);
+    const data = new Uint32Array(Module.HEAPU8.buffer, dataPtr, length);
     gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
 }
 

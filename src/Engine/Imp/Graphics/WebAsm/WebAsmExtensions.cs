@@ -1,4 +1,6 @@
-﻿namespace Fusee.Base.Imp.WebAsm
+﻿using Microsoft.JSInterop;
+
+namespace Fusee.Base.Imp.WebAsm
 {
     /// <summary>
     /// Useful extensions while working with Microsoft.JSInterop methods like getting an object reference or
