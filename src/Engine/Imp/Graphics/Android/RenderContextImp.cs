@@ -535,10 +535,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="System.ApplicationException">
         /// </exception>
-        public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null, string cs = null)
         {
             if (!string.IsNullOrEmpty(gs))
                 Diagnostics.Warn("Geometry Shaders are unsupported");
+
+            if (!string.IsNullOrEmpty(cs))
+                Diagnostics.Warn("Compute Shaders are unsupported");
 
             int statusCode;
             StringBuilder info = new StringBuilder(512);

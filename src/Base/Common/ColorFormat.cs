@@ -28,7 +28,7 @@
         /// <summary>
         /// RGBA float, 32bit.
         /// </summary>
-        fRGB32,
+        fRGB32,        
 
         /// <summary>
         /// RGB float, 16bit.
@@ -41,6 +41,11 @@
         fRGBA16,
 
         /// <summary>
+        /// RGB float, 16bit.
+        /// </summary>
+        fRGBA32,
+
+        /// <summary>
         /// Used for creating depth maps.
         /// </summary>
         Depth16,
@@ -49,5 +54,10 @@
         /// Used for creating depth maps.
         /// </summary>
         Depth24,
+
+        /// <summary>
+        /// RGBA int, 32bit.
+        /// </summary>
+        iRGBA32,
     }
 }

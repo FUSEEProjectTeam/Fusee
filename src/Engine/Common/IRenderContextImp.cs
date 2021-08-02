@@ -67,6 +67,13 @@ namespace Fusee.Engine.Common
         IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null);
 
         /// <summary>
+        /// Creates a shader object from compute shader source code.
+        /// </summary>
+        /// <param name="cs">A string containing the compute shader source.</param>
+        /// <returns></returns>
+        IShaderHandle CreateShaderProgramCompute(string cs = null);
+
+        /// <summary>
         /// Removes given shader program from GPU
         /// </summary>
         /// <param name="sp"></param>
@@ -284,7 +291,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texIds">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
+        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);        
 
         /// <summary>
         /// Updates the given region of a texture with the passed image data.
@@ -550,6 +557,21 @@ namespace Fusee.Engine.Common
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
         void Render(IMeshImp mr);
+
+        /// <summary>
+        /// Launch the bound Compute Shader Program.
+        /// </summary>
+        /// <param name="kernelIndex"></param>
+        /// <param name="threadGroupsX">The number of work groups to be launched in the X dimension.</param>
+        /// <param name="threadGroupsY">The number of work groups to be launched in the Y dimension.</param>
+        /// <param name="threadGroupsZ">he number of work groups to be launched in the Z dimension.</param>
+        void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ);
+
+        /// <summary>
+        /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
+        /// TODO: Define GLbitfield enum
+        /// </summary>
+        void MemoryBarrier();
 
         /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).

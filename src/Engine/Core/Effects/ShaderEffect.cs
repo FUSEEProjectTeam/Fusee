@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The Geometry shader code.
         /// </summary>
-        public string GeometryShaderSrc { get; protected set; }
+        public string GeometryShaderSrc { get; protected set; }        
 
         /// <summary>
         /// The constructor to create a shader effect.

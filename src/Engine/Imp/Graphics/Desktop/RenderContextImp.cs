@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
-using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -254,8 +253,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;
-
                     break;
+
                 case ColorFormat.fRGB16:
                     internalFormat = PixelInternalFormat.Rgb16f;
                     format = PixelFormat.Rgb;
@@ -266,6 +265,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     format = PixelFormat.Rgba;
                     pxType = PixelType.Float;
                     break;
+                case ColorFormat.fRGBA32:
+                    internalFormat = PixelInternalFormat.Rgba32f;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.Float;
+                    break;
+
+                case ColorFormat.iRGBA32:
+                    internalFormat = PixelInternalFormat.Rgba32i;
+                    format = PixelFormat.RgbaInteger;
+                    pxType = PixelType.Int;
+                    break;
+
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
@@ -522,11 +533,47 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Shader related Members
 
         /// <summary>
+        /// Creates a shader object from compute shader source code.
+        /// </summary>
+        /// <param name="cs">A string containing the compute shader source.</param>
+        /// <returns></returns>
+        public IShaderHandle CreateShaderProgramCompute(string cs)
+        {
+            string info = string.Empty;
+            int statusCode = -1;
+
+            // Compile compute shader
+            int computeObject = -1;
+            if (!string.IsNullOrEmpty(cs))
+            {
+                computeObject = GL.CreateShader(ShaderType.ComputeShader);
+
+                GL.ShaderSource(computeObject, cs);
+                GL.CompileShader(computeObject);
+                GL.GetShaderInfoLog(computeObject, out info);
+                GL.GetShader(computeObject, ShaderParameter.CompileStatus, out statusCode);
+            }
+
+            if (statusCode != 1)
+                throw new ApplicationException(info);
+
+            int program = GL.CreateProgram();
+           
+            GL.AttachShader(program, computeObject);
+            GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
+            GL.DetachShader(program, computeObject);
+            GL.DeleteShader(computeObject);
+
+            return new ShaderHandleImp { Handle = program };
+        }
+
+        /// <summary>
         /// Creates the shader program by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
         /// Do not use this function in frequent updates.
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="gs">The geometry shader code.</param>
+        /// <param name="cs">The compute shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="ApplicationException">
@@ -704,6 +751,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case ActiveUniformType.UnsignedIntSampler2D:
                     case ActiveUniformType.IntSampler2D:
                     case ActiveUniformType.Sampler2DShadow:
+                    case ActiveUniformType.Image2D:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
                     case ActiveUniformType.SamplerCube:
@@ -872,6 +920,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case TextureType.ArrayTexture:
                     GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
+                case TextureType.Image2D:                    
+                    GL.BindImageTexture(0, ((TextureHandle)texId).TexHandle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba32f);
+                    break;
                 default:
                     throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
@@ -1028,7 +1079,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.GetFloat(GetPName.ColorClearValue, out OpenTK.Mathematics.Vector4 ret);
                 return new float4(ret.X, ret.Y, ret.Z, ret.W);
             }
-            set { GL.ClearColor(value.x, value.y, value.z, value.w); }
+            set => GL.ClearColor(value.x, value.y, value.z, value.w);
         }
 
         /// <summary>
@@ -1044,7 +1095,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.GetFloat(GetPName.DepthClearValue, out float ret);
                 return ret;
             }
-            set { GL.ClearDepth(value); }
+            set => GL.ClearDepth(value);
         }
 
         #endregion
@@ -1089,7 +1140,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), attributes, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
-                throw new ApplicationException(String.Format(
+                throw new ApplicationException(string.Format(
                     "Problem uploading attribute buffer to VBO ('{2}'). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes, attributeName));
 
@@ -1148,7 +1199,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1173,7 +1224,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(tangentBytes), tangents, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != tangentBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
         }
 
         /// <summary>
@@ -1198,7 +1249,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(bitangentBytes), bitangents, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != bitangentBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
         }
 
         /// <summary>
@@ -1223,7 +1274,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
-                throw new ApplicationException(String.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1248,7 +1299,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
-                throw new ApplicationException(String.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
         }
 
         /// <summary>
@@ -1273,7 +1324,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
-                throw new ApplicationException(String.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1298,7 +1349,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
-                throw new ApplicationException(String.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1323,7 +1374,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
-                throw new ApplicationException(String.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
         }
 
         /// <summary>
@@ -1349,7 +1400,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
-                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
+                throw new ApplicationException(string.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
         }
 
         /// <summary>
@@ -1440,6 +1491,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             GL.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
             ((MeshImp)mr).InvalidateBiTangents();
+        }
+
+        /// <summary>
+        /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
+        /// </summary>
+        public void MemoryBarrier()
+        {
+            GL.MemoryBarrier(MemoryBarrierFlags.AllBarrierBits);
+        }
+
+        /// <summary>
+        /// Launch the bound Compute Shader Program.
+        /// </summary>
+        /// <param name="kernelIndex"></param>
+        /// <param name="threadGroupsX">The number of work groups to be launched in the X dimension.</param>
+        /// <param name="threadGroupsY">The number of work groups to be launched in the Y dimension.</param>
+        /// <param name="threadGroupsZ">he number of work groups to be launched in the Z dimension.</param>
+        public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
+        {
+            GL.DispatchCompute(threadGroupsX, threadGroupsY, threadGroupsZ);
         }
 
         /// <summary>

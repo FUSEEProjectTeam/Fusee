@@ -26,6 +26,11 @@ namespace Fusee.Engine.Core
         public RenderTargetTextureTypes TextureType { get; private set; }
 
         /// <summary>
+        /// Is treated as "image2D" in the shader.
+        /// </summary>
+        public bool AsImage = false;
+
+        /// <summary>
         /// Width in pixels.
         /// </summary>
         public int Width
@@ -201,6 +206,17 @@ namespace Fusee.Engine.Core
         public static WritableTexture CreateSSAOTex(int width, int height)
         {
             return new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.Nearest);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save SSAO information.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateForComputeShader(int width, int height)
+        {
+            return new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGBA32), width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
