@@ -30,7 +30,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                 shaderCode: AssetStorage.Get<string>("MandelbrotFractal.comp"),
                 effectParameters: new IFxParamDeclaration[]
                 {
-                    new FxParamDeclaration<WritableTexture> { Name = "RWTexture", Value = RWTexture}
+                    new FxParamDeclaration<WritableTexture> { Name = "destTex", Value = RWTexture}
                 }
             );
 
@@ -48,7 +48,7 @@ namespace Fusee.Examples.ComputeFractal.Core
              },
              new IFxParamDeclaration[]
              {
-                new FxParamDeclaration<WritableTexture> { Name = "RWTexture", Value = RWTexture}
+                new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
              });
         }
 
@@ -57,7 +57,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         {           
             RWTexture.AsImage = true;
             RC.SetEffect(_computeShader);
-            RC.DispatchCompute(-1, 1, 1, 1);
+            RC.DispatchCompute(-1, RWTexture.Width/16, RWTexture.Height/16, 1);
             RC.MemoryBarrier();
 
             RWTexture.AsImage = false;

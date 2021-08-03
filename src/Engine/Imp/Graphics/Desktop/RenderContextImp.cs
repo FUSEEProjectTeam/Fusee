@@ -921,7 +921,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
                 case TextureType.Image2D:                    
-                    GL.BindImageTexture(0, ((TextureHandle)texId).TexHandle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba32f);
+                    GL.BindImageTexture(((TextureHandle)texId).TexHandle, ((TextureHandle)texId).TexHandle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba32f);
                     break;
                 default:
                     throw new ArgumentException($"Unknown texture target: {texTarget}.");

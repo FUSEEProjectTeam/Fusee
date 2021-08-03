@@ -1,7 +1,7 @@
 ﻿#version 460 core
 
-layout(rgba32f, binding = 0) uniform image2D RWTexture;
-layout (local_size_x = 1, local_size_y = 1) in;
+layout(rgba32f, binding = 0) uniform image2D destTex;
+layout (local_size_x = 16, local_size_y = 16) in;
 
 void main() {
 
@@ -16,5 +16,5 @@ void main() {
 	//
   
 	// output to a specific pixel in the image
-	imageStore(RWTexture, pixel_coords, pixel);
+	imageStore(destTex, pixel_coords, pixel);
 }
