@@ -119,7 +119,9 @@ namespace Fusee.Engine.Common
         /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
         /// the given shader.
         /// </returns>
-        IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram);
+        IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram);
+
+        IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram);
 
         /// <summary>
         /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
@@ -131,7 +133,7 @@ namespace Fusee.Engine.Common
         /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
-        IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName);
+        IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName);
 
         /// <summary>
         /// Sets the specified shader parameter to a float value.
@@ -139,7 +141,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float value that should be assigned to the shader parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float val);
@@ -150,7 +152,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float2 value that should be assigned to the shader parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float2 val);
@@ -161,7 +163,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float2 array that should be assigned to the shader array parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float2[] val);
@@ -172,7 +174,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float3 value that should be assigned to the shader parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float3 val);
@@ -183,7 +185,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float3 array that should be assigned to the shader array parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float3[] val);
@@ -194,7 +196,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float4 value that should be assigned to the shader parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float4 val);
@@ -205,7 +207,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
         /// <param name="val">The float4 array that should be assigned to the shader array parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float4[] val);
@@ -216,7 +218,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float4x4 val);
@@ -227,7 +229,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The float4x4 matrix array that should be assigned to the shader array parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, float4x4[] val);
@@ -238,10 +240,19 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter identifier.</param>
         /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
         /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         void SetShaderParam(IShaderParam param, int val);
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="format">The internal sized format of the texture.</param>
+        void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -275,6 +286,14 @@ namespace Fusee.Engine.Common
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
+
+        void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data);
+
+        void DeleteStorageBuffer(IBufferHandle storageBufferHandle);
+
+        T[] StorageBufferGetData<T>(IBufferHandle storageBufferHandle);
+
+        void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName);
 
         /// <summary>
         /// Sets a texture active and binds it.

@@ -1,3 +1,4 @@
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
@@ -893,13 +894,22 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
+        private void SetShaderParamImage(IShaderParam param, WritableTexture texture)
+        {
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);            
+            _rci.SetShaderParamImage(param, textureHandle, TextureType.Image2D, texture.PixelFormat);
+            
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
         private void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
-            if (texture.AsImage)
-                _rci.SetShaderParamTexture(param, textureHandle, TextureType.Image2D);
-            else
-                _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);            
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
         }
 
         /// <summary>
@@ -939,6 +949,11 @@ namespace Fusee.Engine.Core
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.ArrayTexture);
+        }
+
+        private void ConnectBufferToShaderStorage(IStorageBuffer buffer, string ssboName)
+        {
+            _rci.ConnectBufferToShaderStorage(_currentShaderProgram, buffer, ssboName);
         }
 
         #endregion
@@ -1049,7 +1064,7 @@ namespace Fusee.Engine.Core
                         frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
                     }
                     var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
-                    var activeUniforms = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
 
                     if (activeUniforms.Count == 0)
                     {
@@ -1080,7 +1095,10 @@ namespace Fusee.Engine.Core
                     cs = computeShader.ComputeShaderSrc;
 
                     var shaderOnGpu = _rci.CreateShaderProgramCompute(cs);
-                    var activeUniforms = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                    var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+
+                    var shaderStorageBuffers = _rci.GetShaderStorageBufferList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+
                     if (activeUniforms.Count == 0)
                     {
                         var ex = new Exception();
@@ -1089,6 +1107,12 @@ namespace Fusee.Engine.Core
                     }
 
                     foreach (var param in activeUniforms)
+                    {
+                        if (!shaderParams.ContainsKey(param.Key))
+                            shaderParams.Add(param.Key, param.Value);
+                    }
+
+                    foreach (var param in shaderStorageBuffers)
                     {
                         if (!shaderParams.ContainsKey(param.Key))
                             shaderParams.Add(param.Key, param.Value);
@@ -1149,27 +1173,27 @@ namespace Fusee.Engine.Core
             if (cFx.ActiveUniforms.Count != 0)
                 throw new ArgumentException("The compiled effect already has parameters!");
 
-            //Iterate source shader's active uniforms and create a EffectParam for each one.
-            foreach (var activeUniform in activeUniforms)
+            //Iterate source shader's active params and create a EffectParam for each one.
+            foreach (var shaderParams in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(activeUniform.Key, out IFxParamDeclaration dcl))
+                if (!ef.ParamDecl.TryGetValue(shaderParams.Key, out IFxParamDeclaration dcl))
                 {
-                    Diagnostics.Error(activeUniform.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
+                    Diagnostics.Error(shaderParams.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
                 }
 
                 var effectParam = new FxParam()
                 {
-                    Info = activeUniform.Value
+                    Info = shaderParams.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(activeUniform.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(shaderParams.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
-                cFx.ActiveUniforms.Add(activeUniform.Key, effectParam);
+                cFx.ActiveUniforms.Add(shaderParams.Key, effectParam);
             }
         }
 
@@ -1323,11 +1347,19 @@ namespace Fusee.Engine.Core
                 }
                 else if (param.Value is IWritableTexture)
                 {
-                    SetShaderParamTexture(param.Info.Handle, ((WritableTexture)param.Value));
+                    var wt = ((WritableTexture)param.Value);
+                    if (wt.AsImage)
+                        SetShaderParamImage(param.Info.Handle, wt);
+                    else
+                        SetShaderParamTexture(param.Info.Handle, wt);
                 }
                 else if (param.Value is ITexture)
                 {
                     SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+                }
+                else if(param.Value is IStorageBuffer)
+                {
+                    ConnectBufferToShaderStorage((IStorageBuffer)param.Value, param.Info.Name);
                 }
             }
             else
@@ -1640,7 +1672,7 @@ namespace Fusee.Engine.Core
                     SetShaderParamT(param);
                     param.HasValueChanged = false;
                 }
-
+                
                 _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
 
                 _textureManager.Cleanup();

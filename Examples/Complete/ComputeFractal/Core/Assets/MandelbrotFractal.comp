@@ -1,20 +1,46 @@
 ﻿#version 460 core
 
-layout(rgba32f, binding = 0) uniform image2D RWTexture;
-layout (local_size_x = 1, local_size_y = 1) in;
+//src: https://www.reddit.com/r/Unity3D/comments/7pa6bq/drawing_mandelbrot_fractal_using_gpu_compute/
+
+layout(rgba32f, location = 3, binding = 0) uniform image2D destTex;
+
+layout(std430) buffer rectStorageBuffer
+{
+    int rect_data[4];
+};
+
+layout(std430) buffer colorStorageBuffer
+{
+    vec4 colors_data[256];
+};
+
+layout (local_size_x = 16, local_size_y = 16) in;
 
 void main() {
-
-	// base pixel color for image
-	vec4 pixel = vec4(0.0, 0.0, 1.0, 1.0);
 
 	// get index in global work group i.e x,y position
 	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
   
-	//
-	// interesting stuff happens here later
-	//
-  
+	float k = 0.0009765625;						// this is simply 1 / 1024
+	double dx, dy;
+	double p, q;								// initial point coordinates
+	double x, y, xnew, ynew, d = 0;				// current coordinates, new coordinates, distance from (0, 0)
+	uint itn = 0;								// number of iterations
+	dx = rect_data[2] - rect_data[0];
+	dy = rect_data[3] - rect_data[1];
+	p = rect_data[0] + pixel_coords.x * k * dx;	// divide by 256, to shrink [-512, 512) space to [-2, 2) ---- -2 + x/width * 
+	q = rect_data[1] + pixel_coords.y * k * dy;
+	x = p;
+	y = q;
+	while (itn < 255 && d <= 2){				// this is a trivial fractal drawing loop, we just count the number of iterations required to move the point away
+		xnew = x * x - y * y + p;
+		ynew = 2 * x * y + q;
+		x = xnew;
+		y = ynew;
+		d = x * x + y * y;
+		itn++;
+	}
+	
 	// output to a specific pixel in the image
-	imageStore(RWTexture, pixel_coords, pixel);
+	imageStore(destTex, pixel_coords, colors_data[itn]);
 }

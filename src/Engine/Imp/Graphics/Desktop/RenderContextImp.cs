@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -201,6 +202,30 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge;
                 case Common.TextureWrapMode.ClampToBorder:
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToBorder;
+            }
+        }
+
+        private SizedInternalFormat GetSizedInteralFormat(ImagePixelFormat format)
+        {
+            switch (format.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    return SizedInternalFormat.Rgba8;
+                case ColorFormat.fRGBA16:
+                    return SizedInternalFormat.Rgba16f;
+                case ColorFormat.fRGBA32:
+                    return SizedInternalFormat.Rgba32f;
+                case ColorFormat.iRGBA32:
+                    return SizedInternalFormat.Rgba32i;
+                case ColorFormat.RGB:
+                case ColorFormat.Intensity:
+                case ColorFormat.fRGB32:
+                case ColorFormat.uiRgb8:
+                case ColorFormat.fRGB16:
+                case ColorFormat.Depth24:
+                case ColorFormat.Depth16:
+                default:
+                    throw new ArgumentOutOfRangeException("SizedInternalFormat not supported. Try to use a format with r,g,b and a components.");
             }
         }
 
@@ -558,7 +583,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ApplicationException(info);
 
             int program = GL.CreateProgram();
-           
+
             GL.AttachShader(program, computeObject);
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
             GL.DetachShader(program, computeObject);
@@ -682,7 +707,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
+        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
@@ -702,12 +727,52 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Returns a List of type <see cref="ShaderParamInfo"/> for all ShaderStorageBlocks
+        /// </summary>
+        /// <param name="shaderProgram">The shader program to query.</param>
+        public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        {
+            var paramList = new List<ShaderParamInfo>();
+            var sProg = (ShaderHandleImp)shaderProgram;
+            GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.MaxNameLength, out int ssboMaxLen);
+            GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.ActiveResources, out int nParams);
+            GL.GetProgramInterface(sProg.Handle, ProgramInterface.BufferVariable, ProgramInterfaceParameter.MaxNameLength, out int varMaxLength);
+
+            for (var i = 0; i < nParams; i++)
+            {
+                var paramInfo = new ShaderParamInfo();
+                GL.GetProgramResourceName(sProg.Handle, ProgramInterface.ShaderStorageBlock, i, ssboMaxLen, out _, out string name);
+                paramInfo.Name = name;
+
+                int h = GL.GetProgramResourceIndex(sProg.Handle, ProgramInterface.ShaderStorageBlock, name);
+                paramInfo.Handle = (h == -1) ? null : new ShaderParam { handle = h };
+
+                //// get number of the buffer variables in the shader storage block
+                //ProgramProperty[] queries = new[] { ProgramProperty.ActiveVariables };
+                //var props = new int[queries.Length];
+                //GL.GetProgramResource(sProg.Handle, ProgramInterface.ShaderStorageBlock, h, 1, queries, queries.Length, out int nFields, props);
+
+                //for (int k = 0; k < nFields; k++)
+                //{
+                //    // get name of buffer variable     
+                //    GL.GetProgramResourceName(sProg.Handle, ProgramInterface.BufferVariable, i, varMaxLength, out _, out string varName);
+                //}
+
+                //TODO: paramInfo.Type?
+                paramList.Add(paramInfo);
+            }
+
+            return paramList;
+
+        }
+
+        /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />. 
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
+        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
@@ -718,7 +783,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 var paramInfo = new ShaderParamInfo();
                 paramInfo.Name = GL.GetActiveUniform(sProg.Handle, i, out paramInfo.Size, out ActiveUniformType uType);
-                paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
+                paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
 
                 //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
@@ -901,6 +966,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
+        private void BindImage(TextureType texTarget, ITextureHandle texId, TextureAccess access, SizedInternalFormat format)
+        {
+            switch (texTarget)
+            {
+                case TextureType.Image2D:
+                    GL.BindImageTexture(((TextureHandle)texId).TexHandle, ((TextureHandle)texId).TexHandle, 0, false, 0, access, format);
+                    break;
+                default:
+                    Diagnostics.Warn("Texture will not be bound - use BindTextureByTarget() instead!");
+                    break;
+            }
+        }
+
         private void BindTextureByTarget(ITextureHandle texId, TextureType texTarget)
         {
             switch (texTarget)
@@ -920,7 +998,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case TextureType.ArrayTexture:
                     GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.Image2D:                    
+                case TextureType.Image2D:
                     GL.BindImageTexture(0, ((TextureHandle)texId).TexHandle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba32f);
                     break;
                 default:
@@ -947,6 +1025,38 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             BindTextureByTarget(texId, texTarget);
+        }
+
+        public void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
+            {
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
+                _shaderParam2TexUnit[iParam] = texUnit;
+            }
+
+            var sizedIntFormat = GetSizedInteralFormat(format);
+
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            BindImage(texTarget, texId, access, sizedIntFormat);
+        }
+
+        public void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            {
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
+                _shaderParam2TexUnit[iParam] = texUnit;
+            }
+
+            var sizedIntFormat = GetSizedInteralFormat(format);
+
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            BindImage(texTarget, texId, access, sizedIntFormat);
         }
 
         /// <summary>
@@ -1025,6 +1135,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit + i);
                 BindTextureByTarget(texIds[i], texTarget);
             }
+        }
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="format">The internal sized format of the texture.</param>
+        public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
+        {
+            SetActiveAndBindImage(param, texId, texTarget, format, TextureAccess.ReadWrite, out int texUnit);
+            GL.Uniform1(((ShaderParam)param).handle, texUnit);
         }
 
         /// <summary>
@@ -2421,6 +2544,50 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.End();
         }
 
+        #endregion
+
+        #region Shader Storage Buffer
+
+        public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
+        {
+            var shaderProgram = ((ShaderHandleImp)currentProgram).Handle;
+            var blockIdx = GL.GetProgramResourceIndex(shaderProgram, ProgramInterface.ShaderStorageBlock, ssboName);
+            
+            GL.ShaderStorageBlockBinding(shaderProgram, blockIdx, buffer.BindingIndex);
+        }
+
+        public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data)
+        {
+            if (storageBuffer.BufferHandle == null)
+                storageBuffer.BufferHandle = new StorageBufferHandle();
+            var bufferHandle = (StorageBufferHandle)storageBuffer.BufferHandle;
+            int dataBytes = storageBuffer.Count * storageBuffer.Size;
+
+            //1. Generate Buffer and or set the data
+            if (bufferHandle.Handle == -1)
+            {
+                GL.GenBuffers(1, out bufferHandle.Handle);
+            }
+
+            if (data == null || data.Length == 0)
+            {
+                throw new ArgumentException("Data must not be null or empty");
+            }
+
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferHandle.Handle);
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, storageBuffer.DataMem, BufferUsageHint.DynamicCopy);
+            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
+        }
+
+        public void DeleteStorageBuffer(IBufferHandle storageBufferHandle)
+        {
+            GL.DeleteBuffer(((StorageBufferHandle)storageBufferHandle).Handle);
+        }
+
+        public T[] StorageBufferGetData<T>(IBufferHandle storageBufferHandle)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
 
         #region Picking related Members
