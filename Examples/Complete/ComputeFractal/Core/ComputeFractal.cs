@@ -81,9 +81,7 @@ namespace Fusee.Examples.ComputeFractal.Core
             _rectData[0] = -2.0f;
             _rectData[1] = -2.0f;
             _rectData[2] = 2.0f;
-            _rectData[3] = 2.0f;
-
-            _rect.SetData(_rectData);
+            _rectData[3] = 2.0f;            
 
             _colors = new StorageBuffer<float4>(this, 256, sizeof(float) * 4, 2);
             var i = 0;
@@ -97,8 +95,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                 if (i >= 128 && i < 256)
                     _colorData[i] += new float4(Sawtooth(i * 4, 256) / 256, 0, 0, 1);
                 i++;
-            }
-            _colors.SetData(_colorData);
+            }            
 
             _computeShader = new ComputeShader(
 
@@ -127,6 +124,10 @@ namespace Fusee.Examples.ComputeFractal.Core
              {
                 new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
              });
+
+            RC.SetEffect(_computeShader);
+            _rect.SetData(_rectData);
+            _colors.SetData(_colorData);
         }
 
         // RenderAFrame is called once a frame

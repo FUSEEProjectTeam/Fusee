@@ -2,19 +2,18 @@
 
 //src: https://www.reddit.com/r/Unity3D/comments/7pa6bq/drawing_mandelbrot_fractal_using_gpu_compute/
 
-layout(rgba32f, location = 3, binding = 0) uniform image2D destTex;
+layout(rgba32f) uniform image2D destTex;
+layout (local_size_x = 16, local_size_y = 16) in;
 
-layout(std430) buffer rectStorageBuffer
+layout(std430, binding = 1) buffer rectStorageBuffer
 {
     int rect_data[4];
 };
 
-layout(std430) buffer colorStorageBuffer
+layout(std430, binding = 2) buffer colorStorageBuffer
 {
     vec4 colors_data[256];
 };
-
-layout (local_size_x = 16, local_size_y = 16) in;
 
 void main() {
 

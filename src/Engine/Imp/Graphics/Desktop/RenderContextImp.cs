@@ -2576,6 +2576,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferHandle.Handle);
             GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, storageBuffer.DataMem, BufferUsageHint.DynamicCopy);
+
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int bufferBytes);
+            if (bufferBytes != dataBytes)
+                throw new ApplicationException(string.Format("Problem uploading bone indices buffer to SSBO. Tried to upload {0} bytes, uploaded {1}.", bufferBytes, dataBytes));
+
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
         }
 
