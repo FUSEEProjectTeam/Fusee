@@ -634,7 +634,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
+        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             StringBuilder sbParamName = new StringBuilder(paramName);
             int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName);
@@ -660,7 +660,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
+        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
@@ -673,7 +673,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 StringBuilder sbName = new StringBuilder(512);
                 GL.GetActiveUniform(sProg.Handle, i, 511, out int lenWritten, out paramInfo.Size, out ActiveUniformType uType, sbName);
                 paramInfo.Name = sbName.ToString();
-                paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
+                paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
 
                 switch (uType)
                 {
