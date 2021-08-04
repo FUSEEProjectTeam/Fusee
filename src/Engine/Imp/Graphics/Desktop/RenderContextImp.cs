@@ -974,8 +974,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.BindImageTexture(texUint, ((TextureHandle)texId).TexHandle, 0, false, 0, access, format);
                     break;
                 default:
-                    Diagnostics.Warn("Texture will not be bound - use BindTextureByTarget() instead!");
-                    break;
+                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
         }
 
@@ -1257,7 +1256,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int vertsBytes = attributes.Length * 3 * sizeof(float);
             GL.GenBuffers(1, out int handle);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);            
+            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
 
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), attributes, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
@@ -2551,8 +2550,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             var shaderProgram = ((ShaderHandleImp)currentProgram).Handle;
             var resInx = GL.GetProgramResourceIndex(shaderProgram, ProgramInterface.ShaderStorageBlock, ssboName);
-            
-            GL.ShaderStorageBlockBinding(shaderProgram, resInx, 2);
+            GL.ShaderStorageBlockBinding(shaderProgram, resInx, buffer.BindingIndex);
+            GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, buffer.BindingIndex, ((StorageBufferHandle)buffer.BufferHandle).Handle);
         }
 
         public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct

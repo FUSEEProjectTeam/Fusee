@@ -19,8 +19,6 @@ namespace Fusee.Engine.Common
 
         IBufferHandle BufferHandle { get; set; }
 
-        IntPtr DataMem { get; }
-
         int BindingIndex { get; set; }
     }
 }

@@ -1,9 +1,5 @@
 ﻿using Fusee.Engine.Common;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Fusee.Engine.Core.Effects
 {
@@ -17,34 +13,27 @@ namespace Fusee.Engine.Core.Effects
         private bool _disposed;
         private IBufferHandle _bufferHandle;
 
-        private IntPtr _dataMem;
-
-        public IntPtr DataMem { get { return _dataMem; } }
-
-        private RenderCanvas _rc;
+        private readonly RenderCanvas _rc;
 
         public int BindingIndex { get; set; }
 
         /// <summary>
         /// Return the number of buffer elements.
         /// </summary>
-        public int Count { get { return _count; } }
+        public int Count => _count;
 
         /// <summary>
         /// Return the size in byte for one buffer element.
         /// </summary>
-        public int Size { get { return _tSize; } }
+        public int Size => _tSize;
 
         public IBufferHandle BufferHandle
         {
-            get { return _bufferHandle; }
-            set { _bufferHandle = value; }
+            get => _bufferHandle;
+            set => _bufferHandle = value;
         }
 
-        public T this[int index]
-        {
-            get { return _data[index]; }
-        }
+        public T this[int index] => _data[index];
 
         /// <summary>
         /// Creates a new instance of type StorageBuffer.
@@ -88,7 +77,6 @@ namespace Fusee.Engine.Core.Effects
         private void Release()
         {
             _rc.ContextImplementor.DeleteStorageBuffer(_bufferHandle);
-            Marshal.FreeCoTaskMem(_dataMem);
         }
 
         public void Dispose()

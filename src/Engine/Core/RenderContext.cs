@@ -1,4 +1,3 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
@@ -31,8 +30,8 @@ namespace Fusee.Engine.Core
         /// <seealso cref="Clear"/>
         public float4 ClearColor
         {
-            set { _rci.ClearColor = float4.SRgbFromLinearColor(value); }
-            get { return float4.LinearColorFromSRgb(_rci.ClearColor); }
+            set => _rci.ClearColor = float4.SRgbFromLinearColor(value);
+            get => float4.LinearColorFromSRgb(_rci.ClearColor);
         }
 
         /// <summary>
@@ -896,9 +895,9 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         private void SetShaderParamImage(IShaderParam param, WritableTexture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);            
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamImage(param, textureHandle, TextureType.Image2D, texture.PixelFormat);
-            
+
         }
 
         /// <summary>
@@ -908,7 +907,7 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         private void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);            
+            ITextureHandle textureHandle = _textureManager.GetTextureHandle(texture);
             _rci.SetShaderParamTexture(param, textureHandle, TextureType.Texture2D);
         }
 
@@ -1122,7 +1121,7 @@ namespace Fusee.Engine.Core
                 }
                 catch (Exception ex)
                 {
-                    Diagnostics.Error("Error while compiling shader ", ex, new string[] { cs});
+                    Diagnostics.Error("Error while compiling shader ", ex, new string[] { cs });
                     throw new Exception("Error while compiling shader ", ex);
                 }
             }
@@ -1357,7 +1356,7 @@ namespace Fusee.Engine.Core
                 {
                     SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
                 }
-                else if(param.Value is IStorageBuffer)
+                else if (param.Value is IStorageBuffer)
                 {
                     ConnectBufferToShaderStorage((IStorageBuffer)param.Value, param.Info.Name);
                 }
@@ -1672,7 +1671,7 @@ namespace Fusee.Engine.Core
                     SetShaderParamT(param);
                     param.HasValueChanged = false;
                 }
-                
+
                 _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
 
                 _textureManager.Cleanup();

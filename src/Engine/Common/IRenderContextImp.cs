@@ -287,7 +287,7 @@ namespace Fusee.Engine.Common
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
 
-        void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct; 
+        void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct;
 
         void DeleteStorageBuffer(IBufferHandle storageBufferHandle);
 
@@ -310,7 +310,7 @@ namespace Fusee.Engine.Common
         /// <param name="param">The shader parameter, associated with this texture.</param>
         /// <param name="texIds">The texture handle.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);        
+        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
 
         /// <summary>
         /// Updates the given region of a texture with the passed image data.
