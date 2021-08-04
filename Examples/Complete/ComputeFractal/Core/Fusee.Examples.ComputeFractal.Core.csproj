@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Lato-Black.ttf" />
     <None Remove="Assets\MandelbrotFractal.comp" />
     <None Remove="Assets\RenderTexToScreen.frag" />
     <None Remove="Assets\RenderTexToScreen.vert" />

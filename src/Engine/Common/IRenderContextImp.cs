@@ -147,6 +147,17 @@ namespace Fusee.Engine.Common
         void SetShaderParam(IShaderParam param, float val);
 
         /// <summary>
+        /// Sets the specified shader parameter to a double value.
+        /// </summary>
+        /// <param name="param">The shader parameter identifier.</param>
+        /// <param name="val">The float value that should be assigned to the shader parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderUniformParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        void SetShaderParam(IShaderParam param, double val);
+
+        /// <summary>
         /// Sets the shader parameter to a float2 value.
         /// </summary>
         /// <param name="param">The shader parameter identifier.</param>

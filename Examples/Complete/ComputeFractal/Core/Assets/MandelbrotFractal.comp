@@ -3,6 +3,7 @@
 //src: https://www.reddit.com/r/Unity3D/comments/7pa6bq/drawing_mandelbrot_fractal_using_gpu_compute/
 
 layout(rgba32f) uniform image2D destTex;
+uniform double k;
 layout (local_size_x = 16, local_size_y = 16) in;
 
 layout(std430) buffer rectStorageBuffer
@@ -18,9 +19,8 @@ layout(std430) buffer colorStorageBuffer
 void main() {
 
 	// get index in global work group i.e x,y position
-	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy);
-  
-	float k = 0.0009765625;						// this is simply 1 / 1024
+	ivec2 pixel_coords = ivec2(gl_GlobalInvocationID.xy); 
+	
 	double dx, dy;
 	double p, q;								// initial point coordinates
 	double x, y, xnew, ynew, d = 0;				// current coordinates, new coordinates, distance from (0, 0)

@@ -1290,6 +1290,10 @@ namespace Fusee.Engine.Core
                 {
                     _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
                 }
+                else if (param.Info.Type == typeof(double))
+                {
+                    _rci.SetShaderParam(param.Info.Handle, (double)param.Value);
+                }
                 else if (param.Info.Type == typeof(float2))
                 {
                     if (param.Info.Size > 1)

@@ -797,6 +797,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         paramInfo.Type = typeof(float);
                         break;
 
+                    case ActiveUniformType.Double:
+                        paramInfo.Type = typeof(double);
+                        break;
+
                     case ActiveUniformType.FloatVec2:
                         paramInfo.Type = typeof(float2);
                         break;
@@ -850,6 +854,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float val)
+        {
+            GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        /// <summary>
+        /// Sets a double shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, double val)
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }

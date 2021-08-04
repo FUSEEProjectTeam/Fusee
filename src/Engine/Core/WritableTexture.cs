@@ -216,7 +216,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateForComputeShader(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGBA32), width, height, false, TextureFilterMode.Nearest);
+            return new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGBA32), width, height, false, TextureFilterMode.Linear);
         }
 
         /// <summary>
