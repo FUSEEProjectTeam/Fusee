@@ -103,7 +103,7 @@ namespace Fusee.Examples.ComputeFractal.Core
                 effectParameters: new IFxParamDeclaration[]
                 {
                     new FxParamDeclaration<WritableTexture> { Name = "destTex", Value = RWTexture},
-                    new FxParamDeclaration<StorageBuffer<float4>>{ Name = "colorStorageBuffer", Value = _colors},
+                    //new FxParamDeclaration<StorageBuffer<float4>>{ Name = "colorStorageBuffer", Value = _colors},
                     new FxParamDeclaration<StorageBuffer<double>>{ Name = "rectStorageBuffer", Value = _rect},
                 }
             );
@@ -127,7 +127,7 @@ namespace Fusee.Examples.ComputeFractal.Core
 
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
-            _colors.SetData(_colorData);
+            //_colors.SetData(_colorData);
         }
 
         // RenderAFrame is called once a frame

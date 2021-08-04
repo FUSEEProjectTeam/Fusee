@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Fusee.Engine.Core.Effects
 {
-    public class StorageBuffer<T> : IStorageBuffer 
+    public class StorageBuffer<T> : IStorageBuffer where T : struct
     {
         private readonly int _count;
         private readonly int _tSize;
@@ -35,11 +35,11 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public int Size { get { return _tSize; } }
 
-        public IBufferHandle BufferHandle 
-        { 
+        public IBufferHandle BufferHandle
+        {
             get { return _bufferHandle; }
             set { _bufferHandle = value; }
-        }        
+        }
 
         public T this[int index]
         {
@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core.Effects
             _count = count;
             _tSize = tSize;
             _rc = rc;
-            BindingIndex = blockBindingIndex;            
+            BindingIndex = blockBindingIndex;
         }
 
         /// <summary>
@@ -69,8 +69,6 @@ namespace Fusee.Engine.Core.Effects
             if (data.Length == _count)
             {
                 _data = data;
-                Marshal.FreeCoTaskMem(_dataMem);
-                _dataMem = AllocArrayCoTaskMem();
             }
             else
                 throw new ArgumentOutOfRangeException($"Data array has the wrong length. The length has to be {_count}!");
@@ -86,7 +84,7 @@ namespace Fusee.Engine.Core.Effects
             _data = _rc.ContextImplementor.StorageBufferGetData<T>(_bufferHandle);
             return _data;
         }
-        
+
         private void Release()
         {
             _rc.ContextImplementor.DeleteStorageBuffer(_bufferHandle);
@@ -98,7 +96,7 @@ namespace Fusee.Engine.Core.Effects
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
@@ -117,14 +115,6 @@ namespace Fusee.Engine.Core.Effects
                 // Note disposing has been done.
                 _disposed = true;
             }
-        }
-
-        // Helper method for allocating bytes with generic arrays.
-        private IntPtr AllocArrayCoTaskMem()
-        {
-            var type = typeof(T);
-            var size = Marshal.SizeOf(type) * _data.Length;
-            return Marshal.AllocCoTaskMem(size);
         }
     }
 }

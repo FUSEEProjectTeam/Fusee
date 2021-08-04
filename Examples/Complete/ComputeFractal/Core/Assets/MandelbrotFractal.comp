@@ -5,15 +5,15 @@
 layout(rgba32f) uniform image2D destTex;
 layout (local_size_x = 16, local_size_y = 16) in;
 
-layout(std430, binding = 1) buffer rectStorageBuffer
+layout(std430) buffer rectStorageBuffer
 {
     int rect_data[4];
 };
 
-layout(std430, binding = 2) buffer colorStorageBuffer
-{
-    vec4 colors_data[256];
-};
+//layout(std430, binding = 2) buffer colorStorageBuffer
+//{
+//    vec4 colors_data[256];
+//};
 
 void main() {
 
@@ -41,5 +41,6 @@ void main() {
 	}
 	
 	// output to a specific pixel in the image
-	imageStore(destTex, pixel_coords, colors_data[itn]);
+	//imageStore(destTex, pixel_coords, colors_data[itn]);
+	imageStore(destTex, pixel_coords, vec4(p, 0.0, 0.0, 1.0));
 }

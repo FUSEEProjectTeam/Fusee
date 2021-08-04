@@ -287,7 +287,7 @@ namespace Fusee.Engine.Common
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
 
-        void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data);
+        void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct; 
 
         void DeleteStorageBuffer(IBufferHandle storageBufferHandle);
 

@@ -966,12 +966,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
-        private void BindImage(TextureType texTarget, ITextureHandle texId, TextureAccess access, SizedInternalFormat format)
+        private void BindImage(TextureType texTarget, ITextureHandle texId, int texUint, TextureAccess access, SizedInternalFormat format)
         {
             switch (texTarget)
             {
                 case TextureType.Image2D:
-                    GL.BindImageTexture(((TextureHandle)texId).TexHandle, ((TextureHandle)texId).TexHandle, 0, false, 0, access, format);
+                    GL.BindImageTexture(texUint, ((TextureHandle)texId).TexHandle, 0, false, 0, access, format);
                     break;
                 default:
                     Diagnostics.Warn("Texture will not be bound - use BindTextureByTarget() instead!");
@@ -998,9 +998,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case TextureType.ArrayTexture:
                     GL.BindTexture(TextureTarget.Texture2DArray, ((TextureHandle)texId).TexHandle);
                     break;
-                case TextureType.Image2D:                    
-                    GL.BindImageTexture(((TextureHandle)texId).TexHandle, ((TextureHandle)texId).TexHandle, 0, false, 0, TextureAccess.ReadWrite, SizedInternalFormat.Rgba32f);
-                    break;
+                case TextureType.Image2D:
                 default:
                     throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
@@ -1040,7 +1038,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var sizedIntFormat = GetSizedInteralFormat(format);
 
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            BindImage(texTarget, texId, access, sizedIntFormat);
+            BindImage(texTarget, texId, texUnit, access, sizedIntFormat);
         }
 
         public void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
@@ -1056,7 +1054,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var sizedIntFormat = GetSizedInteralFormat(format);
 
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            BindImage(texTarget, texId, access, sizedIntFormat);
+            BindImage(texTarget, texId, texUnit, access, sizedIntFormat);
         }
 
         /// <summary>
@@ -1259,7 +1257,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int vertsBytes = attributes.Length * 3 * sizeof(float);
             GL.GenBuffers(1, out int handle);
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);            
+
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), attributes, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
@@ -2551,12 +2550,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
         {
             var shaderProgram = ((ShaderHandleImp)currentProgram).Handle;
-            var blockIdx = GL.GetProgramResourceIndex(shaderProgram, ProgramInterface.ShaderStorageBlock, ssboName);
+            var resInx = GL.GetProgramResourceIndex(shaderProgram, ProgramInterface.ShaderStorageBlock, ssboName);
             
-            GL.ShaderStorageBlockBinding(shaderProgram, blockIdx, buffer.BindingIndex);
+            GL.ShaderStorageBlockBinding(shaderProgram, resInx, 2);
         }
 
-        public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data)
+        public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct
         {
             if (storageBuffer.BufferHandle == null)
                 storageBuffer.BufferHandle = new StorageBufferHandle();
@@ -2575,9 +2574,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferHandle.Handle);
-            GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, storageBuffer.DataMem, BufferUsageHint.DynamicCopy);
 
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int bufferBytes);
+            GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, data, BufferUsageHint.DynamicCopy);
+
+            GL.GetBufferParameter(BufferTarget.ShaderStorageBuffer, BufferParameterName.BufferSize, out int bufferBytes);
             if (bufferBytes != dataBytes)
                 throw new ApplicationException(string.Format("Problem uploading bone indices buffer to SSBO. Tried to upload {0} bytes, uploaded {1}.", bufferBytes, dataBytes));
 
