@@ -298,12 +298,26 @@ namespace Fusee.Engine.Common
         /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
 
+        /// <summary>
+        /// Uploads the given data to the SSBO. If the buffer is not created on the GPU by no it will be.
+        /// </summary>
+        /// <typeparam name="T">The data type.</typeparam>
+        /// <param name="storageBuffer">The Storage Buffer Object on the CPU.</param>
+        /// <param name="data">The data that will be uploaded.</param>
         void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct;
 
+        /// <summary>
+        /// Deletes the shader storage buffer on the GPU.
+        /// </summary>
+        /// <param name="storageBufferHandle">The buffer object.</param>
         void DeleteStorageBuffer(IBufferHandle storageBufferHandle);
 
-        T[] StorageBufferGetData<T>(IBufferHandle storageBufferHandle);
-
+        /// <summary>
+        /// Connects the given SSBO to the currently active shader program.
+        /// </summary>
+        /// <param name="currentProgram">The handle of the current shader program.</param>
+        /// <param name="buffer">The Storage Buffer object on the CPU.</param>
+        /// <param name="ssboName">The SSBO's name.</param>
         void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName);
 
         /// <summary>

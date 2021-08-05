@@ -736,7 +736,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var sProg = (ShaderHandleImp)shaderProgram;
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.MaxNameLength, out int ssboMaxLen);
             GL.GetProgramInterface(sProg.Handle, ProgramInterface.ShaderStorageBlock, ProgramInterfaceParameter.ActiveResources, out int nParams);
-            GL.GetProgramInterface(sProg.Handle, ProgramInterface.BufferVariable, ProgramInterfaceParameter.MaxNameLength, out int varMaxLength);
 
             for (var i = 0; i < nParams; i++)
             {
@@ -746,24 +745,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 int h = GL.GetProgramResourceIndex(sProg.Handle, ProgramInterface.ShaderStorageBlock, name);
                 paramInfo.Handle = (h == -1) ? null : new ShaderParam { handle = h };
-
-                //// get number of the buffer variables in the shader storage block
-                //ProgramProperty[] queries = new[] { ProgramProperty.ActiveVariables };
-                //var props = new int[queries.Length];
-                //GL.GetProgramResource(sProg.Handle, ProgramInterface.ShaderStorageBlock, h, 1, queries, queries.Length, out int nFields, props);
-
-                //for (int k = 0; k < nFields; k++)
-                //{
-                //    // get name of buffer variable     
-                //    GL.GetProgramResourceName(sProg.Handle, ProgramInterface.BufferVariable, i, varMaxLength, out _, out string varName);
-                //}
-
-                //TODO: paramInfo.Type?
                 paramList.Add(paramInfo);
             }
 
             return paramList;
-
         }
 
         /// <summary>
@@ -1036,25 +1021,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             BindTextureByTarget(texId, texTarget);
-        }
+        }        
 
-        public void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access)
-        {
-            int iParam = ((ShaderParam)param).handle;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
-            {
-                _textureCountPerShader++;
-                texUnit = _textureCountPerShader;
-                _shaderParam2TexUnit[iParam] = texUnit;
-            }
-
-            var sizedIntFormat = GetSizedInteralFormat(format);
-
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            BindImage(texTarget, texId, texUnit, access, sizedIntFormat);
-        }
-
-        public void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
+        private void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
         {
             int iParam = ((ShaderParam)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
@@ -2547,7 +2516,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-
             GL.Begin(PrimitiveType.Lines);
             GL.Color4(color.x, color.y, color.z, color.w);
             GL.Vertex3(start.x, start.y, start.z);
@@ -2560,6 +2528,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         #region Shader Storage Buffer
 
+        /// <summary>
+        /// Connects the given SSBO to the currently active shader program.
+        /// </summary>
+        /// <param name="currentProgram">The handle of the current shader program.</param>
+        /// <param name="buffer">The Storage Buffer object on the CPU.</param>
+        /// <param name="ssboName">The SSBO's name.</param>
         public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
         {
             var shaderProgram = ((ShaderHandleImp)currentProgram).Handle;
@@ -2568,6 +2542,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, buffer.BindingIndex, ((StorageBufferHandle)buffer.BufferHandle).Handle);
         }
 
+        /// <summary>
+        /// Uploads the given data to the SSBO. If the buffer is not created on the GPU by no it will be.
+        /// </summary>
+        /// <typeparam name="T">The data type.</typeparam>
+        /// <param name="storageBuffer">The Storage Buffer Object on the CPU.</param>
+        /// <param name="data">The data that will be uploaded.</param>
         public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct
         {
             if (storageBuffer.BufferHandle == null)
@@ -2587,7 +2567,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferHandle.Handle);
-
             GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, data, BufferUsageHint.DynamicCopy);
 
             GL.GetBufferParameter(BufferTarget.ShaderStorageBuffer, BufferParameterName.BufferSize, out int bufferBytes);
@@ -2597,15 +2576,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
         }
 
+        /// <summary>
+        /// Deletes the shader storage buffer on the GPU.
+        /// </summary>
+        /// <param name="storageBufferHandle">The buffer object.</param>
         public void DeleteStorageBuffer(IBufferHandle storageBufferHandle)
         {
             GL.DeleteBuffer(((StorageBufferHandle)storageBufferHandle).Handle);
         }
-
-        public T[] StorageBufferGetData<T>(IBufferHandle storageBufferHandle)
-        {
-            throw new NotImplementedException();
-        }
+        
         #endregion
 
         #region Picking related Members

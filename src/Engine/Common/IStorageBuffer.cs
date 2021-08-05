@@ -17,8 +17,15 @@ namespace Fusee.Engine.Common
         /// </summary>
         public int Size { get; }
 
+        /// <summary>
+        /// The handle of the buffer on the GPU.
+        /// </summary>
         IBufferHandle BufferHandle { get; set; }
 
+        /// <summary>
+        /// The binding index point the SSBO will be bound to.
+        /// Caution: the binding point should not be hard coded in the shader code!
+        /// </summary>
         int BindingIndex { get; set; }
     }
 }

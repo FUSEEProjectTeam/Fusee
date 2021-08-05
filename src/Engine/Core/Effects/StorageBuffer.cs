@@ -3,18 +3,16 @@ using System;
 
 namespace Fusee.Engine.Core.Effects
 {
+    /// <summary>
+    /// CPU side implementation for using Shader Storage Buffer Objects.
+    /// </summary>
+    /// <typeparam name="T">The data type of the payload.</typeparam>
     public class StorageBuffer<T> : IStorageBuffer where T : struct
     {
-        private readonly int _count;
-        private readonly int _tSize;
-
-        private T[] _data;
-
-        private bool _disposed;
-        private IBufferHandle _bufferHandle;
-
-        private readonly RenderCanvas _rc;
-
+        /// <summary>
+        /// The binding index point the SSBO will be bound to.
+        /// Caution: the binding point should not be hard coded in the shader code!
+        /// </summary>
         public int BindingIndex { get; set; }
 
         /// <summary>
@@ -27,17 +25,34 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public int Size => _tSize;
 
+        /// <summary>
+        /// The handle of the buffer on the GPU.
+        /// </summary>
         public IBufferHandle BufferHandle
         {
             get => _bufferHandle;
             set => _bufferHandle = value;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public T this[int index] => _data[index];
+
+        private readonly int _count;
+        private readonly int _tSize;
+        private readonly RenderCanvas _rc;
+
+        private T[] _data;
+        private bool _disposed;
+        private IBufferHandle _bufferHandle;
 
         /// <summary>
         /// Creates a new instance of type StorageBuffer.
         /// </summary>
+        /// <param name="rc">The RenderContext this object is used with.</param>
         /// <param name="count">The (fixed) count of buffer elements.</param>
         /// <param name="tSize">The size (byte) of one buffer element.</param>
         /// <param name="blockBindingIndex">Int that needs to be unique throughout the shader.</param>
@@ -62,36 +77,30 @@ namespace Fusee.Engine.Core.Effects
             else
                 throw new ArgumentOutOfRangeException($"Data array has the wrong length. The length has to be {_count}!");
             _rc.ContextImplementor.StorageBufferSetData(this, _data);
-        }
-
-        /// <summary>
-        /// Returns the buffer contents.
-        /// </summary>
-        /// <returns></returns>
-        public T[] GetData()
-        {
-            _data = _rc.ContextImplementor.StorageBufferGetData<T>(_bufferHandle);
-            return _data;
-        }
+        }        
 
         private void Release()
         {
             _rc.ContextImplementor.DeleteStorageBuffer(_bufferHandle);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            // Check to see if Dispose has already been called.
-            if (!this._disposed)
+            if (!_disposed)
             {
-                // If disposing equals true, dispose all managed
-                // and unmanaged resources.
                 if (disposing)
                 {
                     // Dispose managed resources.
@@ -100,7 +109,6 @@ namespace Fusee.Engine.Core.Effects
                 //Release unmanaged resources
                 Release();
 
-                // Note disposing has been done.
                 _disposed = true;
             }
         }
