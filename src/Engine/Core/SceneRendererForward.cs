@@ -267,7 +267,7 @@ namespace Fusee.Engine.Core
         /// Sets the render context for the given scene.
         /// </summary>
         /// <param name="rc"></param>
-        public void SetContext(RenderContext rc)
+        public virtual void SetContext(RenderContext rc)
         {
             if (rc == null)
                 throw new ArgumentNullException("rc");
@@ -275,6 +275,7 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
+
                 InitState();
             }
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 
 namespace Fusee.Engine.Common
 {
@@ -34,5 +34,16 @@ namespace Fusee.Engine.Common
         /// Careful: it is better to use a <see cref="IWritableTexture"/> when rendering to a single texture!
         /// </summary>
         bool IsDepthOnly { get; set; }
+
+        void SetPositionTex();
+        void SetAlbedoSpecularTex();
+        void SetNormalTex();
+        void SetDepthTex(TextureCompareMode texCompareMode, Compare depthCompare);
+        void SetSpecularTex();
+        void SetEmissiveTex();
+
+        event EventHandler<EventArgs> DeleteBuffers;
+
+        void SetTexture(IWritableTexture src, RenderTargetTextureTypes tex);
     }
 }

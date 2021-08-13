@@ -1,7 +1,8 @@
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using System;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Graphics
 {
     /// <summary>
     /// Use this if you want to render into buffer object, associated with one or more textures.
@@ -57,7 +58,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="src">The source RenderTarget.</param>
         /// <param name="tex">The type of the texture.</param>
-        public void SetTextureFromRenderTarget(RenderTarget src, RenderTargetTextureTypes tex)
+        public void SetTextureFromRenderTarget(IRenderTarget src, RenderTargetTextureTypes tex)
         {
             var srcTex = src.RenderTextures[(int)tex];
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
@@ -68,7 +69,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="src">The source RenderTexture.</param>
         /// <param name="tex">The type of the texture.</param>
-        public void SetTexture(WritableTexture src, RenderTargetTextureTypes tex)
+        public void SetTexture(IWritableTexture src, RenderTargetTextureTypes tex)
         {
             RenderTextures[(int)tex] = src ?? throw new ArgumentException("Texture from source target is null!");
         }

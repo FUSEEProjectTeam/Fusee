@@ -72,14 +72,16 @@ namespace Fusee.Engine.Common
         /// <param name="sp"></param>
         void RemoveShader(IShaderHandle sp);
 
+        IRenderTarget CreateGBufferTarget(TexRes res);
+
         /// <summary>
-        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// Free all allocated gpu memory that belong to a frame buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteFrameBuffer(IBufferHandle bh);
 
         /// <summary>
-        /// Free all allocated gpu memory belonging to a renderbuffer object.
+        /// Free all allocated gpu memory belonging to a render buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteRenderBuffer(IBufferHandle bh);
