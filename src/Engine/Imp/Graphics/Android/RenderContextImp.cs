@@ -3,6 +3,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
 using OpenTK.Graphics.ES31;
 using System;
@@ -1038,6 +1039,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion Clear
 
         #region Rendering related Members
+        public IRenderTarget CreateGBufferTarget(TexRes res)
+        {
+            var gBufferRenderTarget = new RenderTarget(res);
+            gBufferRenderTarget.SetPositionTex();
+            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetNormalTex();
+            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetSpecularTex();
+            gBufferRenderTarget.SetEmissiveTex();
+
+            return gBufferRenderTarget;
+        }
+
 
         /// <summary>
         /// Only pixels that lie within the scissor box can be modified by drawing commands.

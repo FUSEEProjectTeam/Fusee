@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -2395,7 +2396,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return depth;
         }
 
-        
+
 
         #endregion
     }

@@ -2,7 +2,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using System;
 
-namespace Fusee.Engine.Imp.Graphics
+namespace Fusee.Engine.Imp.Shared
 {
     /// <summary>
     /// Use this if you want to render into buffer object, associated with one or more textures.
@@ -28,7 +28,7 @@ namespace Fusee.Engine.Imp.Graphics
         public IBufferHandle GBufferHandle { get; set; }
 
         /// <summary>
-        /// Handle of the corresponding Depth Buffer (as renderbuffer). Used to dispose the object if it isn't needed anymore.
+        /// Handle of the corresponding Depth Buffer (as render buffer). Used to dispose the object if it isn't needed anymore.
         /// </summary>
         public IBufferHandle DepthBufferHandle { get; set; }
 
