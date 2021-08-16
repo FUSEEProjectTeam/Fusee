@@ -918,7 +918,7 @@ namespace Fusee.Engine.Core
             _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
 
-            
+
 
             _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
         }

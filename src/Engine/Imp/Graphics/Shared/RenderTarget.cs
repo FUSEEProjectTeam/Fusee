@@ -18,7 +18,7 @@ namespace Fusee.Engine.Imp.Shared
 
         /// Flag: Has Dispose already been called?
         public bool Disposed { get; private set; } = false;
-    
+
         ///Order of textures in RenderTextures array is given by the corresponding enum.
         public IWritableTexture[] RenderTextures { get; private set; }
 
