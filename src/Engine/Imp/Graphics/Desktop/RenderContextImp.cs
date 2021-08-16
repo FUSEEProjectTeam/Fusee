@@ -1049,8 +1049,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         #endregion
 
-        #region Rendering related Members       
+        #region Rendering related Members
 
+        /// <summary>
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
         public IRenderTarget CreateGBufferTarget(TexRes res)
         {
             var gBufferRenderTarget = new RenderTarget(res);

@@ -652,7 +652,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Called when keyboard button is released.
         /// </summary>
-        /// <param name="sender">The sender.</param>
         /// <param name="key">The <see cref="KeyboardKeyEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinKeyUp(KeyboardKeyEventArgs key)
         {
@@ -698,7 +697,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private ButtonImpDescription _btnLeftDesc, _btnRightDesc, _btnMiddleDesc;
 
         /// <summary>
-        /// Creates a new mouse input device instance using an existing <see cref="OpenTK.GameWindow"/>.
+        /// Creates a new mouse input device instance using an existing <see cref="GameWindow"/>.
         /// </summary>
         /// <param name="gameWindow">The game window providing mouse input.</param>
         public MouseDeviceImp(GameWindow gameWindow)

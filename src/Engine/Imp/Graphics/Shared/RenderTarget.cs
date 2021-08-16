@@ -18,7 +18,7 @@ namespace Fusee.Engine.Imp.Shared
 
         /// Flag: Has Dispose already been called?
         public bool Disposed { get; private set; } = false;
-
+    
         ///Order of textures in RenderTextures array is given by the corresponding enum.
         public IWritableTexture[] RenderTextures { get; private set; }
 
@@ -108,7 +108,7 @@ namespace Fusee.Engine.Imp.Shared
 
         /// <summary>
         /// Generates a SSAO texture and sets it at the correct position in the RenderTextures Array.
-        /// </summary>        
+        /// </summary>
         public void SetSSAOTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
@@ -116,7 +116,7 @@ namespace Fusee.Engine.Imp.Shared
 
         /// <summary>
         /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
-        /// </summary>        
+        /// </summary>
         public void SetSpecularTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
@@ -124,7 +124,7 @@ namespace Fusee.Engine.Imp.Shared
 
         /// <summary>
         /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
-        /// </summary>        
+        /// </summary>
         public void SetEmissiveTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution);

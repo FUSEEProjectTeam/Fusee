@@ -72,6 +72,10 @@ namespace Fusee.Engine.Common
         /// <param name="sp"></param>
         void RemoveShader(IShaderHandle sp);
 
+        /// <summary>
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
         IRenderTarget CreateGBufferTarget(TexRes res);
 
         /// <summary>
@@ -353,7 +357,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Sets the line width when drawing a mesh with primitive mode line
         /// </summary>
-        /// <param name="width"></param>
+        /// <param name="width">The width of the line.</param>
         void SetLineWidth(float width);
 
         /// <summary>

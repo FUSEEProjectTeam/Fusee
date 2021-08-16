@@ -35,15 +35,46 @@ namespace Fusee.Engine.Common
         /// </summary>
         bool IsDepthOnly { get; set; }
 
+        /// <summary>
+        /// Generates a position texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
         void SetPositionTex();
+
+        /// <summary>
+        /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
         void SetAlbedoSpecularTex();
+
+        /// <summary>
+        /// Generates a normal texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
         void SetNormalTex();
+
+        /// <summary>
+        /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
         void SetDepthTex(TextureCompareMode texCompareMode, Compare depthCompare);
+
+        /// <summary>
+        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
         void SetSpecularTex();
+
+        /// <summary>
+        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
         void SetEmissiveTex();
 
+        /// <summary>
+        /// Event that deletes unmanaged buffer objects.
+        /// </summary>
         event EventHandler<EventArgs> DeleteBuffers;
 
+        /// <summary>
+        /// Sets a RenderTexture into the correct position in the RederTexture array.
+        /// </summary>
+        /// <param name="src">The source RenderTexture.</param>
+        /// <param name="tex">The type of the texture.</param>
         void SetTexture(IWritableTexture src, RenderTargetTextureTypes tex);
     }
 }

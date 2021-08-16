@@ -1334,6 +1334,10 @@ namespace Fusee.Engine.Core
 
         #region Render related methods
 
+        /// <summary>
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
         public IRenderTarget CreateGBufferTarget(TexRes res)
         {
             return _rci.CreateGBufferTarget(res);
