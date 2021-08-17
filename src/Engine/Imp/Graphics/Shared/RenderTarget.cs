@@ -1,3 +1,4 @@
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using System;
@@ -79,7 +80,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetPositionTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGB32));
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>       
         public void SetAlbedoSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>
@@ -95,7 +96,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetNormalTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Normal] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGB32));
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
+            RenderTextures[(int)RenderTargetTextureTypes.Depth] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.Depth24), compareMode, compareFunc);
         }
 
         /// <summary>
@@ -119,7 +120,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
 
         /// <summary>
@@ -127,7 +128,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetEmissiveTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGB));
         }
 
         /// <summary>
