@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (lc.IsCastingShadows)
                 {
                     if (lc.Type != LightType.Point)
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.ShadowMap));
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2DShadow, UniformNameDeclarations.ShadowMap));
                     else
                         uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));
                 }
