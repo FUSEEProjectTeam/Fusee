@@ -4803,7 +4803,6 @@ Global
 		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release|x86.ActiveCfg = Release|Any CPU
 		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release|x86.Build.0 = Release|Any CPU
 		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release-Android|x64.Build.0 = Release|Any CPU
 		{FDBFE3BE-AB08-4477-8318-BBB99AD11B94}.Release-Android|x86.ActiveCfg = Release|Any CPU
