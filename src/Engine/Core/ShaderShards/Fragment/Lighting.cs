@@ -862,7 +862,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;",
+                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z)).r;",
                         "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
                     "}",
                 "}",
@@ -873,7 +873,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculation", new[]
             {
-                GLSL.CreateVar(GLSL.Type.ArrayTexture, "shadowMap"),
+                GLSL.CreateVar(GLSL.Type.ArrayTextureShadow, "shadowMap"),
                 GLSL.CreateVar(GLSL.Type.Int, "layer"),
                 GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"),
                 GLSL.CreateVar(GLSL.Type.Vec3, "normal"),

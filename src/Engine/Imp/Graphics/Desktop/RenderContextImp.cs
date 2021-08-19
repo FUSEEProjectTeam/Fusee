@@ -711,6 +711,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
                     case ActiveUniformType.Sampler2DArray:
+                    case ActiveUniformType.Sampler2DArrayShadow:
                         paramInfo.Type = typeof(IWritableArrayTexture);
                         break;
                     default:
