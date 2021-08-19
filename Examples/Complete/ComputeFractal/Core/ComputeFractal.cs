@@ -31,7 +31,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         private readonly double[] _rectData = new double[4];
 
         // center of the view rect
-        private double _cx, _cy; 
+        private double _cx, _cy;
         private float _depthFactor = 1f;
         private double _k;
 
@@ -130,7 +130,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         private void MoveFractal()
         {
             // in this method we simply change size and position of the view rect in fractal dimension, but it is always projected to the texture
-            
+
             double borderChange = 1.0;
 
             if (Mouse.WheelVel != 0)

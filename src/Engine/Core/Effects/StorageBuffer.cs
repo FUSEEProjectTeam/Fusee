@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core.Effects
             else
                 throw new ArgumentOutOfRangeException($"Data array has the wrong length. The length has to be {_count}!");
             _rc.ContextImplementor.StorageBufferSetData(this, _data);
-        }        
+        }
 
         private void Release()
         {

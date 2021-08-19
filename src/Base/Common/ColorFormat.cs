@@ -28,7 +28,7 @@
         /// <summary>
         /// RGBA float, 32bit.
         /// </summary>
-        fRGB32,        
+        fRGB32,
 
         /// <summary>
         /// RGB float, 16bit.

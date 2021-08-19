@@ -1021,7 +1021,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             BindTextureByTarget(texId, texTarget);
-        }        
+        }
 
         private void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, TextureAccess access, out int texUnit)
         {
@@ -2584,7 +2584,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             GL.DeleteBuffer(((StorageBufferHandle)storageBufferHandle).Handle);
         }
-        
+
         #endregion
 
         #region Picking related Members

@@ -602,7 +602,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             if (!string.IsNullOrEmpty(gs))
-                Diagnostics.Warn("Geometry Shaders are unsupported");            
+                Diagnostics.Warn("Geometry Shaders are unsupported");
 
             int statusCode;
             StringBuilder info = new StringBuilder(512);
