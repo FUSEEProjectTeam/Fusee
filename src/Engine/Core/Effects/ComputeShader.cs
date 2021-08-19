@@ -4,16 +4,21 @@ using System.Text;
 
 namespace Fusee.Engine.Core.Effects
 {
+    /// <summary>
+    /// Class that contains information on how to build a compute shader program.
+    /// </summary>
     public class ComputeShader : Effect, IDisposable
     {
-        //TODO: has RenderStates but doesn't need them...
-
-
         /// <summary>
         /// The Compute Shader code.
         /// </summary>
         public string ComputeShaderSrc { get; protected set; }
 
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="shaderCode">The compute shader code.</param>
+        /// <param name="effectParameters">The uniform parameters as collections of <see cref="IFxParamDeclaration"/>.</param>
         public ComputeShader(string shaderCode, IEnumerable<IFxParamDeclaration> effectParameters)
         {
             ParamDecl = new Dictionary<string, IFxParamDeclaration>();

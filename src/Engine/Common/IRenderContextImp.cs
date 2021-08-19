@@ -121,6 +121,10 @@ namespace Fusee.Engine.Common
         /// </returns>
         IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram);
 
+        /// <summary>
+        /// Get a list of shader storage buffer variables accessed by the given shader.
+        /// </summary>
+        /// <param name="shaderProgram">The shader program to query for parameters.</param>
         IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram);
 
         /// <summary>
