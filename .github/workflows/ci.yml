@@ -56,7 +56,7 @@ jobs:
     - name: Xene
       run: dotnet test -c Release src/Tests/Xene/Fusee.Tests.Xene.csproj
     - name: Xirkit
-      run: dotnet test -c Release src/Tests/Xirkit/Core/Fusees.Tests.Xirkit.Core.csproj
+      run: dotnet test -c Release src/Tests/Xirkit/Core/Fusee.Tests.Xirkit.Core.csproj
     - name: Xirkit Nested Access
       run: dotnet test -c Release src/Tests/Xirkit/NestedAccess/Fusee.Tests.Xirkit.NestedAccess.csproj
 
