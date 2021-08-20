@@ -53,7 +53,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Enable(EnableCap.DebugOutput);
             GL.Enable(EnableCap.DebugOutputSynchronous);
 
-            _openGlDebugDelegate = new DebugProc(openGLDebugCallback);
+            _openGlDebugDelegate = new DebugProc(OpenGLDebugCallback);
 
             GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
             GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, new int[0], false);
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
 #if DEBUG
-        private static void openGLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
+        private static void OpenGLDebugCallback(DebugSource source, DebugType type, int id, DebugSeverity severity, int length, IntPtr message, IntPtr userParam)
         {
             Diagnostics.Debug($"{System.Runtime.InteropServices.Marshal.PtrToStringAnsi(message, length)}\n\tid:{id} severity:{severity} type:{type} source:{source}\n");
         }
