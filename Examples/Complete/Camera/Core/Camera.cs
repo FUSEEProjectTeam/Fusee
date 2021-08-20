@@ -29,9 +29,9 @@ namespace Fusee.Examples.Camera.Core
 
         private Transform _mainCamTransform;
         private Transform _guiCamTransform;
-        private readonly Engine.Core.Scene.Camera _mainCam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
-        private readonly Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
-        private readonly Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _mainCam = new(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _guiCam = new(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _sndCam = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private Transform _sndCamTransform;
 
@@ -75,7 +75,7 @@ namespace Fusee.Examples.Camera.Core
             _sih = new SceneInteractionHandler(_gui);
 
             _frustum = new WireframeCube();
-            SceneNode frustumNode = new SceneNode()
+            SceneNode frustumNode = new()
             {
                 Name = "Frustum",
                 Components = new List<SceneComponent>()
@@ -85,7 +85,7 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            SceneNode cam = new SceneNode()
+            SceneNode cam = new()
             {
                 Name = "MainCam",
                 Components = new List<SceneComponent>()
@@ -120,7 +120,7 @@ namespace Fusee.Examples.Camera.Core
                 Scale = float3.One
             };
 
-            SceneNode cam1 = new SceneNode()
+            SceneNode cam1 = new()
             {
                 Name = "SecondCam",
                 Components = new List<SceneComponent>()
@@ -178,7 +178,7 @@ namespace Fusee.Examples.Camera.Core
             float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_mainCamTransform.Matrix);
             _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
 
-            FrustumF frustum = new FrustumF();
+            FrustumF frustum = new();
             frustum.CalculateFrustumPlanes(viewProjection);
 
             // Sets a mesh inactive if it does not pass the culling test and active if it does. 
@@ -244,7 +244,7 @@ namespace Fusee.Examples.Camera.Core
             float canvasWidth = Width / 100f;
             float canvasHeight = Height / 100f;
 
-            GUIButton btnFuseeLogo = new GUIButton
+            GUIButton btnFuseeLogo = new()
             {
                 Name = "Canvas_Button"
             };
@@ -252,8 +252,8 @@ namespace Fusee.Examples.Camera.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            Texture guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            TextureNode fuseeLogo = new TextureNode(
+            Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
+            TextureNode fuseeLogo = new(
                 "fuseeLogo",
                 vsTex,
                 psTex,
@@ -269,9 +269,9 @@ namespace Fusee.Examples.Camera.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            FontMap guiLatoBlack = new FontMap(fontLato, 24);
+            FontMap guiLatoBlack = new(fontLato, 24);
 
-            TextNode text = new TextNode(
+            TextNode text = new(
                 "FUSEE Camera Example",
                 "ButtonText",
                 vsTex,
@@ -283,7 +283,7 @@ namespace Fusee.Examples.Camera.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            CanvasNode canvas = new CanvasNode(
+            CanvasNode canvas = new(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -300,7 +300,7 @@ namespace Fusee.Examples.Camera.Core
                 }
             };
 
-            SceneNode cam = new SceneNode()
+            SceneNode cam = new()
             {
                 Name = "GUICam",
                 Components = new List<SceneComponent>()

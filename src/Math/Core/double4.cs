@@ -38,32 +38,32 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length double4 that points towards the x-axis.
         /// </summary>
-        public static double4 UnitX = new double4(1, 0, 0, 0);
+        public static double4 UnitX = new(1, 0, 0, 0);
 
         /// <summary>
         /// Defines a unit-length double4 that points towards the y-axis.
         /// </summary>
-        public static double4 UnitY = new double4(0, 1, 0, 0);
+        public static double4 UnitY = new(0, 1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length double4 that points towards the z-axis.
         /// </summary>
-        public static double4 UnitZ = new double4(0, 0, 1, 0);
+        public static double4 UnitZ = new(0, 0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length double4 that points towards the w-axis.
         /// </summary>
-        public static double4 UnitW = new double4(0, 0, 0, 1);
+        public static double4 UnitW = new(0, 0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length double4.
         /// </summary>
-        public static double4 Zero = new double4(0, 0, 0, 0);
+        public static double4 Zero = new(0, 0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly double4 One = new double4(1, 1, 1, 1);
+        public static readonly double4 One = new(1, 1, 1, 1);
 
         // <summary>
         // Defines the size of the double4 struct in bytes.
@@ -528,7 +528,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The xy.
         /// </value>
-        public double2 xy { get => new double2(x, y); set { x = value.x; y = value.y; } }
+        public double2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets and sets an OpenTK.double3 with the x, y and z components of this instance.
@@ -536,7 +536,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The xyz.
         /// </value>
-        public double3 xyz { get => new double3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
+        public double3 xyz { get => new(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         #endregion Swizzle
 

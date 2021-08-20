@@ -67,7 +67,7 @@ namespace Fusee.Engine.Player.Core
             _sih = new SceneInteractionHandler(_gui);
 
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            AABBCalculator aabbc = new(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
@@ -261,6 +261,9 @@ namespace Fusee.Engine.Player.Core
             var psTex = AssetStorage.Get<string>("texture.frag");
             var psText = AssetStorage.Get<string>("text.frag");
 
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
+
             var btnFuseeLogo = new GUIButton
             {
                 Name = "Canvas_Button"
@@ -274,54 +277,48 @@ namespace Fusee.Engine.Player.Core
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f)),
-                float2.One);
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
+                );
             fuseeLogo.AddComponent(btnFuseeLogo);
-
-            // Initialize the information text line.
-            var textToDisplay = "FUSEE 3D Scene";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                textToDisplay += " created";
-                if (_scene.Header.CreatedBy != null)
-                    textToDisplay += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    textToDisplay += " on " + _scene.Header.CreationDate;
-            }
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                textToDisplay,
-                "SceneDescriptionText",
+                "FUSEE Simple Example",
+                "ButtonText",
                 vsTex,
                 psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
-
 
             var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                });
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
+                }
+            };
 
             return new SceneContainer
             {

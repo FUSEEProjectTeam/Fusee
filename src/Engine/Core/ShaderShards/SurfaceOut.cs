@@ -81,23 +81,23 @@ namespace Fusee.Engine.Core.ShaderShards
         internal static readonly string ChangeSurfVert = "ChangeSurfVert";
 
         #region Variables that can be changed in a Shader Shard
-        internal static readonly Tuple<GLSL.Type, string> Pos = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "position");
-        internal static readonly Tuple<GLSL.Type, string> Normal = new Tuple<GLSL.Type, string>(GLSL.Type.Vec3, "normal");
-        internal static readonly Tuple<GLSL.Type, string> Albedo = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "albedo");
-        internal static readonly Tuple<GLSL.Type, string> Emission = new Tuple<GLSL.Type, string>(GLSL.Type.Vec4, "emission");
-        internal static readonly Tuple<GLSL.Type, string> Shininess = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "shininess");
-        internal static readonly Tuple<GLSL.Type, string> SpecularStrength = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specularStrength");
+        internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec4, "position");
+        internal static readonly Tuple<GLSL.Type, string> Normal = new(GLSL.Type.Vec3, "normal");
+        internal static readonly Tuple<GLSL.Type, string> Albedo = new(GLSL.Type.Vec4, "albedo");
+        internal static readonly Tuple<GLSL.Type, string> Emission = new(GLSL.Type.Vec4, "emission");
+        internal static readonly Tuple<GLSL.Type, string> Shininess = new(GLSL.Type.Float, "shininess");
+        internal static readonly Tuple<GLSL.Type, string> SpecularStrength = new(GLSL.Type.Float, "specularStrength");
 
         //BRDF only
-        internal static readonly Tuple<GLSL.Type, string> Roughness = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "roughness");
-        internal static readonly Tuple<GLSL.Type, string> Metallic = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "metallic");
-        internal static readonly Tuple<GLSL.Type, string> Specular = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "specular");
-        internal static readonly Tuple<GLSL.Type, string> IOR = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "ior");
-        internal static readonly Tuple<GLSL.Type, string> Subsurface = new Tuple<GLSL.Type, string>(GLSL.Type.Float, "subsurface");
-        internal static readonly Tuple<GLSL.Type, string> SubsurfaceColor = new Tuple<GLSL.Type, string>(GLSL.Type.Vec3, "subsurfaceColor");
+        internal static readonly Tuple<GLSL.Type, string> Roughness = new(GLSL.Type.Float, "roughness");
+        internal static readonly Tuple<GLSL.Type, string> Metallic = new(GLSL.Type.Float, "metallic");
+        internal static readonly Tuple<GLSL.Type, string> Specular = new(GLSL.Type.Float, "specular");
+        internal static readonly Tuple<GLSL.Type, string> IOR = new(GLSL.Type.Float, "ior");
+        internal static readonly Tuple<GLSL.Type, string> Subsurface = new(GLSL.Type.Float, "subsurface");
+        internal static readonly Tuple<GLSL.Type, string> SubsurfaceColor = new(GLSL.Type.Vec3, "subsurfaceColor");
         #endregion
 
-        private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new Dictionary<LightingSetupFlags, LightingSetupShards>();
+        private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new();
 
         private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
         private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";

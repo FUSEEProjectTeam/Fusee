@@ -3,7 +3,9 @@
     <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
     <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
-   
+
+	<LangVersion>9</LangVersion>
+	  
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
       
     <Authors>FuseeProjectTeam</Authors>

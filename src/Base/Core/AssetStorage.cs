@@ -13,7 +13,7 @@ namespace Fusee.Base.Core
 
     internal static class Ext
     {
-        internal static Dictionary<DateTime, string> _timeAdded = new Dictionary<DateTime, string>();
+        internal static Dictionary<DateTime, string> _timeAdded = new();
 
         /// <summary>
         /// Checks if assets dictionary holds more than 20 element, if so, delete the latest 10 entries

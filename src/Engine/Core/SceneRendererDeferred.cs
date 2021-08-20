@@ -76,9 +76,9 @@ namespace Fusee.Engine.Core
 
         private bool _needToSetSSAOTex = false;
 
-        private float4 _texClearColor = new float4(0, 0, 0, 0);
+        private float4 _texClearColor = new(0, 0, 0, 0);
 
-        private readonly Plane _quad = new Plane();
+        private readonly Plane _quad = new();
 
         private ShaderEffect _ssaoTexEffect;
         private ShaderEffect _lightingPassEffect;

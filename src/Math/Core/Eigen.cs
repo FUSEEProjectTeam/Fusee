@@ -18,7 +18,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Generates the rotation matrix from eigen vectors
         /// </summary>
-        public float4x4 RotationMatrix => new float4x4(new float4(Vectors[0]), new float4(Vectors[1]), new float4(Vectors[2]), new float4(0, 0, 0, 1));
+        public float4x4 RotationMatrix => new(new float4(Vectors[0]), new float4(Vectors[1]), new float4(Vectors[2]), new float4(0, 0, 0, 1));
 
         /// <summary>
         /// Checks if two EigenF values are the same
@@ -69,7 +69,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Generates the rotation matrix from eigen vectors
         /// </summary>
-        public double4x4 RotationMatrix => new double4x4(new double4(Vectors[0]), new double4(Vectors[1]), new double4(Vectors[2]), new double4(0, 0, 0, 1));
+        public double4x4 RotationMatrix => new(new double4(Vectors[0]), new double4(Vectors[1]), new double4(Vectors[2]), new double4(0, 0, 0, 1));
 
 
         /// <summary>

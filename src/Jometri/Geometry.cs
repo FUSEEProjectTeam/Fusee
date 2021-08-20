@@ -11,7 +11,7 @@ namespace Fusee.Jometri
     public class Geometry
     {
         #region Members
-        private readonly Dictionary<Face, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<Face, Dictionary<int, float3>>();
+        private readonly Dictionary<Face, Dictionary<int, float3>> _vertPos2DCache = new();
 
         /// <summary>
         /// Contains all vertices of the Geometry.

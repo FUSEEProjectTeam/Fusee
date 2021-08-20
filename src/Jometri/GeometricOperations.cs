@@ -352,7 +352,7 @@ namespace Fusee.Jometri
         /// <returns>Returns the position of the mean of all Vertices as a float3.</returns>
         public static float3 GetVerticesMeanPos(List<Vertex> vertices)
         {
-            float3 centroid = new float3();
+            float3 centroid = new();
 
             foreach (Vertex vertex in vertices)
             {

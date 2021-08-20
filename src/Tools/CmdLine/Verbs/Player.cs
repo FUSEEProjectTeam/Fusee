@@ -86,7 +86,7 @@ namespace Fusee.Tools.CmdLine.Verbs
             Type tApp = null;
 
             string modelFile = null;
-            List<string> assetDirs = new List<string>();
+            List<string> assetDirs = new();
             TryAddDir(assetDirs, "Assets");
 
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);

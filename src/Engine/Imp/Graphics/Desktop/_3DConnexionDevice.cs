@@ -326,7 +326,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public static SpwRetVal SiGetDeviceImageFileName(IntPtr hdl, out string path)
         {
             SpwRetVal tmpRetVal;
-            SiDeviceIconPath devicePathStruct = new SiDeviceIconPath();
+            SiDeviceIconPath devicePathStruct = new();
             int len = SI_STRSIZE;
             tmpRetVal = pfnSiGetDeviceImageFileName(hdl, ref devicePathStruct, ref len);
             path = devicePathStruct.path;
@@ -336,7 +336,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public static SpwRetVal SiGetDeviceName(IntPtr hdl, out string name)
         {
             SpwRetVal tmpRetVal;
-            SiDeviceName deviceNameStruct = new SiDeviceName();
+            SiDeviceName deviceNameStruct = new();
             tmpRetVal = pfnSiGetDeviceName(hdl, ref deviceNameStruct);
             name = deviceNameStruct.name;
             return tmpRetVal;
@@ -345,7 +345,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public static SpwRetVal SiGetButtonName(IntPtr hdl, uint buttonNumber, out string name)
         {
             SpwRetVal tmpRetVal;
-            SiButtonName buttonNameStruct = new SiButtonName();
+            SiButtonName buttonNameStruct = new();
             tmpRetVal = pfnSiGetButtonName(hdl, buttonNumber, ref buttonNameStruct);
             name = buttonNameStruct.name;
             return tmpRetVal;
@@ -388,7 +388,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <summary>
         /// Buffer for Events
         /// </summary>
-        private readonly Dictionary<SiApp.SiEventType, EventArgs> eventBuffer = new Dictionary<SiApp.SiEventType, EventArgs>();
+        private readonly Dictionary<SiApp.SiEventType, EventArgs> eventBuffer = new();
         /// <summary>
         /// The 3Dconnexion device.
         /// </summary>

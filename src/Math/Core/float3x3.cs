@@ -30,12 +30,12 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     The identity matrix
         /// </summary>
-        public static float3x3 Identity = new float3x3(float3.UnitX, float3.UnitY, float3.UnitZ);
+        public static float3x3 Identity = new(float3.UnitX, float3.UnitY, float3.UnitZ);
 
         /// <summary>
         ///     The zero matrix
         /// </summary>
-        public static float3x3 Zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        public static float3x3 Zero = new(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         #endregion Fields
 
@@ -284,7 +284,7 @@ namespace Fusee.Math.Core
             if (right == Identity) return left;
             if (left == Zero || right == Zero) return Zero;
 
-            float3x3 result = new float3x3(
+            float3x3 result = new(
                 left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
                 left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
                 left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
@@ -360,7 +360,7 @@ namespace Fusee.Math.Core
         {
             float2 result;
 
-            float3 temp = new float3(vector.x, vector.y, 1);
+            float3 temp = new(vector.x, vector.y, 1);
             result = Transform(matrix, temp).xy;
 
             return result;
@@ -376,7 +376,7 @@ namespace Fusee.Math.Core
         {
             float2 result;
 
-            float3 temp = new float3(vector.x, vector.y, 1);
+            float3 temp = new(vector.x, vector.y, 1);
             result = Transform(temp, matrix).xy;
 
             return result;

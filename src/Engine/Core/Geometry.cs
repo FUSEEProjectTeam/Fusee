@@ -162,7 +162,7 @@ namespace Fusee.Engine.Core
         public int AddFace(int[] vertInx, int[] texCoordInx, int[] normalInx)
         {
             int i;
-            Face f = new Face();
+            Face f = new();
 
             // Plausibility checks interleaved...
             if (vertInx == null)
@@ -255,7 +255,7 @@ namespace Fusee.Engine.Core
         /// <returns>A list of indices containing the vertex.</returns>
         public IList<int> GetAllFacesContainingVertex(int iV, out IList<int> vertInFace)
         {
-            List<int> ret = new List<int>();
+            List<int> ret = new();
             vertInFace = new List<int>();
 
             for (int iF = 0; iF < _faces.Count; iF++)
@@ -305,7 +305,7 @@ namespace Fusee.Engine.Core
             for (int iV = 0; iV < _vertices.Count; iV++)
             {
                 IList<int> facesWithIV = GetAllFacesContainingVertex(iV, out IList<int> vertInFace);
-                List<double3> normals = new List<double3>();
+                List<double3> normals = new();
                 foreach (int i in facesWithIV)
                 {
                     normals.Add(CalcFaceNormal(_faces[i]));
@@ -330,7 +330,7 @@ namespace Fusee.Engine.Core
                 if (smoothit)
                 {
                     // create a single normal and set each face to it
-                    double3 daNormal = new double3() { x = 0, y = 0, z = 0 };
+                    double3 daNormal = new() { x = 0, y = 0, z = 0 };
                     foreach (var n in normals)
                     {
                         daNormal += n;
@@ -393,10 +393,10 @@ namespace Fusee.Engine.Core
         {
             // TODO: make a big case decision based on HasTexCoords and HasNormals around the implementation and implement each case individually
 
-            Dictionary<TripleInx, int> _vDict = new Dictionary<TripleInx, int>();
+            Dictionary<TripleInx, int> _vDict = new();
 
-            List<ushort> mTris = new List<ushort>();
-            List<float3> mVerts = new List<float3>();
+            List<ushort> mTris = new();
+            List<float3> mVerts = new();
             List<float2> mTexCoords = (HasTexCoords) ? new List<float2>() : null;
             List<float3> mNormals = (HasNormals) ? new List<float3>() : null;
 
@@ -405,7 +405,7 @@ namespace Fusee.Engine.Core
                 int[] mFace = new int[f.InxVert.Length];
                 for (int i = 0; i < f.InxVert.Length; i++)
                 {
-                    TripleInx ti = new TripleInx()
+                    TripleInx ti = new()
                     {
                         iV = f.InxVert[i],
                         iT = (HasTexCoords) ? f.InxTexCoord[i] : 0,
@@ -436,7 +436,7 @@ namespace Fusee.Engine.Core
                 mTris.AddRange(Triangulate(f, mFace));
             }
 
-            Mesh m = new Mesh
+            Mesh m = new()
             {
                 Vertices = mVerts.ToArray()
             };

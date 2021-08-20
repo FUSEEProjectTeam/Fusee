@@ -72,12 +72,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The identity matrix
         /// </summary>
-        public static double4x4 Identity = new double4x4(double4.UnitX, double4.UnitY, double4.UnitZ, double4.UnitW);
+        public static double4x4 Identity = new(double4.UnitX, double4.UnitY, double4.UnitZ, double4.UnitW);
 
         /// <summary>
         /// The zero matrix
         /// </summary>
-        public static double4x4 Zero = new double4x4(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
+        public static double4x4 Zero = new(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
 
         #endregion Fields
 
@@ -161,7 +161,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column1
         {
-            get => new double4(Row1.x, Row2.x, Row3.x, Row4.x);
+            get => new(Row1.x, Row2.x, Row3.x, Row4.x);
             set { Row1.x = value.x; Row2.x = value.y; Row3.x = value.z; Row4.x = value.w; }
         }
 
@@ -170,7 +170,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column2
         {
-            get => new double4(Row1.y, Row2.y, Row3.y, Row4.y);
+            get => new(Row1.y, Row2.y, Row3.y, Row4.y);
             set { Row1.y = value.x; Row2.y = value.y; Row3.y = value.z; Row4.y = value.w; }
         }
 
@@ -179,7 +179,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column3
         {
-            get => new double4(Row1.z, Row2.z, Row3.z, Row4.z);
+            get => new(Row1.z, Row2.z, Row3.z, Row4.z);
             set { Row1.z = value.x; Row2.z = value.y; Row3.z = value.z; Row4.z = value.w; }
         }
 
@@ -188,7 +188,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4 Column4
         {
-            get => new double4(Row1.w, Row2.w, Row3.w, Row4.w);
+            get => new(Row1.w, Row2.w, Row3.w, Row4.w);
             set { Row1.w = value.x; Row2.w = value.y; Row3.w = value.z; Row4.w = value.w; }
         }
 
@@ -342,7 +342,7 @@ namespace Fusee.Math.Core
         /// <remarks>
         /// The offset part of the matrix consists of the M14, M24 and M34 components (in row major order notation).
         /// </remarks>
-        public double3 Offset => new double3(Row1.w, Row2.w, Row3.w);
+        public double3 Offset => new(Row1.w, Row2.w, Row3.w);
 
         #endregion Properties
 
@@ -722,7 +722,7 @@ namespace Fusee.Math.Core
         public static double4x4 CreateOrthographicOffCenterRH(double left, double right, double bottom, double top, double zNear,
                                                          double zFar)
         {
-            double4x4 result = new double4x4();
+            double4x4 result = new();
 
             double invRL = 1 / (right - left);
             double invTB = 1 / (top - bottom);
@@ -754,7 +754,7 @@ namespace Fusee.Math.Core
         public static double4x4 CreateOrthographicOffCenter(double left, double right, double bottom, double top, double zNear,
                                                            double zFar)
         {
-            double4x4 result = new double4x4();
+            double4x4 result = new();
 
             double invRL = 1 / (right - left);
             double invTB = 1 / (top - bottom);
@@ -1383,9 +1383,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 TransformPerspective(double4x4 mat, double3 vec)
         {
-            double3 result = new double3();
+            double3 result = new();
 
-            double4 v = new double4(vec, 1);
+            double4 v = new(vec, 1);
             v = mat * v;
             result.x = v.x / v.w;
             result.y = v.y / v.w;

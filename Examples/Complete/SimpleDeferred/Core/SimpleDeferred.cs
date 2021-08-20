@@ -42,7 +42,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Light _sun;
 
         private Transform _camTransform;
-        private readonly Camera _campComp = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         // Init is called on startup.
         public override void Init()

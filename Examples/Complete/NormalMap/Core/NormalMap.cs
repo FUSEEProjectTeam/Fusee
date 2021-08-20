@@ -80,7 +80,7 @@ namespace Fusee.Examples.NormalMap.Core
             _mesh.BiTangents = _mesh.CalculateBiTangents();
             _scene.Children[0].Components.Insert(1, normalMappingEffect);
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            AABBCalculator aabbc = new(_scene);
             AABBf? bbox = aabbc.GetBox();
             if (bbox != null)
             {

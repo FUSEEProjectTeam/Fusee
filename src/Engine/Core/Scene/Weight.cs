@@ -14,17 +14,17 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The weight map. Contains as many entries as the object containing this node's geometry has vertices.
         /// </summary>       
-        public List<VertexWeightList> WeightMap = new List<VertexWeightList>();
+        public List<VertexWeightList> WeightMap = new();
 
         /// <summary>
         /// The joint objects controlling the geometry.
         /// </summary>       
-        public List<SceneNode> Joints = new List<SceneNode>();
+        public List<SceneNode> Joints = new();
 
         /// <summary>
         /// The binding matrices defining the object's untransformed state.
         /// </summary>
-        public List<float4x4> BindingMatrices = new List<float4x4>();
+        public List<float4x4> BindingMatrices = new();
     }
 
     /// <summary>

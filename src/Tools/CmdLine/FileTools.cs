@@ -10,8 +10,8 @@ namespace Fusee.Tools.CmdLine
             if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
             if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
 
-            Uri fromUri = new Uri(fromPath);
-            Uri toUri = new Uri(toPath);
+            Uri fromUri = new(fromPath);
+            Uri toUri = new(toPath);
 
             if (fromUri.Scheme != toUri.Scheme)
             {
@@ -45,7 +45,7 @@ namespace Fusee.Tools.CmdLine
         public static void DirectoryCopy(string sourceDirName, string destDirName, bool copySubDirs, bool overwrite)
         {
             // Get the subdirectories for the specified directory.
-            DirectoryInfo dir = new DirectoryInfo(sourceDirName);
+            DirectoryInfo dir = new(sourceDirName);
             DirectoryInfo[] dirs = dir.GetDirectories();
 
             if (!dir.Exists)

@@ -10,8 +10,8 @@ namespace Fusee.Engine.Core
     internal class MeshManager
     {
         private readonly IRenderContextImp _renderContextImp;
-        private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
-        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
+        private readonly Stack<IMeshImp> _toBeDeletedMeshImps = new();
+        private readonly Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new();
 
         private void Remove(IMeshImp meshImp)
         {

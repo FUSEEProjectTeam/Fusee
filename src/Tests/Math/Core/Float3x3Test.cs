@@ -443,7 +443,7 @@ namespace Fusee.Tests.Math.Core
         public void ToString_InvariantCulture()
         {
             string s = "(1.5, 0, 0)\n(0, 1.5, 0)\n(0, 0, 1)";
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
         }
@@ -452,7 +452,7 @@ namespace Fusee.Tests.Math.Core
         public void ToString_CultureDE()
         {
             string s = "(1,5; 0; 0)\n(0; 1,5; 0)\n(0; 0; 1)";
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
         }
@@ -461,7 +461,7 @@ namespace Fusee.Tests.Math.Core
         public void Parse_InvariantCulture()
         {
             string s = "(1.5, 0, 0)\n(0, 1.5, 0)\n(0, 0, 1)";
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(f, float3x3.Parse(s, CultureInfo.InvariantCulture));
         }
@@ -470,7 +470,7 @@ namespace Fusee.Tests.Math.Core
         public void Parse_CultureDE()
         {
             string s = "(1,5; 0; 0)\n(0; 1,5; 0)\n(0; 0; 1)";
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(f, float3x3.Parse(s, new CultureInfo("de-DE")));
         }
@@ -478,7 +478,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_NoCulture()
         {
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(f, float3x3.Parse(f.ToString()));
         }
@@ -486,7 +486,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_InvariantCulture()
         {
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(f, float3x3.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
         }
@@ -494,7 +494,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_CultureDE()
         {
-            float3x3 f = new float3x3(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
+            float3x3 f = new(1.5f, 0, 0, 0, 1.5f, 0, 0, 0, 1);
 
             Assert.Equal(f, float3x3.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
         }

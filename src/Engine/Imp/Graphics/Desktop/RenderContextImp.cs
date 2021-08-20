@@ -735,54 +735,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
-                switch (uType)
+                paramInfo.Type = uType switch
                 {
-                    case ActiveUniformType.Int:
-                        paramInfo.Type = typeof(int);
-                        break;
-
-                    case ActiveUniformType.Float:
-                        paramInfo.Type = typeof(float);
-                        break;
-
-                    case ActiveUniformType.Double:
-                        paramInfo.Type = typeof(double);
-                        break;
-
-                    case ActiveUniformType.FloatVec2:
-                        paramInfo.Type = typeof(float2);
-                        break;
-
-                    case ActiveUniformType.FloatVec3:
-                        paramInfo.Type = typeof(float3);
-                        break;
-
-                    case ActiveUniformType.FloatVec4:
-                        paramInfo.Type = typeof(float4);
-                        break;
-
-                    case ActiveUniformType.FloatMat4:
-                        paramInfo.Type = typeof(float4x4);
-                        break;
-                    case ActiveUniformType.Sampler2D:
-                    case ActiveUniformType.UnsignedIntSampler2D:
-                    case ActiveUniformType.IntSampler2D:
-                    case ActiveUniformType.Sampler2DShadow:
-                    case ActiveUniformType.Image2D:
-                        paramInfo.Type = typeof(ITextureBase);
-                        break;
-                    case ActiveUniformType.SamplerCube:
-                    case ActiveUniformType.SamplerCubeShadow:
-                        paramInfo.Type = typeof(IWritableCubeMap);
-                        break;
-                    case ActiveUniformType.Sampler2DArray:
-                    case ActiveUniformType.Sampler2DArrayShadow:
-                        paramInfo.Type = typeof(IWritableArrayTexture);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
-                }
-
+                    ActiveUniformType.Int => typeof(int),
+                    ActiveUniformType.Float => typeof(float),
+                    ActiveUniformType.Double => typeof(double),
+                    ActiveUniformType.FloatVec2 => typeof(float2),
+                    ActiveUniformType.FloatVec3 => typeof(float3),
+                    ActiveUniformType.FloatVec4 => typeof(float4),
+                    ActiveUniformType.FloatMat4 => typeof(float4x4),
+                    ActiveUniformType.Sampler2D or ActiveUniformType.UnsignedIntSampler2D or ActiveUniformType.IntSampler2D or ActiveUniformType.Sampler2DShadow or ActiveUniformType.Image2D => typeof(ITextureBase),
+                    ActiveUniformType.SamplerCube or ActiveUniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
+                    ActiveUniformType.Sampler2DArray or ActiveUniformType.Sampler2DArrayShadow => typeof(IWritableArrayTexture),
+                    _ => throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown."),
+                };
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -1809,37 +1775,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         internal static Blend BlendFromOgl(int bf)
         {
-            switch (bf)
+            return bf switch
             {
-                case (int)BlendingFactorSrc.Zero:
-                    return Blend.Zero;
-                case (int)BlendingFactorSrc.One:
-                    return Blend.One;
-                case (int)BlendingFactorDest.SrcColor:
-                    return Blend.SourceColor;
-                case (int)BlendingFactorDest.OneMinusSrcColor:
-                    return Blend.InverseSourceColor;
-                case (int)BlendingFactorSrc.SrcAlpha:
-                    return Blend.SourceAlpha;
-                case (int)BlendingFactorSrc.OneMinusSrcAlpha:
-                    return Blend.InverseSourceAlpha;
-                case (int)BlendingFactorSrc.DstAlpha:
-                    return Blend.DestinationAlpha;
-                case (int)BlendingFactorSrc.OneMinusDstAlpha:
-                    return Blend.InverseDestinationAlpha;
-                case (int)BlendingFactorSrc.DstColor:
-                    return Blend.DestinationColor;
-                case (int)BlendingFactorSrc.OneMinusDstColor:
-                    return Blend.InverseDestinationColor;
-                case (int)BlendingFactorSrc.ConstantAlpha:
-                case (int)BlendingFactorSrc.ConstantColor:
-                    return Blend.BlendFactor;
-                case (int)BlendingFactorSrc.OneMinusConstantAlpha:
-                case (int)BlendingFactorSrc.OneMinusConstantColor:
-                    return Blend.InverseBlendFactor;
-                default:
-                    throw new ArgumentOutOfRangeException("blend");
-            }
+                (int)BlendingFactorSrc.Zero => Blend.Zero,
+                (int)BlendingFactorSrc.One => Blend.One,
+                (int)BlendingFactorDest.SrcColor => Blend.SourceColor,
+                (int)BlendingFactorDest.OneMinusSrcColor => Blend.InverseSourceColor,
+                (int)BlendingFactorSrc.SrcAlpha => Blend.SourceAlpha,
+                (int)BlendingFactorSrc.OneMinusSrcAlpha => Blend.InverseSourceAlpha,
+                (int)BlendingFactorSrc.DstAlpha => Blend.DestinationAlpha,
+                (int)BlendingFactorSrc.OneMinusDstAlpha => Blend.InverseDestinationAlpha,
+                (int)BlendingFactorSrc.DstColor => Blend.DestinationColor,
+                (int)BlendingFactorSrc.OneMinusDstColor => Blend.InverseDestinationColor,
+                (int)BlendingFactorSrc.ConstantAlpha or (int)BlendingFactorSrc.ConstantColor => Blend.BlendFactor,
+                (int)BlendingFactorSrc.OneMinusConstantAlpha or (int)BlendingFactorSrc.OneMinusConstantColor => Blend.InverseBlendFactor,
+                _ => throw new ArgumentOutOfRangeException("blend"),
+            };
         }
 
         /// <summary>

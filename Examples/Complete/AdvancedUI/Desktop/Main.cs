@@ -17,7 +17,7 @@ namespace Fusee.Examples.AdvancedUI.Desktop
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            FileAssetProvider fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            FileAssetProvider fap = new("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -48,7 +48,7 @@ namespace Fusee.Examples.AdvancedUI.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            Core.AdvancedUI app = new Core.AdvancedUI();
+            Core.AdvancedUI app = new();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

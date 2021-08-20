@@ -48,7 +48,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private readonly int[,] _bmp = Bmp();
 
         // Cam pos for changing
-        private float3 _cam = new float3(10, 5, 10);
+        private float3 _cam = new(10, 5, 10);
 
         private int _cases = 0;
 
@@ -86,7 +86,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private Transform _body;
         private Transform _bodytrans;
         private SceneContainer _scene;
-        private readonly Transform mazeTransform = new Transform();
+        private readonly Transform mazeTransform = new();
 
         // Other var
         private SceneRendererForward _sceneRenderer;
@@ -109,9 +109,9 @@ namespace Fusee.Examples.Labyrinth.Core
             SceneNode wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
             SceneNode ball = mazeScene.Children.FindNodes(n => n.Name == "Body").First();
             SceneNode head = mazeScene.Children.FindNodes(n => n.Name == "Head").First();
-            Cube _ground = new Cube();
+            Cube _ground = new();
 
-            SceneNode maze = new SceneNode
+            SceneNode maze = new()
             {
                 Components = new List<SceneComponent>
                 {

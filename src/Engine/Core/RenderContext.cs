@@ -111,7 +111,7 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _rci;
 
         private readonly EffectManager _effectManager;
-        private readonly Dictionary<Effect, CompiledEffects> _allCompiledEffects = new Dictionary<Effect, CompiledEffects>();
+        private readonly Dictionary<Effect, CompiledEffects> _allCompiledEffects = new();
 
         /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.

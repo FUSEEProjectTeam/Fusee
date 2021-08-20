@@ -114,7 +114,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public class RayCasterState : VisitorState
         {
-            private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            private readonly CollapsingStateStack<float4x4> _model = new();
 
             /// <summary>
             /// The registered model.

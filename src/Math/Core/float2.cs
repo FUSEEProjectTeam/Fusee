@@ -136,7 +136,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular right.
         /// </value>
-        public float2 PerpendicularRight => new float2(y, -x);
+        public float2 PerpendicularRight => new(y, -x);
 
         #endregion public float2 PerpendicularRight
 
@@ -148,7 +148,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular left.
         /// </value>
-        public float2 PerpendicularLeft => new float2(-y, x);
+        public float2 PerpendicularLeft => new(-y, x);
 
         #endregion public float2 PerpendicularLeft
 
@@ -194,22 +194,22 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length float2 that points towards the x-axis.
         /// </summary>
-        public static readonly float2 UnitX = new float2(1, 0);
+        public static readonly float2 UnitX = new(1, 0);
 
         /// <summary>
         /// Defines a unit-length float2 that points towards the y-axis.
         /// </summary>
-        public static readonly float2 UnitY = new float2(0, 1);
+        public static readonly float2 UnitY = new(0, 1);
 
         /// <summary>
         /// Defines a zero-length float2.
         /// </summary>
-        public static readonly float2 Zero = new float2(0, 0);
+        public static readonly float2 Zero = new(0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly float2 One = new float2(1, 1);
+        public static readonly float2 One = new(1, 1);
 
         // <summary>
         // Defines the size of the float2 struct in bytes.
@@ -619,12 +619,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
+        public float2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
         /// </summary>
-        public float2 yx { get => new float2(y, x); set { y = value.x; x = value.y; } }
+        public float2 yx { get => new(y, x); set { y = value.x; x = value.y; } }
 
         #endregion Swizzle
 

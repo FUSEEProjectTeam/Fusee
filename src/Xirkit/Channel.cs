@@ -30,7 +30,7 @@ namespace Fusee.Xirkit
         public event SetChanelValue TimeChanged;
 
         // The _timeline contains a List of Keyframes.
-        private readonly List<Keyframe<TValue>> _timeline = new List<Keyframe<TValue>>();
+        private readonly List<Keyframe<TValue>> _timeline = new();
 
         private readonly LerpFunc _lerpIt;
 

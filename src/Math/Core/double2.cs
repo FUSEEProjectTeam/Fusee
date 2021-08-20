@@ -122,7 +122,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular right.
         /// </value>
-        public double2 PerpendicularRight => new double2(y, -x);
+        public double2 PerpendicularRight => new(y, -x);
 
         #endregion public double2 PerpendicularRight
 
@@ -134,7 +134,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The perpendicular left.
         /// </value>
-        public double2 PerpendicularLeft => new double2(-y, x);
+        public double2 PerpendicularLeft => new(-y, x);
 
         #endregion public double2 PerpendicularLeft
 
@@ -180,22 +180,22 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length double2 that points towards the x-axis.
         /// </summary>
-        public static readonly double2 UnitX = new double2(1, 0);
+        public static readonly double2 UnitX = new(1, 0);
 
         /// <summary>
         /// Defines a unit-length double2 that points towards the y-axis.
         /// </summary>
-        public static readonly double2 UnitY = new double2(0, 1);
+        public static readonly double2 UnitY = new(0, 1);
 
         /// <summary>
         /// Defines a zero-length double2.
         /// </summary>
-        public static readonly double2 Zero = new double2(0, 0);
+        public static readonly double2 Zero = new(0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly double2 One = new double2(1, 1);
+        public static readonly double2 One = new(1, 1);
 
         // <summary>
         // Defines the size of the double2 struct in bytes.

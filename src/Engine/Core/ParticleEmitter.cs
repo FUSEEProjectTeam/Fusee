@@ -99,13 +99,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The entire particle system consists of one mesh.
         /// </summary>
-        public Mesh ParticleMesh = new Mesh();
+        public Mesh ParticleMesh = new();
         /// <summary>
         /// Returns the particle mesh.
         /// </summary>
         public Mesh PMesh => ParticleMesh;
 
-        private readonly List<ParticleData> _particleList = new List<ParticleData>();
+        private readonly List<ParticleData> _particleList = new();
         private ParticleData _particle;
         private Random _rnd;
         private double _randVelX;

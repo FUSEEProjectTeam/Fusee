@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Defines the identity quaternion.
         /// </summary>
-        public static Quaternion Identity = new Quaternion(0, 0, 0, 1);
+        public static Quaternion Identity = new(0, 0, 0, 1);
 
         #endregion Fields
 
@@ -278,7 +278,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static Quaternion Multiply(Quaternion left, Quaternion right)
         {
-            Quaternion result = new Quaternion(
+            Quaternion result = new(
                 left.w * right.x + left.x * right.w - left.y * right.z + left.z * right.y,
                 left.w * right.y + left.x * right.z + left.y * right.w - left.z * right.x,
                 left.w * right.z - left.x * right.y + left.y * right.x + left.z * right.w,
@@ -751,7 +751,7 @@ namespace Fusee.Math.Core
         /// <returns>A normalized quaternion rotation.</returns>
         public static Quaternion FromToRotation(float3 from, float3 to)
         {
-            Quaternion q = new Quaternion();
+            Quaternion q = new();
 
             float3 a = float3.Cross(from, to);
 
@@ -775,7 +775,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the operation.</returns>
         public static float4 Transform(float4 vec, Quaternion quat)
         {
-            Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
+            Quaternion v = new(vec.x, vec.y, vec.z, vec.w), i, t;
             i = Invert(quat);
             t = Multiply(v, quat);
             v = Multiply(i, t);

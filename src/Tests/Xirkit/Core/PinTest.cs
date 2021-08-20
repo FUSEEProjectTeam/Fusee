@@ -11,9 +11,9 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void TestMemberAndN()
         {
-            SimpleClass obj = new SimpleClass(1, 1);
-            Node node = new Node(obj);
-            Pin pin = new Pin(node, "x");
+            SimpleClass obj = new(1, 1);
+            Node node = new(obj);
+            Pin pin = new(node, "x");
 
             Assert.Equal("x", pin.Member);
             Assert.Equal(pin.N, node);
@@ -22,10 +22,10 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void InPin_TestSetValue_GetPinType()
         {
-            SimpleClass obj1 = new SimpleClass(1, 1);
-            SimpleClass obj2 = new SimpleClass(0, 0);
-            Node node1 = new Node(obj1);
-            Node node2 = new Node(obj2);
+            SimpleClass obj1 = new(1, 1);
+            SimpleClass obj2 = new(0, 0);
+            Node node1 = new(obj1);
+            Node node2 = new(obj2);
 
             node1.Attach("x", node2, "x");
 

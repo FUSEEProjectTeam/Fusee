@@ -12,11 +12,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void TestInAndOutPins_AndRemove()
         {
-            SimpleClass obj1 = new SimpleClass(0, 0);
-            SimpleClass obj2 = new SimpleClass(1, 1);
+            SimpleClass obj1 = new(0, 0);
+            SimpleClass obj2 = new(1, 1);
 
-            Node node1 = new Node(obj1);
-            Node node2 = new Node(obj2);
+            Node node1 = new(obj1);
+            Node node2 = new(obj2);
 
             node1.Attach("x", node2, "y");
 
@@ -33,11 +33,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void TestPropagate()
         {
-            SimpleClass obj1 = new SimpleClass(0, 0);
-            SimpleClass obj2 = new SimpleClass(1, 1);
+            SimpleClass obj1 = new(0, 0);
+            SimpleClass obj2 = new(1, 1);
 
-            Node node1 = new Node(obj1);
-            Node node2 = new Node(obj2);
+            Node node1 = new(obj1);
+            Node node2 = new(obj2);
 
             node1.Attach("x", node2, "y");
 
@@ -51,7 +51,7 @@ namespace Fusee.Tests.Xirkit
         {
             int x = 1;
 
-            void action() { Node node = new Node(x); }
+            void action() { Node node = new(x); }
 
             Assert.Throws<ArgumentException>(action);
         }

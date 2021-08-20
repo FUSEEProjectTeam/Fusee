@@ -2,8 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Tests\Xirkit</OutputPath>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <OutputPath>$(BaseOutputPath)\Tests\Xirkit\Core\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

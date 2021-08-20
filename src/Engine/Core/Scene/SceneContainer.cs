@@ -36,6 +36,6 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The list of child nodes. Each can contain children itself.
         /// </summary>
-        public List<SceneNode> Children = new List<SceneNode>();
+        public List<SceneNode> Children = new();
     }
 }

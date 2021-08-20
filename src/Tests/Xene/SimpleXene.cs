@@ -12,7 +12,7 @@ namespace Fusee.Tests.Xene
         [Fact]
         public void SingleNodeEnumeratorThrowsOnReset()
         {
-            TestNode node = new TestNode();
+            TestNode node = new();
 
             var singleNodeEnumerator = VisitorHelpers.SingleRootEnumerator(node);
 
@@ -25,7 +25,7 @@ namespace Fusee.Tests.Xene
         [Fact]
         public void SingleNodeEnumerableForEach()
         {
-            TestNode node = new TestNode();
+            TestNode node = new();
 
             var singleNodeEnumerable = VisitorHelpers.SingleRootEnumerable(node);
 
@@ -44,7 +44,7 @@ namespace Fusee.Tests.Xene
         {
             // to test the enumeration without the usage of reset()
             // (enumerable should yield a new enumerator every time it's called)
-            TestNode node = new TestNode();
+            TestNode node = new();
 
             var singleNodeEnumerable = VisitorHelpers.SingleRootEnumerable(node);
 

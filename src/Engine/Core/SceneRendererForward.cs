@@ -66,7 +66,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Caches SceneNodes and their model matrices. Used when visiting a <see cref="Bone"/>.
         /// </summary>
-        protected Dictionary<SceneNode, float4x4> _boneMap = new Dictionary<SceneNode, float4x4>();
+        protected Dictionary<SceneNode, float4x4> _boneMap = new();
 
         /// <summary>
         /// Manages animations.
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        protected List<Tuple<SceneNode, LightResult>> _lightResults = new List<Tuple<SceneNode, LightResult>>();
+        protected List<Tuple<SceneNode, LightResult>> _lightResults = new();
 
         #endregion
 

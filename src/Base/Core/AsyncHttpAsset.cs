@@ -10,7 +10,7 @@ namespace Fusee.Base.Core
     /// </summary>
     public class AsyncHttpAsset
     {
-        private static readonly Dictionary<Type, AsyncAssetDecoder> _assetHandlers = new Dictionary<Type, AsyncAssetDecoder>()
+        private static readonly Dictionary<Type, AsyncAssetDecoder> _assetHandlers = new()
         {
             // Default callback for byte[]
             {
@@ -151,7 +151,7 @@ namespace Fusee.Base.Core
 
         private async void DoGetAsset()
         {
-            using HttpClient client = new HttpClient();
+            using HttpClient client = new();
             try
             {
                 byte[] bytes = await client.GetByteArrayAsync(Id);
