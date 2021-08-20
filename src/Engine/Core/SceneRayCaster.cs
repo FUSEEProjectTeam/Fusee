@@ -139,6 +139,7 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new SceneRayCaster.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to use.</param>
+        /// <param name="cullMode"></param>
         public SceneRayCaster(SceneContainer scene, Cull cullMode = Cull.None)
             : base(scene.Children)
         {
@@ -157,7 +158,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that are hit by the ray and that can be iterated over.
         /// </summary>
-        /// <param name="origin">The origin of the ray (in world space).</param>
+        /// <param name="ray"></param>
         /// <param name="direction">The direction of the ray (in world space).</param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
         public IEnumerable<RayCastResult> RayCast(Rayf ray)

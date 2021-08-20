@@ -264,7 +264,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                     Console.WriteLine(" - SUCCESS");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Console.WriteLine(" - FAILD");
                     status = false;

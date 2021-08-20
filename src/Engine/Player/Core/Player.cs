@@ -57,7 +57,7 @@ namespace Fusee.Engine.Player.Core
 
         private GamePadDevice _gamePad;
 
-        public async void LoadAssets()
+        public void LoadAssets()
         {
 
             // Load the standard model
