@@ -3,6 +3,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
 using OpenTK.Graphics.ES31;
 using System;
@@ -39,6 +40,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
         /// <param name="renderCanvas">The render canvas interface.</param>
+        /// <param name="androidContext">The android <see cref="Context"/>.</param>
         public RenderContextImp(IRenderCanvasImp renderCanvas, Context androidContext)
         {
             _textureCountPerShader = 0;
@@ -501,6 +503,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.DeleteFramebuffers(1, ref ((RenderBufferHandle)bh).Handle);
         }
 
+        /// <summary>
+        /// Removes the TextureHandle's buffers and textures from the graphics card's memory
+        /// </summary>
+        /// <remarks>
+        /// Method should be called after an TextureHandle is no longer required by the application.
+        /// </remarks>
+        /// <param name="textureHandle">An TextureHandle object, containing necessary information for the upload to the graphics card.</param>
         public void RemoveTextureHandle(ITextureHandle textureHandle)
         {
             TextureHandle texHandle = (TextureHandle)textureHandle;
@@ -532,6 +541,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
+        /// <param name="gs">A string containing the geometry shader source.</param>
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="System.ApplicationException">
         /// </exception>
@@ -618,6 +628,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.UseProgram(((ShaderHandleImp)program).Handle);
         }
 
+        /// <summary>
+        /// Sets the line width when drawing a mesh with primitive mode line
+        /// </summary>
+        /// <param name="width">The width of the line.</param>
         public void SetLineWidth(float width)
         {
             GL.LineWidth(width);
@@ -1040,6 +1054,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #region Rendering related Members
 
         /// <summary>
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
+        public IRenderTarget CreateGBufferTarget(TexRes res)
+        {
+            var gBufferRenderTarget = new RenderTarget(res);
+            gBufferRenderTarget.SetPositionTex();
+            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetNormalTex();
+            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetSpecularTex();
+            gBufferRenderTarget.SetEmissiveTex();
+
+            return gBufferRenderTarget;
+        }
+
+
+        /// <summary>
         /// Only pixels that lie within the scissor box can be modified by drawing commands.
         /// Note that the Scissor test must be enabled for this to work.
         /// </summary>
@@ -1070,6 +1102,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             //throw new NotImplementedException("Depth clamping isn't implemented yet!");
         }
 
+        /// <summary>
+        /// Binds the VertexArrayPbject onto the GL render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void SetVertexArrayObject(IMeshImp mr)
         {
             //throw new NotImplementedException("Depth clamping isn't implemented yet!");
@@ -1104,6 +1140,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         }
 
+        /// <summary>
+        /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The tangents.</param>
+        /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetTangents(IMeshImp mr, float4[] tangents)
         {
             if (tangents == null || tangents.Length == 0)
@@ -1123,9 +1166,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
-
         }
 
+        /// <summary>
+        /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name = "bitangents">The bitangents.</param>
+        /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetBiTangents(IMeshImp mr, float3[] bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
@@ -1317,7 +1366,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).VertexBufferObject);
@@ -1327,7 +1376,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).NormalBufferObject);
@@ -1337,7 +1386,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject);
@@ -1347,7 +1396,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).UVBufferObject);
@@ -1357,7 +1406,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).ElementBufferObject);
@@ -1367,7 +1416,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneWeightBufferObject);
@@ -1377,19 +1426,27 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneIndexBufferObject);
             ((MeshImp)mr).InvalidateBoneIndices();
         }
 
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTangents(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).TangentBufferObject);
             ((MeshImp)mr).InvalidateTangents();
         }
 
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBiTangents(IMeshImp mr)
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).BitangentBufferObject);
@@ -1985,7 +2042,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
             if (((TextureHandle)texHandle).FrameBufferHandle == -1)
@@ -2013,7 +2070,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders into the given cube map.
         /// </summary>
         /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given cube map. Should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandle">The texture handle, associated with the given cube map. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle)
         {
             if (((TextureHandle)texHandle).FrameBufferHandle == -1)
@@ -2083,7 +2140,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders into the given textures of the RenderTarget.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {
             if (renderTarget == null || (renderTarget.RenderTextures.All(x => x == null)))
