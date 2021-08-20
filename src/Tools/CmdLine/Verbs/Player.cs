@@ -234,8 +234,6 @@ namespace Fusee.Tools.CmdLine.Verbs
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-                // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-                // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
