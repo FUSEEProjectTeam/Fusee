@@ -648,7 +648,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
             StringBuilder sbParamName = new StringBuilder(paramName);
-            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName);
+            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName.ToString());
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 

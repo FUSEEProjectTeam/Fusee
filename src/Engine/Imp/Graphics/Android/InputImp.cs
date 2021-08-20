@@ -566,7 +566,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Should be called by the driver only.
         /// </summary>
-        /// <param name="View"></param>
+        /// <param name="view"></param>
         internal KeyboardDeviceImp(View view)
         {
             _view = (AndroidGameView)view;
@@ -742,7 +742,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Creates a new mouse input device instance using an existing <see cref="View"/>.
         /// </summary>
-        /// <param name="View">The game window providing mouse input.</param>
+        /// <param name="view">The game window providing mouse input.</param>
         public MouseDeviceImp(View view)
         {
             _view = (AndroidGameView)view;

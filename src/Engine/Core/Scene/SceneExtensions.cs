@@ -89,18 +89,6 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Calculates a transformation matrix from this transform component.
-        /// </summary>
-        /// <param name="transformThis">This transform component.</param>
-        /// <returns>The transform component's translation, rotation and scale combined in a single matrix.</returns>
-        //public static float4x4 Matrix(this Transform transformThis)
-        //{
-        //    return float4x4.CreateTranslation(transformThis.Translation) * float4x4.CreateRotationY(transformThis.Rotation.y) *
-        //           float4x4.CreateRotationX(transformThis.Rotation.x) * float4x4.CreateRotationZ(transformThis.Rotation.z) *
-        //           float4x4.CreateScale(transformThis.Scale);
-        //}
-
-        /// <summary>
         /// Returns the global transformation matrix as the product of all transformations along the scene graph branch this SceneNode is a part of. 
         /// </summary>
         public static float4x4 GetGlobalTransformation(this SceneNode snThis)

@@ -386,7 +386,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (!_wasLoaded)
             {
                 // Check for necessary capabilities
-                string version = GL.GetString(All.Version);
+                string version = GL.GetString(StringName.Version);
 
                 int major = version[0];
                 // int minor = (int)version[2];
@@ -398,8 +398,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 GL.ClearColor(0, 0.3f, 0.1f, 1);
 
-                GL.Enable(All.DepthTest);
-                GL.Enable(All.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.CullFace);
 
                 // Use VSync!
                 // Context.SwapInterval = 1;
