@@ -815,8 +815,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;",
-                        "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
+                        "shadow -= texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, projCoords.z), thisBias).r;",
                     "}",
                 "}",
                 "shadow /= pcfKernelSize;",
@@ -826,7 +825,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculation", new[]
             {
-                GLSL.CreateVar(GLSL.Type.Sampler2D, "shadowMap"),
+                GLSL.CreateVar(GLSL.Type.Sampler2DShadow, "shadowMap"),
                 GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"),
                 GLSL.CreateVar(GLSL.Type.Vec3, "normal"),
                 GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"),
@@ -862,7 +861,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "float pcfDepth = texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, layer)).r;",
+                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z)).r;",
                         "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
                     "}",
                 "}",
@@ -873,7 +872,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculation", new[]
             {
-                GLSL.CreateVar(GLSL.Type.ArrayTexture, "shadowMap"),
+                GLSL.CreateVar(GLSL.Type.ArrayTextureShadow, "shadowMap"),
                 GLSL.CreateVar(GLSL.Type.Int, "layer"),
                 GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"),
                 GLSL.CreateVar(GLSL.Type.Vec3, "normal"),
@@ -1021,7 +1020,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (light.isCastingShadows == 1)
                     {
                     ");
-                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, ({UniformNameDeclarations.IView} * vec4(light.position,1.0)).xyz, light.maxDistance, normal, lightDir, light.bias, 1.0);");
+                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap({UniformNameDeclarations.ShadowCubeMap}, ({UniformNameDeclarations.IView} * fragPos).xyz, ({UniformNameDeclarations.IView} * vec4(light.position,1.0)).xyz, light.maxDistance, normal, lightDir, light.bias, 1.0);");
                     frag.AppendLine("}");
                 }
             }
