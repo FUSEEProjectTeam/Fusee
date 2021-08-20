@@ -154,8 +154,7 @@ namespace Fusee.Engine.Core
 
         public IMeshImp GetMeshImpFromMesh(Mesh m)
         {
-            IMeshImp foundMeshImp;
-            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out foundMeshImp))
+            if (!_identifierToMeshImpDictionary.TryGetValue(m.SessionUniqueIdentifier, out IMeshImp foundMeshImp))
             {
                 return RegisterNewMesh(m);
             }

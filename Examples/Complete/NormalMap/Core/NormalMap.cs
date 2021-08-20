@@ -225,11 +225,6 @@ namespace Fusee.Examples.NormalMap.Core
             Present();
         }
 
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
-        }
-
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {

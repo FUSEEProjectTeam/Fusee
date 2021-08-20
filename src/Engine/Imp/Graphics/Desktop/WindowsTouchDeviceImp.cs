@@ -15,8 +15,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsTouchInputDriverImp : IInputDriverImp
     {
-        GameWindow _gameWindow;
-        WindowsTouchInputDeviceImp _touch;
+        readonly GameWindow _gameWindow;
+        readonly WindowsTouchInputDeviceImp _touch;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsTouchInputDriverImp"/> class.
         /// </summary>
@@ -137,11 +137,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsTouchInputDeviceImp : IInputDeviceImp
     {
-        private Dictionary<int, AxisImpDescription> _tpAxisDescs;
-        private Dictionary<int, ButtonImpDescription> _tpButtonDescs;
-        private Dictionary<int, int> _activeTouchpoints;
-        private int _nTouchPointsSupported = 5;
-        private HandleRef _handle;
+        private readonly Dictionary<int, AxisImpDescription> _tpAxisDescs;
+        private readonly Dictionary<int, ButtonImpDescription> _tpButtonDescs;
+        private readonly Dictionary<int, int> _activeTouchpoints;
+        private readonly int _nTouchPointsSupported = 5;
+        private readonly HandleRef _handle;
         private readonly GameWindow _gameWindow;
 
 
@@ -200,19 +200,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private UInt16 GET_Y_LPARAM(UInt32 lp) => HIWORD(lp);
 
         private int GET_POINTERID_WPARAM(UInt32 wParam) => LOWORD(wParam);
-
-        private bool IS_POINTER_FLAG_SET_WPARAM(UInt32 wParam, PointerMsgFlags flag) => ((UInt32)HIWORD(wParam) & ((UInt32)flag)) == ((UInt32)flag);
-        private bool IS_POINTER_NEW_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_NEW);
-        private bool IS_POINTER_INRANGE_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_INRANGE);
-        private bool IS_POINTER_INCONTACT_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_INCONTACT);
-        private bool IS_POINTER_FIRSTBUTTON_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_FIRSTBUTTON);
-        private bool IS_POINTER_SECONDBUTTON_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_SECONDBUTTON);
-        private bool IS_POINTER_THIRDBUTTON_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_THIRDBUTTON);
-        private bool IS_POINTER_FOURTHBUTTON_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_FOURTHBUTTON);
-        private bool IS_POINTER_FIFTHBUTTON_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_FIFTHBUTTON);
-        private bool IS_POINTER_PRIMARY_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_PRIMARY);
-        private bool HAS_POINTER_CONFIDENCE_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_CONFIDENCE);
-        private bool IS_POINTER_CANCELED_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_CANCELED);
 
 
         [DllImport("user32.dll")]
@@ -395,8 +382,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         internal void OnWindowsTouchMove(int id, float x, float y)
         {
             // Diagnostics.Log($"TouchMove {id}");
-            int inx;
-            if (!_activeTouchpoints.TryGetValue(id, out inx))
+            if (!_activeTouchpoints.TryGetValue(id, out int inx))
                 return;
 
             AxisValueChanged?.Invoke(this, new AxisValueChangedArgs { Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_X + 2 * inx].AxisDesc, Value = x });
@@ -405,8 +391,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         internal void OnWindowsTouchEnd(int id, float x, float y)
         {
             // Diagnostics.Log($"TouchEnd {id}");
-            int inx;
-            if (!_activeTouchpoints.TryGetValue(id, out inx))
+            if (!_activeTouchpoints.TryGetValue(id, out int inx))
                 return;
 
             AxisValueChanged?.Invoke(this, new AxisValueChangedArgs { Axis = _tpAxisDescs[(int)TouchAxes.Touchpoint_0_X + 2 * inx].AxisDesc, Value = x });
@@ -417,8 +402,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         internal void OnWindowsTouchCancel(int id, float x, float y)
         {
             // Diagnostics.Log($"TouchCancel {id}");
-            int inx;
-            if (!_activeTouchpoints.TryGetValue(id, out inx))
+            if (!_activeTouchpoints.TryGetValue(id, out int inx))
                 return;
             ButtonValueChanged?.Invoke(this, new ButtonValueChangedArgs { Button = _tpButtonDescs[(int)TouchPoints.Touchpoint_0 + inx].ButtonDesc, Pressed = false });
             _activeTouchpoints.Remove(id);
@@ -607,20 +591,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>The value at the given axis.</returns>
         public float GetAxis(int iAxisId)
         {
-            switch (iAxisId)
+            return iAxisId switch
             {
-                case (int)TouchAxes.ActiveTouchpoints:
-                    return _activeTouchpoints.Count;
-                case (int)TouchAxes.MinX:
-                    return 0;
-                case (int)TouchAxes.MaxX:
-                    return GetWindowWidth();
-                case (int)TouchAxes.MinY:
-                    return 0;
-                case (int)TouchAxes.MaxY:
-                    return GetWindowHeight();
-            }
-            throw new InvalidOperationException($"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this device.");
+                (int)TouchAxes.ActiveTouchpoints => _activeTouchpoints.Count,
+                (int)TouchAxes.MinX => 0,
+                (int)TouchAxes.MaxX => GetWindowWidth(),
+                (int)TouchAxes.MinY => 0,
+                (int)TouchAxes.MaxY => GetWindowHeight(),
+                _ => throw new InvalidOperationException($"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this device."),
+            };
         }
 
         /// <summary>

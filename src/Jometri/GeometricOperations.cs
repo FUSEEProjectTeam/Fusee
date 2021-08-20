@@ -82,7 +82,7 @@ namespace Fusee.Jometri
                 normal.y += (vCur.z - vNext.z) * (vCur.x + vNext.x);
                 normal.z += (vCur.x - vNext.x) * (vCur.y + vNext.y);
             }
-            normal = normal * -1;
+            normal *= -1;
             normal = normal.Normalize();
 
             return normal;
@@ -358,7 +358,7 @@ namespace Fusee.Jometri
             {
                 centroid += vertex.VertData.Pos;
             }
-            centroid = centroid / vertices.Count;
+            centroid /= vertices.Count;
             return centroid;
         }
     }

@@ -13,7 +13,7 @@ namespace Fusee.Base.Imp.Android
     /// </summary>
     public class ApkAssetProvider : StreamAssetProvider
     {
-        Context _androidContext;
+        readonly Context _androidContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApkAssetProvider" /> class.

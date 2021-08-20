@@ -27,7 +27,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private SceneRendererDeferred _sceneRendererDeferred;
         private SceneRendererForward _sceneRendererForward;
 
-        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
@@ -164,7 +163,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _sceneRendererForward = new SceneRendererForward(_sponzaScene);
 
             // Wrap a SceneRenderer around the GUI.
-            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         private bool _renderDeferred = true;

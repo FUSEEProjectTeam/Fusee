@@ -67,58 +67,49 @@ namespace Fusee.Engine.GUI
         /// <returns>The <see cref="MinMaxRect"/> containing the anchor position in percent.</returns>
         public static MinMaxRect GetAnchors(AnchorPos anchorPos)
         {
-            switch (anchorPos)
+            return anchorPos switch
             {
-                case AnchorPos.DownDownLeft:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(0, 0),
-                        Max = new float2(0, 0)
-                    };
-                case AnchorPos.DownDownRight:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(1, 0),
-                        Max = new float2(1, 0)
-                    };
-                case AnchorPos.TopTopLeft:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(0, 1),
-                        Max = new float2(0, 1)
-                    };
-                case AnchorPos.TopTopRight:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(1, 1),
-                        Max = new float2(1, 1)
-                    };
-                case AnchorPos.StretchAll:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(0, 0),
-                        Max = new float2(1, 1)
-                    };
-                case AnchorPos.StretchHorizontal:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(0, 0),
-                        Max = new float2(1, 0)
-                    };
-                case AnchorPos.StretchVertical:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(0, 0),
-                        Max = new float2(0, 1)
-                    };
-                default:
-                case AnchorPos.Middle:
-                    return new MinMaxRect()
-                    {
-                        Min = new float2(0.5f, 0.5f),
-                        Max = new float2(0.5f, 0.5f)
-                    };
-            }
+                AnchorPos.DownDownLeft => new MinMaxRect()
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(0, 0)
+                },
+                AnchorPos.DownDownRight => new MinMaxRect()
+                {
+                    Min = new float2(1, 0),
+                    Max = new float2(1, 0)
+                },
+                AnchorPos.TopTopLeft => new MinMaxRect()
+                {
+                    Min = new float2(0, 1),
+                    Max = new float2(0, 1)
+                },
+                AnchorPos.TopTopRight => new MinMaxRect()
+                {
+                    Min = new float2(1, 1),
+                    Max = new float2(1, 1)
+                },
+                AnchorPos.StretchAll => new MinMaxRect()
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 1)
+                },
+                AnchorPos.StretchHorizontal => new MinMaxRect()
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 0)
+                },
+                AnchorPos.StretchVertical => new MinMaxRect()
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(0, 1)
+                },
+                _ => new MinMaxRect()
+                {
+                    Min = new float2(0.5f, 0.5f),
+                    Max = new float2(0.5f, 0.5f)
+                },
+            };
         }
 
         /// <summary>

@@ -43,7 +43,6 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private DefaultSurfaceEffect _gold_brdfFx;
         private DefaultSurfaceEffect _paint_brdfFx;
         private DefaultSurfaceEffect _rubber_brdfFx;
-        private DefaultSurfaceEffect _subsurf_brdfFx;
 
         private DefaultSurfaceEffect _testFx;
 
@@ -111,17 +110,6 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 specular: 0.1f,
                 ior: 1.519f,
                 subsurface: 0
-            );
-
-            _subsurf_brdfFx = MakeEffect.FromBRDF
-            (
-                albedoColor: new float4(255f / 256f, 234f / 256f, 215f / 256f, 1.0f).LinearColorFromSRgb(),
-                emissionColor: new float4(),
-                roughness: 0.508f,
-                metallic: 0,
-                specular: 0.079f,
-                ior: 1.4f,
-                subsurface: 1.0f
             );
 
             _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;

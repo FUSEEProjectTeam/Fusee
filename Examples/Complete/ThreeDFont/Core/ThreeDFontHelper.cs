@@ -55,8 +55,8 @@ namespace Fusee.Examples.ThreeDFont.Core
                     }
                 }
 
-                advanceComp = advanceComp + advance;
-                kerningComp = kerningComp + kerning;
+                advanceComp += advance;
+                kerningComp += kerning;
 
                 for (var j = 0; j < outline.Count; j++)
                 {
@@ -88,8 +88,8 @@ namespace Fusee.Examples.ThreeDFont.Core
             {
                 var outline = textCurves[i].CalcUniformPolyline(seg).ToList();
 
-                advanceComp = advanceComp + advance;
-                kerningComp = kerningComp + kerning;
+                advanceComp += advance;
+                kerningComp += kerning;
 
                 for (var j = 0; j < outline.Count; j++)
                 {
@@ -122,8 +122,8 @@ namespace Fusee.Examples.ThreeDFont.Core
             {
                 var outline = textCurves[i].CalcAdaptivePolyline(angle).ToList();
 
-                advanceComp = advanceComp + advance;
-                kerningComp = kerningComp + kerning;
+                advanceComp += advance;
+                kerningComp += kerning;
 
                 for (var j = 0; j < outline.Count; j++)
                 {
@@ -155,8 +155,8 @@ namespace Fusee.Examples.ThreeDFont.Core
             {
                 var outline = textCurves[i].CalcAdaptivePolyline(arcreage).ToList();
 
-                advanceComp = advanceComp + advance;
-                kerningComp = kerningComp + kerning;
+                advanceComp += advance;
+                kerningComp += kerning;
 
                 for (var j = 0; j < outline.Count; j++)
                 {
@@ -187,7 +187,7 @@ namespace Fusee.Examples.ThreeDFont.Core
             for (var i = 0; i < textCurves.Count; i++)
             {
                 advanceComp = advanceComp + advance + 0.1f; // 0.1f offset to make sure letters do not have common vertices (example XY Lato).
-                kerningComp = kerningComp + kerning;
+                kerningComp += kerning;
 
                 foreach (var part in textCurves[i].CurveParts)
                 {

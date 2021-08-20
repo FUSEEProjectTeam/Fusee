@@ -30,21 +30,17 @@ namespace Fusee.Examples.Starkiller.Core
         private SceneNode _projectiles;
         private SceneNode _schiff;
 
-        private float MeteorSpeedFactor = 2;
+        private readonly float MeteorSpeedFactor = 2;
 
         private bool[] abgefeuert;
 
         private SceneContainer _scene;
 
-
-        float Highscore = 0;
         float Leben = 0;
         bool gamestart = false;
 
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
@@ -109,7 +105,6 @@ namespace Fusee.Examples.Starkiller.Core
 
             _scene = CreateScene();
             _gui = CreateGui();
-            _sih = new SceneInteractionHandler(_gui);
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
@@ -124,7 +119,8 @@ namespace Fusee.Examples.Starkiller.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-
+            var perspective = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, (float)Width / Height, 0.01f, 1000f);
+            RC.Projection = perspective;
             RC.View = float4x4.CreateTranslation(0, -20, 50) * float4x4.CreateRotationX(-5 * M.Pi / 180);
 
             var schiffTranslation = _schiff.GetTransform().Translation;
@@ -234,7 +230,6 @@ namespace Fusee.Examples.Starkiller.Core
                                 abgefeuert[i] = false;
                                 projectileTranslation.z = -50;
                                 meteorTranslation.z = -100;
-                                Highscore += 100;
                             }
 
                             _meteors.Children[j].GetTransform().Translation = meteorTranslation;
@@ -264,14 +259,11 @@ namespace Fusee.Examples.Starkiller.Core
                             if (Leben == 0)
                             {
                                 gamestart = false;
-                                Highscore = 0;
                             }
 
                         }
 
                     }
-
-
 
                 }
             }
@@ -280,6 +272,9 @@ namespace Fusee.Examples.Starkiller.Core
 
             //Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
+
+            var orthographic = float4x4.CreateOrthographic(Width, Height, 0.01f, 1000);
+            RC.Projection = orthographic;
             _guiRenderer.Render(RC);
 
             //Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -337,7 +332,7 @@ namespace Fusee.Examples.Starkiller.Core
                 textToDisplay,
                 "SceneDescriptionText",
                 vsTex,
-                psTex,
+                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,

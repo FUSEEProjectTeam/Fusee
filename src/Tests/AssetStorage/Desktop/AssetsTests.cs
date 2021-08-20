@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Fusee.Test.Assets.Desktop
+namespace Fusee.Tests.Assets.Desktop
 {
 
     public static class AssetsTest
@@ -14,19 +14,19 @@ namespace Fusee.Test.Assets.Desktop
         }
 
         [Fact]
-        static void SimpleReadOfTxtFile()
+        public static void SimpleReadOfTxtFile()
         {
             Assert.Equal("Test123", AssetStorage.Get<string>("test.txt"));
         }
 
         [Fact]
-        static async void AsyncReadOfTxtFile()
+        public static async void AsyncReadOfTxtFile()
         {
             Assert.Equal("Test123", await AssetStorage.GetAsync<string>("test.txt").ConfigureAwait(false));
         }
 
         [Fact]
-        static void SimpleMultipleReadOfTxtFile()
+        public static void SimpleMultipleReadOfTxtFile()
         {
             // To check the cache dictionary
             for (var i = 0; i < 10000; i++)
@@ -34,7 +34,7 @@ namespace Fusee.Test.Assets.Desktop
         }
 
         [Fact]
-        static async void MultipleAsyncReadOfTxtFile()
+        public static async void MultipleAsyncReadOfTxtFile()
         {
             var list = new List<string>();
 

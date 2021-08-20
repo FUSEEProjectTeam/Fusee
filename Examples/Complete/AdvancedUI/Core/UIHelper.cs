@@ -237,28 +237,13 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private static SceneNode CreateLine(MatColor color)
         {
-            float4 col;
-
-            switch (color)
+            var col = color switch
             {
-                default:
-                case MatColor.White:
-                    col = White;
-                    break;
-
-                case MatColor.Green:
-                    col = Green;
-                    break;
-
-                case MatColor.Yellow:
-                    col = Yellow;
-                    break;
-
-                case MatColor.Gray:
-                    col = Gray;
-                    break;
-            }
-
+                MatColor.Green => Green,
+                MatColor.Yellow => Yellow,
+                MatColor.Gray => Gray,
+                _ => White,
+            };
             return new SceneNode()
             {
                 Name = "line",

@@ -129,7 +129,10 @@ namespace Fusee.Math.Core
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding box, to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
-        public static AABBf operator |(AABBf a, AABBf b) => Union(a, b);
+        public static AABBf operator |(AABBf a, AABBf b)
+        {
+            return Union(a, b);
+        }
 
         /// <summary>
         /// Calculates the bounding box around an existing bounding box and a single point.
@@ -145,7 +148,10 @@ namespace Fusee.Math.Core
         ///         box |= p;
         ///   </code>
         /// </example>
-        public static AABBf operator |(AABBf a, float3 p) => Union(a, p);
+        public static AABBf operator |(AABBf a, float3 p)
+        {
+            return Union(a, p);
+        }
 
         /// <summary>
         ///     Returns the center of the bounding box
@@ -205,7 +211,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this AABB.      
+        /// Checks if a plane lies within or intersects this AABB.      
         /// </summary>
         /// <param name="plane">The plane to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
@@ -305,13 +311,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + max.GetHashCode();
-                hash = hash * 23 + min.GetHashCode();
-                return hash;
-            }
+            return HashCode.Combine(max, min);
         }
     }
 }

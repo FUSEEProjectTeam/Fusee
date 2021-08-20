@@ -58,20 +58,26 @@ namespace Fusee.Base.Common
             {
                 switch (PixelFormat.ColorFormat)
                 {
-                    case ColorFormat.RGBA:
-
-                        return 4;
-                    case ColorFormat.RGB:
-                    case ColorFormat.uiRgb8:
-                        return 3;
                     case ColorFormat.Intensity:
                         return 1;
-                    case ColorFormat.fRGB32:
-                    case ColorFormat.fRGB16:
-                        return 12;
                     case ColorFormat.Depth16:
-                    case ColorFormat.Depth24:
                         return 2;
+                    case ColorFormat.RGB:
+                    case ColorFormat.Depth24:
+                    case ColorFormat.uiRgb8:
+                        return 3;
+                    case ColorFormat.RGBA:
+                        return 4;
+                    case ColorFormat.fRGB16:
+                        return 6;
+                    case ColorFormat.fRGBA16:
+                        return 8;
+                    case ColorFormat.fRGB32:
+                        return 12;
+                    case ColorFormat.iRGBA32:
+                    case ColorFormat.fRGBA32:
+                        return 16;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }

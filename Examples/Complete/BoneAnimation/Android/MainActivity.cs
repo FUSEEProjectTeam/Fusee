@@ -15,7 +15,7 @@ using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
 
-namespace Fusee.Examples.Bone.Android
+namespace Fusee.Examples.BoneAnimation.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__

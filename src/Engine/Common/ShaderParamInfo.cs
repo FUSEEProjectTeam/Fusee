@@ -30,6 +30,10 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// The Handle to be used when setting or getting the parameter value from the shader.
         /// </summary>
-        public IShaderParam Handle;
+        public IShaderParam Handle
+        {
+            get;
+            set;
+        }
     }
 }

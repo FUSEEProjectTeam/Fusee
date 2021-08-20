@@ -142,7 +142,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                     playerFile = Path.GetFullPath(Path.Combine(desktopPlayerDir, "Player.exe"));
                     break;
                 default:
-                    Console.Error.WriteLine($"ERROR: Platform {Platform.ToString()} is currently not handled by fusee.");
+                    Console.Error.WriteLine($"ERROR: Platform {Platform} is currently not handled by fusee.");
                     Environment.Exit((int)ErrorCode.PlatformNotHandled);
                     break;
             }

@@ -108,23 +108,14 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (idx)
+                return idx switch
                 {
-                    case 0:
-                        return x;
-
-                    case 1:
-                        return y;
-
-                    case 2:
-                        return z;
-
-                    case 3:
-                        return w;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a Quaternion type");
-                }
+                    0 => x,
+                    1 => y,
+                    2 => z,
+                    3 => w,
+                    _ => throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a Quaternion type"),
+                };
             }
             set
             {

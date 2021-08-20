@@ -130,110 +130,97 @@ namespace Fusee.Base.Core
             {
                 // Wee need to perform pixel-conversion while copying. -> still GetLineBytes and then perform pixel conversion
 
-                switch (PixelFormat.ColorFormat)
+                copyLine = PixelFormat.ColorFormat switch
                 {
-                    case ColorFormat.RGBA:
-                        switch (src.PixelFormat.ColorFormat)
-                        {
-                            case ColorFormat.RGB:
-                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
-                                {
-                                    for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
-                                    {
-                                        PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
-                                        PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
-                                        PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
-                                        PixelData[destinationIndex + i + 3] = byte.MaxValue;
-                                    }
-                                };
-                                break;
-                            case ColorFormat.Intensity:
-                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
-                                {
-                                    for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGBA
-                                    {
-                                        PixelData[destinationIndex + i + 0] = srcLineBytes[i];
-                                        PixelData[destinationIndex + i + 1] = srcLineBytes[i];
-                                        PixelData[destinationIndex + i + 2] = srcLineBytes[i];
-                                        PixelData[destinationIndex + i + 3] = byte.MaxValue;
-                                    }
-                                };
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGBA");
-                        }
-                        break;
-                    case ColorFormat.RGB:
-                        switch (src.PixelFormat.ColorFormat)
-                        {
-                            case ColorFormat.RGBA:
+                    ColorFormat.RGBA => src.PixelFormat.ColorFormat switch
+                    {
+                        ColorFormat.RGB => delegate (byte[] srcLineBytes, int destinationIndex)
+                                                         {
+                                                             for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
+                                                             {
+                                                                 PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
+                                                                 PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
+                                                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
+                                                                 PixelData[destinationIndex + i + 3] = byte.MaxValue;
+                                                             }
+                                                         }
 
-                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
-                                {
-                                    for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst RGB
-                                    {
-                                        PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
-                                        PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
-                                        PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
-                                        // skip source alpha
-                                    }
-                                };
-
-                                break;
-                            case ColorFormat.Intensity:
-                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
-                                {
-                                    for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGB
-                                    {
-                                        PixelData[destinationIndex + i + 0] = srcLineBytes[i];
-                                        PixelData[destinationIndex + i + 1] = srcLineBytes[i];
-                                        PixelData[destinationIndex + i + 2] = srcLineBytes[i];
-                                    }
-                                };
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB");
-                        }
-                        break;
-                    case ColorFormat.Intensity:
-                        switch (src.PixelFormat.ColorFormat)
+                        ,
+                        ColorFormat.Intensity => delegate (byte[] srcLineBytes, int destinationIndex)
                         {
-                            case ColorFormat.RGB:
-                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
-                                {
-                                    for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst Intensity
-                                    {
-                                        // Quick integer Luma conversion (not accurate)
-                                        // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-                                        int r = srcLineBytes[destinationIndex + i + 0];
-                                        int g = srcLineBytes[destinationIndex + i + 1];
-                                        int b = srcLineBytes[destinationIndex + i + 2];
-                                        PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
-                                    }
-                                };
-                                break;
-                            case ColorFormat.RGBA:
-                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
-                                {
-                                    for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst Intensity
-                                    {
-                                        // Quick integer Luma conversion (not accurate)
-                                        // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-                                        int r = srcLineBytes[destinationIndex + i + 0];
-                                        int g = srcLineBytes[destinationIndex + i + 1];
-                                        int b = srcLineBytes[destinationIndex + i + 2];
-                                        PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
-                                    }
-                                };
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB");
+                            for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGBA
+                            {
+                                PixelData[destinationIndex + i + 0] = srcLineBytes[i];
+                                PixelData[destinationIndex + i + 1] = srcLineBytes[i];
+                                PixelData[destinationIndex + i + 2] = srcLineBytes[i];
+                                PixelData[destinationIndex + i + 3] = byte.MaxValue;
+                            }
                         }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException(ToString(), "Unknown destination pixel format");
-                } // end switch
 
+                        ,
+                        _ => throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGBA"),
+                    },
+                    ColorFormat.RGB => src.PixelFormat.ColorFormat switch
+                    {
+                        ColorFormat.RGBA => delegate (byte[] srcLineBytes, int destinationIndex)
+                                                         {
+                                                             for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst RGB
+                                                             {
+                                                                 PixelData[destinationIndex + i + 0] = srcLineBytes[i + 0];
+                                                                 PixelData[destinationIndex + i + 1] = srcLineBytes[i + 1];
+                                                                 PixelData[destinationIndex + i + 2] = srcLineBytes[i + 2];
+                                                                 // skip source alpha
+                                                             }
+                                                         }
+
+                        ,
+                        ColorFormat.Intensity => delegate (byte[] srcLineBytes, int destinationIndex)
+                        {
+                            for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGB
+                            {
+                                PixelData[destinationIndex + i + 0] = srcLineBytes[i];
+                                PixelData[destinationIndex + i + 1] = srcLineBytes[i];
+                                PixelData[destinationIndex + i + 2] = srcLineBytes[i];
+                            }
+                        }
+
+                        ,
+                        _ => throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB"),
+                    },
+                    ColorFormat.Intensity => src.PixelFormat.ColorFormat switch
+                    {
+                        ColorFormat.RGB => delegate (byte[] srcLineBytes, int destinationIndex)
+                                                         {
+                                                             for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst Intensity
+                                                             {
+                                                                 // Quick integer Luma conversion (not accurate)
+                                                                 // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+                                                                 int r = srcLineBytes[destinationIndex + i + 0];
+                                                                 int g = srcLineBytes[destinationIndex + i + 1];
+                                                                 int b = srcLineBytes[destinationIndex + i + 2];
+                                                                 PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
+                                                             }
+                                                         }
+
+                        ,
+                        ColorFormat.RGBA => delegate (byte[] srcLineBytes, int destinationIndex)
+                        {
+                            for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst Intensity
+                            {
+                                // Quick integer Luma conversion (not accurate)
+                                // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
+                                int r = srcLineBytes[destinationIndex + i + 0];
+                                int g = srcLineBytes[destinationIndex + i + 1];
+                                int b = srcLineBytes[destinationIndex + i + 2];
+                                PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
+                            }
+                        }
+
+                        ,
+                        _ => throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB"),
+                    },
+                    _ => throw new ArgumentOutOfRangeException(ToString(), "Unknown destination pixel format"),
+                };
             } // end else block
 
             // loop over the ScanLineEnumerator and call CopyLine delegate

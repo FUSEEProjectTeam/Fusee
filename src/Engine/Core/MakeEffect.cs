@@ -60,7 +60,7 @@ namespace Fusee.Engine.Core
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
         /// <param name="noiseTexSize">Width and height of the noise texture.</param>
-        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
+        public static ShaderEffect SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
         {
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(noiseTexSize);
@@ -110,21 +110,12 @@ namespace Fusee.Engine.Core
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
             var frag = AssetStorage.Get<string>("SimpleBlur.frag");
-            float blurKernelSize;
-            switch (ssaoRenderTex.Width)
+            var blurKernelSize = ssaoRenderTex.Width switch
             {
-                case (int)TexRes.Low:
-                    blurKernelSize = 2.0f;
-                    break;
-                default:
-                case (int)TexRes.Middle:
-                    blurKernelSize = 4.0f;
-                    break;
-                case (int)TexRes.High:
-                    blurKernelSize = 8.0f;
-                    break;
-            }
-
+                (int)TexRes.Low => 2.0f,
+                (int)TexRes.High => 8.0f,
+                _ => 4.0f,
+            };
             if (blurKernelSize != 4.0f)
             {
                 var lines = frag.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -159,7 +150,7 @@ namespace Fusee.Engine.Core
         /// <param name="shadowMap">The shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -206,7 +197,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -300,7 +291,7 @@ namespace Fusee.Engine.Core
             });
         }
 
-        private static List<IFxParamDeclaration> DeferredLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
+        private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget srcRenderTarget, float4 backgroundColor)
         {
             return new List<IFxParamDeclaration>()
             {

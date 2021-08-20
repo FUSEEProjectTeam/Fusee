@@ -41,9 +41,9 @@ namespace Fusee.Engine.Core
         }
 
         //private SceneContainer _sc;
-        private IEnumerable<SceneNode> _sncList;
-        private OBBState _state = new OBBState();
-        private List<float3> _allVerticesOfCurrentScene = new List<float3>();
+        private readonly IEnumerable<SceneNode> _sncList;
+        private readonly OBBState _state = new OBBState();
+        private readonly List<float3> _allVerticesOfCurrentScene = new List<float3>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
@@ -172,8 +172,8 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private IEnumerable<SceneNode> _sncList;
-        private AABBState _state = new AABBState();
+        private readonly IEnumerable<SceneNode> _sncList;
+        private readonly AABBState _state = new AABBState();
         private bool _boxValid;
         private AABBf _result;
 

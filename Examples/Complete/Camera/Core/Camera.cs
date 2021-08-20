@@ -33,7 +33,6 @@ namespace Fusee.Examples.Camera.Core
         private readonly Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private readonly Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        private Transform _cubeOneTransform;
         private Transform _sndCamTransform;
 
         private WireframeCube _frustum;
@@ -139,8 +138,6 @@ namespace Fusee.Examples.Camera.Core
             // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
 
-            _cubeOneTransform = _rocketScene.Children[0].GetComponent<Transform>();
-
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
             _rocketScene.Children.Add(frustumNode);
@@ -178,7 +175,7 @@ namespace Fusee.Examples.Camera.Core
                 _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out float4 viewport) * float4x4.Invert(_mainCamTransform.Matrix);
+            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_mainCamTransform.Matrix);
             _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
 
             FrustumF frustum = new FrustumF();
