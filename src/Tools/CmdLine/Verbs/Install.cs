@@ -49,8 +49,6 @@ namespace Fusee.Tools.CmdLine.Verbs
                 if (instBlender)
                 {
                     string blenderAddOnDstDir = "";
-                    string blenderAddOnSrcDir = "";
-
                     try
                     {
                         IEnumerable<string> possibleDirs;
@@ -77,7 +75,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                         if (!string.IsNullOrEmpty(blenderAddOnDstDir))
                         {
-                            blenderAddOnSrcDir = Path.Combine(fuseePaths.fuseeCmdLineRoot, "BlenderScripts", "addons");
+                            string blenderAddOnSrcDir = Path.Combine(fuseePaths.fuseeCmdLineRoot, "BlenderScripts", "addons");
                             foreach (var addOnSrcDir in Directory.EnumerateDirectories(blenderAddOnSrcDir, "*", SearchOption.TopDirectoryOnly))
                             {
                                 string addOnName = new DirectoryInfo(addOnSrcDir).Name;
@@ -177,8 +175,6 @@ namespace Fusee.Tools.CmdLine.Verbs
                 if (instBlender)
                 {
                     string blenderAddOnDstDir = "";
-                    string blenderAddOnSrcDir = "";
-
                     try
                     {
                         IEnumerable<string> possibleDirs;
@@ -203,7 +199,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                         if (!string.IsNullOrEmpty(blenderAddOnDstDir))
                         {
-                            blenderAddOnSrcDir = Path.Combine(fuseePaths.fuseeCmdLineRoot, "BlenderScripts", "addons");
+                            string blenderAddOnSrcDir = Path.Combine(fuseePaths.fuseeCmdLineRoot, "BlenderScripts", "addons");
                             foreach (var addOnSrcDir in Directory.EnumerateDirectories(blenderAddOnSrcDir, "*", SearchOption.TopDirectoryOnly))
                             {
                                 string addOnName = new DirectoryInfo(addOnSrcDir).Name;
@@ -256,9 +252,11 @@ namespace Fusee.Tools.CmdLine.Verbs
         private IEnumerable<string> GetBlenderAddOnDir()
         {
             // Start with some possible start directories (e.g. "C:\Program Files\" and C:\Program Files (x86)\"
-            List<string> baseDirs = new List<string>();
-            baseDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
-            baseDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+            List<string> baseDirs = new List<string>
+            {
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
+            };
 
             // Find [B|b]lender sub-subdirectories
             List<string> blenderDirs = new List<string>();

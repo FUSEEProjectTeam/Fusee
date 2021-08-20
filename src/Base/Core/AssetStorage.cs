@@ -66,7 +66,7 @@ namespace Fusee.Base.Core
     public sealed class AssetStorage
     {
         private readonly List<IAssetProvider> _providers;
-        private Dictionary<string, Task> _assetBuffer;
+        private readonly Dictionary<string, Task> _assetBuffer;
 
         private static AssetStorage _instance;
 

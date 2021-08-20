@@ -362,10 +362,8 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetBarycentric))]
         public void GetBarycentric_Edges(float2 a, float2 b, float2 c, float uExpected, float vExpected, float2 point)
         {
-            float uActual;
-            float vActual;
 
-            float2.GetBarycentric(a, b, c, point, out uActual, out vActual);
+            float2.GetBarycentric(a, b, c, point, out float uActual, out float vActual);
 
             Assert.Equal(uExpected, uActual);
             Assert.Equal(vExpected, vActual);
@@ -557,9 +555,10 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var vec = new float2();
-
-            vec.rg = new float2(1, 2);
+            var vec = new float2
+            {
+                rg = new float2(1, 2)
+            };
 
             Assert.Equal(new float2(1, 2), vec);
 

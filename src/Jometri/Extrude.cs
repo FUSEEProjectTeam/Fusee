@@ -84,7 +84,7 @@ namespace Fusee.Jometri
                 var prevEdge = geometry.GetHalfEdgeByHandle(next.PrevHalfEdge);
                 var prevTwinEdge = geometry.GetHalfEdgeByHandle(prevEdge.TwinHalfEdge);
 
-                nextOriginV.VertData.Pos = nextOriginV.VertData.Pos + extrusionVector * offset;
+                nextOriginV.VertData.Pos += extrusionVector * offset;
 
                 var h4 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
                 var h2n = new HalfEdge(geometry.CreateHalfEdgeHandleId());
@@ -318,8 +318,10 @@ namespace Fusee.Jometri
             var vertDictHelper = new Dictionary<int, Vertex>();
             foreach (var v in second.DictVertices)
             {
-                var vert = new Vertex(v.Value.Handle + highestVertHandle, v.Value.VertData.Pos);
-                vert.IncidentHalfEdge = v.Value.IncidentHalfEdge + highestHalfEdgeHandle;
+                var vert = new Vertex(v.Value.Handle + highestVertHandle, v.Value.VertData.Pos)
+                {
+                    IncidentHalfEdge = v.Value.IncidentHalfEdge + highestHalfEdgeHandle
+                };
 
                 vertDictHelper.Add(vert.Handle, vert);
             }
@@ -331,7 +333,7 @@ namespace Fusee.Jometri
             {
                 var face = new Face(f.Value.Handle + highestFaceHandle, f.Value);
 
-                if (face.OuterHalfEdge != default(int))
+                if (face.OuterHalfEdge != default)
                 {
                     var outerHeId = face.OuterHalfEdge + first.HighestHalfEdgeHandle;
                     face.OuterHalfEdge = outerHeId;
@@ -340,7 +342,7 @@ namespace Fusee.Jometri
                 for (var k = 0; k < face.InnerHalfEdges.Count; k++)
                 {
                     var innerHe = face.InnerHalfEdges[k];
-                    innerHe = innerHe + first.HighestHalfEdgeHandle;
+                    innerHe += first.HighestHalfEdgeHandle;
                     face.InnerHalfEdges[k] = innerHe;
                 }
 
@@ -354,14 +356,14 @@ namespace Fusee.Jometri
             {
                 var halfEdge = new HalfEdge(he.Value.Handle + highestHalfEdgeHandle, he.Value);
 
-                halfEdge.IncidentFace = halfEdge.IncidentFace + first.HighestFaceHandle;
-                halfEdge.OriginVertex = halfEdge.OriginVertex + first.HighestVertHandle;
+                halfEdge.IncidentFace += first.HighestFaceHandle;
+                halfEdge.OriginVertex += first.HighestVertHandle;
 
-                halfEdge.NextHalfEdge = halfEdge.NextHalfEdge + highestHalfEdgeHandle;
-                halfEdge.PrevHalfEdge = halfEdge.PrevHalfEdge + highestHalfEdgeHandle;
+                halfEdge.NextHalfEdge += highestHalfEdgeHandle;
+                halfEdge.PrevHalfEdge += highestHalfEdgeHandle;
 
-                if (halfEdge.TwinHalfEdge != default(int))
-                    halfEdge.TwinHalfEdge = halfEdge.TwinHalfEdge + highestHalfEdgeHandle;
+                if (halfEdge.TwinHalfEdge != default)
+                    halfEdge.TwinHalfEdge += highestHalfEdgeHandle;
 
                 heDictHelper.Add(halfEdge.Handle, halfEdge);
             }

@@ -51,7 +51,7 @@ namespace Fusee.Tests.Xirkit
         {
             int x = 1;
 
-            Action action = delegate () { Node node = new Node(x); };
+            void action() { Node node = new Node(x); }
 
             Assert.Throws<ArgumentException>(action);
         }

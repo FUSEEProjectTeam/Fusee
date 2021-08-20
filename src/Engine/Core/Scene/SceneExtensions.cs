@@ -385,7 +385,7 @@ namespace Fusee.Engine.Core.Scene
         {
             if (scc == null || snThisThis == null)
                 return;
-            (snThisThis.Components ?? (snThisThis.Components = new List<SceneComponent>())).Add(scc);
+            (snThisThis.Components ??= new List<SceneComponent>()).Add(scc);
         }
 
         /// <summary>

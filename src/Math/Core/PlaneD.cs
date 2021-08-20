@@ -365,15 +365,7 @@ namespace Fusee.Math.Core
         /// </summary>        
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 29 + A.GetHashCode();
-                hash = hash * 29 + B.GetHashCode();
-                hash = hash * 29 + C.GetHashCode();
-                hash = hash * 29 + D.GetHashCode();
-                return hash;
-            }
+            return HashCode.Combine(A, B, C, D);
         }
 
         #endregion

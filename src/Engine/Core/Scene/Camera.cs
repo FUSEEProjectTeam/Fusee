@@ -141,15 +141,11 @@ namespace Fusee.Engine.Core.Scene
 
             viewport = new float4(startX, startY, width, height);
 
-            switch (ProjectionMethod)
+            return ProjectionMethod switch
             {
-                default:
-                case ProjectionMethod.Perspective:
-                    return float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)width / height), ClippingPlanes.x, ClippingPlanes.y);
-
-                case ProjectionMethod.Orthographic:
-                    return float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y);
-            }
+                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y),
+                _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)width / height), ClippingPlanes.x, ClippingPlanes.y),
+            };
         }
 
     }

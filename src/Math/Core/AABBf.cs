@@ -311,13 +311,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + max.GetHashCode();
-                hash = hash * 23 + min.GetHashCode();
-                return hash;
-            }
+            return HashCode.Combine(max, min);
         }
     }
 }

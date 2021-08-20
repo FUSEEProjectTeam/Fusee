@@ -428,7 +428,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Camera Component",
-                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
+                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 

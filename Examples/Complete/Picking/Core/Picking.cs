@@ -179,11 +179,6 @@ namespace Fusee.Examples.Picking.Core
             Present();
         }
 
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
-        }
-
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");

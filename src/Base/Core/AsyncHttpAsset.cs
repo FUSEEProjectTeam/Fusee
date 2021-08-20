@@ -151,18 +151,16 @@ namespace Fusee.Base.Core
 
         private async void DoGetAsset()
         {
-            using (HttpClient client = new HttpClient())
+            using HttpClient client = new HttpClient();
+            try
             {
-                try
-                {
-                    byte[] bytes = await client.GetByteArrayAsync(Id);
-                    //onDownloaded
-                    ProcessAsset(bytes);
-                }
-                catch
-                {
-                    FailCallback();
-                }
+                byte[] bytes = await client.GetByteArrayAsync(Id);
+                //onDownloaded
+                ProcessAsset(bytes);
+            }
+            catch
+            {
+                FailCallback();
             }
         }
 

@@ -122,20 +122,13 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (idx)
+                return idx switch
                 {
-                    case 0:
-                        return x;
-
-                    case 1:
-                        return y;
-
-                    case 2:
-                        return z;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float3 type");
-                }
+                    0 => x,
+                    1 => y,
+                    2 => z,
+                    _ => throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float3 type"),
+                };
             }
             set
             {

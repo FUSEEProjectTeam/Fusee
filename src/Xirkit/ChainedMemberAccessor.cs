@@ -14,15 +14,15 @@ namespace Fusee.Xirkit
     public class ChainedMemberAccessor<TPin, TObj> : IMemberAccessor<TPin>
     {
         //private readonly PropertyInfo _propertyInfo;
-        Converter<TPin, TObj> _p2o;
-        Converter<TObj, TPin> _o2p;
-        private MemberInfo[] _miList;
-        private object[] _oList;
+        readonly Converter<TPin, TObj> _p2o;
+        readonly Converter<TObj, TPin> _o2p;
+        private readonly MemberInfo[] _miList;
+        private readonly object[] _oList;
 
         private delegate void PrePost(int i);
 
-        private PrePost[] _pre;
-        private PrePost[] _post;
+        private readonly PrePost[] _pre;
+        private readonly PrePost[] _post;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChainedMemberAccessor{TPin, TObj}"/> class.

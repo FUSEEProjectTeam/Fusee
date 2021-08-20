@@ -30,7 +30,7 @@ namespace Fusee.Examples.Starkiller.Core
         private SceneNode _projectiles;
         private SceneNode _schiff;
 
-        private float MeteorSpeedFactor = 2;
+        private readonly float MeteorSpeedFactor = 2;
 
         private bool[] abgefeuert;
 

@@ -507,9 +507,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             if (IsAvailable)
                 return; //Init already done.
 
-            SiApp.SpwRetVal v = SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR;
-
-            v = SiApp.SiInitialize();
+            SiApp.SpwRetVal v = SiApp.SiInitialize();
 
             //try
             //{
@@ -538,14 +536,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
                 throw new _3DxException("Unable to open device");
             }
 
-            string devName;
-            SiApp.SiGetDeviceName(_deviceHandle, out devName);
+            SiApp.SiGetDeviceName(_deviceHandle, out string devName);
 
             this.DeviceName = devName;
 
             this.DeviceID = SiApp.SiGetDeviceID(_deviceHandle);
 
-            SiApp.SiDevInfo info = default(SiApp.SiDevInfo);
+            SiApp.SiDevInfo info = default;
             SiApp.SiGetDeviceInfo(_deviceHandle, ref info);
 
             this.FirmwareVersion = info.firmware;
@@ -579,9 +576,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             if (this.IsDisposed) //We don't throw an Exception in the Message Loop, just return
                 return;
 
-            SiApp.SiGetEventData evd = default(SiApp.SiGetEventData);
+            SiApp.SiGetEventData evd = default;
             SiApp.SiGetEventWinInit(ref evd, msg, wParam, lParam);
-            SiApp.SiSpwEvent_SpwData edata = default(SiApp.SiSpwEvent_SpwData);
+            SiApp.SiSpwEvent_SpwData edata = default;
             var t = SiApp.SiGetEvent(_deviceHandle, SiApp.SI_AVERAGE_EVENTS, ref evd, ref edata);
             if (t == SiApp.SpwRetVal.SI_IS_EVENT)
             {
@@ -609,8 +606,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// </summary>
         protected virtual void OnZeroPoint()
         {
-            if (ZeroPoint != null)
-                ZeroPoint(this, EventArgs.Empty);
+            ZeroPoint?.Invoke(this, EventArgs.Empty);
         }
         /// <summary>
         /// Is called if the mouse is moved. 
@@ -618,8 +614,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <param name="args"></param>
         protected virtual void OnMotion(MotionEventArgs args)
         {
-            if (Motion != null)
-                Motion(this, args);
+            Motion?.Invoke(this, args);
         }
 
         //protected virtual void OnDeviceChange(DeviceChangeEventArgs args)
@@ -719,12 +714,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         public DeviceChangeEventArgs(int deviceId, int type)
         {
             this.DeviceID = deviceId;
-            switch (type)
+            Type = type switch
             {
-                case 0: Type = EDeviceChangeType.CONNECTED; break;
-                case 1: Type = EDeviceChangeType.DISCONNECTED; break;
-                default: Type = EDeviceChangeType.UNKNOWN; break;
-            }
+                0 => EDeviceChangeType.CONNECTED,
+                1 => EDeviceChangeType.DISCONNECTED,
+                _ => EDeviceChangeType.UNKNOWN,
+            };
         }
     }
 

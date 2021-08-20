@@ -110,12 +110,13 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Setter_Test()
         {
-            var actual = new Quaternion();
-
-            actual.x = 1;
-            actual.y = 2;
-            actual.z = 3;
-            actual.w = 4;
+            var actual = new Quaternion
+            {
+                x = 1,
+                y = 2,
+                z = 3,
+                w = 4
+            };
             Assert.Equal(new Quaternion(1, 2, 3, 4), actual);
 
             actual.xyz = new float3(3, 2, 1);

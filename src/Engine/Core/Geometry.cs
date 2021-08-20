@@ -304,8 +304,7 @@ namespace Fusee.Engine.Core
             _normals = new List<double3>();
             for (int iV = 0; iV < _vertices.Count; iV++)
             {
-                IList<int> vertInFace;
-                IList<int> facesWithIV = GetAllFacesContainingVertex(iV, out vertInFace);
+                IList<int> facesWithIV = GetAllFacesContainingVertex(iV, out IList<int> vertInFace);
                 List<double3> normals = new List<double3>();
                 foreach (int i in facesWithIV)
                 {
@@ -412,8 +411,7 @@ namespace Fusee.Engine.Core
                         iT = (HasTexCoords) ? f.InxTexCoord[i] : 0,
                         iN = (HasNormals) ? f.InxNormal[i] : 0
                     };
-                    int inx;
-                    if (!_vDict.TryGetValue(ti, out inx))
+                    if (!_vDict.TryGetValue(ti, out int inx))
                     {
                         // Create a new vertex triplet combination
                         int vInx = f.InxVert[i];
@@ -438,8 +436,10 @@ namespace Fusee.Engine.Core
                 mTris.AddRange(Triangulate(f, mFace));
             }
 
-            Mesh m = new Mesh();
-            m.Vertices = mVerts.ToArray();
+            Mesh m = new Mesh
+            {
+                Vertices = mVerts.ToArray()
+            };
             if (HasNormals)
                 m.Normals = mNormals.ToArray();
             if (HasTexCoords)

@@ -427,10 +427,8 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetBarycentric))]
         public void GetBarycentric_Edges(float3 a, float3 b, float3 c, float uExpected, float vExpected, float3 point)
         {
-            float uActual;
-            float vActual;
 
-            float3.GetBarycentric(a, b, c, point, out uActual, out vActual);
+            float3.GetBarycentric(a, b, c, point, out float uActual, out float vActual);
 
             Assert.Equal(uExpected, uActual);
             Assert.Equal(vExpected, vActual);
@@ -516,9 +514,10 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Swizzle_Float2_Set()
         {
-            var actual = new float3();
-
-            actual.xy = new float2(1, 2);
+            var actual = new float3
+            {
+                xy = new float2(1, 2)
+            };
             Assert.Equal(new float3(1, 2, 0), actual);
 
             actual.xz = new float2(3, 1);
@@ -553,9 +552,10 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Swizzle_Float3_Set()
         {
-            var actual = new float3();
-
-            actual.xyz = new float3(1, 2, 3);
+            var actual = new float3
+            {
+                xyz = new float3(1, 2, 3)
+            };
             Assert.Equal(new float3(1, 2, 3), actual);
 
             actual.xzy = new float3(1, 2, 3);
@@ -732,9 +732,10 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var actual = new float3();
-
-            actual.r = 1;
+            var actual = new float3
+            {
+                r = 1
+            };
             Assert.Equal(new float3(1, 0, 0), actual);
 
             actual.g = 2;

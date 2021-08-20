@@ -84,9 +84,10 @@ namespace Fusee.Tests.Xirkit.NestedAccess
         [Fact]
         public void NotifyNestedProperty()
         {
-            var ob = new CNodeOb();
-
-            ob.Prop = new CNestedInner { Number = 44, Text = "Howdy" };
+            var ob = new CNodeOb
+            {
+                Prop = new CNestedInner { Number = 44, Text = "Howdy" }
+            };
 
             ob.Prop.Number = 33;
 

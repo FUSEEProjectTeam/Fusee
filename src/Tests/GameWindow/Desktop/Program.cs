@@ -50,8 +50,10 @@ namespace Fusee.Tests.GameWindow.Desktop
             var app = Example;
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(width, height);
-            cimp.EnableBlending = true;
+            var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(width, height)
+            {
+                EnableBlending = true
+            };
             app.CanvasImplementor = cimp;
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
 

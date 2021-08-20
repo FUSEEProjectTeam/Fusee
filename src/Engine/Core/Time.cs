@@ -155,7 +155,7 @@
         /// <summary>
         /// Provides the Singleton Instance of the Time Class.
         /// </summary>
-        public static Time Instance => _instance ?? (_instance = new Time());
+        public static Time Instance => _instance ??= new Time();
 
         #endregion
 

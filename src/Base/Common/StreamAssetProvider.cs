@@ -116,7 +116,6 @@ namespace Fusee.Base.Common
         {
             if (!CheckExists(id))
             {
-                type = null;
                 return false;
             }
 

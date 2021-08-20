@@ -9,7 +9,7 @@
         /// <summary>
         /// The _time in the BaseChannel
         /// </summary>
-        private float _time;
+        private readonly float _time;
 
         /// <summary>
         /// Gets and sets the time of the Channel.

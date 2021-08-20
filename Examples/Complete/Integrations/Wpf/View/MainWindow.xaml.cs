@@ -18,7 +18,7 @@ namespace Fusee.Examples.Integrations.Wpf.View
     /// </summary>
     public partial class MainWindow : Window
     {
-        private MainViewModel mainViewModel;
+        private readonly MainViewModel mainViewModel;
         private Core.Main fuseeApp;
 
         public MainWindow()

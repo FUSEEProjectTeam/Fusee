@@ -38,7 +38,6 @@ namespace Fusee.Examples.BoneAnimation.Core
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
 
         // Init is called on startup.
         public override void Init()

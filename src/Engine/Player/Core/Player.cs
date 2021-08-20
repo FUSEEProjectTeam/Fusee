@@ -40,7 +40,7 @@ namespace Fusee.Engine.Player.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 3000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -264,11 +264,6 @@ namespace Fusee.Engine.Player.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
         }
 
         // Is called when the window was resized

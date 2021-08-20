@@ -11,7 +11,7 @@ namespace Fusee.Tests.Math.Core
     /// </summary>
     public class RotationConversionTest
     {
-        float precision = 1E-05f;
+        readonly float precision = 1E-05f;
 
         private readonly ITestOutputHelper output;
 
