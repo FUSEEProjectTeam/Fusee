@@ -251,7 +251,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 //TODO: This is a workaround, pls fix: https://stackoverflow.com/questions/3918517/calling-startactivity-from-outside-of-an-activity-context
                 intent.SetFlags(ActivityFlags.NewTask);
-                
+
                 intent.SetData(Uri.Parse(link));
                 _gameView.Context.StartActivity(intent);
             }
