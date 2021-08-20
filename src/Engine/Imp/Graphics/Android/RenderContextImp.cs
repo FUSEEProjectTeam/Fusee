@@ -150,6 +150,30 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        private SizedInternalFormat GetSizedInteralFormat(ImagePixelFormat format)
+        {
+            switch (format.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    return SizedInternalFormat.Rgba8;
+                case ColorFormat.fRGBA16:
+                    return SizedInternalFormat.Rgba16f;
+                case ColorFormat.fRGBA32:
+                    return SizedInternalFormat.Rgba32f;
+                case ColorFormat.iRGBA32:
+                    return SizedInternalFormat.Rgba32i;
+                case ColorFormat.RGB:
+                case ColorFormat.Intensity:
+                case ColorFormat.fRGB32:
+                case ColorFormat.uiRgb8:
+                case ColorFormat.fRGB16:
+                case ColorFormat.Depth24:
+                case ColorFormat.Depth16:
+                default:
+                    throw new ArgumentOutOfRangeException("SizedInternalFormat not supported. Try to use a format with r,g,b and a components.");
+            }
+        }
+
         private DepthFunction GetDepthCompareFunc(Compare compareFunc)
         {
             switch (compareFunc)
@@ -534,6 +558,40 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion Image data related Members
 
         #region Shader related Members
+        /// <summary>
+        /// Creates a shader object from compute shader source code.
+        /// </summary>
+        /// <param name="cs">A string containing the compute shader source.</param>
+        /// <returns></returns>
+        public IShaderHandle CreateShaderProgramCompute(string cs)
+        {
+            string info = string.Empty;
+            int statusCode = -1;
+
+            // Compile compute shader
+            int computeObject = -1;
+            if (!string.IsNullOrEmpty(cs))
+            {
+                computeObject = GL.CreateShader(ShaderType.ComputeShader);
+
+                GL.ShaderSource(computeObject, cs);
+                GL.CompileShader(computeObject);
+                GL.GetShaderInfoLog(computeObject, out info);
+                GL.GetShader(computeObject, ShaderParameter.CompileStatus, out statusCode);
+            }
+
+            if (statusCode != 1)
+                throw new ApplicationException(info);
+
+            int program = GL.CreateProgram();
+
+            GL.AttachShader(program, computeObject);
+            GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
+            GL.DetachShader(program, computeObject);
+            GL.DeleteShader(computeObject);
+
+            return new ShaderHandleImp { Handle = program };
+        }
 
         /// <summary>
         /// Creates the shader program by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
@@ -541,7 +599,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
-        /// <param name="gs">A string containing the geometry shader source.</param>
+        /// <param name="gs">The geometry shader code. Caution: must be null because geometry shaders are unsupported by Android right now.</param>
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="System.ApplicationException">
         /// </exception>
@@ -645,7 +703,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
+        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             StringBuilder sbParamName = new StringBuilder(paramName);
             int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName);
@@ -666,12 +724,38 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Returns a List of type <see cref="ShaderParamInfo"/> for all ShaderStorageBlocks
+        /// </summary>
+        /// <param name="shaderProgram">The shader program to query.</param>
+        public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        {
+            var paramList = new List<ShaderParamInfo>();
+            var sProg = (ShaderHandleImp)shaderProgram;
+            GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.MaxNameLength, out int ssboMaxLen);
+            GL.GetProgramInterface(sProg.Handle, All.ShaderStorageBlock, All.ActiveResources, out int nParams);
+
+            for (var i = 0; i < nParams; i++)
+            {
+                var paramInfo = new ShaderParamInfo();
+                var name = new StringBuilder();
+                GL.GetProgramResourceName(sProg.Handle, All.ShaderStorageBlock, i, ssboMaxLen, out _, name);
+                paramInfo.Name = name.ToString();
+
+                int h = GL.GetProgramResourceIndex(sProg.Handle, All.ShaderStorageBlock, name);
+                paramInfo.Handle = (h == -1) ? null : new ShaderParam { handle = h };
+                paramList.Add(paramInfo);
+            }
+
+            return paramList;
+        }
+
+        /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />.
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
+        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
@@ -684,7 +768,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 StringBuilder sbName = new StringBuilder(512);
                 GL.GetActiveUniform(sProg.Handle, i, 511, out int lenWritten, out paramInfo.Size, out ActiveUniformType uType, sbName);
                 paramInfo.Name = sbName.ToString();
-                paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
+                paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
 
                 switch (uType)
                 {
@@ -743,6 +827,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public void SetShaderParam(IShaderParam param, float val)
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        /// <summary>
+        /// Sets a double shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, double val)
+        {
+            Diagnostics.Warn("No support for double values - it is cast to float!");
+            GL.Uniform1(((ShaderParam)param).handle, (float)val);
         }
 
         /// <summary>
@@ -853,6 +948,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public void SetShaderParam(IShaderParam param, int val)
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
+        }
+
+        private void BindImage(TextureType texTarget, ITextureHandle texId, int texUint, All access, SizedInternalFormat format)
+        {
+            Diagnostics.Warn("SizedInternalFormat not supported by BindImageTexture!");
+            //switch (texTarget)
+            //{
+            //    case TextureType.Image2D:
+            //        GL.BindImageTexture(texUint, ((TextureHandle)texId).TexHandle, 0, false, 0, access, format);
+            //        break;
+            //    default:
+            //        throw new ArgumentException($"Unknown texture target: {texTarget}.");
+            //}
         }
 
         private void BindTextureByTarget(ITextureHandle texId, TextureType texTarget)
@@ -983,6 +1091,35 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="format">The internal sized format of the texture.</param>
+        public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
+        {
+            SetActiveAndBindImage(param, texId, texTarget, format, All.ReadWrite, out int texUnit);
+            GL.Uniform1(((ShaderParam)param).handle, texUnit);
+        }
+
+        private void SetActiveAndBindImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format, All access, out int texUnit)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            {
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
+                _shaderParam2TexUnit[iParam] = texUnit;
+            }
+
+            var sizedIntFormat = GetSizedInteralFormat(format);
+
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            BindImage(texTarget, texId, texUnit, access, sizedIntFormat);
+        }
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
         {
             SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);
@@ -1103,7 +1240,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Binds the VertexArrayPbject onto the GL render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the VertexArrayObject onto the GL Render context and assigns its index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void SetVertexArrayObject(IMeshImp mr)
@@ -1451,6 +1588,26 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).BitangentBufferObject);
             ((MeshImp)mr).InvalidateBiTangents();
+        }
+
+        /// <summary>
+        /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
+        /// </summary>
+        public void MemoryBarrier()
+        {
+            GL.MemoryBarrier(MemoryBarrierMask.AllBarrierBits);
+        }
+
+        /// <summary>
+        /// Launch the bound Compute Shader Program.
+        /// </summary>
+        /// <param name="kernelIndex"></param>
+        /// <param name="threadGroupsX">The number of work groups to be launched in the X dimension.</param>
+        /// <param name="threadGroupsY">The number of work groups to be launched in the Y dimension.</param>
+        /// <param name="threadGroupsZ">he number of work groups to be launched in the Z dimension.</param>
+        public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
+        {
+            GL.DispatchCompute(threadGroupsX, threadGroupsY, threadGroupsZ);
         }
 
         /// <summary>
@@ -2363,6 +2520,68 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         #endregion Rendering related Members
+
+        #region Shader Storage Buffer
+
+        /// <summary>
+        /// Connects the given SSBO to the currently active shader program.
+        /// </summary>
+        /// <param name="currentProgram">The handle of the current shader program.</param>
+        /// <param name="buffer">The Storage Buffer object on the CPU.</param>
+        /// <param name="ssboName">The SSBO's name.</param>
+        public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
+        {
+            Diagnostics.Warn("GL does not contain a definition for ShaderStorageBlockBinding!");
+            //var shaderProgram = ((ShaderHandleImp)currentProgram).Handle;
+            //var resInx = GL.GetProgramResourceIndex(shaderProgram, All.ShaderStorageBlock, new StringBuilder(ssboName));
+            //GL.ShaderStorageBlockBinding(shaderProgram, resInx, buffer.BindingIndex);
+            //GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, buffer.BindingIndex, ((StorageBufferHandle)buffer.BufferHandle).Handle);
+        }
+
+        /// <summary>
+        /// Uploads the given data to the SSBO. If the buffer is not created on the GPU by no it will be.
+        /// </summary>
+        /// <typeparam name="T">The data type.</typeparam>
+        /// <param name="storageBuffer">The Storage Buffer Object on the CPU.</param>
+        /// <param name="data">The data that will be uploaded.</param>
+        public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct
+        {
+            Diagnostics.Warn("The GL enums BufferTarget.ShaderStorageBuffer and BufferUsage.DynamicCopy do not exist!");
+
+            //if (storageBuffer.BufferHandle == null)
+            //    storageBuffer.BufferHandle = new StorageBufferHandle();
+            //var bufferHandle = (StorageBufferHandle)storageBuffer.BufferHandle;
+            //int dataBytes = storageBuffer.Count * storageBuffer.Size;
+
+            //if (bufferHandle.Handle == -1)
+            //{
+            //    GL.GenBuffers(1, out bufferHandle.Handle);
+            //}
+
+            //if (data == null || data.Length == 0)
+            //{
+            //    throw new ArgumentException("Data must not be null or empty");
+            //}
+
+            //GL.BindBuffer(BufferTarget.ShaderStorageBuffer, bufferHandle.Handle);
+            //GL.BufferData(BufferTarget.ShaderStorageBuffer, dataBytes, data, BufferUsage.DynamicCopy);
+
+            //GL.GetBufferParameter(BufferTarget.ShaderStorageBuffer, BufferParameterName.BufferSize, out int bufferBytes);
+            //if (bufferBytes != dataBytes)
+            //    throw new ApplicationException(string.Format("Problem uploading bone indices buffer to SSBO. Tried to upload {0} bytes, uploaded {1}.", bufferBytes, dataBytes));
+
+            //GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
+        }
+
+        /// <summary>
+        /// Deletes the shader storage buffer on the GPU.
+        /// </summary>
+        /// <param name="storageBufferHandle">The buffer object.</param>
+        public void DeleteStorageBuffer(IBufferHandle storageBufferHandle)
+        {
+            GL.DeleteBuffers(1, ref ((StorageBufferHandle)storageBufferHandle).Handle);
+        }
+        #endregion
 
         #region Picking related Members
 
