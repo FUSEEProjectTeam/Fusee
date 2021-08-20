@@ -8,6 +8,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowHandle : IWindowHandle
     {
+        /// <summary>
+        /// The Window Handle as IntPtr
+        /// </summary>
         public IntPtr Handle { get; internal set; }
     }
 }

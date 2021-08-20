@@ -55,6 +55,7 @@ namespace Fusee.Engine.GUI
         /// Picks at the mouse position and traverses the picked objects components.
         /// If a corresponding component is found the suitable visit method is called which invokes the event.
         /// </summary>
+        /// <param name="rc">The <see cref="RenderContext"/>, used for picking operations.</param>
         /// <param name="mousePos">The current mouse position.</param>
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
