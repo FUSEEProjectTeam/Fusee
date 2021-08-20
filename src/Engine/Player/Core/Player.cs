@@ -55,8 +55,6 @@ namespace Fusee.Engine.Player.Core
 
         private bool _isLoaded;
 
-        private GamePadDevice _gamePad;
-
         public void LoadAssets()
         {
 
@@ -135,9 +133,6 @@ namespace Fusee.Engine.Player.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            // Register the input devices that are not already given.
-            _gamePad = GetDevice<GamePadDevice>(0);
 
             LoadAssets();
         }

@@ -36,15 +36,11 @@ namespace Fusee.Examples.Starkiller.Core
 
         private SceneContainer _scene;
 
-
-        float Highscore = 0;
         float Leben = 0;
         bool gamestart = false;
 
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
@@ -109,7 +105,6 @@ namespace Fusee.Examples.Starkiller.Core
 
             _scene = CreateScene();
             _gui = CreateGui();
-            _sih = new SceneInteractionHandler(_gui);
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
@@ -235,7 +230,6 @@ namespace Fusee.Examples.Starkiller.Core
                                 abgefeuert[i] = false;
                                 projectileTranslation.z = -50;
                                 meteorTranslation.z = -100;
-                                Highscore += 100;
                             }
 
                             _meteors.Children[j].GetTransform().Translation = meteorTranslation;
@@ -265,7 +259,6 @@ namespace Fusee.Examples.Starkiller.Core
                             if (Leben == 0)
                             {
                                 gamestart = false;
-                                Highscore = 0;
                             }
 
                         }

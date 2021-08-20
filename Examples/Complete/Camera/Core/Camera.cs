@@ -33,7 +33,6 @@ namespace Fusee.Examples.Camera.Core
         private readonly Engine.Core.Scene.Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private readonly Engine.Core.Scene.Camera _sndCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        private Transform _cubeOneTransform;
         private Transform _sndCamTransform;
 
         private WireframeCube _frustum;
@@ -138,8 +137,6 @@ namespace Fusee.Examples.Camera.Core
 
             // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
-
-            _cubeOneTransform = _rocketScene.Children[0].GetComponent<Transform>();
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);

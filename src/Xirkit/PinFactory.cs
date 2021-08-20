@@ -103,7 +103,7 @@ namespace Fusee.Xirkit
 
                     miList[i] = miFound[0];
 
-                    currentType = (miList[i] is FieldInfo) ? ((FieldInfo)miList[i]).FieldType : ((PropertyInfo)miList[i]).PropertyType;
+                    currentType = (miList[i] is FieldInfo info) ? info.FieldType : ((PropertyInfo)miList[i]).PropertyType;
                 }
                 memberType = currentType;
                 if (pinType == null)

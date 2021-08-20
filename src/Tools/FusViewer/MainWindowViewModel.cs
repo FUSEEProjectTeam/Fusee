@@ -89,12 +89,6 @@ namespace Fusee.Tools.FusViewer.ViewModel
             return true;
         }
 
-        private readonly MainWindowViewModel _caller;
-
-        public ViewInPlayerCmd(MainWindowViewModel caller)
-        {
-            _caller = caller;
-        }
         public void Execute(object parameter)
         {
             // TODO: Spawn fusee window   
@@ -150,8 +144,6 @@ namespace Fusee.Tools.FusViewer.ViewModel
         public ICommand OpenFusFile => new OpenFusFileCmd(this);
 
         public ICommand SaveAsJSON => new SaveAsJSONCmd(this);
-
-        public ICommand ViewInPlayer => new ViewInPlayerCmd(this);
     }
 
     public class SceneToTreeConv : Visitor<SceneNode, SceneComponent>

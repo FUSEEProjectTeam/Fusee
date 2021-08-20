@@ -33,10 +33,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             _mouse = new MouseDeviceImp(_view);
         }
 
-        private View _view;
-        private TouchDeviceImp _touch;
-        private KeyboardDeviceImp _keyboard;
-        private MouseDeviceImp _mouse;
+        private readonly View _view;
+        private readonly TouchDeviceImp _touch;
+        private readonly KeyboardDeviceImp _keyboard;
+        private readonly MouseDeviceImp _mouse;
 
         /// <summary>
         /// Devices supported by this driver: A touch device.
@@ -135,17 +135,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class TouchDeviceImp : IInputDeviceImp
     {
-        private Dictionary<int, AxisImpDescription> _tpAxisDescs;
-        private Dictionary<int, ButtonImpDescription> _tpButtonDescs;
-        private Dictionary<int, int> _activeTouchpoints;
-        private int _nTouchPointsSupported = 5;
+        private readonly Dictionary<int, AxisImpDescription> _tpAxisDescs;
+        private readonly Dictionary<int, ButtonImpDescription> _tpButtonDescs;
+        private readonly Dictionary<int, int> _activeTouchpoints;
+        private readonly int _nTouchPointsSupported = 5;
         private readonly View _view;
 
         #region Android handling
-
-        private void DisconnectViewEvents()
-        {
-        }
 
         // Android tries some sense-less smartness in interweaving
         // MotionEventActions.Down and MotionEventActions.Up with
@@ -263,8 +259,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal void OnViewTouchMove(int id, float x, float y)
         {
             // Diagnostics.Log($"TouchMove {id}");
-            int inx;
-            if (!_activeTouchpoints.TryGetValue(id, out inx))
+            if (!_activeTouchpoints.TryGetValue(id, out int inx))
                 return;
 
             AxisValueChanged?.Invoke(this,
@@ -284,8 +279,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal void OnViewTouchEnd(int id, float x, float y)
         {
             // Diagnostics.Log($"TouchEnd {id}");
-            int inx;
-            if (!_activeTouchpoints.TryGetValue(id, out inx))
+            if (!_activeTouchpoints.TryGetValue(id, out int inx))
                 return;
 
             AxisValueChanged?.Invoke(this,
@@ -312,8 +306,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal void OnViewTouchCancel(int id, float x, float y)
         {
             // Diagnostics.Log($"TouchCancel {id}");
-            int inx;
-            if (!_activeTouchpoints.TryGetValue(id, out inx))
+            if (!_activeTouchpoints.TryGetValue(id, out int inx))
                 return;
             ButtonValueChanged?.Invoke(this,
                 new ButtonValueChangedArgs
@@ -506,25 +499,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>The value at the given axis.</returns>
         public float GetAxis(int iAxisId)
         {
-            switch (iAxisId)
+            return iAxisId switch
             {
-                case (int)TouchAxes.ActiveTouchpoints:
-                    return _activeTouchpoints.Count;
-
-                case (int)TouchAxes.MinX:
-                    return 0;
-
-                case (int)TouchAxes.MaxX:
-                    return GetWindowWidth();
-
-                case (int)TouchAxes.MinY:
-                    return 0;
-
-                case (int)TouchAxes.MaxY:
-                    return GetWindowHeight();
-            }
-            throw new InvalidOperationException(
-                $"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this device.");
+                (int)TouchAxes.ActiveTouchpoints => _activeTouchpoints.Count,
+                (int)TouchAxes.MinX => 0,
+                (int)TouchAxes.MaxX => GetWindowWidth(),
+                (int)TouchAxes.MinY => 0,
+                (int)TouchAxes.MaxY => GetWindowHeight(),
+                _ => throw new InvalidOperationException(
+$"Unknown axis {iAxisId}.  Probably an event based axis or unsupported by this device."),
+            };
         }
 
         /// <summary>
@@ -560,8 +544,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class KeyboardDeviceImp : IInputDeviceImp
     {
-        private AndroidGameView _view;
-        private Keymapper _keymapper;
+        private readonly Keymapper _keymapper;
 
         /// <summary>
         /// Should be called by the driver only.
@@ -569,7 +552,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="view"></param>
         internal KeyboardDeviceImp(View view)
         {
-            _view = (AndroidGameView)view;
             _keymapper = new Keymapper();
             /*
             _View.Keyboard.KeyDown += OnGameWinKeyDown;
@@ -736,7 +718,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class MouseDeviceImp : IInputDeviceImp
     {
-        private AndroidGameView _view;
+        private readonly AndroidGameView _view;
         private ButtonImpDescription _btnLeftDesc, _btnRightDesc, _btnMiddleDesc;
 
         /// <summary>
@@ -948,30 +930,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>The value at the given axis.</returns>
         public float GetAxis(int iAxisId)
         {
-            switch (iAxisId)
+            return iAxisId switch
             {
-                case (int)MouseAxes.X:
-                    return 0;
-
-                case (int)MouseAxes.Y:
-                    return 0;
-
-                case (int)MouseAxes.Wheel:
-                    return 0;
-
-                case (int)MouseAxes.MinX:
-                    return 0;
-
-                case (int)MouseAxes.MaxX:
-                    return _view.Width;
-
-                case (int)MouseAxes.MinY:
-                    return 0;
-
-                case (int)MouseAxes.MaxY:
-                    return _view.Height;
-            }
-            throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
+                (int)MouseAxes.X => 0,
+                (int)MouseAxes.Y => 0,
+                (int)MouseAxes.Wheel => 0,
+                (int)MouseAxes.MinX => 0,
+                (int)MouseAxes.MaxX => _view.Width,
+                (int)MouseAxes.MinY => 0,
+                (int)MouseAxes.MaxY => _view.Height,
+                _ => throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis."),
+            };
         }
 
         /// <summary>

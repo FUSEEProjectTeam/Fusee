@@ -74,17 +74,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         private TextureCompareMode GetTexComapreMode(Common.TextureCompareMode compareMode)
         {
-            switch (compareMode)
+            return compareMode switch
             {
-                case TextureCompareMode.None:
-                    return TextureCompareMode.None;
-
-                case Common.TextureCompareMode.CompareRefToTexture:
-                    return TextureCompareMode.CompareRefToTexture;
-
-                default:
-                    throw new ArgumentException("Invalid compare mode.");
-            }
+                TextureCompareMode.None => TextureCompareMode.None,
+                Common.TextureCompareMode.CompareRefToTexture => TextureCompareMode.CompareRefToTexture,
+                _ => throw new ArgumentException("Invalid compare mode."),
+            };
         }
         private Tuple<TextureMinFilter, TextureMagFilter> GetMinMagFilter(TextureFilterMode filterMode)
         {
@@ -152,86 +147,47 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         private SizedInternalFormat GetSizedInteralFormat(ImagePixelFormat format)
         {
-            switch (format.ColorFormat)
+            return format.ColorFormat switch
             {
-                case ColorFormat.RGBA:
-                    return SizedInternalFormat.Rgba8;
-                case ColorFormat.fRGBA16:
-                    return SizedInternalFormat.Rgba16f;
-                case ColorFormat.fRGBA32:
-                    return SizedInternalFormat.Rgba32f;
-                case ColorFormat.iRGBA32:
-                    return SizedInternalFormat.Rgba32i;
-                case ColorFormat.RGB:
-                case ColorFormat.Intensity:
-                case ColorFormat.fRGB32:
-                case ColorFormat.uiRgb8:
-                case ColorFormat.fRGB16:
-                case ColorFormat.Depth24:
-                case ColorFormat.Depth16:
-                default:
-                    throw new ArgumentOutOfRangeException("SizedInternalFormat not supported. Try to use a format with r,g,b and a components.");
-            }
+                ColorFormat.RGBA => SizedInternalFormat.Rgba8,
+                ColorFormat.fRGBA16 => SizedInternalFormat.Rgba16f,
+                ColorFormat.fRGBA32 => SizedInternalFormat.Rgba32f,
+                ColorFormat.iRGBA32 => SizedInternalFormat.Rgba32i,
+                _ => throw new ArgumentOutOfRangeException("SizedInternalFormat not supported. Try to use a format with r,g,b and a components."),
+            };
         }
 
         private DepthFunction GetDepthCompareFunc(Compare compareFunc)
         {
-            switch (compareFunc)
+            return compareFunc switch
             {
-                case Compare.Never:
-                    return DepthFunction.Never;
-
-                case Compare.Less:
-                    return DepthFunction.Less;
-
-                case Compare.Equal:
-                    return DepthFunction.Equal;
-
-                case Compare.LessEqual:
-                    return DepthFunction.Lequal;
-
-                case Compare.Greater:
-                    return DepthFunction.Greater;
-
-                case Compare.NotEqual:
-                    return DepthFunction.Notequal;
-
-                case Compare.GreaterEqual:
-                    return DepthFunction.Gequal;
-
-                case Compare.Always:
-                    return DepthFunction.Always;
-
-                default:
-                    throw new ArgumentOutOfRangeException("value");
-            }
+                Compare.Never => DepthFunction.Never,
+                Compare.Less => DepthFunction.Less,
+                Compare.Equal => DepthFunction.Equal,
+                Compare.LessEqual => DepthFunction.Lequal,
+                Compare.Greater => DepthFunction.Greater,
+                Compare.NotEqual => DepthFunction.Notequal,
+                Compare.GreaterEqual => DepthFunction.Gequal,
+                Compare.Always => DepthFunction.Always,
+                _ => throw new ArgumentOutOfRangeException("value"),
+            };
         }
 
         private TextureComponentCount GetTexTureComponentCount(ITextureBase tex)
         {
-            switch (tex.PixelFormat.ColorFormat)
+            return tex.PixelFormat.ColorFormat switch
             {
-                case ColorFormat.RGBA:
-                    return TextureComponentCount.Rgba;
-                case ColorFormat.RGB:
-                    return TextureComponentCount.Rgb;
-                case ColorFormat.Intensity:
-                    return TextureComponentCount.Alpha;
-                case ColorFormat.uiRgb8:
-                    return TextureComponentCount.Rgb8ui;
-                case ColorFormat.fRGB32:
-                    return TextureComponentCount.Rgb32f;
-                case ColorFormat.fRGB16:
-                    return TextureComponentCount.Rgb16f;
-                case ColorFormat.fRGBA16:
-                    return TextureComponentCount.Rgba16f;
-                case ColorFormat.Depth16:
-                    return TextureComponentCount.DepthComponent16;
-                case ColorFormat.Depth24:
-                    return TextureComponentCount.DepthComponent24;
-                default:
-                    throw new ArgumentException("Unsupported color format!");
-            }
+                ColorFormat.RGBA => TextureComponentCount.Rgba,
+                ColorFormat.RGB => TextureComponentCount.Rgb,
+                ColorFormat.Intensity => TextureComponentCount.Alpha,
+                ColorFormat.uiRgb8 => TextureComponentCount.Rgb8ui,
+                ColorFormat.fRGB32 => TextureComponentCount.Rgb32f,
+                ColorFormat.fRGB16 => TextureComponentCount.Rgb16f,
+                ColorFormat.fRGBA16 => TextureComponentCount.Rgba16f,
+                ColorFormat.Depth16 => TextureComponentCount.DepthComponent16,
+                ColorFormat.Depth24 => TextureComponentCount.DepthComponent24,
+                _ => throw new ArgumentException("Unsupported color format!"),
+            };
         }
 
         /*TODO: OpenTK 30ES does not seem to support other PixelInternalFormats other than Rgba, Rgb, Alpha, Luminance,
@@ -608,9 +564,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (!string.IsNullOrEmpty(gs))
                 Diagnostics.Warn("Geometry Shaders are unsupported");
 
-            int statusCode;
             StringBuilder info = new StringBuilder(512);
-            int length;
 
             int vertexObject = GL.CreateShader(ShaderType.VertexShader);
             int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
@@ -618,8 +572,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             // Compile vertex shader
             GL.ShaderSource(vertexObject, 1, new[] { vs }, new[] { vs.Length });
             GL.CompileShader(vertexObject);
-            GL.GetShaderInfoLog(vertexObject, 512, out length, info);
-            GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out statusCode);
+            GL.GetShaderInfoLog(vertexObject, 512, out int length, info);
+            GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out int statusCode);
 
             if (statusCode != 1)
             {
@@ -1262,14 +1216,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ArgumentException("Vertices must not be null or empty");
             }
 
-            int vboBytes;
             int vertsBytes = vertices.Length * 3 * sizeof(float);
             if (((MeshImp)mr).VertexBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).VertexBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsage.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(string.Format(
                     "Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.",
@@ -1291,14 +1244,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ArgumentException("Tangents must not be null or empty");
             }
 
-            int vboBytes;
             int vertsBytes = tangents.Length * 4 * sizeof(float);
             if (((MeshImp)mr).TangentBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).TangentBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), tangents, BufferUsage.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.",
@@ -1319,14 +1271,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ArgumentException("Tangents must not be null or empty");
             }
 
-            int vboBytes;
             int vertsBytes = bitangents.Length * 3 * sizeof(float);
             if (((MeshImp)mr).BitangentBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).BitangentBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, BufferUsage.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.",
@@ -1456,14 +1407,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ArgumentException("colors must not be null or empty");
             }
 
-            int vboBytes;
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsage.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.",
@@ -1484,7 +1434,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ArgumentException("triangleIndices must not be null or empty");
             }
             ((MeshImp)mr).NElements = triangleIndices.Length;
-            int vboBytes;
             int trisBytes = triangleIndices.Length * sizeof(short);
 
             if (((MeshImp)mr).ElementBufferObject == 0)
@@ -1493,7 +1442,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices,
                 BufferUsage.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.",
@@ -1768,91 +1717,46 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         internal static BlendEquationMode BlendOperationToOgl(BlendOperation bo)
         {
-            switch (bo)
+            return bo switch
             {
-                case BlendOperation.Add:
-                    return BlendEquationMode.FuncAdd;
-
-                case BlendOperation.Subtract:
-                    return BlendEquationMode.FuncSubtract;
-
-                case BlendOperation.ReverseSubtract:
-                    return BlendEquationMode.FuncReverseSubtract;
-
-                case BlendOperation.Minimum:
-                    return BlendEquationMode.Min;
-
-                case BlendOperation.Maximum:
-                    return BlendEquationMode.Max;
-
-                default:
-                    throw new ArgumentOutOfRangeException("bo");
-            }
+                BlendOperation.Add => BlendEquationMode.FuncAdd,
+                BlendOperation.Subtract => BlendEquationMode.FuncSubtract,
+                BlendOperation.ReverseSubtract => BlendEquationMode.FuncReverseSubtract,
+                BlendOperation.Minimum => BlendEquationMode.Min,
+                BlendOperation.Maximum => BlendEquationMode.Max,
+                _ => throw new ArgumentOutOfRangeException("bo"),
+            };
         }
 
         internal static BlendOperation BlendOperationFromOgl(BlendEquationMode bom)
         {
-            switch (bom)
+            return bom switch
             {
-                case BlendEquationMode.FuncAdd:
-                    return BlendOperation.Add;
-
-                case BlendEquationMode.Min:
-                    return BlendOperation.Minimum;
-
-                case BlendEquationMode.Max:
-                    return BlendOperation.Maximum;
-
-                case BlendEquationMode.FuncSubtract:
-                    return BlendOperation.Subtract;
-
-                case BlendEquationMode.FuncReverseSubtract:
-                    return BlendOperation.ReverseSubtract;
-
-                default:
-                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
-            }
+                BlendEquationMode.FuncAdd => BlendOperation.Add,
+                BlendEquationMode.Min => BlendOperation.Minimum,
+                BlendEquationMode.Max => BlendOperation.Maximum,
+                BlendEquationMode.FuncSubtract => BlendOperation.Subtract,
+                BlendEquationMode.FuncReverseSubtract => BlendOperation.ReverseSubtract,
+                _ => throw new ArgumentOutOfRangeException($"Invalid argument: {bom}"),
+            };
         }
 
         internal static int BlendToOgl(Blend blend, bool isForAlpha = false)
         {
-            switch (blend)
+            return blend switch
             {
-                case Blend.Zero:
-                    return (int)BlendingFactorSrc.Zero;
-
-                case Blend.One:
-                    return (int)BlendingFactorSrc.One;
-
-                case Blend.SourceColor:
-                    return (int)BlendingFactorDest.SrcColor;
-
-                case Blend.InverseSourceColor:
-                    return (int)BlendingFactorDest.OneMinusSrcColor;
-
-                case Blend.SourceAlpha:
-                    return (int)BlendingFactorSrc.SrcAlpha;
-
-                case Blend.InverseSourceAlpha:
-                    return (int)BlendingFactorSrc.OneMinusSrcAlpha;
-
-                case Blend.DestinationAlpha:
-                    return (int)BlendingFactorSrc.DstAlpha;
-
-                case Blend.InverseDestinationAlpha:
-                    return (int)BlendingFactorSrc.OneMinusDstAlpha;
-
-                case Blend.DestinationColor:
-                    return (int)BlendingFactorSrc.DstColor;
-
-                case Blend.InverseDestinationColor:
-                    return (int)BlendingFactorSrc.OneMinusDstColor;
-
-                case Blend.BlendFactor:
-                    return (int)((isForAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor);
-
-                case Blend.InverseBlendFactor:
-                    return (int)((isForAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor);
+                Blend.Zero => (int)BlendingFactorSrc.Zero,
+                Blend.One => (int)BlendingFactorSrc.One,
+                Blend.SourceColor => (int)BlendingFactorDest.SrcColor,
+                Blend.InverseSourceColor => (int)BlendingFactorDest.OneMinusSrcColor,
+                Blend.SourceAlpha => (int)BlendingFactorSrc.SrcAlpha,
+                Blend.InverseSourceAlpha => (int)BlendingFactorSrc.OneMinusSrcAlpha,
+                Blend.DestinationAlpha => (int)BlendingFactorSrc.DstAlpha,
+                Blend.InverseDestinationAlpha => (int)BlendingFactorSrc.OneMinusDstAlpha,
+                Blend.DestinationColor => (int)BlendingFactorSrc.DstColor,
+                Blend.InverseDestinationColor => (int)BlendingFactorSrc.OneMinusDstColor,
+                Blend.BlendFactor => (int)((isForAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor),
+                Blend.InverseBlendFactor => (int)((isForAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor),
                 // Ignored...
                 // case Blend.SourceAlphaSaturated:
                 //     break;
@@ -1864,9 +1768,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 //    break;
                 //case Blend.InverseSourceColor2:
                 //    break;
-                default:
-                    throw new ArgumentOutOfRangeException("blend");
-            }
+                _ => throw new ArgumentOutOfRangeException("blend"),
+            };
         }
 
         internal static Blend BlendFromOgl(int bf)
@@ -2100,44 +2003,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 case RenderState.ZFunc:
                     {
                         GL.GetInteger(GetPName.DepthFunc, out int depFunc);
-                        Compare ret;
-                        switch ((All)depFunc)
+                        var ret = (All)depFunc switch
                         {
-                            case All.Never:
-                                ret = Compare.Never;
-                                break;
-
-                            case All.Less:
-                                ret = Compare.Less;
-                                break;
-
-                            case All.Equal:
-                                ret = Compare.Equal;
-                                break;
-
-                            case All.Lequal:
-                                ret = Compare.LessEqual;
-                                break;
-
-                            case All.Greater:
-                                ret = Compare.Greater;
-                                break;
-
-                            case All.Notequal:
-                                ret = Compare.NotEqual;
-                                break;
-
-                            case All.Gequal:
-                                ret = Compare.GreaterEqual;
-                                break;
-
-                            case All.Always:
-                                ret = Compare.Always;
-                                break;
-
-                            default:
-                                throw new ArgumentOutOfRangeException("depFunc", "Value " + ((All)depFunc) + " not handled");
-                        }
+                            All.Never => Compare.Never,
+                            All.Less => Compare.Less,
+                            All.Equal => Compare.Equal,
+                            All.Lequal => Compare.LessEqual,
+                            All.Greater => Compare.Greater,
+                            All.Notequal => Compare.NotEqual,
+                            All.Gequal => Compare.GreaterEqual,
+                            All.Always => Compare.Always,
+                            _ => throw new ArgumentOutOfRangeException("depFunc", "Value " + ((All)depFunc) + " not handled"),
+                        };
                         return (uint)ret;
                     }
                 case RenderState.ZEnable:
@@ -2481,16 +2358,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>uint</returns>
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
-            switch (capability)
+            return capability switch
             {
-                case HardwareCapability.CanRenderDeferred:
-                    return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
-
-                case HardwareCapability.CanUseGeometryShaders:
-                    return 0U; //Android uses OpenGL es, where no geometry shaders can be used.
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
-            }
+                HardwareCapability.CanRenderDeferred => !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U,
+                HardwareCapability.CanUseGeometryShaders => 0U,//Android uses OpenGL es, where no geometry shaders can be used.
+                _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
+            };
         }
 
         /// <summary>
