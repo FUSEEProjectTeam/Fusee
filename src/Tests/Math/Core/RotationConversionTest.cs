@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     /// <summary>
     /// This test is comparing all rotation conversions with the results in Unity3D.

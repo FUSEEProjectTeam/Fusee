@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
-namespace Fusee.Test.Serialization.V1
+namespace Fusee.Tests.Serialization.V1
 {
     public class SimpleSerialization
     {

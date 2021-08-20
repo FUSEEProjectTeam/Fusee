@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Fusee.Test.Assets.Desktop
+namespace Fusee.Tests.Assets.Desktop
 {
 
     public static class AssetsTest

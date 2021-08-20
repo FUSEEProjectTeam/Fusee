@@ -1,9 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <OutputPath>$(BaseOutputPath)\Tests\Xirkit\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Tests\Xirkit\Core\</OutputPath>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />

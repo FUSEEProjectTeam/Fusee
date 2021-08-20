@@ -1,5 +1,4 @@
 using Fusee.Engine.Imp.Graphics.Desktop;
-using Fusee.Test.GameWindow.Desktop;
 using System;
 using Xunit;
 

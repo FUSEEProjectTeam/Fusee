@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fusee.Test.Xirkit
+namespace Fusee.Tests.Xirkit
 {
     class HelperClasses
     {

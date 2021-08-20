@@ -6,7 +6,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 
-namespace Fusee.Test.GameWindow.Desktop
+namespace Fusee.Tests.GameWindow.Desktop
 {
     public class Program
     {

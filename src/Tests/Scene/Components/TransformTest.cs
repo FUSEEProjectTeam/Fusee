@@ -2,7 +2,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Xunit;
 
-namespace Fusee.Test.Scene.Components
+namespace Fusee.Tests.Scene.Components
 {
     public class TransformTest
     {

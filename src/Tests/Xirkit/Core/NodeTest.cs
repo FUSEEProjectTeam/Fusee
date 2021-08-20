@@ -2,10 +2,10 @@
 using System;
 using System.Linq;
 using Xunit;
-using static Fusee.Test.Xirkit.HelperClasses;
+using static Fusee.Tests.Xirkit.HelperClasses;
 
 
-namespace Fusee.Test.Xirkit
+namespace Fusee.Tests.Xirkit
 {
     public class NodeTest
     {

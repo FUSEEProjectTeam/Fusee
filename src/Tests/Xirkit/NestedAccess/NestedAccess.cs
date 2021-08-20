@@ -1,7 +1,7 @@
 using Fusee.Xirkit;
 using Xunit;
 
-namespace Fusee.Test.Xirkit.NestedAccess
+namespace Fusee.Tests.Xirkit.NestedAccess
 {
     public class CNodeOb
     {

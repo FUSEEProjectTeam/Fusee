@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace Fusee.Test.Xene
+namespace Fusee.Tests.Xene
 {
     public class SimpleXene
     {

@@ -3,9 +3,9 @@ using Fusee.Xirkit;
 using System;
 using System.Collections.Generic;
 using Xunit;
-using static Fusee.Test.Xirkit.HelperClasses;
+using static Fusee.Tests.Xirkit.HelperClasses;
 
-namespace Fusee.Test.Xirkit
+namespace Fusee.Tests.Xirkit
 {
     public class ConversionTest
     {

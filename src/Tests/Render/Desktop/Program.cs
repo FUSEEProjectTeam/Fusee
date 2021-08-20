@@ -7,7 +7,7 @@ using Fusee.Serialization;
 using System;
 using System.IO;
 
-namespace Fusee.Test.Render.Desktop
+namespace Fusee.Tests.Render.Desktop
 {
     public class Program
     {
