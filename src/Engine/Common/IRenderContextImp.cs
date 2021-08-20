@@ -80,13 +80,19 @@ namespace Fusee.Engine.Common
         void RemoveShader(IShaderHandle sp);
 
         /// <summary>
-        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
+        IRenderTarget CreateGBufferTarget(TexRes res);
+
+        /// <summary>
+        /// Free all allocated gpu memory that belong to a frame buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteFrameBuffer(IBufferHandle bh);
 
         /// <summary>
-        /// Free all allocated gpu memory belonging to a renderbuffer object.
+        /// Free all allocated gpu memory belonging to a render buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteRenderBuffer(IBufferHandle bh);
@@ -406,7 +412,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Sets the line width when drawing a mesh with primitive mode line
         /// </summary>
-        /// <param name="width"></param>
+        /// <param name="width">The width of the line.</param>
         void SetLineWidth(float width);
 
         /// <summary>

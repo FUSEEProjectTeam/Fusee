@@ -2,6 +2,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -367,6 +368,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             for (int i = 0; i < 6; i++)
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -813,6 +816,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
                     case ActiveUniformType.Sampler2DArray:
+                    case ActiveUniformType.Sampler2DArrayShadow:
                         paramInfo.Type = typeof(IWritableArrayTexture);
                         break;
                     default:
@@ -1203,7 +1207,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         #endregion
 
-        #region Rendering related Members       
+        #region Rendering related Members
+
+        /// <summary>
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
+        public IRenderTarget CreateGBufferTarget(TexRes res)
+        {
+            var gBufferRenderTarget = new RenderTarget(res);
+            gBufferRenderTarget.SetPositionTex();
+            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetNormalTex();
+            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetSpecularTex();
+            gBufferRenderTarget.SetEmissiveTex();
+
+            return gBufferRenderTarget;
+        }
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -2617,6 +2638,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             return depth;
         }
+
+
 
         #endregion
     }

@@ -134,10 +134,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
-        /// <returns></returns>
-        public static WritableTexture CreatePosTex(int width, int height)
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreatePosTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Position, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.Nearest);
+            return new WritableTexture(RenderTargetTextureTypes.Position, pxFormat, width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
@@ -145,10 +145,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
-        /// <returns></returns>
-        public static WritableTexture CreateAlbedoTex(int width, int height)
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreateAlbedoTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGBA), width, height, false, TextureFilterMode.Linear);
+            return new WritableTexture(RenderTargetTextureTypes.Albedo, pxFormat, width, height, false, TextureFilterMode.Linear);
         }
 
         /// <summary>
@@ -156,10 +156,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
-        /// <returns></returns>
-        public static WritableTexture CreateSpecularTex(int width, int height)
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreateSpecularTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Specular, new ImagePixelFormat(ColorFormat.fRGBA16), width, height, false, TextureFilterMode.Linear);
+            return new WritableTexture(RenderTargetTextureTypes.Specular, pxFormat, width, height, false, TextureFilterMode.Linear);
         }
 
         /// <summary>
@@ -167,10 +167,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
-        /// <returns></returns>
-        public static WritableTexture CreateEmissionTex(int width, int height)
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreateEmissionTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Emission, new ImagePixelFormat(ColorFormat.RGB), width, height, false, TextureFilterMode.Linear);
+            return new WritableTexture(RenderTargetTextureTypes.Emission, pxFormat, width, height, false, TextureFilterMode.Linear);
         }
 
         /// <summary>
@@ -178,10 +178,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
-        /// <returns></returns>
-        public static WritableTexture CreateNormalTex(int width, int height)
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreateNormalTex(int width, int height, ImagePixelFormat pxFormat)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Normal, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.Nearest);
+            return new WritableTexture(RenderTargetTextureTypes.Normal, pxFormat, width, height, false, TextureFilterMode.Nearest);
         }
 
         /// <summary>
@@ -189,12 +189,13 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
+        /// <param name="pxFormat">The color format of this texture.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
         /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
         /// <returns></returns>
-        public static WritableTexture CreateDepthTex(int width, int height, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
+        public static WritableTexture CreateDepthTex(int width, int height, ImagePixelFormat pxFormat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, compareMode, compareFunc);
+            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, compareMode, compareFunc);
         }
 
         /// <summary>

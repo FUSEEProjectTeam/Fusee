@@ -3,6 +3,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
 using OpenTK.Graphics.ES31;
 using System;
@@ -39,7 +40,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
         /// <param name="renderCanvas">The render canvas interface.</param>
-        /// <param name="androidContext">The <see cref="Context"/>.</param>
+        /// <param name="androidContext">The android <see cref="Context"/>.</param>
         public RenderContextImp(IRenderCanvasImp renderCanvas, Context androidContext)
         {
             _textureCountPerShader = 0;
@@ -527,9 +528,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
+        /// Removes the TextureHandle's buffers and textures from the graphics card's memory
         /// </summary>
-        /// <param name="textureHandle">The <see cref="ITextureHandle"/> which gpu allocated memory will be freed.</param>
+        /// <remarks>
+        /// Method should be called after an TextureHandle is no longer required by the application.
+        /// </remarks>
+        /// <param name="textureHandle">An TextureHandle object, containing necessary information for the upload to the graphics card.</param>
         public void RemoveTextureHandle(ITextureHandle textureHandle)
         {
             TextureHandle texHandle = (TextureHandle)textureHandle;
@@ -683,9 +687,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Specifies the rasterized width of both aliased and antialiased lines.
+        /// Sets the line width when drawing a mesh with primitive mode line
         /// </summary>
-        /// <param name="width">The width in px.</param>
+        /// <param name="width">The width of the line.</param>
         public void SetLineWidth(float width)
         {
             GL.LineWidth(width);
@@ -1187,6 +1191,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #region Rendering related Members
 
         /// <summary>
+        /// Creates a <see cref="IRenderTarget"/> with the purpose of being used as CPU GBuffer representation.
+        /// </summary>
+        /// <param name="res">The texture resolution.</param>
+        public IRenderTarget CreateGBufferTarget(TexRes res)
+        {
+            var gBufferRenderTarget = new RenderTarget(res);
+            gBufferRenderTarget.SetPositionTex();
+            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetNormalTex();
+            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetSpecularTex();
+            gBufferRenderTarget.SetEmissiveTex();
+
+            return gBufferRenderTarget;
+        }
+
+
+        /// <summary>
         /// Only pixels that lie within the scissor box can be modified by drawing commands.
         /// Note that the Scissor test must be enabled for this to work.
         /// </summary>
@@ -1256,12 +1278,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Binds the tangents onto the GL Render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="tangents">The tangents.</param>
-        /// <exception cref="ArgumentException">Tangents must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
+        /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetTangents(IMeshImp mr, float4[] tangents)
         {
             if (tangents == null || tangents.Length == 0)
@@ -1281,16 +1303,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
-
         }
 
         /// <summary>
-        /// Binds the bitangents onto the GL Render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="bitangents">The BiTangents.</param>
-        /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
-        /// <exception cref="ApplicationException"></exception>
+        /// <param name = "bitangents">The bitangents.</param>
+        /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
         public void SetBiTangents(IMeshImp mr, float3[] bitangents)
         {
             if (bitangents == null || bitangents.Length == 0)
