@@ -266,6 +266,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.Blazor", "Examples\Complete\Simple\Blazor\Fusee.Examples.Simple.Blazor.csproj", "{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SimpleDeferred.Blazor", "Examples\Complete\SimpleDeferred\Blazor\Fusee.Examples.SimpleDeferred.Blazor.csproj", "{4AD5FF81-185A-4650-BB79-47686AF5478F}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ComputeFractal", "ComputeFractal", "{12605406-F001-4A09-B3B1-ED2CEDEBCCB3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ComputeFractal.Core", "Examples\Complete\ComputeFractal\Core\Fusee.Examples.ComputeFractal.Core.csproj", "{5C516B22-9791-49DF-B7CF-5B4F67C119AD}"
@@ -4885,7 +4886,6 @@ Global
 		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
 		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Android|x86.Build.0 = Debug|Any CPU
 		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
 		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Desktop|x64.ActiveCfg = Debug|Any CPU
 		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
 		{4AD5FF81-185A-4650-BB79-47686AF5478F}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU

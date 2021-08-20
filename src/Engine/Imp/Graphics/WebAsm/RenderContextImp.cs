@@ -2433,11 +2433,79 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl2.BindVertexArray(((MeshImp)mr).VertexArrayObject);
         }
 
+        #endregion
+
         public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
         {
             throw new NotImplementedException();
         }
 
-        #endregion
+        public IShaderHandle CreateShaderProgramCompute(string cs = null)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IRenderTarget CreateGBufferTarget(TexRes res)
+        {
+            var gBufferRenderTarget = new RenderTarget(res);
+            gBufferRenderTarget.SetPositionTex();
+            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetNormalTex();
+            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetSpecularTex();
+            gBufferRenderTarget.SetEmissiveTex();
+
+            return gBufferRenderTarget;
+        }
+
+        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetShaderParam(IShaderParam param, double val)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DeleteStorageBuffer(IBufferHandle storageBufferHandle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MemoryBarrier()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

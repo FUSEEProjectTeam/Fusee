@@ -16,4 +16,9 @@
     <ProjectReference Include="..\Core\Fusee.Examples.Integrations.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Core\" />
+    <Folder Include="Frontend\" />
+  </ItemGroup>
+
 </Project>
