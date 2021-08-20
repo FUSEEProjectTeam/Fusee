@@ -1374,7 +1374,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the normals implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
@@ -1384,7 +1384,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the colors implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
@@ -1394,7 +1394,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the uvs implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
@@ -1404,7 +1404,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the triangles implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
@@ -1414,7 +1414,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the bone weights implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
@@ -1424,7 +1424,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the bone indices implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
@@ -1434,7 +1434,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the tangents implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTangents(IMeshImp mr)
@@ -1444,7 +1444,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Deletes the buffer associated with the mesh implementation.
+        /// Deletes the buffer associated with the bitangents implementation.
         /// </summary>
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBiTangents(IMeshImp mr)

@@ -71,7 +71,7 @@ namespace Fusee.Engine.Common
         event EventHandler<EventArgs> DeleteBuffers;
 
         /// <summary>
-        /// Sets a RenderTexture into the correct position in the RederTexture array.
+        /// Sets a RenderTexture into the correct position in the RenderTexture array.
         /// </summary>
         /// <param name="src">The source RenderTexture.</param>
         /// <param name="tex">The type of the texture.</param>
