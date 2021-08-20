@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)\Examples\Bone\Android</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\BoneAnimation\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{92F6C1B2-636A-4031-BDAB-29F12A45730E}</ProjectGuid>
@@ -95,9 +95,9 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Fusee.Examples.Bone.Core.csproj">
+    <ProjectReference Include="..\Core\Fusee.Examples.BoneAnimation.Core.csproj">
       <Project>{6ce07dfe-23a3-4ca3-910d-e4cfa16c8408}</Project>
-      <Name>Fusee.Examples.Bone.Core</Name>
+      <Name>Fusee.Examples.BoneAnimation.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->

@@ -8,7 +8,7 @@ using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
 
-namespace Fusee.Examples.Bone.Desktop
+namespace Fusee.Examples.BoneAnimation.Desktop
 {
     public class Bone
     {
@@ -43,7 +43,7 @@ namespace Fusee.Examples.Bone.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Fusee.Examples.Bone.Core.Bone();
+            var app = new Fusee.Examples.BoneAnimation.Core.Bone();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             var appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

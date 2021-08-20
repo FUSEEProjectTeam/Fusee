@@ -83,11 +83,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.UI.Android",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BoneAnimation", "BoneAnimation", "{E1BC09A2-3E81-4862-B990-8EAF779DE500}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Bone.Core", "Examples\Complete\BoneAnimation\Core\Fusee.Examples.Bone.Core.csproj", "{6CE07DFE-23A3-4CA3-910D-E4CFA16C8408}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.BoneAnimation.Core", "Examples\Complete\BoneAnimation\Core\Fusee.Examples.BoneAnimation.Core.csproj", "{6CE07DFE-23A3-4CA3-910D-E4CFA16C8408}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Bone.Desktop", "Examples\Complete\BoneAnimation\Desktop\Fusee.Examples.Bone.Desktop.csproj", "{4CC6BB70-640D-4789-98F3-67783E5E2350}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.BoneAnimation.Desktop", "Examples\Complete\BoneAnimation\Desktop\Fusee.Examples.BoneAnimation.Desktop.csproj", "{4CC6BB70-640D-4789-98F3-67783E5E2350}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Bone.Android", "Examples\Complete\BoneAnimation\Android\Fusee.Examples.Bone.Android.csproj", "{92F6C1B2-636A-4031-BDAB-29F12A45730E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.BoneAnimation.Android", "Examples\Complete\BoneAnimation\Android\Fusee.Examples.BoneAnimation.Android.csproj", "{92F6C1B2-636A-4031-BDAB-29F12A45730E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NormalMap", "NormalMap", "{F3B54D27-75AC-40B3-8E6E-F960D13D94BC}"
 EndProject
