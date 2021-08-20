@@ -61,18 +61,6 @@ namespace Fusee.Engine.Player.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            // Initialize the information text line.
-            var textToDisplay = "FUSEE 3D Scene";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                textToDisplay += " created";
-                if (_scene.Header.CreatedBy != null)
-                    textToDisplay += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    _ = " on " + _scene.Header.CreationDate;
-            }
-
             _gui = CreateGui();
 
             // Create the interaction handler
