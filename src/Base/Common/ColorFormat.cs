@@ -21,12 +21,12 @@
         Intensity,
 
         /// <summary>
-        /// RGBA integer.
+        /// RGB integer.
         /// </summary>
         uiRgb8,
 
         /// <summary>
-        /// RGBA float, 32bit.
+        /// RGB float, 32bit.
         /// </summary>
         fRGB32,
 
@@ -36,12 +36,12 @@
         fRGB16,
 
         /// <summary>
-        /// RGB float, 16bit.
+        /// RGBA float, 16bit.
         /// </summary>
         fRGBA16,
 
         /// <summary>
-        /// RGB float, 16bit.
+        /// RGBA float, 32bit.
         /// </summary>
         fRGBA32,
 
