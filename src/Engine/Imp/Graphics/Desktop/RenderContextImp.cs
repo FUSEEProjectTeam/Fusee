@@ -601,7 +601,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="gs">The geometry shader code.</param>
-        /// <param name="cs">The compute shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="ApplicationException">

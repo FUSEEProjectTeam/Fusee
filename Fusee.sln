@@ -221,8 +221,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scene", "Scene", "{A9EE99FE
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{87F19962-A219-45D7-AB71-C0E3618CCF41}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Scene.Components", "src\Tests\Scene\Components\Fusee.Test.Scene.Components\Fusee.Test.Scene.Components.csproj", "{45F790CB-C1C5-4CC3-AAB2-788696BC65E4}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameWindow", "GameWindow", "{ED2FBF72-1E63-4DDE-8646-9008F2BF3CAC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Starkiller", "Starkiller", "{C8A57860-4A53-46BA-969D-02EB861B3309}"
@@ -248,6 +246,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tests.Render.Desktop", "src\Tests\Render\Desktop\Fusee.Tests.Render.Desktop.csproj", "{16F2D7BC-CBE2-424F-BB29-313CF6989EA2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tests.Serialization.V1", "src\Tests\Serialization\V1\Fusee.Tests.Serialization.V1.csproj", "{F971051F-B756-4509-849D-C737BA9E4B0F}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ComputeFractal", "ComputeFractal", "{12605406-F001-4A09-B3B1-ED2CEDEBCCB3}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ComputeFractal.Core", "Examples\Complete\ComputeFractal\Core\Fusee.Examples.ComputeFractal.Core.csproj", "{5C516B22-9791-49DF-B7CF-5B4F67C119AD}"
