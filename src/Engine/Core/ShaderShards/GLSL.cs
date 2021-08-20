@@ -20,6 +20,9 @@ namespace Fusee.Engine.Core.ShaderShards
             Sampler2D,
             SamplerCube,
             ArrayTexture,
+            Sampler2DShadow,
+            SamplerCubeShadow,
+            ArrayTextureShadow,
             Void
         }
 
@@ -185,6 +188,12 @@ namespace Fusee.Engine.Core.ShaderShards
                     return "void";
                 case Type.ArrayTexture:
                     return "sampler2DArray";
+                case Type.Sampler2DShadow:
+                    return "sampler2DShadow";
+                case Type.SamplerCubeShadow:
+                    return "samplerCubeShadow";
+                case Type.ArrayTextureShadow:
+                    return "sampler2DArrayShadow";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }

@@ -1,8 +1,5 @@
 using Fusee.Engine.Common;
-using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using OpenTK.Platform;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
@@ -39,7 +36,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public int Width
         {
-            get { return BaseWidth; }
+            get => BaseWidth;
             set
             {
                 _gameWindow.Size = new OpenTK.Mathematics.Vector2i(value, _gameWindow.Size.Y);
@@ -56,7 +53,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public int Height
         {
-            get { return BaseHeight; }
+            get => BaseHeight;
             set
             {
                 _gameWindow.Size = new OpenTK.Mathematics.Vector2i(_gameWindow.Size.X, value);
@@ -73,7 +70,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public string Caption
         {
-            get { return (_gameWindow == null) ? "" : _gameWindow.Title; }
+            get => (_gameWindow == null) ? "" : _gameWindow.Title;
             set { if (_gameWindow != null) _gameWindow.Title = value; }
         }
 
@@ -104,7 +101,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool VerticalSync
         {
-            get { return (_gameWindow != null) && _gameWindow.VSync == OpenTK.Windowing.Common.VSyncMode.On; }
+            get => (_gameWindow != null) && _gameWindow.VSync == OpenTK.Windowing.Common.VSyncMode.On;
             set { if (_gameWindow != null) _gameWindow.VSync = (value) ? OpenTK.Windowing.Common.VSyncMode.On : OpenTK.Windowing.Common.VSyncMode.Off; }
         }
 
@@ -117,8 +114,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool EnableBlending
         {
-            get { return _gameWindow.Blending; }
-            set { _gameWindow.Blending = value; }
+            get => _gameWindow.Blending;
+            set => _gameWindow.Blending = value;
         }
 
         /// <summary>
@@ -129,8 +126,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool Fullscreen
         {
-            get { return (_gameWindow.WindowState == OpenTK.Windowing.Common.WindowState.Fullscreen); }
-            set { _gameWindow.WindowState = (value) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal; }
+            get => (_gameWindow.WindowState == OpenTK.Windowing.Common.WindowState.Fullscreen);
+            set => _gameWindow.WindowState = (value) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal;
         }
 
         /// <summary>
@@ -140,10 +137,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <value>
         ///   <c>true</c> if [focused]; otherwise, <c>false</c>.
         /// </value>
-        public bool Focused
-        {
-            get { return _gameWindow.IsFocused; }
-        }
+        public bool Focused => _gameWindow.IsFocused;
 
         // Some tryptichon related Fields.
 
@@ -152,8 +146,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public bool VideoWallMode
         {
-            get { return _videoWallMode; }
-            set { _videoWallMode = value; }
+            get => _videoWallMode;
+            set => _videoWallMode = value;
         }
 
         /// <summary>
@@ -161,8 +155,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public int TryptMonitorSetupVertical
         {
-            get { return _videoWallMonitorsVert; }
-            set { _videoWallMonitorsVert = value; }
+            get => _videoWallMonitorsVert;
+            set => _videoWallMonitorsVert = value;
         }
 
         /// <summary>
@@ -170,8 +164,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public int TryptMonitorSetupHorizontal
         {
-            get { return _videoWallMonitorsHor; }
-            set { _videoWallMonitorsHor = value; }
+            get => _videoWallMonitorsHor;
+            set => _videoWallMonitorsHor = value;
         }
 
         internal RenderCanvasGameWindow _gameWindow;
@@ -269,8 +263,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 //TODO: Select correct monitor
-                MonitorInfo mon;
-                Monitors.TryGetMonitorInfo(0, out mon);
+                Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
 
                 var oneScreenWidth = mon.HorizontalResolution;
                 var oneScreenHeight = mon.VerticalResolution;
@@ -312,8 +305,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="borderHidden">Show the window border or not.</param>
         public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            MonitorInfo mon;
-            Monitors.TryGetMonitorInfo(0, out mon);
+            Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
 
             BaseWidth = width;
             BaseHeight = height;
@@ -462,7 +454,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Does the initialize of this instance.
         /// </summary>
-        internal protected void DoInit()
+        protected internal void DoInit()
         {
             if (Init != null)
                 Init(this, new InitEventArgs());
@@ -471,7 +463,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Does the unload of this instance. 
         /// </summary>
-        internal protected void DoUnLoad()
+        protected internal void DoUnLoad()
         {
             if (UnLoad != null)
                 UnLoad(this, new InitEventArgs());
@@ -480,7 +472,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Does the render of this instance.
         /// </summary>
-        internal protected void DoRender()
+        protected internal void DoRender()
         {
             if (Render != null)
                 Render(this, new RenderEventArgs());
@@ -489,7 +481,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
-        internal protected void DoResize(int width, int height)
+        protected internal void DoResize(int width, int height)
         {
             if (Resize != null)
                 Resize(this, new ResizeEventArgs(width, height));
@@ -498,11 +490,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
     }
 
-    class RenderCanvasGameWindow : GameWindow
+    internal class RenderCanvasGameWindow : GameWindow
     {
         #region Fields
 
-        private RenderCanvasImp _renderCanvasImp;
+        private readonly RenderCanvasImp _renderCanvasImp;
 
         /// <summary>
         /// Gets the delta time.
@@ -523,7 +515,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool Blending
         {
-            get { return GL.IsEnabled(EnableCap.Blend); }
+            get => GL.IsEnabled(EnableCap.Blend);
             set
             {
                 if (value)
@@ -579,7 +571,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // Check for necessary capabilities
             string version = GL.GetString(StringName.Version);
 
-            int major = (int)version[0];
+            int major = version[0];
             // int minor = (int)version[2];
 
             if (major < 2)

@@ -301,7 +301,7 @@ namespace Fusee.Engine.Core
             });
         }
 
-        private static List<IFxParamDeclaration> DeferredLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
+        private static List<IFxParamDeclaration> DeferredLightingEffectParams(IRenderTarget srcRenderTarget, float4 backgroundColor)
         {
             return new List<IFxParamDeclaration>()
             {
