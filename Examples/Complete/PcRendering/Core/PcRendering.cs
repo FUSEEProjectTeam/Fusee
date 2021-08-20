@@ -88,7 +88,7 @@ namespace Fusee.Examples.PcRendering.Core
         {
             _spaceMouse = Input.GetDevice<SixDOFDevice>();
 
-            _depthTex = WritableTexture.CreateDepthTex(Width, Height);
+            _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
             IsAlive = true;
             AppSetup();
@@ -324,7 +324,7 @@ namespace Fusee.Examples.PcRendering.Core
             //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
-                _depthTex = WritableTexture.CreateDepthTex(Width, Height);
+                _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
                 PtRenderingParams.DepthPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
                 PtRenderingParams.ColorPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
