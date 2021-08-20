@@ -58,7 +58,7 @@ namespace Fusee.Xirkit
         {
             string member = ip.Member;
             Type targetType = ip.GetPinType();
-            Type memberType = GetMemberTypeAndAccessor(n, member, targetType, out object elementAccessor);
+            _ = GetMemberTypeAndAccessor(n, member, targetType, out object elementAccessor);
 
             // This does a ip.ElementAccessor = elementAccessor. We need to use reflection because the type is not known at compile time
             Type t = ip.GetType();
@@ -69,7 +69,7 @@ namespace Fusee.Xirkit
         public static void ReAttachOutPin(Node n, IOutPin op)
         {
             string member = op.Member;
-            Type memberType = GetMemberTypeAndAccessor(n, member, null, out object elementAccessor);
+            _ = GetMemberTypeAndAccessor(n, member, null, out object elementAccessor);
 
             // This does a ip.ElementAccessor = elementAccessor. We need to use reflection because the type is not known at compile time
             op.GetType().GetProperty("MemberAccessor").SetValue(op, elementAccessor, null);
@@ -395,8 +395,7 @@ namespace Fusee.Xirkit
         private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
-
-            if (!_convMap.TryGetValue(typeof(TParm), out Dictionary<Type, Delegate> val))
+            if (!_convMap.TryGetValue(typeof(TParm), out _))
                 _convMap[typeof(TParm)] = new Dictionary<Type, Delegate>();
 
             _convMap[typeof(TParm)][typeof(TRet)] = d;

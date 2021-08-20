@@ -259,7 +259,7 @@ namespace Fusee.Base.Core
                 throw new InvalidOperationException($"DeepCopy: ProtoBuf.ProtoContractAttribute is not defined on '{source.GetType().Name}'!");
             }
 
-            var stream = new MemoryStream();
+            _ = new MemoryStream();
 
             //ProtoBuf.Serializer.Serialize(stream, source);
             //stream.Position = 0;

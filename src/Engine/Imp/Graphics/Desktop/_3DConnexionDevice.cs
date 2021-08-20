@@ -489,7 +489,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             {
                 if (IsAvailable)
                 {
-                    var ret = SiApp.SiGetDeviceImageFileName(_deviceHandle, out var path);
+                    _ = SiApp.SiGetDeviceImageFileName(_deviceHandle, out var path);
                     return path;
                 }
                 return null;

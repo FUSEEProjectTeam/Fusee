@@ -373,10 +373,9 @@ namespace Fusee.Engine.Core
 
             var trans = boneContainer.GetGlobalTranslation();
             var rot = boneContainer.GetGlobalRotation();
+            _ = float4x4.CreateTranslation(trans) * rot; //TODO: ???
 
-            var currentModel = float4x4.CreateTranslation(trans) * rot; //TODO: ???
-
-            if (!_boneMap.TryGetValue(boneContainer, out var transform))
+            if (!_boneMap.TryGetValue(boneContainer, out _))
                 _boneMap.Add(boneContainer, _rc.Model);
             else
                 _boneMap[boneContainer] = _rc.Model;

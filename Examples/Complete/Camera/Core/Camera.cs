@@ -175,7 +175,7 @@ namespace Fusee.Examples.Camera.Core
                 _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out float4 viewport) * float4x4.Invert(_mainCamTransform.Matrix);
+            float4x4 viewProjection = _mainCam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_mainCamTransform.Matrix);
             _frustum.Vertices = FrustumF.CalculateFrustumCorners(viewProjection).ToArray();
 
             FrustumF frustum = new FrustumF();

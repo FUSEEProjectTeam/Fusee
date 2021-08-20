@@ -70,7 +70,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " by " + _scene.Header.CreatedBy;
 
                 if (_scene.Header.CreationDate != null)
-                    textToDisplay += " on " + _scene.Header.CreationDate;
+                    _ = " on " + _scene.Header.CreationDate;
             }
 
             _gui = CreateGui();
