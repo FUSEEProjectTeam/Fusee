@@ -45,18 +45,20 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Math
-      run: dotnet test -c Release src/Tests/Math/Core/Fusee.Test.Math.Core.csproj
-    - name: Serialization V1
-      run: dotnet test -c Release src/Tests/Serialization/Fusee.Serialization.Test/Fusee.Test.Serialization.V1.csproj
     - name: AssetStorage
-      run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Test.AssetStorage.Desktop.csproj
+      run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
+    - name: Math
+      run: dotnet test -c Release src/Tests/Math/Core/Fusee.Tests.Math.Core.csproj
+    - name: Scene Components
+      run: dotnet test -c Release src/Tests/Scene/Components/Fusee.Tests.Scene.Components.csproj
+    - name: Serialization V1
+      run: dotnet test -c Release src/Tests/Serialization/V1/Fusee.Tests.Serialization.V1.csproj
     - name: Xene
-      run: dotnet test -c Release src/Tests/Xene/Fusee.Xene.Test/Fusee.Test.Xene.csproj
+      run: dotnet test -c Release src/Tests/Xene/Fusee.Tests.Xene.csproj
     - name: Xirkit
-      run: dotnet test -c Release src/Tests/Xirkit/Fusee.Test.Xirkit/Fusee.Test.Xirkit.csproj
+      run: dotnet test -c Release src/Tests/Xirkit/Core/Fusees.Tests.Xirkit.Core.csproj
     - name: Xirkit Nested Access
-      run: dotnet test -c Release src/Tests/Xirkit/Fusee.Xirkit.NestedAccess.Test/Fusee.Test.Xirkit.NestedAccess.csproj
+      run: dotnet test -c Release src/Tests/Xirkit/NestedAccess/Fusee.Tests.Xirkit.NestedAccess.csproj
 
   builddesktop:
     needs: [tests]
