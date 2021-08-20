@@ -9,7 +9,7 @@ namespace Fusee.Base.Imp.Android
     /// </summary>
     public class IOImp : IIOImp
     {
-        Context _androidContext;
+        readonly Context _androidContext;
         public IOImp(Context androidContext)
         {
             _androidContext = androidContext;
@@ -30,7 +30,7 @@ namespace Fusee.Base.Imp.Android
             string pathCpy = path.ToLower();
             if (pathCpy.StartsWith("assets/") || pathCpy.StartsWith("assets\\"))
             {
-                path = path.Substring("assets/".Length);
+                path = path["assets/".Length..];
                 file = _androidContext.Assets.Open(path);
             }
             else

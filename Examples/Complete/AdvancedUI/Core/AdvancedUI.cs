@@ -54,56 +54,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
 
-        private SceneContainer BuildScene()
-        {
-            Sphere sphere = new Sphere(32, 24);
-
-            List<float3> lineControlPoints = new List<float3>
-            {
-                new float3(-3f,0,0) , new float3(-1.5f,-1.5f,0), new float3(1f,1.5f,0)
-            };
-            Line line = new Line(lineControlPoints, 0.2f);
-
-            var paperTex = new Texture(AssetStorage.Get<ImageData>("crumpled-paper-free.jpg"));
-
-            return new SceneContainer()
-            {
-                Children = new List<SceneNode>()
-                {
-                    new SceneNode()
-                    {
-                        Components = new List<SceneComponent>()
-                        {
-                            new Transform()
-                            {
-                                Name = "SphereTransform",
-                                Rotation = new float3(0,0,0),
-                                Translation = new float3(0,0,0),
-                                Scale = new float3(1, 1, 1)
-                            },
-                            MakeEffect.FromDiffuseSpecularNormalTexture(new float4(0.90980f, 0.35686f, 0.35686f,1).LinearColorFromSRgb(), float4.Zero, paperTex, 1.0f, float2.One, 20, 0.5f)                            
-                            //sphere
-                        }
-                    },
-                    new SceneNode()
-                    {
-                        Components = new List<SceneComponent>()
-                        {
-                            new Transform()
-                            {
-                                Name = "LineTransform",
-                                Rotation = new float3(0,0,0),
-                                Translation = new float3(0,0,0),
-                                Scale = new float3(1, 1, 1)
-                            },
-                            MakeEffect.FromDiffuseSpecular(new float4(0, 0, 1, 1).LinearColorFromSRgb(), float4.Zero, 20, 1.0f),
-                            line
-                        }
-                    }
-                }
-            };
-        }
-
         // Init is called on startup.
         public override void Init()
         {

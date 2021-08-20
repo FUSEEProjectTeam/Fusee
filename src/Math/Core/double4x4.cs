@@ -360,23 +360,14 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (i)
+                return i switch
                 {
-                    case 0:
-                        return Row0[j];
-
-                    case 1:
-                        return Row1[j];
-
-                    case 2:
-                        return Row2[j];
-
-                    case 3:
-                        return Row3[j];
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
-                }
+                    0 => Row0[j],
+                    1 => Row1[j],
+                    2 => Row2[j],
+                    3 => Row3[j],
+                    _ => throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type"),
+                };
             }
             set
             {

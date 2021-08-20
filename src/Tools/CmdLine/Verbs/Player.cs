@@ -223,8 +223,8 @@ namespace Fusee.Tools.CmdLine.Verbs
                 // invoke the first public constructor with no parameters.
                 RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
 
-                if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player)
-                    ((Fusee.Engine.Player.Core.Player)app).ModelFile = modelFile;
+                if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player player)
+                    player.ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
@@ -234,8 +234,6 @@ namespace Fusee.Tools.CmdLine.Verbs
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-                // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-                // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
@@ -266,7 +264,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                     Console.WriteLine(" - SUCCESS");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Console.WriteLine(" - FAILD");
                     status = false;

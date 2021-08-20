@@ -11,7 +11,7 @@ using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Examples.Bone.Core
+namespace Fusee.Examples.BoneAnimation.Core
 {
     [FuseeApplication(Name = "FUSEE Bone Animation Example", Description = "Quick bone animation example")]
     public class Bone : RenderCanvas
@@ -38,7 +38,6 @@ namespace Fusee.Examples.Bone.Core
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
 
         // Init is called on startup.
         public override void Init()

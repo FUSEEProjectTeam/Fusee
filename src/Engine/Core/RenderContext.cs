@@ -1360,9 +1360,9 @@ namespace Fusee.Engine.Core
                 {
                     SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
                 }
-                else if (param.Value is IStorageBuffer)
+                else if (param.Value is IStorageBuffer buffer)
                 {
-                    ConnectBufferToShaderStorage((IStorageBuffer)param.Value, param.Info.Name);
+                    ConnectBufferToShaderStorage(buffer, param.Info.Name);
                 }
             }
             else

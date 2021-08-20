@@ -55,17 +55,12 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (idx)
+                return idx switch
                 {
-                    case 0:
-                        return x;
-
-                    case 1:
-                        return y;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
-                }
+                    0 => x,
+                    1 => y,
+                    _ => throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type"),
+                };
             }
             set
             {

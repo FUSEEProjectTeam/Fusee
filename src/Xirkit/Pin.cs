@@ -19,7 +19,7 @@ namespace Fusee.Xirkit
     [DebuggerDisplay("{N.O}.{Member}")]
     public class Pin
     {
-        private Node _n;
+        private readonly Node _n;
         /// <summary>
         /// Gets the Node this pin is accessing.
         /// </summary>
@@ -31,7 +31,7 @@ namespace Fusee.Xirkit
             get { return _n; }
         }
 
-        private string _member;
+        private readonly string _member;
         /// <summary>
         /// Gets the name of the member or the member chain.
         /// </summary>

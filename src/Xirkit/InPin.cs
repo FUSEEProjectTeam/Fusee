@@ -42,8 +42,7 @@ namespace Fusee.Xirkit
         public void SetValue(T value)
         {
             _memberAccessor.Set(N.O, value);
-            if (ReceivedValue != null)
-                ReceivedValue(this, null);
+            ReceivedValue?.Invoke(this, null);
         }
 
         /// <summary>

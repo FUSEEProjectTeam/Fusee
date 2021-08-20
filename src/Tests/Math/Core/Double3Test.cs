@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class Double3Test
     {
@@ -398,10 +398,8 @@ namespace Fusee.Test.Math.Core
         [MemberData(nameof(GetBarycentric))]
         public void GetBarycentric_Edges(double3 a, double3 b, double3 c, double uExpected, double vExpected, double3 point)
         {
-            double uActual;
-            double vActual;
 
-            double3.GetBarycentric(a, b, c, point, out uActual, out vActual);
+            double3.GetBarycentric(a, b, c, point, out double uActual, out double vActual);
 
             Assert.Equal(uExpected, uActual);
             Assert.Equal(vExpected, vActual);
@@ -465,9 +463,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Swizzle_double2_Set()
         {
-            var actual = new double3();
-
-            actual.xy = new double2(1, 2);
+            var actual = new double3
+            {
+                xy = new double2(1, 2)
+            };
             Assert.Equal(new double3(1, 2, 0), actual);
         }
 
@@ -601,9 +600,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var actual = new double3();
-
-            actual.r = 1;
+            var actual = new double3
+            {
+                r = 1
+            };
             Assert.Equal(new double3(1, 0, 0), actual);
 
             actual.g = 2;

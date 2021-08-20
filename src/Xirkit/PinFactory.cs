@@ -24,8 +24,7 @@ namespace Fusee.Xirkit
             // Unfortunately we cannot write it that way because we don't have t
             // at compile time. So we need to do some Reflection magic.
 
-            object elementAccessor;
-            Type memberType = GetMemberTypeAndAccessor(n, member, out elementAccessor);
+            Type memberType = GetMemberTypeAndAccessor(n, member, out object elementAccessor);
 
             // Perform  <code> return new OutPin<t>(n, member, elementAccessor); </code> with t known at runtime, not at compile time
             Type outPinGeneric = typeof(OutPin<>).MakeGenericType(new Type[] { memberType });
@@ -43,8 +42,7 @@ namespace Fusee.Xirkit
             // 
             // Unfortunately we cannot write it that way because we don't have t
             // at compile time. So we need to do some Reflection magic.
-            object elementAccessor;
-            Type memberType = GetMemberTypeAndAccessor(n, member, targetType, out elementAccessor);
+            Type memberType = GetMemberTypeAndAccessor(n, member, targetType, out object elementAccessor);
 
             // pre-check if types are compatible or castable
             if (memberType != targetType && !CanConvert(targetType, memberType))
@@ -60,8 +58,7 @@ namespace Fusee.Xirkit
         {
             string member = ip.Member;
             Type targetType = ip.GetPinType();
-            object elementAccessor;
-            Type memberType = GetMemberTypeAndAccessor(n, member, targetType, out elementAccessor);
+            _ = GetMemberTypeAndAccessor(n, member, targetType, out object elementAccessor);
 
             // This does a ip.ElementAccessor = elementAccessor. We need to use reflection because the type is not known at compile time
             Type t = ip.GetType();
@@ -72,8 +69,7 @@ namespace Fusee.Xirkit
         public static void ReAttachOutPin(Node n, IOutPin op)
         {
             string member = op.Member;
-            object elementAccessor;
-            Type memberType = GetMemberTypeAndAccessor(n, member, null, out elementAccessor);
+            _ = GetMemberTypeAndAccessor(n, member, null, out object elementAccessor);
 
             // This does a ip.ElementAccessor = elementAccessor. We need to use reflection because the type is not known at compile time
             op.GetType().GetProperty("MemberAccessor").SetValue(op, elementAccessor, null);
@@ -107,7 +103,7 @@ namespace Fusee.Xirkit
 
                     miList[i] = miFound[0];
 
-                    currentType = (miList[i] is FieldInfo) ? ((FieldInfo)miList[i]).FieldType : ((PropertyInfo)miList[i]).PropertyType;
+                    currentType = (miList[i] is FieldInfo info) ? info.FieldType : ((PropertyInfo)miList[i]).PropertyType;
                 }
                 memberType = currentType;
                 if (pinType == null)
@@ -188,7 +184,7 @@ namespace Fusee.Xirkit
 
 
         // [JSIgnore] (ignoring it will generate an exception in JSIl-generated PinFactory constructor)
-        private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
+        private static readonly Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
         //private static void InitConvMap()
         static PinFactory()
@@ -202,7 +198,7 @@ namespace Fusee.Xirkit
             AddConverter<int, int>(x => x);
             AddConverter<int, float>(x => (float)x);
             AddConverter<int, double>(x => (double)x);
-            AddConverter<int, bool>(x => (x == 0) ? false : true);
+            AddConverter<int, bool>(x => x != 0);
             AddConverter<int, string>(x => x.ToString());
             AddConverter<int, double2>(x => new double2(x, 0));
             AddConverter<int, double3>(x => new double3(x, 0, 0));
@@ -217,7 +213,7 @@ namespace Fusee.Xirkit
             AddConverter<float, int>(x => (int)x);
             AddConverter<float, float>(x => x);
             AddConverter<float, double>(x => (double)x);
-            AddConverter<float, bool>(x => (x == 0.0f) ? false : true);
+            AddConverter<float, bool>(x => x != 0.0f);
             AddConverter<float, string>(x => x.ToString());
             AddConverter<float, double2>(x => new double2(x, 0));
             AddConverter<float, double3>(x => new double3(x, 0, 0));
@@ -232,7 +228,7 @@ namespace Fusee.Xirkit
             AddConverter<double, int>(x => (int)x);
             AddConverter<double, float>(x => (float)x);
             AddConverter<double, double>(x => x);
-            AddConverter<double, bool>(x => (x == 0.0) ? false : true);
+            AddConverter<double, bool>(x => x != 0.0);
             AddConverter<double, string>(x => x.ToString());
             AddConverter<double, double2>(x => new double2(x, 0));
             AddConverter<double, double3>(x => new double3(x, 0, 0));
@@ -399,9 +395,7 @@ namespace Fusee.Xirkit
         private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
-
-            Dictionary<Type, Delegate> val;
-            if (!_convMap.TryGetValue(typeof(TParm), out val))
+            if (!_convMap.TryGetValue(typeof(TParm), out _))
                 _convMap[typeof(TParm)] = new Dictionary<Type, Delegate>();
 
             _convMap[typeof(TParm)][typeof(TRet)] = d;
@@ -420,12 +414,10 @@ namespace Fusee.Xirkit
             //if (_convMap == null)
             //    InitConvMap();
 
-            Dictionary<Type, Delegate> dict;
-            if (!_convMap.TryGetValue(from, out dict))
+            if (!_convMap.TryGetValue(from, out Dictionary<Type, Delegate> dict))
                 return false;
 
-            Delegate del = null;
-            if (!dict.TryGetValue(to, out del))
+            if (!dict.TryGetValue(to, out Delegate del))
                 return false;
 
             return del != null;

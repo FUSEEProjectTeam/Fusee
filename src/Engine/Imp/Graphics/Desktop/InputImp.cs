@@ -40,13 +40,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
         }
 
-        private GameWindow _gameWindow;
-        private KeyboardDeviceImp _keyboard;
-        private MouseDeviceImp _mouse;
-        private GamePadDeviceImp _gamePad0;
-        private GamePadDeviceImp _gamePad1;
-        private GamePadDeviceImp _gamePad2;
-        private GamePadDeviceImp _gamePad3;
+        private readonly GameWindow _gameWindow;
+        private readonly KeyboardDeviceImp _keyboard;
+        private readonly MouseDeviceImp _mouse;
+        private readonly GamePadDeviceImp _gamePad0;
+        private readonly GamePadDeviceImp _gamePad1;
+        private readonly GamePadDeviceImp _gamePad2;
+        private readonly GamePadDeviceImp _gamePad3;
 
 
         /// <summary>
@@ -155,8 +155,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </remarks>
     public class GamePadDeviceImp : IInputDeviceImp
     {
-        private GameWindow _gameWindow;
-        private int DeviceID;
+        private readonly GameWindow _gameWindow;
+        private readonly int DeviceID;
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
         internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
@@ -525,8 +525,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class KeyboardDeviceImp : IInputDeviceImp
     {
-        private GameWindow _gameWindow;
-        private Keymapper _keymapper;
+        private readonly GameWindow _gameWindow;
+        private readonly Keymapper _keymapper;
 
         /// <summary>
         /// Should be called by the driver only.
@@ -638,8 +638,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="key">The <see cref="KeyboardKeyEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinKeyDown(KeyboardKeyEventArgs key)
         {
-            ButtonDescription btnDesc;
-            if (ButtonValueChanged != null && _keymapper.TryGetValue(key.Key, out btnDesc))
+            if (ButtonValueChanged != null && _keymapper.TryGetValue(key.Key, out ButtonDescription btnDesc))
             {
                 ButtonValueChanged(this, new ButtonValueChangedArgs
                 {
@@ -655,8 +654,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="key">The <see cref="KeyboardKeyEventArgs"/> instance containing the event data.</param>
         protected void OnGameWinKeyUp(KeyboardKeyEventArgs key)
         {
-            ButtonDescription btnDesc;
-            if (ButtonValueChanged != null && _keymapper.TryGetValue(key.Key, out btnDesc))
+            if (ButtonValueChanged != null && _keymapper.TryGetValue(key.Key, out ButtonDescription btnDesc))
             {
                 ButtonValueChanged(this, new ButtonValueChangedArgs
                 {
@@ -693,7 +691,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class MouseDeviceImp : IInputDeviceImp
     {
-        private GameWindow _gameWindow;
+        private readonly GameWindow _gameWindow;
         private ButtonImpDescription _btnLeftDesc, _btnRightDesc, _btnMiddleDesc;
 
         /// <summary>
@@ -902,20 +900,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>The value at the given axis.</returns>
         public float GetAxis(int iAxisId)
         {
-            switch (iAxisId)
+            return iAxisId switch
             {
-                case (int)MouseAxes.Wheel:
-                    return _gameWindow.MouseState.Scroll.Y;
-                case (int)MouseAxes.MinX:
-                    return 0;
-                case (int)MouseAxes.MaxX:
-                    return _gameWindow.Size.X;
-                case (int)MouseAxes.MinY:
-                    return 0;
-                case (int)MouseAxes.MaxY:
-                    return _gameWindow.Size.Y;
-            }
-            throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
+                (int)MouseAxes.Wheel => _gameWindow.MouseState.Scroll.Y,
+                (int)MouseAxes.MinX => 0,
+                (int)MouseAxes.MaxX => _gameWindow.Size.X,
+                (int)MouseAxes.MinY => 0,
+                (int)MouseAxes.MaxY => _gameWindow.Size.Y,
+                _ => throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis."),
+            };
         }
 
         /// <summary>
