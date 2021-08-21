@@ -263,7 +263,7 @@ namespace Fusee.Engine.Core
         public virtual void SetContext(RenderContext rc)
         {
             if (rc == null)
-                throw new ArgumentNullException("rc");
+                throw new ArgumentNullException(nameof(rc));
 
             if (rc != _rc)
             {
@@ -388,8 +388,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            var boneArray = new float4x4[weight.Joints.Count()];
-            for (var i = 0; i < weight.Joints.Count(); i++)
+            var boneArray = new float4x4[weight.Joints.Count];
+            for (var i = 0; i < weight.Joints.Count; i++)
             {
                 var tmp = weight.BindingMatrices[i];
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;

@@ -25,7 +25,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => obj is EigenF e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
+        public override bool Equals(object? obj) => obj is EigenF e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
 
         /// <summary>
         /// Returns hash code
@@ -77,7 +77,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => obj is EigenD e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
+        public override bool Equals(object? obj) => obj is EigenD e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
 
         /// <summary>
         /// Returns hash code

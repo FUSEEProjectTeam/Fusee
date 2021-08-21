@@ -254,7 +254,7 @@ namespace Fusee.Math.Core
         /// <returns>The next power of two.</returns>
         public static long NextPowerOfTwo(long n)
         {
-            if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
+            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n), "Must be positive.");
             return (long)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
@@ -265,7 +265,7 @@ namespace Fusee.Math.Core
         /// <returns>The next power of two.</returns>
         public static int NextPowerOfTwo(int n)
         {
-            if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
+            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n), "Must be positive.");
             return (int)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
@@ -276,7 +276,7 @@ namespace Fusee.Math.Core
         /// <returns>The next power of two.</returns>
         public static float NextPowerOfTwo(float n)
         {
-            if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
+            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n), "Must be positive.");
             return (float)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
@@ -287,7 +287,7 @@ namespace Fusee.Math.Core
         /// <returns>The next power of two.</returns>
         public static double NextPowerOfTwo(double n)
         {
-            if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
+            if (n < 0) throw new ArgumentOutOfRangeException(nameof(n), "Must be positive.");
             return System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 

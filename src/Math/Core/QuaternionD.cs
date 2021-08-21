@@ -709,7 +709,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="other">The other object to be used in the comparison.</param>
         /// <returns>True if both objects are QuaternionDs of equal value. Otherwise it returns false.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
         {
             if (other is QuaternionD == false) return false;
             return this == (QuaternionD)other;

@@ -166,7 +166,7 @@ namespace Fusee.Engine.Core
 
             // Plausibility checks interleaved...
             if (vertInx == null)
-                throw new ArgumentNullException("vertInx");
+                throw new ArgumentNullException(nameof(vertInx));
 
             f.InxVert = new int[vertInx.Length];
             for (i = 0; i < vertInx.Length; i++)
@@ -181,7 +181,7 @@ namespace Fusee.Engine.Core
             {
                 if (texCoordInx.Length != vertInx.Length)
                     throw new ArgumentException(
-                        "Number of texture coordinate indices must match number of vertex indices", "texCoordInx");
+                        "Number of texture coordinate indices must match number of vertex indices", nameof(texCoordInx));
 
                 f.InxTexCoord = new int[texCoordInx.Length];
                 for (i = 0; i < texCoordInx.Length; i++)
@@ -196,8 +196,7 @@ namespace Fusee.Engine.Core
             if (normalInx != null)
             {
                 if (normalInx.Length != vertInx.Length)
-                    throw new ArgumentException("Number of normal indices must match number of vertex indices",
-                                                "normalInx");
+                    throw new ArgumentException("Number of normal indices must match number of vertex indices", nameof(normalInx));
 
                 f.InxNormal = new int[normalInx.Length];
                 for (i = 0; i < normalInx.Length; i++)

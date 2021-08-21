@@ -199,7 +199,7 @@ namespace Fusee.Engine.Core.ShaderShards
             };
             bodyCompl.AddRange(methodBody);
             bodyCompl.Add("return OUT;");
-            return GLSL.CreateMethod(StructName, ChangeSurfVert, new string[] { }, bodyCompl);
+            return GLSL.CreateMethod(StructName, ChangeSurfVert, Array.Empty<string>(), bodyCompl);
         }
 
         private static string BuildStructDecl(LightingSetupFlags setup)

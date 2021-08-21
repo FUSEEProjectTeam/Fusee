@@ -564,7 +564,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (!string.IsNullOrEmpty(gs))
                 Diagnostics.Warn("Geometry Shaders are unsupported");
 
-            StringBuilder info = new StringBuilder(512);
+            StringBuilder info = new(512);
 
             int vertexObject = GL.CreateShader(ShaderType.VertexShader);
             int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
@@ -572,19 +572,19 @@ namespace Fusee.Engine.Imp.Graphics.Android
             // Compile vertex shader
             GL.ShaderSource(vertexObject, 1, new[] { vs }, new[] { vs.Length });
             GL.CompileShader(vertexObject);
-            GL.GetShaderInfoLog(vertexObject, 512, out int length, info);
+            GL.GetShaderInfoLog(vertexObject, 512, out _, info);
             GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out int statusCode);
 
             if (statusCode != 1)
             {
-                var errMsg = info.ToString();
+                _ = info.ToString();
                 throw new ApplicationException(info.ToString());
             }
 
             // Compile pixel shader
             GL.ShaderSource(fragmentObject, 1, new[] { ps }, new[] { ps.Length });
             GL.CompileShader(fragmentObject);
-            GL.GetShaderInfoLog(vertexObject, 512, out length, info);
+            GL.GetShaderInfoLog(vertexObject, 512, out _, info);
             GL.GetShader(fragmentObject, ShaderParameter.CompileStatus, out statusCode);
 
             if (statusCode != 1)
@@ -659,7 +659,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
         public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
-            StringBuilder sbParamName = new StringBuilder(paramName);
+            StringBuilder sbParamName = new(paramName);
             int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName.ToString());
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
@@ -719,55 +719,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
             for (var i = 0; i < nParams; i++)
             {
                 var paramInfo = new ShaderParamInfo();
-                StringBuilder sbName = new StringBuilder(512);
-                GL.GetActiveUniform(sProg.Handle, i, 511, out int lenWritten, out paramInfo.Size, out ActiveUniformType uType, sbName);
+                StringBuilder sbName = new(512);
+                GL.GetActiveUniform(sProg.Handle, i, 511, out _, out paramInfo.Size, out ActiveUniformType uType, sbName);
                 paramInfo.Name = sbName.ToString();
                 paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
 
-                switch (uType)
+                paramInfo.Type = uType switch
                 {
-                    case ActiveUniformType.Int:
-                        paramInfo.Type = typeof(int);
-                        break;
-
-                    case ActiveUniformType.Float:
-                        paramInfo.Type = typeof(float);
-                        break;
-
-                    case ActiveUniformType.FloatVec2:
-                        paramInfo.Type = typeof(float2);
-                        break;
-
-                    case ActiveUniformType.FloatVec3:
-                        paramInfo.Type = typeof(float3);
-                        break;
-
-                    case ActiveUniformType.FloatVec4:
-                        paramInfo.Type = typeof(float4);
-                        break;
-
-                    case ActiveUniformType.FloatMat4:
-                        paramInfo.Type = typeof(float4x4);
-                        break;
-
-                    case ActiveUniformType.Sampler2D:
-                    case ActiveUniformType.UnsignedIntSampler2D:
-                    case ActiveUniformType.IntSampler2D:
-                    case ActiveUniformType.Sampler2DShadow:
-                        paramInfo.Type = typeof(ITextureBase);
-                        break;
-
-                    case ActiveUniformType.SamplerCube:
-                    case ActiveUniformType.SamplerCubeShadow:
-                        paramInfo.Type = typeof(IWritableCubeMap);
-                        break;
-                    case ActiveUniformType.Sampler2DArray:
-                        paramInfo.Type = typeof(IWritableArrayTexture);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
-                }
-
+                    ActiveUniformType.Int => typeof(int),
+                    ActiveUniformType.Float => typeof(float),
+                    ActiveUniformType.FloatVec2 => typeof(float2),
+                    ActiveUniformType.FloatVec3 => typeof(float3),
+                    ActiveUniformType.FloatVec4 => typeof(float4),
+                    ActiveUniformType.FloatMat4 => typeof(float4x4),
+                    ActiveUniformType.Sampler2D or ActiveUniformType.UnsignedIntSampler2D or ActiveUniformType.IntSampler2D or ActiveUniformType.Sampler2DShadow => typeof(ITextureBase),
+                    ActiveUniformType.SamplerCube or ActiveUniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
+                    ActiveUniformType.Sampler2DArray => typeof(IWritableArrayTexture),
+                    _ => throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown."),
+                };
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -1774,49 +1743,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         internal static Blend BlendFromOgl(int bf)
         {
-            switch (bf)
+            return bf switch
             {
-                case (int)BlendingFactorSrc.Zero:
-                    return Blend.Zero;
-
-                case (int)BlendingFactorSrc.One:
-                    return Blend.One;
-
-                case (int)BlendingFactorDest.SrcColor:
-                    return Blend.SourceColor;
-
-                case (int)BlendingFactorDest.OneMinusSrcColor:
-                    return Blend.InverseSourceColor;
-
-                case (int)BlendingFactorSrc.SrcAlpha:
-                    return Blend.SourceAlpha;
-
-                case (int)BlendingFactorSrc.OneMinusSrcAlpha:
-                    return Blend.InverseSourceAlpha;
-
-                case (int)BlendingFactorSrc.DstAlpha:
-                    return Blend.DestinationAlpha;
-
-                case (int)BlendingFactorSrc.OneMinusDstAlpha:
-                    return Blend.InverseDestinationAlpha;
-
-                case (int)BlendingFactorSrc.DstColor:
-                    return Blend.DestinationColor;
-
-                case (int)BlendingFactorSrc.OneMinusDstColor:
-                    return Blend.InverseDestinationColor;
-
-                case (int)BlendingFactorSrc.ConstantAlpha:
-                case (int)BlendingFactorSrc.ConstantColor:
-                    return Blend.BlendFactor;
-
-                case (int)BlendingFactorSrc.OneMinusConstantAlpha:
-                case (int)BlendingFactorSrc.OneMinusConstantColor:
-                    return Blend.InverseBlendFactor;
-
-                default:
-                    throw new ArgumentOutOfRangeException("blend");
-            }
+                (int)BlendingFactorSrc.Zero => Blend.Zero,
+                (int)BlendingFactorSrc.One => Blend.One,
+                (int)BlendingFactorDest.SrcColor => Blend.SourceColor,
+                (int)BlendingFactorDest.OneMinusSrcColor => Blend.InverseSourceColor,
+                (int)BlendingFactorSrc.SrcAlpha => Blend.SourceAlpha,
+                (int)BlendingFactorSrc.OneMinusSrcAlpha => Blend.InverseSourceAlpha,
+                (int)BlendingFactorSrc.DstAlpha => Blend.DestinationAlpha,
+                (int)BlendingFactorSrc.OneMinusDstAlpha => Blend.InverseDestinationAlpha,
+                (int)BlendingFactorSrc.DstColor => Blend.DestinationColor,
+                (int)BlendingFactorSrc.OneMinusDstColor => Blend.InverseDestinationColor,
+                (int)BlendingFactorSrc.ConstantAlpha or (int)BlendingFactorSrc.ConstantColor => Blend.BlendFactor,
+                (int)BlendingFactorSrc.OneMinusConstantAlpha or (int)BlendingFactorSrc.OneMinusConstantColor => Blend.InverseBlendFactor,
+                _ => throw new ArgumentOutOfRangeException("blend"),
+            };
         }
 
         /// <summary>

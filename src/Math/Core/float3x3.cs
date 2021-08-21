@@ -544,7 +544,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare tresult.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is float3x3))
                 return false;

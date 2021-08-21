@@ -221,7 +221,7 @@ namespace Fusee.Tools.CmdLine.Verbs
             else
             {
                 // invoke the first public constructor with no parameters.
-                RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
+                RenderCanvas app = (RenderCanvas)ctor.Invoke(Array.Empty<object>());
 
                 if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player player)
                     player.ModelFile = modelFile;

@@ -37,7 +37,7 @@ namespace Fusee.Structures
         {
             get
             {
-                if (_size == null || _size == double3.Zero)
+                if (_size == double3.Zero)
                     return new double3(CellSize.x * NumberOfGridCells.x, CellSize.y * NumberOfGridCells.y, CellSize.z * NumberOfGridCells.z);
                 else return _size;
             }

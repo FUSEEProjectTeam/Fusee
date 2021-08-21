@@ -799,15 +799,15 @@ namespace Fusee.Math.Core
             double4x4 result;
 
             if (fovy <= 0 || fovy > System.Math.PI)
-                throw new ArgumentOutOfRangeException("fovy");
+                throw new ArgumentOutOfRangeException(nameof(fovy));
             if (aspect <= 0)
-                throw new ArgumentOutOfRangeException("aspect");
+                throw new ArgumentOutOfRangeException(nameof(aspect));
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             double yMax = zNear * (double)System.Math.Tan(0.5f * fovy);
             double yMin = -yMax;
@@ -853,11 +853,11 @@ namespace Fusee.Math.Core
             double4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             double x = (2.0f * zNear) / (right - left);
             double y = (2.0f * zNear) / (top - bottom);
@@ -899,11 +899,11 @@ namespace Fusee.Math.Core
             double4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             double x = (2.0f * zNear) / (right - left);
             double y = (2.0f * zNear) / (top - bottom);
@@ -1655,7 +1655,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare this instance to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is double4x4))
                 return false;

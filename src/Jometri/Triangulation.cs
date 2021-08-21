@@ -315,7 +315,7 @@ namespace Fusee.Jometri
                         HandleRegularVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"Cannot handle {vertTypes[current.Handle]}");
                 }
                 sortedVertices.RemoveAt(0);
             }

@@ -35,7 +35,7 @@ namespace Fusee.Engine.Player.Desktop
             List<string> assetDirs = new();
             TryAddDir(assetDirs, "Assets");
 
-            string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string ExeDir = AppContext.BaseDirectory;
             string Cwd = Directory.GetCurrentDirectory();
 
             if (Cwd != ExeDir)
@@ -172,7 +172,7 @@ namespace Fusee.Engine.Player.Desktop
             else
             {
                 // invoke the first public constructor with no parameters.
-                RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
+                RenderCanvas app = (RenderCanvas)ctor.Invoke(Array.Empty<object>());
 
                 if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player player)
                     player.ModelFile = modelFile;

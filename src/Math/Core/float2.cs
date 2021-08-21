@@ -843,7 +843,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// True if the instances are equal; false otherwise.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is float2))
                 return false;

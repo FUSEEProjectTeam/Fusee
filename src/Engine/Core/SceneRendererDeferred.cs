@@ -900,7 +900,7 @@ namespace Fusee.Engine.Core
         public override void SetContext(RenderContext rc)
         {
             if (rc == null)
-                throw new ArgumentNullException("rc");
+                throw new ArgumentNullException(nameof(rc));
 
             if (rc != _rc)
             {

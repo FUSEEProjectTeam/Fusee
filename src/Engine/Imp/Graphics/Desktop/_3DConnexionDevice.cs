@@ -527,12 +527,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
 
 
             var o = default(SiApp.SiOpenData);
-            SiApp.SiOpenWinInit(ref o, windowHandle);
+            _ = SiApp.SiOpenWinInit(ref o, windowHandle);
 
             _deviceHandle = SiApp.SiOpen(this.AppName, SiApp.SI_ANY_DEVICE, IntPtr.Zero, SiApp.SI_EVENT, ref o);
             if (_deviceHandle == IntPtr.Zero)
             {
-                SiApp.SiTerminate();
+                _ = SiApp.SiTerminate();
                 throw new _3DxException("Unable to open device");
             }
 
@@ -784,7 +784,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         public static MotionEventArgs FromEventArray(int[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             if (data.Length < 6)
                 throw new ArgumentException("data array to small");
 

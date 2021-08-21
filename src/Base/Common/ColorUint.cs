@@ -196,7 +196,7 @@ namespace Fusee.Base.Common
                     1 => this.G,
                     2 => this.B,
                     3 => this.A,
-                    _ => throw new ArgumentOutOfRangeException("index", "Indices for ColorUint run from 0 to 3, inclusive."),
+                    _ => throw new ArgumentOutOfRangeException(nameof(index), "Indices for ColorUint run from 0 to 3, inclusive."),
                 };
             }
             set
@@ -216,7 +216,7 @@ namespace Fusee.Base.Common
                         this.A = value;
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException("index", "Indices for ColorUint run from 0 to 3, inclusive.");
+                        throw new ArgumentOutOfRangeException(nameof(index), "Indices for ColorUint run from 0 to 3, inclusive.");
                 }
             }
         }
@@ -326,9 +326,9 @@ namespace Fusee.Base.Common
         public ColorUint(float[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be three or four input values for ColorUint.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
             this.R = ColorUint.ToByte(values[0]);
             this.G = ColorUint.ToByte(values[1]);
             this.B = ColorUint.ToByte(values[2]);
@@ -345,9 +345,9 @@ namespace Fusee.Base.Common
         public ColorUint(byte[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 3 && values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be three or four input values for ColorUint.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be three or four input values for ColorUint.");
             this.R = values[0];
             this.G = values[1];
             this.B = values[2];
@@ -366,9 +366,9 @@ namespace Fusee.Base.Common
         public ColorUint(byte[] copyFrom, int index, bool noAlpha = true)
         {
             if (copyFrom == null)
-                throw new ArgumentNullException("copyFrom");
+                throw new ArgumentNullException(nameof(copyFrom));
             if (copyFrom.Length < index + (noAlpha ? 3 : 4))
-                throw new ArgumentOutOfRangeException("copyFrom", "Not enough pixel data to copy from given index.");
+                throw new ArgumentOutOfRangeException(nameof(copyFrom), "Not enough pixel data to copy from given index.");
             this.R = copyFrom[index + 0];
             this.G = copyFrom[index + 1];
             this.B = copyFrom[index + 2];

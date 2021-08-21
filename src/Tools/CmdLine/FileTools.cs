@@ -7,8 +7,8 @@ namespace Fusee.Tools.CmdLine
     {
         public static string MakeRelativePath(String fromPath, String toPath)
         {
-            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
-            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException(nameof(fromPath));
+            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException(nameof(toPath));
 
             Uri fromUri = new(fromPath);
             Uri toUri = new(toPath);

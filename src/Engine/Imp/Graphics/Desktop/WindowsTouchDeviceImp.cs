@@ -354,7 +354,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             get
             {
                 for (int i = 0; i < _nTouchPointsSupported; i++)
-                    if (!_activeTouchpoints.Values.Contains(i))
+                    if (!_activeTouchpoints.ContainsValue(i))
                         return i;
 
                 return -1;

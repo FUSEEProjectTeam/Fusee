@@ -24,7 +24,7 @@ namespace Fusee.Serialization.V1
         /// The specular channel.
         /// </summary>
         [ProtoMember(2)]
-        public SpecularChannel? Specular;
+        public SpecularChannel Specular;
         #endregion
 
         #region equals

@@ -57,7 +57,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _openGlDebugDelegate = new DebugProc(OpenGLDebugCallback);
 
             GL.DebugMessageCallback(_openGlDebugDelegate, IntPtr.Zero);
-            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, new int[0], false);
+            GL.DebugMessageControl(DebugSourceControl.DontCare, DebugTypeControl.DontCare, DebugSeverityControl.DebugSeverityNotification, 0, Array.Empty<int>(), false);
 #endif
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
@@ -1769,7 +1769,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 //    break;
                 //case Blend.InverseSourceColor2:
                 //    break;
-                _ => throw new ArgumentOutOfRangeException("blend"),
+                _ => throw new ArgumentOutOfRangeException(nameof(blend)),
             };
         }
 
@@ -1818,7 +1818,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             FillMode.Point => PolygonMode.Point,
                             FillMode.Wireframe => PolygonMode.Line,
                             FillMode.Solid => PolygonMode.Fill,
-                            _ => throw new ArgumentOutOfRangeException("value"),
+                            _ => throw new ArgumentOutOfRangeException(nameof(value)),
                         };
                         GL.PolygonMode(MaterialFace.FrontAndBack, pm);
                         return;
@@ -1852,7 +1852,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                                 GL.FrontFace(FrontFaceDirection.Ccw);
                                 break;
                             default:
-                                throw new ArgumentOutOfRangeException("value");
+                                throw new ArgumentOutOfRangeException(nameof(value));
                         }
                     }
                     break;
@@ -1921,7 +1921,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.BlendColor(Color.FromArgb((int)value));
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("renderState");
+                    throw new ArgumentOutOfRangeException(nameof(renderState));
             }
         }
 
@@ -2033,7 +2033,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.GetInteger(GetPName.BlendColorExt, out col);
                     return (uint)col;
                 default:
-                    throw new ArgumentOutOfRangeException("renderState");
+                    throw new ArgumentOutOfRangeException(nameof(renderState));
             }
         }
 

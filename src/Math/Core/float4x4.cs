@@ -46,9 +46,7 @@ namespace Fusee.Math.Core
     /// </remarks>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
-#pragma warning disable IDE1006 // Naming Styles
     public struct float4x4 : IEquatable<float4x4>
-#pragma warning restore IDE1006 // Naming Styles
     {
         #region Fields
 
