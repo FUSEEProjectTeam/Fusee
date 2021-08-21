@@ -436,16 +436,16 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetBarycentric))]
-        public void PointInTriangle_CornersInTriangle(float3 a, float3 b, float3 c, float uExpected, float vExpected, float3 point)
+        public void PointInTriangle_CornersInTriangle(float3 a, float3 b, float3 c, float _1, float _2, float3 point)
         {
-            Assert.True(float3.PointInTriangle(a, b, c, point, out var uActual, out var vActual));
+            Assert.True(float3.PointInTriangle(a, b, c, point, out var _, out var _));
         }
 
         [Theory]
         [MemberData(nameof(GetPointInTriangle_Outside))]
         public void PointInTriangle_IsNotIntriangle(float3 a, float3 b, float3 c, float3 point)
         {
-            Assert.False(float3.PointInTriangle(a, b, c, point, out var u, out var v));
+            Assert.False(float3.PointInTriangle(a, b, c, point, out var _, out var _));
         }
 
         #endregion

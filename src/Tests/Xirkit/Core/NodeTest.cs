@@ -26,8 +26,8 @@ namespace Fusee.Tests.Xirkit
             node1.RemoveAllPins();
             node2.RemoveAllPins();
 
-            Assert.True(node1.OutPins.Any(), "OutPins count should be 0 but is " + node1.OutPins.Count());
-            Assert.True(node2.InPins.Any(), "InPins count should be 0 but is " + node2.OutPins.Count());
+            Assert.True(!node1.OutPins.Any(), "OutPins count should be 0 but is " + node1.OutPins.Count());
+            Assert.True(!node2.InPins.Any(), "InPins count should be 0 but is " + node2.OutPins.Count());
         }
 
         [Fact]

@@ -90,12 +90,10 @@ namespace Fusee.Base.Imp.Android
         }
 
         /// <summary>
-        /// Checks the existence of the identified asset using <see cref="File.Exists"/>
+        /// Checks the existence of the identified asset.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
-        /// <returns>
-        /// true if a stream can be created.
-        /// </returns>
+        /// <returns>true if the asset exists.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         protected override bool CheckExists(string id)
         {
@@ -122,6 +120,11 @@ namespace Fusee.Base.Imp.Android
             return _androidContext.Assets.Open(id);
         }
 
+        /// <summary>
+        /// Checks the existence of the identified asset
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>true if the asset exists.</returns>
         protected override Task<bool> CheckExistsAsync(string id)
         {
             return Task.Factory.StartNew(() =>
