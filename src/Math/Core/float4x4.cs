@@ -2467,7 +2467,7 @@ namespace Fusee.Math.Core
 
             result = false;
 
-            var e = Vector128.Create(float.Epsilon);
+            var e = Vector128.Create(M.EpsilonFloat);
 
             var r = Sse.And(Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow0, otherrow0), Sse.Min(thisrow0, otherrow0)), e),
                                     Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow1, otherrow1), Sse.Min(thisrow1, otherrow1)), e)),
