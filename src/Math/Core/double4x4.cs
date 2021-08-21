@@ -72,12 +72,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The identity matrix
         /// </summary>
-        public static double4x4 Identity = new(double4.UnitX, double4.UnitY, double4.UnitZ, double4.UnitW);
+        public static readonly double4x4 Identity = new(double4.UnitX, double4.UnitY, double4.UnitZ, double4.UnitW);
 
         /// <summary>
         /// The zero matrix
         /// </summary>
-        public static double4x4 Zero = new(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
+        public static readonly double4x4 Zero = new(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
 
         #endregion Fields
 

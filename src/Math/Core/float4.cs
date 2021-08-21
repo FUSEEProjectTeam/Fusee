@@ -42,27 +42,27 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length float4 that points towards the x-axis.
         /// </summary>
-        public static float4 UnitX = new(1, 0, 0, 0);
+        public static readonly float4 UnitX = new(1, 0, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float4 that points towards the y-axis.
         /// </summary>
-        public static float4 UnitY = new(0, 1, 0, 0);
+        public static readonly float4 UnitY = new(0, 1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float4 that points towards the z-axis.
         /// </summary>
-        public static float4 UnitZ = new(0, 0, 1, 0);
+        public static readonly float4 UnitZ = new(0, 0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length float4 that points towards the w-axis.
         /// </summary>
-        public static float4 UnitW = new(0, 0, 0, 1);
+        public static readonly float4 UnitW = new(0, 0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length float4.
         /// </summary>
-        public static float4 Zero = new(0, 0, 0, 0);
+        public static readonly float4 Zero = new(0, 0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.

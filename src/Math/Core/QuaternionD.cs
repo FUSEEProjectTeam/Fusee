@@ -231,7 +231,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Defines the identity QuaternionD.
         /// </summary>
-        public static QuaternionD Identity = new(0, 0, 0, 1);
+        public static readonly QuaternionD Identity = new(0, 0, 0, 1);
 
         #endregion Fields
 

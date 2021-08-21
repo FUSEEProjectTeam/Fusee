@@ -30,12 +30,12 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     The identity matrix
         /// </summary>
-        public static float3x3 Identity = new(float3.UnitX, float3.UnitY, float3.UnitZ);
+        public static readonly float3x3 Identity = new(float3.UnitX, float3.UnitY, float3.UnitZ);
 
         /// <summary>
         ///     The zero matrix
         /// </summary>
-        public static float3x3 Zero = new(0, 0, 0, 0, 0, 0, 0, 0, 0);
+        public static readonly float3x3 Zero = new(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
         #endregion Fields
 
