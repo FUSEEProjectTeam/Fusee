@@ -36,7 +36,7 @@ namespace Fusee.Examples.UI.Core
         private GUIButton _btnCat;
 
         private FontMap _fontMap;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.World;
         private float _initWindowWidth;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
