@@ -3,7 +3,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using System;
@@ -81,14 +80,6 @@ namespace Fusee.Examples.GeometryEditing.Core
             RC.ClearColor = new float4(.7f, .7f, .7f, 1);
 
             _activeGeometrys = new Dictionary<int, Geometry>();
-
-            //Create Geometry
-            //Geometry sphere = CreateGeometry.CreateSpehreGeometry(2,22,11);
-            //sphere = SubdivisionSurface.CatmullClarkSubdivision(sphere);
-            //AddGeometryToSceneNode(sphere, new float3(0,0,0));
-
-            //Geometry cuboid = CreateGeometry.CreateCuboidGeometry(5, 2, 5);
-            //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));
         }
 
         // RenderAFrame is called once a frame
@@ -113,10 +104,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<ShaderEffect>().SetFxParam(UniformNameDeclarations.Albedo, _defaultColor);
+                    _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _defaultColor;
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<ShaderEffect>().SetFxParam(UniformNameDeclarations.Albedo, _selectedColor);
+                _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _selectedColor;
             }
         }
 
@@ -144,7 +135,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Keyboard.GetKey(KeyCodes.D4) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
-                Geometry geometry = CreatePrimitiveGeometry.CreateSpehreGeometry(1, 30, 15);
+                Geometry geometry = CreatePrimitiveGeometry.CreateSphereGeometry(1, 30, 15);
                 AddGeometryToSceneNode(geometry, new float3(0, 0, 0));
             }
             _keyTimeout -= DeltaTime;
