@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <Description>Fusee Base Imp Desktop</Description>
     <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Desktop</OutputPath>
@@ -11,11 +11,6 @@
     <EmbeddedResource Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>

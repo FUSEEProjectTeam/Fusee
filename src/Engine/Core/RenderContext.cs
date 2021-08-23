@@ -1613,7 +1613,7 @@ namespace Fusee.Engine.Core
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        internal void SetRenderTarget(IWritableCubeMap tex)
+        public void SetRenderTarget(IWritableCubeMap tex)
         {
             var texHandle = _textureManager.GetTextureHandle((WritableCubeMap)tex);
             _rci.SetRenderTarget(tex, texHandle);

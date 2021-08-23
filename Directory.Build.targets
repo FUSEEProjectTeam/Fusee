@@ -6,15 +6,6 @@
     </BuildDependsOn>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!--LIBRARY-->
-    <AssetDestinationFolder Condition=" '$(OutputType)' == 'Library' ">$(OutputPath)$(AssemblyName).Assets\</AssetDestinationFolder>
-    <!--DESKTOP-->
-    <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
-    <!--WPF-->
-    <AssetDestinationFolder Condition="  $(AssemblyName.Contains('WPF')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
-  </PropertyGroup>
-
   <Target Name="FuseeBeforeBuild">
   </Target>
 </Project>

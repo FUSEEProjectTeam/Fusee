@@ -48,6 +48,24 @@ namespace Fusee.Engine.Core.Effects
         private float4 _albedo;
 
         /// <summary>
+        /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
+        /// </summary>
+        public float Roughness
+        {
+            get => _roughness;
+
+            set
+            {
+                if (value != _roughness)
+                {
+                    _roughness = value;
+                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
+                }
+            }
+        }
+        private float _roughness;
+
+        /// <summary>
         /// Event to notify a <see cref="SurfaceEffect"/> about a changed value of a property of this class.
         /// </summary>
         public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;
@@ -65,51 +83,12 @@ namespace Fusee.Engine.Core.Effects
         }
     }
 
-    public class RoughnessInput : ColorInput
-    {
-        /// <summary>
-        /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
-        /// </summary>
-        public float Roughness
-        {
-            get => _roughness;
-
-            set
-            {
-                if (value != _roughness)
-                {
-                    _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
-                }
-            }
-        }
-        private float _roughness;
-    }
-
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for a BRDF lighting calculation.
     /// </summary>
     public class BRDFInput : ColorInput
     {
-        /// <summary>
-        /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
-        /// </summary>
-        public float Roughness
-        {
-            get => _roughness;
-
-            set
-            {
-                if (value != _roughness)
-                {
-                    _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
-                }
-            }
-        }
-        private float _roughness;
-
         /// <summary>
         /// The albedo color.
         /// </summary>
@@ -219,7 +198,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
-    public class SpecularInput : RoughnessInput
+    public class SpecularInput : ColorInput
     {
         /// <summary>
         /// The albedo color.
@@ -280,24 +259,6 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class TextureInputSpecular : SpecularInput
     {
-        /// <summary>
-        /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
-        /// </summary>
-        public float Roughness
-        {
-            get => _roughness;
-
-            set
-            {
-                if (value != _roughness)
-                {
-                    _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
-                }
-            }
-        }
-        private float _roughness;
-
         /// <summary>
         /// The mix between albedo texture and albedo color.
         /// </summary>
@@ -448,24 +409,6 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class TextureInputColor : TextureInputColorUnlit
     {
-        /// <summary>
-        /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
-        /// </summary>
-        public float Roughness
-        {
-            get => _roughness;
-
-            set
-            {
-                if (value != _roughness)
-                {
-                    _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
-                }
-            }
-        }
-        private float _roughness;
-
         /// <summary>
         /// The normal texture.
         /// </summary>

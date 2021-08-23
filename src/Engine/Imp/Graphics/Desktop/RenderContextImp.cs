@@ -585,6 +585,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (!string.IsNullOrEmpty(gs))
             {
                 geometryObject = GL.CreateShader(ShaderType.GeometryShader);
+
                 GL.ShaderSource(geometryObject, gs);
                 GL.CompileShader(geometryObject);
                 GL.GetShaderInfoLog(geometryObject, out info);

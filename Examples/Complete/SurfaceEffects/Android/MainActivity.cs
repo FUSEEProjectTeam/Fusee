@@ -84,7 +84,7 @@ namespace Fusee.Examples.SurfaceEffects.Android
                 Engine.Core.Input.AddDriverImp(
                     new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
                 // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
-                // Delayed into RenderCanvasImp....app.Run() - SEE DELEGATE ABOVE;
+                // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
             }
             else
             {

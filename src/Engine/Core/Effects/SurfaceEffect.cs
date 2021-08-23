@@ -174,7 +174,7 @@ namespace Fusee.Engine.Core.Effects
             FxShaderAttribute shaderAttribute;
             FxShardAttribute shardAttribute;
 
-            foreach (var prop in t.GetProperties())
+            foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
             {
                 var attribs = prop.GetCustomAttributes().ToList();
 
@@ -238,6 +238,7 @@ namespace Fusee.Engine.Core.Effects
                         continue;
                     default:
                         throw new ArgumentException($"Unknown shard category: {shardAttribute.ShardCategory}");
+
                 }
             }
 

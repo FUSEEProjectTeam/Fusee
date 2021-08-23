@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Fusee.PointCloud.PointAccessorCollections</RootNamespace>
 		<PackageId>Fusee.PointCloud.PointAccessorCollections</PackageId>
-		<TargetFramework>netstandard2.1</TargetFramework>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
 		<Description>Fusee PointCloud PointAccessorCollections</Description>
 	</PropertyGroup>
 

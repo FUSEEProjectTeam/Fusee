@@ -1210,7 +1210,7 @@ namespace Fusee.Engine.Core
                 Name = cam.Name,
                 ClippingPlanes = cam.ClippingPlanes,
                 Fov = cam.Fov,
-                ProjectionMethod = cam.ProjectionMethod == Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
+                ProjectionMethod = cam.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
             });
         }
 

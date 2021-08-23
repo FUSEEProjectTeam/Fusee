@@ -20,9 +20,9 @@ namespace Fusee.Base.Imp.Desktop
         /// <param name="resourceName">The resource name (fully qualified)</param>
         public static void LoadEmbeddedDll(string dllName, string resourceName)
         {
-            if (!_loadedDlls.Contains(dllName))
+            if (!loadedDlls.Contains(dllName))
             {
-                _loadedDlls.Add(dllName);
+                loadedDlls.Add(dllName);
 
                 Assembly assem = Assembly.GetExecutingAssembly();
                 _ = assem.GetManifestResourceNames();
@@ -32,7 +32,7 @@ namespace Fusee.Base.Imp.Desktop
 
                 // The temporary folder holds one or more of the temporary DLLs
                 // It is made "unique" to avoid different versions of the DLL or architectures.
-                var tempFolder = string.Format("{0}.{1}.{2}", an.Name, an.ProcessorArchitecture, an.Version);
+                var tempFolder = String.Format("{0}.{1}.{2}", an.Name, an.ProcessorArchitecture, an.Version);
 
                 string dirName = Path.Combine(Path.GetTempPath(), tempFolder);
                 if (!Directory.Exists(dirName))
@@ -59,6 +59,6 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         [DllImport("kernel32", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr LoadLibrary(string lpFileName);
+        static extern IntPtr LoadLibrary(string lpFileName);
     }
 }
