@@ -277,14 +277,17 @@ namespace Fusee.Examples.PcRendering.Core
             RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
             {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+
+                if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                {
+                    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                }
             }
 
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
