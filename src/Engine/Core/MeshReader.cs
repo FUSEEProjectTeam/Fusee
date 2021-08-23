@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("vt"))
                 {
                     // Vertex texcoord.
-                    string tmp = line.Substring(3);
+                    string tmp = line[3..];
 
                     string[] values = FilteredSplit(tmp, null);
 
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("vn"))
                 {
                     // Normals
-                    string tmp = line.Substring(3);
+                    string tmp = line[3..];
 
                     string[] values = FilteredSplit(tmp, null);
 
@@ -76,7 +76,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("v"))
                 {
                     // Positions.
-                    string tmp = line.Substring(2);
+                    string tmp = line[2..];
 
                     string[] values = FilteredSplit(tmp, null);
 
@@ -87,7 +87,7 @@ namespace Fusee.Engine.Core
                 else if (line.StartsWith("f"))
                 {
                     // Face
-                    string tmp = line.Substring(2);
+                    string tmp = line[2..];
                     string[] values = FilteredSplit(tmp, null);
 
                     if (!(3 <= values.Length && values.Length < nMaxInx))
@@ -189,10 +189,8 @@ namespace Fusee.Engine.Core
         /// <returns>The newly created Mesh object</returns>
         public static Geometry LoadGeometry(Stream stream)
         {
-            using (var obj = new StreamReader(stream))
-            {
-                return ReadWavefrontObj(obj);
-            }
+            using var obj = new StreamReader(stream);
+            return ReadWavefrontObj(obj);
         }
 
         /// <summary>
@@ -202,11 +200,9 @@ namespace Fusee.Engine.Core
         /// <returns>The newly created Mesh object</returns>
         public static Mesh LoadMesh(Stream stream)
         {
-            using (var obj = new StreamReader(stream))
-            {
-                Geometry geo = ReadWavefrontObj(obj);
-                return geo.ToMesh();
-            }
+            using var obj = new StreamReader(stream);
+            Geometry geo = ReadWavefrontObj(obj);
+            return geo.ToMesh();
         }
 
         /// <summary>

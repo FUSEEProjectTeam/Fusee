@@ -23,6 +23,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
+        /// <param name="id"></param>
         public static SceneContainer ConvertFrom(FusFile fus, string id = null)
         {
             if (fus == null)

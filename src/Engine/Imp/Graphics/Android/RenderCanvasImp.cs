@@ -248,6 +248,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (link.StartsWith("http://"))
             {
                 var intent = new Intent(Intent.ActionView);
+
+                //TODO: This is a workaround, pls fix: https://stackoverflow.com/questions/3918517/calling-startactivity-from-outside-of-an-activity-context
+                intent.SetFlags(ActivityFlags.NewTask);
+
                 intent.SetData(Uri.Parse(link));
                 _gameView.Context.StartActivity(intent);
             }
@@ -298,8 +302,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoInit()
         {
-            if (Init != null)
-                Init(this, new InitEventArgs());
+            Init?.Invoke(this, new InitEventArgs());
         }
 
         /// <summary>
@@ -307,8 +310,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoUnLoad()
         {
-            if (UnLoad != null)
-                UnLoad(this, new InitEventArgs());
+            UnLoad?.Invoke(this, new InitEventArgs());
         }
 
         /// <summary>
@@ -316,8 +318,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoRender()
         {
-            if (Render != null)
-                Render(this, new RenderEventArgs());
+            Render?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -325,8 +326,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         protected internal void DoResize(int width, int height)
         {
-            if (Resize != null)
-                Resize(this, new ResizeEventArgs(width, height));
+            Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
 
         #endregion Internal Members
@@ -336,11 +336,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
     {
         #region Fields
 
-        private RenderCanvasImp _renderCanvasImp;
+        private readonly RenderCanvasImp _renderCanvasImp;
         private float _deltaTime;
-        private Action _run;
+        private readonly Action _run;
         internal Context AndroidContext;
-        private Stopwatch _stopwatch = new Stopwatch();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
         #endregion Fields
 
@@ -386,7 +386,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (!_wasLoaded)
             {
                 // Check for necessary capabilities
-                string version = GL.GetString(All.Version);
+                string version = GL.GetString(StringName.Version);
 
                 int major = version[0];
                 // int minor = (int)version[2];
@@ -398,8 +398,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 GL.ClearColor(0, 0.3f, 0.1f, 1);
 
-                GL.Enable(All.DepthTest);
-                GL.Enable(All.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Enable(EnableCap.CullFace);
 
                 // Use VSync!
                 // Context.SwapInterval = 1;

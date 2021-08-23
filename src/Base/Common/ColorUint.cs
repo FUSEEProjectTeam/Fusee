@@ -190,19 +190,14 @@ namespace Fusee.Base.Common
         {
             get
             {
-                switch (index)
+                return index switch
                 {
-                    case 0:
-                        return this.R;
-                    case 1:
-                        return this.G;
-                    case 2:
-                        return this.B;
-                    case 3:
-                        return this.A;
-                    default:
-                        throw new ArgumentOutOfRangeException("index", "Indices for ColorUint run from 0 to 3, inclusive.");
-                }
+                    0 => this.R,
+                    1 => this.G,
+                    2 => this.B,
+                    3 => this.A,
+                    _ => throw new ArgumentOutOfRangeException("index", "Indices for ColorUint run from 0 to 3, inclusive."),
+                };
             }
             set
             {
@@ -948,8 +943,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Clamp(ColorUint value, ColorUint min, ColorUint max)
         {
-            ColorUint result;
-            ColorUint.Clamp(ref value, ref min, ref max, out result);
+            ColorUint.Clamp(ref value, ref min, ref max, out ColorUint result);
             return result;
         }
 
@@ -1049,8 +1043,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Max(ColorUint left, ColorUint right)
         {
-            ColorUint result;
-            ColorUint.Max(ref left, ref right, out result);
+            ColorUint.Max(ref left, ref right, out ColorUint result);
             return result;
         }
 
@@ -1077,8 +1070,7 @@ namespace Fusee.Base.Common
         /// </returns>
         public static ColorUint Min(ColorUint left, ColorUint right)
         {
-            ColorUint result;
-            ColorUint.Min(ref left, ref right, out result);
+            ColorUint.Min(ref left, ref right, out ColorUint result);
             return result;
         }
 

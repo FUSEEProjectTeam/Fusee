@@ -10,9 +10,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class MouseDevice : InputDevice
     {
-        private int _xVelId;
-        private int _yVelId;
-        private int _wheelVelId;
+        private readonly int _xVelId;
+        private readonly int _yVelId;
+        private readonly int _wheelVelId;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MouseDevice"/> class.

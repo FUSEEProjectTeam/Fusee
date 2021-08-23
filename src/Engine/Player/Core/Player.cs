@@ -40,7 +40,7 @@ namespace Fusee.Engine.Player.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 3000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -55,25 +55,11 @@ namespace Fusee.Engine.Player.Core
 
         private bool _isLoaded;
 
-        private GamePadDevice _gamePad;
-
-        public async void LoadAssets()
+        public void LoadAssets()
         {
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
-
-            // Initialize the information text line.
-            var textToDisplay = "FUSEE 3D Scene";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                textToDisplay += " created";
-                if (_scene.Header.CreatedBy != null)
-                    textToDisplay += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    textToDisplay += " on " + _scene.Header.CreationDate;
-            }
 
             _gui = CreateGui();
 
@@ -135,9 +121,6 @@ namespace Fusee.Engine.Player.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            // Register the input devices that are not already given.
-            _gamePad = GetDevice<GamePadDevice>(0);
 
             LoadAssets();
         }
@@ -264,11 +247,6 @@ namespace Fusee.Engine.Player.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
         }
 
         // Is called when the window was resized

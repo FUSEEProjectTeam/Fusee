@@ -9,7 +9,7 @@ namespace Fusee.Tools.CmdLine
         [STAThread]
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, Server, ProtoSchema>(args)
+            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, ProtoSchema>(args)
                 .WithParsed<Install>(install =>
                 {
                     install.Run();
@@ -29,10 +29,6 @@ namespace Fusee.Tools.CmdLine
                 .WithParsed<Publish>(publish =>
                 {
                     publish.Run();
-                })
-                .WithParsed<Server>(server =>
-                {
-                    server.Run();
                 })
                 .WithNotParsed(errs =>
                 {

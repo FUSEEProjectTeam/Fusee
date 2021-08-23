@@ -331,8 +331,8 @@ namespace Fusee.Jometri
 
         private HalfEdge TwinNext(HalfEdge halfEdge)
         {
-            if (halfEdge.TwinHalfEdge == default(int))
-                return default(HalfEdge);
+            if (halfEdge.TwinHalfEdge == default)
+                return default;
 
             var twin = GetHalfEdgeByHandle(halfEdge.TwinHalfEdge);
             return GetHalfEdgeByHandle(twin.NextHalfEdge);

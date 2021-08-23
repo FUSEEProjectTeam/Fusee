@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class Double4Test
     {
@@ -394,9 +394,10 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Swizzle_Set()
         {
-            var actual = new double4(0, 0, 0, 0);
-
-            actual.xy = new double2(1, 2);
+            var actual = new double4(0, 0, 0, 0)
+            {
+                xy = new double2(1, 2)
+            };
             Assert.Equal(new double4(1, 2, 0, 0), actual);
 
             actual.xyz = new double3(3, 3, 3);
@@ -545,12 +546,13 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Color_Set()
         {
-            var actual = new double4();
-
-            actual.r = 1;
-            actual.g = 2;
-            actual.b = 3;
-            actual.a = 4;
+            var actual = new double4
+            {
+                r = 1,
+                g = 2,
+                b = 3,
+                a = 4
+            };
             Assert.Equal(new double4(1, 2, 3, 4), actual);
 
             actual.rgb = new double3(3, 2, 1);

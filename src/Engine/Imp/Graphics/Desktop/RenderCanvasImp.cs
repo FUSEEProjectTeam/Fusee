@@ -456,8 +456,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoInit()
         {
-            if (Init != null)
-                Init(this, new InitEventArgs());
+            Init?.Invoke(this, new InitEventArgs());
         }
 
         /// <summary>
@@ -465,8 +464,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoUnLoad()
         {
-            if (UnLoad != null)
-                UnLoad(this, new InitEventArgs());
+            UnLoad?.Invoke(this, new InitEventArgs());
         }
 
         /// <summary>
@@ -474,8 +472,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoRender()
         {
-            if (Render != null)
-                Render(this, new RenderEventArgs());
+            Render?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -483,8 +480,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoResize(int width, int height)
         {
-            if (Resize != null)
-                Resize(this, new ResizeEventArgs(width, height));
+            Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
 
         #endregion

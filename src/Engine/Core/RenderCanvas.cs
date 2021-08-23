@@ -35,15 +35,6 @@ namespace Fusee.Engine.Core
         public IRenderContextImp ContextImplementor { set; get; }
 
         /// <summary>
-        ///     Gets and sets the audio implementor.
-        /// </summary>
-        /// <value>
-        ///     The audio implementor.
-        /// </value>
-        [InjectMe]
-        public IAudioImp AudioImplementor { set; get; }
-
-        /// <summary>
         ///     Gets and sets the input driver implementor.
         /// </summary>
         /// <value>
@@ -60,15 +51,6 @@ namespace Fusee.Engine.Core
         /// </value>
         [InjectMe]
         public IVideoManagerImp VideoManagerImplementor { set; get; }
-
-        /// <summary>
-        ///     Gets and sets the network implementor.
-        /// </summary>
-        /// <value>
-        ///     The network implementor.
-        /// </value>
-        [InjectMe]
-        public INetworkImp NetworkImplementor { set; get; }
 
         /// <summary>
         ///     Returns the render context object.
@@ -157,8 +139,6 @@ namespace Fusee.Engine.Core
             RC.Viewport(0, 0, Width, Height);
             RC.SetRenderStateSet(RenderStateSet.Default);
 
-            Audio.Instance.AudioImp = AudioImplementor;
-            Network.Instance.NetworkImp = NetworkImplementor;
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
             CanvasImplementor.Init += delegate { Init(); };
@@ -167,7 +147,6 @@ namespace Fusee.Engine.Core
             CanvasImplementor.Render += delegate
             {
                 // pre-rendering
-                Network.Instance.OnUpdateFrame();
                 Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
@@ -218,13 +197,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public virtual void DeInit()
         {
-            Audio.Instance.CloseDevice();
-            Network.Instance.CloseDevice();
-
-            Audio.Instance.Dispose();
             Time.Instance.Dispose();
             Input.Instance.Dispose();
-            Network.Instance.Dispose();
         }
 
         /// <summary>

@@ -31,7 +31,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private const float _rotationSpeed = 7;
 
         // Speed from character
-        private float _speed = 7;
+        private readonly float _speed = 7;
 
         // Var for collision-detection
         private float3 _cornerbox;
@@ -45,7 +45,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private float _ballradius;
         private float _oldX;
         private float _oldY;
-        private int[,] _bmp = Bmp();
+        private readonly int[,] _bmp = Bmp();
 
         // Cam pos for changing
         private float3 _cam = new float3(10, 5, 10);
@@ -65,7 +65,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private FontMap _winMap;
 
         // Font
-        private Font _fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+        private readonly Font _fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
         // Call winningdisplay method only once
         private bool _readonce = true;
@@ -86,14 +86,14 @@ namespace Fusee.Examples.Labyrinth.Core
         private Transform _body;
         private Transform _bodytrans;
         private SceneContainer _scene;
-        private Transform mazeTransform = new Transform();
+        private readonly Transform mazeTransform = new Transform();
 
         // Other var
         private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;

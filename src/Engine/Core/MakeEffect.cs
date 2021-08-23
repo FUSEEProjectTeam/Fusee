@@ -110,21 +110,12 @@ namespace Fusee.Engine.Core
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
             var frag = AssetStorage.Get<string>("SimpleBlur.frag");
-            float blurKernelSize;
-            switch (ssaoRenderTex.Width)
+            var blurKernelSize = ssaoRenderTex.Width switch
             {
-                case (int)TexRes.Low:
-                    blurKernelSize = 2.0f;
-                    break;
-                default:
-                case (int)TexRes.Middle:
-                    blurKernelSize = 4.0f;
-                    break;
-                case (int)TexRes.High:
-                    blurKernelSize = 8.0f;
-                    break;
-            }
-
+                (int)TexRes.Low => 2.0f,
+                (int)TexRes.High => 8.0f,
+                _ => 4.0f,
+            };
             if (blurKernelSize != 4.0f)
             {
                 var lines = frag.Split(new[] { Environment.NewLine }, StringSplitOptions.None);

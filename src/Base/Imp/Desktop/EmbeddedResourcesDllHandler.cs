@@ -11,7 +11,7 @@ namespace Fusee.Base.Imp.Desktop
     /// </summary>
     public static class EmbeddedResourcesDllHandler
     {
-        private static readonly List<string> _loadedDlls = new List<string>();
+        private static readonly List<string> loadedDlls = new List<string>();
 
         /// <summary>
         /// Extract a dll from resources to temporary folder and loads it
@@ -24,8 +24,8 @@ namespace Fusee.Base.Imp.Desktop
             {
                 _loadedDlls.Add(dllName);
 
-                Assembly assem = Assembly.GetCallingAssembly();
-                string[] names = assem.GetManifestResourceNames();
+                Assembly assem = Assembly.GetExecutingAssembly();
+                _ = assem.GetManifestResourceNames();
                 AssemblyName an = assem.GetName();
 
                 var resourceStream = assem.GetManifestResourceStream(resourceName);
@@ -45,11 +45,9 @@ namespace Fusee.Base.Imp.Desktop
 
                 if (!File.Exists(dllPath))
                 {
-                    using (var fileStream = File.Create(dllPath))
-                    {
-                        resourceStream.Seek(0, SeekOrigin.Begin);
-                        resourceStream.CopyTo(fileStream);
-                    }
+                    using var fileStream = File.Create(dllPath);
+                    resourceStream.Seek(0, SeekOrigin.Begin);
+                    resourceStream.CopyTo(fileStream);
                 }
 
                 IntPtr h = LoadLibrary(dllPath);

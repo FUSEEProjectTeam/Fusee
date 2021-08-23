@@ -77,8 +77,7 @@ namespace Fusee.Jometri
 
                 if (!bEdge.IsOriginOldVert) continue; //A half-edge can only exist if its source vertex is an old one.
 
-                int existingHeHandle;
-                if (!IsEdgeExisting(bEdge.HalfEdge, boundaryEdges, out existingHeHandle))
+                if (!IsEdgeExisting(bEdge.HalfEdge, boundaryEdges, out int existingHeHandle))
                     continue; //Check the target vertex to identify the existing half edge.
 
                 //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge, replace it.
@@ -169,9 +168,8 @@ namespace Fusee.Jometri
 
             foreach (var coord in polyBoundary.Points)
             {
-                bool isOldVert;
                 handle++;
-                var vert = CreateOrFindVertex(coord, out isOldVert, handle);
+                var vert = CreateOrFindVertex(coord, out bool isOldVert, handle);
                 outlineVerts.Add(new KeyValuePair<Vertex, bool>(vert, isOldVert));
             }
             return outlineVerts;
@@ -214,10 +212,9 @@ namespace Fusee.Jometri
                 //Assumption: outlines are processed from outer to inner, therefore faceHandle will never has its default value if "else" is hit.
                 if (polyBoundary.IsOuter)
                 {
-                    if (faceHandle == default(int))
+                    if (faceHandle == default)
                     {
-                        Face face;
-                        faceHandle = AddFace(halfEdge.Handle, out face);
+                        faceHandle = AddFace(halfEdge.Handle, out Face face);
                         _geometry.DictFaces.Add(face.Handle, face);
                     }
                 }
@@ -354,7 +351,7 @@ namespace Fusee.Jometri
                     newHeTargetVert = be.HalfEdge.OriginVertex;
             }
 
-            if (newHeTargetVert == default(int))
+            if (newHeTargetVert == default)
                 throw new ArgumentException("Target vertex not found!");
 
             var heStartingAtOldV = _geometry.GetVertexStartingHalfEdges(halfEdge.OriginVertex).ToList();

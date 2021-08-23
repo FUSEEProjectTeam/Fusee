@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
         private WritableTexture _blurRenderTex;
         private WritableTexture _lightedSceneTex; //Do post-pro effects like FXAA on this texture.
 
-        private Dictionary<Tuple<SceneNode, Light>, ShadowParams> _shadowparams; //One per Light       
+        private readonly Dictionary<Tuple<SceneNode, Light>, ShadowParams> _shadowparams; //One per Light       
 
         private RenderPasses _currentPass;
         private bool _canUseGeometryShaders;
@@ -406,7 +406,7 @@ namespace Fusee.Engine.Core
 
             _rc.EnableDepthClamp();
 
-            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U ? true : false;
+            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U;
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {

@@ -2,7 +2,7 @@ using System.Drawing;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fusee.Test.Render.Desktop
+namespace Fusee.Tests.Render.Desktop
 {
     public class RenderTests
     {

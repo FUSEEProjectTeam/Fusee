@@ -9,7 +9,6 @@ namespace Fusee.Engine.Core.Scene
     /// </summary>
     public class Mesh : SceneComponent, IDisposable
     {
-#pragma warning disable CA1819 // Properties should not return arrays
 
         #region RenderContext Asset Management
 
@@ -311,6 +310,5 @@ namespace Fusee.Engine.Core.Scene
 
         #endregion
 
-#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

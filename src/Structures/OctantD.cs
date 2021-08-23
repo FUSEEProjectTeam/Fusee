@@ -117,37 +117,18 @@ namespace Fusee.Structures
         /// <returns></returns>
         public static double3 CalcChildCenterAtPos(int posInParent, double parentSize, double3 parentCenter)
         {
-            double3 childCenter;
             var childsHalfSize = parentSize / 4d;
-            switch (posInParent)
+            var childCenter = posInParent switch
             {
-                default:
-                case 0:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 1:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 2:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-                case 3:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-                case 4:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 5:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 6:
-                    childCenter = new double3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-                case 7:
-                    childCenter = new double3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-            }
-
+                1 => new double3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize),
+                2 => new double3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize),
+                3 => new double3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize),
+                4 => new double3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize),
+                5 => new double3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize),
+                6 => new double3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize),
+                7 => new double3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize),
+                _ => new double3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize),
+            };
             return childCenter;
         }
 
