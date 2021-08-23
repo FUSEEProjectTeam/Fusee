@@ -7,6 +7,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
+        public static async Task<SceneContainer> ConvertFrom(FusFile fus, string id = null)
         {
             if (fus == null)
             {
@@ -84,6 +85,10 @@ namespace Fusee.Engine.Core
 
             var converted = instance.Convert(payload);
 
+            _ = await Task.WhenAll(instance.AllEffects);
+
+            instance.AllEffects.ForEach(x => { if(!x.IsCompletedSuccessfully) System.Console.WriteLine($"Texture failed: {x.Status}"); });
+
             converted.Header = new SceneHeader
             {
                 CreatedBy = fus.Header.CreatedBy,
@@ -133,6 +138,8 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
 
+        public List<Task<Effect>> AllEffects;
+
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
         /// </summary>
@@ -150,6 +157,8 @@ namespace Fusee.Engine.Core
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _texMap = new Dictionary<string, Texture>();
             _boneContainers = new Stack<SceneNode>();
+
+            AllEffects = new List<Task<Effect>>();
         }
 
         internal SceneContainer Convert(FusScene sc)
@@ -318,6 +327,7 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             var effect = LookupMaterial(matComp);
+            AllEffects.Add(effect);
             _currentNode.Components.Add(await effect);
         }
 
@@ -331,8 +341,9 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var effect = await LookupMaterial(matComp);
-            _currentNode.Components.Add(effect);
+            var effect = LookupMaterial(matComp);
+            AllEffects.Add(effect);
+            _currentNode.Components.Add(await effect);
         }
 
         /// <summary>
@@ -346,6 +357,7 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             var effect = LookupMaterial(matComp);
+            AllEffects.Add(effect);
             _currentNode.Components.Add(await effect);
         }
 
@@ -360,6 +372,7 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             var effect = LookupMaterial(matComp);
+            AllEffects.Add(effect);
             _currentNode.Components.Add(await effect);
         }
 
@@ -618,11 +631,12 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    var tex = await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture);
+                    albedoTex = new Texture(tex, true, TextureFilterMode.Linear)
                     {
                         PathAndName = m.Albedo.Texture
                     };
-                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                    //_texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, m.Albedo.Mix, float2.One);
             }
@@ -630,11 +644,12 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    var tex = await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture);
+                    normalTex = new Texture(tex, false, TextureFilterMode.Linear)
                     {
                         PathAndName = m.NormalMap.Texture
                     };
-                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                    //_texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, normalTex, m.NormalMap.Intensity, float2.One);
             }
@@ -642,19 +657,21 @@ namespace Fusee.Engine.Core
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
-                    albedoTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture), true, TextureFilterMode.Linear)
+                    var tex = await AssetStorage.GetAsync<ImageData>(m.Albedo.Texture);
+                    albedoTex = new Texture(tex, true, TextureFilterMode.Linear)
                     {
                         PathAndName = m.Albedo.Texture
                     };
-                    _texMap.Add(m.Albedo.Texture, albedoTex);
+                    //_texMap.Add(m.Albedo.Texture, albedoTex);
                 }
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
-                    normalTex = new Texture(await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture), false, TextureFilterMode.Linear)
+                    var tex = await AssetStorage.GetAsync<ImageData>(m.NormalMap.Texture);
+                    normalTex = new Texture(tex, false, TextureFilterMode.Linear)
                     {
                         PathAndName = m.NormalMap.Texture
                     };
-                    _texMap.Add(m.NormalMap.Texture, normalTex);
+                    //_texMap.Add(m.NormalMap.Texture, normalTex);
                 }
                 sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
@@ -662,6 +679,7 @@ namespace Fusee.Engine.Core
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
+
 
             _matMap.Add(m, sfx);
             return sfx;
@@ -688,7 +706,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.Albedo.Texture
                         };
-                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                        //_texMap.Add(m.Albedo.Texture, albedoTex);
                     }
                     sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, albedoTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, roughness);
                 }
@@ -700,7 +718,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.NormalMap.Texture
                         };
-                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                        //_texMap.Add(m.NormalMap.Texture, normalTex);
                     }
                     sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, normalTex, m.NormalMap.Intensity, float2.One.PerpendicularLeft, shininess, specularStrenght, roughness);
                 }
@@ -712,7 +730,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.Albedo.Texture
                         };
-                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                        //_texMap.Add(m.Albedo.Texture, albedoTex);
                     }
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
@@ -720,7 +738,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.NormalMap.Texture
                         };
-                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                        //_texMap.Add(m.NormalMap.Texture, normalTex);
                     }
                     sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, albedoTex, normalTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, m.NormalMap.Intensity, roughness);
                 }
@@ -742,7 +760,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.Albedo.Texture
                         };
-                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                        //_texMap.Add(m.Albedo.Texture, albedoTex);
                     }
                     sfx = MakeEffect.FromDiffuseAlbedoTexture(m.Albedo.Color, albedoTex, float2.One, m.Albedo.Mix, roughness);
                 }
@@ -754,7 +772,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.NormalMap.Texture
                         };
-                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                        //_texMap.Add(m.NormalMap.Texture, normalTex);
                     }
                     sfx = MakeEffect.FromDiffuseNormalTexture(m.Albedo.Color, normalTex, m.NormalMap.Intensity, float2.One, roughness);
                 }
@@ -766,7 +784,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.Albedo.Texture
                         };
-                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                        //_texMap.Add(m.Albedo.Texture, albedoTex);
                     }
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
@@ -774,7 +792,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.NormalMap.Texture
                         };
-                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                        //_texMap.Add(m.NormalMap.Texture, normalTex);
                     }
                     sfx = MakeEffect.FromDiffuseTexture(m.Albedo.Color, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity, roughness);
                 }
@@ -796,7 +814,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.Albedo.Texture
                         };
-                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                        //_texMap.Add(m.Albedo.Texture, albedoTex);
                     }
                     sfx = MakeEffect.FromGlossyAlbedoTexture(m.Albedo.Color, albedoTex, float2.One, m.Albedo.Mix, roughness);
                 }
@@ -808,7 +826,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.NormalMap.Texture
                         };
-                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                        //_texMap.Add(m.NormalMap.Texture, normalTex);
                     }
                     sfx = MakeEffect.FromGlossyNormalTexture(m.Albedo.Color, normalTex, m.NormalMap.Intensity, float2.One, roughness);
                 }
@@ -820,7 +838,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.Albedo.Texture
                         };
-                        _texMap.Add(m.Albedo.Texture, albedoTex);
+                        //_texMap.Add(m.Albedo.Texture, albedoTex);
                     }
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
@@ -828,7 +846,7 @@ namespace Fusee.Engine.Core
                         {
                             PathAndName = m.NormalMap.Texture
                         };
-                        _texMap.Add(m.NormalMap.Texture, normalTex);
+                        //_texMap.Add(m.NormalMap.Texture, normalTex);
                     }
                     sfx = MakeEffect.FromGlossyTexture(m.Albedo.Color, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity, roughness);
                 }
@@ -841,6 +859,7 @@ namespace Fusee.Engine.Core
             }
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
+
 
             _matMap.Add(m, sfx);
             return sfx;

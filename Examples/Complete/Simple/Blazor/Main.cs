@@ -74,7 +74,7 @@ namespace Fusee.Examples.Simple.Blazor
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            return await Task.Factory.StartNew(() => FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage)));
+                            return await FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage));
                         }
                         return null;
                     },
@@ -92,21 +92,35 @@ namespace Fusee.Examples.Simple.Blazor
                 DecoderAsync = async (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
-                    using var image = await Image.LoadAsync<Rgba32>((Stream)storage);
-                    image.Mutate(x => x.AutoOrient());
-                    image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-                    var ret = new ImageData(ReadPixels(image), image.Width, image.Height,
-                            new ImagePixelFormat(ColorFormat.RGBA));
 
-                    return ret;
-
-                    // inner method to prevent Span<T> inside async method error
-                    static byte[] ReadPixels(Image<Rgba32> image)
+                    try
                     {
-                        image.TryGetSinglePixelSpan(out var res);
-                        var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-                        return resBytes.ToArray();
-                    };
+                        using var image = await Image.LoadAsync<Rgba32>((Stream)storage);
+
+                        image.Mutate(x => x.AutoOrient());
+                        image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+                        var ret = new ImageData(ReadPixels(image), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.RGBA));
+
+                        return ret;
+
+                        // inner method to prevent Span<T> inside async method error
+                        static byte[] ReadPixels(Image<Rgba32> image)
+                        {
+                            image.TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                            return resBytes.ToArray();
+                        };
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error loading/converting image {id}", ex);
+                        Diagnostics.Error($"Error loading/converting image {id}", ex);
+                    }
+
+                    // return empty 1x1 image
+                    return new ImageData(new byte[] { 0, 0, 0, 1, 0, 0, 0, 1 }, 1, 1,
+                                new ImagePixelFormat(ColorFormat.RGBA));
                 },
                 Checker = (string id) =>
                 {
