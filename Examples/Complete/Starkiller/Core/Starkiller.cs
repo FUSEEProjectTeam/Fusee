@@ -44,7 +44,7 @@ namespace Fusee.Examples.Starkiller.Core
 
         private SceneContainer CreateScene()
         {
-            SceneContainer sc = new SceneContainer();
+            SceneContainer sc = new();
             SceneContainer _starkillerScene = AssetStorage.Get<SceneContainer>("StarkillerAssets.fus");
 
             if (_starkillerScene != null)

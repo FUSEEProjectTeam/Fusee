@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Defines the identity quaternion.
         /// </summary>
-        public static Quaternion Identity = new Quaternion(0, 0, 0, 1);
+        public static readonly Quaternion Identity = new(0, 0, 0, 1);
 
         #endregion Fields
 
@@ -278,7 +278,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static Quaternion Multiply(Quaternion left, Quaternion right)
         {
-            Quaternion result = new Quaternion(
+            Quaternion result = new(
                 left.w * right.x + left.x * right.w - left.y * right.z + left.z * right.y,
                 left.w * right.y + left.x * right.z + left.y * right.w - left.z * right.x,
                 left.w * right.z - left.x * right.y + left.y * right.x + left.z * right.w,
@@ -630,40 +630,40 @@ namespace Fusee.Math.Core
                 var invS = 1f / s;
 
                 q.w = s * 0.25f;
-                q.x = (mtx.Row2.y - mtx.Row1.z) * invS;
-                q.y = (mtx.Row0.z - mtx.Row2.x) * invS;
-                q.z = (mtx.Row1.x - mtx.Row0.y) * invS;
+                q.x = (mtx.Row3.y - mtx.Row2.z) * invS;
+                q.y = (mtx.Row1.z - mtx.Row3.x) * invS;
+                q.z = (mtx.Row2.x - mtx.Row1.y) * invS;
             }
             else
             {
-                if (mtx.Row0.x > mtx.Row1.y && mtx.Row0.x > mtx.Row2.z)
+                if (mtx.Row1.x > mtx.Row2.y && mtx.Row1.x > mtx.Row3.z)
                 {
-                    var s = MathF.Sqrt(1 + mtx.Row0.x - mtx.Row1.y - mtx.Row2.z) * 2;
+                    var s = MathF.Sqrt(1 + mtx.Row1.x - mtx.Row2.y - mtx.Row3.z) * 2;
                     var invS = 1f / s;
 
-                    q.w = (mtx.Row2.y - mtx.Row1.z) * invS;
+                    q.w = (mtx.Row3.y - mtx.Row2.z) * invS;
                     q.x = s * 0.25f;
-                    q.y = (mtx.Row0.y + mtx.Row1.x) * invS;
-                    q.z = (mtx.Row0.z + mtx.Row2.x) * invS;
+                    q.y = (mtx.Row1.y + mtx.Row2.x) * invS;
+                    q.z = (mtx.Row1.z + mtx.Row3.x) * invS;
                 }
-                else if (mtx.Row1.y > mtx.Row2.z)
+                else if (mtx.Row2.y > mtx.Row3.z)
                 {
-                    var s = MathF.Sqrt(1 + mtx.Row1.y - mtx.Row0.x - mtx.Row2.z) * 2;
+                    var s = MathF.Sqrt(1 + mtx.Row2.y - mtx.Row1.x - mtx.Row3.z) * 2;
                     var invS = 1f / s;
 
-                    q.w = (mtx.Row0.z - mtx.Row2.x) * invS;
-                    q.x = (mtx.Row0.y + mtx.Row1.x) * invS;
+                    q.w = (mtx.Row1.z - mtx.Row3.x) * invS;
+                    q.x = (mtx.Row1.y + mtx.Row2.x) * invS;
                     q.y = s * 0.25f;
-                    q.z = (mtx.Row1.z + mtx.Row2.y) * invS;
+                    q.z = (mtx.Row2.z + mtx.Row3.y) * invS;
                 }
                 else
                 {
-                    var s = MathF.Sqrt(1 + mtx.Row2.z - mtx.Row0.x - mtx.Row1.y) * 2;
+                    var s = MathF.Sqrt(1 + mtx.Row3.z - mtx.Row1.x - mtx.Row2.y) * 2;
                     var invS = 1f / s;
 
-                    q.w = (mtx.Row1.x - mtx.Row0.y) * invS;
-                    q.x = (mtx.Row0.z + mtx.Row2.x) * invS;
-                    q.y = (mtx.Row1.z + mtx.Row2.y) * invS;
+                    q.w = (mtx.Row2.x - mtx.Row1.y) * invS;
+                    q.x = (mtx.Row1.z + mtx.Row3.x) * invS;
+                    q.y = (mtx.Row2.z + mtx.Row3.y) * invS;
                     q.z = s * 0.25f;
                 }
             }
@@ -751,7 +751,7 @@ namespace Fusee.Math.Core
         /// <returns>A normalized quaternion rotation.</returns>
         public static Quaternion FromToRotation(float3 from, float3 to)
         {
-            Quaternion q = new Quaternion();
+            Quaternion q = new();
 
             float3 a = float3.Cross(from, to);
 
@@ -775,7 +775,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the operation.</returns>
         public static float4 Transform(float4 vec, Quaternion quat)
         {
-            Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
+            Quaternion v = new(vec.x, vec.y, vec.z, vec.w), i, t;
             i = Invert(quat);
             t = Multiply(v, quat);
             v = Multiply(i, t);
@@ -910,7 +910,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="other">The other object to be used in the comparison.</param>
         /// <returns>True if both objects are Quaternions of equal value. Otherwise it returns false.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
         {
             if (other is Quaternion == false) return false;
             return this == (Quaternion)other;

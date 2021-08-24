@@ -13,11 +13,11 @@ namespace Fusee.Tests.Xirkit
         [MemberData(nameof(GetConversions))]
         public void ConvertFromInt(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -61,11 +61,11 @@ namespace Fusee.Tests.Xirkit
         [MemberData(nameof(GetConversions))]
         public void ConvertFromFloat(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -109,11 +109,11 @@ namespace Fusee.Tests.Xirkit
         [MemberData(nameof(GetConversions))]
         public void ConvertFromDouble(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -155,15 +155,15 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromBool(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromBool(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            text = isTrue.ToString();
+            var text = isTrue.ToString();
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -205,13 +205,13 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromString(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromString(int i, float f, double d, bool _1, string text, double2 _2, double3 _3, double4 _4, double4x4 _5, float2 _6, float3 _7, float4 _8, float4x4 _9)
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -235,11 +235,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToBool()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -260,11 +260,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToDouble2()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -280,11 +280,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToDouble3()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -300,11 +300,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToDouble4()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -320,11 +320,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToDouble4x4()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -340,11 +340,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToFloat2()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -360,11 +360,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToFloat3()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -380,11 +380,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToFloat4()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -400,11 +400,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void ConvertFromStringToFloat4x4()
         {
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -419,15 +419,15 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromDouble2(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromDouble2(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            text = d2.ToString();
+            var text = d2.ToString();
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -469,15 +469,15 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromDouble3(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromDouble3(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            text = d3.ToString();
+            var text = d3.ToString();
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -519,17 +519,17 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromDouble4(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromDouble4(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 _2, float2 f2, float3 f3, float4 f4, float4x4 _3)
         {
-            text = d4.ToString();
-            d4x4 = new double4x4(d4, new double4(0, 0, 0, 0), new double4(0, 0, 0, 0), new double4(0, 0, 0, 0));
-            f4x4 = new float4x4(f4, new float4(0, 0, 0, 0), new float4(0, 0, 0, 0), new float4(0, 0, 0, 0));
+            var text = d4.ToString();
+            var d4x4 = new double4x4(d4, new double4(0, 0, 0, 0), new double4(0, 0, 0, 0), new double4(0, 0, 0, 0));
+            var f4x4 = new float4x4(f4, new float4(0, 0, 0, 0), new float4(0, 0, 0, 0), new float4(0, 0, 0, 0));
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -571,17 +571,17 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromDouble4x4(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromDouble4x4(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 _2, double4x4 d4x4, float2 f2, float3 f3, float4 _3, float4x4 f4x4)
         {
-            text = d4x4.ToString();
-            d4 = d4x4.Row0;
-            f4 = f4x4.Row0;
+            var text = d4x4.ToString();
+            var d4 = d4x4.Row1;
+            var f4 = f4x4.Row1;
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -623,15 +623,15 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromFloat2(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromFloat2(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            text = f2.ToString();
+            var text = f2.ToString();
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -673,15 +673,15 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromFloat3(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromFloat3(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
         {
-            text = f3.ToString();
+            var text = f3.ToString();
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -723,17 +723,17 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromFloat4(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromFloat4(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 d4, double4x4 _2, float2 f2, float3 f3, float4 f4, float4x4 _3)
         {
-            text = f4.ToString();
-            d4x4 = new double4x4(d4, new double4(0, 0, 0, 0), new double4(0, 0, 0, 0), new double4(0, 0, 0, 0));
-            f4x4 = new float4x4(f4, new float4(0, 0, 0, 0), new float4(0, 0, 0, 0), new float4(0, 0, 0, 0));
+            var text = f4.ToString();
+            var d4x4 = new double4x4(d4, new double4(0, 0, 0, 0), new double4(0, 0, 0, 0), new double4(0, 0, 0, 0));
+            var f4x4 = new float4x4(f4, new float4(0, 0, 0, 0), new float4(0, 0, 0, 0), new float4(0, 0, 0, 0));
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);
@@ -775,17 +775,17 @@ namespace Fusee.Tests.Xirkit
 
         [Theory]
         [MemberData(nameof(GetConversions))]
-        public void ConvertFromFloat4x4(int i, float f, double d, bool isTrue, string text, double2 d2, double3 d3, double4 d4, double4x4 d4x4, float2 f2, float3 f3, float4 f4, float4x4 f4x4)
+        public void ConvertFromFloat4x4(int i, float f, double d, bool isTrue, string _1, double2 d2, double3 d3, double4 _2, double4x4 d4x4, float2 f2, float3 f3, float4 _3, float4x4 f4x4)
         {
-            text = f4x4.ToString();
-            d4 = d4x4.Row0;
-            f4 = f4x4.Row0;
+            var text = f4x4.ToString();
+            var d4 = d4x4.Row1;
+            var f4 = f4x4.Row1;
 
-            ConverterClass source = new ConverterClass();
-            ConverterClass expected = new ConverterClass();
-            Node root = new Node(source);
-            Node node = new Node(expected);
-            Circuit circuit = new Circuit();
+            ConverterClass source = new();
+            ConverterClass expected = new();
+            Node root = new(source);
+            Node node = new(expected);
+            Circuit circuit = new();
 
             circuit.AddNode(root);
             circuit.AddNode(node);

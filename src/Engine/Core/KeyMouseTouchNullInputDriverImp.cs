@@ -522,9 +522,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     internal class KeyMouseTouchNullInputDriverImp : IInputDriverImp
     {
-        readonly KeyNullDevImp _keyNullDevImp = new KeyNullDevImp();
-        readonly MouseNullDevImp _mouseNullDevImp = new MouseNullDevImp();
-        readonly TouchNullDevImp _touchNullDevImp = new TouchNullDevImp();
+        readonly KeyNullDevImp _keyNullDevImp = new();
+        readonly MouseNullDevImp _mouseNullDevImp = new();
+        readonly TouchNullDevImp _touchNullDevImp = new();
 
         /// <summary>
         /// List the devices/device types supported by this driver.

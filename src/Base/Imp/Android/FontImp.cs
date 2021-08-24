@@ -29,7 +29,7 @@ namespace Fusee.Base.Imp.Android
                 _sharpFont = new Library();
 
             byte[] fileArray;
-            using (MemoryStream ms = new MemoryStream())
+            using (MemoryStream ms = new())
             {
                 stream.CopyTo(ms);
                 fileArray = ms.ToArray();
@@ -179,7 +179,7 @@ namespace Fusee.Base.Imp.Android
                 Array.Copy(bmp.BufferData, pixelData, bmp.BufferData.Length);
             }
 
-            ImageData ret = new ImageData(pixelData, bmp.Width, bmp.Rows,
+            ImageData ret = new(pixelData, bmp.Width, bmp.Rows,
                 new ImagePixelFormat(ColorFormat.Intensity));
 
             bitmapLeft = _face.Glyph.BitmapLeft;

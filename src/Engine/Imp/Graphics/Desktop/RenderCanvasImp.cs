@@ -370,7 +370,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (link.StartsWith("http://"))
             {
                 //UseShellExecute needs to be set to true in .net 3.0. See:https://github.com/dotnet/corefx/issues/33714
-                ProcessStartInfo psi = new ProcessStartInfo
+                ProcessStartInfo psi = new()
                 {
                     FileName = link,
                     UseShellExecute = true

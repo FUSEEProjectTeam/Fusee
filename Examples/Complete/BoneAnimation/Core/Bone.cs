@@ -173,7 +173,7 @@ namespace Fusee.Examples.BoneAnimation.Core
             */
             #endregion
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            AABBCalculator aabbc = new(_scene);
             AABBf? bbox = aabbc.GetBox();
             if (bbox != null)
             {

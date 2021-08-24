@@ -99,8 +99,8 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 float3 middle = (triVert0 + triVert1 + triVert2) / 3;
 
-                float2 circleCanvasPos = new float2(middle.x, middle.y);
-                float2 circleCanvasPosCache = new float2(0, 0);
+                float2 circleCanvasPos = new(middle.x, middle.y);
+                float2 circleCanvasPosCache = new(0, 0);
 
                 float prob = (float)rnd.NextDouble();
                 prob = (float)System.Math.Round(prob, 3);
@@ -108,7 +108,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 UIHelper.AnnotationKind annotationKind = (UIHelper.AnnotationKind)rnd.Next(0, Enum.GetNames(typeof(UIHelper.AnnotationKind)).Length);
 
-                UIInput input = new UIInput(annotationKind, middle, new float2(0.65f, 0.65f), dummyClass, prob)
+                UIInput input = new(annotationKind, middle, new float2(0.65f, 0.65f), dummyClass, prob)
                 {
                     Identifier = i,
                     CircleCanvasPos = circleCanvasPos,
@@ -286,7 +286,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
                         {
-                            Dictionary<int, float2> intersectedAnnotations = new Dictionary<int, float2>();
+                            Dictionary<int, float2> intersectedAnnotations = new();
                             int iterations = 0;
                             CalculateNonIntersectingAnnotationPositions(ref uiInput, ref intersectedAnnotations, ref iterations);
                         }
@@ -354,7 +354,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 borderScaleFactor = canvasScaleFactor;
             }
 
-            GUIButton btnFuseeLogo = new GUIButton
+            GUIButton btnFuseeLogo = new()
             {
                 Name = "Canvas_Button"
             };
@@ -362,8 +362,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            Texture guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            TextureNode fuseeLogo = new TextureNode(
+            Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
+            TextureNode fuseeLogo = new(
                 "fuseeLogo",
                 UIHelper.VsTex,
                 UIHelper.PsTex,
@@ -372,12 +372,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                 UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)), float2.One);
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            SceneNode markModelContainer = new SceneNode
+            SceneNode markModelContainer = new()
             {
                 Name = "MarkModelContainer",
             };
 
-            CanvasNode canvas = new CanvasNode(
+            CanvasNode canvas = new(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
@@ -488,7 +488,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 if (mesh != null)
                 {
-                    Line newLine = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                    Line newLine = new(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
                     mesh.Vertices = newLine.Vertices;
                     mesh.Normals = newLine.Normals;
                     mesh.Triangles = newLine.Triangles;
@@ -496,7 +496,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 }
                 else
                 {
-                    Line newLine = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                    Line newLine = new(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
                     sncLine.AddComponent(newLine);
                 }
             }
@@ -548,7 +548,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 }
 
                 int middleIndex = (intersectedAnnotations.Count) / 2;
-                float2 averagePos = new float2();
+                float2 averagePos = new();
 
                 for (int i = 0; i < intersectedAnnotations.Count; i++)
                     averagePos += intersectedAnnotations.ElementAt(i).Value;

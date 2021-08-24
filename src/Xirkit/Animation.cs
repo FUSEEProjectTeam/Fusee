@@ -13,11 +13,11 @@ namespace Fusee.Xirkit
         /// <summary>
         /// The _channels List stores all Animation Channels that are derived from the ChannelBase Class.
         /// </summary>
-        private readonly List<ChannelBase> _channels = new List<ChannelBase>();
+        private readonly List<ChannelBase> _channels = new();
         /// <summary>
         /// The _anim handler is a Xirkit Circuit connecting the calculated values to the corresponding Object.
         /// </summary>
-        private readonly Circuit _animHandler = new Circuit();
+        private readonly Circuit _animHandler = new();
 
         /// <summary>
         /// The _time is the actual time in this Animation.
@@ -85,8 +85,8 @@ namespace Fusee.Xirkit
 
             _channels.Add(channel);
             channel.SetTick(_time);
-            Node channelNode = new Node(channel);
-            Node channelObjektNode = new Node(channelObject);
+            Node channelNode = new(channel);
+            Node channelObjektNode = new(channelObject);
             channelNode.Attach("Value", channelObjektNode, field);
             _animHandler.AddRoot(channelNode);
             _animHandler.AddNode(channelObjektNode);

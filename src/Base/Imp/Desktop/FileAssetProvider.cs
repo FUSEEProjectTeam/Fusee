@@ -59,41 +59,29 @@ namespace Fusee.Base.Imp.Desktop
                 Decoder = (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    return ext switch
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return FileDecoder.LoadImage((Stream)storage);
-                    }
-                    return null;
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" => FileDecoder.LoadImage((Stream)storage),
+                        _ => null,
+                    };
                 },
                 DecoderAsync = async (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    return ext switch
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false);
-                    }
-                    return null;
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" => await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false),
+                        _ => null,
+                    };
                 },
                 Checker = (string id) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    return ext switch
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return true;
-                    }
-                    return false;
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" => true,
+                        _ => false,
+                    };
                 }
             });
 

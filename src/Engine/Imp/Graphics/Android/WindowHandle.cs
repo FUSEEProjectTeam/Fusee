@@ -8,6 +8,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// </summary>
     public class WindowHandle : IWindowHandle
     {
+        /// <summary>
+        /// The window handle
+        /// </summary>
         public WindowId WinId { get; internal set; }
     }
 }

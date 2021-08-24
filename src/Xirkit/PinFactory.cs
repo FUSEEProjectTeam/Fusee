@@ -86,7 +86,7 @@ namespace Fusee.Xirkit
             Type t = n.O.GetType();
 
             // First see if it's an entire access chain (like n.O.transform.vec.x)
-            if (member.Contains("."))
+            if (member.Contains('.'))
             {
                 Type memberType;
                 string[] memberName = member.Split(new char[] { '.' });

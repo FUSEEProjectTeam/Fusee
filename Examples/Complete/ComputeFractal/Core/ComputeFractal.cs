@@ -18,7 +18,7 @@ namespace Fusee.Examples.ComputeFractal.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class ComputeFractal : RenderCanvas
     {
-        private readonly Plane _plane = new Plane();
+        private readonly Plane _plane = new();
 
         private WritableTexture RWTexture;
         private ComputeShader _computeShader;

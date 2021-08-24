@@ -76,7 +76,7 @@ namespace Fusee.Examples.BoneAnimation.Android
                 var app = new Core.Bone();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                RenderCanvasImp rci = new(ApplicationContext, null, delegate { app.Run(); });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

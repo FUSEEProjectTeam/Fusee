@@ -66,7 +66,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Caches SceneNodes and their model matrices. Used when visiting a <see cref="Bone"/>.
         /// </summary>
-        protected Dictionary<SceneNode, float4x4> _boneMap = new Dictionary<SceneNode, float4x4>();
+        protected Dictionary<SceneNode, float4x4> _boneMap = new();
 
         /// <summary>
         /// Manages animations.
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        protected List<Tuple<SceneNode, LightResult>> _lightResults = new List<Tuple<SceneNode, LightResult>>();
+        protected List<Tuple<SceneNode, LightResult>> _lightResults = new();
 
         #endregion
 
@@ -126,12 +126,12 @@ namespace Fusee.Engine.Core
             {
                 Rotation = new float4x4
                 (
-                    new float4(_rc.InvView.Row0.xyz, 0),
                     new float4(_rc.InvView.Row1.xyz, 0),
                     new float4(_rc.InvView.Row2.xyz, 0),
+                    new float4(_rc.InvView.Row3.xyz, 0),
                     float4.UnitW
                  ),
-                WorldSpacePos = _rc.InvView.Column3.xyz
+                WorldSpacePos = _rc.InvView.Column4.xyz
             }));
         }
 
@@ -263,7 +263,7 @@ namespace Fusee.Engine.Core
         public virtual void SetContext(RenderContext rc)
         {
             if (rc == null)
-                throw new ArgumentNullException("rc");
+                throw new ArgumentNullException(nameof(rc));
 
             if (rc != _rc)
             {
@@ -388,8 +388,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            var boneArray = new float4x4[weight.Joints.Count()];
-            for (var i = 0; i < weight.Joints.Count(); i++)
+            var boneArray = new float4x4[weight.Joints.Count];
+            for (var i = 0; i < weight.Joints.Count; i++)
             {
                 var tmp = weight.BindingMatrices[i];
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;

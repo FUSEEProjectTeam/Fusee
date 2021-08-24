@@ -10,12 +10,12 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void CreateTwoNodesAndChangeSimpleValue()
         {
-            SimpleClass obj1 = new SimpleClass(0, 0);
-            SimpleClass obj2 = new SimpleClass(1, 1);
+            SimpleClass obj1 = new(0, 0);
+            SimpleClass obj2 = new(1, 1);
 
-            Circuit circuit = new Circuit();
-            Node node1 = new Node(obj1);
-            Node node2 = new Node(obj2);
+            Circuit circuit = new();
+            Node node1 = new(obj1);
+            Node node2 = new(obj2);
 
             circuit.AddNode(node1);
             circuit.AddRoot(node1);
@@ -31,11 +31,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void NestedProperties()
         {
-            NestedClass obj1 = new NestedClass(new SimpleStruct(1, 1));
-            NestedClass obj2 = new NestedClass(new SimpleStruct(0, 0));
-            Circuit circuit = new Circuit();
-            Node node1 = new Node(obj1);
-            Node node2 = new Node(obj2);
+            NestedClass obj1 = new(new SimpleStruct(1, 1));
+            NestedClass obj2 = new(new SimpleStruct(0, 0));
+            Circuit circuit = new();
+            Node node1 = new(obj1);
+            Node node2 = new(obj2);
 
             circuit.AddNode(node1);
             circuit.AddRoot(node1);
@@ -51,11 +51,11 @@ namespace Fusee.Tests.Xirkit
         [Fact]
         public void PerformCalculationOnExecute()
         {
-            CalculationClass obj1 = new CalculationClass(1, 1);
-            SimpleClass obj2 = new SimpleClass(0, 0);
-            Circuit circuit = new Circuit();
-            Node node1 = new Node(obj1);
-            Node node2 = new Node(obj2);
+            CalculationClass obj1 = new(1, 1);
+            SimpleClass obj2 = new(0, 0);
+            Circuit circuit = new();
+            Node node1 = new(obj1);
+            Node node2 = new(obj2);
 
             circuit.AddNode(node1);
             circuit.AddRoot(node1);

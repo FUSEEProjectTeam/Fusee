@@ -86,7 +86,7 @@ namespace Fusee.Tools.CmdLine.Verbs
             Type tApp = null;
 
             string modelFile = null;
-            List<string> assetDirs = new List<string>();
+            List<string> assetDirs = new();
             TryAddDir(assetDirs, "Assets");
 
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
@@ -221,7 +221,7 @@ namespace Fusee.Tools.CmdLine.Verbs
             else
             {
                 // invoke the first public constructor with no parameters.
-                RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
+                RenderCanvas app = (RenderCanvas)ctor.Invoke(Array.Empty<object>());
 
                 if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player player)
                     player.ModelFile = modelFile;

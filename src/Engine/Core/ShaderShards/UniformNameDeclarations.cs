@@ -320,7 +320,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// List of all possible render texture names.
         /// </summary>
-        public static readonly List<string> DeferredRenderTextures = new List<string>()
+        public static readonly List<string> DeferredRenderTextures = new()
         {
             Enum.GetName(typeof(RenderTargetTextureTypes), 0),
             Enum.GetName(typeof(RenderTargetTextureTypes), 1),

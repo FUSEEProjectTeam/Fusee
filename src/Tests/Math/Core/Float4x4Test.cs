@@ -1,4 +1,4 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,7 +23,7 @@ namespace Fusee.Tests.Math.Core
         {
             var matrix = new float4x4(new float4(1, 0, 0, 0), new float4(0, 1, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
 
-            var actual = matrix.Row0;
+            var actual = matrix.Row1;
 
             Assert.Equal(new float4(1, 0, 0, 0), actual);
         }
@@ -33,7 +33,7 @@ namespace Fusee.Tests.Math.Core
         {
             var matrix = new float4x4(new float4(1, 0, 0, 0), new float4(0, 1, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
 
-            var actual = matrix.Row1;
+            var actual = matrix.Row2;
 
             Assert.Equal(new float4(0, 1, 0, 0), actual);
         }
@@ -43,7 +43,7 @@ namespace Fusee.Tests.Math.Core
         {
             var matrix = new float4x4(new float4(1, 0, 0, 0), new float4(0, 1, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
 
-            var actual = matrix.Row2;
+            var actual = matrix.Row3;
 
             Assert.Equal(new float4(0, 0, 1, 0), actual);
         }
@@ -53,7 +53,7 @@ namespace Fusee.Tests.Math.Core
         {
             var matrix = new float4x4(new float4(1, 0, 0, 0), new float4(0, 1, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
 
-            var actual = matrix.Row3;
+            var actual = matrix.Row4;
 
             Assert.Equal(new float4(0, 0, 0, 1), actual);
         }
@@ -93,17 +93,6 @@ namespace Fusee.Tests.Math.Core
         public void Column0_IsColumn()
         {
             var matrix = float4x4.Identity;
-            matrix.Column0 = new float4(3, 3, 3, 3);
-
-            var actual = matrix.Column0;
-
-            Assert.Equal(new float4(3, 3, 3, 3), actual);
-        }
-
-        [Fact]
-        public void Column1_IsColumn()
-        {
-            var matrix = float4x4.Identity;
             matrix.Column1 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column1;
@@ -112,7 +101,7 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void Column2_IsColumn()
+        public void Column1_IsColumn()
         {
             var matrix = float4x4.Identity;
             matrix.Column2 = new float4(3, 3, 3, 3);
@@ -123,12 +112,23 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void Column3_IsColumn()
+        public void Column2_IsColumn()
         {
             var matrix = float4x4.Identity;
             matrix.Column3 = new float4(3, 3, 3, 3);
 
             var actual = matrix.Column3;
+
+            Assert.Equal(new float4(3, 3, 3, 3), actual);
+        }
+
+        [Fact]
+        public void Column3_IsColumn()
+        {
+            var matrix = float4x4.Identity;
+            matrix.Column4 = new float4(3, 3, 3, 3);
+
+            var actual = matrix.Column4;
 
             Assert.Equal(new float4(3, 3, 3, 3), actual);
         }
@@ -654,16 +654,6 @@ namespace Fusee.Tests.Math.Core
             var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.Invert();
-
-            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
-        }
-
-        [Fact]
-        public void InvertAffine_Static()
-        {
-            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
-
-            var actual = mat.InvertAffine();
 
             Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }

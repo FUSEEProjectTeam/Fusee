@@ -20,13 +20,13 @@ namespace Fusee.Engine.Core
         public static float4[] CalculateTangents(this Mesh m)
         {
             if (m == null)
-                new ArgumentException("Mesh cannot be empty!");
+                throw new ArgumentException("Mesh cannot be empty!");
 
             if (m.Normals == null || m.Normals.Length < 0)
-                new ArgumentException($"Can not calculate tangents, empty normals in this mesh: {m.Name}");
+                throw new ArgumentException($"Can not calculate tangents, empty normals in this mesh: {m.Name}");
 
             if (m.UVs == null)
-                new ArgumentException("Can not calculate tangents, no uv map");
+                throw new ArgumentException("Can not calculate tangents, no uv map");
 
 
             var tangentList = new float4[m.Vertices.Length];
@@ -107,16 +107,16 @@ namespace Fusee.Engine.Core
         public static float3[] CalculateBiTangents(this Mesh m)
         {
             if (m == null)
-                new ArgumentException("Mesh cannot be empty!");
+                throw new ArgumentException("Mesh cannot be empty!");
 
             if (m?.Normals == null || m.Normals.Length < 0)
-                new ArgumentException($"Can not calculate bitangents, empty normals in this mesh: {m.Name}");
+                throw new ArgumentException($"Can not calculate bitangents, empty normals in this mesh: {m.Name}");
 
             if (m.Tangents == null || m.Tangents.Length < 1)
-                new ArgumentException($"Can not calculate bitangents, empty tangent list in this mesh: {m.Name}");
+                throw new ArgumentException($"Can not calculate bitangents, empty tangent list in this mesh: {m.Name}");
 
             if (m.Tangents != null && (m.Normals != null && m.Normals.Length != m.Tangents.Length))
-                new ArgumentException($"Can not calculate bitangents, quantity of normals: {m.Normals.Length} and quantity of tangents: {m.Tangents.Length} differs.");
+                throw new ArgumentException($"Can not calculate bitangents, quantity of normals: {m.Normals.Length} and quantity of tangents: {m.Tangents.Length} differs.");
 
 
             var bitangents = new float3[m.Tangents.Length];

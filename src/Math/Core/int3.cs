@@ -85,27 +85,27 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length float3 that points towards the x-axis.
         /// </summary>
-        public static readonly float3 UnitX = new float3(1, 0, 0);
+        public static readonly float3 UnitX = new(1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float3 that points towards the y-axis.
         /// </summary>
-        public static readonly float3 UnitY = new float3(0, 1, 0);
+        public static readonly float3 UnitY = new(0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length float3 that points towards the z-axis.
         /// </summary>
-        public static readonly float3 UnitZ = new float3(0, 0, 1);
+        public static readonly float3 UnitZ = new(0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length float3.
         /// </summary>
-        public static readonly float3 Zero = new float3(0, 0, 0);
+        public static readonly float3 Zero = new(0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly float3 One = new float3(1, 1, 1);
+        public static readonly float3 One = new(1, 1, 1);
 
         // <summary>
         // Defines the size of the float3 struct in bytes.
@@ -543,7 +543,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// True if the instances are equal; false otherwise.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is int3))
                 return false;

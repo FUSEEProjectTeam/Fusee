@@ -340,7 +340,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private float _deltaTime;
         private readonly Action _run;
         internal Context AndroidContext;
-        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private readonly Stopwatch _stopwatch = new();
 
         #endregion Fields
 

@@ -82,8 +82,8 @@ namespace Fusee.Xene
         #region Declarative stuff
         internal class VisitorSet
         {
-            public Dictionary<Type, VisitNodeMethod<TNode, TComponent>> Nodes = new Dictionary<Type, VisitNodeMethod<TNode, TComponent>>();
-            public Dictionary<Type, VisitComponentMethod<TNode, TComponent>> Components = new Dictionary<Type, VisitComponentMethod<TNode, TComponent>>();
+            public Dictionary<Type, VisitNodeMethod<TNode, TComponent>> Nodes = new();
+            public Dictionary<Type, VisitComponentMethod<TNode, TComponent>> Components = new();
         }
 
 

@@ -76,9 +76,9 @@ namespace Fusee.Engine.Core
 
         private bool _needToSetSSAOTex = false;
 
-        private float4 _texClearColor = new float4(0, 0, 0, 0);
+        private float4 _texClearColor = new(0, 0, 0, 0);
 
-        private readonly Plane _quad = new Plane();
+        private readonly Plane _quad = new();
 
         private ShaderEffect _ssaoTexEffect;
         private ShaderEffect _lightingPassEffect;
@@ -793,9 +793,9 @@ namespace Fusee.Engine.Core
             {
                 lightRes.Rotation = new float4x4
                 (
-                    new float4(_rc.InvView.Row0.xyz, 0),
                     new float4(_rc.InvView.Row1.xyz, 0),
                     new float4(_rc.InvView.Row2.xyz, 0),
+                    new float4(_rc.InvView.Row3.xyz, 0),
                     float4.UnitW
                  );
             }
@@ -900,7 +900,7 @@ namespace Fusee.Engine.Core
         public override void SetContext(RenderContext rc)
         {
             if (rc == null)
-                throw new ArgumentNullException("rc");
+                throw new ArgumentNullException(nameof(rc));
 
             if (rc != _rc)
             {

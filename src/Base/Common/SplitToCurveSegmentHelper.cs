@@ -154,7 +154,7 @@ namespace Fusee.Base.Common
                     segment.Vertices = segmentVerts;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException($"Cannot handle {Type}");
             }
 
             return segment;
@@ -190,7 +190,7 @@ namespace Fusee.Base.Common
                     segment.Vertices = segmentVerts;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException($"Cannot handle {Type}");
             }
             segment.Vertices = segmentVerts;
             return segment;

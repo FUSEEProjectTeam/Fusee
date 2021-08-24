@@ -371,9 +371,9 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetBarycentric))]
-        public void PointIntriangle(float2 a, float2 b, float2 c, float u, float v, float2 point)
+        public void PointIntriangle(float2 a, float2 b, float2 c, float _1, float _2, float2 point)
         {
-            Assert.True(float2.PointInTriangle(a, b, c, point, out u, out v));
+            Assert.True(float2.PointInTriangle(a, b, c, point, out _, out _));
         }
 
         [Fact]

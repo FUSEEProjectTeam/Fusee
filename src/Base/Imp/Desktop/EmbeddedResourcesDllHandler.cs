@@ -11,7 +11,7 @@ namespace Fusee.Base.Imp.Desktop
     /// </summary>
     public static class EmbeddedResourcesDllHandler
     {
-        private static readonly List<string> loadedDlls = new List<string>();
+        private static readonly List<string> loadedDlls = new();
 
         /// <summary>
         /// Extract a dll from resources to temporary folder and loads it

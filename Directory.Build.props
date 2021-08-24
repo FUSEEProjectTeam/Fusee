@@ -3,7 +3,9 @@
     <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
     <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
-   
+
+	<LangVersion>9</LangVersion>
+	  
     <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
       
     <Authors>FuseeProjectTeam</Authors>
@@ -29,12 +31,17 @@
     <PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
 
     <ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
-    
-    <!--
+
+	<!--
     Suppress warnings
     1701 and 1702 is standard.
     -->
     <NoWarn>1701;1702</NoWarn>
+
+	<!--
+	<WarningLevel>9999</WarningLevel>
+    <TreatWarningsAsErrors Condition="'$(Configuration)'=='Release'">true</TreatWarningsAsErrors>
+	-->
   </PropertyGroup>
 
   <!-- This enables deterministic builds when building NuGet and when running on GitHub Actions or Azure DevOps -->

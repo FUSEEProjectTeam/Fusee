@@ -231,7 +231,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Defines the identity QuaternionD.
         /// </summary>
-        public static QuaternionD Identity = new QuaternionD(0, 0, 0, 1);
+        public static readonly QuaternionD Identity = new(0, 0, 0, 1);
 
         #endregion Fields
 
@@ -279,7 +279,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static QuaternionD Multiply(QuaternionD left, QuaternionD right)
         {
-            QuaternionD result = new QuaternionD(
+            QuaternionD result = new(
                 left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y,
                 left.w * right.y + left.y * right.w + left.z * right.x - left.x * right.z,
                 left.w * right.z + left.z * right.w + left.x * right.y - left.y * right.x,
@@ -571,7 +571,7 @@ namespace Fusee.Math.Core
         {
             double4 result;
 
-            QuaternionD v = new QuaternionD(vec.x, vec.y, vec.z, vec.w), i, t;
+            QuaternionD v = new(vec.x, vec.y, vec.z, vec.w), i, t;
             i = QuaternionD.Invert(quat);
             t = Multiply(quat, v);
             v = Multiply(t, i);
@@ -709,7 +709,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="other">The other object to be used in the comparison.</param>
         /// <returns>True if both objects are QuaternionDs of equal value. Otherwise it returns false.</returns>
-        public override bool Equals(object other)
+        public override bool Equals(object? other)
         {
             if (other is QuaternionD == false) return false;
             return this == (QuaternionD)other;

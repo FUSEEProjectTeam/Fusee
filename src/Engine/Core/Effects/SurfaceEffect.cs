@@ -14,9 +14,9 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public abstract class SurfaceEffect : Effect
     {
-        internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        internal readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
-        internal readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new List<KeyValuePair<ShardCategory, string>>();
+        internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new();
+        internal readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new();
+        internal readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new();
 
         /// <summary>
         /// The shader shard containing the shader version.

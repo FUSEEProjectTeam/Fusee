@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Labyrinth.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Labyrinth.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>

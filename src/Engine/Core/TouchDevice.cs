@@ -335,7 +335,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The midpoint (halfway between) touchpoint 0 and touchpoint 1.
         /// </value>
-        public float2 TwoPointMidPoint => new float2(GetAxis(_tpMidPointX), GetAxis(_tpMidPointY));
+        public float2 TwoPointMidPoint => new(GetAxis(_tpMidPointX), GetAxis(_tpMidPointY));
         /// <summary>
         /// Gets speed of the midpoint between the first two active touch points. Use this value if you want to implement two-finger movement-like actions based on the current 
         /// averaged speed of the first two touchpoints.
@@ -343,6 +343,6 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The two-dimensional speed vector of the midpoint between touchpoint 0 and touchpoint 1.
         /// </value>
-        public float2 TwoPointMidPointVel => new float2(GetAxis(_tpMidPointVelX), GetAxis(_tpMidPointVelY));
+        public float2 TwoPointMidPointVel => new(GetAxis(_tpMidPointVelX), GetAxis(_tpMidPointVelY));
     }
 }
