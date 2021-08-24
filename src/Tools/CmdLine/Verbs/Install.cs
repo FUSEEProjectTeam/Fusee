@@ -252,14 +252,14 @@ namespace Fusee.Tools.CmdLine.Verbs
         private IEnumerable<string> GetBlenderAddOnDir()
         {
             // Start with some possible start directories (e.g. "C:\Program Files\" and C:\Program Files (x86)\"
-            List<string> baseDirs = new List<string>
+            List<string> baseDirs = new()
             {
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
                 Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86)
             };
 
             // Find [B|b]lender sub-subdirectories
-            List<string> blenderDirs = new List<string>();
+            List<string> blenderDirs = new();
             foreach (var baseDir in baseDirs)
             {
                 try
@@ -273,7 +273,7 @@ namespace Fusee.Tools.CmdLine.Verbs
             }
 
             // Find addon sub-subdirectories
-            List<string> addonDirs = new List<string>();
+            List<string> addonDirs = new();
             foreach (var blenderDir in blenderDirs)
             {
                 addonDirs.AddRange(Directory.EnumerateDirectories(blenderDir, "addon?", SearchOption.AllDirectories));

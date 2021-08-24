@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
 
     internal class PrepassVisitorState : VisitorState
     {
-        private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+        private readonly CollapsingStateStack<float4x4> _model = new();
 
         /// <summary>
         /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.

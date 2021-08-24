@@ -11,7 +11,7 @@ namespace Fusee.Examples.Integrations.Wpf
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
-            MainWindow window = new MainWindow();
+            MainWindow window = new();
             window.Show();
         }
     }

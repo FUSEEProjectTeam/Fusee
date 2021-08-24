@@ -13,32 +13,32 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// State of the Model Matrix.
         /// </summary>
-        protected CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+        protected CollapsingStateStack<float4x4> _model = new();
 
         /// <summary>
         /// State of the <see cref="MinMaxRect"/>.
         /// </summary>
-        protected CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
+        protected CollapsingStateStack<MinMaxRect> _uiRect = new();
 
         /// <summary>
         /// State of the <see cref="CanvasXForm"/>.
         /// </summary>
-        protected CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
+        protected CollapsingStateStack<float4x4> _canvasXForm = new();
 
         /// <summary>
         /// State of the <see cref="ShaderEffect"/>.
         /// </summary>
-        protected CollapsingStateStack<Effect> _effect = new CollapsingStateStack<Effect>();
+        protected CollapsingStateStack<Effect> _effect = new();
 
         /// <summary>
         /// State of the <see cref="RenderStateSet"/>.
         /// </summary>
-        protected CollapsingStateStack<RenderStateSet> _renderStates = new CollapsingStateStack<RenderStateSet>();
+        protected CollapsingStateStack<RenderStateSet> _renderStates = new();
 
         /// <summary>
         /// State of the <see cref="RenderLayer"/>.
         /// </summary>
-        protected CollapsingStateStack<RenderLayer> _renderLayer = new CollapsingStateStack<RenderLayer>();
+        protected CollapsingStateStack<RenderLayer> _renderLayer = new();
 
         /// <summary>
         /// Gets and sets the top of stack of the Render states state stack.

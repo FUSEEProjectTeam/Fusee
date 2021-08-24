@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <Description>Fusee Base Imp Desktop</Description>
     <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Desktop</OutputPath>

@@ -31,7 +31,7 @@ namespace Fusee.Base.Imp.Desktop
                 _sharpFont = new Library();
 
             byte[] fileArray;
-            using (MemoryStream ms = new MemoryStream())
+            using (MemoryStream ms = new())
             {
                 stream.CopyTo(ms);
                 fileArray = ms.ToArray();
@@ -174,14 +174,14 @@ namespace Fusee.Base.Imp.Desktop
             _face.Glyph.RenderGlyph(RenderMode.Normal);
 
             FTBitmap bmp = _face.Glyph.Bitmap;
-            byte[] pixelData = new byte[0]; // empty??
+            byte[] pixelData = Array.Empty<byte>();
             if (bmp.Width != 0 && bmp.Rows != 0)
             {
                 pixelData = new byte[bmp.BufferData.Length];
                 Array.Copy(bmp.BufferData, pixelData, bmp.BufferData.Length);
             }
 
-            ImageData ret = new ImageData(pixelData, bmp.Width, bmp.Rows,
+            ImageData ret = new(pixelData, bmp.Width, bmp.Rows,
                new ImagePixelFormat(ColorFormat.Intensity));
 
             bitmapLeft = _face.Glyph.BitmapLeft;

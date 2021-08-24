@@ -312,29 +312,24 @@ namespace Fusee.Engine.Core
 
         private static List<IFxParamDeclaration> DeferredLightParams(LightType type)
         {
-            switch (type)
+            return type switch
             {
-                case LightType.Point:
-                    return new List<IFxParamDeclaration>()
+                LightType.Point => new List<IFxParamDeclaration>()
                     {
                         new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
                         new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
                         new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f },
                         new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
                         new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    };
-                case LightType.Legacy:
-                case LightType.Parallel:
-                    return new List<IFxParamDeclaration>()
+                    },
+                LightType.Legacy or LightType.Parallel => new List<IFxParamDeclaration>()
                     {
                         new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
                         new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
                         new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
                         new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    };
-                default:
-                case LightType.Spot:
-                    return new List<IFxParamDeclaration>()
+                    },
+                _ => new List<IFxParamDeclaration>()
                     {
                         new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
                         new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
@@ -344,8 +339,8 @@ namespace Fusee.Engine.Core
                         new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f },
                         new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
                         new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    };
-            }
+                    },
+            };
         }
 
         #endregion

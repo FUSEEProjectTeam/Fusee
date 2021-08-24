@@ -8,9 +8,9 @@ namespace Fusee.Engine.Core
     {
         private readonly IRenderContextImp _renderContextImp;
 
-        private readonly Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
+        private readonly Stack<ITextureHandle> _toBeDeletedTextureHandles = new();
 
-        private readonly Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
+        private readonly Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new();
 
         private void Remove(ITextureHandle textureHandle)
         {

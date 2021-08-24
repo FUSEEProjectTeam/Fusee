@@ -553,7 +553,6 @@ namespace Fusee.Engine.Common
         RightStickY = 3,
         LeftTrigger = 4,
         RightTrigger = 5
-
 #pragma warning restore 1591
     }
 

@@ -260,27 +260,27 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length float3 that points towards the x-axis.
         /// </summary>
-        public static readonly float3 UnitX = new float3(1, 0, 0);
+        public static readonly float3 UnitX = new(1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float3 that points towards the y-axis.
         /// </summary>
-        public static readonly float3 UnitY = new float3(0, 1, 0);
+        public static readonly float3 UnitY = new(0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length float3 that points towards the z-axis.
         /// </summary>
-        public static readonly float3 UnitZ = new float3(0, 0, 1);
+        public static readonly float3 UnitZ = new(0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length float3.
         /// </summary>
-        public static readonly float3 Zero = new float3(0, 0, 0);
+        public static readonly float3 Zero = new(0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly float3 One = new float3(1, 1, 1);
+        public static readonly float3 One = new(1, 1, 1);
 
         #region Infinity
 
@@ -624,7 +624,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Cross(float3 left, float3 right)
         {
-            float3 result = new float3(left.y * right.z - left.z * right.y,
+            float3 result = new(left.y * right.z - left.z * right.y,
                                        left.z * right.x - left.x * right.z,
                                        left.x * right.y - left.y * right.x);
 
@@ -942,62 +942,62 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
+        public float2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and z components of this instance.
         /// </summary>
-        public float2 xz { get => new float2(x, z); set { x = value.x; z = value.y; } }
+        public float2 xz { get => new(x, z); set { x = value.x; z = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
         /// </summary>
-        public float2 yx { get => new float2(y, x); set { y = value.x; x = value.y; } }
+        public float2 yx { get => new(y, x); set { y = value.x; x = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the y and z components of this instance.
         /// </summary>
-        public float2 yz { get => new float2(y, z); set { y = value.x; z = value.y; } }
+        public float2 yz { get => new(y, z); set { y = value.x; z = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the z and x components of this instance.
         /// </summary>
-        public float2 zx { get => new float2(z, x); set { z = value.x; x = value.y; } }
+        public float2 zx { get => new(z, x); set { z = value.x; x = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the z and y components of this instance.
         /// </summary>
-        public float2 zy { get => new float2(z, y); set { z = value.x; y = value.y; } }
+        public float2 zy { get => new(z, y); set { z = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-        public float3 xyz { get => new float3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
+        public float3 xyz { get => new(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
         /// </summary>
-        public float3 xzy { get => new float3(x, z, y); set { x = value.x; z = value.y; y = value.z; } }
+        public float3 xzy { get => new(x, z, y); set { x = value.x; z = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
         /// </summary>
-        public float3 yzx { get => new float3(y, z, x); set { y = value.x; z = value.y; x = value.z; } }
+        public float3 yzx { get => new(y, z, x); set { y = value.x; z = value.y; x = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, x and z components of this instance.
         /// </summary>
-        public float3 yxz { get => new float3(y, x, z); set { y = value.x; x = value.y; z = value.z; } }
+        public float3 yxz { get => new(y, x, z); set { y = value.x; x = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, x and y components of this instance.
         /// </summary>
-        public float3 zxy { get => new float3(z, x, y); set { z = value.x; x = value.y; y = value.z; } }
+        public float3 zxy { get => new(z, x, y); set { z = value.x; x = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, y and x components of this instance.
         /// </summary>
-        public float3 zyx { get => new float3(z, y, x); set { z = value.x; y = value.y; x = value.z; } }
+        public float3 zyx { get => new(z, y, x); set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion Swizzle
 
@@ -1221,7 +1221,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// True if the instances are equal; false otherwise.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is float3))
                 return false;

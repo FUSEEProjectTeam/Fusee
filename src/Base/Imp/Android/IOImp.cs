@@ -10,11 +10,15 @@ namespace Fusee.Base.Imp.Android
     public class IOImp : IIOImp
     {
         readonly Context _androidContext;
+
+        /// <summary>
+        /// Android implementation for IO related functionality.
+        /// </summary>
+        /// <param name="androidContext"></param>
         public IOImp(Context androidContext)
         {
             _androidContext = androidContext;
         }
-
 
         /// <summary>
         /// Opens a file and returns its contents as a <see cref="Stream" />.

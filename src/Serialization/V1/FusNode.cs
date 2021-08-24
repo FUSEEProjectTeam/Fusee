@@ -33,6 +33,9 @@ namespace Fusee.Serialization.V1
         #endregion
 
         #region Scene assembly helpers
+        /// <summary>
+        /// A scene node.
+        /// </summary>
         public FusScene Scene;
 
         /// <summary>

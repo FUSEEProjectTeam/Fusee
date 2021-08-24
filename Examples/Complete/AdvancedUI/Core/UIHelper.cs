@@ -13,7 +13,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 {
     internal static class UIHelper
     {
-        internal static List<string> DummySegmentationClasses = new List<string>()
+        internal static List<string> DummySegmentationClasses = new()
         {
             "orangutan",
             "banana",
@@ -30,8 +30,8 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static float CanvasWidthInit;
         internal static float CanvasHeightInit;
 
-        internal static float2 AnnotationDim = new float2(3f, 0.5f);
-        internal static float4 AnnotationBorderThickness = new float4(6, 0.5f, 0.5f, 0.5f);
+        internal static float2 AnnotationDim = new(3f, 0.5f);
+        internal static float4 AnnotationBorderThickness = new(6, 0.5f, 0.5f, 0.5f);
 
         internal static string VsTex = AssetStorage.Get<string>("texture.vert");
         internal static string PsTex = AssetStorage.Get<string>("texture.frag");
@@ -40,7 +40,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static string PsNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
-        internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 24);
+        internal static FontMap RalewayFontMap = new(FontRaleway, 24);
 
         internal static float alphaInv = 0.5f;
         internal static float alphaVis = 1f;
@@ -51,14 +51,14 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static readonly float4 White = (float4)ColorUint.White;
 
-        private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"), false, TextureFilterMode.Linear);
-        private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"), false, TextureFilterMode.Linear);
-        private static readonly Texture _frameRecognizedMLOrConfirmed = new Texture(AssetStorage.Get<ImageData>("frame_green.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _frameToCheck = new(AssetStorage.Get<ImageData>("frame_yellow.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _frameDiscarded = new(AssetStorage.Get<ImageData>("frame_gray.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _frameRecognizedMLOrConfirmed = new(AssetStorage.Get<ImageData>("frame_green.png"), false, TextureFilterMode.Linear);
 
-        private static readonly Texture _iconToCheck = new Texture(AssetStorage.Get<ImageData>("lightbulb.png"), false, TextureFilterMode.Linear);
-        private static readonly Texture _iconDiscarded = new Texture(AssetStorage.Get<ImageData>("minus-oktagon.png"), false, TextureFilterMode.Linear);
-        private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"), false, TextureFilterMode.Linear);
-        private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _iconToCheck = new(AssetStorage.Get<ImageData>("lightbulb.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _iconDiscarded = new(AssetStorage.Get<ImageData>("minus-oktagon.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _iconRecognizedML = new(AssetStorage.Get<ImageData>("check-circle.png"), false, TextureFilterMode.Linear);
+        private static readonly Texture _iconConfirmed = new(AssetStorage.Get<ImageData>("check-circle_filled.png"), false, TextureFilterMode.Linear);
 
         internal static readonly SurfaceEffect GreenEffect = MakeEffect.FromDiffuseSpecular(Green, float4.Zero);
         internal static readonly SurfaceEffect YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, float4.Zero);
@@ -89,7 +89,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void CreateAndAddCircleAnnotationAndLine(SceneNode parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float borderScaleFactor, string text)
         {
-            SceneNode container = new SceneNode
+            SceneNode container = new()
             {
                 Name = "Container"
             };
@@ -125,7 +125,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private static SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
-            TextureNode icon = new TextureNode(
+            TextureNode icon = new(
                 "icon",
                 VsTex,
                 PsTex,
@@ -139,7 +139,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 float2.One
             );
 
-            TextNode annotationText = new TextNode(
+            TextNode annotationText = new(
                 text,
                 "annotation text",
                 VsTex,
@@ -155,7 +155,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            TextureNode annotation = new TextureNode(
+            TextureNode annotation = new(
                 "Annotation",
                 VsNineSlice,
                 PsNineSlice,

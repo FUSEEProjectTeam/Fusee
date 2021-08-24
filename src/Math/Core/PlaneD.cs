@@ -348,9 +348,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="PlaneD"/>.</param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() != typeof(PlaneD)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj?.GetType() != typeof(PlaneD)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
 
             var other = (PlaneD)obj;
             return

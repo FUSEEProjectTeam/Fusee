@@ -22,7 +22,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void EulerToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void EulerToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 _1, float3 _2)
         {
             var valid = false;
             var expected = quaternion;
@@ -45,7 +45,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void EulerToMatrix(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void EulerToMatrix(string text, float3 euler, Quaternion _1, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = matrix;
@@ -75,7 +75,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void QuaternionToEuler(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void QuaternionToEuler(string text, float3 euler, Quaternion quaternion, float4x4 _1, float3 _2)
         {
             var valid = false;
             var expected = euler;
@@ -102,7 +102,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void QuaternionToMatrix(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void QuaternionToMatrix(string text, float3 _1, Quaternion quaternion, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = matrix;
@@ -132,7 +132,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void MatrixToEuler(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void MatrixToEuler(string text, float3 euler, Quaternion _1, float4x4 matrix, float3 _2)
         {
             var valid = false;
 
@@ -160,7 +160,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        public void MatrixToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void MatrixToQuaternion(string text, float3 _1, Quaternion quaternion, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = quaternion;

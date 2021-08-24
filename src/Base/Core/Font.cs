@@ -15,11 +15,11 @@ namespace Fusee.Base.Core
         /// </summary>
         public IFontImp _fontImp;
 
-        private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
+        private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new();
 
-        private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
+        private readonly Dictionary<uint, Curve> _glyphCurveChache = new();
 
-        private readonly Dictionary<uint, float> _glyphAdvanceCache = new Dictionary<uint, float>();
+        private readonly Dictionary<uint, float> _glyphAdvanceCache = new();
 
 
         /// <summary>

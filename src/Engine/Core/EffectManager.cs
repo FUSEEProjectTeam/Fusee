@@ -9,9 +9,9 @@ namespace Fusee.Engine.Core
     {
         private readonly RenderContext _rc;
 
-        private readonly Stack<Effect> _effectsToBeDeleted = new Stack<Effect>();
+        private readonly Stack<Effect> _effectsToBeDeleted = new();
 
-        private readonly Dictionary<Suid, Effect> _allEffects = new Dictionary<Suid, Effect>();
+        private readonly Dictionary<Suid, Effect> _allEffects = new();
 
         private void EffectChanged(object sender, EffectManagerEventArgs args)
         {

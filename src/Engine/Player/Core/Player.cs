@@ -8,10 +8,8 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -46,10 +44,6 @@ namespace Fusee.Engine.Player.Core
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
-        private float _initCanvasWidth;
-        private float _initCanvasHeight;
-        private float _canvasWidth = 16;
-        private float _canvasHeight = 9;
 
         private float _maxPinchSpeed;
 
@@ -57,7 +51,6 @@ namespace Fusee.Engine.Player.Core
 
         public void LoadAssets()
         {
-
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
@@ -67,7 +60,7 @@ namespace Fusee.Engine.Player.Core
             _sih = new SceneInteractionHandler(_gui);
 
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            AABBCalculator aabbc = new(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
@@ -104,12 +97,6 @@ namespace Fusee.Engine.Player.Core
         // Init is called on startup.
         public override void Init()
         {
-            _initCanvasWidth = Width / 100f;
-            _initCanvasHeight = Height / 100f;
-
-            _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
 
@@ -124,7 +111,6 @@ namespace Fusee.Engine.Player.Core
 
             LoadAssets();
         }
-
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -224,10 +210,18 @@ namespace Fusee.Engine.Player.Core
 
             var view = mtxCam * mtxRot * _sceneScale * _sceneCenter; ;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar) * mtxOffset;
+
+            // Tick any animations and Render the scene loaded in Init()
+            RC.View = view;
+            RC.Projection = perspective;
+            _sceneRenderer.Animate();
+            _sceneRenderer.Render(RC);
+
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            RC.View = view;
+            RC.View = float4x4.Identity;
             RC.Projection = orthographic;
+
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
@@ -235,14 +229,7 @@ namespace Fusee.Engine.Player.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            // Tick any animations and Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
-            _sceneRenderer.Animate();
-            _sceneRenderer.Render(RC);
 
-            RC.View = view;
-            RC.Projection = orthographic;
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -261,6 +248,9 @@ namespace Fusee.Engine.Player.Core
             var psTex = AssetStorage.Get<string>("texture.frag");
             var psText = AssetStorage.Get<string>("text.frag");
 
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
+
             var btnFuseeLogo = new GUIButton
             {
                 Name = "Canvas_Button"
@@ -274,54 +264,48 @@ namespace Fusee.Engine.Player.Core
                 "fuseeLogo",
                 vsTex,
                 psTex,
-                //Set the diffuse texture you want to use.
+                //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f)),
-                float2.One);
+                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                float2.One
+                );
             fuseeLogo.AddComponent(btnFuseeLogo);
-
-            // Initialize the information text line.
-            var textToDisplay = "FUSEE 3D Scene";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                textToDisplay += " created";
-                if (_scene.Header.CreatedBy != null)
-                    textToDisplay += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    textToDisplay += " on " + _scene.Header.CreationDate;
-            }
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                textToDisplay,
-                "SceneDescriptionText",
+                "FUSEE Simple Example",
+                "ButtonText",
                 vsTex,
                 psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
-
 
             var canvas = new CanvasNode(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                });
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
+                }
+            };
 
             return new SceneContainer
             {

@@ -30,12 +30,12 @@ namespace Fusee.Examples.Materials.Core
         public override void Init()
         {
             Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            FontMap fontLatoMap = new FontMap(fontLato, 32);
+            FontMap fontLatoMap = new(fontLato, 32);
 
             string vsTex = AssetStorage.Get<string>("texture.vert");
             string psTex = AssetStorage.Get<string>("texture.frag");
 
-            Icosphere icosphereWithTangents = new Icosphere(5);
+            Icosphere icosphereWithTangents = new(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
             icosphereWithTangents.BiTangents = icosphereWithTangents.CalculateBiTangents();
 
@@ -47,7 +47,7 @@ namespace Fusee.Examples.Materials.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("albedoTex.jpg"));
             var normalTex = new Texture(AssetStorage.Get<ImageData>("normalTex.jpg"));
 
-            SceneContainer guiDescriptionScene = new SceneContainer
+            SceneContainer guiDescriptionScene = new()
             {
                 Children = new List<SceneNode>
                 {

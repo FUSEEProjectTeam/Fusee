@@ -152,7 +152,7 @@ namespace Fusee.Serialization.V1
         /// If not null, the texture to use as the color.
         /// </summary>
         [ProtoMember(2)]
-        public string? Texture;
+        public string Texture;
 
         /// <summary>
         /// The percentage how to mix Color and Texture.
@@ -355,7 +355,7 @@ namespace Fusee.Serialization.V1
         /// The texture to read the normal information from.
         /// </summary>
         [ProtoMember(1)]
-        public string? Texture;
+        public string Texture;
 
         /// <summary>
         /// The intensity of the normal map..

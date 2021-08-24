@@ -1,7 +1,12 @@
 using ProtoBuf;
 using System;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+#if NET5_0_OR_GREATER
+using System.Runtime.Intrinsics;
+using System.Runtime.Intrinsics.X86;
+#endif
 
 namespace Fusee.Math.Core
 {
@@ -49,35 +54,35 @@ namespace Fusee.Math.Core
         /// Top row of the matrix
         /// </summary>
         [ProtoMember(1)]
-        public float4 Row0;
+        public float4 Row1;
 
         /// <summary>
         /// 2nd row of the matrix
         /// </summary>
         [ProtoMember(2)]
-        public float4 Row1;
+        public float4 Row2;
 
         /// <summary>
         /// 3rd row of the matrix
         /// </summary>
         [ProtoMember(3)]
-        public float4 Row2;
+        public float4 Row3;
 
         /// <summary>
         /// Bottom row of the matrix
         /// </summary>
         [ProtoMember(4)]
-        public float4 Row3;
+        public float4 Row4;
 
         /// <summary>
         /// The identity matrix
         /// </summary>
-        public static float4x4 Identity = new float4x4(float4.UnitX, float4.UnitY, float4.UnitZ, float4.UnitW);
+        public static readonly float4x4 Identity = new(float4.UnitX, float4.UnitY, float4.UnitZ, float4.UnitW);
 
         /// <summary>
         /// The zero matrix
         /// </summary>
-        public static float4x4 Zero = new float4x4(float4.Zero, float4.Zero, float4.Zero, float4.Zero);
+        public static readonly float4x4 Zero = new(float4.Zero, float4.Zero, float4.Zero, float4.Zero);
 
         #endregion Fields
 
@@ -86,47 +91,47 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        /// <param name="row0">Top row of the matrix</param>
-        /// <param name="row1">Second row of the matrix</param>
-        /// <param name="row2">Third row of the matrix</param>
-        /// <param name="row3">Bottom row of the matrix</param>
-        public float4x4(float4 row0, float4 row1, float4 row2, float4 row3)
+        /// <param name="row1">Top row of the matrix</param>
+        /// <param name="row2">Second row of the matrix</param>
+        /// <param name="row3">Third row of the matrix</param>
+        /// <param name="row4">Bottom row of the matrix</param>
+        public float4x4(float4 row1, float4 row2, float4 row3, float4 row4)
         {
-            Row0 = row0;
             Row1 = row1;
             Row2 = row2;
             Row3 = row3;
+            Row4 = row4;
         }
 
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        /// <param name="m00">First item of the first row of the matrix.</param>
-        /// <param name="m01">Second item of the first row of the matrix.</param>
-        /// <param name="m02">Third item of the first row of the matrix.</param>
-        /// <param name="m03">Fourth item of the first row of the matrix.</param>
-        /// <param name="m10">First item of the second row of the matrix.</param>
-        /// <param name="m11">Second item of the second row of the matrix.</param>
-        /// <param name="m12">Third item of the second row of the matrix.</param>
-        /// <param name="m13">Fourth item of the second row of the matrix.</param>
-        /// <param name="m20">First item of the third row of the matrix.</param>
-        /// <param name="m21">Second item of the third row of the matrix.</param>
-        /// <param name="m22">Third item of the third row of the matrix.</param>
-        /// <param name="m23">First item of the third row of the matrix.</param>
-        /// <param name="m30">Fourth item of the fourth row of the matrix.</param>
-        /// <param name="m31">Second item of the fourth row of the matrix.</param>
-        /// <param name="m32">Third item of the fourth row of the matrix.</param>
-        /// <param name="m33">Fourth item of the fourth row of the matrix.</param>
+        /// <param name="m11">First item of the first row of the matrix.</param>
+        /// <param name="m12">Second item of the first row of the matrix.</param>
+        /// <param name="m13">Third item of the first row of the matrix.</param>
+        /// <param name="m14">Fourth item of the first row of the matrix.</param>
+        /// <param name="m21">First item of the second row of the matrix.</param>
+        /// <param name="m22">Second item of the second row of the matrix.</param>
+        /// <param name="m23">Third item of the second row of the matrix.</param>
+        /// <param name="m24">Fourth item of the second row of the matrix.</param>
+        /// <param name="m31">First item of the third row of the matrix.</param>
+        /// <param name="m32">Second item of the third row of the matrix.</param>
+        /// <param name="m33">Third item of the third row of the matrix.</param>
+        /// <param name="m34">First item of the third row of the matrix.</param>
+        /// <param name="m41">Fourth item of the fourth row of the matrix.</param>
+        /// <param name="m42">Second item of the fourth row of the matrix.</param>
+        /// <param name="m43">Third item of the fourth row of the matrix.</param>
+        /// <param name="m44">Fourth item of the fourth row of the matrix.</param>
         public float4x4(
-            float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33)
+            float m11, float m12, float m13, float m14,
+            float m21, float m22, float m23, float m24,
+            float m31, float m32, float m33, float m34,
+            float m41, float m42, float m43, float m44)
         {
-            Row0 = new float4(m00, m01, m02, m03);
-            Row1 = new float4(m10, m11, m12, m13);
-            Row2 = new float4(m20, m21, m22, m23);
-            Row3 = new float4(m30, m31, m32, m33);
+            Row1 = new float4(m11, m12, m13, m14);
+            Row2 = new float4(m21, m22, m23, m24);
+            Row3 = new float4(m31, m32, m33, m34);
+            Row4 = new float4(m41, m42, m43, m44);
         }
 
         /// <summary>
@@ -135,10 +140,10 @@ namespace Fusee.Math.Core
         /// <param name="d4x4">The double4x4 to copy components from.</param>
         public float4x4(double4x4 d4x4)
         {
-            Row0 = (float4)d4x4.Row0;
             Row1 = (float4)d4x4.Row1;
             Row2 = (float4)d4x4.Row2;
             Row3 = (float4)d4x4.Row3;
+            Row4 = (float4)d4x4.Row4;
         }
 
         /// <summary>
@@ -147,10 +152,10 @@ namespace Fusee.Math.Core
         /// <param name="f3x3">The float3x3 matrix to copy components from.</param>
         public float4x4(float3x3 f3x3)
         {
-            Row0 = new float4(f3x3.Row0, 0);
             Row1 = new float4(f3x3.Row1, 0);
             Row2 = new float4(f3x3.Row2, 0);
-            Row3 = new float4(0, 0, 0, 1);
+            Row3 = new float4(f3x3.Row3, 0);
+            Row4 = new float4(0, 0, 0, 1);
         }
 
         #endregion Constructors
@@ -162,58 +167,58 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The determinant of this matrix
         /// </summary>
-        public float Determinant => Row0.x * Row1.y * Row2.z * Row3.w - Row0.x * Row1.y * Row2.w * Row3.z + Row0.x * Row1.z * Row2.w * Row3.y -
-                    Row0.x * Row1.z * Row2.y * Row3.w
-                    + Row0.x * Row1.w * Row2.y * Row3.z - Row0.x * Row1.w * Row2.z * Row3.y - Row0.y * Row1.z * Row2.w * Row3.x +
-                    Row0.y * Row1.z * Row2.x * Row3.w
-                    - Row0.y * Row1.w * Row2.x * Row3.z + Row0.y * Row1.w * Row2.z * Row3.x - Row0.y * Row1.x * Row2.z * Row3.w +
-                    Row0.y * Row1.x * Row2.w * Row3.z
-                    + Row0.z * Row1.w * Row2.x * Row3.y - Row0.z * Row1.w * Row2.y * Row3.x + Row0.z * Row1.x * Row2.y * Row3.w -
-                    Row0.z * Row1.x * Row2.w * Row3.y
-                    + Row0.z * Row1.y * Row2.w * Row3.x - Row0.z * Row1.y * Row2.x * Row3.w - Row0.w * Row1.x * Row2.y * Row3.z +
-                    Row0.w * Row1.x * Row2.z * Row3.y
-                    - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
-                    Row0.w * Row1.z * Row2.y * Row3.x;
+        public float Determinant => Row1.x * Row2.y * Row3.z * Row4.w - Row1.x * Row2.y * Row3.w * Row4.z + Row1.x * Row2.z * Row3.w * Row4.y -
+                    Row1.x * Row2.z * Row3.y * Row4.w
+                    + Row1.x * Row2.w * Row3.y * Row4.z - Row1.x * Row2.w * Row3.z * Row4.y - Row1.y * Row2.z * Row3.w * Row4.x +
+                    Row1.y * Row2.z * Row3.x * Row4.w
+                    - Row1.y * Row2.w * Row3.x * Row4.z + Row1.y * Row2.w * Row3.z * Row4.x - Row1.y * Row2.x * Row3.z * Row4.w +
+                    Row1.y * Row2.x * Row3.w * Row4.z
+                    + Row1.z * Row2.w * Row3.x * Row4.y - Row1.z * Row2.w * Row3.y * Row4.x + Row1.z * Row2.x * Row3.y * Row4.w -
+                    Row1.z * Row2.x * Row3.w * Row4.y
+                    + Row1.z * Row2.y * Row3.w * Row4.x - Row1.z * Row2.y * Row3.x * Row4.w - Row1.w * Row2.x * Row3.y * Row4.z +
+                    Row1.w * Row2.x * Row3.z * Row4.y
+                    - Row1.w * Row2.y * Row3.z * Row4.x + Row1.w * Row2.y * Row3.x * Row4.z - Row1.w * Row2.z * Row3.x * Row4.y +
+                    Row1.w * Row2.z * Row3.y * Row4.x;
 
         /// <summary>
         /// Returns the trace of this matrix
         /// </summary>
-        public float Trace => Row0.x + Row1.y + Row2.z + Row3.w;
+        public float Trace => Row1.x + Row2.y + Row3.z + Row4.w;
 
         /// <summary>
         /// The first column of this matrix
         /// </summary>
-        public float4 Column0
+        public float4 Column1
         {
-            get => new float4(Row0.x, Row1.x, Row2.x, Row3.x);
-            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
+            get => new(Row1.x, Row2.x, Row3.x, Row4.x);
+            set { Row1.x = value.x; Row2.x = value.y; Row3.x = value.z; Row4.x = value.w; }
         }
 
         /// <summary>
         /// The second column of this matrix
         /// </summary>
-        public float4 Column1
+        public float4 Column2
         {
-            get => new float4(Row0.y, Row1.y, Row2.y, Row3.y);
-            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
+            get => new(Row1.y, Row2.y, Row3.y, Row4.y);
+            set { Row1.y = value.x; Row2.y = value.y; Row3.y = value.z; Row4.y = value.w; }
         }
 
         /// <summary>
         /// The third column of this matrix
         /// </summary>
-        public float4 Column2
+        public float4 Column3
         {
-            get => new float4(Row0.z, Row1.z, Row2.z, Row3.z);
-            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
+            get => new(Row1.z, Row2.z, Row3.z, Row4.z);
+            set { Row1.z = value.x; Row2.z = value.y; Row3.z = value.z; Row4.z = value.w; }
         }
 
         /// <summary>
         /// The fourth column of this matrix
         /// </summary>
-        public float4 Column3
+        public float4 Column4
         {
-            get => new float4(Row0.w, Row1.w, Row2.w, Row3.w);
-            set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
+            get => new(Row1.w, Row2.w, Row3.w, Row4.w);
+            set { Row1.w = value.x; Row2.w = value.y; Row3.w = value.z; Row4.w = value.w; }
         }
 
         /// <summary>
@@ -221,8 +226,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M11
         {
-            get => Row0.x;
-            set => Row0.x = value;
+            get => Row1.x;
+            set => Row1.x = value;
         }
 
         /// <summary>
@@ -230,8 +235,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M12
         {
-            get => Row0.y;
-            set => Row0.y = value;
+            get => Row1.y;
+            set => Row1.y = value;
         }
 
         /// <summary>
@@ -239,8 +244,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M13
         {
-            get => Row0.z;
-            set => Row0.z = value;
+            get => Row1.z;
+            set => Row1.z = value;
         }
 
         /// <summary>
@@ -248,8 +253,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M14
         {
-            get => Row0.w;
-            set => Row0.w = value;
+            get => Row1.w;
+            set => Row1.w = value;
         }
 
         /// <summary>
@@ -257,8 +262,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M21
         {
-            get => Row1.x;
-            set => Row1.x = value;
+            get => Row2.x;
+            set => Row2.x = value;
         }
 
         /// <summary>
@@ -266,8 +271,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M22
         {
-            get => Row1.y;
-            set => Row1.y = value;
+            get => Row2.y;
+            set => Row2.y = value;
         }
 
         /// <summary>
@@ -275,8 +280,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M23
         {
-            get => Row1.z;
-            set => Row1.z = value;
+            get => Row2.z;
+            set => Row2.z = value;
         }
 
         /// <summary>
@@ -284,8 +289,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M24
         {
-            get => Row1.w;
-            set => Row1.w = value;
+            get => Row2.w;
+            set => Row2.w = value;
         }
 
         /// <summary>
@@ -293,8 +298,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M31
         {
-            get => Row2.x;
-            set => Row2.x = value;
+            get => Row3.x;
+            set => Row3.x = value;
         }
 
         /// <summary>
@@ -302,8 +307,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M32
         {
-            get => Row2.y;
-            set => Row2.y = value;
+            get => Row3.y;
+            set => Row3.y = value;
         }
 
         /// <summary>
@@ -311,8 +316,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M33
         {
-            get => Row2.z;
-            set => Row2.z = value;
+            get => Row3.z;
+            set => Row3.z = value;
         }
 
         /// <summary>
@@ -320,8 +325,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M34
         {
-            get => Row2.w;
-            set => Row2.w = value;
+            get => Row3.w;
+            set => Row3.w = value;
         }
 
         /// <summary>
@@ -329,8 +334,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M41
         {
-            get => Row3.x;
-            set => Row3.x = value;
+            get => Row4.x;
+            set => Row4.x = value;
         }
 
         /// <summary>
@@ -338,8 +343,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M42
         {
-            get => Row3.y;
-            set => Row3.y = value;
+            get => Row4.y;
+            set => Row4.y = value;
         }
 
         /// <summary>
@@ -347,8 +352,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M43
         {
-            get => Row3.z;
-            set => Row3.z = value;
+            get => Row4.z;
+            set => Row4.z = value;
         }
 
         /// <summary>
@@ -356,8 +361,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float M44
         {
-            get => Row3.w;
-            set => Row3.w = value;
+            get => Row4.w;
+            set => Row4.w = value;
         }
 
         /// <summary>
@@ -386,10 +391,10 @@ namespace Fusee.Math.Core
             {
                 return i switch
                 {
-                    0 => Row0[j],
-                    1 => Row1[j],
-                    2 => Row2[j],
-                    3 => Row3[j],
+                    0 => Row1[j],
+                    1 => Row2[j],
+                    2 => Row3[j],
+                    3 => Row4[j],
                     _ => throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type"),
                 };
             }
@@ -398,19 +403,19 @@ namespace Fusee.Math.Core
                 switch (i)
                 {
                     case 0:
-                        Row0[j] = value;
-                        break;
-
-                    case 1:
                         Row1[j] = value;
                         break;
 
-                    case 2:
+                    case 1:
                         Row2[j] = value;
                         break;
 
-                    case 3:
+                    case 2:
                         Row3[j] = value;
+                        break;
+
+                    case 3:
+                        Row4[j] = value;
                         break;
 
                     default:
@@ -429,14 +434,6 @@ namespace Fusee.Math.Core
         public float4x4 Invert()
         {
             return Invert(this);
-        }
-
-        /// <summary>
-        /// Converts this instance into its inverse.
-        /// </summary>
-        public float4x4 InvertAffine()
-        {
-            return InvertAffine(this);
         }
 
         #endregion public Invert()
@@ -536,8 +533,8 @@ namespace Fusee.Math.Core
         /// <returns>A matrix instance.</returns>
         public static float4x4 CreateFromAxisAngle(float3 axis, float angle)
         {
-            var cos = (float)System.Math.Cos(-angle);
-            var sin = (float)System.Math.Sin(-angle);
+            var cos = MathF.Cos(-angle);
+            var sin = MathF.Sin(-angle);
             var t = 1.0f - cos;
 
             axis = axis.Normalize();
@@ -561,15 +558,15 @@ namespace Fusee.Math.Core
         /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationX(float angle)
         {
-            float4x4 result = new float4x4();
+            float4x4 result;
 
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
-            result.Row0 = float4.UnitX;
-            result.Row1 = new float4(0.0f, cos, -sin, 0.0f);
-            result.Row2 = new float4(0.0f, sin, cos, 0.0f);
-            result.Row3 = float4.UnitW;
+            result.Row1 = float4.UnitX;
+            result.Row2 = new float4(0.0f, cos, -sin, 0.0f);
+            result.Row3 = new float4(0.0f, sin, cos, 0.0f);
+            result.Row4 = float4.UnitW;
 
             return result;
         }
@@ -581,15 +578,15 @@ namespace Fusee.Math.Core
         /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationY(float angle)
         {
-            float4x4 result = new float4x4();
+            float4x4 result;
 
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
-            result.Row0 = new float4(cos, 0.0f, sin, 0.0f);
-            result.Row1 = float4.UnitY;
-            result.Row2 = new float4(-sin, 0.0f, cos, 0.0f);
-            result.Row3 = float4.UnitW;
+            result.Row1 = new float4(cos, 0.0f, sin, 0.0f);
+            result.Row2 = float4.UnitY;
+            result.Row3 = new float4(-sin, 0.0f, cos, 0.0f);
+            result.Row4 = float4.UnitW;
 
             return result;
         }
@@ -601,15 +598,15 @@ namespace Fusee.Math.Core
         /// <returns>The resulting float4x4 instance.</returns>
         public static float4x4 CreateRotationZ(float angle)
         {
-            float4x4 result = new float4x4();
+            float4x4 result;
 
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
+            var cos = MathF.Cos(angle);
+            var sin = MathF.Sin(angle);
 
-            result.Row0 = new float4(cos, -sin, 0.0f, 0.0f);
-            result.Row1 = new float4(sin, cos, 0.0f, 0.0f);
-            result.Row2 = float4.UnitZ;
-            result.Row3 = float4.UnitW;
+            result.Row1 = new float4(cos, -sin, 0.0f, 0.0f);
+            result.Row2 = new float4(sin, cos, 0.0f, 0.0f);
+            result.Row3 = float4.UnitZ;
+            result.Row4 = float4.UnitW;
 
             return result;
         }
@@ -748,28 +745,28 @@ namespace Fusee.Math.Core
             var parity = 1; //parity of axis permutation (even=0, odd=1) - 'n' in original code
 
             int i = (int)axis.x, j = (int)axis.y, k = (int)axis.z;
-            var cy = System.Math.Sqrt(System.Math.Pow(mat[i][i], 2.0) + System.Math.Pow(mat[i][j], 2.0));
+            var cy = MathF.Sqrt(MathF.Pow(mat[i][i], 2.0f) + MathF.Pow(mat[i][j], 2.0f));
 
             var FLT_EPSILON = 1.192092896e-07F;
 
             if (cy > 16.0f * FLT_EPSILON)
             {
-                eul1[i] = (float)System.Math.Atan2(mat[j][k], mat[k][k]);
-                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
-                eul1[k] = (float)System.Math.Atan2(mat[i][j], mat[i][i]);
+                eul1[i] = MathF.Atan2(mat[j][k], mat[k][k]);
+                eul1[j] = MathF.Atan2(-mat[i][k], cy);
+                eul1[k] = MathF.Atan2(mat[i][j], mat[i][i]);
 
-                eul2[i] = (float)System.Math.Atan2(-mat[j][k], -mat[k][k]);
-                eul2[j] = (float)System.Math.Atan2(-mat[i][k], -cy);
-                eul2[k] = (float)System.Math.Atan2(-mat[i][j], -mat[i][i]);
+                eul2[i] = MathF.Atan2(-mat[j][k], -mat[k][k]);
+                eul2[j] = MathF.Atan2(-mat[i][k], -cy);
+                eul2[k] = MathF.Atan2(-mat[i][j], -mat[i][i]);
             }
             else
             {
-                eul1[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
-                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul1[i] = MathF.Atan2(-mat[k][j], mat[j][j]);
+                eul1[j] = MathF.Atan2(-mat[i][k], cy);
                 eul1[k] = 0;
 
-                eul2[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
-                eul2[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul2[i] = MathF.Atan2(-mat[k][j], mat[j][j]);
+                eul2[j] = MathF.Atan2(-mat[i][k], cy);
                 eul2[k] = 0;
             }
 
@@ -791,7 +788,7 @@ namespace Fusee.Math.Core
         public static float3 RotMatToEuler(float4x4 rotMat)
         {
             //Matrix is being handled as a multi-dimensional array to ensure that the rotation order can be changed easily in the future.
-            var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
+            var m = new[] { rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray(), rotMat.Row4.ToArray() };
 
             var eul1 = new float[3];
             var eul2 = new float[3];
@@ -799,8 +796,8 @@ namespace Fusee.Math.Core
 
             RotMatToEuler2(m, ref eul1, ref eul2);
 
-            d1 = System.Math.Abs(eul1[0]) + System.Math.Abs(eul1[1]) + System.Math.Abs(eul1[2]);
-            d2 = System.Math.Abs(eul2[0]) + System.Math.Abs(eul2[1]) + System.Math.Abs(eul2[2]);
+            d1 = MathF.Abs(eul1[0]) + MathF.Abs(eul1[1]) + MathF.Abs(eul1[2]);
+            d2 = MathF.Abs(eul2[0]) + MathF.Abs(eul2[1]) + MathF.Abs(eul2[2]);
 
             /* return best, which is just the one with lowest values it in */
             return d1 > d2 ? new float3(eul2[0], eul2[1], eul2[2]) : new float3(eul1[0], eul1[1], eul1[2]);
@@ -891,10 +888,9 @@ namespace Fusee.Math.Core
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
         /// <returns>The resulting float4x4 instance.</returns>
-        public static float4x4 CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear,
-                                                         float zFar)
+        public static float4x4 CreateOrthographicOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar)
         {
-            float4x4 result = new float4x4();
+            float4x4 result = new();
 
             float invRL = 1 / (right - left);
             float invTB = 1 / (top - bottom);
@@ -922,10 +918,9 @@ namespace Fusee.Math.Core
         /// <param name="zNear">The near edge of the projection volume.</param>
         /// <param name="zFar">The far edge of the projection volume.</param>
         /// <returns>The resulting float4x4 instance.</returns>
-        public static float4x4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear,
-                                                           float zFar)
+        public static float4x4 CreateOrthographicOffCenter(float left, float right, float bottom, float top, float zNear, float zFar)
         {
-            float4x4 result = new float4x4();
+            float4x4 result = new();
 
             float invRL = 1 / (right - left);
             float invTB = 1 / (top - bottom);
@@ -958,7 +953,7 @@ namespace Fusee.Math.Core
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
-        /// <item>fovy is zero, less than zero or larger than Math.PI</item>
+        /// <item>fovy is zero, less than zero or larger than MathF.PI</item>
         /// <item>aspect is negative or zero</item>
         /// <item>zNear is negative or zero</item>
         /// <item>zFar is negative or zero</item>
@@ -969,18 +964,18 @@ namespace Fusee.Math.Core
         {
             float4x4 result;
 
-            if (fovy <= 0 || fovy > System.Math.PI)
-                throw new ArgumentOutOfRangeException("fovy");
+            if (fovy <= 0 || fovy > MathF.PI)
+                throw new ArgumentOutOfRangeException(nameof(fovy));
             if (aspect <= 0)
-                throw new ArgumentOutOfRangeException("aspect");
+                throw new ArgumentOutOfRangeException(nameof(aspect));
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
-            float yMax = zNear * (float)System.Math.Tan(0.5f * fovy);
+            float yMax = zNear * MathF.Tan(0.5f * fovy);
             float yMin = -yMax;
             float xMin = yMin * aspect;
             float xMax = yMax * aspect;
@@ -1024,11 +1019,11 @@ namespace Fusee.Math.Core
             float4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             float x = (2.0f * zNear) / (right - left);
             float y = (2.0f * zNear) / (top - bottom);
@@ -1069,11 +1064,11 @@ namespace Fusee.Math.Core
             float4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             float x = (2.0f * zNear) / (right - left);
             float y = (2.0f * zNear) / (top - bottom);
@@ -1125,10 +1120,10 @@ namespace Fusee.Math.Core
         public static float4x4 Scale(float x, float y, float z)
         {
             float4x4 result;
-            result.Row0 = float4.UnitX * x;
-            result.Row1 = float4.UnitY * y;
-            result.Row2 = float4.UnitZ * z;
-            result.Row3 = float4.UnitW;
+            result.Row1 = float4.UnitX * x;
+            result.Row2 = float4.UnitY * y;
+            result.Row3 = float4.UnitZ * z;
+            result.Row4 = float4.UnitW;
             return result;
         }
 
@@ -1217,12 +1212,83 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Add(in float4x4 left, in float4x4 right)
         {
-            return new float4x4(left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M14 + right.M14,
-                                left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M24 + right.M24,
-                                left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33, left.M34 + right.M34,
-                                left.M41 + right.M41, left.M42 + right.M42, left.M43 + right.M43, left.M44 + right.M44);
+#if NET5_0_OR_GREATER
+            float4x4 result;
+
+            if (Sse.IsSupported)
+            {
+                AddSse(in left, in right, out result);
+            }
+            else
+            {
+                Add(in left, in right, out result);
+            }
+
+            return result;
+#else
+            Add(in left, in right, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void AddSse(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            Vector128<float> leftrow0;
+            Vector128<float> leftrow1;
+            Vector128<float> leftrow2;
+            Vector128<float> leftrow3;
+
+            fixed (float* m = &left.Row1.x)
+            {
+                leftrow0 = Sse.LoadVector128(m + 0);
+                leftrow1 = Sse.LoadVector128(m + 4);
+                leftrow2 = Sse.LoadVector128(m + 8);
+                leftrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> rightrow0;
+            Vector128<float> rightrow1;
+            Vector128<float> rightrow2;
+            Vector128<float> rightrow3;
+
+            fixed (float* m = &right.Row1.x)
+            {
+                rightrow0 = Sse.LoadVector128(m + 0);
+                rightrow1 = Sse.LoadVector128(m + 4);
+                rightrow2 = Sse.LoadVector128(m + 8);
+                rightrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            var resultrow0 = Sse.Add(leftrow0, rightrow0);
+            var resultrow1 = Sse.Add(leftrow1, rightrow1);
+            var resultrow2 = Sse.Add(leftrow2, rightrow2);
+            var resultrow3 = Sse.Add(leftrow3, rightrow3);
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row1.x)
+            {
+                Sse.Store(r + 0, resultrow0);
+                Sse.Store(r + 4, resultrow1);
+                Sse.Store(r + 8, resultrow2);
+                Sse.Store(r + 12, resultrow3);
+            }
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Add(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            result.Row1 = left.Row1 + right.Row1;
+            result.Row2 = left.Row2 + right.Row2;
+            result.Row3 = left.Row3 + right.Row3;
+            result.Row4 = left.Row4 + right.Row4;
         }
 
         /// <summary>
@@ -1231,12 +1297,83 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the subtraction.</param>
         /// <param name="right">The right operand of the subtraction.</param>
         /// <returns>A new instance that is the result of the subtraction.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Subtract(in float4x4 left, in float4x4 right)
         {
-            return new float4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
-                                left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
-                                left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33, left.M34 - right.M34,
-                                left.M41 - right.M41, left.M42 - right.M42, left.M43 - right.M43, left.M44 - right.M44);
+#if NET5_0_OR_GREATER
+            float4x4 result;
+
+            if (Sse.IsSupported)
+            {
+                SubtractSse(in left, in right, out result);
+            }
+            else
+            {
+                Subtract(in left, in right, out result);
+            }
+
+            return result;
+#else
+            Subtract(in left, in right, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void SubtractSse(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            Vector128<float> leftrow0;
+            Vector128<float> leftrow1;
+            Vector128<float> leftrow2;
+            Vector128<float> leftrow3;
+
+            fixed (float* m = &left.Row1.x)
+            {
+                leftrow0 = Sse.LoadVector128(m + 0);
+                leftrow1 = Sse.LoadVector128(m + 4);
+                leftrow2 = Sse.LoadVector128(m + 8);
+                leftrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> rightrow0;
+            Vector128<float> rightrow1;
+            Vector128<float> rightrow2;
+            Vector128<float> rightrow3;
+
+            fixed (float* m = &right.Row1.x)
+            {
+                rightrow0 = Sse.LoadVector128(m + 0);
+                rightrow1 = Sse.LoadVector128(m + 4);
+                rightrow2 = Sse.LoadVector128(m + 8);
+                rightrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            var resultrow0 = Sse.Subtract(leftrow0, rightrow0);
+            var resultrow1 = Sse.Subtract(leftrow1, rightrow1);
+            var resultrow2 = Sse.Subtract(leftrow2, rightrow2);
+            var resultrow3 = Sse.Subtract(leftrow3, rightrow3);
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row1.x)
+            {
+                Sse.Store(r + 0, resultrow0);
+                Sse.Store(r + 4, resultrow1);
+                Sse.Store(r + 8, resultrow2);
+                Sse.Store(r + 12, resultrow3);
+            }
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Subtract(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            result.Row1 = left.Row1 - right.Row1;
+            result.Row2 = left.Row2 - right.Row2;
+            result.Row3 = left.Row3 - right.Row3;
+            result.Row4 = left.Row4 - right.Row4;
         }
 
         #endregion Elementary Arithmetic Functions
@@ -1249,59 +1386,143 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float4x4 Mult(in float4x4 left, in float4x4 right)
         {
-            if (left == Identity) return right;
-            if (right == Identity) return left;
-            if (left == Zero || right == Zero) return Zero;
-
+#if NET5_0_OR_GREATER
             float4x4 result;
 
-            if (left.IsAffine && right.IsAffine)
+            if (Sse.IsSupported)
             {
-                result = new float4x4(
-                    left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
-                    left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
-                    left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
-                    left.M11 * right.M14 + left.M12 * right.M24 + left.M13 * right.M34 + left.M14,
-
-                    left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31,
-                    left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32,
-                    left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33,
-                    left.M21 * right.M14 + left.M22 * right.M24 + left.M23 * right.M34 + left.M24,
-
-                    left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31,
-                    left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32,
-                    left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33,
-                    left.M31 * right.M14 + left.M32 * right.M24 + left.M33 * right.M34 + left.M34,
-
-                    0, 0, 0, 1);
+                MultSse(in left, in right, out result);
             }
             else
             {
-                result = new float4x4(
-                    left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31 + left.M14 * right.M41,
-                    left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32 + left.M14 * right.M42,
-                    left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33 + left.M14 * right.M43,
-                    left.M11 * right.M14 + left.M12 * right.M24 + left.M13 * right.M34 + left.M14 * right.M44,
-
-                    left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31 + left.M24 * right.M41,
-                    left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32 + left.M24 * right.M42,
-                    left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33 + left.M24 * right.M43,
-                    left.M21 * right.M14 + left.M22 * right.M24 + left.M23 * right.M34 + left.M24 * right.M44,
-
-                    left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31 + left.M34 * right.M41,
-                    left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32 + left.M34 * right.M42,
-                    left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33 + left.M34 * right.M43,
-                    left.M31 * right.M14 + left.M32 * right.M24 + left.M33 * right.M34 + left.M34 * right.M44,
-
-                    left.M41 * right.M11 + left.M42 * right.M21 + left.M43 * right.M31 + left.M44 * right.M41,
-                    left.M41 * right.M12 + left.M42 * right.M22 + left.M43 * right.M32 + left.M44 * right.M42,
-                    left.M41 * right.M13 + left.M42 * right.M23 + left.M43 * right.M33 + left.M44 * right.M43,
-                    left.M41 * right.M14 + left.M42 * right.M24 + left.M43 * right.M34 + left.M44 * right.M44);
+                Mult(in left, in right, out result);
             }
 
             return result;
+#else
+            Mult(in left, in right, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void MultSse(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            Vector128<float> leftrow0;
+            Vector128<float> leftrow1;
+            Vector128<float> leftrow2;
+            Vector128<float> leftrow3;
+
+            fixed (float* m = &left.Row1.x)
+            {
+                leftrow0 = Sse.LoadVector128(m + 0);
+                leftrow1 = Sse.LoadVector128(m + 4);
+                leftrow2 = Sse.LoadVector128(m + 8);
+                leftrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> rightrow0;
+            Vector128<float> rightrow1;
+            Vector128<float> rightrow2;
+            Vector128<float> rightrow3;
+
+            fixed (float* m = &right.Row1.x)
+            {
+                rightrow0 = Sse.LoadVector128(m + 0);
+                rightrow1 = Sse.LoadVector128(m + 4);
+                rightrow2 = Sse.LoadVector128(m + 8);
+                rightrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            var resultrow0 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xFF), rightrow3)));
+
+            var resultrow1 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xFF), rightrow3)));
+
+            var resultrow2 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xFF), rightrow3)));
+
+            var resultrow3 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x00), rightrow0),
+                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x55), rightrow1)),
+                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xAA), rightrow2),
+                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xFF), rightrow3)));
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row1.x)
+            {
+                Sse.Store(r + 0, resultrow0);
+                Sse.Store(r + 4, resultrow1);
+                Sse.Store(r + 8, resultrow2);
+                Sse.Store(r + 12, resultrow3);
+            }
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Mult(in float4x4 left, in float4x4 right, out float4x4 result)
+        {
+            float leftM11 = left.Row1.x;
+            float leftM12 = left.Row1.y;
+            float leftM13 = left.Row1.z;
+            float leftM14 = left.Row1.w;
+            float leftM21 = left.Row2.x;
+            float leftM22 = left.Row2.y;
+            float leftM23 = left.Row2.z;
+            float leftM24 = left.Row2.w;
+            float leftM31 = left.Row3.x;
+            float leftM32 = left.Row3.y;
+            float leftM33 = left.Row3.z;
+            float leftM34 = left.Row3.w;
+            float leftM41 = left.Row4.x;
+            float leftM42 = left.Row4.y;
+            float leftM43 = left.Row4.z;
+            float leftM44 = left.Row4.w;
+            float rightM11 = right.Row1.x;
+            float rightM12 = right.Row1.y;
+            float rightM13 = right.Row1.z;
+            float rightM14 = right.Row1.w;
+            float rightM21 = right.Row2.x;
+            float rightM22 = right.Row2.y;
+            float rightM23 = right.Row2.z;
+            float rightM24 = right.Row2.w;
+            float rightM31 = right.Row3.x;
+            float rightM32 = right.Row3.y;
+            float rightM33 = right.Row3.z;
+            float rightM34 = right.Row3.w;
+            float rightM41 = right.Row4.x;
+            float rightM42 = right.Row4.y;
+            float rightM43 = right.Row4.z;
+            float rightM44 = right.Row4.w;
+
+            result.Row1.x = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
+            result.Row1.y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
+            result.Row1.z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
+            result.Row1.w = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
+            result.Row2.x = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
+            result.Row2.y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
+            result.Row2.z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
+            result.Row2.w = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
+            result.Row3.x = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
+            result.Row3.y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
+            result.Row3.z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
+            result.Row3.w = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
+            result.Row4.x = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
+            result.Row4.y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
+            result.Row4.z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
+            result.Row4.w = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
         }
 
         #endregion Multiply Functions
@@ -1332,131 +1553,243 @@ namespace Fusee.Math.Core
         /// Calculate the inverse of the given matrix.
         /// If you are unsure whether the matrix is invertible, check it with IsInvertable() first.
         /// </summary>
-        /// <param name="mat">The matrix to invert.</param>
+        /// <param name="matrix">The matrix to invert.</param>
         /// <returns>The inverse of the given matrix.</returns>
-        public static float4x4 Invert(float4x4 mat)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4x4 Invert(in float4x4 matrix)
         {
-            if (mat == Identity || mat == Zero) return mat;
+            if (matrix == Identity || matrix == Zero) return matrix;
 
-            if (!IsInvertable(mat, out float det))
-                throw new ArgumentException("Matrix isn't invertible.");
+#if NET5_0_OR_GREATER
+            float4x4 result;
 
-            if (mat.IsAffine)
-                return InvertAffine(mat);
+            if (Sse3.IsSupported)
+            {
+                InvertSse3(in matrix, out result);
+            }
+            else
+            {
+                Invert(in matrix, out result);
+            }
 
-            mat = mat.Transpose();
+            return result;
+#else
+            Invert(in matrix, out float4x4 result);
 
-            var tmp0 = mat.M33 * mat.M44;
-            var tmp1 = mat.M34 * mat.M43;
-            var tmp2 = mat.M32 * mat.M44;
-            var tmp3 = mat.M34 * mat.M42;
-            var tmp4 = mat.M32 * mat.M43;
-            var tmp5 = mat.M33 * mat.M42;
-            var tmp6 = mat.M31 * mat.M44;
-            var tmp7 = mat.M34 * mat.M41;
-            var tmp8 = mat.M31 * mat.M43;
-            var tmp9 = mat.M33 * mat.M41;
-            var tmp10 = mat.M31 * mat.M42;
-            var tmp11 = mat.M32 * mat.M41;
-
-            // calculate first 8 elements (cofactors)
-            var m11 = tmp0 * mat.M22 + tmp3 * mat.M23 + tmp4 * mat.M24;
-            m11 -= tmp1 * mat.M22 + tmp2 * mat.M23 + tmp5 * mat.M24;
-            var m12 = tmp1 * mat.M21 + tmp6 * mat.M23 + tmp9 * mat.M24;
-            m12 -= tmp0 * mat.M21 + tmp7 * mat.M23 + tmp8 * mat.M24;
-            var m13 = tmp2 * mat.M21 + tmp7 * mat.M22 + tmp10 * mat.M24;
-            m13 -= tmp3 * mat.M21 + tmp6 * mat.M22 + tmp11 * mat.M24;
-            var m14 = tmp5 * mat.M21 + tmp8 * mat.M22 + tmp11 * mat.M23;
-            m14 -= tmp4 * mat.M21 + tmp9 * mat.M22 + tmp10 * mat.M23;
-            var m21 = tmp1 * mat.M12 + tmp2 * mat.M13 + tmp5 * mat.M14;
-            m21 -= tmp0 * mat.M12 + tmp3 * mat.M13 + tmp4 * mat.M14;
-            var m22 = tmp0 * mat.M11 + tmp7 * mat.M13 + tmp8 * mat.M14;
-            m22 -= tmp1 * mat.M11 + tmp6 * mat.M13 + tmp9 * mat.M14;
-            var m23 = tmp3 * mat.M11 + tmp6 * mat.M12 + tmp11 * mat.M14;
-            m23 -= tmp2 * mat.M11 + tmp7 * mat.M12 + tmp10 * mat.M14;
-            var m24 = tmp4 * mat.M11 + tmp9 * mat.M12 + tmp10 * mat.M13;
-            m24 -= tmp5 * mat.M11 + tmp8 * mat.M12 + tmp11 * mat.M13;
-
-            // calculate pairs for second 8 elements (cofactors)
-            tmp0 = mat.M13 * mat.M24;
-            tmp1 = mat.M14 * mat.M23;
-            tmp2 = mat.M12 * mat.M24;
-            tmp3 = mat.M14 * mat.M22;
-            tmp4 = mat.M12 * mat.M23;
-            tmp5 = mat.M13 * mat.M22;
-            tmp6 = mat.M11 * mat.M24;
-            tmp7 = mat.M14 * mat.M21;
-            tmp8 = mat.M11 * mat.M23;
-            tmp9 = mat.M13 * mat.M21;
-            tmp10 = mat.M11 * mat.M22;
-            tmp11 = mat.M12 * mat.M21;
-
-            // calculate second 8 elements (cofactors)
-            var m31 = tmp0 * mat.M42 + tmp3 * mat.M43 + tmp4 * mat.M44;
-            m31 -= tmp1 * mat.M42 + tmp2 * mat.M43 + tmp5 * mat.M44;
-            var m32 = tmp1 * mat.M41 + tmp6 * mat.M43 + tmp9 * mat.M44;
-            m32 -= tmp0 * mat.M41 + tmp7 * mat.M43 + tmp8 * mat.M44;
-            var m33 = tmp2 * mat.M41 + tmp7 * mat.M42 + tmp10 * mat.M44;
-            m33 -= tmp3 * mat.M41 + tmp6 * mat.M42 + tmp11 * mat.M44;
-            var m34 = tmp5 * mat.M41 + tmp8 * mat.M42 + tmp11 * mat.M43;
-            m34 -= tmp4 * mat.M41 + tmp9 * mat.M42 + tmp10 * mat.M43;
-            var m41 = tmp2 * mat.M33 + tmp5 * mat.M34 + tmp1 * mat.M32;
-            m41 -= tmp4 * mat.M34 + tmp0 * mat.M32 + tmp3 * mat.M33;
-            var m42 = tmp8 * mat.M34 + tmp0 * mat.M31 + tmp7 * mat.M33;
-            m42 -= tmp6 * mat.M33 + tmp9 * mat.M34 + tmp1 * mat.M31;
-            var m43 = tmp6 * mat.M32 + tmp11 * mat.M34 + tmp3 * mat.M31;
-            m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
-            var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
-            m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
-
-            var invDet = 1 / det;
-            mat = new float4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
-                                invDet * m21, invDet * m22, invDet * m23, invDet * m24,
-                                invDet * m31, invDet * m32, invDet * m33, invDet * m34,
-                                invDet * m41, invDet * m42, invDet * m43, invDet * m44);
-
-            return mat;
+            return result;
+#endif
         }
 
-        /// <summary>
-        /// Calculate the inverse of a given matrix which represents an affine transformation.
-        /// </summary>
-        /// <param name="mat">The matrix to invert.</param>
-        /// <returns>The inverse of the given matrix.</returns>
-        public static float4x4 InvertAffine(float4x4 mat)
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void InvertSse3(in float4x4 matrix, out float4x4 result)
         {
-            //1. Save translation and scale
-            var translVec = mat.Translation();
-            var invScaleX = 1 / mat.Column0.xyz.Length;
-            var invScaleY = 1 / mat.Column1.xyz.Length;
-            var invScaleZ = 1 / mat.Column2.xyz.Length;
+            // Original derivation and implementation can be found here:
+            // https://lxjk.github.io/2017/09/03/Fast-4x4-Matrix-Inverse-with-SSE-SIMD-Explained.html
+            // found via OpenTK
 
-            //2. Get rotation only 
+            Vector128<float> row0;
+            Vector128<float> row1;
+            Vector128<float> row2;
+            Vector128<float> row3;
 
-            //2.1 Eliminate translation
-            mat.Column3 = float4.UnitW;
+            fixed (float* m = &matrix.Row1.x)
+            {
+                row0 = Sse.LoadVector128(m);
+                row1 = Sse.LoadVector128(m + 4);
+                row2 = Sse.LoadVector128(m + 8);
+                row3 = Sse.LoadVector128(m + 12);
+            }
 
-            //2.2 Eliminate scale
-            mat.Column0 /= mat.Column0.Length;
-            mat.Column1 /= mat.Column1.Length;
-            mat.Column2 /= mat.Column2.Length;
+            var A = Sse.MoveLowToHigh(row0, row1);
+            var B = Sse.MoveHighToLow(row1, row0);
+            var C = Sse.MoveLowToHigh(row2, row3);
+            var D = Sse.MoveHighToLow(row3, row2);
 
-            //3. Invert rotation part
-            mat = mat.Transpose();
+            const byte Shuffle_0202 = 0b1000_1000;
+            const byte Shuffle_1313 = 0b1101_1101;
 
-            //4. Invert scale
-            mat.Column0 *= invScaleX;
-            mat.Column1 *= invScaleY;
-            mat.Column2 *= invScaleZ;
+            var detSub = Sse.Subtract(
+                Sse.Multiply(
+                    Sse.Shuffle(row0, row2, Shuffle_0202),
+                    Sse.Shuffle(row1, row3, Shuffle_1313)),
+                Sse.Multiply(
+                    Sse.Shuffle(row0, row2, Shuffle_1313),
+                    Sse.Shuffle(row1, row3, Shuffle_0202)));
 
-            //5. Invert translation
-            var invTranslation = mat * (-1 * translVec);
+            const byte Shuffle_0000 = 0b0000_0000;
+            const byte Shuffle_1111 = 0b0101_0101;
+            const byte Shuffle_2222 = 0b1010_1010;
+            const byte Shuffle_3333 = 0b1111_1111;
 
-            mat.M14 = invTranslation.x;
-            mat.M24 = invTranslation.y;
-            mat.M34 = invTranslation.z;
+            var detA = Sse2.Shuffle(detSub.AsInt32(), Shuffle_0000).AsSingle();
+            var detB = Sse2.Shuffle(detSub.AsInt32(), Shuffle_1111).AsSingle();
+            var detC = Sse2.Shuffle(detSub.AsInt32(), Shuffle_2222).AsSingle();
+            var detD = Sse2.Shuffle(detSub.AsInt32(), Shuffle_3333).AsSingle();
 
-            return mat;
+            const byte Shuffle_3300 = 0b0000_1111;
+            const byte Shuffle_1122 = 0b1010_0101;
+            const byte Shuffle_2301 = 0b0100_1110;
+
+            var D_C = Sse.Subtract(
+                Sse.Multiply(Sse2.Shuffle(D.AsInt32(), Shuffle_3300).AsSingle(), C),
+                Sse.Multiply(
+                    Sse2.Shuffle(D.AsInt32(), Shuffle_1122).AsSingle(),
+                    Sse2.Shuffle(C.AsInt32(), Shuffle_2301).AsSingle()));
+
+            var A_B = Sse.Subtract(
+                Sse.Multiply(Sse2.Shuffle(A.AsInt32(), Shuffle_3300).AsSingle(), B),
+                Sse.Multiply(
+                    Sse2.Shuffle(A.AsInt32(), Shuffle_1122).AsSingle(),
+                    Sse2.Shuffle(B.AsInt32(), Shuffle_2301).AsSingle()));
+
+            const byte Shuffle_0303 = 0b1100_1100;
+            const byte Shuffle_1032 = 0b1011_0001;
+            const byte Shuffle_2121 = 0b0110_0110;
+
+            var X_ = Sse.Subtract(
+                Sse.Multiply(detD, A),
+                Sse.Add(
+                    Sse.Multiply(B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0303).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(B.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
+
+            var W_ = Sse.Subtract(
+                Sse.Multiply(detA, D),
+                Sse.Add(
+                    Sse.Multiply(C, Sse2.Shuffle(A_B.AsInt32(), Shuffle_0303).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(C.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
+
+            var detM = Sse.Multiply(detA, detD);
+
+            const byte Shuffle_3030 = 0b0011_0011;
+
+            var Y_ = Sse.Subtract(
+                Sse.Multiply(detB, C),
+                Sse.Subtract(
+                    Sse.Multiply(D, Sse2.Shuffle(A_B.AsInt32(), Shuffle_3030).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(D.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
+
+            var Z_ = Sse.Subtract(
+                Sse.Multiply(detC, B),
+                Sse.Subtract(
+                    Sse.Multiply(A, Sse2.Shuffle(D_C.AsInt32(), Shuffle_3030).AsSingle()),
+                    Sse.Multiply(
+                        Sse2.Shuffle(A.AsInt32(), Shuffle_1032).AsSingle(),
+                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
+
+            detM = Sse.Add(detM, Sse.Multiply(detB, detC));
+
+            const byte Shuffle_0213 = 0b1101_1000;
+
+            var tr = Sse.Multiply(A_B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0213).AsSingle());
+            tr = Sse3.HorizontalAdd(tr, tr);
+            tr = Sse3.HorizontalAdd(tr, tr);
+
+            detM = Sse.Subtract(detM, tr);
+
+            if (MathF.Abs(detM.GetElement(0)) < float.Epsilon)
+            {
+                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+            }
+
+            var adjSignMask = Vector128.Create(1.0f, -1.0f, -1.0f, 1.0f);
+
+            var rDetM = Sse.Divide(adjSignMask, detM);
+
+            X_ = Sse.Multiply(X_, rDetM);
+            Y_ = Sse.Multiply(Y_, rDetM);
+            Z_ = Sse.Multiply(Z_, rDetM);
+            W_ = Sse.Multiply(W_, rDetM);
+
+            const byte Shuffle_3131 = 0b0111_0111;
+            const byte Shuffle_2020 = 0b0010_0010;
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row1.x)
+            {
+                Sse.Store(r + 0, Sse.Shuffle(X_, Y_, Shuffle_3131));
+                Sse.Store(r + 4, Sse.Shuffle(X_, Y_, Shuffle_2020));
+                Sse.Store(r + 8, Sse.Shuffle(Z_, W_, Shuffle_3131));
+                Sse.Store(r + 12, Sse.Shuffle(Z_, W_, Shuffle_2020));
+            }
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Invert(in float4x4 matrix, out float4x4 result)
+        {
+            // Original implementation can be found here:
+            // https://github.com/dotnet/runtime/blob/79ae74f5ca5c8a6fe3a48935e85bd7374959c570/src/libraries/System.Private.CoreLib/src/System/Numerics/Matrix4x4.cs#L1556
+            // found via OpenTK
+
+            var mat = matrix;
+
+            float a = mat.M11, b = mat.M21, c = mat.M31, d = mat.M41;
+            float e = mat.M12, f = mat.M22, g = mat.M32, h = mat.M42;
+            float i = mat.M13, j = mat.M23, k = mat.M33, l = mat.M43;
+            float m = mat.M14, n = mat.M24, o = mat.M34, p = mat.M44;
+
+            float kp_lo = k * p - l * o;
+            float jp_ln = j * p - l * n;
+            float jo_kn = j * o - k * n;
+            float ip_lm = i * p - l * m;
+            float io_km = i * o - k * m;
+            float in_jm = i * n - j * m;
+
+            float a11 = +(f * kp_lo - g * jp_ln + h * jo_kn);
+            float a12 = -(e * kp_lo - g * ip_lm + h * io_km);
+            float a13 = +(e * jp_ln - f * ip_lm + h * in_jm);
+            float a14 = -(e * jo_kn - f * io_km + g * in_jm);
+
+            float det = a * a11 + b * a12 + c * a13 + d * a14;
+
+            if (MathF.Abs(det) < float.Epsilon)
+            {
+                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+            }
+
+            float invDet = 1.0f / det;
+
+            result.Row1 = new float4(a11, a12, a13, a14) * invDet;
+
+            result.Row2 = new float4(
+                -(b * kp_lo - c * jp_ln + d * jo_kn),
+                +(a * kp_lo - c * ip_lm + d * io_km),
+                -(a * jp_ln - b * ip_lm + d * in_jm),
+                +(a * jo_kn - b * io_km + c * in_jm)) * invDet;
+
+            float gp_ho = g * p - h * o;
+            float fp_hn = f * p - h * n;
+            float fo_gn = f * o - g * n;
+            float ep_hm = e * p - h * m;
+            float eo_gm = e * o - g * m;
+            float en_fm = e * n - f * m;
+
+            result.Row3 = new float4(
+                +(b * gp_ho - c * fp_hn + d * fo_gn),
+                -(a * gp_ho - c * ep_hm + d * eo_gm),
+                +(a * fp_hn - b * ep_hm + d * en_fm),
+                -(a * fo_gn - b * eo_gm + c * en_fm)) * invDet;
+
+            float gl_hk = g * l - h * k;
+            float fl_hj = f * l - h * j;
+            float fk_gj = f * k - g * j;
+            float el_hi = e * l - h * i;
+            float ek_gi = e * k - g * i;
+            float ej_fi = e * j - f * i;
+
+            result.Row4 = new float4(
+                -(b * gl_hk - c * fl_hj + d * fk_gj),
+                +(a * gl_hk - c * el_hi + d * ek_gi),
+                -(a * fl_hj - b * el_hi + d * ej_fi),
+                +(a * fk_gj - b * ek_gi + c * ej_fi)) * invDet;
         }
 
         #endregion Invert Functions
@@ -1466,11 +1799,104 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Calculate the transpose of the given matrix
         /// </summary>
-        /// <param name="mat">The matrix to transpose</param>
+        /// <param name="matrix">The matrix to transpose</param>
         /// <returns>The transpose of the given matrix</returns>
-        public static float4x4 Transpose(float4x4 mat)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static float4x4 Transpose(float4x4 matrix)
         {
-            return new float4x4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
+#if NET5_0_OR_GREATER
+            float4x4 result;
+
+            if (Sse.IsSupported)
+            {
+                TransposeSse(in matrix, out result);
+            }
+            else
+            {
+                Transpose(in matrix, out result);
+            }
+
+            return result;
+#else
+            Transpose(in matrix, out float4x4 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void TransposeSse(in float4x4 matrix, out float4x4 result)
+        {
+            Vector128<float> row0;
+            Vector128<float> row1;
+            Vector128<float> row2;
+            Vector128<float> row3;
+
+            fixed (float* m = &matrix.Row1.x)
+            {
+                row0 = Sse.LoadVector128(m + 0);
+                row1 = Sse.LoadVector128(m + 4);
+                row2 = Sse.LoadVector128(m + 8);
+                row3 = Sse.LoadVector128(m + 12);
+            }
+
+            var l12 = Sse.UnpackLow(row0, row1);
+            var l34 = Sse.UnpackLow(row2, row3);
+            var h12 = Sse.UnpackHigh(row0, row1);
+            var h34 = Sse.UnpackHigh(row2, row3);
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.Row1.x)
+            {
+                Sse.Store(r + 0, Sse.MoveLowToHigh(l12, l34));
+                Sse.Store(r + 4, Sse.MoveHighToLow(l34, l12));
+                Sse.Store(r + 8, Sse.MoveLowToHigh(h12, h34));
+                Sse.Store(r + 12,Sse.MoveHighToLow(h34, h12));
+            }
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Transpose(in float4x4 matrix, out float4x4 result)
+        {
+            float m11 = matrix.Row1.x;
+            float m12 = matrix.Row1.y;
+            float m13 = matrix.Row1.z;
+            float m14 = matrix.Row1.w;
+            float m21 = matrix.Row2.x;
+            float m22 = matrix.Row2.y;
+            float m23 = matrix.Row2.z;
+            float m24 = matrix.Row2.w;
+            float m31 = matrix.Row3.x;
+            float m32 = matrix.Row3.y;
+            float m33 = matrix.Row3.z;
+            float m34 = matrix.Row3.w;
+            float m41 = matrix.Row4.x;
+            float m42 = matrix.Row4.y;
+            float m43 = matrix.Row4.z;
+            float m44 = matrix.Row4.w;
+
+            result = new float4x4()
+            {
+                M11 = m11,
+                M12 = m21,
+                M13 = m31,
+                M14 = m41,
+                M21 = m12,
+                M22 = m22,
+                M23 = m32,
+                M24 = m42,
+                M31 = m13,
+                M32 = m23,
+                M33 = m33,
+                M34 = m43,
+                M41 = m14,
+                M42 = m24,
+                M43 = m34,
+                M44 = m44
+            };
         }
 
         #endregion Transpose
@@ -1518,13 +1944,101 @@ namespace Fusee.Math.Core
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float3"/> instance.</param>
         /// <returns>A new <see cref="float3"/> instance containing the result.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static float3 Transform(float4x4 matrix, float3 vector)
         {
-            float w = (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + matrix.M44;
-            return new float3(
-                ((matrix.M11 * vector.x) + (matrix.M12 * vector.y) + (matrix.M13 * vector.z) + matrix.M14) / w,
-                ((matrix.M21 * vector.x) + (matrix.M22 * vector.y) + (matrix.M23 * vector.z) + matrix.M24) / w,
-                ((matrix.M31 * vector.x) + (matrix.M32 * vector.y) + (matrix.M33 * vector.z) + matrix.M34) / w);
+#if NET5_0_OR_GREATER
+            float3 result;
+
+            if (Sse.IsSupported)
+            {
+                TransformSse(in matrix, in vector, out result);
+            }
+            else
+            {
+                Transform(in matrix, in vector, out result);
+            }
+
+            return result;
+#else
+            Transform(in matrix, in vector, out float3 result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static unsafe void TransformSse(in float4x4 matrix, in float3 vector, out float3 result)
+        {
+            Vector128<float> row0;
+            Vector128<float> row1;
+            Vector128<float> row2;
+            Vector128<float> row3;
+
+            fixed (float* m = &matrix.Row1.x)
+            {
+                row0 = Sse.LoadVector128(m + 0);
+                row1 = Sse.LoadVector128(m + 4);
+                row2 = Sse.LoadVector128(m + 8);
+                row3 = Sse.LoadVector128(m + 12);
+            }
+
+            var l12 = Sse.UnpackLow(row0, row1);
+            var l34 = Sse.UnpackLow(row2, row3);
+            var h12 = Sse.UnpackHigh(row0, row1);
+            var h34 = Sse.UnpackHigh(row2, row3);
+
+            var col0 = Sse.MoveLowToHigh(l12, l34);
+            var col1 = Sse.MoveHighToLow(l34, l12);
+            var col2 = Sse.MoveLowToHigh(h12, h34);
+            var col3 = Sse.MoveHighToLow(h34, h12);
+
+            Vector128<float> vec;
+
+            fixed (float* m = &vector.x)
+            {
+                vec = Sse.LoadVector128(m);
+            }
+
+            const byte Shuffle_0000 = 0x00;
+            const byte Shuffle_1111 = 0x55;
+            const byte Shuffle_2222 = 0xAA;
+            const byte Shuffle_3333 = 0xFF;
+
+            var vX = Sse.Shuffle(vec, vec, Shuffle_0000);
+            var vY = Sse.Shuffle(vec, vec, Shuffle_1111);
+            var vZ = Sse.Shuffle(vec, vec, Shuffle_2222);
+
+            var res = Sse.Divide(Sse.Add(Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(l12, l34), vX),
+                                                 Sse.Multiply(Sse.MoveHighToLow(l34, l12), vY)),
+                                         Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(h12, h34), vZ),
+                                                 Sse.MoveHighToLow(h34, h12))),
+                                 Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_0000), vX),
+                                                 Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_1111), vY)),
+                                         Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_2222), vZ),
+                                                 Sse.Shuffle(row3, row3, Shuffle_3333))));
+
+            Unsafe.SkipInit(out result);
+
+            fixed (float* r = &result.x)
+            {
+                Sse.Store(r + 0, res);
+            }
+        }
+#endif
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void Transform(in float4x4 matrix, in float3 vector, out float3 result)
+        {
+            var mat = matrix;
+            var vec = vector;
+
+            float w = (mat.M41 * vec.x) + (mat.M42 * vec.y) + (mat.M43 * vec.z) + mat.M44;
+
+            result.x = ((mat.M11 * vec.x) + (mat.M12 * vec.y) + (mat.M13 * vec.z) + mat.M14) / w;
+            result.y = ((mat.M21 * vec.x) + (mat.M22 * vec.y) + (mat.M23 * vec.z) + mat.M24) / w;
+            result.z = ((mat.M31 * vec.x) + (mat.M32 * vec.y) + (mat.M33 * vec.z) + mat.M34) / w;
         }
 
         /// <summary>
@@ -1557,7 +2071,7 @@ namespace Fusee.Math.Core
         {
             var v = new float4(vec, 1.0f);
             v = mat * v;
-            float3 result = new float3();
+            float3 result = new();
 
             if (v.w > M.EpsilonFloat)
             {
@@ -1650,9 +2164,9 @@ namespace Fusee.Math.Core
         {
             var scale = float3.One;
 
-            scale.x = mat.Column0.Length;
-            scale.y = mat.Column1.Length;
-            scale.z = mat.Column2.Length;
+            scale.x = mat.Column1.Length;
+            scale.y = mat.Column2.Length;
+            scale.z = mat.Column3.Length;
 
             return scale;
         }
@@ -1685,10 +2199,10 @@ namespace Fusee.Math.Core
         /// <returns>The rounded matrix.</returns>
         public static float4x4 Round(float4x4 mat)
         {
-            return new float4x4(float4.Round(mat.Row0),
-                                float4.Round(mat.Row1),
+            return new float4x4(float4.Round(mat.Row1),
                                 float4.Round(mat.Row2),
-                                float4.Round(mat.Row3));
+                                float4.Round(mat.Row3),
+                                float4.Round(mat.Row4));
         }
 
         #endregion Round
@@ -1705,7 +2219,7 @@ namespace Fusee.Math.Core
         /// <returns>A new float4x4 which holds the result of the multiplication</returns>
         public static float4x4 operator +(float4x4 left, float4x4 right)
         {
-            return Add(left, right);
+            return Add(in left, in right);
         }
 
         /// <summary>
@@ -1716,7 +2230,7 @@ namespace Fusee.Math.Core
         /// <returns>A new float2x2 which holds the result of the multiplication</returns>
         public static float4x4 operator -(float4x4 left, float4x4 right)
         {
-            return Subtract(left, right);
+            return Subtract(in left, in right);
         }
 
         /// <summary>
@@ -1727,7 +2241,7 @@ namespace Fusee.Math.Core
         /// <returns>A new Matrix44 which holds the result of the multiplication</returns>
         public static float4x4 operator *(float4x4 left, float4x4 right)
         {
-            return Mult(left, right);
+            return Mult(in left, in right);
         }
 
         /// <summary>
@@ -1848,7 +2362,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
+            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider), Row4.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -1861,7 +2375,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
+            return Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode() ^ Row4.GetHashCode();
         }
 
         #endregion public override int GetHashCode()
@@ -1873,7 +2387,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare tresult.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object? obj)
         {
             if (!(obj is float4x4))
                 return false;
@@ -1894,18 +2408,83 @@ namespace Fusee.Math.Core
         /// </summary>       
         public bool IsAffine =>
                 // Column order notation
-                (Row3 == float4.UnitW);
+                (Row4 == float4.UnitW);
 
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
         /// <param name="other">A matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
-        public bool Equals(float4x4 other)
+        public readonly bool Equals(float4x4 other)
         {
-            return
-                Row0 == other.Row0 &&
-                Row1 == other.Row1 &&
-                Row2 == other.Row2 &&
-                Row3 == other.Row3;
+#if NET5_0_OR_GREATER
+            bool result;
+
+            if (Sse.IsSupported)
+            {
+                EqualsSse(in other, out result);
+            }
+            else
+            {
+                Equals(in other, out result);
+            }
+
+            return result;
+#else
+            Equals(in other, out bool result);
+
+            return result;
+#endif
+        }
+
+#if NET5_0_OR_GREATER
+        private readonly unsafe void EqualsSse(in float4x4 other, out bool result)
+        {
+
+            Vector128<float> thisrow0;
+            Vector128<float> thisrow1;
+            Vector128<float> thisrow2;
+            Vector128<float> thisrow3;
+
+            fixed (float* m = &this.Row1.x)
+            {
+                thisrow0 = Sse.LoadVector128(m);
+                thisrow1 = Sse.LoadVector128(m + 4);
+                thisrow2 = Sse.LoadVector128(m + 8);
+                thisrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            Vector128<float> otherrow0;
+            Vector128<float> otherrow1;
+            Vector128<float> otherrow2;
+            Vector128<float> otherrow3;
+
+            fixed (float* m = &other.Row1.x)
+            {
+                otherrow0 = Sse.LoadVector128(m);
+                otherrow1 = Sse.LoadVector128(m + 4);
+                otherrow2 = Sse.LoadVector128(m + 8);
+                otherrow3 = Sse.LoadVector128(m + 12);
+            }
+
+            result = false;
+
+            var e = Vector128.Create(M.EpsilonFloat);
+
+            var r = Sse.And(Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow0, otherrow0), Sse.Min(thisrow0, otherrow0)), e),
+                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow1, otherrow1), Sse.Min(thisrow1, otherrow1)), e)),
+                            Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow2, otherrow2), Sse.Min(thisrow2, otherrow2)), e),
+                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow3, otherrow3), Sse.Min(thisrow3, otherrow3)), e)));
+
+            if (float.IsNaN(r.GetElement(0)) && float.IsNaN(r.GetElement(1)) && float.IsNaN(r.GetElement(2)) && float.IsNaN(r.GetElement(3)))
+                result = true;
+        }
+#endif
+
+        private readonly void Equals(in float4x4 other, out bool result)
+        {
+            result = Row1 == other.Row1 &&
+                     Row2 == other.Row2 &&
+                     Row3 == other.Row3 &&
+                     Row4 == other.Row4;
         }
 
         #endregion IEquatable<float4x4> Members

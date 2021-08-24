@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core
         /// </value>
         public Point PositionInt
                     =>
-                        new Point
+                        new()
                         {
                             x = (int)GetAxis((int)MouseAxes.X),
                             y = (int)GetAxis((int)MouseAxes.Y),
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The current position of the mouse.
         /// </value>
-        public float2 Position => new float2(GetAxis((int)MouseAxes.X), GetAxis((int)MouseAxes.Y));
+        public float2 Position => new(GetAxis((int)MouseAxes.X), GetAxis((int)MouseAxes.Y));
 
         /// <summary>
         /// Gets the mouse's x value.
@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core
         /// </value>
         public Point VelocityInt
                     =>
-                        new Point
+                        new()
                         {
                             x = (int)GetAxis(_xVelId),
                             y = (int)GetAxis(_yVelId),
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The mouse velocity. 
         /// </value>
-        public float2 Velocity => new float2(GetAxis(_xVelId), GetAxis(_yVelId));
+        public float2 Velocity => new(GetAxis(_xVelId), GetAxis(_yVelId));
 
         /// <summary>
         /// Retrieves the current mouse velocity in x direction. 

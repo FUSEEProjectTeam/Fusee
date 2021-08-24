@@ -298,9 +298,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBf"/>.</param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
+            if (obj?.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
 
             var other = (AABBf)obj;
             return max.Equals(other.max) && min.Equals(other.min);

@@ -503,7 +503,7 @@ namespace Fusee.Jometri
             //create and add vertices 
             for (var i = 0; i < 5; i++)
             {
-                Vertex current = new Vertex(pyramid.CreateVertHandleId(), positions[i]);
+                Vertex current = new(pyramid.CreateVertHandleId(), positions[i]);
                 if (i < 4) current.IncidentHalfEdge = i * 4 + 1;
                 if (i == 4) current.IncidentHalfEdge = 3;
                 pyramid.DictVertices.Add(current.Handle, current);

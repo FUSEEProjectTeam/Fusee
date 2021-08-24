@@ -80,7 +80,7 @@ namespace Fusee.Engine.Core.Scene
         /// z: width
         /// w: height
         /// </summary>
-        public float4 Viewport = new float4(0, 0, 100, 100);
+        public float4 Viewport = new(0, 0, 100, 100);
 
         /// <summary>
         /// The texture given here will be used as render target.

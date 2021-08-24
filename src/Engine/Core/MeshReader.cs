@@ -215,7 +215,7 @@ namespace Fusee.Engine.Core
         {
             // Sometime if we have a white space at the beginning of the string, split
             // will return an empty string. Let's remove that.
-            List<string> ret = new List<string>();
+            List<string> ret = new();
             foreach (string s in strIn.Split(separator))
             {
                 if (!string.IsNullOrEmpty(s))

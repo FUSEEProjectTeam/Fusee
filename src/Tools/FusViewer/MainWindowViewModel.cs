@@ -124,7 +124,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             }
         }
 
-        public List<TreeItem> SceneAsTreeView => new List<TreeItem> { _sceneAsTreeItem };
+        public List<TreeItem> SceneAsTreeView => new() { _sceneAsTreeItem };
 
         private string _pathToFile;
         private SceneContainer _scene;

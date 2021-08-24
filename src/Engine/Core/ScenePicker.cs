@@ -181,10 +181,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         public class PickerState : VisitorState
         {
-            private readonly CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
-            private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-            private readonly CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
-            private readonly CollapsingStateStack<Cull> _cullMode = new CollapsingStateStack<Cull>();
+            private readonly CollapsingStateStack<float4x4> _canvasXForm = new();
+            private readonly CollapsingStateStack<float4x4> _model = new();
+            private readonly CollapsingStateStack<MinMaxRect> _uiRect = new();
+            private readonly CollapsingStateStack<Cull> _cullMode = new();
 
             /// <summary>
             /// The registered model.

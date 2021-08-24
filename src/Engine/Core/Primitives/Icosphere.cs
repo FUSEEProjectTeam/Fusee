@@ -1,5 +1,6 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Primitives
@@ -70,7 +71,7 @@ namespace Fusee.Engine.Core.Primitives
                 1, 8, 9
             };
 
-            Normals = new float3[] { };
+            Normals = Array.Empty<float3>();
             NormalAndUvHelper.CreateVertexNormals(this);
 
             UVs = new float2[Vertices.Length];

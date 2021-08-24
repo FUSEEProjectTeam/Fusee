@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Starkiller.Core</RootNamespace>
     <PackageId>Fusee.Examples.Starkiller.Core</PackageId>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
