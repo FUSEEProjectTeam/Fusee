@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Fusee.Pointcloud.Reader.LASReader</RootNamespace>
 		<PackageId>Fusee.Pointcloud.Reader.LASReader</PackageId>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net5.0</TargetFramework>
 	</PropertyGroup>
 
 	<PropertyGroup>

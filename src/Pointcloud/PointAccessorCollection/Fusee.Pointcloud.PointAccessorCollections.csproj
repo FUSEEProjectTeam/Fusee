@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Fusee.PointCloud.PointAccessorCollections</RootNamespace>
 		<PackageId>Fusee.PointCloud.PointAccessorCollections</PackageId>
-		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<TargetFramework>net5.0</TargetFramework>
 		<Description>Fusee PointCloud PointAccessorCollections</Description>
 	</PropertyGroup>
 
@@ -19,7 +19,7 @@
 		<ProjectReference Include="..\Common\Fusee.PointCloud.Common.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<ProjectReference Include="..\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj" >
+		<ProjectReference Include="..\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 		<ProjectReference Include="..\Reader\LASReader\Fusee.PointCloud.Reader.LASReader.csproj">
