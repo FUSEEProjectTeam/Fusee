@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.PcRendering.WPF</RootNamespace>
     <PackageId>Fusee.Examples.PcRendering.WPF</PackageId>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>Exe</OutputType>
