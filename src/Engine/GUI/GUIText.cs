@@ -106,7 +106,7 @@ namespace Fusee.Engine.GUI
 
             for (var i = 0; i < LineVertices.Count; i++)
             {
-                var lineWidth = LineVertices[i].Last().x - LineVertices[i][0].x;
+                var lineWidth = LineVertices[i].LastOrDefault().x - LineVertices[i][0].x;
                 switch (HorizontalAlignment)
                 {
                     case HorizontalTextAlignment.Left:

@@ -570,7 +570,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
+        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
@@ -2456,11 +2456,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gBufferRenderTarget.SetEmissiveTex();
 
             return gBufferRenderTarget;
-        }
-
-        public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
-        {
-            throw new NotImplementedException();
         }
 
         public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)

@@ -117,7 +117,7 @@ namespace Fusee.Base.Imp.Android
             //Freetype contours are defined by their end points.
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
 
-            var partTags = new List<byte>();
+            var partTags = new List<bool>();
             var partVerts = new List<float3>();
 
             //Writes points of a freetype contour into a CurvePart,

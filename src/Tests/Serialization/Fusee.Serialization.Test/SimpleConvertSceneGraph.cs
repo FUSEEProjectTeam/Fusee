@@ -16,7 +16,7 @@ namespace Fusee.Test.Serialization.V1
     public class SimpleConvertSceneGraphV1
     {
         [Fact]
-        public void V1_SimpleScene_Convert()
+        public async void V1_SimpleScene_Convert()
         {
             var groundTruth = BuildGroundTruthSceneContainer();
             var gtFlattened = new List<Xene.IComponent>();
@@ -245,7 +245,7 @@ namespace Fusee.Test.Serialization.V1
             }
 
             // Now we are sure the converted FusFile resembles the ground truth SceneContainer. We can deserialize it to test those methods.
-            var FusFileConvertedToGT = FusSceneConverter.ConvertFrom(fusFileFromGroundTruth);
+            var FusFileConvertedToGT = await FusSceneConverter.ConvertFrom(fusFileFromGroundTruth);
             var sceneFileFlattenedAgain = new List<Xene.IComponent>();
             FlattenScene(sceneFileFlattenedAgain, (FusFileConvertedToGT.Children[0]));
 

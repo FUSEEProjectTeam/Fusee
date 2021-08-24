@@ -9,13 +9,10 @@ using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System;
-using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using Path = System.IO.Path;
 
-namespace Fusee.Examples.Simple.Blazor
+namespace Fusee.Examples.Simple.WebAsm
 {
     public class Main : WebAsmBase
     {
@@ -47,11 +44,11 @@ namespace Fusee.Examples.Simple.Blazor
                     Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
-                        if (Path.GetExtension(id).IndexOf("ttf", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                        if (Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
                         {
                             var font = new Base.Core.Font
                             {
-                                _fontImp = await Task.Factory.StartNew(() => new FontImp((Stream)storage)).ConfigureAwait(false)
+                                _fontImp = new FontImp((Stream)storage)
                             };
 
                             return font;

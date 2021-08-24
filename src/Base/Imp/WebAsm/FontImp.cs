@@ -1,25 +1,24 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
-using SharpFontManaged;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Numerics;
-using System.Runtime.InteropServices;
+using SixLabors.Fonts;
+using Font = SixLabors.Fonts.Font;
+using SixLabors.ImageSharp.Drawing.Processing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace Fusee.Base.Imp.WebAsm
 {
     /// <summary>
-    /// Font implementation using SharpFont
-    /// https://github.com/MikePopoloski/SharpFont
-    /// this is NOT the SharpFont freetype wrapper but a C# native library
+    /// Font implementation using SixLabors.Fonts
     /// </summary>
     public class FontImp : IFontImp
     {
 
-        internal FontFace _face;
+        internal Font _font;
+        internal FontCollection _collection;
 
         /// <summary>
         /// Font implementation for WebAsm
@@ -27,7 +26,9 @@ namespace Fusee.Base.Imp.WebAsm
         /// <param name="stream"></param>
         public FontImp(Stream stream)
         {
-            _face = new FontFace(stream);
+            _collection = new FontCollection();
+            _collection.Install(stream);
+
             PixelHeight = 18;
             UseKerning = false;
         }
@@ -37,10 +38,21 @@ namespace Fusee.Base.Imp.WebAsm
         /// </summary>
         public bool UseKerning { get; set; }
 
+        private uint _pixelHeight;
+
         /// <summary>
         /// Gets and sets the currently used pixel height
         /// </summary>
-        public uint PixelHeight { get; set; }
+        public uint PixelHeight
+        {
+            get => _pixelHeight;
+
+            set
+            {
+                _pixelHeight = value;
+                _font = _collection.Families.AsEnumerable().First().CreateFont(_pixelHeight, FontStyle.Regular);
+            }
+        }
 
         /// <summary>
         /// Returns the glyph curve from a given char
@@ -53,31 +65,17 @@ namespace Fusee.Base.Imp.WebAsm
             {
                 CurveParts = new List<CurvePart>()
             };
-            var glyph = _face.GetGlyphUnscaled(new CodePoint((char)c));
-            var orgPointCoords = glyph.Points.Select(pt => new PointF(new Vector2((int)pt.X, (int)pt.Y), pt.Type)).ToArray();
-            var ptTypeAsList = orgPointCoords.Select(pt => pt.Type).ToList();
-            var ptTypeAsByteArray = new List<byte>();
 
-            foreach (var pt in ptTypeAsList)
-            {
-                switch (pt)
-                {
-                    case PointType.OnCurve:
-                        ptTypeAsByteArray.AddRange(new byte[] { 1 });
-                        break;
-                    case PointType.Quadratic:
-                        ptTypeAsByteArray.AddRange(new byte[] { 0 });
-                        break;
-                    case PointType.Cubic:
-                        throw new NotImplementedException("Cubic pattern not yet implemented and/or available (*.TTF)");
-                }
-            }
+            var glyph = _font.GetGlyph((int)c);
 
-            var pointTags = ptTypeAsByteArray.ToArray();
+            //var glyph = _face.GetGlyphUnscaled(new CodePoint((char)c));
+
+            var orgPointCoords = glyph.Instance.ControlPoints.ToArray();
+            var pointTags = glyph.Instance.OnCurves.Select(x => x ? (byte)1 : (byte)0).ToArray();
             if (orgPointCoords == null) return curve;
 
             // Freetype contours are defined by their end points.
-            var curvePartEndPoints = glyph.ContourEndpoints.Select(pt => (short)pt).ToArray();
+            var curvePartEndPoints = glyph.Instance.EndPoints;
 
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
@@ -86,7 +84,7 @@ namespace Fusee.Base.Imp.WebAsm
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
-                if (!curvePartEndPoints.Contains((short)i)) continue;
+                if (!curvePartEndPoints.ToList().Contains((ushort)i)) continue;
 
                 partVerts.Clear();
                 partTags.Clear();
@@ -112,21 +110,17 @@ namespace Fusee.Base.Imp.WebAsm
         {
             GlyphInfo ret;
 
-            var cp = new CodePoint((char)c);
-            var glyph = _face.GetGlyph(cp, PixelHeight);
+            var glyph = _font.GetGlyph((int)c);
 
-            if (glyph == null)
-            {
-                return new GlyphInfo
-                { Height = 1, Width = 1 };
-            }
+            var options = new RendererOptions(_font);
+            FontRectangle size = TextMeasurer.Measure(Convert.ToChar(c).ToString(), options);
 
             ret.CharCode = c;
-            ret.AdvanceX = glyph.HorizontalMetrics.Advance;
-            ret.AdvanceY = glyph.VerticalMetrics.Advance;
+            ret.AdvanceX = size.Width;
+            ret.AdvanceY = 0;
 
-            ret.Width = glyph.Width;
-            ret.Height = glyph.Height;
+            ret.Width = size.Width;
+            ret.Height = size.Height;
 
             return ret;
         }
@@ -140,8 +134,8 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public float GetKerning(uint leftC, uint rightC)
         {
-            var kern = _face.GetKerning(new CodePoint((char)leftC), new CodePoint((char)rightC), PixelHeight);
-            return kern;
+            var offset = _font.Instance.GetOffset(_font.GetGlyph((int)leftC).Instance, _font.GetGlyph((int)rightC).Instance);
+            return offset.X;
         }
 
         /// <summary>
@@ -151,9 +145,8 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
-            var unscaledGlyph = _face.GetGlyphUnscaled(new CodePoint((char)c));
-
-            return unscaledGlyph.Advance;
+            var glyph = _font.Instance.GetGlyph((int)c);
+            return glyph.AdvanceWidth / glyph.ScaleFactor;
         }
 
         /// <summary>
@@ -164,9 +157,12 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC)
         {
-            // TODO: Implement unscaled kerning
-            return _face.GetKerning(new CodePoint((char)leftC), new CodePoint((char)rightC), PixelHeight);
+            var offset = _font.Instance.GetOffset(_font.GetGlyph((int)leftC).Instance, _font.GetGlyph((int)rightC).Instance);
+            var glyph = _font.GetGlyph((int)leftC);
+            return offset.X / glyph.Instance.ScaleFactor;
         }
+
+        private static int cnt = 0;
 
         /// <summary>
         /// Renders a glyph to an IImageData for further use
@@ -177,118 +173,104 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
         {
-            var surface = RenderGlyph(_face, (char)c);
-            var glyph = _face.GetGlyph(new CodePoint((char)c), PixelHeight);
-            var metric = _face.GetFaceMetrics(PixelHeight);
+            var options = new RendererOptions(_font);
+            FontRectangle size = TextMeasurer.Measure(Convert.ToChar(c).ToString(), options);
 
-            var ret = new ImageData(new byte[surface.Height * surface.Width], surface.Width, surface.Height, new ImagePixelFormat(ColorFormat.Intensity));
-
-            bitmapLeft = 0;
-            bitmapTop = 0;
-
-            if (surface.Bits == IntPtr.Zero) return ret;
-
-            var imgBytes = new byte[surface.Height * surface.Width];
-
-            unsafe
+            var drawingOptions = new DrawingOptions
             {
-                var idx = 0;
-
-                for (var y = 0; y < surface.Height; y++)
+                TextOptions = new TextOptions()
                 {
-                    var src = (byte*)surface.Bits + (y * surface.Pitch);
-
-                    for (var x = 0; x < surface.Width; x++)
-                    {
-                        imgBytes[idx++] = *src++;
-                    }
+                    ApplyKerning = options.ApplyKerning,
+                    DpiX = options.DpiX,
+                    DpiY = options.DpiY,
+                    TabWidth = options.TabWidth,
+                    LineSpacing = options.LineSpacing,
+                    HorizontalAlignment = options.HorizontalAlignment,
+                    VerticalAlignment = options.VerticalAlignment,
+                    WrapTextWidth = options.WrappingWidth,
+                    RenderColorFonts = options.ColorFontSupport != ColorFontSupport.None
                 }
-            }
+            };
 
-            ret.PixelData = imgBytes;
 
-            bitmapTop = (int)(glyph.Height + glyph.VerticalMetrics.Bearing.Y);
-            bitmapLeft = 0;
+
+            using var img = CreateImage(drawingOptions, Convert.ToChar(c).ToString(),
+                options.Font, ((int)size.Width) == 0 ? 1 : (int)size.Width, (int)size.Height,
+                options.Origin, Color.Black);
+
+            bitmapLeft = (int)size.Left;
+            bitmapTop = (int)(size.Top);
+
+            img.TryGetSinglePixelSpan(out var res);
+
+            var ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), (int)size.Width, (int)size.Height, new ImagePixelFormat(ColorFormat.Intensity));
 
             return ret;
         }
 
-        private unsafe Surface RenderGlyph(FontFace typeface, char c)
-        {
-            var glyph = typeface.GetGlyph(c, PixelHeight);
-            if (glyph == null)
-            {
-                return new Surface
-                {
-                    Height = 1,
-                    Width = 1
-                };
-            }
 
-            var surface = new Surface
+        private static Image<Rgba32> CreateImage(DrawingOptions options,
+            string text,
+            Font font,
+            int width,
+            int height,
+            Vector2 origin,
+            Color color)
+        {
+            var img = new Image<Rgba32>(width, height);
+            img.Mutate(x => x.Fill(Color.FromRgba(0, 0, 0, 0)));
+            img.Mutate(x => x.DrawText(options, text, font, color, origin));
+
+            return img;
+        }
+    }
+
+
+    internal static class SplitToCurvePartHelper
+    {
+        #region Methods
+
+        public static void CurvePartVertice(CurvePart cp, int j, Vector2[] orgPointCoords, List<float3> partVerts)
+        {
+            var vert = new float3(orgPointCoords[j].X, orgPointCoords[j].Y, 0);
+            partVerts.Add(vert);
+        }
+
+        public static CurvePart CreateCurvePart(Vector2[] orgPointCoords, byte[] pointTags, ushort[] curvePartEndPoints, int i, List<float3> partVerts, List<byte> partTags)
+        {
+            var index = Array.IndexOf(curvePartEndPoints, (short)i);
+            var cp = new CurvePart
             {
-                Bits = Marshal.AllocHGlobal(glyph.RenderWidth * glyph.RenderHeight),
-                Width = glyph.RenderWidth,
-                Height = glyph.RenderHeight,
-                Pitch = glyph.RenderWidth
+                IsClosed = true,
+                CurveSegments = new List<CurveSegment>()
             };
 
-            var stuff = (byte*)surface.Bits;
-
-            for (var i = 0; i < surface.Width * surface.Height; i++)
-                *stuff++ = 0;
-
-            glyph.RenderTo(surface);
-
-            return surface;
-        }
-
-        internal static class SplitToCurvePartHelper
-        {
-            #region Methods
-
-            public static void CurvePartVertice(CurvePart cp, int j, PointF[] orgPointCoords, List<float3> partVerts)
+            //Marginal case - first contour ( 0 to contours[0] ).
+            if (index == 0)
             {
-                var vert = new float3(orgPointCoords[j].P.X, orgPointCoords[j].P.Y, 0);
-                partVerts.Add(vert);
+                for (var j = 0; j <= i; j++)
+                {
+                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    partTags.Add(pointTags[j]);
+                }
+                //The start point is the first point in the outline.Points array.
+                cp.StartPoint = new float3(orgPointCoords[0].X, orgPointCoords[0].Y, 0);
             }
 
-            public static CurvePart CreateCurvePart(PointF[] orgPointCoords, byte[] pointTags, short[] curvePartEndPoints, int i, List<float3> partVerts, List<byte> partTags)
+            //contours[0]+1 to contours[1]
+            else
             {
-                var index = Array.IndexOf(curvePartEndPoints, (short)i);
-                var cp = new CurvePart
+                for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
                 {
-                    IsClosed = true,
-                    CurveSegments = new List<CurveSegment>()
-                };
-
-                //Marginal case - first contour ( 0 to contours[0] ).
-                if (index == 0)
-                {
-                    for (var j = 0; j <= i; j++)
-                    {
-                        CurvePartVertice(cp, j, orgPointCoords, partVerts);
-                        partTags.Add(pointTags[j]);
-                    }
-                    //The start point is the first point in the outline.Points array.
-                    cp.StartPoint = new float3(orgPointCoords[0].P.X, orgPointCoords[0].P.Y, 0);
+                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    partTags.Add(pointTags[j]);
                 }
 
-                //contours[0]+1 to contours[1]
-                else
-                {
-                    for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
-                    {
-                        CurvePartVertice(cp, j, orgPointCoords, partVerts);
-                        partTags.Add(pointTags[j]);
-                    }
-
-                    //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1.
-                    cp.StartPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].P.X, orgPointCoords[curvePartEndPoints[index - 1] + 1].P.Y, 0);
-                }
-                return cp;
+                //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1.
+                cp.StartPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y, 0);
             }
-            #endregion
+            return cp;
         }
+        #endregion
     }
 }

@@ -25,8 +25,8 @@ namespace Fusee.Examples.Simple.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;
+        //private SceneContainer _rocketScene;
+        //private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -50,10 +50,10 @@ namespace Fusee.Examples.Simple.Core
 
 
             // Load the rocket model
-            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("RocketFus.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            //_sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
             _loaded = true;
@@ -126,7 +126,7 @@ namespace Fusee.Examples.Simple.Core
             // Render the scene loaded in Init()
             RC.View = view;
             RC.Projection = perspective;
-            _sceneRenderer.Render(RC);
+            //_sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
 
@@ -178,7 +178,7 @@ namespace Fusee.Examples.Simple.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
+            var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = new TextNode(
                 "FUSEE Simple Example",

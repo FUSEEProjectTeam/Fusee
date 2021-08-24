@@ -263,7 +263,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Base.Imp.WebAsm", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Graphics.WebAsm", "src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj", "{D3115943-7EC8-4476-A746-8BBAF893CAFA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.Blazor", "Examples\Complete\Simple\Blazor\Fusee.Examples.Simple.Blazor.csproj", "{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.WebAsm", "Examples\Complete\Simple\Blazor\Fusee.Examples.Simple.WebAsm.csproj", "{96A0BDEC-A688-405C-B2E6-443F5B1E98D0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SimpleDeferred.Blazor", "Examples\Complete\SimpleDeferred\Blazor\Fusee.Examples.SimpleDeferred.Blazor.csproj", "{4AD5FF81-185A-4650-BB79-47686AF5478F}"
 EndProject
