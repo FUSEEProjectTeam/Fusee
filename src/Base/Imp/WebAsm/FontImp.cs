@@ -9,6 +9,7 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
+
 namespace Fusee.Base.Imp.WebAsm
 {
     /// <summary>
@@ -29,7 +30,7 @@ namespace Fusee.Base.Imp.WebAsm
             _collection = new FontCollection();
             _collection.Install(stream);
 
-            PixelHeight = 18;
+            PixelHeight = 24;
             UseKerning = false;
         }
 
@@ -50,7 +51,7 @@ namespace Fusee.Base.Imp.WebAsm
             set
             {
                 _pixelHeight = value;
-                _font = _collection.Families.AsEnumerable().First().CreateFont(_pixelHeight, FontStyle.Regular);
+                _font = _collection.Families.AsEnumerable().First().CreateFont(_pixelHeight);
             }
         }
 
@@ -58,7 +59,6 @@ namespace Fusee.Base.Imp.WebAsm
         /// Returns the glyph curve from a given char
         /// </summary>
         /// <param name="c"></param>
-        /// <exception cref="NotImplementedException">Throws not implemented exception when called with <see cref="PointType.Cubic"/></exception>
         public Curve GetGlyphCurve(uint c)
         {
             var curve = new Curve
@@ -66,16 +66,20 @@ namespace Fusee.Base.Imp.WebAsm
                 CurveParts = new List<CurvePart>()
             };
 
-            var glyph = _font.GetGlyph((int)c);
+            // don't print space
+            if (c == 32)
+            {
+                return curve;
+            }
 
-            //var glyph = _face.GetGlyphUnscaled(new CodePoint((char)c));
+            var glyph = _font.GetGlyph(Convert.ToChar(c));
 
             var orgPointCoords = glyph.Instance.ControlPoints.ToArray();
             var pointTags = glyph.Instance.OnCurves.Select(x => x ? (byte)1 : (byte)0).ToArray();
             if (orgPointCoords == null) return curve;
 
             // Freetype contours are defined by their end points.
-            var curvePartEndPoints = glyph.Instance.EndPoints;
+            var curvePartEndPoints = glyph.Instance.EndPoints.Select(x => (short)x).ToArray();
 
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
@@ -84,7 +88,7 @@ namespace Fusee.Base.Imp.WebAsm
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
-                if (!curvePartEndPoints.ToList().Contains((ushort)i)) continue;
+                if (!curvePartEndPoints.ToList().Contains((short)i)) continue;
 
                 partVerts.Clear();
                 partTags.Clear();
@@ -110,8 +114,6 @@ namespace Fusee.Base.Imp.WebAsm
         {
             GlyphInfo ret;
 
-            var glyph = _font.GetGlyph((int)c);
-
             var options = new RendererOptions(_font);
             FontRectangle size = TextMeasurer.Measure(Convert.ToChar(c).ToString(), options);
 
@@ -134,7 +136,7 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public float GetKerning(uint leftC, uint rightC)
         {
-            var offset = _font.Instance.GetOffset(_font.GetGlyph((int)leftC).Instance, _font.GetGlyph((int)rightC).Instance);
+            var offset = _font.Instance.GetOffset(_font.GetGlyph(Convert.ToChar(leftC)).Instance, _font.GetGlyph(Convert.ToChar(rightC)).Instance);
             return offset.X;
         }
 
@@ -145,8 +147,8 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
-            var glyph = _font.Instance.GetGlyph((int)c);
-            return glyph.AdvanceWidth / glyph.ScaleFactor;
+            var glyph = _font.Instance.GetGlyph(Convert.ToChar(c));
+            return glyph.AdvanceWidth;
         }
 
         /// <summary>
@@ -157,12 +159,9 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC)
         {
-            var offset = _font.Instance.GetOffset(_font.GetGlyph((int)leftC).Instance, _font.GetGlyph((int)rightC).Instance);
-            var glyph = _font.GetGlyph((int)leftC);
-            return offset.X / glyph.Instance.ScaleFactor;
+            var offset = _font.Instance.GetOffset(_font.GetGlyph(Convert.ToChar(leftC)).Instance, _font.GetGlyph(Convert.ToChar(rightC)).Instance);
+            return offset.X;
         }
-
-        private static int cnt = 0;
 
         /// <summary>
         /// Renders a glyph to an IImageData for further use
@@ -192,18 +191,19 @@ namespace Fusee.Base.Imp.WebAsm
                 }
             };
 
-
+            var width = (int)System.Math.Max(1, System.Math.Round(size.Width));
+            var height = (int)size.Height;
 
             using var img = CreateImage(drawingOptions, Convert.ToChar(c).ToString(),
-                options.Font, ((int)size.Width) == 0 ? 1 : (int)size.Width, (int)size.Height,
+                options.Font, width, height,
                 options.Origin, Color.Black);
 
-            bitmapLeft = (int)size.Left;
-            bitmapTop = (int)(size.Top);
+            bitmapLeft = (int)System.Math.Round(size.Left);
+            bitmapTop = (int)System.Math.Round(size.Top);
 
             img.TryGetSinglePixelSpan(out var res);
 
-            var ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), (int)size.Width, (int)size.Height, new ImagePixelFormat(ColorFormat.Intensity));
+            var ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), width, height, new ImagePixelFormat(ColorFormat.Intensity));
 
             return ret;
         }
@@ -236,7 +236,7 @@ namespace Fusee.Base.Imp.WebAsm
             partVerts.Add(vert);
         }
 
-        public static CurvePart CreateCurvePart(Vector2[] orgPointCoords, byte[] pointTags, ushort[] curvePartEndPoints, int i, List<float3> partVerts, List<byte> partTags)
+        public static CurvePart CreateCurvePart(Vector2[] orgPointCoords, byte[] pointTags, short[] curvePartEndPoints, int i, List<float3> partVerts, List<byte> partTags)
         {
             var index = Array.IndexOf(curvePartEndPoints, (short)i);
             var cp = new CurvePart

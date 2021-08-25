@@ -1,10 +1,12 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace Fusee.Base.Imp.Desktop
 {
@@ -30,23 +32,24 @@ namespace Fusee.Base.Imp.Desktop
         /// <returns>An ImageData object with all necessary information.</returns>
         public static ImageData LoadImage(Stream file)
         {
-            using var bmp = new Bitmap(file);
+            try
+            {
+                using var image = Image.Load<Rgba32>(file);
 
-            //Flip y-axis, otherwise texture would be upside down
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                image.Mutate(x => x.AutoOrient());
+                image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+                image.TryGetSinglePixelSpan(out var res);
+                var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                var ret = new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                        new ImagePixelFormat(ColorFormat.RGBA));
 
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
-            int bytes = strideAbs * bmp.Height;
-
-            var ret = new ImageData(new byte[bytes], bmpData.Width, bmpData.Height,
-                new ImagePixelFormat(ColorFormat.RGBA));
-
-            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
-
-            bmp.UnlockBits(bmpData);
-            return ret;
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.Error($"Error loading/converting image", ex);
+                return null;
+            }
         }
     }
 }
