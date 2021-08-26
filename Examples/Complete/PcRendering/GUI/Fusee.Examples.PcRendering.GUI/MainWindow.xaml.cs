@@ -39,7 +39,7 @@ namespace Fusee.Examples.PcRendering.WPF
         private bool _ssaoStrengthDragStarted;
         private bool _specularStrengthPxDragStarted;
 
-        private Thread _fusThread;
+        private Task _fusTask;
 
         private static readonly Regex numRegex = new Regex("[^0-9.-]+");
 
@@ -329,7 +329,7 @@ namespace Fusee.Examples.PcRendering.WPF
                 SingleColor.IsEnabled = true;
         }
 
-        private async void LoadFile_Button_Click(object sender, RoutedEventArgs e)
+        private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
         {
             string fullPath;
             string path;
@@ -353,7 +353,11 @@ namespace Fusee.Examples.PcRendering.WPF
                 fullPath = ofd.FileName;
                 path = fullPath.Replace(ofd.SafeFileName, "");
 
-                await OpenFusThread(path);
+                app?.CloseGameWindow();
+
+                _ = int.TryParse(PtThreshold.Text, out int th);
+                CreateApp(path, th);
+                RunApp();
 
                 MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
@@ -361,7 +365,6 @@ namespace Fusee.Examples.PcRendering.WPF
                 if (app.GetOocLoaderRootNode() != null) //if RootNode == null no scene was ever initialized
                 {
                     app.DeletePointCloud();
-
                     SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && app.GetOocLoaderWasSceneUpdated() && _isAppInizialized);
                 }
 
@@ -462,99 +465,80 @@ namespace Fusee.Examples.PcRendering.WPF
             return !numRegex.IsMatch(text);
         }
 
-        private async Task OpenFusThread(string pathToFile)
+        private void RunApp()
         {
             InnerGrid.IsEnabled = false;
             _isAppInizialized = false;
 
-            if (app != null && !app.IsAlive)
-                app = null;
-
-            if (_fusThread != null && _fusThread.IsAlive)
+            _fusTask = new Task(() =>
             {
-                try
-                {
-                    app?.CloseGameWindow(); //UI Thread
-                    app = null;
-                }
-                catch (NullReferenceException) { }
-
-                _fusThread.Join();
-            }
-
-            await Task.Run(() =>
-            {
-                _fusThread = new Thread(() =>
-                {
-                    // Inject Fusee.Engine.Base InjectMe dependencies
-                    IO.IOImp = new IOImp();
-
-                    var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
-                    fap.RegisterTypeHandler(
-                        new AssetHandler
-                        {
-                            ReturnedType = typeof(Font),
-                            Decoder = (string id, object storage) =>
-                            {
-                                if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
-                                return new Font { _fontImp = new FontImp((Stream)storage) };
-                            },
-                            Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
-                        });
-                    fap.RegisterTypeHandler(
-                        new AssetHandler
-                        {
-                            ReturnedType = typeof(SceneContainer),
-                            Decoder = (string id, object storage) =>
-                            {
-                                if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
-                            },
-                            Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
-                        });
-
-                    AssetStorage.RegisterProvider(fap);
-
-                    int th = 0;
-                    Application.Current.Dispatcher.Invoke(() =>
-                    {
-                        int.TryParse(PtThreshold.Text, out th);
-                    });
-
-                    var ptType = AppSetupHelper.GetPtType(pathToFile);
-                    var ptEnumName = Enum.GetName(typeof(PointType), ptType);
-
-                    var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
-
-                    var objectType = typeof(PcRendering<>);
-                    var objWithGenType = objectType.MakeGenericType(genericType);
-
-                    app = (IPcRendering)Activator.CreateInstance(objWithGenType);
-                    app.UseWPF = true;
-                    AppSetup.DoSetup(app, AppSetupHelper.GetPtType(pathToFile), th, pathToFile);
-
-                    // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                    System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-                    app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
-                    app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-                    Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
-                    Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
-                    Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
-
-                    app.Run();
-
-                });
-
-                _fusThread.Start();
-
-                SpinWait.SpinUntil(() => app != null && app.IsInitialized);
-
-                Closed += (s, e) => app?.CloseGameWindow();
-
+                app.Run();
             });
+
+            _fusTask.Start();
+
+            SpinWait.SpinUntil(() => app != null && app.IsInitialized);
+
+            Closed += (s, e) => app?.CloseGameWindow();
 
             _isAppInizialized = true;
             InnerGrid.IsEnabled = true;
+        }
+
+        private void CreateApp(string pathToFile, int th)
+        {
+            // Inject Fusee.Engine.Base InjectMe dependencies
+            IO.IOImp = new IOImp();
+
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            fap.RegisterTypeHandler(
+                new AssetHandler
+                {
+                    ReturnedType = typeof(Font),
+                    Decoder = (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
+                    },
+                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
+                });
+            fap.RegisterTypeHandler(
+                new AssetHandler
+                {
+                    ReturnedType = typeof(SceneContainer),
+                    Decoder = (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                    },
+                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
+                });
+
+            AssetStorage.RegisterProvider(fap);
+
+            var ptType = AppSetupHelper.GetPtType(pathToFile);
+            var ptEnumName = Enum.GetName(typeof(PointType), ptType);
+
+            var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
+
+            var objectType = typeof(PcRendering<>);
+            var objWithGenType = objectType.MakeGenericType(genericType);
+
+            app = (IPcRendering)Activator.CreateInstance(objWithGenType);
+
+            app.UseWPF = true;
+            AppSetup.DoSetup(app, AppSetupHelper.GetPtType(pathToFile), th, pathToFile);
+
+            //Inject Fusee.Engine InjectMe dependencies(hard coded)
+            System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon, true);
+            app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
+            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
+            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
+            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
+
+            app.InitCanvas();
+
         }
     }
 }

@@ -117,6 +117,11 @@ namespace Fusee.PointCloud.Common
         void Run();
 
         /// <summary>
+        /// Initializes the canvas for the rendering loop.
+        /// </summary>
+        void InitCanvas();
+
+        /// <summary>
         /// Wrapper to get the app's RenderContext.
         /// </summary>
         /// <returns></returns>

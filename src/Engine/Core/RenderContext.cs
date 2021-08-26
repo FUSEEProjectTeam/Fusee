@@ -1230,21 +1230,20 @@ namespace Fusee.Engine.Core
             if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffects)) throw new ArgumentException("Effect isn't build yet!");
 
             var forwardFx = compiledEffects.ForwardFx;
-            if (forwardFx != null && forwardFx.ActiveUniforms.TryGetValue(name, out FxParam effectParamFw))
+            if (forwardFx != null)
             {
+                var effectParamFw = forwardFx.ActiveUniforms[name];
                 effectParamFw.Value = paramValue;
                 effectParamFw.HasValueChanged = true;
             }
 
             var deferredFx = compiledEffects.DeferredFx;
-            if (deferredFx != null && deferredFx.ActiveUniforms.TryGetValue(name, out FxParam effectParamDf))
+            if (deferredFx != null)
             {
+                var effectParamDf = deferredFx.ActiveUniforms[name];
                 effectParamDf.Value = paramValue;
                 effectParamDf.HasValueChanged = true;
             }
-            //else
-            //    Diagnostics.Warn($"Parameter {name} is declared in Effect but currently not used by the shader."); 
-
         }
 
         /// <summary>
@@ -1253,10 +1252,9 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The Effect.</param>
         internal void RemoveShader(Effect ef)
         {
-            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffect)) return;
-
             _allCompiledEffects.Remove(ef);
 
+            var compiledEffect = _allCompiledEffects[ef];
             if (compiledEffect.ForwardFx != null)
                 _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
 
@@ -1666,15 +1664,10 @@ namespace Fusee.Engine.Core
 
                 foreach (var fxParam in cFx.ActiveUniforms)
                 {
-                    if (!_currentEffect.ParamDecl.TryGetValue(fxParam.Key, out IFxParamDeclaration dcl))
-                    {
-                        Diagnostics.Error(fxParam.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
-                        continue;
-                    }
-
                     // OVERWRITE Values in the Effect with the newest ones from the GlobalFXParams collection.
                     if (GlobalFXParams.TryGetValue(fxParam.Key, out object globalFXValue))
                     {
+                        var dcl = _currentEffect.ParamDecl[fxParam.Key];
                         var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
                         if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
                         {
@@ -1743,15 +1736,10 @@ namespace Fusee.Engine.Core
 
                 foreach (var fxParam in cFx.ActiveUniforms)
                 {
-                    if (!_currentEffect.ParamDecl.TryGetValue(fxParam.Key, out IFxParamDeclaration dcl))
-                    {
-                        Diagnostics.Error(fxParam.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
-                        continue;
-                    }
-
                     // OVERWRITE Values in the Effect with the newest ones from the GlobalFXParams collection.
                     if (GlobalFXParams.TryGetValue(fxParam.Key, out object globalFXValue))
                     {
+                        var dcl = _currentEffect.ParamDecl[fxParam.Key];
                         var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
                         if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
                         {
