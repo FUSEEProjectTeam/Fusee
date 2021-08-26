@@ -76,7 +76,10 @@ namespace Fusee.Examples.Simple.Android
                 var app = new Core.Simple();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                RenderCanvasImp rci = new(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate {
+                    app.InitCanvas();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

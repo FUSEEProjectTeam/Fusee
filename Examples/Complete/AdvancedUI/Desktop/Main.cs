@@ -60,6 +60,8 @@ namespace Fusee.Examples.AdvancedUI.Desktop
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
+            app.InitCanvas();
+
             // Start the app
             app.Run();
         }

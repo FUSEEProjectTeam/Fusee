@@ -78,7 +78,10 @@ namespace Fusee.Examples.MeshingAround.Android
                 var app = new Core.MeshingAround();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate {
+                    app.InitCanvas();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

@@ -63,6 +63,8 @@ namespace Fusee.Examples.PcRendering.Desktop
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
 
+            app.InitCanvas();
+
             // Start the app
             app.Run();
         }

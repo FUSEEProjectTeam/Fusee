@@ -240,7 +240,6 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Run()
         {
-            //InitCanvas();            
             CanvasImplementor.Run();
         }
 
