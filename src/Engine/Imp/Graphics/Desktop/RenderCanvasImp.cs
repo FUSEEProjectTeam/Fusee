@@ -184,6 +184,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
         /// <param name="appIcon">The icon for the render window.</param>
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
@@ -209,15 +210,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             WindowHandle = new WindowHandle()
             {
-                Handle = _gameWindow.Handle
+                Handle = _gameWindow.Context.WindowPtr
             };
 
             _gameWindow.CenterWindow();
-
-            unsafe
-            {
-                GLFW.MakeContextCurrent(null);
-            }
+            _gameWindow.Context.MakeNoneCurrent();
         }
 
         /// <summary>
@@ -225,6 +222,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="width">The width of the render window.</param>
         /// <param name="height">The height of the render window.</param>
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <remarks>The window created by this constructor is not visible. Should only be used for internal testing.</remarks>
         public RenderCanvasImp(int width, int height, bool isMultithreaded = false)
         {
@@ -239,7 +237,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             WindowHandle = new WindowHandle()
             {
-                Handle = _gameWindow.Handle
+                Handle = _gameWindow.Context.WindowPtr
             };
 
             _gameWindow.IsVisible = false;
@@ -328,13 +326,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Closes the GameWindow with a call to OpenTk.
         /// </summary>
-        public unsafe void CloseGameWindow()
+        public void CloseGameWindow()
         {
             if (_gameWindow != null)
             {
-                GameWindow.Close();
-                GameWindow.ProcessEvents();
-                GameWindow.Dispose();
+                _gameWindow.Close();
+                _gameWindow.ProcessEvents();
+                _gameWindow.Dispose();
             }
         }
 
@@ -382,7 +380,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (_gameWindow != null)
             {
-                _gameWindow.MakeCurrent();
                 _gameWindow.Run();
             }
         }
@@ -534,19 +531,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     GL.Disable(EnableCap.Blend);
                 }
-            }
-        }
-
-        public IntPtr Handle
-        {
-            get
-            {
-                IntPtr hwnd;
-                unsafe
-                {
-                    hwnd = this.Context.WindowPtr;
-                }
-                return hwnd;
             }
         }
 

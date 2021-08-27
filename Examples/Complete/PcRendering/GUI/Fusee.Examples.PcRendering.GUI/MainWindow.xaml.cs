@@ -329,7 +329,12 @@ namespace Fusee.Examples.PcRendering.WPF
                 SingleColor.IsEnabled = true;
         }
 
-        private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
+        private async Task CloseApp()
+        {
+            app?.CloseGameWindow();
+        }
+
+        private async void LoadFile_Button_Click(object sender, RoutedEventArgs e)
         {
             string fullPath;
             string path;
@@ -352,11 +357,13 @@ namespace Fusee.Examples.PcRendering.WPF
 
                 fullPath = ofd.FileName;
                 path = fullPath.Replace(ofd.SafeFileName, "");
-
-                app?.CloseGameWindow();
+                
+                await CloseApp();
 
                 _ = int.TryParse(PtThreshold.Text, out int th);
-                CreateApp(path, th);
+
+                await CreateApp(path, th);
+
                 RunApp();
 
                 MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
@@ -485,12 +492,12 @@ namespace Fusee.Examples.PcRendering.WPF
             InnerGrid.IsEnabled = true;
         }
 
-        private void CreateApp(string pathToFile, int th)
+        private async Task CreateApp(string pathToFile, int th)
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            var fap = new FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
