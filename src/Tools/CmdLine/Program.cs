@@ -29,7 +29,7 @@ namespace Fusee.Tools.CmdLine
                 .WithParsed<Publish>(publish =>
                 {
                     publish.Run();
-                })              
+                })
                 .WithParsed<Verbs.Convert>(convert =>
                 {
                     convert.Run();

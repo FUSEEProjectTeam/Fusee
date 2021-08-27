@@ -261,7 +261,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                 writer.WriteStartArray();
                 writer.WriteNumberValue(value.x);
                 writer.WriteNumberValue(value.y);
-                writer.WriteEndArray();             
+                writer.WriteEndArray();
             }
         }
 
