@@ -116,18 +116,18 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         private float _deltaTimeSinceLastUpdate;
 
-        private Dictionary<Guid, SceneNode> _nodesToRender;                                                                         // Visible AND loaded nodes - updated per traversal. Created from _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded);
+        private Dictionary<Guid, SceneNode> _nodesToRender;                                             // Visible AND loaded nodes - updated per traversal. Created from _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded);
 
-        private ConcurrentDictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                                                         // Visible AND loaded meshes.
+        private ConcurrentDictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                             // Visible AND loaded meshes.
 
-        private SortedDictionary<double, SceneNode> _nodesOrderedByProjectionSize;                                                  // For traversal purposes only.
-        private Dictionary<Guid, SceneNode> _determinedAsVisible = new Dictionary<Guid, SceneNode>();                               // All visible nodes in screen projected size order - cleared in every traversal.
-        
-        private readonly Dictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded = new Dictionary<Guid, SceneNode>();           // Visible but unloaded nodes - cleared in every traversal.
-        private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new ConcurrentDictionary<Guid, SceneNode>();   //nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
+        private SortedDictionary<double, SceneNode> _nodesOrderedByProjectionSize;                      // For traversal purposes only.
+        private Dictionary<Guid, SceneNode> _determinedAsVisible = new();                               // All visible nodes in screen projected size order - cleared in every traversal.
 
-        private readonly WireframeCube wfc = new WireframeCube();
-        private readonly DefaultSurfaceEffect _wfcEffect = (DefaultSurfaceEffect)MakeEffect.Default();
+        private readonly Dictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded = new();           // Visible but unloaded nodes - cleared in every traversal.
+        private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new();             //nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
+
+        private readonly WireframeCube wfc = new();
+        private readonly DefaultSurfaceEffect _wfcEffect;
         private readonly int _sceneUpdateTime = 300; // in ms
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
@@ -142,11 +142,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <param name="getMeshsForNode">Encapsulates a method that has a <see cref="PointAccessor{TPoint}"/>, and a list of point cloud points and as parameters. Returns a collection of <see cref="Mesh"/>es for a Octant.</param>
         public PtOctantLoader(string fileFolderPath, RenderContext rc, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> getMeshsForNode)
         {
+            RC = rc;
             _nodesToRender = new Dictionary<Guid, SceneNode>();
             _loadedMeshs = new ConcurrentDictionary<Guid, IEnumerable<Mesh>>();
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;
             _getMeshsForNode = getMeshsForNode;
-            RC = rc;
+            _wfcEffect = (DefaultSurfaceEffect)RC.DefaultEffect;
 
             FileFolderPath = fileFolderPath;
 

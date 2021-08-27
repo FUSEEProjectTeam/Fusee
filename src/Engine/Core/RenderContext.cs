@@ -114,6 +114,11 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<Effect, CompiledEffects> _allCompiledEffects = new();
 
         /// <summary>
+        /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
+        /// </summary>
+        public SurfaceEffect DefaultEffect;
+
+        /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.
         /// </summary>
         private Effect _currentEffect;
@@ -783,6 +788,7 @@ namespace Fusee.Engine.Core
         {
             _rci = rci;
             DefaultState = new RenderContextDefaultState();
+            DefaultEffect = MakeEffect.Default();
             GlobalFXParams = new Dictionary<string, object>();
 
             SetGlobalEffectParam(UniformNameDeclarations.FuseePlatformId, _rci.FuseePlatformId);
