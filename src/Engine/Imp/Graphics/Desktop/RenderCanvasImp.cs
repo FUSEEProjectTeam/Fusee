@@ -332,14 +332,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             if (_gameWindow != null)
             {
-                _gameWindow.ProcessEvents();
-                _gameWindow.Close();
-                _gameWindow.Dispose();
-
-                // Somehow NativeWindow.DestroyWindow() is never called when OpenTK.CloseWindow() is called
-                // from an WPF app, see: Fusee.WpfIntegration in combination with Fusee.Examples.*.WfpFamebuffer or PcRendering.WPF
-                // https://github.com/opentk/opentk/blob/master/src/OpenTK.Windowing.Desktop/NativeWindow.cs#L1091
-                // Possible life-time problems?
+                GameWindow.Close();
+                GameWindow.ProcessEvents();
+                GameWindow.Dispose();
             }
         }
 
