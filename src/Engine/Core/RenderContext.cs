@@ -1773,7 +1773,6 @@ namespace Fusee.Engine.Core
             {
                 throw new Exception("Error while rendering pass ", ex);
             }
-
         }
 
         #endregion

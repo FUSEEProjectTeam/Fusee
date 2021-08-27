@@ -1,7 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {

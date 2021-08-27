@@ -241,6 +241,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             };
 
             _gameWindow.IsVisible = false;
+            _gameWindow.Context.MakeNoneCurrent();
         }
 
         /// <summary>
@@ -342,7 +343,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public void Present()
         {
-            if (_gameWindow != null)
+            if (!_gameWindow.IsExiting)
                 _gameWindow.SwapBuffers();
         }
 
@@ -378,7 +379,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public void Run()
         {
-            if (_gameWindow != null)
+            if (!_gameWindow.IsExiting)
             {
                 _gameWindow.Run();
             }

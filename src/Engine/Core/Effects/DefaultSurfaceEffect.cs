@@ -1,5 +1,6 @@
-﻿using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Effects
@@ -8,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     /// The default <see cref="Effect"/>, that is used if no other Effect is found.
     /// Provides properties to change the Diffuse Color, Specular Color, Specular Intensity and Specular Shininess.
     /// </summary>
-    public class DefaultSurfaceEffect : SurfaceEffect
+    public class DefaultSurfaceEffect : SurfaceEffect, IDisposable
     {
         #region Matrices
 
@@ -35,6 +36,8 @@ namespace Fusee.Engine.Core.Effects
 
         #endregion
 
+        private bool _disposed;
+
         /// <summary>
         /// Creates a new instance of type DefaultSurfaceEffect.
         /// </summary>
@@ -52,6 +55,28 @@ namespace Fusee.Engine.Core.Effects
             FUSEE_ITMV = float4x4.Identity;
             FUSEE_MVP = float4x4.Identity;
             HandleFieldsAndProps();
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+                //FUSEE_ITMV = null;
+                //FUSEE_MV = null;
+                //FUSEE_MVP = null;
+            }
+            _disposed = true;
         }
     }
 }

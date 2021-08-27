@@ -12,8 +12,9 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A surface effect contains information to build a shader program 
     /// </summary>
-    public abstract class SurfaceEffect : Effect
+    public abstract class SurfaceEffect : Effect, IDisposable
     {
+        private bool _disposed;
         internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new();
         internal readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new();
         internal readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new();
@@ -619,6 +620,27 @@ namespace Fusee.Engine.Core.Effects
             GetType().GetMethod("SetFxParam")
             .MakeGenericMethod(args.Type)
             .Invoke(this, new object[] { memberName + "." + args.Name, args.Value });
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
+
+            if (_disposed)
+                return;
+
+            if (disposing)
+            {
+
+            }
+
+            _disposed = true;
         }
 
         private PropertyInfo[] GetPublicProperties(Type type)

@@ -357,12 +357,12 @@ namespace Fusee.Examples.PcRendering.WPF
 
                 fullPath = ofd.FileName;
                 path = fullPath.Replace(ofd.SafeFileName, "");
-                
-                await CloseApp();
+
+                app?.CloseGameWindow();
 
                 _ = int.TryParse(PtThreshold.Text, out int th);
 
-                await CreateApp(path, th);
+                CreateApp(path, th);
 
                 RunApp();
 
@@ -492,7 +492,7 @@ namespace Fusee.Examples.PcRendering.WPF
             InnerGrid.IsEnabled = true;
         }
 
-        private async Task CreateApp(string pathToFile, int th)
+        private void CreateApp(string pathToFile, int th)
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();

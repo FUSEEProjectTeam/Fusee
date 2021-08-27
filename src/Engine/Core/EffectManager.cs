@@ -66,12 +66,11 @@ namespace Fusee.Engine.Core
             while (_effectsToBeDeleted.Count > 0)
             {
                 var tmPop = _effectsToBeDeleted.Pop();
-                // remove one Effect from _allEffects
+                // Remove one Effect from _allEffects
                 _allEffects.Remove(tmPop.SessionUniqueIdentifier);
                 // Remove one Effect from Memory
                 _rc.RemoveShader(tmPop);
             }
         }
-
     }
 }
