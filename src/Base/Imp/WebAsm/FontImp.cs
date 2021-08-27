@@ -9,7 +9,6 @@ using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 
-
 namespace Fusee.Base.Imp.WebAsm
 {
     /// <summary>
@@ -17,7 +16,6 @@ namespace Fusee.Base.Imp.WebAsm
     /// </summary>
     public class FontImp : IFontImp
     {
-
         internal Font _font;
         internal FontCollection _collection;
 
@@ -29,17 +27,14 @@ namespace Fusee.Base.Imp.WebAsm
         {
             _collection = new FontCollection();
             _collection.Install(stream);
-
-            PixelHeight = 24;
-            UseKerning = false;
         }
 
         /// <summary>
         /// Use kerning
         /// </summary>
-        public bool UseKerning { get; set; }
+        public bool UseKerning { get; set; } = false;
 
-        private uint _pixelHeight;
+        private uint _pixelHeight = 24;
 
         /// <summary>
         /// Gets and sets the currently used pixel height
@@ -167,8 +162,14 @@ namespace Fusee.Base.Imp.WebAsm
         /// Renders a glyph to an IImageData for further use
         /// </summary>
         /// <param name="c"></param>
-        /// <param name="bitmapLeft"></param>
-        /// <param name="bitmapTop"></param>
+        /// <param name="bitmapLeft">
+        ///     The x-Bearing of the glyph on the bitmap (in pixels). The number of pixels from the left border of the image 
+        ///     to the leftmost pixel of the glyph within the rendered image.
+        /// </param>
+        /// <param name="bitmapTop">
+        ///     The y-Bearing of the glyph on the bitmap (in pixels). The number of pixels from the character's origin 
+        ///     (base line) of the image to the topmost pixel of the glyph within the rendered image.
+        /// </param>
         /// <returns></returns>
         public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
         {
@@ -179,7 +180,7 @@ namespace Fusee.Base.Imp.WebAsm
             {
                 TextOptions = new TextOptions()
                 {
-                    ApplyKerning = options.ApplyKerning,
+                    ApplyKerning = UseKerning,
                     DpiX = options.DpiX,
                     DpiY = options.DpiY,
                     TabWidth = options.TabWidth,
@@ -192,14 +193,14 @@ namespace Fusee.Base.Imp.WebAsm
             };
 
             var width = (int)System.Math.Max(1, System.Math.Round(size.Width));
-            var height = (int)size.Height;
+            var height = (int)System.Math.Max(1, size.Height);
 
             using var img = CreateImage(drawingOptions, Convert.ToChar(c).ToString(),
                 options.Font, width, height,
                 options.Origin, Color.Black);
 
-            bitmapLeft = (int)System.Math.Round(size.Left);
-            bitmapTop = (int)System.Math.Round(size.Top);
+            bitmapLeft = (int)size.Left;
+            bitmapTop = -(int)size.Top;
 
             img.TryGetSinglePixelSpan(out var res);
 
@@ -274,3 +275,4 @@ namespace Fusee.Base.Imp.WebAsm
         #endregion
     }
 }
+
