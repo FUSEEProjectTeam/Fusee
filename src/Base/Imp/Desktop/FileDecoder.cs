@@ -1,14 +1,12 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.ColorSpaces.Conversion;
 
 namespace Fusee.Base.Imp.Desktop
 {
@@ -75,9 +73,6 @@ namespace Fusee.Base.Imp.Desktop
                         }
                     case 48:
                         {
-                            var rgba = image as Image<Rgba32>;
-                            var bgra = rgba.CloneAs<Bgra32>();
-
                             (image as Image<Rgb48>).TryGetSinglePixelSpan(out var res);
                             var resBytes = MemoryMarshal.AsBytes<Rgb48>(res.ToArray());
                             return new ImageData(resBytes.ToArray(), image.Width, image.Height,
