@@ -1,10 +1,14 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
-using System.Drawing;
-using System.Drawing.Imaging;
+using SixLabors.ImageSharp;
+using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using SixLabors.ImageSharp.Formats;
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
 
 namespace Fusee.Base.Imp.Desktop
 {
@@ -30,23 +34,71 @@ namespace Fusee.Base.Imp.Desktop
         /// <returns>An ImageData object with all necessary information.</returns>
         public static ImageData LoadImage(Stream file)
         {
-            using var bmp = new Bitmap(file);
+            try
+            {
+                using var image = Image.Load(file, out var imgFormat);
 
-            //Flip y-axis, otherwise texture would be upside down
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+                image.Mutate(x => x.AutoOrient());
+                image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
 
-            BitmapData bmpData = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
-            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
-            int bytes = strideAbs * bmp.Height;
 
-            var ret = new ImageData(new byte[bytes], bmpData.Width, bmpData.Height,
-                new ImagePixelFormat(ColorFormat.RGBA));
+                var bpp = image.PixelType.BitsPerPixel;
 
-            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
+                switch (image.PixelType.BitsPerPixel)
+                {
+                    case 16:
+                        {
+                            (image as Image<Rg32>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.Depth16));
+                        }
+                    case 24:
+                        {
+                            var rgb = image as Image<Rgb24>;
+                            var bgr = rgb.CloneAs<Bgr24>();
 
-            bmp.UnlockBits(bmpData);
-            return ret;
+                            bgr.TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Bgr24>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.RGB));
+                        }
+                    case 32:
+                        {
+                            var rgba = image as Image<Rgba32>;
+                            var bgra = rgba.CloneAs<Bgra32>();
+
+                            bgra.TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Bgra32>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.RGBA));
+                        }
+                    case 48:
+                        {
+                            var rgba = image as Image<Rgba32>;
+                            var bgra = rgba.CloneAs<Bgra32>();
+
+                            (image as Image<Rgb48>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rgb48>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.fRGB32));
+                        }
+                    case 64:
+                        {
+                            (image as Image<Rgba64>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rgba64>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.fRGBA32));
+                        }
+                    default:
+                        throw new ArgumentException($"{bpp} Bits per pixel not supported!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.Error($"Error loading/converting image", ex);
+                return null;
+            }
         }
     }
 }
