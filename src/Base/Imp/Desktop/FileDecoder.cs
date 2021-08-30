@@ -46,8 +46,8 @@ namespace Fusee.Base.Imp.Desktop
                 {
                     case 16:
                         {
-                            (image as Image<Rg32>).TryGetSinglePixelSpan(out var res);
-                            var resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
+                            (image as Image<L16>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<L16>(res.ToArray());
                             return new ImageData(resBytes.ToArray(), image.Width, image.Height,
                                 new ImagePixelFormat(ColorFormat.Depth16));
                         }
