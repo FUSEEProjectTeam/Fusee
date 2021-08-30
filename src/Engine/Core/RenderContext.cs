@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
     /// many similarities in this class' methods and properties.
     /// </summary>
-    public class RenderContext
+    public class RenderContext : IDisposable
     {
         /// <summary>
         /// The color to use when clearing the color buffer.
@@ -1786,6 +1786,32 @@ namespace Fusee.Engine.Core
             Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
             Projection = DefaultState.Projection;
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool disposed;
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!disposed)
+            {
+                _effectManager.Dispose();
+                _textureManager.Dispose();
+                _meshManager.Dispose();
+
+                // Note disposing has been done.
+                disposed = true;
+            }
+        }
+
+        ~RenderContext()
+        {
+            Dispose(disposing: false);
         }
     }
 }

@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Members       
+        #region Members
 
         /// <summary>
         ///     Gets the name of the app.
@@ -282,11 +282,12 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Closes the GameWindow with a call to OpenTK.
+        /// Closes the GameWindow with a call to OpenTK.
         /// </summary>
         public void CloseGameWindow()
         {
             CanvasImplementor.CloseGameWindow();
+            RC.Dispose();
         }
 
         #endregion

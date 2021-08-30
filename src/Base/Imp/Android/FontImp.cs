@@ -14,10 +14,11 @@ namespace Fusee.Base.Imp.Android
     /// </summary>
     public class FontImp : IFontImp
     {
-        internal static Library _sharpFont;
+        internal Library _sharpFont;
         internal Face _face;
         internal uint _pixelHeight;
         private bool _useKerning;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontImp"/> class. 
@@ -38,7 +39,6 @@ namespace Fusee.Base.Imp.Android
             _face = _sharpFont.NewMemoryFace(fileArray, 0);
             _useKerning = false;
         }
-
 
         /// <summary>
         /// Gets and sets a value indicating whether the kerning definition of a font should be used.
@@ -218,6 +218,35 @@ namespace Fusee.Base.Imp.Android
             var rightInx = _face.GetCharIndex(rightC);
 
             return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _sharpFont.Dispose();
+                    _face.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        // Use interop to call the method necessary
+        // to clean up the unmanaged resource.
+        [System.Runtime.InteropServices.DllImport("Kernel32")]
+        private extern static Boolean CloseHandle(IntPtr handle);
+
+        ~FontImp()
+        {
+            Dispose(false);
         }
     }
 

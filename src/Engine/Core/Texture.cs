@@ -208,20 +208,40 @@ namespace Fusee.Engine.Core
             return _imageData.ScanLines(xSrc, ySrc, width, height);
         }
 
+        private bool disposedValue; // To detect redundant calls
+
         /// <summary>
-        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// Fire dispose mesh event
         /// </summary>
-        public void Dispose()
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
         {
-            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+                }
+
+                disposedValue = true;
+            }
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire TextureChanged event.
+        /// Fire dispose mesh event
+        /// </summary>
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose()"/> in order to fire TextureChanged event.
         /// </summary>
         ~Texture()
         {
-            Dispose();
+            Dispose(true);
         }
 
         /// <summary>
