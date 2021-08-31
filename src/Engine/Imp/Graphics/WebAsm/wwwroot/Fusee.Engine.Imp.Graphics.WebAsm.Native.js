@@ -7,6 +7,17 @@ window.init = (instance) => {
     window.addEventListener("keydown", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnKeyDown', evt.keyCode); });
     window.addEventListener("keyup", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnKeyUp', evt.keyCode); });
 
+    window.addEventListener("resize", (evt) => {
+
+        const w = document.documentElement.clientWidth;
+        const h = document.documentElement.clientHeight;
+
+        cvs.width = w;
+        cvs.height = h;
+
+        DotNet.invokeMethod('Fusee.Base.Imp.WebAsm', 'OnResize', w, h);
+
+    });
 
     cvs.addEventListener("mousedown", (evt) => DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnMouseDown', evt.button));
     cvs.addEventListener("mouseup", (evt) => DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnMouseUp', evt.button));
@@ -20,6 +31,11 @@ window.init = (instance) => {
     cvs.addEventListener("touchmove", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchMove', evt); });
     cvs.addEventListener("touchcancel", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchCancel', evt); });
     cvs.addEventListener("touchend", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchEnd', evt); });
+
+
+    // Loading and installation of event listener complete, hide loading overlay
+    // Loading complete, hide loading overlay
+    document.getElementById("LoadingOverlay").hidden = true;
 };
 
 function getClearColor() {

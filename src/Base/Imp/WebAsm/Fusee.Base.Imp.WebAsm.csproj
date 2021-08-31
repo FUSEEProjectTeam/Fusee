@@ -7,7 +7,7 @@
         <Nullable>disable</Nullable>
         <Platforms>AnyCPU</Platforms>
         <DefineConstants>$(DefineConstants);PLATFORM_WASM</DefineConstants>
-        <RunAOTCompilation>false</RunAOTCompilation>
+        <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
     
     <PropertyGroup>

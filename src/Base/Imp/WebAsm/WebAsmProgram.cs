@@ -24,7 +24,7 @@ namespace Fusee.Base.Imp.WebAsm
         private static string divCanvasName;
         private static string canvasName;
 
-        private Fusee.Base.Imp.WebAsm.WebAsmBase mainExecutable;
+        private static Fusee.Base.Imp.WebAsm.WebAsmBase mainExecutable;
 
         /// <summary>
         /// Starts the WASM program
@@ -53,7 +53,7 @@ namespace Fusee.Base.Imp.WebAsm
             divCanvasName = "div_canvas";
             canvasName = "canvas";
 
-            using var window = Runtime.GetGlobalObject<IJSInProcessObjectReference>("window");
+            using var window = Runtime.GetGlobalObject<IJSInProcessObjectReference>("window");          
 
             var windowWidth = window.GetObjectProperty<int>(runtime, "innerWidth");
             var windowHeight = window.GetObjectProperty<int>(runtime, "innerHeight");
@@ -62,77 +62,13 @@ namespace Fusee.Base.Imp.WebAsm
             mainExecutable.Init(canvas, runtime, CanvasColor);
             mainExecutable.Run();
 
-            // TODO: Implement in javascript
-            //AddEnterFullScreenHandler();
-            //AddResizeHandler();
-
             RequestAnimationFrame();
         }
 
-        private void AddResizeHandler()
+        [JSInvokable]
+        public static void OnResize(int newX, int newY)
         {
-            using var window = Runtime.GetGlobalObject<IJSInProcessObjectReference>("window");
-            window.InvokeVoid("addEventListener", "resize", new Action<IJSInProcessObjectReference>((o) =>
-            {
-                using (var d = Runtime.GetGlobalObject<IJSInProcessObjectReference>("document"))
-                using (var w = Runtime.GetGlobalObject<IJSInProcessObjectReference>("window"))
-                {
-                    using var canvasObject = d.Invoke<IJSInProcessObjectReference>("getElementById", canvasName);
-
-                    var windowWidth = w.GetObjectProperty<int>("innerWidth");
-                    var windowHeight = w.GetObjectProperty<int>("innerHeight");
-
-                    var cobj = canvasObject.GetObjectProperty<string>("id");
-
-                    canvasObject.SetObjectProperty("width", windowWidth);
-                    canvasObject.SetObjectProperty("height", windowHeight);
-                    // call fusee resize
-                    mainExecutable.Resize(windowWidth, windowHeight);
-                }
-
-                o.Dispose();
-            }), false);
-        }
-
-        private void RequestFullscreen(IJSInProcessObjectReference canvas)
-        {
-            if (canvas.GetObjectProperty<IJSInProcessObjectReference>("requestFullscreen") != null)
-                canvas.InvokeVoid("requestFullscreen");
-            if (canvas.GetObjectProperty<IJSInProcessObjectReference>("webkitRequestFullscreen") != null)
-                canvas.InvokeVoid("webkitRequestFullscreen");
-            if (canvas.GetObjectProperty<IJSInProcessObjectReference>("msRequestFullscreen") != null)
-                canvas.InvokeVoid("msRequestFullscreen");
-
-        }
-
-        private void AddEnterFullScreenHandler()
-        {
-            using var canvas = Runtime.GetGlobalObject<IJSInProcessObjectReference>(canvasName);
-            canvas.InvokeVoid("addEventListener", "dblclick", new Action<IJSInProcessObjectReference>((o) =>
-           {
-               using var d = Runtime.GetGlobalObject<IJSInProcessObjectReference>("document");
-
-               var canvasObject = d.Invoke<IJSInProcessObjectReference>("getElementById", canvasName);
-
-               RequestFullscreen(canvasObject);
-
-               var width = canvasObject.GetObjectProperty<int>("clientWidth");
-               var height = canvasObject.GetObjectProperty<int>("clientHeight");
-
-               SetNewCanvasSize(canvasObject, width, height);
-
-               // call fusee resize
-               mainExecutable.Resize(width, height);
-
-
-               o.Dispose();
-           }), false);
-        }
-
-        private void SetNewCanvasSize(IJSInProcessObjectReference canvasObject, int newWidth, int newHeight)
-        {
-            canvasObject.SetObjectProperty("width", newWidth);
-            canvasObject.SetObjectProperty("height", newHeight);
+            mainExecutable?.Resize(newX, newY);
         }
 
         [JSInvokable]
@@ -144,7 +80,6 @@ namespace Fusee.Base.Imp.WebAsm
             mainExecutable.Update(elapsedMilliseconds);
             mainExecutable.Draw();
         }
-
 
         private void RequestAnimationFrame()
         {

@@ -6,6 +6,7 @@
 
 @code
 {
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -17,6 +18,9 @@
             var main = new Main();
             program.Start(main, (IJSInProcessRuntime)JS);
         }
+
+
+
         await base.OnAfterRenderAsync(firstRender);
     }
 }

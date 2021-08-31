@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
+        public static async Task<SceneContainer> ConvertFrom(FusFile fus, string id = null)
         {
             if (fus == null)
             {
@@ -85,9 +85,9 @@ namespace Fusee.Engine.Core
 
             var converted = instance.Convert(payload);
 
-            //await Task.WhenAll(instance.AllEffects).Result;
+            await Task.WhenAll(instance.AllEffects);
 
-            instance.AllEffects.ForEach(x => { if(!x.IsCompletedSuccessfully) System.Console.WriteLine($"Texture failed: {x.Status}"); });
+            instance.AllEffects.ForEach(x => { if (!x.IsCompletedSuccessfully) System.Console.WriteLine($"Texture failed: {x.Status}"); });
 
             converted.Header = new SceneHeader
             {
