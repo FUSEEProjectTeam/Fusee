@@ -208,7 +208,7 @@ namespace Fusee.Engine.Core
             return _imageData.ScanLines(xSrc, ySrc, width, height);
         }
 
-        private bool disposedValue; // To detect redundant calls
+        private bool _disposed;
 
         /// <summary>
         /// Fire dispose mesh event
@@ -216,14 +216,14 @@ namespace Fusee.Engine.Core
         /// <param name="disposing"></param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposed)
             {
                 if (disposing)
                 {
                     TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
                 }
 
-                disposedValue = true;
+                _disposed = true;
             }
         }
 
