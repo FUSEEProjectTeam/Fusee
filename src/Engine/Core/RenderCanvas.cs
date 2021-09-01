@@ -68,6 +68,28 @@ namespace Fusee.Engine.Core
         #region Members
 
         /// <summary>
+        /// Used to inject functionallity that is ment to be executed when the application is shutting down.
+        /// </summary>
+        public event EventHandler<EventArgs> ApplicationIsShuttingDown;
+
+        /// <summary>
+        /// Used to stop the rendering process when the application is shutting down.
+        /// Needed when the creation and running of an application are executed in different threads.
+        /// Will invoke <see cref="ApplicationIsShuttingDown"/>.
+        /// </summary>
+        public bool IsShuttingDown
+        {
+            get { return _isShuttingDown; }
+            private set
+            {
+                _isShuttingDown = value;
+                if (_isShuttingDown)
+                    ApplicationIsShuttingDown.Invoke(this, new EventArgs());
+            }
+        }
+        private bool _isShuttingDown;
+
+        /// <summary>
         ///     Gets the name of the app.
         /// </summary>
         /// <returns>Name of the app as string.</returns>
@@ -141,10 +163,15 @@ namespace Fusee.Engine.Core
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
             CanvasImplementor.Init += delegate { Init(); };
-            CanvasImplementor.UnLoad += delegate { DeInit(); };
+            CanvasImplementor.UnLoad += delegate
+            {
+                DeInit();
+            };
 
             CanvasImplementor.Render += delegate
             {
+                if (IsShuttingDown) return;
+
                 // pre-rendering
                 Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
@@ -161,6 +188,7 @@ namespace Fusee.Engine.Core
 
             CanvasImplementor.Resize += delegate
             {
+                if (IsShuttingDown) return;
                 RC.DefaultState.CanvasWidth = Width;
                 RC.DefaultState.CanvasHeight = Height;
                 Resize(new ResizeEventArgs(Width, Height));
@@ -286,6 +314,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CloseGameWindow()
         {
+            IsShuttingDown = true;
             CanvasImplementor.CloseGameWindow();
             RC.Dispose();
         }
