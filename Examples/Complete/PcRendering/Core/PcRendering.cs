@@ -11,6 +11,7 @@ using Fusee.PointCloud.Common;
 using Fusee.PointCloud.OoCReaderWriter;
 using Fusee.PointCloud.PointAccessorCollections;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
@@ -21,7 +22,7 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Point Cloud Viewer")]
     public class PcRendering<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
     {
-        public AppSetupHelper.AppSetupDelegate AppSetup;
+        public AppSetupHelper.AppSetupDelegate AppSetupDel;
 
         public PtOctantLoader<TPoint> OocLoader { get; set; }
 
@@ -70,6 +71,19 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
+        public bool ClosingRequested 
+        { 
+            get
+            {
+                return _closingRequested;
+            }
+            set
+            {
+                _closingRequested = value;
+            }
+        }
+        private bool _closingRequested;
+
         private bool _isTexInitialized = false;
 
         private Texture _octreeTex;
@@ -83,13 +97,6 @@ namespace Fusee.Examples.PcRendering.Core
 
         private SixDOFDevice _spaceMouse;
 
-        // Init is called on startup. 
-
-        public void InitCanvas()
-        {
-            base.InitCanvas();
-        }
-
         public override void Init()
         {
             _spaceMouse = Input.GetDevice<SixDOFDevice>();
@@ -97,7 +104,11 @@ namespace Fusee.Examples.PcRendering.Core
             _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
             IsAlive = true;
-            AppSetup();
+            AppSetupDel();
+
+            ApplicationIsShuttingDown += (object sender, EventArgs e) => { 
+                OocLoader.IsShuttingDown = true; 
+            };
 
             _scene = new SceneContainer
             {
@@ -155,6 +166,12 @@ namespace Fusee.Examples.PcRendering.Core
         public override void RenderAFrame()
         {
             ReadyToLoadNewFile = false;
+
+            if (_closingRequested)
+            {
+                ReadyToLoadNewFile = true;
+                return;
+            }
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -245,11 +262,11 @@ namespace Fusee.Examples.PcRendering.Core
 
                 //----------------------------  
 
-                if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
+                if (PtRenderingParams.Instance.CalcSSAO || PtRenderingParams.Instance.Lighting != Lighting.Unlit)
                 {
                     //Render Depth-only pass
                     _scene.Children[1].RemoveComponent<ShaderEffect>();
-                    _scene.Children[1].Components.Insert(1, PtRenderingParams.DepthPassEf);
+                    _scene.Children[1].Components.Insert(1, PtRenderingParams.Instance.DepthPassEf);
 
                     _cam.RenderTexture = _depthTex;
                     _sceneRenderer.Render(RC);
@@ -259,19 +276,19 @@ namespace Fusee.Examples.PcRendering.Core
                 //Render color pass
                 //Change shader effect in complete scene
                 _scene.Children[1].RemoveComponent<ShaderEffect>();
-                _scene.Children[1].Components.Insert(1, PtRenderingParams.ColorPassEf);
+                _scene.Children[1].Components.Insert(1, PtRenderingParams.Instance.ColorPassEf);
                 _sceneRenderer.Render(RC);
 
                 //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
                 OocLoader.RC = RC;
-                OocLoader.UpdateScene(PtRenderingParams.PtMode, PtRenderingParams.DepthPassEf, PtRenderingParams.ColorPassEf);
+                OocLoader.UpdateScene(PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.DepthPassEf, PtRenderingParams.Instance.ColorPassEf);
 
                 if (UseWPF)
                 {
-                    if (PtRenderingParams.ShaderParamsToUpdate.Count != 0)
+                    if (PtRenderingParams.Instance.ShaderParamsToUpdate.Count != 0)
                     {
                         UpdateShaderParams();
-                        PtRenderingParams.ShaderParamsToUpdate.Clear();
+                        PtRenderingParams.Instance.ShaderParamsToUpdate.Clear();
                     }
                 }
 
@@ -328,16 +345,16 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.Unlit) return;
+            if (!PtRenderingParams.Instance.CalcSSAO && PtRenderingParams.Instance.Lighting == Lighting.Unlit) return;
 
             //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
                 _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
-                PtRenderingParams.DepthPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
-                PtRenderingParams.ColorPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
-                PtRenderingParams.ColorPassEf.SetFxParam("DepthTex", _depthTex);
+                PtRenderingParams.Instance.DepthPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
+                PtRenderingParams.Instance.ColorPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
+                PtRenderingParams.Instance.ColorPassEf.SetFxParam("DepthTex", _depthTex);
             }
 
             _isTexInitialized = true;
@@ -345,16 +362,9 @@ namespace Fusee.Examples.PcRendering.Core
 
         public override void DeInit()
         {
-            IsAlive = false;
             base.DeInit();
-
+            IsAlive = false;
         }
-
-        public void Close()
-        {
-            CanvasImplementor.CloseGameWindow();
-        }
-
 
         private bool HasUserMoved()
         {
@@ -410,7 +420,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene.Children.Add(root);
 
             OocLoader.RootNode = root;
-            OocLoader.FileFolderPath = PtRenderingParams.PathToOocFile;
+            OocLoader.FileFolderPath = PtRenderingParams.Instance.PathToOocFile;
 
             var octreeTexImgData = new ImageData(ColorFormat.uiRgb8, OocFileReader.NumberOfOctants, 1);
             _octreeTex = new Texture(octreeTexImgData);
@@ -423,14 +433,14 @@ namespace Fusee.Examples.PcRendering.Core
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
 
-            PtRenderingParams.DepthPassEf = PtRenderingParams.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            PtRenderingParams.ColorPassEf = PtRenderingParams.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            PtRenderingParams.Instance.DepthPassEf = PtRenderingParams.Instance.CreateDepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            PtRenderingParams.Instance.ColorPassEf = PtRenderingParams.Instance.CreateColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
             _scene.Children[1].RemoveComponent<ShaderEffect>();
-            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.Unlit)
-                _scene.Children[1].AddComponent(PtRenderingParams.DepthPassEf);
+            if (PtRenderingParams.Instance.CalcSSAO || PtRenderingParams.Instance.Lighting != Lighting.Unlit)
+                _scene.Children[1].AddComponent(PtRenderingParams.Instance.DepthPassEf);
             else
-                _scene.Children[1].AddComponent(PtRenderingParams.ColorPassEf);
+                _scene.Children[1].AddComponent(PtRenderingParams.Instance.ColorPassEf);
 
             IsSceneLoaded = true;
         }
@@ -470,15 +480,15 @@ namespace Fusee.Examples.PcRendering.Core
 
         private void UpdateShaderParams()
         {
-            foreach (var param in PtRenderingParams.ShaderParamsToUpdate)
+            foreach (var param in PtRenderingParams.Instance.ShaderParamsToUpdate)
             {
-                if (PtRenderingParams.DepthPassEf.ParamDecl.ContainsKey(param.Key))
-                    PtRenderingParams.DepthPassEf.SetFxParam(param.Key, param.Value);
-                if (PtRenderingParams.ColorPassEf.ParamDecl.ContainsKey(param.Key))
-                    PtRenderingParams.ColorPassEf.SetFxParam(param.Key, param.Value);
+                if (PtRenderingParams.Instance.DepthPassEf.ParamDecl.ContainsKey(param.Key))
+                    PtRenderingParams.Instance.DepthPassEf.SetFxParam(param.Key, param.Value);
+                if (PtRenderingParams.Instance.ColorPassEf.ParamDecl.ContainsKey(param.Key))
+                    PtRenderingParams.Instance.ColorPassEf.SetFxParam(param.Key, param.Value);
             }
 
-            PtRenderingParams.ShaderParamsToUpdate.Clear();
+            PtRenderingParams.Instance.ShaderParamsToUpdate.Clear();
         }
 
         #region UI

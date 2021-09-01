@@ -2,7 +2,6 @@
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
 namespace Fusee.PointCloud.Common
 {
@@ -11,6 +10,8 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public interface IPcRendering
     {
+        bool ClosingRequested { get; set; }
+
         /// <summary>
         /// Needed when using UI / WPF. Set to false on DeInit().
         /// </summary>

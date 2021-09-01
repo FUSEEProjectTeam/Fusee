@@ -45,7 +45,7 @@ namespace Fusee.Examples.PcRendering.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var ptType = AppSetupHelper.GetPtType(PtRenderingParams.PathToOocFile);
+            var ptType = AppSetupHelper.GetPtType(PtRenderingParams.Instance.PathToOocFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
             var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
@@ -54,7 +54,7 @@ namespace Fusee.Examples.PcRendering.Desktop
             var objWithGenType = objectType.MakeGenericType(genericType);
 
             var app = (PointCloud.Common.IPcRendering)Activator.CreateInstance(objWithGenType);
-            AppSetup.DoSetup(app, ptType, PtRenderingParams.MaxNoOfVisiblePoints, PtRenderingParams.PathToOocFile);
+            AppSetup.DoSetup(app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

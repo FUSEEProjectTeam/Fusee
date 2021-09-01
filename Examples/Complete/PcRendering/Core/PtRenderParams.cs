@@ -3,22 +3,36 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Fusee.Examples.PcRendering.Core
 {
-    public static class PtRenderingParams
+    public sealed class PtRenderingParams : IDisposable
     {
-        public static ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();
-        public static int MaxNoOfVisiblePoints = 500000;
-        public static string PathToOocFile = "C://Users//busert//Desktop//Baugrube8m";
+        public static PtRenderingParams Instance
+        {
+            get
+            {
+                return instance;
+            }
+            private set
+            {
+                instance = value;
+            }
+        }
+        private static PtRenderingParams instance = new();
 
-        public static ShaderEffect DepthPassEf;
-        public static ShaderEffect ColorPassEf;
+        public ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();
+        public int MaxNoOfVisiblePoints = 500000;
+        public string PathToOocFile = "C://Users//busert//Desktop//Baugrube8m";
 
-        private static Lighting _lighting = Lighting.Edl;
-        public static Lighting Lighting
+        public ShaderEffect DepthPassEf;
+        public ShaderEffect ColorPassEf;
+
+        private Lighting _lighting = Lighting.Edl;
+        public Lighting Lighting
         {
             get { return _lighting; }
             set
@@ -28,8 +42,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static PointShape _shape = PointShape.Paraboloid;
-        public static PointShape Shape
+        private PointShape _shape = PointShape.Paraboloid;
+        public PointShape Shape
         {
             get { return _shape; }
             set
@@ -39,8 +53,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static PointSizeMode _ptMode = PointSizeMode.FixedPixelSize;
-        public static PointSizeMode PtMode
+        private PointSizeMode _ptMode = PointSizeMode.FixedPixelSize;
+        public PointSizeMode PtMode
         {
             get { return _ptMode; }
             set
@@ -50,8 +64,9 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static ColorMode _colorMode = ColorMode.Single;
-        public static ColorMode ColorMode
+        private ColorMode _colorMode = ColorMode.Single;
+
+        public ColorMode ColorMode
         {
             get { return _colorMode; }
             set
@@ -61,8 +76,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static int _size = 10;
-        public static int Size
+        private int _size = 10;
+        public int Size
         {
             get { return _size; }
             set
@@ -72,8 +87,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static float4 _singleColor = new float4(0.8f, 0.8f, 0.8f, 1);
-        public static float4 SingleColor
+        private float4 _singleColor = new float4(0.8f, 0.8f, 0.8f, 1);
+        public float4 SingleColor
         {
             get { return _singleColor; }
             set
@@ -83,8 +98,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static bool _calcSSAO = false;
-        public static bool CalcSSAO
+        private bool _calcSSAO = false;
+        public bool CalcSSAO
         {
             get { return _calcSSAO; }
             set
@@ -94,8 +109,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static float _ssaoStrength = 0.2f;
-        public static float SSAOStrength
+        private float _ssaoStrength = 0.2f;
+        public float SSAOStrength
         {
             get { return _ssaoStrength; }
             set
@@ -105,8 +120,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static int _edlNoOfNeighbourPx = 2;
-        public static int EdlNoOfNeighbourPx
+        private int _edlNoOfNeighbourPx = 2;
+        public int EdlNoOfNeighbourPx
         {
             get { return _edlNoOfNeighbourPx; }
             set
@@ -116,8 +131,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static float _edlStrength = 0.1f;
-        public static float EdlStrength
+        private float _edlStrength = 0.1f;
+        public float EdlStrength
         {
             get { return _edlStrength; }
             set
@@ -127,8 +142,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static float _specularStrength = 0.2f;
-        public static float SpecularStrength
+        private float _specularStrength = 0.2f;
+        public float SpecularStrength
         {
             get { return _specularStrength; }
             set
@@ -138,8 +153,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static float _shininess = 2000;
-        public static float Shininess
+        private float _shininess = 2000;
+        public float Shininess
         {
             get { return _shininess; }
             set
@@ -149,7 +164,13 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        internal static ShaderEffect CreateDepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
+        // Explicit static constructor to tell C# compiler
+        // not to mark type as beforefieldinit
+        static PtRenderingParams()
+        {
+        }
+
+        internal ShaderEffect CreateDepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             return new ShaderEffect(
             new FxPassDeclaration
@@ -188,7 +209,7 @@ namespace Fusee.Examples.PcRendering.Core
             });
         }
 
-        internal static ShaderEffect CreateColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, WritableTexture depthTex, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
+        internal ShaderEffect CreateColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, WritableTexture depthTex, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             var kernelLength = 32;
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
@@ -246,6 +267,35 @@ namespace Fusee.Examples.PcRendering.Core
                 new FxParamDeclaration<int> {Name = "CalcSSAO", Value = CalcSSAO ? 1 : 0},
                 new FxParamDeclaration<float> {Name = "SSAOStrength", Value = SSAOStrength}
             });
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);            
+            GC.SuppressFinalize(this);
+        }
+
+        private bool _disposed;
+
+        void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!_disposed)
+            {
+                if (Instance != null)
+                {
+                    Instance = null;
+                }
+
+                // Note disposing has been done.
+                _disposed = true;
+            }
+            
+        }
+        
+        ~PtRenderingParams()
+        {
+            Dispose(false);
         }
     }
 }

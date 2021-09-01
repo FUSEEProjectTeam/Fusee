@@ -1,4 +1,4 @@
-﻿using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.PointAccessorCollections;
 
 namespace Fusee.Examples.PcRendering.Core
@@ -20,7 +20,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64)
                             {
@@ -38,7 +38,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64Col32IShort>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort)
                             {
@@ -55,7 +55,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64IShort>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64IShort)
                             {
@@ -72,7 +72,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64Col32>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Col32)
                             {
@@ -89,7 +89,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64Label8>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Label8>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Label8)
                             {
@@ -106,7 +106,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64Nor32Col32IShort>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32IShort)
                             {
@@ -123,7 +123,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64Nor32IShort>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32IShort>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Nor32IShort)
                             {
@@ -140,7 +140,7 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         var appImp = (PcRendering<Pos64Nor32Col32>)app;
 
-                        appImp.AppSetup = () =>
+                        appImp.AppSetupDel = () =>
                         {
                             appImp.OocLoader = new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32>(pathToFile, appImp.GetRc(), MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32)
                             {

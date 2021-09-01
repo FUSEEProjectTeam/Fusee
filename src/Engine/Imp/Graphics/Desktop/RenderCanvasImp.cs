@@ -395,9 +395,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns></returns>
         public Bitmap ShootCurrentFrame(int width, int height)
         {
-            this.DoInit();
-            this.DoRender();
-            this.DoResize(width, height);
+            DoInit();
+            DoRender();
+            DoResize(width, height);
 
             var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
             var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);

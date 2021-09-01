@@ -120,7 +120,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             FileStream fileStream = File.Open(pathToHierarchy, FileMode.Open, FileAccess.Read);
 
-            using (BinaryReader br = new BinaryReader(fileStream))
+            using (BinaryReader br = new(fileStream))
             {
                 CreateNode(octree.Root, br);
             }
