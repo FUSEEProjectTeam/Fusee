@@ -2,6 +2,7 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -22,7 +23,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
             var allPoints = new List<double3>();
 
 
-            for (int i = 0; i < points.Count(); i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
@@ -65,7 +66,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
             var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
             var allColors = new List<float3>();
 
-            for (int i = 0; i < points.Count(); i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
@@ -112,7 +113,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
             var allPoints = new List<double3>();
             var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
 
-            for (int i = 0; i < points.Count(); i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
@@ -198,10 +199,14 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode_Pos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
+        public static List<Mesh> GetMeshsForNodePos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
         {
-            var allPoints = new List<double3>();
-            var allColors = new List<float3>();
+            var allPoints = new List<double3>(points.Count);
+            var allColors = new List<float3>(points.Count);
+            IEnumerable<List<double3>> allPointsSplitted;
+            IEnumerable<List<float3>> allColorsSplitted;
+            int maxVertCount = ushort.MaxValue - 1;
+            List<Mesh> allMeshes;
 
             for (int i = 0; i < points.Count(); i++)
             {
@@ -210,17 +215,23 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
             }
 
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
+            if (points.Count > maxVertCount)
             {
-                var pointSplit = allPointsSplitted[i];
-                var colorSplit = allColorsSplitted[i]; ;
+                allMeshes = new List<Mesh>();
+                allPointsSplitted = SplitList(allPoints, maxVertCount);
+                allColorsSplitted = SplitList(allColors, maxVertCount);
+            }
+            else
+            {
+                allMeshes = new List<Mesh>(1);
+                allPointsSplitted = new List<List<double3>>(1) { allPoints };
+                allColorsSplitted = new List<List<float3>>(1) { allColors };
+            }
+
+            for (int i = 0; i < Enumerable.Count(allPointsSplitted); i++)
+            {
+                var pointSplit = allPointsSplitted.ElementAt(i);
+                var colorSplit = allColorsSplitted.ElementAt(i);
 
                 var currentMesh = new Mesh
                 {
@@ -231,6 +242,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()
                 };
 
+                GC.Collect();
+                GC.WaitForFullGCComplete();
                 allMeshes.Add(currentMesh);
             }
 
@@ -299,7 +312,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
             var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
             var allNormals = new List<float3>();
 
-            for (int i = 0; i < points.Count(); i++)
+            for (int i = 0; i < points.Count; i++)
             {
                 var pt = points[i];
                 allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));

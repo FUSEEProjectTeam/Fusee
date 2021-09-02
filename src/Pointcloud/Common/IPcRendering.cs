@@ -2,9 +2,15 @@
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
+using System;
 
 namespace Fusee.PointCloud.Common
 {
+    /// <summary>
+    /// Delegate that allows us to implement a setup method in the app's Main.cs
+    /// </summary>
+    public delegate void AppSetupDelegate();
+
     /// <summary>
     /// Implement this interface into apps that use the ooc file converter.
     /// </summary>
@@ -56,6 +62,10 @@ namespace Fusee.PointCloud.Common
         /// <see cref="RenderCanvas.ContextImplementor"/>
         /// </summary>
         IRenderContextImp ContextImplementor { get; set; }
+
+        IPtOctantLoader OocLoader { get; set; }
+
+        IPtOctreeFileReader OocFileReader { get; set; }
 
         /// <summary>
         /// Wrapper to get the Root Node from the app's File Loader./>

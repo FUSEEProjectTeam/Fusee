@@ -942,7 +942,11 @@ namespace Fusee.PointCloud.Common
                         return x.Concat(y).Concat(z).ToArray();
                     };
                 }
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) =>
+                {
+                    byte[] vs = new byte[] { };
+                    return vs;
+                };
             }
         }
 

@@ -14,7 +14,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
     /// Reads the point cloud files created by the OoCFileGeneration tool into a renderable Scene.
     /// </summary>
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
-    public class PtOctreeFileReader<TPoint>
+    public class PtOctreeFileReader<TPoint> : IPtOctreeFileReader
     {
         private readonly string _fileFolderPath;
 

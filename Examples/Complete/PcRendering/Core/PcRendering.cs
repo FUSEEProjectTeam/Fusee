@@ -9,7 +9,6 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.OoCReaderWriter;
-using Fusee.PointCloud.PointAccessorCollections;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -22,11 +21,8 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Point Cloud Viewer")]
     public class PcRendering<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
     {
-        public AppSetupHelper.AppSetupDelegate AppSetupDel;
-
-        public PtOctantLoader<TPoint> OocLoader { get; set; }
-
-        public PtOctreeFileReader<TPoint> OocFileReader { get; set; }
+        public IPtOctantLoader OocLoader { get; set; }
+        public IPtOctreeFileReader OocFileReader { get; set; }
 
         public bool UseWPF { get; set; }
         public bool DoShowOctants { get; set; }
@@ -82,6 +78,7 @@ namespace Fusee.Examples.PcRendering.Core
                 _closingRequested = value;
             }
         }
+
         private bool _closingRequested;
 
         private bool _isTexInitialized = false;
@@ -99,12 +96,13 @@ namespace Fusee.Examples.PcRendering.Core
 
         public override void Init()
         {
-            _spaceMouse = Input.GetDevice<SixDOFDevice>();
+            _spaceMouse = GetDevice<SixDOFDevice>();
 
             _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
+            OocLoader.Init(RC);
+
             IsAlive = true;
-            AppSetupDel();
 
             ApplicationIsShuttingDown += (object sender, EventArgs e) => { 
                 OocLoader.IsShuttingDown = true; 
@@ -280,7 +278,7 @@ namespace Fusee.Examples.PcRendering.Core
                 _sceneRenderer.Render(RC);
 
                 //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
-                OocLoader.RC = RC;
+                //OocLoader.RC = RC;
                 OocLoader.UpdateScene(PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.DepthPassEf, PtRenderingParams.Instance.ColorPassEf);
 
                 if (UseWPF)

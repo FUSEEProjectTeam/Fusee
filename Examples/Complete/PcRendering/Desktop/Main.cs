@@ -52,9 +52,8 @@ namespace Fusee.Examples.PcRendering.Desktop
 
             var objectType = typeof(PcRendering<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
-
-            var app = (PointCloud.Common.IPcRendering)Activator.CreateInstance(objWithGenType);
-            AppSetup.DoSetup(app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);
+            
+            AppSetup.DoSetup(out PointCloud.Common.IPcRendering app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

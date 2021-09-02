@@ -11,11 +11,6 @@ namespace Fusee.PointCloud.PointAccessorCollections
     public static class AppSetupHelper
     {
         /// <summary>
-        /// Delegate that allows us to implement a setup method in the app's Main.cs
-        /// </summary>
-        public delegate void AppSetupDelegate();
-
-        /// <summary>
         /// Reads the point type from the meta.json.
         /// </summary>
         /// <param name="pathToFile">Path to folder of the meta.json file.</param>

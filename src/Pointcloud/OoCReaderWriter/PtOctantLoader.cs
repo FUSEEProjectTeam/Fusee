@@ -19,12 +19,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
     /// Class that manages the out of core (on demand) loading of point clouds.
     /// </summary>
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
-    public class PtOctantLoader<TPoint> where TPoint : new()
+    public class PtOctantLoader<TPoint> : IPtOctantLoader where TPoint : new()
     {
         /// <summary>
         /// Provides access to properties of different point types.
         /// </summary>
-        public PointAccessor<TPoint> PtAcc;
+        public PointAccessor<TPoint> PtAcc { get; set; }
 
         /// <summary>
         /// Is set to true internally when all visible nodes are loaded.
@@ -34,18 +34,18 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Scene is only updated if the user is moving.
         /// </summary>
-        public bool IsUserMoving = false;
+        public bool IsUserMoving { get; set; } = false;
 
         /// <summary>
         /// The <see cref="RenderContext"/> the app uses.
         /// Needed to determine the field of view and the camera position.
         /// </summary>
-        public RenderContext RC;
+        public RenderContext RC { get; private set; }
 
         /// <summary>
         /// 1D Texture that stores info that is needed by the vertex shader when rendering with adaptive point size.
         /// </summary>
-        public Texture VisibleOctreeHierarchyTex;
+        public Texture VisibleOctreeHierarchyTex { get; set; }
 
         public bool IsShuttingDown
         {
@@ -99,17 +99,17 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// The initial camera position.
         /// </summary>
-        public double3 InitCamPos;
+        public double3 InitCamPos { get; set; }
 
         /// <summary>
         /// The path to the folder that holds the file.
         /// </summary>
-        public string FileFolderPath;
+        public string FileFolderPath { get; set; }
 
         /// <summary>
         /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
         /// </summary>
-        public int PointThreshold = 1000000;
+        public int PointThreshold { get; set; } = 1000000;
 
         private float _minProjSizeModifier = 1 / 3f;
 
@@ -133,31 +133,19 @@ namespace Fusee.PointCloud.OoCReaderWriter
         private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new();             // nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
 
         private readonly WireframeCube wfc = new();
-        private readonly DefaultSurfaceEffect _wfcEffect;
+        private DefaultSurfaceEffect _wfcEffect;
         private readonly int _sceneUpdateTime = 300; // in ms
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _noOfLoadedNodes = 5;
 
-        /// <summary>
-        /// Creates a new instance of type <see cref="PtOctantLoader{TPoint}"/>.
-        /// </summary>
-        /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
-        /// <param name="rc">The <see cref="RenderContext"/> that is used.</param>
-        /// <param name="getMeshsForNode">Encapsulates a method that has a <see cref="PointAccessor{TPoint}"/>, and a list of point cloud points and as parameters. Returns a collection of <see cref="Mesh"/>es for a Octant.</param>
-        public PtOctantLoader(string fileFolderPath, RenderContext rc, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> getMeshsForNode)
+        public void Init(RenderContext rc)
         {
             RC = rc;
-            _nodesToRender = new Dictionary<Guid, SceneNode>();
-            _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
-            _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;
-            _getMeshsForNode = getMeshsForNode;
             _wfcEffect = (DefaultSurfaceEffect)RC.DefaultEffect;
 
-            FileFolderPath = fileFolderPath;
-
-            Task loadingTask = new Task(() =>
+            Task loadingTask = new(() =>
             {
                 Thread.CurrentThread.Name = "OocLoader";
                 while (!IsShuttingDown)
@@ -171,6 +159,22 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 }
             });
             loadingTask.Start();
+        }
+
+        /// <summary>
+        /// Creates a new instance of type <see cref="PtOctantLoader{TPoint}"/>.
+        /// </summary>
+        /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
+        /// <param name="rc">The <see cref="RenderContext"/> that is used.</param>
+        /// <param name="getMeshsForNode">Encapsulates a method that has a <see cref="PointAccessor{TPoint}"/>, and a list of point cloud points and as parameters. Returns a collection of <see cref="Mesh"/>es for a Octant.</param>
+        public PtOctantLoader(string fileFolderPath, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> getMeshsForNode)
+        {
+            _nodesToRender = new Dictionary<Guid, SceneNode>();
+            _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
+            _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;
+            _getMeshsForNode = getMeshsForNode;
+
+            FileFolderPath = fileFolderPath;
         }
 
         /// <summary>
