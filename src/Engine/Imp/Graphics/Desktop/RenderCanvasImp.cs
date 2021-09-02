@@ -439,6 +439,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public event EventHandler<InitEventArgs> UnLoad;
         /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+        /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
@@ -465,6 +469,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         protected internal void DoUnLoad()
         {
             UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        protected internal void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -619,6 +631,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (KeyboardState.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11))
                 WindowState = (WindowState != OpenTK.Windowing.Common.WindowState.Fullscreen) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal;
+
+            _renderCanvasImp?.DoUpdate();
         }
 
         protected override void OnRenderFrame(OpenTK.Windowing.Common.FrameEventArgs args)
@@ -627,8 +641,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             DeltaTime = (float)args.Time;
 
-            if (_renderCanvasImp != null)
-                _renderCanvasImp.DoRender();
+            _renderCanvasImp?.DoRender();
         }
 
         #endregion

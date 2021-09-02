@@ -112,15 +112,9 @@ namespace Fusee.Engine.Player.Core
             LoadAssets();
         }
 
-        // RenderAFrame is called once a frame
-        public override void RenderAFrame()
+        public override void UpdateAFrame()
         {
             if (!_isLoaded) return;
-
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -152,7 +146,6 @@ namespace Fusee.Engine.Player.Core
                 _angleRoll *= curDamp * 0.8f;
                 _offset *= curDamp * 0.8f;
             }
-
 
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton)
@@ -202,9 +195,18 @@ namespace Fusee.Engine.Player.Core
 
             // Wrap-around to keep _angleRoll between -PI and + PI
             _angleRoll = M.MinAngle(_angleRoll);
+        }
+
+        // RenderAFrame is called once a frame
+        public override void RenderAFrame()
+        {
+            if (!_isLoaded) return;
+
+            // Clear the backbuffer
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Create the camera matrix and set it as the current View transformation
-            var mtxRot = /*float4x4.CreateRotationZ(_angleRoll) **/ float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
             var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
 

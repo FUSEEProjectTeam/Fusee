@@ -122,6 +122,10 @@ namespace Fusee.Engine.Common
         /// </summary>
         event EventHandler<InitEventArgs> UnLoad;
         /// <summary>
+        /// Occurs when [Update] is called.
+        /// </summary>
+        event EventHandler<RenderEventArgs> Update;        
+        /// <summary>
         /// Occurs when [Render] is called.
         /// </summary>
         event EventHandler<RenderEventArgs> Render;

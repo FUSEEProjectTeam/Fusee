@@ -284,6 +284,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public event EventHandler<InitEventArgs> UnLoad;
 
         /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+
+        /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
@@ -311,6 +316,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
         protected internal void DoUnLoad()
         {
             UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        protected internal void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -422,6 +435,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 _renderCanvasImp.DoResize(Width, Height);
             }
+        }
+
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            if (_renderCanvasImp != null)
+                _renderCanvasImp.DoUpdate();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
