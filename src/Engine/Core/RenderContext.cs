@@ -1258,14 +1258,15 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The Effect.</param>
         internal void RemoveShader(Effect ef)
         {
-            var compiledEffect = _allCompiledEffects[ef];
+            if (!_allCompiledEffects.TryGetValue(ef, out CompiledEffects compiledEffect)) return;
+
+            _allCompiledEffects.Remove(ef);
+
             if (compiledEffect.ForwardFx != null)
                 _rci.RemoveShader(compiledEffect.ForwardFx?.GpuHandle);
 
             if (compiledEffect.DeferredFx != null)
                 _rci.RemoveShader(compiledEffect.DeferredFx?.GpuHandle);
-
-            _allCompiledEffects.Remove(ef);
         }
 
         /// <summary>

@@ -79,7 +79,7 @@
                             </TextBlock>
                         </Label.ToolTip>
                     </Label>
-                    <Slider VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="2" Width="144" Maximum ="0.99" Grid.Column="1" Minimum ="0.1" x:Name="MinProjSize" ValueChanged="MinProjSize_ValueChanged" Thumb.DragStarted="MinProjSize_DragStarted" Thumb.DragCompleted="MinProjSize_DragCompleted"/>
+                    <Slider VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="2" Width="144" Maximum ="1.00" Grid.Column="1" Minimum ="0.01" x:Name="MinProjSize" ValueChanged="MinProjSize_ValueChanged" Thumb.DragStarted="MinProjSize_DragStarted" Thumb.DragCompleted="MinProjSize_DragCompleted"/>
                     <Label Content="0.33" HorizontalAlignment="Left" Margin="7,10,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="9" x:Name="MinProjSizeVal" />
                 </Grid>
 
