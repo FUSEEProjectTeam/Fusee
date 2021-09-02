@@ -280,32 +280,32 @@ namespace Fusee.Engine.Core.Scene
 
         #region IDisposable Support
 
-        private bool disposedValue; // To detect redundant calls
+        private bool disposed; // To detect redundant calls
 
-        /// <summary>
-        /// Fire dispose mesh event
-        /// </summary>
-        /// <param name="disposing"></param>
+        
+        public void Dispose()
+        {
+            Dispose(true);
+            
+            GC.SuppressFinalize(this);
+        }
+        
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposed)
             {
                 if (disposing)
                 {
                     MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
                 }
 
-                disposedValue = true;
+                disposed = true;
             }
         }
-
-        /// <summary>
-        /// Fire dispose mesh event
-        /// </summary>
-        public void Dispose()
+        
+        ~Mesh()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            Dispose(false);
         }
 
         #endregion
