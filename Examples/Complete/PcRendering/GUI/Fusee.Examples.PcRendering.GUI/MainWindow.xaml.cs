@@ -385,11 +385,6 @@ namespace Fusee.Examples.PcRendering.WPF
             }
         }
 
-        private void DeleteFile_Button_Click(object sender, RoutedEventArgs e)
-        {
-            App.DeletePointCloud();
-        }
-
         private void ResetCam_Button_Click(object sender, RoutedEventArgs e)
         {
             App?.ResetCamera();
