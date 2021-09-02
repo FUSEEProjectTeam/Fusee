@@ -944,7 +944,7 @@ namespace Fusee.PointCloud.Common
                 }
                 return (ref TPoint point) =>
                 {
-                    byte[] vs = new byte[] { };
+                    byte[] vs = Array.Empty<byte>();
                     return vs;
                 };
             }
@@ -979,7 +979,7 @@ namespace Fusee.PointCloud.Common
                 if (HasIntensityFloat64)
                     return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat64(ref point)); };
 
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
         }
 
@@ -1009,7 +1009,7 @@ namespace Fusee.PointCloud.Common
                         return x.Concat(y).Concat(z).ToArray();
                     };
                 }
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
         }
 
@@ -1065,7 +1065,7 @@ namespace Fusee.PointCloud.Common
                         return x.Concat(y).Concat(z).ToArray();
                     };
                 }
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
 
         }
@@ -1099,7 +1099,7 @@ namespace Fusee.PointCloud.Common
                 if (HasLabelFloat64)
                     return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat64(ref point)); };
 
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
 
         }
@@ -1133,7 +1133,7 @@ namespace Fusee.PointCloud.Common
                 if (HasCurvatureFloat64)
                     return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat64(ref point)); };
 
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
 
         }
@@ -1167,7 +1167,7 @@ namespace Fusee.PointCloud.Common
                 if (HasHitCountFloat64)
                     return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat64(ref point)); };
 
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
 
         }
@@ -1201,7 +1201,7 @@ namespace Fusee.PointCloud.Common
                 if (HasGPSTimeFloat64)
                     return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat64(ref point)); };
 
-                return (ref TPoint point) => new byte[] { };
+                return (ref TPoint point) => Array.Empty<byte>();
             }
 
         }

@@ -68,7 +68,7 @@ namespace Fusee.Engine.Core
             {
                 var tmPop = _effectsToBeDeleted.Pop();
                 // Remove one Effect from _allEffects
-                _allEffects.Remove(tmPop.SessionUniqueIdentifier);                
+                _allEffects.Remove(tmPop.SessionUniqueIdentifier);
                 // Remove one Effect from Memory
                 _rc.RemoveShader(tmPop);
             }

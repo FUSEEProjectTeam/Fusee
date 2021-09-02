@@ -27,7 +27,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         internal PtGrid(double3 center, double3 size) : base(center, size, 128, 128, 128) { }
 
-        private static int3 _minusOne = new int3(-1, -1, -1);
+        private static int3 _minusOne = new(-1, -1, -1);
 
         /// <summary>
         /// Creates a new instance of type PtGrid.
@@ -51,7 +51,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var cell = TryGetCellForPos(Size, Center, tPointPos, out var cellIdx);
 
             //Check if NN is too close - a point remains in the parent octant if the distance to the occupant of a neighbor cell is smaller than the neighbor cells' size.         
-            
+
             foreach (var idxOffset in GetGridNeighbourIndices(_minusOne))
             {
                 var neighbourCellIdx = cellIdx + idxOffset;

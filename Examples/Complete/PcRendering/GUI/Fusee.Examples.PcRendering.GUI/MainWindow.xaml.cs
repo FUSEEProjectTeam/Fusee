@@ -41,7 +41,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private Task _fusTask;
 
-        private static readonly Regex numRegex = new Regex("[^0-9.-]+");
+        private static readonly Regex numRegex = new("[^0-9.-]+");
 
         public MainWindow()
         {
@@ -80,12 +80,6 @@ namespace Fusee.Examples.PcRendering.WPF
 
             InnerGrid.IsEnabled = false;
         }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll")]
-        private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
         #region UI Handler
 

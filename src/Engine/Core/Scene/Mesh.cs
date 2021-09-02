@@ -282,14 +282,14 @@ namespace Fusee.Engine.Core.Scene
 
         private bool disposed; // To detect redundant calls
 
-        
+
         public void Dispose()
         {
             Dispose(true);
-            
+
             GC.SuppressFinalize(this);
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
@@ -302,7 +302,7 @@ namespace Fusee.Engine.Core.Scene
                 disposed = true;
             }
         }
-        
+
         ~Mesh()
         {
             Dispose(false);

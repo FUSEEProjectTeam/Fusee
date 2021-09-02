@@ -42,7 +42,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
             JObject jsonObj;
 
-            using (StreamReader sr = new StreamReader(pathToMetaJson))
+            using (StreamReader sr = new(pathToMetaJson))
             {
                 jsonObj = (JObject)JToken.ReadFrom(new JsonTextReader(sr));
             }
@@ -75,7 +75,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
             JObject jsonObj;
 
-            using (StreamReader sr = new StreamReader(pathToMetaJson))
+            using (StreamReader sr = new(pathToMetaJson))
             {
                 jsonObj = (JObject)JToken.ReadFrom(new JsonTextReader(sr));
             }
@@ -137,7 +137,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             FileStream fileStream = File.Open(pathToHierarchy, FileMode.Open, FileAccess.Read);
 
-            using (BinaryReader br = new BinaryReader(fileStream))
+            using (BinaryReader br = new(fileStream))
             {
                 CreateSceneNode(rootSnc, br);
             }
@@ -191,7 +191,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
         }
 
-        private SceneNode CreateSncForChildNode(int posInParent)
+        private static SceneNode CreateSncForChildNode(int posInParent)
         {
             return new SceneNode
             {

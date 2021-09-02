@@ -11,20 +11,9 @@ namespace Fusee.Examples.PcRendering.Core
 {
     public sealed class PtRenderingParams : IDisposable
     {
-        public static PtRenderingParams Instance
-        {
-            get
-            {
-                return instance;
-            }
-            private set
-            {
-                instance = value;
-            }
-        }
-        private static PtRenderingParams instance = new();
+        public static PtRenderingParams Instance { get; private set; } = new();
 
-        public ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();
+        public ConcurrentDictionary<string, object> ShaderParamsToUpdate = new();
         public int MaxNoOfVisiblePoints = 500000;
         public string PathToOocFile = "C://Users//busert//Desktop//Baugrube8m";
 
@@ -87,14 +76,14 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private float4 _singleColor = new float4(0.8f, 0.8f, 0.8f, 1);
+        private float4 _singleColor = new(0.8f, 0.8f, 0.8f, 1);
         public float4 SingleColor
         {
-            get { return _singleColor; }
+            get => _singleColor;
             set
             {
                 _singleColor = value;
-                ShaderParamsToUpdate.AddOrUpdate("Color", SingleColor, (key, val) => val);
+                _ = ShaderParamsToUpdate.AddOrUpdate("Color", SingleColor, (key, val) => val);
             }
         }
 
@@ -271,7 +260,7 @@ namespace Fusee.Examples.PcRendering.Core
 
         public void Dispose()
         {
-            Dispose(true);            
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
 
@@ -290,9 +279,9 @@ namespace Fusee.Examples.PcRendering.Core
                 // Note disposing has been done.
                 _disposed = true;
             }
-            
+
         }
-        
+
         ~PtRenderingParams()
         {
             Dispose(false);

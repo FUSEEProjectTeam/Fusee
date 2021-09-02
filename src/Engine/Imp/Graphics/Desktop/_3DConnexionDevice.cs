@@ -599,13 +599,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         }
 
         #region IDisposable Member
-        
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (!IsDisposed)

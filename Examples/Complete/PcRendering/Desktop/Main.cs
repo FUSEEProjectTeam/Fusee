@@ -52,7 +52,7 @@ namespace Fusee.Examples.PcRendering.Desktop
 
             var objectType = typeof(PcRendering<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
-            
+
             AppSetup.DoSetup(out PointCloud.Common.IPcRendering app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)

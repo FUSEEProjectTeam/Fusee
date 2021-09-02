@@ -49,8 +49,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         public bool IsShuttingDown
         {
-            get; 
-            set; 
+            get;
+            set;
         }
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 var item = toCache[i];
 
                 var added = _globalLoadingCache.TryAdd(item.Key, item.Value);
-                if(!added)
+                if (!added)
                 {
                     _globalLoadingCache.TryUpdate(item.Key, item.Value, _globalLoadingCache[item.Key]);
                 }

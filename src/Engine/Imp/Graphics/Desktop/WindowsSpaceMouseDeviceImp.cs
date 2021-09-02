@@ -40,7 +40,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _gameWindow = ((RenderCanvasImp)renderCanvas)._gameWindow;
             if (_gameWindow == null)
                 throw new ArgumentNullException(nameof(_gameWindow));
-           
+
             _SMI = new WindowsSpaceMouseInputDeviceImp(_gameWindow);
         }
 
@@ -103,7 +103,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 if (disposing)
                 {
-                    
+
                 }
 
                 disposedValue = true;
@@ -428,7 +428,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _oldWndProc = IntPtr.Zero;
 
-                if(_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
+                if (_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
                     _current3DConnexionDevice.Dispose();
 
                 disposedValue = true;

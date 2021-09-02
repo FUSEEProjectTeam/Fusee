@@ -222,13 +222,13 @@ namespace Fusee.Base.Imp.Desktop
             return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
         }
 
-        
+
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        
+
         protected virtual void Dispose(bool disposing)
         {
             if (!_disposed)
@@ -246,7 +246,7 @@ namespace Fusee.Base.Imp.Desktop
         // to clean up the unmanaged resource.
         [System.Runtime.InteropServices.DllImport("Kernel32")]
         private extern static Boolean CloseHandle(IntPtr handle);
-        
+
         ~FontImp()
         {
             Dispose(false);
@@ -256,7 +256,7 @@ namespace Fusee.Base.Imp.Desktop
     internal class SplitToCurvePartHelper
     {
         #region Methods
-        public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
+        public static void CurvePartVertice(int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);
             partVerts.Add(vert);
@@ -276,7 +276,7 @@ namespace Fusee.Base.Imp.Desktop
             {
                 for (var j = 0; j <= i; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
                 //The start point is the first point in the outline.Points array.
@@ -288,7 +288,7 @@ namespace Fusee.Base.Imp.Desktop
             {
                 for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
 

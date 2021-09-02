@@ -63,9 +63,9 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         IRenderContextImp ContextImplementor { get; set; }
 
-        IPtOctantLoader OocLoader { get; set; }
+        IPtOctantLoader OocLoader { get; }
 
-        IPtOctreeFileReader OocFileReader { get; set; }
+        IPtOctreeFileReader OocFileReader { get; }
 
         /// <summary>
         /// Wrapper to get the Root Node from the app's File Loader./>

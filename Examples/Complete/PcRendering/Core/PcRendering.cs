@@ -8,7 +8,6 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.OoCReaderWriter;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
@@ -21,14 +20,20 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Point Cloud Viewer")]
     public class PcRendering<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
     {
-        public IPtOctantLoader OocLoader { get; set; }
-        public IPtOctreeFileReader OocFileReader { get; set; }
+        public PcRendering(IPtOctantLoader oocLoader, IPtOctreeFileReader oocFileReader)
+        {
+            OocLoader = oocLoader;
+            OocFileReader = oocFileReader;
+        }
+
+        public IPtOctantLoader OocLoader { get; }
+        public IPtOctreeFileReader OocFileReader { get; }
 
         public bool UseWPF { get; set; }
         public bool DoShowOctants { get; set; }
         public bool IsSceneLoaded { get; private set; }
         public bool ReadyToLoadNewFile { get; private set; }
-        public bool IsInitialized { get; private set; } = false;
+        public bool IsInitialized { get; private set; }
         public bool IsAlive { get; private set; }
 
         // angle variables
@@ -67,8 +72,8 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        public bool ClosingRequested 
-        { 
+        public bool ClosingRequested
+        {
             get
             {
                 return _closingRequested;
@@ -104,8 +109,9 @@ namespace Fusee.Examples.PcRendering.Core
 
             IsAlive = true;
 
-            ApplicationIsShuttingDown += (object sender, EventArgs e) => { 
-                OocLoader.IsShuttingDown = true; 
+            ApplicationIsShuttingDown += (object sender, EventArgs e) =>
+            {
+                OocLoader.IsShuttingDown = true;
             };
 
             _scene = new SceneContainer
@@ -283,7 +289,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                 if (UseWPF)
                 {
-                    if (PtRenderingParams.Instance.ShaderParamsToUpdate.Count != 0)
+                    if (!PtRenderingParams.Instance.ShaderParamsToUpdate.IsEmpty)
                     {
                         UpdateShaderParams();
                         PtRenderingParams.Instance.ShaderParamsToUpdate.Clear();
@@ -476,7 +482,7 @@ namespace Fusee.Examples.PcRendering.Core
             IsSceneLoaded = true;
         }
 
-        private void UpdateShaderParams()
+        private static void UpdateShaderParams()
         {
             foreach (var param in PtRenderingParams.Instance.ShaderParamsToUpdate)
             {
