@@ -1183,26 +1183,26 @@ namespace Fusee.Engine.Core
                 throw new ArgumentException("The compiled effect already has parameters!");
 
             //Iterate source shader's active params and create a EffectParam for each one.
-            foreach (var shaderParams in activeUniforms)
+            foreach (var shaderParam in activeUniforms)
             {
-                if (!ef.ParamDecl.TryGetValue(shaderParams.Key, out IFxParamDeclaration dcl))
+                if (!ef.ParamDecl.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
                 {
-                    Diagnostics.Error(shaderParams.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
+                    Diagnostics.Error(shaderParam.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
                 }
 
                 var effectParam = new FxParam()
                 {
-                    Info = shaderParams.Value
+                    Info = shaderParam.Value
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(shaderParams.Key, out object globalFXValue))
+                if (GlobalFXParams.TryGetValue(shaderParam.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
-                cFx.ActiveUniforms.Add(shaderParams.Key, effectParam);
+                cFx.ActiveUniforms.Add(shaderParam.Key, effectParam);
             }
         }
 
@@ -1216,7 +1216,7 @@ namespace Fusee.Engine.Core
         {
             if (GlobalFXParams.TryGetValue(name, out var currentValue))
             {
-                if (currentValue.Equals(value)) return; // no new value
+                if (currentValue == value) return; // no new value
                 GlobalFXParams[name] = value;
             }
             else if (value != null)

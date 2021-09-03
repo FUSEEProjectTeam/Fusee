@@ -47,6 +47,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         public Texture VisibleOctreeHierarchyTex { get; set; }
 
+        /// <summary>
+        /// Used for breaking the loading loop when the application is shutting down.
+        /// </summary>
         public bool IsShuttingDown
         {
             get;
@@ -85,7 +88,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 _minProjSizeModifier = value;
                 if (RootNode != null)
-                    _minScreenProjectedSize = (float)RootNode.GetComponent<OctantD>().ProjectedScreenSize * _minProjSizeModifier;
+                    _minScreenProjectedSize = RootNode.GetComponent<OctantD>().ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -104,33 +107,37 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         public int PointThreshold { get; set; } = 1000000;
 
-        private float _minProjSizeModifier = 1 / 3f;
+        private float _minProjSizeModifier = 0.1f;
 
         private Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> _getMeshsForNode;
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
-        private float _minScreenProjectedSize;
+        private double _minScreenProjectedSize;
 
         private float _deltaTimeSinceLastUpdate;
 
-        private Dictionary<Guid, SceneNode> _nodesToRender;                                             // Visible AND loaded nodes - updated per traversal. Created from _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded);
+        private Dictionary<Guid, SceneNode> _nodesToRender;                                     // Visible AND loaded nodes - updated per traversal. Created from _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded);
 
-        private readonly Dictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                              // Visible AND loaded meshes.
+        private Dictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                              // Visible AND loaded meshes.
 
         private readonly SortedDictionary<double, SceneNode> _visibleNodesOrderedByProjectionSize;      // For traversal purposes only.
-        private readonly Dictionary<Guid, SceneNode> _determinedAsVisible = new();                               // All visible nodes in screen projected size order - cleared in every traversal.
+        private Dictionary<Guid, SceneNode> _determinedAsVisible;                              // All visible nodes in screen projected size order - cleared in every traversal.
 
-        private readonly ConcurrentDictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded = new(); // Visible but unloaded nodes - cleared in every traversal.
-        private readonly ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache = new();             // nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
+        private ConcurrentDictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded;         // Visible but unloaded nodes - cleared in every traversal.
+        private ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache;                     // nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
 
         private readonly WireframeCube wfc = new();
         private DefaultSurfaceEffect _wfcEffect;
-        private readonly int _sceneUpdateTime = 100; // in ms
+        private readonly int _sceneUpdateTime = 33; // in ms
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _maxNumberOfNodesToLoad = 5;
 
+        /// <summary>
+        /// Initializes the <see cref="RC"/> dependent properties and starts the loading task.
+        /// </summary>
+        /// <param name="rc">The RenderContext for this loader.</param>
         public void Init(RenderContext rc)
         {
             RC = rc;
@@ -156,15 +163,13 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// Creates a new instance of type <see cref="PtOctantLoader{TPoint}"/>.
         /// </summary>
         /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
-        /// <param name="rc">The <see cref="RenderContext"/> that is used.</param>
         /// <param name="getMeshsForNode">Encapsulates a method that has a <see cref="PointAccessor{TPoint}"/>, and a list of point cloud points and as parameters. Returns a collection of <see cref="Mesh"/>es for a Octant.</param>
         public PtOctantLoader(string fileFolderPath, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> getMeshsForNode)
         {
-            _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
             _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;
             _getMeshsForNode = getMeshsForNode;
-
             FileFolderPath = fileFolderPath;
+            InitCollections(Directory.GetFiles($"{FileFolderPath}\\Octants").Length);
         }
 
         /// <summary>
@@ -193,7 +198,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                 _nodesToRender = _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
 
-                if (_nodesToRender.Count == 0) 
+                if (_nodesToRender.Count == 0)
                     return;
 
                 if (ptSizeMode == PointSizeMode.AdaptiveSize)
@@ -250,6 +255,14 @@ namespace Fusee.PointCloud.OoCReaderWriter
         public void DeleteOctants(SceneContainer scene)
         {
             _ = scene.Children.RemoveAll(node => node.Name == "WireframeCube");
+        }
+
+        private void InitCollections(int octantCnt)
+        {
+            _globalLoadingCache = new(2, _maxNumberOfNodesToLoad);
+            _determinedAsVisibleAndUnloaded = new(2, octantCnt);
+            _determinedAsVisible = new(octantCnt);
+            _loadedMeshs = new(octantCnt);
         }
 
         /// <summary>
@@ -341,7 +354,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             if (!ptOctantChildComp.InsideOrIntersectingFrustum(frustum))
             {
-                RemoveMeshes(node, ptOctantChildComp);
+                TryRemoveMeshes(node, ptOctantChildComp);
                 return;
             }
 
@@ -356,7 +369,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             //If the nodes screen projected size is too small, remove it from loaded meshes and return.
             if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
             {
-                RemoveMeshes(node, ptOctantChildComp);
+                TryRemoveMeshes(node, ptOctantChildComp);
                 return;
             }
 
@@ -399,22 +412,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             if (!_nodesToRender.ContainsKey(ptOctantComp.Guid)) //Node isn't visible
             {
-                RemoveMeshes(node, ptOctantComp);
+                TryRemoveMeshes(node, ptOctantComp);
             }
-            else
+            else //is visible and was loaded
             {
-                if (_nodesToRender.ContainsKey(ptOctantComp.Guid)) //is visible and was loaded
-                {
-                    if (_loadedMeshs.TryGetValue(ptOctantComp.Guid, out var loadedMeshes))
-                    {
-                        node.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
-                        node.Components.AddRange(loadedMeshes);
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Trying to set meshes that are not loaded yet!");
-                    }
-                }
+                node.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
+                node.Components.AddRange(_loadedMeshs[ptOctantComp.Guid]);
             }
 
             foreach (var child in node.Children)
@@ -423,31 +426,40 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
         }
 
-        private void RemoveMeshes(SceneNode node, OctantD ptOctantComponent)
+        /// <summary>
+        /// Removes the meshes from the given SceneNode.
+        /// </summary>
+        /// <param name="node">The SceneNode.</param>
+        /// <param name="ptOctantComponent">The GUID od this octant is used to check if the meshes where loaded.</param>
+        /// <returns>Only returns false if the meshes where never loaded.</returns>
+        private bool TryRemoveMeshes(SceneNode node, OctantD ptOctantComponent)
         {
-            _ = node.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
-
-            bool couldGetValue = _loadedMeshs.TryGetValue(ptOctantComponent.Guid, out var meshs);
-            if (couldGetValue)
+            bool contains = _loadedMeshs.ContainsKey(ptOctantComponent.Guid);
+            if (!contains)
+                return false;
+            else
             {
+                _ = node.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
+                var meshes = _loadedMeshs[ptOctantComponent.Guid];
                 _ = _loadedMeshs.Remove(ptOctantComponent.Guid);
 
                 ptOctantComponent.WasLoaded = false;
                 ptOctantComponent.VisibleChildIndices = 0;
 
-                foreach (Mesh mesh in meshs)
+                foreach (Mesh mesh in meshes)
                 {
                     mesh.Dispose();
                 }
+                return true;
             }
         }
 
         private List<TPoint> LoadPointsForNode(PointAccessor<TPoint> ptAccessor, OctantD ptOctantComponent)
         {
-            var pathToFile = FileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
+            var pathToFile = $"{FileFolderPath}/Octants/{ptOctantComponent.Guid.ToString("N")}.node";
 
             if (!File.Exists(pathToFile))
-                throw new ArgumentException("File: " + ptOctantComponent.Guid + ".node does not exist!");
+                throw new ArgumentException($"File: { ptOctantComponent.Guid }.node does not exist!");
 
             using BinaryReader br = new(File.Open(pathToFile, FileMode.Open, FileAccess.Read, FileShare.Read));
             // step to stream position
@@ -472,12 +484,11 @@ namespace Fusee.PointCloud.OoCReaderWriter
             ptOctantComponent.WasLoaded = true;
 
             return points;
-
         }
 
         private int GetPtCountFromFile(OctantD ptOctantComponent)
         {
-            var pathToFile = FileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
+            var pathToFile = $"{FileFolderPath}/Octants/{ptOctantComponent.Guid.ToString("N")}.node";
 
             if (!File.Exists(pathToFile))
                 throw new ArgumentException("File: " + ptOctantComponent.Guid + ".node does not exist!");
@@ -563,7 +574,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
             RootNode.GetComponent<OctantD>().ComputeScreenProjectedSize(camPos, RC.ViewportHeight, fov);
-            _minScreenProjectedSize = (float)RootNode.GetComponent<OctantD>().ProjectedScreenSize * _minProjSizeModifier;
+            _minScreenProjectedSize = RootNode.GetComponent<OctantD>().ProjectedScreenSize * _minProjSizeModifier;
         }
     }
 }

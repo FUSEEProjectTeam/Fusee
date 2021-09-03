@@ -209,7 +209,7 @@ namespace Fusee.Examples.PcRendering.Core
                     _angleRoll = Touch.TwoPointAngle - _angleRollInit;
                     _offset = Touch.TwoPointMidPoint - _offsetInit;
                     float pinchSpeed = Touch.TwoPointDistanceVel;
-                    if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
+                    if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed;
                 }
                 else
                 {
@@ -284,7 +284,6 @@ namespace Fusee.Examples.PcRendering.Core
                 _sceneRenderer.Render(RC);
 
                 //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
-                //OocLoader.RC = RC;
                 OocLoader.UpdateScene(PtRenderingParams.Instance.PtMode, PtRenderingParams.Instance.DepthPassEf, PtRenderingParams.Instance.ColorPassEf);
 
                 if (UseWPF)
