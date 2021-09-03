@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         /// </summary>
-        internal readonly Dictionary<string, object> GlobalFXParams;
+        internal readonly Dictionary<string, FxParam> GlobalFXParams;
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
@@ -789,7 +789,7 @@ namespace Fusee.Engine.Core
             _rci = rci;
             DefaultState = new RenderContextDefaultState();
             DefaultEffect = MakeEffect.Default();
-            GlobalFXParams = new Dictionary<string, object>();
+            GlobalFXParams = new Dictionary<string, FxParam>();
 
             SetGlobalEffectParam(UniformNameDeclarations.FuseePlatformId, _rci.FuseePlatformId);
 
@@ -1197,8 +1197,8 @@ namespace Fusee.Engine.Core
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(shaderParam.Key, out object globalFXValue))
-                    effectParam.Value = globalFXValue;
+                if (GlobalFXParams.TryGetValue(shaderParam.Key, out FxParam globalFxParam))
+                    effectParam.Value = globalFxParam.Value;
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
@@ -1214,14 +1214,27 @@ namespace Fusee.Engine.Core
         /// <param name="value">Effect parameter value.</param>
         internal void SetGlobalEffectParam(string name, object value)
         {
-            if (GlobalFXParams.TryGetValue(name, out var currentValue))
+            if (GlobalFXParams.TryGetValue(name, out var param))
             {
-                if (currentValue == value) return; // no new value
-                GlobalFXParams[name] = value;
+                if (param.Value == value) return; // no new value
+                param.Value = value;
+                param.HasValueChanged = true;
             }
             else if (value != null)
             {
-                GlobalFXParams.Add(name, value);
+                var newParam = new FxParam()
+                {
+                    Value = value
+                };
+                GlobalFXParams.Add(name, newParam);
+            }
+        }
+
+        internal void ClearGlobalEffectParamsDirtyFlag()
+        {
+            foreach (var globalParam in GlobalFXParams.Values)
+            {
+                globalParam.HasValueChanged = false;
             }
         }
 
@@ -1669,19 +1682,21 @@ namespace Fusee.Engine.Core
 
                 SetShaderProgram(cFx.GpuHandle);
 
-                foreach (var fxParam in cFx.ActiveUniforms)
+                for (int i = 0; i < GlobalFXParams.Count; i++)
                 {
-                    // OVERWRITE Values in the Effect with the newest ones from the GlobalFXParams collection.
-                    if (GlobalFXParams.TryGetValue(fxParam.Key, out object globalFXValue))
+                    var globalFxParam = GlobalFXParams.ElementAt(i);
+                    if (globalFxParam.Value.HasValueChanged)
                     {
-                        var dcl = _currentEffect.ParamDecl[fxParam.Key];
-                        var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
-                        if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
+                        if (cFx.ActiveUniforms.ContainsKey(globalFxParam.Key))
                         {
-                            _currentEffect.SetFxParam(fxParam.Key, globalFXValue);
+                            _currentEffect.SetFxParam(globalFxParam.Key, globalFxParam.Value.Value);
+                            globalFxParam.Value.HasValueChanged = false;
                         }
                     }
+                }
 
+                foreach (var fxParam in cFx.ActiveUniforms)
+                {
                     var param = cFx.ActiveUniforms[fxParam.Key];
                     SetShaderParamT(param);
                     param.HasValueChanged = false;
@@ -1741,22 +1756,22 @@ namespace Fusee.Engine.Core
                 SetShaderProgram(cFx.GpuHandle);
                 SetRenderStateSet(_currentEffect.RendererStates);
 
-                foreach (var fxParam in cFx.ActiveUniforms)
+                foreach (var key in GlobalFXParams.Keys)
                 {
-                    // OVERWRITE Values in the Effect with the newest ones from the GlobalFXParams collection.
-                    if (GlobalFXParams.TryGetValue(fxParam.Key, out object globalFXValue))
+                    var globalFxParam = GlobalFXParams[key];
+                    if (globalFxParam.HasValueChanged)
                     {
-                        var dcl = _currentEffect.ParamDecl[fxParam.Key];
-                        var dclVal = dcl.GetType().GetField("Value").GetValue(dcl);
-                        if (!dclVal.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
+                        if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
                         {
-                            _currentEffect.SetFxParam(fxParam.Key, globalFXValue);
+                            _currentEffect.SetFxParam(key, globalFxParam.Value);
                         }
                     }
-
-                    var param = cFx.ActiveUniforms[fxParam.Key];
-                    SetShaderParamT(param);
-                    param.HasValueChanged = false;
+                }
+                
+                foreach (var fxParam in cFx.ActiveUniforms.Values)
+                {
+                    SetShaderParamT(fxParam);
+                    fxParam.HasValueChanged = false;
                 }
 
                 // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.

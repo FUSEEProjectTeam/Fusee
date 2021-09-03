@@ -308,6 +308,8 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
+
+            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam)

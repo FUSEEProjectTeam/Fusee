@@ -23,6 +23,8 @@ namespace Fusee.Engine.Core.Effects
         /// Defines in which type of shader this parameter is used in.
         /// </summary>
         IEnumerable<ShaderCategory> UsedInShaders { get; }
+
+        void SetValue(object val);
     }
 
     /// <summary>
@@ -51,5 +53,15 @@ namespace Fusee.Engine.Core.Effects
         IEnumerable<ShaderCategory> IFxParamDeclaration.UsedInShaders => _usedInShaders;
 
         private readonly IEnumerable<ShaderCategory> _usedInShaders;
+
+        public void SetValue(object val)
+        {
+            if (ParamType != typeof(T))
+                throw new ArgumentException($"{val} has the wrong Type!");
+            else
+            {
+                Value = (T)val;
+            }
+        }
     }
 }
