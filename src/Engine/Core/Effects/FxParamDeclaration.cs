@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         IEnumerable<ShaderCategory> UsedInShaders { get; }
 
-        void SetValue(object val);
+        bool SetValue(object val);
     }
 
     /// <summary>
@@ -73,13 +73,16 @@ namespace Fusee.Engine.Core.Effects
 
         private readonly IEnumerable<ShaderCategory> _usedInShaders;
 
-        public void SetValue(object val)
+        public bool SetValue(object val)
         {
             if (ParamType != typeof(T))
                 throw new ArgumentException($"{val} has the wrong Type!");
             else
             {
+                if (Value.Equals((T)val)) 
+                    return false;
                 Value = (T)val;
+                return true;
             }
         }
     }

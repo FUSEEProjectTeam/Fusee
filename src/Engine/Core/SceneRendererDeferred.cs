@@ -621,7 +621,7 @@ namespace Fusee.Engine.Core
                 }
 
                 UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
-                _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.RenderPassNoHash, lightPassCnt);
+                _lightingPassEffect.SetFxParam(UniformNameDeclarations.RenderPassNoHash, lightPassCnt);
 
                 if (_needToSetSSAOTex)
                 {
