@@ -131,7 +131,7 @@ namespace Fusee.Engine.Core.Effects
         public SurfaceEffect(LightingSetupFlags lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
 
             Version = Header.Version300Es;
             Pi = Header.DefinePi;
@@ -157,7 +157,7 @@ namespace Fusee.Engine.Core.Effects
             foreach (var structProp in surfInType.GetProperties())
             {
                 var paramDcl = BuildFxParamDecl(structProp, GetType().GetProperty(surfInName));
-                ParamDecl.Add(paramDcl.Name, paramDcl);
+                ParamDecl.Add(paramDcl.Hash, paramDcl);
             }
 
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
@@ -224,7 +224,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
-                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            ParamDecl.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }
@@ -247,7 +247,7 @@ namespace Fusee.Engine.Core.Effects
                         foreach (var structProp in prop.PropertyType.GetProperties())
                         {
                             var paramDcl = BuildFxParamDecl(structProp, prop);
-                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            ParamDecl.Add(paramDcl.Hash, paramDcl);
                         }
                         HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
                         continue;
@@ -293,7 +293,7 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Matrix:
                         {
                             var paramDcl = BuildFxParamDecl(field);
-                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            ParamDecl.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }

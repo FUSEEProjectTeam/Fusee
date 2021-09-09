@@ -134,6 +134,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _maxNumberOfNodesToLoad = 5;
 
+        private const string _octreeTexName = "OctreeTex";
+
         /// <summary>
         /// Initializes the <see cref="RC"/> dependent properties and starts the loading task.
         /// </summary>
@@ -204,8 +206,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 if (ptSizeMode == PointSizeMode.AdaptiveSize)
                 {
                     TraverseBreadthFirstToCreate1DTex(_rootNode, VisibleOctreeHierarchyTex);
-                    depthPassEf.SetFxParam("OctreeTex", VisibleOctreeHierarchyTex);
-                    colorPassEf.SetFxParam("OctreeTex", VisibleOctreeHierarchyTex);
+                    depthPassEf.SetFxParam(_octreeTexName, VisibleOctreeHierarchyTex);
+                    colorPassEf.SetFxParam(_octreeTexName, VisibleOctreeHierarchyTex);
                 }
 
                 TraverseToUpdateScene(_rootNode);

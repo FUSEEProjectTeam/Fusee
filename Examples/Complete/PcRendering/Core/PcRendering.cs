@@ -28,7 +28,6 @@ namespace Fusee.Examples.PcRendering.Core
 
         public IPtOctantLoader OocLoader { get; }
         public IPtOctreeFileReader OocFileReader { get; }
-
         public bool UseWPF { get; set; }
         public bool DoShowOctants { get; set; }
         public bool IsSceneLoaded { get; private set; }
@@ -101,6 +100,7 @@ namespace Fusee.Examples.PcRendering.Core
 
         public override void Init()
         {
+            VSync = false;
             _spaceMouse = GetDevice<SixDOFDevice>();
 
             _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));

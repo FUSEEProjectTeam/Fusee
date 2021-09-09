@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core
                     _effectsToBeDeleted.Push(senderSF);
                     break;
                 case UniformChangedEnum.Update:
-                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedUniformName, args.ChangedUniformValue);
+                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedUniformHash, args.ChangedUniformValue);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"EffectChanged event called with unknown arguments: {args}, calling Effect: {sender as Effect}");

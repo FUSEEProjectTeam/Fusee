@@ -47,6 +47,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
         // Init is called on startup.
         public override void Init()
         {
+            VSync = false;
+
             _camTransform = new Transform()
             {
                 Scale = float3.One,

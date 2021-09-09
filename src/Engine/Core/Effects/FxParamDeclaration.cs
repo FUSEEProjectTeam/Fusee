@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -10,9 +10,14 @@ namespace Fusee.Engine.Core.Effects
     public interface IFxParamDeclaration
     {
         /// <summary>
-        /// The name of the parameter.
+        /// The name of the parameter. Must be unique in the used Effect.
         /// </summary>
         string Name { get; set; }
+
+        /// <summary>
+        /// Hash code of the Name, set in the Setter of "Name".
+        /// </summary>
+        int Hash { get; }
 
         /// <summary>
         /// The Type of the parameter.
@@ -36,9 +41,23 @@ namespace Fusee.Engine.Core.Effects
     public struct FxParamDeclaration<T> : IFxParamDeclaration
     {
         /// <summary>
-        /// The name of the parameter.
+        /// The name of the parameter. Must be unique in the used Effect.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Hash = value.GetHashCode();
+            }
+        }
+        private string _name;
+
+        /// <summary>
+        /// Hash code of the Name.
+        /// </summary>
+        public int Hash { get; private set; }
 
         /// <summary>
         /// The value of the parameter.

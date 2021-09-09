@@ -13,12 +13,26 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static PtRenderingParams Instance { get; private set; } = new();
 
-        public ConcurrentDictionary<string, object> ShaderParamsToUpdate = new();
+        public ConcurrentDictionary<int, object> ShaderParamsToUpdate = new();
         public int MaxNoOfVisiblePoints = 500000;
         public string PathToOocFile = "D://HolbeinPferdOctree";
 
         public ShaderEffect DepthPassEf;
         public ShaderEffect ColorPassEf;
+
+        
+        private int _lightingParamHash = "Lighting".GetHashCode();
+        private int _pointShapeParamHash = "PointShape".GetHashCode();
+        private int _pointModeParamHash = "PointMode".GetHashCode();
+        private int _colorModeParamHash = "ColorMode".GetHashCode();
+        private int _shininessParamHash = "Shininess".GetHashCode();
+        private int _pointSizeParamHash = "PointSize".GetHashCode();
+        private int _colorParamHash = "Color".GetHashCode();
+        private int _calcSSAOParamHash = "CalcSSAO".GetHashCode();
+        private int _ssaoStrengthParamHash = "SSAOStrength".GetHashCode();
+        private int _edlNeighbourPixelsParamHash = "EDLNeighbourPixels".GetHashCode();
+        private int _edlStrengthParamHash = "EDLStrength".GetHashCode();
+        private int _specularStrengthParamHash = "SpecularStrength".GetHashCode();
 
         private Lighting _lighting = Lighting.Edl;
         public Lighting Lighting
@@ -27,7 +41,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _lighting = value;
-                ShaderParamsToUpdate.AddOrUpdate("Lighting", (int)Lighting, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_lightingParamHash, (int)Lighting, (key, val) => val);
             }
         }
 
@@ -38,7 +52,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _shape = value;
-                ShaderParamsToUpdate.AddOrUpdate("PointShape", (int)Shape, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_pointShapeParamHash, (int)Shape, (key, val) => val);
             }
         }
 
@@ -49,7 +63,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _ptMode = value;
-                ShaderParamsToUpdate.AddOrUpdate("PointMode", (int)PtMode, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_pointModeParamHash, (int)PtMode, (key, val) => val);
             }
         }
 
@@ -61,7 +75,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _colorMode = value;
-                ShaderParamsToUpdate.AddOrUpdate("ColorMode", (int)ColorMode, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_colorModeParamHash, (int)ColorMode, (key, val) => val);
             }
         }
 
@@ -72,7 +86,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _size = value;
-                ShaderParamsToUpdate.AddOrUpdate("PointSize", Size, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_pointSizeParamHash, Size, (key, val) => val);
             }
         }
 
@@ -83,7 +97,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _singleColor = value;
-                _ = ShaderParamsToUpdate.AddOrUpdate("Color", SingleColor, (key, val) => val);
+                _ = ShaderParamsToUpdate.AddOrUpdate(_colorParamHash, SingleColor, (key, val) => val);
             }
         }
 
@@ -94,7 +108,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _calcSSAO = value;
-                ShaderParamsToUpdate.AddOrUpdate("CalcSSAO", CalcSSAO ? 1 : 0, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_calcSSAOParamHash, CalcSSAO ? 1 : 0, (key, val) => val);
             }
         }
 
@@ -105,7 +119,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _ssaoStrength = value;
-                ShaderParamsToUpdate.AddOrUpdate("SSAOStrength", SSAOStrength, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_ssaoStrengthParamHash, SSAOStrength, (key, val) => val);
             }
         }
 
@@ -116,7 +130,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _edlNoOfNeighbourPx = value;
-                ShaderParamsToUpdate.AddOrUpdate("EDLNeighbourPixels", EdlNoOfNeighbourPx, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_edlNeighbourPixelsParamHash, EdlNoOfNeighbourPx, (key, val) => val);
             }
         }
 
@@ -127,7 +141,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _edlStrength = value;
-                ShaderParamsToUpdate.AddOrUpdate("EDLStrength", EdlStrength, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_edlStrengthParamHash, EdlStrength, (key, val) => val);
             }
         }
 
@@ -138,7 +152,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _specularStrength = value;
-                ShaderParamsToUpdate.AddOrUpdate("SpecularStrength", SpecularStrength, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_specularStrengthParamHash, SpecularStrength, (key, val) => val);
             }
         }
 
@@ -149,7 +163,7 @@ namespace Fusee.Examples.PcRendering.Core
             set
             {
                 _shininess = value;
-                ShaderParamsToUpdate.AddOrUpdate("Shininess", Shininess, (key, val) => val);
+                ShaderParamsToUpdate.AddOrUpdate(_shininessParamHash, Shininess, (key, val) => val);
             }
         }
 
