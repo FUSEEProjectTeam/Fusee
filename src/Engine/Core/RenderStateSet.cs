@@ -2,7 +2,6 @@ using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -69,15 +68,21 @@ namespace Fusee.Engine.Core
         public RenderStateSet()
         {
             _states = new Dictionary<RenderState, uint>();
-        }
+            AlphaBlendEnable = false;
+            BlendFactor = float4.Zero;
+            BlendOperation = BlendOperation.Add;
+            BlendOperationAlpha = BlendOperation.Add;
+            DestinationBlend = Blend.Zero;
+            DestinationBlendAlpha = Blend.Zero;
+            SourceBlend = Blend.One;
+            SourceBlendAlpha = Blend.One;
 
-        /// <summary>
-        /// Returns a new instance of type <see cref="RenderStateSet"/>.
-        /// </summary>
-        /// <param name="states">The values to fill this state set with.</param>
-        public RenderStateSet(Dictionary<RenderState, uint> states)
-        {
-            _states = states;
+            CullMode = Cull.Counterclockwise;
+            Clipping = true;
+            FillMode = FillMode.Solid;
+            ZEnable = true;
+            ZFunc = Compare.Less;
+            ZWriteEnable = true;
         }
 
         /// <summary>
@@ -85,53 +90,41 @@ namespace Fusee.Engine.Core
         /// </summary>
         public RenderStateSet Copy()
         {
-            return new RenderStateSet(new Dictionary<RenderState, uint>(_states));
+            var newSet = new RenderStateSet();
+            newSet.SetRenderStates(_states);
+            return newSet;
         }
 
         /// <summary>
-        /// Returns a new RenderStateSet which contains the delta of this instance (A) and a given RenderStateSet (B).
-        /// Rules
-        /// 1. A has state and B has state and A == B: no need to add the state.
-        /// 2. A has state and B has state and A != B: set state to value of A.
-        /// 3. A has state and B does not: set state to value of A.
-        /// 4. B has state and A has not: set state to default value.
+        /// Returns a new RenderStateSet which contains the delta of this instance (A) and a given RenderStateSet (B).        
         /// </summary>
         /// <param name="otherSet"></param>
         /// <returns></returns>
         internal RenderStateSet Delta(RenderStateSet otherSet)
         {
-            var resStates = new Dictionary<RenderState, uint>();
+            if (this == otherSet) return new RenderStateSet();
+            var newSet = new RenderStateSet();
 
-            //Rule 1 and 2
-            var intersectKeys = _states.Keys.Intersect(otherSet._states.Keys);
-            foreach (var stateEnum in intersectKeys)
+            foreach (var key in _states.Keys)
             {
-                if (_states[stateEnum] != otherSet._states[stateEnum])
-                    resStates.Add(stateEnum, _states[stateEnum]);
+                if (_states[key] != otherSet._states[key])
+                {
+                    newSet.SetRenderState(key, _states[key]);
+                }
             }
 
-            //Rule 3
-            var aWithoutBKeys = _states.Keys.Except(otherSet._states.Keys);
-            foreach (var stateEnum in aWithoutBKeys)
-                resStates.Add(stateEnum, _states[stateEnum]);
-
-            //Rule 4
-            var bWithoutAKeys = otherSet._states.Keys.Except(_states.Keys);
-            foreach (var stateEnum in bWithoutAKeys)
-                resStates.Add(stateEnum, (uint)Default.GetRenderState(stateEnum));
-
-            return new RenderStateSet(resStates);
+            return newSet;
         }
 
         /// <summary>
         /// Sets the RenderStates in the Set.
         /// </summary>
         /// <param name="renderStateContainer"></param>
-        internal void SetRenderStates(Dictionary<uint, uint> renderStateContainer)
+        internal void SetRenderStates(Dictionary<RenderState, uint> renderStateContainer)
         {
             foreach (var renderState in renderStateContainer)
             {
-                _states[(RenderState)renderState.Key] = renderState.Value;
+                _states[renderState.Key] = renderState.Value;
             }
         }
 
