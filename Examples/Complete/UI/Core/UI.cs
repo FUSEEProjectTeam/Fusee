@@ -398,7 +398,7 @@ namespace Fusee.Examples.UI.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-            _fpsText.Text = "FPS: " + Time.FramePerSecond.ToString("0.00");
+            _fpsText.Text = "FPS: " + Time.FramesPerSecond.ToString("0.00");
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
