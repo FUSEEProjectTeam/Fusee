@@ -15,7 +15,7 @@ namespace Fusee.Examples.PcRendering.Core
 
         public ConcurrentDictionary<string, object> ShaderParamsToUpdate = new();
         public int MaxNoOfVisiblePoints = 500000;
-        public string PathToOocFile = "C://Users//busert//Desktop//Baugrube8m";
+        public string PathToOocFile = "D://HolbeinPferdOctree";
 
         public ShaderEffect DepthPassEf;
         public ShaderEffect ColorPassEf;

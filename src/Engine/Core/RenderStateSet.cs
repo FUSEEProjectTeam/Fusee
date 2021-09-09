@@ -56,7 +56,7 @@ namespace Fusee.Engine.Core
         ///     DoSomethingWithState(state.Key, state.Value);
         /// </code>
         /// </example>
-        public IEnumerable<KeyValuePair<RenderState, uint>> States
+        public Dictionary<RenderState, uint> States
         {
             get { return _states; }
         }
@@ -90,17 +90,32 @@ namespace Fusee.Engine.Core
         /// </summary>
         public RenderStateSet Copy()
         {
-            var newSet = new RenderStateSet();
-            newSet.SetRenderStates(_states);
-            return newSet;
+            return new RenderStateSet
+            {
+                AlphaBlendEnable = AlphaBlendEnable,
+                BlendFactor = BlendFactor,
+                BlendOperation = BlendOperation,
+                BlendOperationAlpha = BlendOperationAlpha,
+                DestinationBlend = DestinationBlend,
+                DestinationBlendAlpha = DestinationBlendAlpha,
+                SourceBlend = SourceBlend,
+                SourceBlendAlpha = SourceBlendAlpha,
+
+                CullMode = CullMode,
+                Clipping = Clipping,
+                FillMode = FillMode,
+                ZEnable = ZEnable,
+                ZFunc = ZFunc,
+                ZWriteEnable = ZWriteEnable
+            };
         }
 
         /// <summary>
-        /// Returns a new RenderStateSet which contains the delta of this instance (A) and a given RenderStateSet (B).        
+        /// Returns a new RenderStateSet which merges this instance (A) and a given RenderStateSet (B) by overwriting differing values with the ones from B.        
         /// </summary>
         /// <param name="otherSet"></param>
         /// <returns></returns>
-        internal RenderStateSet Delta(RenderStateSet otherSet)
+        internal RenderStateSet Merge(RenderStateSet otherSet)
         {
             if (this == otherSet) return new RenderStateSet();
             var newSet = new RenderStateSet();
@@ -135,10 +150,7 @@ namespace Fusee.Engine.Core
         /// <param name="value">The value.</param>
         internal void SetRenderState(RenderState state, uint value)
         {
-            if (_states.ContainsKey(state))
-                _states[state] = value;
-            else
-                _states.Add(state, value);
+            _states[state] = value;
         }
 
         /// <summary>
@@ -146,12 +158,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="state">The render state.</param>
         /// <returns></returns>
-        internal uint? GetRenderState(RenderState state)
+        internal uint GetRenderState(RenderState state)
         {
-            if (_states.ContainsKey(state))
-                return _states[state];
-            else
-                return null;
+            return _states[state];
         }
 
         /// <summary>
@@ -160,12 +169,9 @@ namespace Fusee.Engine.Core
         /// <param name="state">The render state</param>
         /// <param name="val">The state as uint.</param>
         /// <returns></returns>
-        internal void GetRenderState(RenderState state, out uint? val)
+        internal void GetRenderState(RenderState state, out uint val)
         {
-            if (_states.ContainsKey(state))
-                val = _states[state];
-            else
-                val = null;
+            val = _states[state];
         }
 
         #region Butter and bread states

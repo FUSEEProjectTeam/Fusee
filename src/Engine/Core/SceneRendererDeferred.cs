@@ -178,9 +178,7 @@ namespace Fusee.Engine.Core
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
-            var renderStatesAfter = _rc.CurrentRenderState.Copy();
-
-            _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         #endregion
