@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
-            : base(LightingSetupFlags.Unlit, new ColorInput() { Albedo = new float4(.5f, .5f, .5f, 1.0f) }, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos, rendererStates)
+            : base(LightingSetupFlags.Unlit, new ColorInput() { Albedo = new float4(.5f, .5f, .5f, 1.0f) }, FragShards.Instance.SurfOutBody_Color, VertShards.Instance.SufOutBody_Pos, rendererStates)
         {
             RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
         }

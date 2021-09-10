@@ -320,15 +320,15 @@ namespace Fusee.Engine.Player.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
+            effect.SetFxParam(UniformNameDeclarations.Instance.Albedo, (float4)ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.Instance.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
+            effect.SetFxParam(UniformNameDeclarations.Instance.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.Instance.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

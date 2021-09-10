@@ -150,6 +150,7 @@ namespace Fusee.Examples.Camera.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            Diagnostics.Warn(FramesPerSecond);
             if (Mouse.RightButton)
             {
                 _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
@@ -324,15 +325,15 @@ namespace Fusee.Examples.Camera.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
+            effect.SetFxParam(UniformNameDeclarations.Instance.Albedo, (float4)ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.Instance.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
             ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
+            effect.SetFxParam(UniformNameDeclarations.Instance.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.Instance.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

@@ -49,8 +49,8 @@ namespace Fusee.Engine.Core.Effects
         public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutFragBody, List<string> surfOutVertBody, RenderStateSet rendererStates = null)
             : base(lightingSetup, input, rendererStates)
         {
-            SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
-            SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, lightingSetup);
+            SurfOutFragMethod = SurfaceOut.Instance.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
+            SurfOutVertMethod = SurfaceOut.Instance.GetChangeSurfVertMethod(surfOutVertBody, lightingSetup);
             FUSEE_MVP = float4x4.Identity;
             FUSEE_ITMV = float4x4.Identity;
             FUSEE_MVP = float4x4.Identity;

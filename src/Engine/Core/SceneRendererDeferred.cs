@@ -426,8 +426,6 @@ namespace Fusee.Engine.Core
             {
                 RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight), renderTex);
             }
-
-            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam, WritableTexture renderTex = null)
@@ -621,19 +619,19 @@ namespace Fusee.Engine.Core
                 }
 
                 UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
-                _lightingPassEffect.SetFxParam(UniformNameDeclarations.RenderPassNoHash, lightPassCnt);
+                _lightingPassEffect.SetFxParam(UniformNameDeclarations.Instance.RenderPassNoHash, lightPassCnt);
 
                 if (_needToSetSSAOTex)
                 {
-                    _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.SsaoOnHash, _ssaoOn ? 1 : 0);
+                    _lightingPassEffect.SetFxParam(UniformNameDeclarations.Instance.SsaoOnHash, _ssaoOn ? 1 : 0);
                     _needToSetSSAOTex = false;
                 }
 
                 //Set background color only in last light pass to NOT blend the color (additive).
                 if (i == LightViseratorResults.Count - 1)
-                    _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
+                    _lightingPassEffect.SetFxParam(UniformNameDeclarations.Instance.BackgroundColorHash, BackgroundColor);
                 else
-                    _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.BackgroundColorHash, _texClearColor);
+                    _lightingPassEffect.SetFxParam(UniformNameDeclarations.Instance.BackgroundColorHash, _texClearColor);
 
                 _rc.SetEffect(_lightingPassEffect);
                 _rc.Render(_quad);
@@ -669,10 +667,10 @@ namespace Fusee.Engine.Core
                                 _rc.CreateShaderProgram(_shadowCubeMapEffect);
                             }
                             else
-                                _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatricesHash, shadowParams.LightSpaceMatrices);
+                                _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.Instance.LightSpaceMatricesHash, shadowParams.LightSpaceMatrices);
 
-                            _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightMatClipPlanesHash, shadowParams.ClipPlanesForLightMat[0]);
-                            _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.Item2.WorldSpacePos);
+                            _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.Instance.LightMatClipPlanesHash, shadowParams.ClipPlanesForLightMat[0]);
+                            _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.Instance.LightPosHash, lightVisRes.Item2.WorldSpacePos);
                             _rc.SetEffect(_shadowCubeMapEffect, true);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMap);
@@ -687,9 +685,9 @@ namespace Fusee.Engine.Core
                         {
                             if (NumberOfCascades == 1)
                             {
-                                _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                                _shadowEffect.SetFxParam(UniformNameDeclarations.Instance.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                                 _rc.SetEffect(_shadowEffect, true);
-                                _rc.SetRenderTarget((IWritableTexture)shadowParams.ShadowMap);
+                                _rc.SetRenderTarget(shadowParams.ShadowMap);
 
                                 _lightFrustum = shadowParams.Frustums[0];
 
@@ -699,7 +697,7 @@ namespace Fusee.Engine.Core
                             {
                                 for (int i = 0; i < NumberOfCascades; i++)
                                 {
-                                    _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
+                                    _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.Instance.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
                                     _rc.SetEffect(_shadowEffect, true);
                                     _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
 
@@ -717,7 +715,7 @@ namespace Fusee.Engine.Core
                     case LightType.Spot:
                         {
                             DoFrumstumCulling = true;
-                            _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                            _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.Instance.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                             _rc.SetEffect(_shadowEffect, false);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
 
@@ -851,25 +849,25 @@ namespace Fusee.Engine.Core
                 switch (lightVisRes.Item2.Light.Type)
                 {
                     case LightType.Point:
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowCubeMapHash, (WritableCubeMap)shadowParams.ShadowMap);
+                        effect.SetFxParam(UniformNameDeclarations.Instance.ShadowCubeMapHash, (WritableCubeMap)shadowParams.ShadowMap);
                         break;
                     case LightType.Legacy:
                     case LightType.Parallel:
                         if (NumberOfCascades > 1)
                         {
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
+                            effect.SetFxParam(UniformNameDeclarations.Instance.ShadowMapHash, shadowParams.ShadowMap);
                             effect.SetFxParam("ClipPlanes[0]", shadowParams.ClipPlanesForLightMat);
                             effect.SetFxParam("LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
                         }
                         else
                         {
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
+                            effect.SetFxParam(UniformNameDeclarations.Instance.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                            effect.SetFxParam(UniformNameDeclarations.Instance.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
                         }
                         break;
                     case LightType.Spot:
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
+                        effect.SetFxParam(UniformNameDeclarations.Instance.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                        effect.SetFxParam(UniformNameDeclarations.Instance.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
                         break;
                     default:
                         break;

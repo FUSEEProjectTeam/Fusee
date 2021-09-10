@@ -5,37 +5,37 @@ namespace Fusee.Engine.Core.ShaderShards
     /// Name declarations for varying variables (vert out, frag in). Ensures compatibility between shader shards.
     /// Use those in vert and frag files too, if you want to mix shards and complete files.
     /// </summary>
-    public static class VaryingNameDeclarations
+    public sealed class VaryingNameDeclarations
     {
         /// <summary>
         /// The variable name of the TBN (Tangent, Bitangent, Normal) matrix.
         /// </summary>
-        public static readonly string TBN = "TBN";
+        public const string TBN = "TBN";
 
         /// <summary>
         /// The texture coordinates variable name.
         /// </summary>
-        public static readonly string TextureCoordinates = "vUV";
+        public const string TextureCoordinates = "vUV";
 
         /// <summary>
         /// The view direction variable name.
         /// </summary>
-        public static readonly string ViewDirection = "vViewDir";
+        public const string ViewDirection = "vViewDir";
 
         /// <summary>
         /// The camera position variable name.
         /// </summary>
-        public static readonly string CameraPosition = "vCamPos";
+        public const string CameraPosition = "vCamPos";
 
         /// <summary>
         /// The tangents variable name.
         /// </summary>
-        public static readonly string Tangent = "vT";
+        public const string Tangent = "vT";
 
         /// <summary>
         /// The bitangents variable name.
         /// </summary>
-        public static readonly string Bitangent = "vB";
+        public const string Bitangent = "vB";
 
         /// <summary>
         /// The vertex colors variable name.
@@ -45,11 +45,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The vertex position variable name.
         /// </summary>
-        public static readonly string Position = "vPos";
+        public const string Position = "vPos";
 
         /// <summary>
         /// The vertex normal variable name.
         /// </summary>
-        public static readonly string Normal = "vNormal";
+        public const string Normal = "vNormal";
     }
 }

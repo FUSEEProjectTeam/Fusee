@@ -49,7 +49,7 @@ namespace Fusee.Engine.Core
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = RenderTargetTextureTypes.Albedo.ToString(), Value = srcTex},
-                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
+                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.Instance.ScreenParams, Value = screenParams},
             });
         }
 
@@ -90,14 +90,14 @@ namespace Fusee.Engine.Core
             },
             new IFxParamDeclaration[]
             {
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
 
-                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
-                new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
-                new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
-                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
+                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.Instance.ScreenParams, Value = screenParams},
+                new FxParamDeclaration<float3[]> {Name = UniformNameDeclarations.Instance.SSAOKernel, Value = ssaoKernel},
+                new FxParamDeclaration<Texture> {Name = UniformNameDeclarations.Instance.NoiseTex, Value = ssaoNoiseTex},
+                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Instance.Projection, Value = float4x4.Identity},
             });
 
         }
@@ -160,11 +160,11 @@ namespace Fusee.Engine.Core
                 effectParams.Add(new FxParamDeclaration<float> { Name = "light.bias", Value = 0.0f });
                 if (lc.Type != LightType.Point)
                 {
-                    effectParams.Add(new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
-                    effectParams.Add(new FxParamDeclaration<WritableTexture> { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
+                    effectParams.Add(new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.LightSpaceMatrix, Value = float4x4.Identity });
+                    effectParams.Add(new FxParamDeclaration<WritableTexture> { Name = UniformNameDeclarations.Instance.ShadowMap, Value = (WritableTexture)shadowMap });
                 }
                 else
-                    effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
+                    effectParams.Add(new FxParamDeclaration<WritableCubeMap> { Name = UniformNameDeclarations.Instance.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
             }
 
             effectParams.AddRange(DeferredLightParams(lc.Type));
@@ -240,8 +240,8 @@ namespace Fusee.Engine.Core
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.Model, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.View, Value = float4x4.Identity },
                 new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
                 new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
                 new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
@@ -286,8 +286,8 @@ namespace Fusee.Engine.Core
             },
             new IFxParamDeclaration[]
             {
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.Model, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.LightSpaceMatrix, Value = float4x4.Identity},
             });
         }
 
@@ -295,18 +295,18 @@ namespace Fusee.Engine.Core
         {
             return new List<IFxParamDeclaration>()
             {
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
-                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
-                new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
-                new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Position]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Normal]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Albedo]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.Instance.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.IView, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.View, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Instance.ITView, Value = float4x4.Identity},
+                new FxParamDeclaration<int> { Name = UniformNameDeclarations.Instance.RenderPassNo, Value = 0},
+                new FxParamDeclaration<float4> { Name = UniformNameDeclarations.Instance.BackgroundColor, Value = backgroundColor},
+                new FxParamDeclaration<int> { Name = UniformNameDeclarations.Instance.SsaoOn, Value = 1},
             };
         }
 
@@ -360,7 +360,7 @@ namespace Fusee.Engine.Core
             {
                 Albedo = albedoColor
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.Unlit, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
+            return new DefaultSurfaceEffect(LightingSetupFlags.Unlit, input, FragShards.Instance.SurfOutBody_Color, VertShards.Instance.SufOutBody_Pos);
         }
 
         /// <summary>
@@ -381,7 +381,7 @@ namespace Fusee.Engine.Core
                 AlbedoMix = albedoMix,
                 TexTiles = texTiles
             };
-            return new DefaultSurfaceEffect(lightingSetup, input, FragShards.SurfOutBody_Textures(lightingSetup), VertShards.SufOutBody_Pos);
+            return new DefaultSurfaceEffect(lightingSetup, input, FragShards.SurfOutBody_Textures(lightingSetup), VertShards.Instance.SufOutBody_Pos);
         }
 
         #endregion
@@ -401,7 +401,7 @@ namespace Fusee.Engine.Core
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.Instance.SurfOutBody_Color, VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -448,7 +448,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         #endregion
@@ -501,7 +501,7 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseSpecular, input, FragShards.SurfOutBody_DiffSpecular, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseSpecular, input, FragShards.Instance.SurfOutBody_DiffSpecular, VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -530,7 +530,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -559,7 +559,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -592,7 +592,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
         #endregion
 
@@ -611,7 +611,7 @@ namespace Fusee.Engine.Core
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.Glossy, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.Glossy, input, FragShards.Instance.SurfOutBody_Color, VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -635,7 +635,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.Glossy | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -658,7 +658,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.Glossy | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -685,7 +685,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.Glossy | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         #endregion
@@ -715,7 +715,7 @@ namespace Fusee.Engine.Core
                 IOR = ior,
                 Subsurface = subsurface
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.Instance.SurfOutBody_BRDF, VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -748,7 +748,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -781,7 +781,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -818,7 +818,7 @@ namespace Fusee.Engine.Core
             };
 
             var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.Instance.SufOutBody_PosNorm);
         }
         #endregion
 
@@ -829,16 +829,16 @@ namespace Fusee.Engine.Core
         private static string CreateDeferredLightingPixelShader(Light lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var frag = new StringBuilder();
-            frag.Append(Header.Version300Es);
-            frag.Append(Header.DefinePi);
+            frag.Append(Header.Instance.Version300Es);
+            frag.Append(Header.Instance.DefinePi);
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append("#extension GL_ARB_gpu_shader5 : enable\n");
-            frag.Append(Header.EsPrecisionHighpFloat);
+            frag.Append(Header.Instance.EsPrecisionHighpFloat);
 
             frag.Append(FragProperties.DeferredTextureUniforms());
-            frag.Append(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IView));
+            frag.Append(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Instance.IView));
 
-            frag.Append(Lighting.LightStructDeclaration);
+            frag.Append(UniformNameDeclarations.Instance.LightStructDeclaration);
             frag.Append(FragProperties.DeferredLightAndShadowUniforms(lc, isCascaded, numberOfCascades));
 
             frag.Append(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));

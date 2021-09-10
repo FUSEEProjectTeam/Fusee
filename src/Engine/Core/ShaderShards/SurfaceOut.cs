@@ -65,52 +65,68 @@ namespace Fusee.Engine.Core.ShaderShards
     /// <summary>
     /// Contains all needed information to define the <see cref="SurfaceEffect.SurfaceOutput"/>.
     /// </summary>
-    public static class SurfaceOut
+    public sealed class SurfaceOut
     {
+        // Explicit static constructor to tell C# compiler
+        // not to mark type as beforefieldinit
+        static SurfaceOut() { }
+
+        private SurfaceOut()
+        {
+            DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
+            DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";
+            DefaultDiffSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0)";
+            DefaultGlossyOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";
+            DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
+        }
+
+        public static SurfaceOut Instance => _instance;
+        private static readonly SurfaceOut _instance = new();
+
         /// <summary>
         /// The surface effects "out"-struct (<see cref="SurfaceEffect.SurfaceOutput"/>) always has this type in the shader code.
         /// </summary>
-        public const string StructName = "SurfOut";
+        public readonly string StructName = "SurfOut";
 
         /// <summary>
         /// The surface effects "out"-struct (<see cref="SurfaceEffect.SurfaceOutput"/>) always has this variable name in the shader code.
         /// </summary>
-        public const string SurfOutVaryingName = "surfOut";
+        public readonly string SurfOutVaryingName = "surfOut";
 
-        internal static readonly string ChangeSurfFrag = "ChangeSurfFrag";
-        internal static readonly string ChangeSurfVert = "ChangeSurfVert";
+        internal readonly string ChangeSurfFrag = "ChangeSurfFrag";
+        internal readonly string ChangeSurfVert = "ChangeSurfVert";
 
         #region Variables that can be changed in a Shader Shard
-        internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec4, "position");
-        internal static readonly Tuple<GLSL.Type, string> Normal = new(GLSL.Type.Vec3, "normal");
-        internal static readonly Tuple<GLSL.Type, string> Albedo = new(GLSL.Type.Vec4, "albedo");
-        internal static readonly Tuple<GLSL.Type, string> Emission = new(GLSL.Type.Vec4, "emission");
-        internal static readonly Tuple<GLSL.Type, string> Shininess = new(GLSL.Type.Float, "shininess");
-        internal static readonly Tuple<GLSL.Type, string> SpecularStrength = new(GLSL.Type.Float, "specularStrength");
+        internal readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec4, "position");
+        internal readonly Tuple<GLSL.Type, string> Normal = new(GLSL.Type.Vec3, "normal");
+        internal readonly Tuple<GLSL.Type, string> Albedo = new(GLSL.Type.Vec4, "albedo");
+        internal readonly Tuple<GLSL.Type, string> Emission = new(GLSL.Type.Vec4, "emission");
+        internal readonly Tuple<GLSL.Type, string> Shininess = new(GLSL.Type.Float, "shininess");
+        internal readonly Tuple<GLSL.Type, string> SpecularStrength = new(GLSL.Type.Float, "specularStrength");
 
         //BRDF only
-        internal static readonly Tuple<GLSL.Type, string> Roughness = new(GLSL.Type.Float, "roughness");
-        internal static readonly Tuple<GLSL.Type, string> Metallic = new(GLSL.Type.Float, "metallic");
-        internal static readonly Tuple<GLSL.Type, string> Specular = new(GLSL.Type.Float, "specular");
-        internal static readonly Tuple<GLSL.Type, string> IOR = new(GLSL.Type.Float, "ior");
-        internal static readonly Tuple<GLSL.Type, string> Subsurface = new(GLSL.Type.Float, "subsurface");
-        internal static readonly Tuple<GLSL.Type, string> SubsurfaceColor = new(GLSL.Type.Vec3, "subsurfaceColor");
+        internal readonly Tuple<GLSL.Type, string> Roughness = new(GLSL.Type.Float, "roughness");
+        internal readonly Tuple<GLSL.Type, string> Metallic = new(GLSL.Type.Float, "metallic");
+        internal readonly Tuple<GLSL.Type, string> Specular = new(GLSL.Type.Float, "specular");
+        internal readonly Tuple<GLSL.Type, string> IOR = new(GLSL.Type.Float, "ior");
+        internal readonly Tuple<GLSL.Type, string> Subsurface = new(GLSL.Type.Float, "subsurface");
+        internal readonly Tuple<GLSL.Type, string> SubsurfaceColor = new(GLSL.Type.Vec3, "subsurfaceColor");
         #endregion
 
-        private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new();
+        private readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new();
 
-        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";
-        private static readonly string DefaultDiffSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0)";
-        private static readonly string DefaultGlossyOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";
-        private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
+        private readonly string DefaultUnlitOut;
+        private readonly string DefaultDiffuseOut;
+        private readonly string DefaultDiffSpecOut;
+        private readonly string DefaultGlossyOut;
+        private readonly string DerfafultBRDFOut;
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
         /// </summary>
         /// <param name="setup">The <see cref="LightingSetupFlags"/> that decides what the appropriate struct is.</param>
         /// <returns></returns>
-        public static LightingSetupShards GetLightingSetupShards(LightingSetupFlags setup)
+        public LightingSetupShards GetLightingSetupShards(LightingSetupFlags setup)
         {
             if (_lightingSetupCache.TryGetValue(setup, out var res))
                 return res;
@@ -174,7 +190,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="methodBody">User-written shader code for modifying.</param>
         /// <param name="inputType">The type of the <see cref="SurfaceEffect.SurfaceInput"/> struct.</param>
         /// <returns></returns>
-        public static string GetChangeSurfFragMethod(List<string> methodBody, Type inputType)
+        public string GetChangeSurfFragMethod(List<string> methodBody, Type inputType)
         {
             var bodyCompl = new List<string>()
             {
@@ -191,7 +207,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="methodBody">User-written shader code for modifying.</param>
         /// <param name="setup">The lighting setup.</param>
         /// <returns></returns>
-        public static string GetChangeSurfVertMethod(List<string> methodBody, LightingSetupFlags setup)
+        public string GetChangeSurfVertMethod(List<string> methodBody, LightingSetupFlags setup)
         {
             var bodyCompl = new List<string>()
             {
@@ -202,7 +218,7 @@ namespace Fusee.Engine.Core.ShaderShards
             return GLSL.CreateMethod(StructName, ChangeSurfVert, Array.Empty<string>(), bodyCompl);
         }
 
-        private static string BuildStructDecl(LightingSetupFlags setup)
+        private string BuildStructDecl(LightingSetupFlags setup)
         {
             var dcl = new List<string>
             {

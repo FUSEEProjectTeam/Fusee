@@ -2,11 +2,11 @@
 
 namespace Fusee.Engine.Core
 {
-    public sealed class FxParam
+    internal sealed class FxParam
     {
-        public ShaderParamInfo Info;
+        internal ShaderParamInfo Info;
 
-        public object Value
+        internal object Value
         {
             get { return _value; }
             set
@@ -17,6 +17,8 @@ namespace Fusee.Engine.Core
         }
         private object _value;
 
-        public bool HasValueChanged { get; set; } = true;
+        internal bool HasValueChanged { get; set; } = true;
+        
+        internal bool HasValueChangedOverride = false;
     }
 }

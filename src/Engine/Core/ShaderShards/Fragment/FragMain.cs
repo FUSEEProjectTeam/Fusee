@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>
             {
-                $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
+                $"{outStructType} surfOut = {SurfaceOut.Instance.ChangeSurfFrag}({inStructName});"
             };
 
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     $"float ambientCo = 0.1;",
                     $"vec3 ambient = vec3(ambientCo, ambientCo, ambientCo) * surfOut.albedo.rgb;",
                     $"vec3 result = vec3(0.0);",
-                    $"for(int i = 0; i < {Lighting.NumberOfLightsForward}; i++)",
+                    $"for(int i = 0; i < {Lighting.Instance.NumberOfLightsForward}; i++)",
                     "{",
                         "if(allLights[i].isActive == 0) continue;",
                         "result += ApplyLight(allLights[i], surfOut, ambientCo);",
@@ -51,14 +51,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>
             {
-                $"{outStructType} surfOut = {SurfaceOut.ChangeSurfFrag}({inStructName});"
+                $"{outStructType} surfOut = {SurfaceOut.Instance.ChangeSurfFrag}({inStructName});"
             };
 
             var ssaoString = RenderTargetTextureTypes.Ssao.ToString();
 
-            for (var i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            for (var i = 0; i < UniformNameDeclarations.Instance.DeferredRenderTextures.Count; i++)
             {
-                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+                var texName = UniformNameDeclarations.Instance.DeferredRenderTextures[i];
                 if (texName == ssaoString) continue;
                 switch (i)
                 {
