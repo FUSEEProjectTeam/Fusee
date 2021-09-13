@@ -29,6 +29,8 @@
         private float _unsmoothedFps;
         private float _realDeltaTime;
 
+        private float _deltaTimeUpdate;
+
         internal float DeltaTimeIncrement
         {
             set
@@ -50,6 +52,14 @@
                     _framePerSecond = 0;
                     _timeSecond = 0;
                 }
+            }
+        }
+
+        internal float DeltaTimeUpdateIncrement
+        {
+            set
+            {
+                _deltaTimeUpdate = value;
             }
         }
 
@@ -90,22 +100,31 @@
         public static long Frames => Instance.TimeFrames;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is effected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is effected by the TimeScale (read only).
         /// </summary>
         public float TimeDeltaTime => _deltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is effected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is effected by the TimeScale (read only).
         /// </summary>
         public static float DeltaTime => Instance.TimeDeltaTime;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is unaffected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is unaffected by the TimeScale (read only).
         /// </summary>
         public float TimeRealDeltaTime => _realDeltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is unaffected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is unaffected by the TimeScale (read only).
         /// </summary>
         public static float RealDeltaTime => Instance.TimeRealDeltaTime;
+
+        /// <summary>
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.UpdateAFrame"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
+        /// </summary>
+        public float TimeDeltaTimeUpdate => _deltaTimeUpdate;
+        /// <summary>
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.UpdateAFrame"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
+        /// </summary>
+        public static float DeltaTimeUpdate => Instance.TimeDeltaTimeUpdate;
 
         /// <summary>
         /// Provides the passed time since start of the application effected by TimeScale (read only).

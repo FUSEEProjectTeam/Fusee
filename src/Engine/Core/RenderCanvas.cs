@@ -144,7 +144,12 @@ namespace Fusee.Engine.Core
             CanvasImplementor.Init += delegate { Init(); };
             CanvasImplementor.UnLoad += delegate { DeInit(); };
 
-            CanvasImplementor.Update += delegate { UpdateAFrame(); };
+            CanvasImplementor.Update += delegate
+            {
+                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+
+                UpdateAFrame();
+            };
 
             CanvasImplementor.Render += delegate
             {

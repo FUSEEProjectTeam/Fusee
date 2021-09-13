@@ -45,6 +45,14 @@ namespace Fusee.Engine.Common
         float DeltaTime { get; }
 
         /// <summary>
+        /// Implementation Tasks: Gets the delta time. The delta time is the time it took the last frame to update in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The delta time.
+        /// </value>
+        float DeltaTimeUpdate { get; }
+
+        /// <summary>
         /// Implementation Tasks: Gets and sets a value indicating whether vertical synchronization is enabled.
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
