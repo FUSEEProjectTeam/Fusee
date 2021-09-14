@@ -232,7 +232,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new TreeComponentItem
             {
                 Name = "Material PBR Component",
-                Desc = $"{sfx.Name}, Diffuse: {sfx.GetFxParam<float4>(UniformNameDeclarations.Instance.Albedo)}, Specular: {sfx.GetFxParam<float4>(UniformNameDeclarations.Instance.Albedo)}"
+                Desc = $"{sfx.Name}, Diffuse: {sfx.GetFxParam<float4>(UniformNameDeclarations.Albedo)}, Specular: {sfx.GetFxParam<float4>(UniformNameDeclarations.Albedo)}"
             });
         }
 
@@ -407,7 +407,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Material Component",
-                Desc = $"{sfx.Name}, Diffuse: {sfx.GetFxParam<float4>(UniformNameDeclarations.Instance.Albedo)}"
+                Desc = $"{sfx.Name}, Diffuse: {sfx.GetFxParam<float4>(UniformNameDeclarations.Albedo)}"
             });
         }
 

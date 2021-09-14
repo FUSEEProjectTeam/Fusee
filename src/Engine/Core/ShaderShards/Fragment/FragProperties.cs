@@ -11,11 +11,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class FragProperties
     {
         /// <summary>
+        /// The standard name for the fragment shader color output.
+        /// </summary>
+        public static string OutColorName = "oFragmentColor";
+
+        /// <summary>
         /// Creates a single color (vec4) out parameter.
         /// </summary>
         public static string ColorOut()
         {
-            return GLSL.CreateOut(GLSL.Type.Vec4, UniformNameDeclarations.Instance.OutColorName);
+            return GLSL.CreateOut(GLSL.Type.Vec4, OutColorName);
         }
 
         /// <summary>
@@ -29,9 +34,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var ssaoString = RenderTargetTextureTypes.Ssao.ToString();
             outs.Add("\n");
-            for (int i = 0; i < UniformNameDeclarations.Instance.DeferredRenderTextures.Count; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
-                var texName = UniformNameDeclarations.Instance.DeferredRenderTextures[i];
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 
                 if (texName == ssaoString) continue;
 
@@ -49,9 +54,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var uniforms = new List<string>();
             var texCount = 0;
-            for (int i = 0; i < UniformNameDeclarations.Instance.DeferredRenderTextures.Count; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
-                var texName = UniformNameDeclarations.Instance.DeferredRenderTextures[i];
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, texName));
                 texCount++;
@@ -78,24 +83,24 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (lc.IsCastingShadows)
                 {
                     if (lc.Type != LightType.Point)
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2DShadow, UniformNameDeclarations.Instance.ShadowMap));
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2DShadow, UniformNameDeclarations.ShadowMap));
                     else
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.Instance.ShadowCubeMap));
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));
                 }
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Instance.LightSpaceMatrix));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));
             }
             else
             {
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTextureShadow, UniformNameDeclarations.Instance.ShadowMap));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTextureShadow, UniformNameDeclarations.ShadowMap));
                 //No implementation for GLSL.CreateArrayUniform yet...
                 uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] ClipPlanes;\n");
                 uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");
             }
 
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.Instance.RenderPassNo));
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.Instance.SsaoOn));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.RenderPassNo));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.SsaoOn));
 
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.Instance.BackgroundColor));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.BackgroundColor));
             return string.Join("\n", uniforms);
         }
 
@@ -103,6 +108,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Creates the "allLights" uniform array, as it is used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string FixedNumberLightArray() { return $"uniform Light {UniformNameDeclarations.Instance.AllLights}[{Lighting.Instance.NumberOfLightsForward}];\n"; }
+        public static string FixedNumberLightArray = $"uniform Light allLights[{Lighting.NumberOfLightsForward}];\n";
     }
 }

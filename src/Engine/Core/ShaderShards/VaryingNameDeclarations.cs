@@ -5,7 +5,7 @@ namespace Fusee.Engine.Core.ShaderShards
     /// Name declarations for varying variables (vert out, frag in). Ensures compatibility between shader shards.
     /// Use those in vert and frag files too, if you want to mix shards and complete files.
     /// </summary>
-    public sealed class VaryingNameDeclarations
+    public static class VaryingNameDeclarations
     {
         /// <summary>
         /// The variable name of the TBN (Tangent, Bitangent, Normal) matrix.

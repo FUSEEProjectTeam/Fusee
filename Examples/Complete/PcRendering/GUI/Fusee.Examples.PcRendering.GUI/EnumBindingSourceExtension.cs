@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Windows.Markup;
 
-namespace Fusee.Examples.PcRendering.WPF
+namespace Fusee.Examples.PointCloudOutOfCore.WPF
 {
     public class EnumBindingSourceExtension : MarkupExtension
     {

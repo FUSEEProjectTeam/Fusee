@@ -6,21 +6,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     /// Contains pre-defined Shader Shards = 
     /// content of the Fragment Shader's method that lets us change values of the "out"-struct that is used for the lighting calculation. 
     /// </summary>
-    public sealed class FragShards
+    public static class FragShards
     {
-        // Explicit static constructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static FragShards() { }
-
-        private FragShards() { }
-
-        public static FragShards Instance => _instance;
-        private static readonly FragShards _instance = new();
-
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public readonly List<string> SurfOutBody_Color = new()
+        public static readonly List<string> SurfOutBody_Color = new()
         {
             "OUT.albedo = IN.Albedo;"
         };
@@ -28,7 +19,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public readonly List<string> SurfOutBody_Roughness = new List<string>()
+        public static readonly List<string> SurfOutBody_Roughness = new List<string>()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.roughness = IN.Roughness;"
@@ -37,7 +28,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public readonly List<string> SurfOutBody_DiffSpecular = new()
+        public static readonly List<string> SurfOutBody_DiffSpecular = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
@@ -49,18 +40,18 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for rendering into a G-Buffer.
         /// </summary>
-        public readonly List<string> SurfOutBody_GBuffer = new()
+        public static readonly List<string> SurfOutBody_GBuffer = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.emission = IN.Emission;",
             "OUT.depth = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);",
-            $"OUT.specular =  vec4({UniformNameDeclarations.Instance.SpecularStrength}, {UniformNameDeclarations.Instance.SpecularShininess}/256.0, 1.0, 1.0);"
+            $"OUT.specular =  vec4({UniformNameDeclarations.SpecularStrength}, {UniformNameDeclarations.SpecularShininess}/256.0, 1.0, 1.0);"
         };
 
         /// <summary>
         /// Returns a default method body for a physically based diffuse-specular lighting calculation.
         /// </summary>
-        public readonly List<string> SurfOutBody_BRDF = new()
+        public static readonly List<string> SurfOutBody_BRDF = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.emission = IN.Emission;",

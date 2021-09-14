@@ -7,363 +7,200 @@ namespace Fusee.Engine.Core.ShaderShards
     /// <summary>
     /// Collection of uniform parameter names, as they should be used in the Shader Shards to make them compatible to each other.
     /// </summary>
-    public sealed class UniformNameDeclarations
+    public static class UniformNameDeclarations
     {
-        // Explicit static readonlyructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static UniformNameDeclarations() { }
-
-        private UniformNameDeclarations() 
-        {
-            LightSpaceMatrices = "LightSpaceMatrices" + ArrayPostfix;
-            BonesArray = Bones + ArrayPostfix;
-
-            ModelHash = Model.GetHashCode();
-            ViewHash = View.GetHashCode();
-            ModelViewHash = ModelView.GetHashCode();
-            ProjectionHash= Projection.GetHashCode();
-            ModelViewProjectionHash = ModelViewProjection.GetHashCode();
-            IViewHash = IView.GetHashCode();
-            IModelHash = IModel.GetHashCode();
-            TModelHash = TModel.GetHashCode();
-            IModelViewHash = IModelView.GetHashCode();
-            TViewHash = TView.GetHashCode();
-            ITViewHash = ITView.GetHashCode();
-            ITModelHash = ITModel.GetHashCode();
-            IProjectionHash = IProjection.GetHashCode();
-            TModelViewHash = TModelView.GetHashCode();
-            TProjectionHash = TProjection.GetHashCode();
-            TModelViewProjectionHash = TModelViewProjection.GetHashCode();
-            ITModelViewHash = ITModelView.GetHashCode();
-            ITProjectionHash = ITProjection.GetHashCode();
-            ITModelViewProjectionHash = ITModelViewProjection.GetHashCode();
-            IModelViewProjectionHash = IModelViewProjection.GetHashCode();
-            BonesHash = Bones.GetHashCode();
-            BonesArrayHash = BonesArray.GetHashCode();
-            FuseePlatformIdHash = FuseePlatformId.GetHashCode();
-            RenderPassNoHash = RenderPassNo.GetHashCode();
-            BackgroundColorHash = BackgroundColor.GetHashCode();
-            SsaoOnHash = SsaoOn.GetHashCode();
-            LightSpaceMatrixHash = LightSpaceMatrix.GetHashCode();
-            LightSpaceMatricesHash = LightSpaceMatrices.GetHashCode();
-            LightMatClipPlanesHash = LightMatClipPlanes.GetHashCode();
-            LightPosHash= LightPos.GetHashCode();
-            ShadowMapHash = ShadowMap.GetHashCode();
-            ShadowCubeMapHash = ShadowCubeMap.GetHashCode();
-        }
-
-        public static UniformNameDeclarations Instance => _instance;
-        private static readonly UniformNameDeclarations _instance = new();
-
-        /// <summary>
-        /// The standard name for the fragment shader color output.
-        /// </summary>
-        public string OutColorName = "oFragmentColor";
-
         /// <summary>
         /// The array postfix as we get it for uniforms of array types, if we call gl.GetShaderParamList().
         /// </summary>
-        public readonly string ArrayPostfix = "[0]";
-
-        /// <summary>
-        /// Struct, that describes a Light object in the shader code./>
-        /// </summary>
-        /// <returns></returns>
-        public readonly string LightStructDeclaration = string.Join("\n", new List<string>() {
-
-        "struct Light",
-        "{",
-        "   vec3 position;",
-        "   vec4 intensities;",
-        "   vec3 direction;",
-        "   float maxDistance;",
-        "   float strength;",
-        "   float outerConeAngle;",
-        "   float innerConeAngle;",
-        "   int lightType;",
-        "   int isActive;",
-        "   int isCastingShadows;",
-        "   float bias;",
-        "};\n",
-        });
-
-        /// <summary>
-        /// Creates the "allLights" uniform array, as it is used in forward rendering.
-        /// </summary>
-        /// <returns></returns>
-        public readonly string AllLights = "allLights";
+        public const string ArrayPostfix = "[0]";
+        public static int ArrayPostfixHash = ArrayPostfix.GetHashCode();
 
         #region Fusee internal
 
         /// <summary>
         /// The vertex attribute name.
         /// </summary>
-        public readonly string Vertex = "fuVertex";
-
+        public const string Vertex = "fuVertex";
+        public static int VertexHash = Vertex.GetHashCode();
         /// <summary>
         /// The color attribute name.
         /// </summary>
-        public readonly string VertexColor = "fuColor";
+        public const string VertexColor = "fuColor";
+        public static int VertexColorHash = VertexColor.GetHashCode();
 
         /// <summary>
         /// The normal attribute name.
         /// </summary>
-        public readonly string Normal = "fuNormal";
+        public const string Normal = "fuNormal";
+        public static int NormalHash = Normal.GetHashCode();
 
         /// <summary>
         /// The uv attribute name.
         /// </summary>
-        public readonly string TextureCoordinates = "fuUV";
+        public const string TextureCoordinates = "fuUV";
+        public static int TextureCoordinatesHash = TextureCoordinates.GetHashCode();
 
         /// <summary>
         /// The tangent attribute name.
         /// </summary>
-        public readonly string Tangent = "fuTangent";
+        public const string Tangent = "fuTangent";
+        public static int TangentHash = Tangent.GetHashCode();
 
         /// <summary>
         /// The bitangent attribute name.
         /// </summary>
-        public readonly string Bitangent = "fuBitangent";
+        public const string Bitangent = "fuBitangent";
+        public static int BitangentHash = Bitangent.GetHashCode();
 
         /// <summary>
         /// The bone weight attribute name.
         /// </summary>
-        public readonly string BoneWeight = "fuBoneWeight";
+        public const string BoneWeight = "fuBoneWeight";
+        public static int BoneWeightHash = BoneWeight.GetHashCode();
 
         /// <summary>
         /// The bone index attribute name.
         /// </summary>
-        public readonly string BoneIndex = "fuBoneIndex";
+        public const string BoneIndex = "fuBoneIndex";
+        public static int BoneIndexHash = BoneIndex.GetHashCode();
 
         /// <summary>
         /// The model matrix. Transforms from model into world space.
         /// </summary>
-        public readonly string Model = "FUSEE_M";
-
-        /// <summary>
-        /// Hash for the model matrix parameter name.
-        /// </summary>
-        internal readonly int ModelHash;
+        public const string Model = "FUSEE_M";
+        public static int ModelHash = Model.GetHashCode();
 
         /// <summary>
         /// The view matrix. Transforms from world into camera space.
         /// </summary>
-        public readonly string View = "FUSEE_V";
-
-        /// <summary>
-        /// Hash for the view matrix parameter name.
-        /// </summary>
-        internal readonly int ViewHash;
+        public const string View = "FUSEE_V";
+        public static int ViewHash = View.GetHashCode();
 
         /// <summary>
         /// The model view matrix. Transforms from model into camera space.
         /// </summary>
-        public readonly string ModelView = "FUSEE_MV";
+        public const string ModelView = "FUSEE_MV";
+        public static int ModelViewHash = ModelView.GetHashCode();
 
         /// <summary>
-        /// Hash for the model view matrix parameter name.
+        /// The model view matrix. Transforms from view into clip space.
         /// </summary>
-        internal readonly int ModelViewHash;
-
-        /// <summary>
-        /// The projection matrix. Transforms from view into clip space.
-        /// </summary>
-        public readonly string Projection = "FUSEE_P";
-
-        /// <summary>
-        /// Hash for the projection matrix parameter name.
-        /// </summary>
-        internal readonly int ProjectionHash;
+        public const string Projection = "FUSEE_P";
+        public static int ProjectionHash = Projection.GetHashCode();
 
         /// <summary>
         /// The model view projection matrix. Transforms from model into clip space.
         /// </summary>
-        public readonly string ModelViewProjection = "FUSEE_MVP";
-
-        /// <summary>
-        /// Hash for the model view projection matrix parameter name.
-        /// </summary>
-        internal readonly int ModelViewProjectionHash;
+        public const string ModelViewProjection = "FUSEE_MVP";
+        public static int ModelViewProjectionHash = ModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The inverse view matrix.
         /// </summary>
-        public readonly string IView = "FUSEE_IV";
+        public const string IView = "FUSEE_IV";
+        public static int IViewHash = IView.GetHashCode();
 
         /// <summary>
-        /// Hash for the inverse view matrix parameter name.
+        /// The inverse view matrix.
         /// </summary>
-        internal readonly int IViewHash;
+        public const string IModel = "FUSEE_IM";
+        public static int IModelHash = IModel.GetHashCode();
 
         /// <summary>
-        /// The inverse model matrix.
+        /// The inverse view matrix.
         /// </summary>
-        public readonly string IModel = "FUSEE_IM";
-
-        /// <summary>
-        /// Hash for the inverse model matrix parameter name.
-        /// </summary>
-        internal readonly int IModelHash;
-
-        /// <summary>
-        /// The transposed model matrix.
-        /// </summary>
-        public readonly string TModel = "FUSEE_TM";
-
-        /// <summary>
-        /// Hash for the transposed model matrix parameter name.
-        /// </summary>
-        internal readonly int TModelHash;
+        public const string TModel = "FUSEE_TM";
+        public static int TModelHash = TModel.GetHashCode();
 
         /// <summary>
         /// The inverse model view matrix.
         /// </summary>
-        public readonly string IModelView = "FUSEE_IMV";
-
-        /// <summary>
-        /// Hash for the inverse model view matrix parameter name.
-        /// </summary>
-        internal readonly int IModelViewHash;
+        public const string IModelView = "FUSEE_IMV";
+        public static int IModelViewHash = IModelView.GetHashCode();
 
         /// <summary>
         /// The inverse transposed view matrix.
         /// </summary>
-        public readonly string TView = "FUSEE_TV";
-
-        /// <summary>
-        /// Hash for the transposed view matrix parameter name.
-        /// </summary>
-        internal readonly int TViewHash;
+        public const string TView = "FUSEE_TV";
+        public static int TViewHash = TView.GetHashCode();
 
         /// <summary>
         /// The inverse transposed view matrix.
         /// </summary>
-        public readonly string ITView = "FUSEE_ITV";
-
-        /// <summary>
-        /// Hash for inverse transposed view matrix parameter name.
-        /// </summary>
-        internal readonly int ITViewHash;
+        public const string ITView = "FUSEE_ITV";
+        public static int ITViewHash = ITView.GetHashCode();
 
         /// <summary>
         /// The inverse projection matrix.
         /// </summary>
-        public readonly string IProjection = "FUSEE_IP";
-
-        /// <summary>
-        /// Hash for the inverse projection matrix parameter name.
-        /// </summary>
-        internal readonly int IProjectionHash;
+        public const string IProjection = "FUSEE_IP";
+        public static int IProjectionHash = IProjection.GetHashCode();
 
         /// <summary>
         /// The inverse model view projection matrix.
         /// </summary>
-        public readonly string IModelViewProjection = "FUSEE_IMVP";
-
-        /// <summary>
-        /// Hash for the inverse model view projection matrix parameter name.
-        /// </summary>
-        internal readonly int IModelViewProjectionHash;
+        public const string IModelViewProjection = "FUSEE_IMVP";
+        public static int IModelViewProjectionHash = IModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The transposed model view matrix.
         /// </summary>
-        public readonly string TModelView = "FUSEE_TMV";
-
-        /// <summary>
-        /// Hash for the transposed model view matrix parameter name.
-        /// </summary>
-        internal readonly int TModelViewHash;
+        public const string TModelView = "FUSEE_TMV";
+        public static int TModelViewHash = TModelView.GetHashCode();
 
         /// <summary>
         /// The transposed projection matrix.
         /// </summary>
-        public readonly string TProjection = "FUSEE_TP";
-
-        /// <summary>
-        /// Hash for the transposed projection matrix parameter name.
-        /// </summary>
-        internal readonly int TProjectionHash;
+        public const string TProjection = "FUSEE_TP";
+        public static int TProjectionHash = TProjection.GetHashCode();
 
         /// <summary>
         /// The transposed model view projection matrix.
         /// </summary>
-        public readonly string TModelViewProjection = "FUSEE_TMVP";
-
-        /// <summary>
-        /// Hash for the transposed model view projection matrix parameter name.
-        /// </summary>
-        internal readonly int TModelViewProjectionHash;
+        public const string TModelViewProjection = "FUSEE_TMVP";
+        public static int TModelViewProjectionHash = TModelViewProjection.GetHashCode();
 
         /// <summary>
         /// The inversed transposed model view matrix.
         /// </summary>
-        public readonly string ITModelView = "FUSEE_ITMV";
-
-        /// <summary>
-        /// Hash for the transposed model view matrix parameter name.
-        /// </summary>
-        internal readonly int ITModelViewHash;
+        public const string ITModelView = "FUSEE_ITMV";
+        public static int ITModelViewHash = ITModelView.GetHashCode();
 
         /// <summary>
         /// The inversed transposed projection matrix.
         /// </summary>
-        public readonly string ITProjection = "FUSEE_ITP";
-
-        /// <summary>
-        /// Hash for the nversed transposed projection matrix parameter name.
-        /// </summary>
-        internal readonly int ITProjectionHash;
+        public const string ITProjection = "FUSEE_ITP";
+        public static int ITProjectionHash = ITProjection.GetHashCode();
 
         /// <summary>
         /// The inversed transposed model view projection matrix.
         /// </summary>
-        public readonly string ITModelViewProjection = "FUSEE_ITMVP";
+        public const string ITModelViewProjection = "FUSEE_ITMVP";
+        public static int ITModelViewProjectionHash = ITModelViewProjection.GetHashCode();
 
         /// <summary>
-        /// Hash for the transposed model view projection matrix parameter name.
+        /// The inversed transposed model view projection matrix.
         /// </summary>
-        internal readonly int ITModelViewProjectionHash;
-
-        /// <summary>
-        /// The inversed transposed model view matrix.
-        /// </summary>
-        public readonly string ITModel = "FUSEE_ITM";
-
-        /// <summary>
-        /// Hash for the transposed model view matrix parameter name.
-        /// </summary>
-        internal readonly int ITModelHash;
+        public const string ITModel = "FUSEE_ITM";
+        public static int ITModelHash = ITModel.GetHashCode();
 
         /// <summary>
         /// The bones array.
         /// </summary>
-        public readonly string Bones = "FUSEE_BONES";
-
-        /// <summary>
-        /// Hash for the bones array parameter name.
-        /// </summary>
-        internal readonly int BonesHash;
+        public const string Bones = "FUSEE_BONES";
+        public static int BonesHash = Bones.GetHashCode();
 
         /// <summary>
         /// The bones array including the postfix.
         /// </summary>
-        public readonly string BonesArray;
+        public const string BonesArray = Bones + ArrayPostfix;
+        public static int BonesArrayHash = BonesArray.GetHashCode();
 
         /// <summary>
-        /// Hash for the bones array parameter name.
+        /// The bones array including the postfix.
         /// </summary>
-        internal readonly int BonesArrayHash;
-
-        /// <summary>
-        /// The platform id.
-        /// </summary>
-        public readonly string FuseePlatformId = "FUSEE_PLATFORM_ID";
-
-        /// <summary>
-        /// Hash for the platform id parameter name.
-        /// </summary>
-        internal readonly int FuseePlatformIdHash;
+        public const string FuseePlatformId = "FUSEE_PLATFORM_ID";
+        public static int FuseePlatformIdHash = FuseePlatformId.GetHashCode();
 
         #endregion
 
@@ -372,18 +209,20 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform SSAOKernel[0] variable.
         /// </summary>
-        public readonly string SSAOKernel = "SSAOKernel[0]";
+        public static string SSAOKernel { get; } = "SSAOKernel[0]";
+        public static int SSAOKernelHash = SSAOKernel.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NoiseTex variable, needed to calculate SSAO.
         /// </summary>
-        public readonly string NoiseTex = "NoiseTex";
+        public static string NoiseTex { get; } = "NoiseTex";
+        public static int NoiseTexHash = NoiseTex.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SsaoOn variable.
         /// </summary>
-        public readonly string SsaoOn = "SsaoOn";
-        internal readonly int SsaoOnHash;
+        public static string SsaoOn { get; } = "SsaoOn";
+        public static int SsaoOnHash = SsaoOn.GetHashCode();
 
         #endregion
 
@@ -392,156 +231,173 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public readonly string LightPos = "LightPos";
-        internal readonly int LightPosHash;
+        public const string LightPos = "LightPos";
+        public static int LightPosHash = LightPos.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public readonly string LightMatClipPlanes = "LightMatClipPlanes";
-        internal readonly int LightMatClipPlanesHash;
+        public const string LightMatClipPlanes = "LightMatClipPlanes";
+        public static int LightMatClipPlanesHash = LightMatClipPlanes.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public readonly string LightSpaceMatrix = "LightSpaceMatrix";
-        internal readonly int LightSpaceMatrixHash;
+        public const string LightSpaceMatrix = "LightSpaceMatrix";
+        public static int LightSpaceMatrixHash = LightSpaceMatrix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public readonly string LightSpaceMatrices;
-        internal readonly int LightSpaceMatricesHash;
+        public const string LightSpaceMatrices = "LightSpaceMatrices" + ArrayPostfix;
+        public static int LightSpaceMatricesHash = LightSpaceMatrices.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ShadowMap.
         /// </summary>
-        public readonly string ShadowMap = "ShadowMap";
-        internal readonly int ShadowMapHash;
+        public const string ShadowMap = "ShadowMap";
+        public static int ShadowMapHash = ShadowMap.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ShadowCubeMap.
         /// </summary>
-        public readonly string ShadowCubeMap = "ShadowCubeMap";
-        internal readonly int ShadowCubeMapHash;
+        public const string ShadowCubeMap = "ShadowCubeMap";
+        public static int ShadowCubeMapHash = ShadowCubeMap.GetHashCode();
 
         #endregion
 
         #region Point Cloud
 
-        /// <summary>
-        /// The name for the uniform variable PointSize.
-        /// </summary>
-        public readonly string PointSize = "PointSize";
+        public const string PointSize = "PointSize";
+        public static int PointSizeHash = PointSize.GetHashCode();
 
         #endregion
 
         /// <summary>
         /// The var name for the uniform PassNo variable.
         /// </summary>
-        public readonly string RenderPassNo = "PassNo";
-        internal readonly int RenderPassNoHash;
+        public const string RenderPassNo = "PassNo";
+        public static int RenderPassNoHash = RenderPassNo.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform BackgroundColor.
         /// </summary>
-        public readonly string BackgroundColor = "BackgroundColor";
-        internal readonly int BackgroundColorHash;
+        public const string BackgroundColor = "BackgroundColor";
+        public static int BackgroundColorHash = BackgroundColor.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ScreenParams (width and height of the window).
         /// </summary>
-        public readonly string ScreenParams = "ScreenParams";
+        public const string ScreenParams = "ScreenParams";
+        public static int ScreenParamsHash = ScreenParams.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform AmbientStrength variable within the pixel shaders.
         /// </summary>
-        public readonly string AmbientStrength = "AmbientStrength";
+        public const string AmbientStrength = "AmbientStrength";
+        public static int AmbientStrengthHash = AmbientStrength.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public readonly string Albedo = "Albedo";
+        public const string Albedo = "Albedo";
+        public static int AlbedoHash = Albedo.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularColor variable within the pixel shaders.
         /// </summary>
-        public readonly string SpecularColor = "SpecularColor";
+        public const string SpecularColor = "SpecularColor";
+        public static int SpecularColorHash = SpecularColor.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform EmissiveColor variable within the pixel shaders.
         /// </summary>
-        public readonly string EmissiveColor = "EmissiveColor";
+        public const string EmissiveColor = "EmissiveColor";
+        public static int EmissiveColorHash = EmissiveColor.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public readonly string AlbedoTexture = "AlbedoTexture";
+        public const string AlbedoTexture = "AlbedoTexture";
+        public static int AlbedoTextureHash = AlbedoTexture.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public readonly string DiffuseTextureTiles = "AlbedoTextureTiles";
+        public const string DiffuseTextureTiles = "AlbedoTextureTiles";
+        public static int DiffuseTextureTilesHash = DiffuseTextureTiles.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularTexture variable within the pixel shaders.
         /// </summary>
-        public readonly string SpecularTexture = "SpecularTexture";
+        public const string SpecularTexture = "SpecularTexture";
+        public static int SpecularTextureHash = SpecularTexture.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform EmissiveTexture variable within the pixel shaders.
         /// </summary>
-        public readonly string EmissiveTexture = "EmissiveTexture";
+        public const string EmissiveTexture = "EmissiveTexture";
+        public static int EmissiveTextureHash = EmissiveTexture.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NormalMap variable within the pixel shaders.
         /// </summary>
-        public readonly string NormalMap = "NormalMap";
+        public const string NormalMap = "NormalMap";
+        public static int NormalMapHash = NormalMap.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public readonly string NormalTextureTiles = "NormalTextureTiles";
+        public const string NormalTextureTiles = "NormalTextureTiles";
+        public static int NormalTextureTilesHash = NormalTextureTiles.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
         /// </summary>
-        public readonly string AlbedoMix = "AlbedoMix";
+        public const string AlbedoMix = "AlbedoMix";
+        public static int AlbedoMixHash = AlbedoMix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.
         /// </summary>
-        public readonly string SpecularMix = "SpecularMix";
+        public const string SpecularMix = "SpecularMix";
+        public static int SpecularMixHash = SpecularMix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform EmissiveMix variable within the pixel shaders.
         /// </summary>
-        public readonly string EmissiveMix = "EmissiveMix";
+        public const string EmissiveMix = "EmissiveMix";
+        public static int EmissiveMixHash = EmissiveMix.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularShininess variable within the pixel shaders.
         /// </summary>
-        public readonly string SpecularShininess = "SpecularShininess";
+        public const string SpecularShininess = "SpecularShininess";
+        public static int SpecularShininessHash = SpecularShininess.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform SpecularIntensity variable within the pixel shaders.
         /// </summary>
-        public readonly string SpecularStrength = "SpecularStrength";
+        public const string SpecularStrength = "SpecularStrength";
+        public static int SpecularStrengthHash = SpecularStrength.GetHashCode();
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] Describes the roughness of the material.
         /// </summary>
-        public readonly string RoughnessValue = "RoughnessValue";
+        public const string RoughnessValue = "RoughnessValue";
+        public static int RoughnessValueHash = RoughnessValue.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform NormalMapIntensity variable within the pixel shaders.
         /// </summary>
-        public readonly string NormalMapIntensity = "NormalMapIntensity";
+        public const string NormalMapIntensity = "NormalMapIntensity";
+        public static int NormalMapIntensityHash = NormalMapIntensity.GetHashCode();
+
 
         /// <summary>
         /// List of all possible render texture names.
         /// </summary>
-        public readonly List<string> DeferredRenderTextures = new()
+        public static readonly List<string> DeferredRenderTextures = new()
         {
             Enum.GetName(typeof(RenderTargetTextureTypes), 0),
             Enum.GetName(typeof(RenderTargetTextureTypes), 1),

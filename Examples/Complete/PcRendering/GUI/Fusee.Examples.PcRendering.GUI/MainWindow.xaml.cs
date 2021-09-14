@@ -3,7 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Examples.PcRendering.Core;
+using Fusee.Examples.PointCloudOutOfCore.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.PointAccessorCollections;
@@ -20,7 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 
-namespace Fusee.Examples.PcRendering.WPF
+namespace Fusee.Examples.PointCloudOutOfCore.WPF
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
@@ -524,7 +524,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
             var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
 
-            var objectType = typeof(PcRendering<>);
+            var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
             AppSetup.DoSetup(out App, AppSetupHelper.GetPtType(pathToFile), th, pathToFile);

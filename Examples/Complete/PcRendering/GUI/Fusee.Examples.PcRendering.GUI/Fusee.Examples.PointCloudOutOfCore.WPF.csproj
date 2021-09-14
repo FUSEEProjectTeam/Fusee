@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.PcRendering.WPF</RootNamespace>
-    <PackageId>Fusee.Examples.PcRendering.WPF</PackageId>
+    <RootNamespace>Fusee.Examples.PointCloudOutOfCore.WPF</RootNamespace>
+    <PackageId>Fusee.Examples.PointCloudOutOfCore.WPF</PackageId>
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
@@ -12,8 +12,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\GUI\WPF</OutputPath>
-    <StartupObject>Fusee.Examples.PcRendering.WPF.App</StartupObject>
+    <OutputPath>$(BaseOutputPath)\Examples\PointCloudOutOfCore\GUI\WPF</OutputPath>
+    <StartupObject>Fusee.Examples.PointCloudOutOfCore.WPF.App</StartupObject>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -55,7 +55,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.PointCloud.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\PointAccessorCollection\Fusee.PointCloud.PointAccessorCollections.csproj" />
-    <ProjectReference Include="..\..\Core\Fusee.Examples.PcRendering.Core.csproj" />
+    <ProjectReference Include="..\..\Core\Fusee.Examples.PointCloudOutOfCore.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

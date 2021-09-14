@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    Lighting.Instance.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+                    Lighting.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
                     HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
@@ -308,6 +308,8 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
+
+            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
@@ -781,16 +783,16 @@ namespace Fusee.Engine.Core
 
         private void UpdateShaderParamsForAllLights()
         {
-            if (_lightResults.Count > Lighting.Instance.NumberOfLightsForward)
-                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.Instance.NumberOfLightsForward} will be ignored!");
+            if (_lightResults.Count > Lighting.NumberOfLightsForward)
+                Diagnostics.Warn($"Number of lights in the scene exceeds the maximal allowed number. Lights above {Lighting.NumberOfLightsForward} will be ignored!");
 
-            for (var i = 0; i < Lighting.Instance.NumberOfLightsForward; i++)
+            for (var i = 0; i < Lighting.NumberOfLightsForward; i++)
             {
                 if (i < _lightResults.Count)
                 {
 
-                    if (!Lighting.Instance.LightPararamStringsAllLights.ContainsKey(i))
-                        Lighting.Instance.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                    if (!Lighting.LightPararamStringsAllLights.ContainsKey(i))
+                        Lighting.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
 
                     UpdateShaderParamForLight(i, _lightResults[i].Item2);
                 }
@@ -813,7 +815,7 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = Lighting.Instance.LightPararamStringsAllLights[position];
+            var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
             // Set parameters in modelview space since the lightning calculation is in modelview space
             _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), _rc.View * lightRes.WorldSpacePos);

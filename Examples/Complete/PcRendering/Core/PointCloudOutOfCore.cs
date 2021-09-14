@@ -15,12 +15,12 @@ using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
-namespace Fusee.Examples.PcRendering.Core
+namespace Fusee.Examples.PointCloudOutOfCore.Core
 {
     [FuseeApplication(Name = "FUSEE Point Cloud Viewer")]
-    public class PcRendering<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
+    public class PointCloudOutOfCore<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
     {
-        public PcRendering(IPtOctantLoader oocLoader, IPtOctreeFileReader oocFileReader)
+        public PointCloudOutOfCore(IPtOctantLoader oocLoader, IPtOctreeFileReader oocFileReader)
         {
             OocLoader = oocLoader;
             OocFileReader = oocFileReader;
@@ -169,7 +169,6 @@ namespace Fusee.Examples.PcRendering.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            Diagnostics.Warn(FramesPerSecond);
             ReadyToLoadNewFile = false;
 
             if (_closingRequested)
@@ -575,15 +574,15 @@ namespace Fusee.Examples.PcRendering.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Instance.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
-            effect.SetFxParam(UniformNameDeclarations.Instance.AlbedoMix, 0.8f);
+            effect.SetFxParam(UniformNameDeclarations.Albedo, new float4(0.0f, 0.0f, 0.0f, 1f));
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
             var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Instance.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.Instance.AlbedoMix, 1f);
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

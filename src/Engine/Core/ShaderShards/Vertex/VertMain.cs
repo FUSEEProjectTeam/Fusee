@@ -17,10 +17,10 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             var methodBody = new List<string>()
             {
                 "vec4 newVertex;",
-                $"newVertex = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.x)] * vec4(vertPos, 1.0) ) * {UniformNameDeclarations.Instance.BoneWeight}.x ;",
-                $"newVertex = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.y)] * vec4(vertPos, 1.0)) * {UniformNameDeclarations.Instance.BoneWeight}.y + newVertex;",
-                $"newVertex = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.z)] * vec4(vertPos, 1.0)) * {UniformNameDeclarations.Instance.BoneWeight}.z + newVertex;",
-                $"newVertex = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.w)] * vec4(vertPos, 1.0)) * {UniformNameDeclarations.Instance.BoneWeight}.w + newVertex;",
+                $"newVertex = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.x)] * vec4(vertPos, 1.0) ) * {UniformNameDeclarations.BoneWeight}.x ;",
+                $"newVertex = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.y)] * vec4(vertPos, 1.0)) * {UniformNameDeclarations.BoneWeight}.y + newVertex;",
+                $"newVertex = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.z)] * vec4(vertPos, 1.0)) * {UniformNameDeclarations.BoneWeight}.z + newVertex;",
+                $"newVertex = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.w)] * vec4(vertPos, 1.0)) * {UniformNameDeclarations.BoneWeight}.w + newVertex;",
                 "return newVertex;"
             };
 
@@ -37,10 +37,10 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             var methodBody = new List<string>()
             {
                 "vec4 newNormal;",
-                $"newNormal = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.x)] * vec4(normal, 0.0)) * {UniformNameDeclarations.Instance.BoneWeight}.x;",
-                $"newNormal = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.y)] * vec4(normal, 0.0)) * {UniformNameDeclarations.Instance.BoneWeight}.y + newNormal;",
-                $"newNormal = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.z)] * vec4(normal, 0.0)) * {UniformNameDeclarations.Instance.BoneWeight}.z + newNormal;",
-                $"newNormal = ({UniformNameDeclarations.Instance.Bones}[int({UniformNameDeclarations.Instance.BoneIndex}.w)] * vec4(normal, 0.0)) * {UniformNameDeclarations.Instance.BoneWeight}.w + newNormal;",
+                $"newNormal = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.x)] * vec4(normal, 0.0)) * {UniformNameDeclarations.BoneWeight}.x;",
+                $"newNormal = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.y)] * vec4(normal, 0.0)) * {UniformNameDeclarations.BoneWeight}.y + newNormal;",
+                $"newNormal = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.z)] * vec4(normal, 0.0)) * {UniformNameDeclarations.BoneWeight}.z + newNormal;",
+                $"newNormal = ({UniformNameDeclarations.Bones}[int({UniformNameDeclarations.BoneIndex}.w)] * vec4(normal, 0.0)) * {UniformNameDeclarations.BoneWeight}.w + newNormal;",
                 "return newNormal;"
             };
 
@@ -55,36 +55,36 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         {
             var vertMainBody = new List<string>
             {
-                $"{SurfaceOut.Instance.SurfOutVaryingName} = {SurfaceOut.Instance.ChangeSurfVert}();",
-                $"vec4 changedVert = {SurfaceOut.Instance.SurfOutVaryingName}.{SurfaceOut.Instance.Pos.Item2};",
-                $"{SurfaceOut.Instance.SurfOutVaryingName}.{SurfaceOut.Instance.Pos.Item2} = {UniformNameDeclarations.Instance.ModelView} * {SurfaceOut.Instance.SurfOutVaryingName}.{SurfaceOut.Instance.Pos.Item2};",
+                $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.ChangeSurfVert}();",
+                $"vec4 changedVert = {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
+                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
             };
 
             if (!setup.HasFlag(LightingSetupFlags.Unlit))
             {
-                vertMainBody.Add($"{SurfaceOut.Instance.SurfOutVaryingName}.{SurfaceOut.Instance.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.Instance.ITModelView}* vec4({SurfaceOut.Instance.SurfOutVaryingName}.normal, 0.0)));");
+                vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
             }
 
             if (setup.HasFlag(LightingSetupFlags.AlbedoTex) || setup.HasFlag(LightingSetupFlags.NormalMap))
-                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.Instance.TextureCoordinates};");
+                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
             if (setup.HasFlag(LightingSetupFlags.NormalMap))
             {
-                vertMainBody.Add($"vec3 T = normalize(vec3({ UniformNameDeclarations.Instance.ITModelView} * vec4({ UniformNameDeclarations.Instance.Tangent}.xyz, 0.0)));");
-                vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.Instance.ITModelView} * vec4({ UniformNameDeclarations.Instance.Bitangent}.xyz, 0.0)));");
+                vertMainBody.Add($"vec3 T = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
+                vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}.xyz, 0.0)));");
 
-                vertMainBody.Add($"TBN = mat3(T,B,{SurfaceOut.Instance.SurfOutVaryingName}.{SurfaceOut.Instance.Normal.Item2});");
+                vertMainBody.Add($"TBN = mat3(T,B,{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
-            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.Instance.ModelViewProjection} * changedVert;");
+            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
 
             if (doRenderPoints)
-                vertMainBody.Add($"gl_PointSize = float({UniformNameDeclarations.Instance.PointSize});");
+                vertMainBody.Add($"gl_PointSize = float({UniformNameDeclarations.PointSize});");
 
             //TODO: needed when bone animation is working (again)
             //vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
-            //? $"gl_Position = {UniformNameDeclarations.Instance.ModelViewProjection} * vec4(vec3(newVertex), 1.0);"
-            //: $"gl_Position = {UniformNameDeclarations.Instance.ModelViewProjection} * vec4({UniformNameDeclarations.Instance.Vertex}, 1.0);"
+            //? $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(vec3(newVertex), 1.0);"
+            //: $"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4({UniformNameDeclarations.Vertex}, 1.0);"
 
             return GLSL.MainMethod(vertMainBody);
         }

@@ -2,7 +2,7 @@ using Fusee.PointCloud.Common;
 using Fusee.PointCloud.PointAccessorCollections;
 using System;
 
-namespace Fusee.Examples.PcRendering.Core
+namespace Fusee.Examples.PointCloudOutOfCore.Core
 {
     public static class AppSetup
     {
@@ -19,7 +19,7 @@ namespace Fusee.Examples.PcRendering.Core
             {
                 case PointType.Pos64:
                     {
-                        app = new PcRendering<Pos64>(
+                        app = new PointCloudOutOfCore<Pos64>(
 
                              new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64)
                              {
@@ -34,7 +34,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64Col32IShort:
                     {
-                        app = new PcRendering<Pos64Col32IShort>
+                        app = new PointCloudOutOfCore<Pos64Col32IShort>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32IShort>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort)
                             {
@@ -48,7 +48,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64IShort:
                     {
-                        app = new PcRendering<Pos64IShort>
+                        app = new PointCloudOutOfCore<Pos64IShort>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64IShort>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64IShort)
                             {
@@ -62,7 +62,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64Col32:
                     {
-                        app = new PcRendering<Pos64Col32>
+                        app = new PointCloudOutOfCore<Pos64Col32>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Col32>(pathToFile, MeshFromOocFile.GetMeshsForNodePos64Col32)
                             {
@@ -76,7 +76,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64Label8:
                     {
-                        app = new PcRendering<Pos64Label8>
+                        app = new PointCloudOutOfCore<Pos64Label8>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Label8>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64Label8)
                             {
@@ -90,7 +90,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64Nor32Col32IShort:
                     {
-                        app = new PcRendering<Pos64Nor32Col32IShort>
+                        app = new PointCloudOutOfCore<Pos64Nor32Col32IShort>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32IShort)
                             {
@@ -104,7 +104,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64Nor32IShort:
                     {
-                        app = new PcRendering<Pos64Nor32IShort>
+                        app = new PointCloudOutOfCore<Pos64Nor32IShort>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32IShort>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64Nor32IShort)
                             {
@@ -118,7 +118,7 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 case PointType.Pos64Nor32Col32:
                     {
-                        app = new PcRendering<Pos64Nor32Col32>
+                        app = new PointCloudOutOfCore<Pos64Nor32Col32>
                         (
                             new PointCloud.OoCReaderWriter.PtOctantLoader<Pos64Nor32Col32>(pathToFile, MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32)
                             {

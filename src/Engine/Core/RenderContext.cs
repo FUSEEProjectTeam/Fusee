@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         /// </summary>
-        internal readonly Dictionary<int, object> GlobalFXParams;
+        internal readonly Dictionary<int, FxParam> GlobalFXParams;
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
@@ -220,21 +220,21 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ViewHash, _view);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ModelViewHash, ModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ModelViewProjectionHash, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ViewHash, _view);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewHash, ModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IViewHash, InvView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IModelViewHash, InvModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IModelViewProjectionHash, InvModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IViewHash, InvView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewHash, InvModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjectionHash, InvModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITViewHash, InvTransView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITModelViewHash, InvTransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITModelViewProjectionHash, InvTransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITViewHash, InvTransView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewHash, InvTransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjectionHash, InvTransModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TViewHash, TransView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TModelViewHash, TransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TModelViewProjectionHash, TransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TViewHash, TransView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewHash, TransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjectionHash, TransModelViewProjection);
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
@@ -273,21 +273,21 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ModelHash, _model);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ModelViewHash, ModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ModelViewProjectionHash, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelHash, _model);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewHash, ModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IModelHash, InvModel);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IModelViewHash, InvModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IModelViewProjectionHash, InvModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelHash, InvModel);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewHash, InvModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.IModelViewProjectionHash, InvModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITModelHash, InvTransModel);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITModelViewHash, InvTransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITModelViewProjectionHash, InvTransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelHash, InvTransModel);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewHash, InvTransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.ITModelViewProjectionHash, InvTransModelViewProjection);
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TModelHash, TransModel);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TModelViewHash, TransModelView);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TModelViewProjectionHash, TransModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelHash, TransModel);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewHash, TransModelView);
+                SetGlobalEffectParam(UniformNameDeclarations.TModelViewProjectionHash, TransModelViewProjection);
             }
         }
 
@@ -318,11 +318,11 @@ namespace Fusee.Engine.Core
                 _invTransProjectionOk = false;
                 _transProjectionOk = false;
 
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ProjectionHash, _projection);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ModelViewProjectionHash, ModelViewProjection);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.IProjectionHash, InvProjection);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.ITProjectionHash, InvTransProjection);
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.TProjectionHash, TransProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ProjectionHash, _projection);
+                SetGlobalEffectParam(UniformNameDeclarations.ModelViewProjectionHash, ModelViewProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.IProjectionHash, InvProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.ITProjectionHash, InvTransProjection);
+                SetGlobalEffectParam(UniformNameDeclarations.TProjectionHash, TransProjection);
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
@@ -776,7 +776,7 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                SetGlobalEffectParam(UniformNameDeclarations.Instance.BonesArrayHash, _bones);
+                SetGlobalEffectParam(UniformNameDeclarations.BonesArrayHash, _bones);
             }
         }
 
@@ -789,9 +789,9 @@ namespace Fusee.Engine.Core
             _rci = rci;
             DefaultState = new RenderContextDefaultState();
             DefaultEffect = MakeEffect.Default();
-            GlobalFXParams = new Dictionary<int, object>();
+            GlobalFXParams = new Dictionary<int, FxParam>();
 
-            SetGlobalEffectParam(UniformNameDeclarations.Instance.FuseePlatformIdHash, _rci.FuseePlatformId);
+            SetGlobalEffectParam(UniformNameDeclarations.FuseePlatformIdHash, _rci.FuseePlatformId);
 
             RenderFrustum = new FrustumF();
 
@@ -1049,23 +1049,23 @@ namespace Fusee.Engine.Core
                         if (fx == null) //effect was never build before
                         {
                             surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.LightingSetup, doRenderPoints)));
-                            foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.Instance.NumberOfLightsForward))
+                            foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
                                 surfEffect.ParamDecl.Add(dcl.Hash, dcl);
                         }
 
                         if (renderForward)
                         {
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.LightingSetup)));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.Instance.StructName)));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, UniformNameDeclarations.Instance.LightStructDeclaration));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray()));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
                         }
                         else
                         {
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.ColorManagementMethods()));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.Instance.StructName)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.LightingSetup, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                         }
 
                         vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
@@ -1197,8 +1197,8 @@ namespace Fusee.Engine.Core
                 };
 
                 // Set the initial values as they are saved in the "globals" list
-                if (GlobalFXParams.TryGetValue(shaderParam.Key, out object globalFxParam))
-                    effectParam.Value = globalFxParam;
+                if (GlobalFXParams.TryGetValue(shaderParam.Key, out FxParam globalFxParam))
+                    effectParam.Value = globalFxParam.Value;
                 else
                     effectParam.Value = dcl.GetType().GetField("Value").GetValue(dcl);
 
@@ -1214,13 +1214,27 @@ namespace Fusee.Engine.Core
         /// <param name="value">Effect parameter value.</param>
         internal void SetGlobalEffectParam(int hash, object value)
         {
-            if (!GlobalFXParams.ContainsKey(hash))
+            if (GlobalFXParams.TryGetValue(hash, out var param))
             {
-                GlobalFXParams.Add(hash, value);
+                if (param.Value == value) return; // no new value
+                param.Value = value;
+                param.HasValueChanged = true;
             }
-            else
+            else if (value != null)
             {
-                GlobalFXParams[hash] = value;
+                var newParam = new FxParam()
+                {
+                    Value = value
+                };
+                GlobalFXParams.Add(hash, newParam);
+            }
+        }
+
+        internal void ClearGlobalEffectParamsDirtyFlag()
+        {
+            foreach (var globalParam in GlobalFXParams.Values)
+            {
+                globalParam.HasValueChanged = false;
             }
         }
 
@@ -1671,15 +1685,24 @@ namespace Fusee.Engine.Core
 
                 SetShaderProgram(cFx.GpuHandle);
 
+                for (int i = 0; i < GlobalFXParams.Count; i++)
+                {
+                    var globalFxParam = GlobalFXParams.ElementAt(i);
+                    if (globalFxParam.Value.HasValueChanged)
+                    {
+                        if (cFx.ActiveUniforms.ContainsKey(globalFxParam.Key))
+                        {
+                            _currentEffect.SetFxParam(globalFxParam.Key, globalFxParam.Value.Value);
+                            globalFxParam.Value.HasValueChanged = false;
+                        }
+                    }
+                }
+
                 foreach (var fxParam in cFx.ActiveUniforms)
                 {
-                    if (GlobalFXParams.TryGetValue(fxParam.Key, out var activeGlobalParamValue))
-                    {
-                        if (activeGlobalParamValue != fxParam.Value.Value)
-                            _currentEffect.SetFxParam(fxParam.Key, activeGlobalParamValue);
-                    }
-                    SetShaderParamT(fxParam.Value);
-                    fxParam.Value.HasValueChanged = false;
+                    var param = cFx.ActiveUniforms[fxParam.Key];
+                    SetShaderParamT(param);
+                    param.HasValueChanged = false;
                 }
 
                 _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
@@ -1736,15 +1759,22 @@ namespace Fusee.Engine.Core
                 SetShaderProgram(cFx.GpuHandle);
                 SetRenderStateSet(_currentEffect.RendererStates);
 
-                foreach (var fxParam in cFx.ActiveUniforms)
+                foreach (var key in GlobalFXParams.Keys)
                 {
-                    if (GlobalFXParams.TryGetValue(fxParam.Key, out var activeGlobalParamValue))
+                    var globalFxParam = GlobalFXParams[key];
+                    if (globalFxParam.HasValueChanged)
                     {
-                        if (activeGlobalParamValue != fxParam.Value.Value)
-                            _currentEffect.SetFxParam(fxParam.Key, activeGlobalParamValue);
+                        if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
+                        {
+                            _currentEffect.SetFxParam(key, globalFxParam.Value);
+                        }
                     }
-                    SetShaderParamT(fxParam.Value);
-                    fxParam.Value.HasValueChanged = false;
+                }
+                
+                foreach (var fxParam in cFx.ActiveUniforms.Values)
+                {
+                    SetShaderParamT(fxParam);
+                    fxParam.HasValueChanged = false;
                 }
 
                 // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.

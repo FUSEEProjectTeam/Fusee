@@ -3,14 +3,14 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Examples.PcRendering.Core;
+using Fusee.Examples.PointCloudOutOfCore.Core;
 using Fusee.PointCloud.PointAccessorCollections;
 using Fusee.Serialization;
 using System;
 using System.IO;
 using System.Reflection;
 
-namespace Fusee.Examples.PcRendering.Desktop
+namespace Fusee.Examples.PointCloudOutOfCore.Desktop
 {
     public class PcRendering
     {
@@ -50,7 +50,7 @@ namespace Fusee.Examples.PcRendering.Desktop
 
             var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
 
-            var objectType = typeof(PcRendering<>);
+            var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
             AppSetup.DoSetup(out PointCloud.Common.IPcRendering app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);

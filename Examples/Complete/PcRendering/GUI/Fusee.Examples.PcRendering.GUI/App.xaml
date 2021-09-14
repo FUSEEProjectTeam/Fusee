@@ -1,7 +1,7 @@
-﻿<Application x:Class="Fusee.Examples.PcRendering.WPF.App"
+﻿<Application x:Class="Fusee.Examples.PointCloudOutOfCore.WPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Fusee.Examples.PcRendering.WPF"
+             xmlns:local="clr-namespace:Fusee.Examples.PointCloudOutOfCore.WPF"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

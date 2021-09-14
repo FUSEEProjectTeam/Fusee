@@ -16,21 +16,21 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         {
             var vertProps = new List<string>
             {
-                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Instance.Vertex),
-                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Instance.Normal),
-                GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.Instance.TextureCoordinates),
+                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex),
+                GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Normal),
+                GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.TextureCoordinates),
 
-                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Instance.VertexColor),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor),
 
-                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Instance.BoneIndex),
-                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Instance.BoneWeight)
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneIndex),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight)
 
             };
 
             if (setup.HasFlag(LightingSetupFlags.NormalMap))
             {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Instance.Tangent));
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Instance.Bitangent));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Tangent));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Bitangent));
             }
 
             return string.Join("\n", vertProps);
