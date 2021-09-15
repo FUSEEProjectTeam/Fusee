@@ -46,7 +46,7 @@ namespace Fusee.PointCloud.OoCFileGenerator
 
             try
             {
-                OocFileFromLas.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
+                OocFileCreator.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
             }
             catch (Exception e)
             {

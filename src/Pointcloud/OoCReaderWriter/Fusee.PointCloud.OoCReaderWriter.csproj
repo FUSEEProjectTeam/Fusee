@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.PointCloud.OoCReaderWriter</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 

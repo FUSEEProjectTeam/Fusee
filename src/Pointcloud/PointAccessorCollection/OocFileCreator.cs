@@ -13,7 +13,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// Provides methods for the Pointcloud.Converter to create the ooc files according to the user-given point type.
     /// If a Point Type is added, ad the associated case to 'CreateFilesForPtType'.
     /// </summary>
-    public static class OocFileFromLas
+    public static class OocFileCreator
     {
         /// <summary>
         /// Converts the point cloud and saves the files (meta.json, .hierarchy and .node files).
@@ -131,7 +131,15 @@ namespace Fusee.PointCloud.PointAccessorCollections
             Console.WriteLine("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
         }
 
-        private static List<TPoint> FromLasToList<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, bool doExchangeYZ) where TPoint : new()
+        /// <summary>
+        /// Reads a given las file into a List.
+        /// </summary>
+        /// <typeparam name="TPoint">The point type.</typeparam>
+        /// <param name="ptAcc">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="pathToPc">The path to the las file.</param>
+        /// <param name="doExchangeYZ">Determines if the Y and Z components of each point position is exchaned.</param>
+        /// <returns></returns>
+        public static List<TPoint> FromLasToList<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, bool doExchangeYZ) where TPoint : new()
         {
             var reader = new LASPointReader(pathToPc);
             var pointCnt = (MetaInfo)reader.MetaInfo;
@@ -152,7 +160,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
 
                     var pos = ptAcc.GetPositionFloat3_32(ref pt);
                     if (doExchangeYZ)
-                        ExchangeYZ(ref pos);
+                        PointCloudHelper.ExchangeYZ(ref pos);
                     pos -= firstPoint;
                     ptAcc.SetPositionFloat3_32(ref pt, pos);
 
@@ -169,7 +177,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
 
                     var pos = ptAcc.GetPositionFloat3_64(ref pt);
                     if (doExchangeYZ)
-                        ExchangeYZ(ref pos);
+                        PointCloudHelper.ExchangeYZ(ref pos);
                     pos -= firstPoint;
                     ptAcc.SetPositionFloat3_64(ref pt, pos);
 
@@ -181,25 +189,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 throw new ArgumentException("Invalid Position type");
             }
 
-
             reader.Dispose();
             return points.ToList();
-        }
-
-        private static void ExchangeYZ(ref float3 pos)
-        {
-            var z = pos.z;
-            var y = pos.y;
-            pos.z = y;
-            pos.y = z;
-        }
-
-        private static void ExchangeYZ(ref double3 pos)
-        {
-            var z = pos.z;
-            var y = pos.y;
-            pos.z = y;
-            pos.y = z;
-        }
+        }        
     }
 }

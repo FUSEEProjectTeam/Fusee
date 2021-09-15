@@ -11,7 +11,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// This class defines a method for every <see cref="PointType"/>, that returns a Mesh which can hold point cloud points.
     /// </summary>
-    public static class MeshFromOocFile
+    public static class MeshFromPointList
     {
         /// <summary>
         /// Returns meshes for point clouds that only have position information in double precision.
@@ -21,7 +21,6 @@ namespace Fusee.PointCloud.PointAccessorCollections
         public static List<Mesh> GetMeshsForNode_Pos64(PointAccessor<Pos64> ptAccessor, List<Pos64> points)
         {
             var allPoints = new List<double3>();
-
 
             for (int i = 0; i < points.Count; i++)
             {

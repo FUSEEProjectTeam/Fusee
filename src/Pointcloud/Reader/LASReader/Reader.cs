@@ -96,7 +96,7 @@ namespace Fusee.PointCloud.Reader.LASReader
         /// <param name="filename">The path to a las encoded file</param>
         public LASPointReader(string filename)
         {
-            EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.Pointcloud.Reader.LASReader.Natives.libLASlib.dll");
+            EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.PointCloud.Reader.LASReader.Natives.libLASlib.dll");
 
             // Open file
             OpenLASFile(filename, ref _ptrToLASClass);

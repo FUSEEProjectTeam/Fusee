@@ -22,7 +22,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
     public class PtOctreeFileWriter<TPoint>
     {
         private readonly string _fileFolderPath;
-        private readonly Dictionary<Guid, FileStream> _fileStreams = new Dictionary<Guid, FileStream>();
+        private readonly Dictionary<Guid, FileStream> _fileStreams = new();
 
         /// <summary>
         /// Creates a new instance of type PtOctantFileWriter.

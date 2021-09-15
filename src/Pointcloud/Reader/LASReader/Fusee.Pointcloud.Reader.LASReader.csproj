@@ -1,14 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<RootNamespace>Fusee.Pointcloud.Reader.LASReader</RootNamespace>
-		<PackageId>Fusee.Pointcloud.Reader.LASReader</PackageId>
 		<TargetFramework>net5.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.PointCloud.Reader.LASReader</OutputPath>
 	</PropertyGroup>
-
-	<PropertyGroup>
-		<OutputPath>$(BaseOutputPath)\Libraries\</OutputPath>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
@@ -23,8 +17,8 @@
 	
 	<ItemGroup>
 		<!-- Release version is usually faster -->
-		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.dll" Link="Natives\libLASlib.dll" />
-		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.so" Link="Natives\libLASlib.so" />
+		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.dll" Link="Natives\libLASlib.dll" PackagePath="runtimes/win/native"/>
+		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.so" Link="Natives\libLASlib.so" PackagePath="runtimes/linux/native"/>
 	</ItemGroup>
 
 </Project>

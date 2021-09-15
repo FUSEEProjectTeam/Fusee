@@ -519,7 +519,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.WPF
 
             AssetStorage.RegisterProvider(fap);
 
-            var ptType = AppSetupHelper.GetPtType(pathToFile);
+            var ptType = PointCloudHelper.GetPtTypeFromMetaJson(pathToFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
             var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
@@ -527,7 +527,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.WPF
             var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
-            AppSetup.DoSetup(out App, AppSetupHelper.GetPtType(pathToFile), th, pathToFile);
+            AppSetup.DoSetup(out App, PointCloudHelper.GetPtTypeFromMetaJson(pathToFile), th, pathToFile);
             App.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)
