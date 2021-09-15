@@ -1,10 +1,7 @@
-﻿using Fusee.Engine.Common;
-using Fusee.Engine.Core.Scene;
+﻿using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.PointCloud.PointAccessorCollections
 {
@@ -18,37 +15,43 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode_Pos64(PointAccessor<Pos64> ptAccessor, List<Pos64> points)
+        public static List<Mesh> GetMeshsForNodePos64(PointAccessor<Pos64> ptAccessor, List<Pos64> points)
         {
-            var allPoints = new List<double3>();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
+
+            Mesh currentMesh = new();
+            int indexCount = 0;
 
             for (int i = 0; i < points.Count; i++)
             {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-            }
-
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = new float3[pointSplit.Count],
-                    Colors = new uint[pointSplit.Count]
-                };
+                    int numberOfPointsInMesh;
 
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+
+                indexCount++;
             }
 
             return allMeshes;
@@ -56,47 +59,51 @@ namespace Fusee.PointCloud.PointAccessorCollections
 
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="Pos64Col32IShort"/>.
+        /// Because we can only save one Color value at a <see cref="Mesh"/> right now we choose the intensity here.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode_Pos64Col32IShort(PointAccessor<Pos64Col32IShort> ptAccessor, List<Pos64Col32IShort> points)
+        public static List<Mesh> GetMeshsForNodePos64Col32IShort(PointAccessor<Pos64Col32IShort> ptAccessor, List<Pos64Col32IShort> points)
         {
-            var allPoints = new List<double3>();
-            var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
-            var allColors = new List<float3>();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
+
+            Mesh currentMesh = new();
+            int indexCount = 0;
 
             for (int i = 0; i < points.Count; i++)
             {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
-            }
-
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-                var colorSplit = allColorsSplitted[i];
-                var intentsitySplit = allIntensitiesSplitted[i];
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = new float3[pointSplit.Count],
-                    //Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
-                    Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
-                };
+                    int numberOfPointsInMesh;
 
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                //var col = ptAccessor.GetColorFloat3_32(ref pt);
+                //currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                var intensity = (int)(pt.Intensity / 4096f * 256);
+                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity);
+
+                indexCount++;
             }
 
             return allMeshes;
@@ -107,39 +114,47 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode_Pos64IShort(PointAccessor<Pos64IShort> ptAccessor, List<Pos64IShort> points)
+        public static List<Mesh> GetMeshsForNodePos64IShort(PointAccessor<Pos64IShort> ptAccessor, List<Pos64IShort> points)
         {
-            var allPoints = new List<double3>();
-            var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
+
+            Mesh currentMesh = new();
+            int indexCount = 0;
 
             for (int i = 0; i < points.Count; i++)
             {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-            }
-
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-                var intentsitySplit = allIntensitiesSplitted[i];
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = new float3[pointSplit.Count],
-                    Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
-                };
+                    int numberOfPointsInMesh;
 
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                //var col = ptAccessor.GetColorFloat3_32(ref pt);
+                //currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                var intensity = (int)(pt.Intensity / 4096f * 256);
+                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity);
+
+                indexCount++;
             }
 
             return allMeshes;
@@ -150,44 +165,47 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode_Pos64Label8(PointAccessor<Pos64Label8> ptAccessor, List<Pos64Label8> points)
+        public static List<Mesh> GetMeshsForNodePos64Label8(PointAccessor<Pos64Label8> ptAccessor, List<Pos64Label8> points)
         {
-            var allPoints = new List<double3>();
-            var allLabels = new List<float3>();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
 
-            for (int i = 0; i < points.Count(); i++)
+            Mesh currentMesh = new();
+            int indexCount = 0;
+
+            for (int i = 0; i < points.Count; i++)
             {
+                if (i % maxVertCount == 0)
+                {
+                    int numberOfPointsInMesh;
+
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
                 var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
 
                 var lbl = ptAccessor.GetLabelUInt_8(ref pt);
                 var colorScale = new float3[4] { new float3(0, 0, 1), new float3(0, 1, 0), new float3(1, 1, 0), new float3(1, 0, 0) };
-                var col = LabelToColor(colorScale, 32, lbl);
-                allLabels.Add(col);
-            }
+                currentMesh.Colors[indexCount] = ColorToUint(LabelToColor(colorScale, 32, lbl));
 
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allLabelsSplitted = SplitList(allLabels, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-                var labelSplit = allLabelsSplitted[i];
-
-                var currentMesh = new Mesh
-                {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = new float3[pointSplit.Count],
-                    Colors = labelSplit.Select(pt => ColorToUint(pt)).ToArray()
-                };
-
-                allMeshes.Add(currentMesh);
+                indexCount++;
             }
 
             return allMeshes;
@@ -200,50 +218,43 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNodePos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
         {
-            var allPoints = new List<double3>(points.Count);
-            var allColors = new List<float3>(points.Count);
-            IEnumerable<List<double3>> allPointsSplitted;
-            IEnumerable<List<float3>> allColorsSplitted;
             int maxVertCount = ushort.MaxValue - 1;
-            List<Mesh> allMeshes;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
 
-            for (int i = 0; i < points.Count(); i++)
-            {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
-            }
+            Mesh currentMesh = new();
+            int indexCount = 0;
 
-            if (points.Count > maxVertCount)
+            for (int i = 0; i < points.Count; i++)
             {
-                allMeshes = new List<Mesh>();
-                allPointsSplitted = SplitList(allPoints, maxVertCount);
-                allColorsSplitted = SplitList(allColors, maxVertCount);
-            }
-            else
-            {
-                allMeshes = new List<Mesh>(1);
-                allPointsSplitted = new List<List<double3>>(1) { allPoints };
-                allColorsSplitted = new List<List<float3>>(1) { allColors };
-            }
-
-            for (int i = 0; i < Enumerable.Count(allPointsSplitted); i++)
-            {
-                var pointSplit = allPointsSplitted.ElementAt(i);
-                var colorSplit = allColorsSplitted.ElementAt(i);
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = new float3[pointSplit.Count],
-                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()
-                };
+                    int numberOfPointsInMesh;
 
-                GC.Collect();
-                GC.WaitForFullGCComplete();
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                var col = ptAccessor.GetColorFloat3_32(ref pt);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+
+                indexCount++;
             }
 
             return allMeshes;
@@ -251,50 +262,53 @@ namespace Fusee.PointCloud.PointAccessorCollections
 
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32IShort"/>.
+        /// Because we can only save one color calue at a <see cref="Mesh"/> the intensity is chosen here.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Nor32Col32IShort(PointAccessor<Pos64Nor32Col32IShort> ptAccessor, List<Pos64Nor32Col32IShort> points)
         {
-            var allPoints = new List<double3>();
-            var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
-            var allColors = new List<float3>();
-            var allNormals = new List<float3>();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
 
-            for (int i = 0; i < points.Count(); i++)
+            Mesh currentMesh = new();
+            int indexCount = 0;
+
+            for (int i = 0; i < points.Count; i++)
             {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
-                allNormals.Add(ptAccessor.GetNormalFloat3_32(ref pt));
-            }
-
-            var allMeshes = new List<Mesh>();
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
-            var allNormalsSplitted = SplitList(allNormals, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-                var colorSplit = allColorsSplitted[i];
-                var intentsitySplit = allIntensitiesSplitted[i];
-                var normalSplitt = allNormalsSplitted[i];
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = normalSplitt.Select(pt => new float3(pt.xyz)).ToArray(),
-                    //Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
-                    Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
-                };
+                    int numberOfPointsInMesh;
 
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh],
+                        Normals = new float3[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                //var col = ptAccessor.GetColorFloat3_32(ref pt);
+                //currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                var intensity = (int)(pt.Intensity / 4096f * 256);
+                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity);
+                currentMesh.Normals[indexCount] = ptAccessor.GetNormalFloat3_32(ref pt);
+
+                indexCount++;
             }
 
             return allMeshes;
@@ -307,41 +321,45 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Nor32IShort(PointAccessor<Pos64Nor32IShort> ptAccessor, List<Pos64Nor32IShort> points)
         {
-            var allPoints = new List<double3>();
-            var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
-            var allNormals = new List<float3>();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
+
+            Mesh currentMesh = new();
+            int indexCount = 0;
 
             for (int i = 0; i < points.Count; i++)
             {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                allNormals.Add(ptAccessor.GetNormalFloat3_32(ref pt));
-            }
-
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
-            var allNormalsSplitted = SplitList(allNormals, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-                var intentsitySplit = allIntensitiesSplitted[i];
-                var normalSplitt = allNormalsSplitted[i];
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = normalSplitt.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt / 4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
-                };
+                    int numberOfPointsInMesh;
 
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh],
+                        Normals = new float3[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                var col = ptAccessor.GetColorFloat3_32(ref pt);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                currentMesh.Normals[indexCount] = ptAccessor.GetNormalFloat3_32(ref pt);
+
+                indexCount++;
             }
 
             return allMeshes;
@@ -354,53 +372,48 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNode_Pos64Nor32Col32(PointAccessor<Pos64Nor32Col32> ptAccessor, List<Pos64Nor32Col32> points)
         {
-            var allPoints = new List<double3>();
-            var allColors = new List<float3>();
-            var allNormals = new List<float3>();
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
 
-            for (int i = 0; i < points.Count(); i++)
+            Mesh currentMesh = new();
+            int indexCount = 0;
+
+            for (int i = 0; i < points.Count; i++)
             {
-                var pt = points[i];
-                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-                allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
-                allNormals.Add(ptAccessor.GetNormalFloat3_32(ref pt));
-            }
-
-            var allMeshes = new List<Mesh>();
-
-            var maxVertCount = ushort.MaxValue - 1;
-
-            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-            var allNormalsSplitted = SplitList(allNormals, maxVertCount).ToList();
-
-            for (int i = 0; i < allPointsSplitted.Count; i++)
-            {
-                var pointSplit = allPointsSplitted[i];
-                var colorSplit = allColorsSplitted[i];
-                var normalSplitt = allNormalsSplitted[i];
-
-                var currentMesh = new Mesh
+                if (i % maxVertCount == 0)
                 {
-                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-                    MeshType = (int)OpenGLPrimitiveType.Points,
-                    Normals = normalSplitt.Select(pt => new float3(pt.xyz)).ToArray(),
-                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray()
-                };
+                    int numberOfPointsInMesh;
 
-                allMeshes.Add(currentMesh);
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh],
+                        Normals = new float3[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                var col = ptAccessor.GetColorFloat3_32(ref pt);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                currentMesh.Normals[indexCount] = ptAccessor.GetNormalFloat3_32(ref pt);
+
+                indexCount++;
             }
 
             return allMeshes;
-        }
-
-        private static IEnumerable<List<T>> SplitList<T>(List<T> locations, int nSize = 30)
-        {
-            for (var i = 0; i < locations.Count; i += nSize)
-            {
-                yield return locations.GetRange(i, M.Min(nSize, locations.Count - i));
-            }
         }
 
         private static float3 LabelToColor(float3[] colors, int numberOfLabels, int label)

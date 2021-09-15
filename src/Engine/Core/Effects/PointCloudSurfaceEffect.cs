@@ -33,6 +33,5 @@ namespace Fusee.Engine.Core.Effects
         {
             RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
         }
-
     }
 }
