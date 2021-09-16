@@ -48,7 +48,12 @@ namespace FuseeApp
             _sceneRenderer = new SceneRendererForward(_rocketScene);
         }
 
-        // RenderAFrame is called once a frame
+	    // Update is called 60 times a second
+        public override void Update()
+        {
+	    }
+
+        // RenderAFrame is called once per frame
         public override void RenderAFrame()
         {
             // Clear the backbuffer
