@@ -2,6 +2,8 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Linq;
 
 namespace Fusee.PointCloud.PointAccessorCollections
 {
@@ -101,7 +103,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 //var col = ptAccessor.GetColorFloat3_32(ref pt);
                 //currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
                 var intensity = (int)(pt.Intensity / 4096f * 256);
-                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity);
+                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity, 255);
 
                 indexCount++;
             }
@@ -152,7 +154,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 //var col = ptAccessor.GetColorFloat3_32(ref pt);
                 //currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
                 var intensity = (int)(pt.Intensity / 4096f * 256);
-                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity);
+                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity, 255);
 
                 indexCount++;
             }
@@ -216,6 +218,61 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
+        public static List<Mesh> GetMeshsForNodePos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points, out AABBf box)
+        {
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            List<Mesh> allMeshes = new(noOfMeshes);
+
+            Mesh currentMesh = new();
+            int indexCount = 0;
+
+            box = new();
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                if (i % maxVertCount == 0)
+                {
+                    int numberOfPointsInMesh;
+
+                    if (noOfMeshes == 1)
+                        numberOfPointsInMesh = points.Count;
+                    else if (noOfMeshes == allMeshes.Count + 1)
+                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                    else
+                        numberOfPointsInMesh = maxVertCount;
+
+                    indexCount = 0;
+                    currentMesh = new Mesh
+                    {
+                        Vertices = new float3[numberOfPointsInMesh],
+                        Triangles = new ushort[numberOfPointsInMesh],
+                        Colors = new uint[numberOfPointsInMesh]
+                    };
+                    allMeshes.Add(currentMesh);
+                }
+
+                var pt = points[i];
+                currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
+                currentMesh.Triangles[indexCount] = (ushort)indexCount;
+                var col = ptAccessor.GetColorFloat3_32(ref pt);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+
+                if (i == 0)
+                    box = new AABBf(currentMesh.Vertices[indexCount], currentMesh.Vertices[indexCount]);
+                box |= currentMesh.Vertices[indexCount];
+
+                indexCount++;
+            }
+
+            return allMeshes;
+        }
+
+        /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
         public static List<Mesh> GetMeshsForNodePos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points)
         {
             int maxVertCount = ushort.MaxValue - 1;
@@ -252,7 +309,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
                 currentMesh.Triangles[indexCount] = (ushort)indexCount;
                 var col = ptAccessor.GetColorFloat3_32(ref pt);
-                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
 
                 indexCount++;
             }
@@ -305,7 +362,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 //var col = ptAccessor.GetColorFloat3_32(ref pt);
                 //currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
                 var intensity = (int)(pt.Intensity / 4096f * 256);
-                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity);
+                currentMesh.Colors[indexCount] = ColorToUInt(intensity, intensity, intensity, 255);
                 currentMesh.Normals[indexCount] = ptAccessor.GetNormalFloat3_32(ref pt);
 
                 indexCount++;
@@ -356,7 +413,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
                 currentMesh.Triangles[indexCount] = (ushort)indexCount;
                 var col = ptAccessor.GetColorFloat3_32(ref pt);
-                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
                 currentMesh.Normals[indexCount] = ptAccessor.GetNormalFloat3_32(ref pt);
 
                 indexCount++;
@@ -407,7 +464,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
                 currentMesh.Vertices[indexCount] = new float3(ptAccessor.GetPositionFloat3_64(ref pt));
                 currentMesh.Triangles[indexCount] = (ushort)indexCount;
                 var col = ptAccessor.GetColorFloat3_32(ref pt);
-                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256);
+                currentMesh.Colors[indexCount] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
                 currentMesh.Normals[indexCount] = ptAccessor.GetNormalFloat3_32(ref pt);
 
                 indexCount++;
@@ -431,9 +488,20 @@ namespace Fusee.PointCloud.PointAccessorCollections
 
         }
 
-        private static uint ColorToUInt(int r, int g, int b)
+        private static uint ColorToUInt(int r, int g, int b, int a)
         {
-            return (uint)((b << 16) | (g << 8) | (r << 0));
+            return (uint)((b << 16) | (g << 8) | (r << 0) | (a << 24));
+        }
+
+        private static float4 UintToColor(uint col)
+        {
+            float4 c = new();
+            c.b = (byte)((col) & 0xFF);
+            c.g = (byte)((col >> 8) & 0xFF);
+            c.r = (byte)((col >> 16) & 0xFF);
+            c.a = (byte)((col >> 24) & 0xFF);
+
+            return c;
         }
 
         private static uint ColorToUint(float3 col)
@@ -443,6 +511,16 @@ namespace Fusee.PointCloud.PointAccessorCollections
             uint packedB = (uint)(col.b * 255) << 16;
 
             return packedR + packedG + packedB;
+        }
+
+        private static uint ColorToUint(float4 col)
+        {
+            uint packedR = (uint)(col.r * 255);
+            uint packedG = (uint)(col.g * 255) << 8;
+            uint packedB = (uint)(col.b * 255) << 16;
+            uint packedA = (uint)(col.a * 255) << 24;
+
+            return packedR + packedG + packedB + packedA;
         }
     }
 }
