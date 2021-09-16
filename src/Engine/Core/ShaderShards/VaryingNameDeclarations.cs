@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The vertex colors variable name.
         /// </summary>
-        public static readonly string Color = "vColors";
+        public static readonly string Color = "vColor";
 
         /// <summary>
         /// The vertex position variable name.

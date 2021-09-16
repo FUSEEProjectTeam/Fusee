@@ -77,6 +77,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             }
 
             vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
+            vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
 
             if (doRenderPoints)
                 vertMainBody.Add($"gl_PointSize = float({UniformNameDeclarations.PointSize});");

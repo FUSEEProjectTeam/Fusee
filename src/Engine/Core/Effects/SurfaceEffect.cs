@@ -106,6 +106,14 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
+        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
         public string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
         [FxShader(ShaderCategory.Vertex)]
