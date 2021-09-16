@@ -7,11 +7,11 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
 using Fusee.PointCloud.PointAccessorCollections;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -21,7 +21,7 @@ namespace Fusee.Examples.PointCloudLive.Core
     public class PointCloudLive : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -39,10 +39,20 @@ namespace Fusee.Examples.PointCloudLive.Core
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private bool _keys;
+        private SceneNode _node;
+        private Transform _mainCamTransform;
+        private PointCloudSurfaceEffect _pcFx;
+
+        private enum ColorMode
+        {
+            Vertex = 0,
+            Single = 1
+        }
 
         // Init is called on startup.
         public override void Init()
         {
+            VSync = false;
             _gui = CreateGui();
 
             // Create the interaction handler
@@ -52,24 +62,56 @@ namespace Fusee.Examples.PointCloudLive.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             var accessor = new Pos64Col32_Accessor();
-            var node = new SceneNode();
-            node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToList(accessor, "D:\\LAS\\HolbeinPferd.las", true)));
+            _node = new SceneNode();
+
+            _pcFx = new PointCloudSurfaceEffect
+            {
+                PointSize = 10,
+                ColorMode = 0
+            };
+
+            _node.Components.Add(_pcFx);
+            //var loadingTask = new Task(() => { 
+                _node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToList(accessor, "D:\\LAS\\HolbeinPferd.las", true), out var box));
+            //});
+            //loadingTask.Start();
+            _mainCamTransform = new Transform()
+            {
+                Translation = box.Center - new float3(0, 0, box.Size.z)
+            };
+
+            SceneNode cam = new()
+            {
+                Name = "MainCam",
+                Components = new List<SceneComponent>()
+                {
+                    _mainCamTransform,
+                    new Camera(ProjectionMethod.Perspective, 0.1f, 5000, M.PiOver4)
+                    {
+                        FrustumCullingOn = false,
+                        BackgroundColor = float4.One
+                    }
+                }
+            };
+
             _pointCloud = new SceneContainer()
             {
                 Children = new List<SceneNode>()
                 {
-                    node
+                    
+                    _node,
+                    cam
                 }
             };
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_pointCloud);
-            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            Diagnostics.Warn(FramesPerSecond);
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -113,30 +155,18 @@ namespace Fusee.Examples.PointCloudLive.Core
             _angleVert += _angleVelVert;
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
+            _mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
 
-            RC.Projection = orthographic;
+            
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
-            _guiRenderer.Render(RC);
-
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
