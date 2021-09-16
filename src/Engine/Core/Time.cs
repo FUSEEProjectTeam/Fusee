@@ -118,11 +118,11 @@
         public static float RealDeltaTime => Instance.TimeRealDeltaTime;
 
         /// <summary>
-        /// Provides the DeltaTime, for the <see cref="RenderCanvas.UpdateAFrame"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.Update"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
         /// </summary>
         public float TimeDeltaTimeUpdate => _deltaTimeUpdate;
         /// <summary>
-        /// Provides the DeltaTime, for the <see cref="RenderCanvas.UpdateAFrame"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.Update"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
         /// </summary>
         public static float DeltaTimeUpdate => Instance.TimeDeltaTimeUpdate;
 

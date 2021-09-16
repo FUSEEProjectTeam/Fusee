@@ -112,7 +112,7 @@ namespace Fusee.Engine.Player.Core
             LoadAssets();
         }
 
-        public override void UpdateAFrame()
+        public override void Update()
         {
             if (!_isLoaded) return;
 

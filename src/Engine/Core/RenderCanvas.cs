@@ -148,7 +148,7 @@ namespace Fusee.Engine.Core
             {
                 Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
 
-                UpdateAFrame();
+                Update();
             };
 
             CanvasImplementor.Render += delegate
@@ -183,7 +183,7 @@ namespace Fusee.Engine.Core
         ///     Override this method in inherited classes of RenderCanvas to update your scene.
         ///     Consider the code you implement here as the body of the application's loop.
         /// </remarks>
-        public virtual void UpdateAFrame()
+        public virtual void Update()
         {
         }
 
