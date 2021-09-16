@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Core.Scene;
+﻿using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System.Collections.Generic;
@@ -44,7 +45,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     {
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
-                        Colors = new uint[numberOfPointsInMesh]
+                        Colors = new uint[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -92,7 +94,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     {
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
-                        Colors = new uint[numberOfPointsInMesh]
+                        Colors = new uint[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -143,7 +146,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     {
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
-                        Colors = new uint[numberOfPointsInMesh]
+                        Colors = new uint[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -194,7 +198,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     {
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
-                        Colors = new uint[numberOfPointsInMesh]
+                        Colors = new uint[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -247,7 +252,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     {
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
-                        Colors = new uint[numberOfPointsInMesh]
+                        Colors = new uint[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -300,7 +306,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                     {
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
-                        Colors = new uint[numberOfPointsInMesh]
+                        Colors = new uint[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -351,7 +358,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
                         Colors = new uint[numberOfPointsInMesh],
-                        Normals = new float3[numberOfPointsInMesh]
+                        Normals = new float3[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -404,7 +412,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
                         Colors = new uint[numberOfPointsInMesh],
-                        Normals = new float3[numberOfPointsInMesh]
+                        Normals = new float3[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
@@ -455,7 +464,8 @@ namespace Fusee.PointCloud.PointAccessorCollections
                         Vertices = new float3[numberOfPointsInMesh],
                         Triangles = new ushort[numberOfPointsInMesh],
                         Colors = new uint[numberOfPointsInMesh],
-                        Normals = new float3[numberOfPointsInMesh]
+                        Normals = new float3[numberOfPointsInMesh],
+                        MeshType = (int)OpenGLPrimitiveType.Points
                     };
                     allMeshes.Add(currentMesh);
                 }
