@@ -28,12 +28,6 @@ namespace Fusee.Examples.PointCloudLive.Core
 
         private SceneContainer _pointCloud;
         private SceneRendererForward _sceneRenderer;
-
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
-
-        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
@@ -41,7 +35,6 @@ namespace Fusee.Examples.PointCloudLive.Core
         private bool _keys;
         private SceneNode _node;
         private Transform _mainCamTransform;
-        private PointCloudSurfaceEffect _pcFx;
 
         private enum ColorMode
         {
@@ -64,17 +57,14 @@ namespace Fusee.Examples.PointCloudLive.Core
             var accessor = new Pos64Col32_Accessor();
             _node = new SceneNode();
 
-            _pcFx = new PointCloudSurfaceEffect
+            _node.Components.Add(new PointCloudSurfaceEffect
             {
-                PointSize = 10,
+                PointSize = 5,
                 ColorMode = 0
-            };
-
-            _node.Components.Add(_pcFx);
-            //var loadingTask = new Task(() => { 
-                _node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToList(accessor, "D:\\LAS\\HolbeinPferd.las", true), out var box));
-            //});
-            //loadingTask.Start();
+            });
+            
+            _node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToList(accessor, "D:\\LAS\\HolbeinPferd.las", true), out var box));
+            
             _mainCamTransform = new Transform()
             {
                 Translation = box.Center - new float3(0, 0, box.Size.z)
@@ -98,7 +88,6 @@ namespace Fusee.Examples.PointCloudLive.Core
             {
                 Children = new List<SceneNode>()
                 {
-                    
                     _node,
                     cam
                 }
@@ -159,7 +148,6 @@ namespace Fusee.Examples.PointCloudLive.Core
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-
             
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
