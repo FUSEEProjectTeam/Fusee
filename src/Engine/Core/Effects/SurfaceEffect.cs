@@ -64,7 +64,7 @@ namespace Fusee.Engine.Core.Effects
         /// The value is filled in the constructor using the chosen lighting setup.
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
+        [FxShard(ShardCategory.SurfOutStruct)]
         public string SurfaceOutput;
 
         /// <summary>
@@ -238,6 +238,7 @@ namespace Fusee.Engine.Core.Effects
                         }
                     case ShardCategory.Header:
                     case ShardCategory.Main:
+                    case ShardCategory.SurfOutStruct:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                     case ShardCategory.SurfOut:
@@ -307,6 +308,7 @@ namespace Fusee.Engine.Core.Effects
                         }
                     case ShardCategory.Header:
                     case ShardCategory.Main:
+                    case ShardCategory.SurfOutStruct:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                     case ShardCategory.SurfOut:

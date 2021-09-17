@@ -738,6 +738,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 paramInfo.Type = uType switch
                 {
                     ActiveUniformType.Int => typeof(int),
+                    ActiveUniformType.Bool => typeof(bool),
                     ActiveUniformType.Float => typeof(float),
                     ActiveUniformType.Double => typeof(double),
                     ActiveUniformType.FloatVec2 => typeof(float2),

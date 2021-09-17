@@ -26,6 +26,11 @@ namespace Fusee.Engine.Core.ShaderShards
     public enum LightingSetupFlags
     {
         /// <summary>
+        /// This effect uses eye dome lighting, mainly used for point cloud rendering.
+        /// </summary>
+        Edl = 128,
+
+        /// <summary>
         /// This effect is fully metallic by default - needs a roughness value.
         /// </summary>
         Glossy = 64,
@@ -153,7 +158,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 };
                 return _lightingSetupCache[setup];
             }
-            else if (setup.HasFlag(LightingSetupFlags.Unlit))
+            else if (setup.HasFlag(LightingSetupFlags.Unlit) || setup.HasFlag(LightingSetupFlags.Edl))
             {
                 _lightingSetupCache[setup] = new LightingSetupShards()
                 {
@@ -215,7 +220,7 @@ namespace Fusee.Engine.Core.ShaderShards
             if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular) || setup.HasFlag(LightingSetupFlags.BRDF))
                 dcl.Add($"  {GLSL.DecodeType(Emission.Item1)} {Emission.Item2};");
 
-            if (!setup.HasFlag(LightingSetupFlags.Unlit))
+            if (!setup.HasFlag(LightingSetupFlags.Unlit) && !setup.HasFlag(LightingSetupFlags.Edl))
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");
 
             if (setup.HasFlag(LightingSetupFlags.DiffuseOnly) || setup.HasFlag(LightingSetupFlags.DiffuseSpecular) || setup.HasFlag(LightingSetupFlags.Glossy))

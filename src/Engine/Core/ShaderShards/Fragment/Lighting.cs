@@ -104,6 +104,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 lighting.Add(GetF0());
                 lighting.Add(BRDFSpecularComponent());
             }
+            else if (setup.HasFlag(LightingSetupFlags.Edl))
+            {
+                lighting.Add(LinearizeDepth());
+                lighting.Add(EDLResponse());
+                lighting.Add(EDLShadingFactor());
+            }
             else if (!setup.HasFlag(LightingSetupFlags.Unlit))
             {
                 throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
@@ -113,6 +119,103 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             return string.Join("\n", lighting);
         }
+
+        /// <summary>
+        /// Method for linerizing a depth value using the clipping planes of the current camera.
+        /// </summary>
+        /// <returns></returns>
+        public static string LinearizeDepth()
+        {
+            var methodBody = new List<string>
+            {
+                "float near = ClippingPlanes.x;",
+                "float far = ClippingPlanes.y;",
+
+                "float z = depth * 2.0 - 1.0; // back to NDC",
+                "return (2.0 * near * far) / (far + near - z * (far - near));"
+        };
+            return GLSL.CreateMethod(GLSL.Type.Float, "LinearizeDepth",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Float, "depth")
+                }, methodBody);
+        }
+
+        /// <summary>
+        /// Method for calculating the shading factor for eye dome lighting.
+        /// </summary>
+        public static string EDLResponse()
+        {
+            var methodBody = new List<string>
+            {
+                "vec2 pxToUv = 1.0/ScreenParams;",
+
+                "vec2 offsetsToNeighbours[8] = vec2[8]",
+                "(",
+                 "   pixelSize * vec2(pxToUv.x, -pxToUv.y),  // right bottom",
+                 "   pixelSize * vec2(pxToUv.x, 0),          // right middle",
+                 "   pixelSize * vec2(pxToUv.x, pxToUv.y),   // right top",
+                 "   pixelSize * vec2(0, -pxToUv.y),         // middle bottom",
+                 "   pixelSize * vec2(0, pxToUv.y),          // middle top",
+                 "   pixelSize * vec2(-pxToUv.x, -pxToUv.y), // left bottom",
+                 "   pixelSize * vec2(-pxToUv.x, 0),         // left middle",
+                 "   pixelSize * vec2(-pxToUv.x, pxToUv.y)   // left top",
+                ");",
+
+                "float response = 0.0;",
+                "int neighbourCount = 0;",
+
+                "for (int i = 0; i < 8; i++)",
+                "{",
+                "    vec2 neighbourUv = thisUv + offsetsToNeighbours[i];",
+                "    float neighbourDepth = texture(DepthTex, neighbourUv).x;",
+                "    neighbourDepth = LinearizeDepth(neighbourDepth);",
+
+                "    if (neighbourDepth == 0.0)",
+                "       neighbourDepth = 1.0 / 0.0; //infinity!",
+
+                "    response += max(0.0, log2(linearDepth) - log2(neighbourDepth));",
+                "    neighbourCount += 1;",
+                "}",
+
+                "if (neighbourCount == 0)",
+                "    return 1.0;",
+
+                "return response = response / float(neighbourCount);"
+            };
+            return GLSL.CreateMethod(GLSL.Type.Float, "EDLResponse",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Float, "pixelSize"),
+                    GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
+                }, methodBody);
+        }
+
+        /// <summary>
+        /// Method for calculating the eye dome lighting response.
+        /// </summary>
+        public static string EDLShadingFactor()
+        {
+            var methodBody = new List<string>
+            {
+                "float response = EDLResponse(float(pixelSize), linearDepth, thisUv);",
+                "if (linearDepth == 0.0 && response == 0.0)",
+                "    discard;",
+                "if (response > 1.0)",
+                "    response = 1.0;",
+                "return exp(-response * 300.0 * edlStrength);"
+            };
+            return GLSL.CreateMethod(GLSL.Type.Float, "EDLShadingFactor",
+                new[]
+                {
+                    GLSL.CreateVar(GLSL.Type.Float, "edlStrength"),
+                    GLSL.CreateVar(GLSL.Type.Int, "pixelSize"),
+                    GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
+                }, methodBody);
+        }
+
 
         /// <summary>
         /// Method for calculation the diffuse lighting component.
@@ -407,94 +510,107 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>();
 
-            if (!setup.HasFlag(LightingSetupFlags.Unlit))
+            if (!setup.HasFlag(LightingSetupFlags.Edl))
             {
-                methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
-                methodBody.AddRange(ViewAndLightDir());
-                methodBody.Add($"vec3 N = normalize(surfOut.{SurfaceOut.Normal.Item2});");
+                if (!setup.HasFlag(LightingSetupFlags.Unlit))
+                {
+                    methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
+                    methodBody.AddRange(ViewAndLightDir());
+                    methodBody.Add($"vec3 N = normalize(surfOut.{SurfaceOut.Normal.Item2});");
+                }
+
+                if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
+                {
+                    methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                    methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                    methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+
+                    //methodBody.Add($"Idif = LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+
+                    methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.{SurfaceOut.Shininess.Item2});");
+                    methodBody.Add($"Ispe = vec3(specularTerm) * surfOut.specularStrength;");
+
+                    methodBody.AddRange(Attenuation());
+                    methodBody.Add($"return  (Idif + Ispe + surfOut.{SurfaceOut.Emission.Item2}.rgb) * att * lightStrength * light.intensities.rgb;");
+                }
+                else if (setup.HasFlag(LightingSetupFlags.BRDF))
+                {
+                    methodBody.Add($"vec3 halfV = normalize(L + V);");
+                    methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                    methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
+                    methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                    methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
+                    methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
+
+                    methodBody.Add($"vec3 F0 = GetF0(surfOut.{SurfaceOut.Albedo.Item2}.rgb, surfOut.{SurfaceOut.IOR.Item2}, surfOut.{SurfaceOut.Metallic.Item2});");
+                    methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
+                    methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
+
+                    methodBody.Add($"Idif = DisneyDiffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2}, surfOut.{SurfaceOut.SubsurfaceColor.Item2}.rgb);");
+                    methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
+
+                    methodBody.Add($"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.");
+                    methodBody.Add($"vec3 diffLayer = (1.0 - surfOut.{SurfaceOut.Metallic.Item2}) /** (1-_Transmission)*/ * Idif;");
+
+                    methodBody.Add($"//Specular color, combining metallic and dielectric specular reflection.");
+                    methodBody.Add($"//Metallic specular is affected by alebdo color, dielectric isn't!");
+                    methodBody.Add($"vec3 specLayerDielectric = surfOut.{SurfaceOut.Specular.Item2} * Ispe;");
+                    methodBody.Add($"vec3 specLayerMetallic = surfOut.{SurfaceOut.Metallic.Item2} * Ispe * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+                    methodBody.Add($"vec3 specLayer = clamp(specLayerDielectric + specLayerMetallic, 0.0, 1.0);");
+
+                    methodBody.Add($"//Combining the layers...");
+                    methodBody.Add($"res += (1.0 - F) * diffLayer;      // diffuse layer, affected by reflectivity");
+                    methodBody.Add($"res += specLayer;                  // direct specular, not affected by reflectivity");
+                    methodBody.Add($"res += surfOut.{SurfaceOut.Emission.Item2}.rgb;");
+
+                    methodBody.AddRange(Attenuation());
+                    methodBody.Add("return res * att * lightStrength * light.intensities.rgb;");
+                }
+                else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
+                {
+                    methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                    methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                    methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
+
+                    methodBody.AddRange(Attenuation());
+
+                    methodBody.Add($"return Idif * att * lightStrength * light.intensities.rgb;");
+                }
+                else if (setup.HasFlag(LightingSetupFlags.Glossy))
+                {
+                    methodBody.Add($"vec3 halfV = normalize(L + V);");
+                    methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
+                    methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
+                    methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
+                    methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
+                    methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
+
+                    //Glossy is a full metallic material with no diffuse component and a default IOR value
+                    methodBody.Add($"vec3 F0 = GetF0(surfOut.{SurfaceOut.Albedo.Item2}.rgb, 1.45, 1.0);");
+                    methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
+                    methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
+
+                    methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
+
+                    methodBody.AddRange(Attenuation());
+                    methodBody.Add($"return Ispe * surfOut.{SurfaceOut.Albedo.Item2}.rgb * att * lightStrength * light.intensities.rgb;");
+                }
+                else if (setup.HasFlag(LightingSetupFlags.Unlit))
+                    methodBody.Add("return surfOut.albedo.rgb;");
+                else
+                    throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
             }
-
-            if (setup.HasFlag(LightingSetupFlags.DiffuseSpecular))
-            {
-                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
-                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
-                methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
-
-                //methodBody.Add($"Idif = LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
-
-                methodBody.Add($"float specularTerm = specularLighting(N, L, V, surfOut.{SurfaceOut.Shininess.Item2});");
-                methodBody.Add($"Ispe = vec3(specularTerm) * surfOut.specularStrength;");
-
-                methodBody.AddRange(Attenuation());
-                methodBody.Add($"return  (Idif + Ispe + surfOut.{SurfaceOut.Emission.Item2}.rgb) * att * lightStrength * light.intensities.rgb;");
-            }
-            else if (setup.HasFlag(LightingSetupFlags.BRDF))
-            {
-                methodBody.Add($"vec3 halfV = normalize(L + V);");
-                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
-                methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
-                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
-                methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
-                methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
-
-                methodBody.Add($"vec3 F0 = GetF0(surfOut.{SurfaceOut.Albedo.Item2}.rgb, surfOut.{SurfaceOut.IOR.Item2}, surfOut.{SurfaceOut.Metallic.Item2});");
-                methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
-                methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
-
-                methodBody.Add($"Idif = DisneyDiffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2}, surfOut.{SurfaceOut.SubsurfaceColor.Item2}.rgb);");
-                methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
-
-                methodBody.Add($"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.");
-                methodBody.Add($"vec3 diffLayer = (1.0 - surfOut.{SurfaceOut.Metallic.Item2}) /** (1-_Transmission)*/ * Idif;");
-
-                methodBody.Add($"//Specular color, combining metallic and dielectric specular reflection.");
-                methodBody.Add($"//Metallic specular is affected by alebdo color, dielectric isn't!");
-                methodBody.Add($"vec3 specLayerDielectric = surfOut.{SurfaceOut.Specular.Item2} * Ispe;");
-                methodBody.Add($"vec3 specLayerMetallic = surfOut.{SurfaceOut.Metallic.Item2} * Ispe * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
-                methodBody.Add($"vec3 specLayer = clamp(specLayerDielectric + specLayerMetallic, 0.0, 1.0);");
-
-                methodBody.Add($"//Combining the layers...");
-                methodBody.Add($"res += (1.0 - F) * diffLayer;      // diffuse layer, affected by reflectivity");
-                methodBody.Add($"res += specLayer;                  // direct specular, not affected by reflectivity");
-                methodBody.Add($"res += surfOut.{SurfaceOut.Emission.Item2}.rgb;");
-
-                methodBody.AddRange(Attenuation());
-                methodBody.Add("return res * att * lightStrength * light.intensities.rgb;");
-            }
-            else if (setup.HasFlag(LightingSetupFlags.DiffuseOnly))
-            {
-                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
-                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
-                methodBody.Add($"Idif = surfOut.{SurfaceOut.Roughness.Item2} > 0.0 ? OrenNayarDiffuseLighting(surfOut.{SurfaceOut.Albedo.Item2}.rgb, NdotL, NdotV, N, L, V, surfOut.{SurfaceOut.Roughness.Item2}) : LambertDiffuseLighting(N, L) * surfOut.{SurfaceOut.Albedo.Item2}.rgb;");
-
-                methodBody.AddRange(Attenuation());
-
-                methodBody.Add($"return Idif * att * lightStrength * light.intensities.rgb;");
-            }
-            else if (setup.HasFlag(LightingSetupFlags.Glossy))
-            {
-                methodBody.Add($"vec3 halfV = normalize(L + V);");
-                methodBody.Add($"float NdotL = clamp(dot(N, L), 0.0, 1.0);");
-                methodBody.Add($"float NdotH = clamp(dot(N, halfV), 0.0, 1.0);");
-                methodBody.Add($"float NdotV = clamp(dot(N, V), 0.0, 1.0);");
-                methodBody.Add($"float VdotH = clamp(dot(V, halfV), 0.0, 1.0);");
-                methodBody.Add($"float LdotH = clamp(dot(L, halfV), 0.0, 1.0);");
-
-                //Glossy is a full metallic material with no diffuse component and a default IOR value
-                methodBody.Add($"vec3 F0 = GetF0(surfOut.{SurfaceOut.Albedo.Item2}.rgb, 1.45, 1.0);");
-                methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
-                methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
-
-                methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
-
-                methodBody.AddRange(Attenuation());
-                methodBody.Add($"return Ispe * surfOut.{SurfaceOut.Albedo.Item2}.rgb * att * lightStrength * light.intensities.rgb;");
-            }
-            else if (setup.HasFlag(LightingSetupFlags.Unlit))
-                methodBody.Add("return surfOut.albedo.rgb;");
             else
-                throw new ArgumentOutOfRangeException($"Lighting setup unknown or incorrect: {setup}");
-
+            {
+                methodBody.Add("if(DoEyeDomeLighting == true)");
+                methodBody.Add("{");
+                methodBody.Add("    vec2 uv = vec2(gl_FragCoord.x / ScreenParams.x, gl_FragCoord.y / ScreenParams.y);");
+                methodBody.Add("    float linearDepth = LinearizeDepth(texture(DepthTex, uv).x);");
+                methodBody.Add("    if (linearDepth > 0.1)");
+                methodBody.Add("        surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);");
+                methodBody.Add("}");
+                methodBody.Add("return surfOut.albedo.rgb;");
+            }
 
             return GLSL.CreateMethod(GLSL.Type.Vec3, "ApplyLight",
             new[]

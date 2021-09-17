@@ -1187,7 +1187,7 @@ namespace Fusee.Engine.Core
             {
                 if (!ef.ParamDecl.TryGetValue(shaderParam.Key, out IFxParamDeclaration dcl))
                 {
-                    Diagnostics.Error(shaderParam.Key, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
+                    Diagnostics.Error(shaderParam.Value.Name, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the Effect!"));
                     continue;
                 }
 
@@ -1304,6 +1304,10 @@ namespace Fusee.Engine.Core
         {
             if (param.HasValueChanged)
             {
+                if (param.Info.Type == typeof(bool))
+                {
+                    _rci.SetShaderParam(param.Info.Handle, (bool)param.Value ? 1 : 0);
+                }
                 if (param.Info.Type == typeof(int))
                 {
                     _rci.SetShaderParam(param.Info.Handle, (int)param.Value);

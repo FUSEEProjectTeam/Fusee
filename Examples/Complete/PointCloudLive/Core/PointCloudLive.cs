@@ -4,14 +4,10 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.GUI;
 using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using Fusee.PointCloud.PointAccessorCollections;
-using Fusee.Xene;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -28,71 +24,105 @@ namespace Fusee.Examples.PointCloudLive.Core
 
         private SceneContainer _pointCloud;
         private SceneRendererForward _sceneRenderer;
-        private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private bool _keys;
         private SceneNode _node;
         private Transform _mainCamTransform;
 
-        private enum ColorMode
+        private WritableTexture _depthTex;
+        private PointCloudSurfaceEffect _pcFx;
+        private ShaderEffect _depthFx;
+        private Camera _mainCam;
+
+        private ShaderEffect CreateDepthPassEffect(int ptSize, int ptShape, int ptMode, float2 screenParams, float initCamPosZ)
         {
-            Vertex = 0,
-            Single = 1
+            return new ShaderEffect(
+            new FxPassDeclaration
+            {
+                VS = AssetStorage.Get<string>("PointCloud.vert"),
+                PS = AssetStorage.Get<string>("PointDepth.frag"),
+                StateSet = new RenderStateSet
+                {
+                    AlphaBlendEnable = true,
+                    ZEnable = true,
+                }
+            },
+            new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_M", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_IV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
+
+                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
+                new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
+
+                new FxParamDeclaration<int> {Name = "PointSize", Value = ptSize},
+                new FxParamDeclaration<int> {Name = "PointShape", Value = (int)ptShape},
+                new FxParamDeclaration<int> {Name = "PointMode", Value = (int)ptMode}
+            });
         }
 
         // Init is called on startup.
         public override void Init()
         {
             VSync = false;
-            _gui = CreateGui();
-
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
 
             var accessor = new Pos64Col32_Accessor();
             _node = new SceneNode();
-
-            _node.Components.Add(new PointCloudSurfaceEffect
-            {
-                PointSize = 5,
-                ColorMode = 0
-            });
-            
             _node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToList(accessor, "D:\\LAS\\HolbeinPferd.las", true), out var box));
             
             _mainCamTransform = new Transform()
             {
                 Translation = box.Center - new float3(0, 0, box.Size.z)
             };
+            _mainCam = new Camera(ProjectionMethod.Perspective, 1f, 5000, M.PiOver4)
+            {
+                FrustumCullingOn = false,
+                BackgroundColor = float4.One
+            };
 
-            SceneNode cam = new()
+            _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
+            _pcFx = new PointCloudSurfaceEffect
+            {
+                PointSize = 5,
+                ColorMode = (int)ColorMode.Point,
+                DoEyeDomeLighting = true,
+                DepthTex = _depthTex,
+                EDLStrength = 1f,
+                EDLNeighbourPixels = 2,
+                ScreenParams = new float2(Width, Height),
+                ClippingPlanes = _mainCam.ClippingPlanes
+            };
+
+            _node.Components.Insert(1, _pcFx);
+            
+            SceneNode camNode = new()
             {
                 Name = "MainCam",
                 Components = new List<SceneComponent>()
                 {
                     _mainCamTransform,
-                    new Camera(ProjectionMethod.Perspective, 0.1f, 5000, M.PiOver4)
-                    {
-                        FrustumCullingOn = false,
-                        BackgroundColor = float4.One
-                    }
+                    _mainCam
                 }
             };
+
+            _depthFx = CreateDepthPassEffect(_pcFx.PointSize, (int)PointShape.Rect, (int)PointSizeMode.FixedPixelSize, new float2(Width, Height), _mainCamTransform.Translation.z);
+            
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(1, 1, 1, 1);
 
             _pointCloud = new SceneContainer()
             {
                 Children = new List<SceneNode>()
                 {
                     _node,
-                    cam
+                    camNode
                 }
             };
-
+            
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_pointCloud);
         }
@@ -145,112 +175,31 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             _mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
+
+            if (_pcFx.DoEyeDomeLighting)
+            {
+                //Render Depth-only pass
+                _node.RemoveComponent<PointCloudSurfaceEffect>();
+                _node.Components.Insert(0, _depthFx);
+
+                _mainCam.RenderTexture = _depthTex;
+                _sceneRenderer.Render(RC);
+                _mainCam.RenderTexture = null;
+                
+                _node.RemoveComponent<ShaderEffect>();
+                _node.Components.Insert(0, _pcFx);
+            }
+
             _sceneRenderer.Render(RC);
 
-            //Constantly check for interactive objects.
-            
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        private SceneContainer CreateGui()
+        public override void Resize(ResizeEventArgs e)
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
-                "fuseeLogo",
-                vsTex,
-                psTex,
-                //Set the albedo texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
-                float2.One
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = new TextNode(
-                "FUSEE Simple Example",
-                "ButtonText",
-                vsTex,
-                psText,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                (float4)ColorUint.Greenery,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
-        }
-
-        public void BtnLogoEnter(CodeComponent sender)
-        {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
-        }
-
-        public void BtnLogoExit(CodeComponent sender)
-        {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<Effect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
-        }
-
-        public void BtnLogoDown(CodeComponent sender)
-        {
-            OpenLink("http://fusee3d.org");
+            _pcFx.ScreenParams = new float2(Width, Height);
+            base.Resize(e);
         }
     }
 }
