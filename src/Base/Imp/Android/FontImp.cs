@@ -2,16 +2,16 @@
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using SixLabors.Fonts;
-using Font = SixLabors.Fonts.Font;
-using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
-using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
+using Font = SixLabors.Fonts.Font;
 
 namespace Fusee.Base.Imp.Android
 {
