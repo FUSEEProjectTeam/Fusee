@@ -276,7 +276,7 @@ namespace Fusee.Engine.Player.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
+            var guiLatoBlack = new FontMap(fontLato, 21);
 
             var text = new TextNode(
                 "FUSEE Simple Example",
