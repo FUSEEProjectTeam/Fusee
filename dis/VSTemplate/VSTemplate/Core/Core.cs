@@ -56,7 +56,12 @@ public class MainCore : RenderCanvas
         _guiRenderer = new SceneRendererForward(_gui);
     }
 
-    // RenderAFrame is called once a frame
+    // Update is called 60 times a second
+    public override void Update()
+    {
+    }
+
+    // RenderAFrame is called once per frame
     public override void RenderAFrame()
     {
         // Clear the backbuffer
