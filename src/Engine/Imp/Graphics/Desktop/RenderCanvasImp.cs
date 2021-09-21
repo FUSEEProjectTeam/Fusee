@@ -93,6 +93,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to update the last frame in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public float DeltaTimeUpdate
+        {
+            get
+            {
+                if (_gameWindow != null)
+                    return _gameWindow.DeltaTimeUpdate;
+                return 0.01f;
+            }
+        }
+
+        /// <summary>
         /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
@@ -102,7 +119,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public bool VerticalSync
         {
             get => (_gameWindow != null) && _gameWindow.VSync == OpenTK.Windowing.Common.VSyncMode.On;
-            set { if (_gameWindow != null) _gameWindow.VSync = (value) ? OpenTK.Windowing.Common.VSyncMode.On : OpenTK.Windowing.Common.VSyncMode.Off; }
+            set { if (_gameWindow != null) _gameWindow.VSync = value ? OpenTK.Windowing.Common.VSyncMode.On : OpenTK.Windowing.Common.VSyncMode.Off; }
         }
 
         /// <summary>
@@ -373,7 +390,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void Run()
         {
             if (_gameWindow != null)
+            {
+                _gameWindow.UpdateFrequency = 60;
+                _gameWindow.RenderFrequency = 0;
+
                 _gameWindow.Run();
+            }
         }
 
         /// <summary>
@@ -439,6 +461,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public event EventHandler<InitEventArgs> UnLoad;
         /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+        /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
@@ -465,6 +491,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         protected internal void DoUnLoad()
         {
             UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        protected internal void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -501,6 +535,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// The delta time in milliseconds.
         /// </value>
         public float DeltaTime { get; private set; }
+
+        /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to update the last frame in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public float DeltaTimeUpdate { get; private set; }
 
         /// <summary>
         /// Gets and sets a value indicating whether [blending].
@@ -602,23 +645,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _renderCanvasImp.BaseHeight = e.Height;
                 _renderCanvasImp.DoResize(e.Width, e.Height);
             }
-
-            /*
-            GL.Viewport(0, 0, Width, Height);
-
-            float aspect_ratio = Width / (float)Height;
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect_ratio, 1, 64);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perspective);
-             * */
         }
 
         protected override void OnUpdateFrame(OpenTK.Windowing.Common.FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
 
+            DeltaTimeUpdate = (float)args.Time;
+
             if (KeyboardState.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11))
                 WindowState = (WindowState != OpenTK.Windowing.Common.WindowState.Fullscreen) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal;
+
+            _renderCanvasImp?.DoUpdate();
         }
 
         protected override void OnRenderFrame(OpenTK.Windowing.Common.FrameEventArgs args)
@@ -627,8 +665,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             DeltaTime = (float)args.Time;
 
-            if (_renderCanvasImp != null)
-                _renderCanvasImp.DoRender();
+            _renderCanvasImp?.DoRender();
         }
 
         #endregion

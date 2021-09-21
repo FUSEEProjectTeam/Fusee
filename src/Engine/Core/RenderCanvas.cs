@@ -144,6 +144,13 @@ namespace Fusee.Engine.Core
             CanvasImplementor.Init += delegate { Init(); };
             CanvasImplementor.UnLoad += delegate { DeInit(); };
 
+            CanvasImplementor.Update += delegate
+            {
+                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+
+                Update();
+            };
+
             CanvasImplementor.Render += delegate
             {
                 // pre-rendering
@@ -151,7 +158,8 @@ namespace Fusee.Engine.Core
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
                 // rendering
-                RenderAFrame();
+                if (Width != 0 || Height != 0)
+                    RenderAFrame();
 
                 //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
                 RC.ResetToDefaultRenderContextState();
@@ -169,12 +177,22 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        ///     Callback method to invoke user code for updating a frame.
+        /// </summary>
+        /// <remarks>
+        ///     Override this method in inherited classes of RenderCanvas to update your scene.
+        ///     Consider the code you implement here as the body of the application's loop.
+        /// </remarks>
+        public virtual void Update()
+        {
+        }
+
+        /// <summary>
         ///     Callback method to invoke user code for rendering a frame.
         /// </summary>
         /// <remarks>
         ///     Override this method in inherited classes of RenderCanvas to render 3D contents. Typically, an application will
-        ///     use the render context (<see cref="RC" />) to achieve this. Consider the code you implement here as the body of the
-        ///     application's rendering loop.
+        ///     use the render context (<see cref="RC" />) to achieve this. This loop will only run while the application is visible.
         /// </remarks>
         public virtual void RenderAFrame()
         {
