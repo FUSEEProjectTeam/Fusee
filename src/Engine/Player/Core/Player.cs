@@ -264,8 +264,6 @@ namespace Fusee.Engine.Player.Core
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
-                vsTex,
-                psTex,
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -283,8 +281,6 @@ namespace Fusee.Engine.Player.Core
             var text = new TextNode(
                 "FUSEE Simple Example",
                 "ButtonText",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,

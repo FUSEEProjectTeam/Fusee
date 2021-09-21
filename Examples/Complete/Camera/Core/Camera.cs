@@ -255,8 +255,6 @@ namespace Fusee.Examples.Camera.Core
             Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
             TextureNode fuseeLogo = new(
                 "fuseeLogo",
-                vsTex,
-                psTex,
                 //Set the diffuse texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -274,8 +272,6 @@ namespace Fusee.Examples.Camera.Core
             TextNode text = new(
                 "FUSEE Camera Example",
                 "ButtonText",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,

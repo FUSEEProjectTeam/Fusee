@@ -184,8 +184,6 @@ namespace Fusee.Examples.ComputeFractal.Core
             var textNode = new TextNode(
                 "Fractal Magnification Factor: " + _depthFactor,
                 "FractalDepth",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,

@@ -280,8 +280,6 @@ namespace Fusee.Examples.Starkiller.Core
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
-                vsTex,
-                psTex,
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -311,8 +309,6 @@ namespace Fusee.Examples.Starkiller.Core
             var text = new TextNode(
                 textToDisplay,
                 "SceneDescriptionText",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
