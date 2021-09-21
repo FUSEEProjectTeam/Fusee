@@ -262,10 +262,6 @@ namespace Fusee.Examples.Starkiller.Core
         }
         private SceneContainer CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
-
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 

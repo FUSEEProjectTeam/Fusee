@@ -237,10 +237,6 @@ namespace Fusee.Examples.Camera.Core
 
         private SceneContainer CreateGui()
         {
-            string vsTex = AssetStorage.Get<string>("texture.vert");
-            string psTex = AssetStorage.Get<string>("texture.frag");
-            string psText = AssetStorage.Get<string>("text.frag");
-
             float canvasWidth = Width / 100f;
             float canvasHeight = Height / 100f;
 

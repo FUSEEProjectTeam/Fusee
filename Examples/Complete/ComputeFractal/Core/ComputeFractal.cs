@@ -172,20 +172,6 @@ namespace Fusee.Examples.ComputeFractal.Core
 
         private SceneContainer CreateGui()
         {
-
-/* Unmerged change from project 'Fusee.Examples.ComputeFractal.Core(net5.0)'
-Before:
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psText = AssetStorage.Get<string>("text.frag");
-After:
-            _ = AssetStorage.Get<string>("texture.vert");
-            string psText;
-            _ = AssetStorage.Get<string>("text.frag");
-*/
-            _ = AssetStorage.Get<string>("texture.vert");
-            string psText;
-            _ = AssetStorage.Get<string>("text.frag");
-
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
