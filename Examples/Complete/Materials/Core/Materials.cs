@@ -30,7 +30,7 @@ namespace Fusee.Examples.Materials.Core
         public override void Init()
         {
             Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            FontMap fontLatoMap = new(fontLato, 32);            
+            FontMap fontLatoMap = new(fontLato, 32);
 
             Icosphere icosphereWithTangents = new(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();

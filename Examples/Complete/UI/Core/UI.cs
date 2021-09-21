@@ -98,7 +98,7 @@ namespace Fusee.Examples.UI.Core
                 VerticalTextAlignment.Center);
 
             var catTextureNode = new TextureNode(
-                "Cat",                
+                "Cat",
                 //Set the albedo texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.Linear),
 
