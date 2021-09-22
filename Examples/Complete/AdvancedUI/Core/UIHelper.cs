@@ -33,12 +33,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal static float2 AnnotationDim = new(3f, 0.5f);
         internal static float4 AnnotationBorderThickness = new(6, 0.5f, 0.5f, 0.5f);
 
-        internal static string VsTex = AssetStorage.Get<string>("texture.vert");
-        internal static string PsTex = AssetStorage.Get<string>("texture.frag");
-        internal static string PsText = AssetStorage.Get<string>("text.frag");
-        internal static string VsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
-        internal static string PsNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
-
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
         internal static FontMap RalewayFontMap = new(FontRaleway, 24);
 
@@ -127,8 +121,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             TextureNode icon = new(
                 "icon",
-                VsTex,
-                PsTex,
                 iconTex,
                 new MinMaxRect
                 {
@@ -142,8 +134,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             TextNode annotationText = new(
                 text,
                 "annotation text",
-                VsTex,
-                PsText,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
@@ -157,8 +147,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             TextureNode annotation = new(
                 "Annotation",
-                VsNineSlice,
-                PsNineSlice,
                 frameTex,
                 new MinMaxRect
                 {

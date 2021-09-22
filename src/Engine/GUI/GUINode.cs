@@ -1,4 +1,5 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
@@ -221,8 +222,6 @@ namespace Fusee.Engine.GUI
         /// By default the border thickness is calculated relative to a unit plane. For a thicker border set the border thickness to the desired value, 2 means a twice as thick border.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
-        /// <param name="vs">The vertex shader you want to use.</param>
-        /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
@@ -234,11 +233,13 @@ namespace Fusee.Engine.GUI
         /// <param name="borderThicknessRight">Border thickness for the right border.</param>
         /// <param name="borderThicknessTop">Border thickness for the top border.</param>
         /// <returns></returns>
-        public TextureNode(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
+        public TextureNode(string name, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
         {
             var borderThickness = new float4(borderThicknessLeft, borderThicknessRight, borderThicknessTop,
                 borderThicknessBottom);
+            var vs = AssetStorage.Get<string>("nineSlice.vert");
+            var ps = AssetStorage.Get<string>("nineSliceTile.frag");
             Name = name;
             Components = new List<SceneComponent>
             {
@@ -295,16 +296,16 @@ namespace Fusee.Engine.GUI
         /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
-        /// <param name="vs">The vertex shader you want to use.</param>
-        /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="diffuseTexTiles">The tiling of the diffuse texture.</param>
         /// <returns></returns>
-        public TextureNode(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
+        public TextureNode(string name, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets, float2 diffuseTexTiles)
         {
+            var vs = AssetStorage.Get<string>("texture.vert");
+            var ps = AssetStorage.Get<string>("texture.frag");
             Name = name;
             Components = new List<SceneComponent>
             {
@@ -360,17 +361,18 @@ namespace Fusee.Engine.GUI
         /// </summary>
         /// <param name="text">The text you want to display.</param>
         /// <param name="name">The name of the SceneNodeContainer.</param>
-        /// <param name="vs">The vertex shader you want to use..</param>
-        /// <param name="ps">The pixel shader you want to use.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">The offsets.</param>
         /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="color">The color.</param>
         /// <param name="horizontalAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s x-axis.</param>
         /// <param name="verticalTextAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s y-axis.</param>
-        public TextNode(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
+        public TextNode(string text, string name, MinMaxRect anchors, MinMaxRect offsets,
             FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.Left, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.Top)
         {
+
+            string vs = AssetStorage.Get<string>("texture.vert");
+            string ps = AssetStorage.Get<string>("text.frag");
             var textMesh = new GUIText(fontMap, text, horizontalAlignment)
             {
                 Name = name + "textMesh"

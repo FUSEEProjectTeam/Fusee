@@ -272,10 +272,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private SceneContainer CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
-
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
@@ -290,8 +286,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
-                vsTex,
-                psTex,
                 //Set the diffuse texture you want to use.
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -311,8 +305,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var text = new TextNode(
                 "FUSEE Deferred Example",
                 "ButtonText",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
