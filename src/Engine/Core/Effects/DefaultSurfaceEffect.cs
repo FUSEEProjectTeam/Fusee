@@ -56,27 +56,5 @@ namespace Fusee.Engine.Core.Effects
             FUSEE_MVP = float4x4.Identity;
             HandleFieldsAndProps();
         }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (_disposed)
-                return;
-
-            if (disposing)
-            {
-                //FUSEE_ITMV = null;
-                //FUSEE_MV = null;
-                //FUSEE_MVP = null;
-            }
-            _disposed = true;
-        }
     }
 }

@@ -47,10 +47,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.WPF
         {
             InitializeComponent();
 
-            ThreadPool.GetMaxThreads(out int t1, out int t2);
-            Console.WriteLine(t1 + " " + t2);
-            ThreadPool.SetMaxThreads(2, 2);
-
             Lighting.SelectedValue = PtRenderingParams.Instance.Lighting;
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;

@@ -148,7 +148,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                "vec2 pxToUv = 1.0/ScreenParams;",
+                "vec2 pxToUv = 1.0/screenParams;",
 
                 "vec2 offsetsToNeighbours[8] = vec2[8]",
                 "(",
@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "for (int i = 0; i < 8; i++)",
                 "{",
                 "    vec2 neighbourUv = thisUv + offsetsToNeighbours[i];",
-                "    float neighbourDepth = texture(DepthTex, neighbourUv).x;",
+                "    float neighbourDepth = texture(depthTex, neighbourUv).x;",
                 "    neighbourDepth = LinearizeDepth(neighbourDepth);",
 
                 "    if (neighbourDepth == 0.0)",
@@ -189,6 +189,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Float, "pixelSize"),
                     GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "screenParams"),
+
+                    GLSL.CreateVar(GLSL.Type.Sampler2D, "depthTex"),
                 }, methodBody);
         }
 
@@ -199,7 +202,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                "float response = EDLResponse(float(pixelSize), linearDepth, thisUv);",
+                "float response = EDLResponse(float(pixelSize), linearDepth, thisUv, screenParams, depthTex);",
                 "if (linearDepth == 0.0 && response == 0.0)",
                 "    discard;",
                 "if (response > 1.0)",
@@ -213,9 +216,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Int, "pixelSize"),
                     GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "screenParams"),
+                    GLSL.CreateVar(GLSL.Type.Sampler2D, "depthTex"),
                 }, methodBody);
         }
-
 
         /// <summary>
         /// Method for calculation the diffuse lighting component.
@@ -607,7 +611,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add("    vec2 uv = vec2(gl_FragCoord.x / ScreenParams.x, gl_FragCoord.y / ScreenParams.y);");
                 methodBody.Add("    float linearDepth = LinearizeDepth(texture(DepthTex, uv).x);");
                 methodBody.Add("    if (linearDepth > 0.1)");
-                methodBody.Add("        surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);");
+                methodBody.Add("        surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ScreenParams, DepthTex);");
                 methodBody.Add("}");
                 methodBody.Add("return surfOut.albedo.rgb;");
             }
@@ -815,6 +819,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
                 "vec3 spec = specularLighting(NdotL, NdotV, LdotH, NdotH, roughness, F);",
                 "res = vec4(spec * albedo.rgb, 1.0);",
+            "}",
+            "else if(decodedShadingModel == uint(6))",
+            "{",
+                // EDL
+                //TODO: add edl methods
+                "res = albedo;",
             "}",
 
             });
