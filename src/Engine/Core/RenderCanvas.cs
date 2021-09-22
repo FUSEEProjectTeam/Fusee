@@ -187,9 +187,6 @@ namespace Fusee.Engine.Core
                 if (Width != 0 || Height != 0)
                     RenderAFrame();
 
-                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
-                RC.ResetToDefaultRenderContextState();
-
                 // post-rendering
                 Input.Instance.PostRender();
             };

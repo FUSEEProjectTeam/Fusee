@@ -1689,24 +1689,21 @@ namespace Fusee.Engine.Core
 
                 SetShaderProgram(cFx.GpuHandle);
 
-                for (int i = 0; i < GlobalFXParams.Count; i++)
+                foreach (var key in GlobalFXParams.Keys)
                 {
-                    var globalFxParam = GlobalFXParams.ElementAt(i);
-                    if (globalFxParam.Value.HasValueChanged)
+                    var globalFxParam = GlobalFXParams[key];
+
+                    if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
                     {
-                        if (cFx.ActiveUniforms.ContainsKey(globalFxParam.Key))
-                        {
-                            _currentEffect.SetFxParam(globalFxParam.Key, globalFxParam.Value.Value);
-                            globalFxParam.Value.HasValueChanged = false;
-                        }
+                        if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
+                            _currentEffect.SetFxParam(key, globalFxParam.Value);
                     }
                 }
 
-                foreach (var fxParam in cFx.ActiveUniforms)
+                foreach (var fxParam in cFx.ActiveUniforms.Values)
                 {
-                    var param = cFx.ActiveUniforms[fxParam.Key];
-                    SetShaderParamT(param);
-                    param.HasValueChanged = false;
+                    SetShaderParamT(fxParam);
+                    fxParam.HasValueChanged = false;
                 }
 
                 _rci.DispatchCompute(kernelIndex, threadGroupsX, threadGroupsY, threadGroupsZ);
@@ -1766,15 +1763,14 @@ namespace Fusee.Engine.Core
                 foreach (var key in GlobalFXParams.Keys)
                 {
                     var globalFxParam = GlobalFXParams[key];
-                    if (globalFxParam.HasValueChanged)
+
+                    if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
                     {
-                        if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
-                        {
+                        if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
                             _currentEffect.SetFxParam(key, globalFxParam.Value);
-                        }
                     }
                 }
-                
+
                 foreach (var fxParam in cFx.ActiveUniforms.Values)
                 {
                     SetShaderParamT(fxParam);
@@ -1799,17 +1795,6 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-
-        /// <summary>
-        /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
-        /// Must be called after every visitation of the Scene Graph that changed these values.
-        /// </summary>
-        internal void ResetToDefaultRenderContextState()
-        {
-            Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
-            View = DefaultState.View;
-            Projection = DefaultState.Projection;
-        }
 
         public void Dispose()
         {

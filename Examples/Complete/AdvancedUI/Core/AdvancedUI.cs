@@ -190,23 +190,10 @@ namespace Fusee.Examples.AdvancedUI.Core
             float4x4 perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             float4x4 orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-
-            RC.View = view;
-            RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
-            // Constantly check for interactive objects.
-            if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-
-            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
             #endregion Controls
 
             //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
-
             RC.View = view;
             RC.Projection = perspective;
             SceneNode canvas = _gui.Children[0];
@@ -328,8 +315,15 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
 
             _sceneRenderer.Render(RC);
-
             RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
+            // Constantly check for interactive objects.
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
             _guiRenderer.Render(RC);
 
             Present();
