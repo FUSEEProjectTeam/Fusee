@@ -128,8 +128,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                "float near = ClippingPlanes.x;",
-                "float far = ClippingPlanes.y;",
+                "float near = clippingPlanes.x;",
+                "float far = clippingPlanes.y;",
 
                 "float z = depth * 2.0 - 1.0; // back to NDC",
                 "return (2.0 * near * far) / (far + near - z * (far - near));"
@@ -137,7 +137,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return GLSL.CreateMethod(GLSL.Type.Float, "LinearizeDepth",
                 new[]
                 {
-                    GLSL.CreateVar(GLSL.Type.Float, "depth")
+                    GLSL.CreateVar(GLSL.Type.Float, "depth"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "clippingPlanes")
                 }, methodBody);
         }
 
@@ -169,7 +170,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                 "    vec2 neighbourUv = thisUv + offsetsToNeighbours[i];",
                 "    float neighbourDepth = texture(depthTex, neighbourUv).x;",
-                "    neighbourDepth = LinearizeDepth(neighbourDepth);",
+                "    neighbourDepth = LinearizeDepth(neighbourDepth, clippingPlanes);",
 
                 "    if (neighbourDepth == 0.0)",
                 "       neighbourDepth = 1.0 / 0.0; //infinity!",
@@ -190,8 +191,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Float, "linearDepth"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "screenParams"),
-
                     GLSL.CreateVar(GLSL.Type.Sampler2D, "depthTex"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "clippingPlanes"),
                 }, methodBody);
         }
 
@@ -202,7 +203,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                "float response = EDLResponse(float(pixelSize), linearDepth, thisUv, screenParams, depthTex);",
+                "float response = EDLResponse(float(pixelSize), linearDepth, thisUv, screenParams, depthTex, clippingPlanes);",
                 "if (linearDepth == 0.0 && response == 0.0)",
                 "    discard;",
                 "if (response > 1.0)",
@@ -218,6 +219,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Vec2, "thisUv"),
                     GLSL.CreateVar(GLSL.Type.Vec2, "screenParams"),
                     GLSL.CreateVar(GLSL.Type.Sampler2D, "depthTex"),
+                    GLSL.CreateVar(GLSL.Type.Vec2, "clippingPlanes")
                 }, methodBody);
         }
 
@@ -609,9 +611,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 methodBody.Add("if(DoEyeDomeLighting == true)");
                 methodBody.Add("{");
                 methodBody.Add("    vec2 uv = vec2(gl_FragCoord.x / ScreenParams.x, gl_FragCoord.y / ScreenParams.y);");
-                methodBody.Add("    float linearDepth = LinearizeDepth(texture(DepthTex, uv).x);");
+                methodBody.Add("    float linearDepth = LinearizeDepth(texture(DepthTex, uv).x, ClippingPlanes);");
                 methodBody.Add("    if (linearDepth > 0.1)");
-                methodBody.Add("        surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ScreenParams, DepthTex);");
+                methodBody.Add("        surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ScreenParams, DepthTex, ClippingPlanes);");
                 methodBody.Add("}");
                 methodBody.Add("return surfOut.albedo.rgb;");
             }

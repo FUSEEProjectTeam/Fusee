@@ -857,6 +857,7 @@ namespace Fusee.Engine.Core
 
             //Lighting methods
             //------------------------------------------
+            frag.Append(Lighting.LinearizeDepth());
             frag.Append(Lighting.EDLResponse());
             frag.Append(Lighting.EDLShadingFactor());
             frag.Append(Lighting.SchlickFresnel());
