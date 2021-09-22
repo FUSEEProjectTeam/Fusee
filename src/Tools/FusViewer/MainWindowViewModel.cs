@@ -42,7 +42,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             {
                 _caller.PathToFile = openFileDialog.FileName;
                 using var stream = File.OpenRead(openFileDialog.FileName);
-                _caller.CurrentContainer = FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>(stream));
+                _caller.CurrentContainer = FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>(stream), openFileDialog.FileName);
             }
         }
 

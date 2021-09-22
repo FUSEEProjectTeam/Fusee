@@ -64,7 +64,7 @@ namespace Fusee.Examples.MeshingAround.Android
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                             }
                             return null;
                         },
