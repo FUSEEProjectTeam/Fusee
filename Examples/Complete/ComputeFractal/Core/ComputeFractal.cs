@@ -1,4 +1,3 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -7,8 +6,6 @@ using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using System.Collections.Generic;
-using System.Linq;
 using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Examples.ComputeFractal.Core
@@ -44,7 +41,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = CreateGui();
+            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Compute Shader Example");
             _guiRenderer = new SceneRendererForward(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
@@ -168,51 +165,6 @@ namespace Fusee.Examples.ComputeFractal.Core
         private float Sawtooth(float i, float m)
         {
             return m - System.Math.Abs(i % (2 * m) - m);
-        }
-
-        private SceneContainer CreateGui()
-        {
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var textNode = new TextNode(
-                "Fractal Magnification Factor: " + _depthFactor,
-                "FractalDepth",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                (float4)ColorUint.White,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            _depthFactorText = textNode.GetComponentsInChildren<GUIText>().First();
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                CanvasRenderMode.Screen,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    textNode
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
         }
     }
 }

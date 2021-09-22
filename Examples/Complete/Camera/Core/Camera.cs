@@ -1,14 +1,10 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
@@ -25,10 +21,8 @@ namespace Fusee.Examples.Camera.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private Transform _mainCamTransform;
-        private Transform _guiCamTransform;
         private readonly Engine.Core.Scene.Camera _mainCam = new(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
         private readonly Engine.Core.Scene.Camera _guiCam = new(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private readonly Engine.Core.Scene.Camera _sndCam = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
@@ -63,14 +57,14 @@ namespace Fusee.Examples.Camera.Core
             _guiCam.ClearDepth = false;
             _guiCam.FrustumCullingOn = false;
 
-            _mainCamTransform = _guiCamTransform = new Transform()
+            _mainCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 1, -30),
                 Scale = new float3(1, 1, 1)
             };
 
-            _gui = CreateGui();
+            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -233,103 +227,6 @@ namespace Fusee.Examples.Camera.Core
                     UserSideFrustumCulling(node.Children, frustum);
                 }
             }
-        }
-
-        private SceneContainer CreateGui()
-        {
-            float canvasWidth = Width / 100f;
-            float canvasHeight = Height / 100f;
-
-            GUIButton btnFuseeLogo = new()
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
-            TextureNode fuseeLogo = new(
-                "fuseeLogo",
-                //Set the diffuse texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
-                float2.One
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            FontMap guiLatoBlack = new(fontLato, 24);
-
-            TextNode text = new(
-                "FUSEE Camera Example",
-                "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                (float4)ColorUint.Greenery,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            CanvasNode canvas = new(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
-
-            SceneNode cam = new()
-            {
-                Name = "GUICam",
-                Components = new List<SceneComponent>()
-                {
-                    _guiCamTransform,
-                    _guiCam
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    cam,
-                    //Add canvas.
-                    canvas
-                }
-            };
-        }
-
-        public void BtnLogoEnter(CodeComponent sender)
-        {
-            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
-        }
-
-        public void BtnLogoExit(CodeComponent sender)
-        {
-            ShaderEffect effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
-        }
-
-        public void BtnLogoDown(CodeComponent sender)
-        {
-            OpenLink("http://fusee3d.org");
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Fusee.Engine.GUI
 
         private SceneNode _pickRes;
         private SceneNode _pickResCache;
+        private RenderCanvas _rc;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.

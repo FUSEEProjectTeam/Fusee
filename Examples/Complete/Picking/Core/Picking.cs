@@ -4,14 +4,10 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
-using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Core
 {
@@ -37,7 +33,6 @@ namespace Fusee.Examples.Picking.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private PickResult _currentPick;
         private float4 _oldColor;
@@ -57,7 +52,7 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-            _gui = CreateGui();
+            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -167,92 +162,6 @@ namespace Fusee.Examples.Picking.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private SceneContainer CreateGui()
-        {
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += BtnLogoExit;
-            btnFuseeLogo.OnMouseDown += BtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
-                "fuseeLogo",
-                //Set the albedo texture you want to use.
-                guiFuseeLogo,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
-                float2.One
-                );
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var text = new TextNode(
-                "FUSEE Picking Example",
-                "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                (float4)ColorUint.Greenery,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                _canvasRenderMode,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
-        }
-
-        public void BtnLogoEnter(CodeComponent sender)
-        {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
-        }
-
-        public void BtnLogoExit(CodeComponent sender)
-        {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
-        }
-
-        public void BtnLogoDown(CodeComponent sender)
-        {
-            OpenLink("http://fusee3d.org");
         }
 
         private SceneContainer CreateScene()
