@@ -55,12 +55,6 @@ namespace Fusee.Examples.UI.Core
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
-            var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
-            var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
-
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
 
             float borderScaleFactor = 1;
@@ -72,8 +66,6 @@ namespace Fusee.Examples.UI.Core
             var fps = new TextNode(
                 "FPS: 0.00",
                 "FPSText",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.DownDownRight),
                 new MinMaxRect
                 {
@@ -94,8 +86,6 @@ namespace Fusee.Examples.UI.Core
                 "jump\n" +
                 "quickly.",
                 "ButtonText",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchAll),
                 new MinMaxRect
                 {
@@ -109,8 +99,6 @@ namespace Fusee.Examples.UI.Core
 
             var catTextureNode = new TextureNode(
                 "Cat",
-                AssetStorage.Get<string>("nineSlice.vert"),
-                AssetStorage.Get<string>("nineSliceTile.frag"),
                 //Set the albedo texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.Linear),
 
@@ -135,8 +123,6 @@ namespace Fusee.Examples.UI.Core
 
             var bltTextureNode = new TextureNode(
                 "Blt",
-                vsTex,
-                psTex,
                 //Set the albedo texture you want to use.
                 _bltDestinationTex,
                 //_fontMap.Image,
@@ -152,8 +138,6 @@ namespace Fusee.Examples.UI.Core
 
             var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
-                vsNineSlice,
-                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
@@ -167,8 +151,6 @@ namespace Fusee.Examples.UI.Core
 
             var nineSliceTextureNode = new TextureNode(
                 "testImage",
-                vsNineSlice,
-                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
@@ -184,8 +166,6 @@ namespace Fusee.Examples.UI.Core
 
             var quagganTextureNode = new TextureNode(
                 "Quaggan",
-                vsNineSlice,
-                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
@@ -198,8 +178,6 @@ namespace Fusee.Examples.UI.Core
 
             var quagganTextureNode2 = new TextureNode(
                 "Quaggan",
-                vsNineSlice,
-                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
@@ -212,8 +190,6 @@ namespace Fusee.Examples.UI.Core
 
             var quagganTextureNode3 = new TextureNode(
                 "Quaggan",
-                vsNineSlice,
-                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.StretchVertical), //Anchor is in the lower right corner. Anchor is in the lower left corner.

@@ -172,9 +172,6 @@ namespace Fusee.Examples.ComputeFractal.Core
 
         private SceneContainer CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psText = AssetStorage.Get<string>("text.frag");
-
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
@@ -184,8 +181,6 @@ namespace Fusee.Examples.ComputeFractal.Core
             var textNode = new TextNode(
                 "Fractal Magnification Factor: " + _depthFactor,
                 "FractalDepth",
-                vsTex,
-                psText,
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
