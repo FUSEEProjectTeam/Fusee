@@ -24,7 +24,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
         /// <param name="id"></param>
-        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
+        public static SceneContainer ConvertFrom(FusFile fus, string id)
         {
             if (fus == null)
             {
