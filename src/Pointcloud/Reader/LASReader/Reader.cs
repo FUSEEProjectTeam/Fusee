@@ -78,7 +78,7 @@ namespace Fusee.PointCloud.Reader.LASReader
         /// </summary>
         public IMeta MetaInfo { get; }
 
-        private IntPtr _ptrToLASClass = new IntPtr();
+        private IntPtr _ptrToLASClass = new();
 
         /// <summary>
         ///     A LASPointReader can open point files encoded by the las format v. 1.4 with the following extensions:

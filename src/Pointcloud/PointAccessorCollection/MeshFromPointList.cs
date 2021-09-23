@@ -223,10 +223,11 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNodePos64Col32(PointAccessor<Pos64Col32> ptAccessor, List<Pos64Col32> points, out AABBf box)
+        /// <param name="box">The <see cref="AABBf"/> of the point cloud.</param>
+        public static List<Mesh> GetMeshsForNodePos64Col32(PointAccessor<Pos64Col32> ptAccessor, Pos64Col32[] points, out AABBf box)
         {
             int maxVertCount = ushort.MaxValue - 1;
-            var noOfMeshes = (int)System.Math.Ceiling((float)points.Count / maxVertCount);
+            var noOfMeshes = (int)System.Math.Ceiling((float)points.Length / maxVertCount);
             List<Mesh> allMeshes = new(noOfMeshes);
 
             Mesh currentMesh = new();
@@ -234,16 +235,16 @@ namespace Fusee.PointCloud.PointAccessorCollections
 
             box = new();
 
-            for (int i = 0; i < points.Count; i++)
+            for (int i = 0; i < points.Length; i++)
             {
                 if (i % maxVertCount == 0)
                 {
                     int numberOfPointsInMesh;
 
                     if (noOfMeshes == 1)
-                        numberOfPointsInMesh = points.Count;
+                        numberOfPointsInMesh = points.Length;
                     else if (noOfMeshes == allMeshes.Count + 1)
-                        numberOfPointsInMesh = points.Count - maxVertCount * allMeshes.Count;
+                        numberOfPointsInMesh = points.Length - maxVertCount * allMeshes.Count;
                     else
                         numberOfPointsInMesh = maxVertCount;
 

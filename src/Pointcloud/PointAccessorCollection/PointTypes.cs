@@ -52,7 +52,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position float3.
     /// </summary>
-    public class Pos32
+    public struct Pos32
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -63,7 +63,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position double3.
     /// </summary>
-    public class Pos64
+    public struct Pos64
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -74,7 +74,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, color, intensity.
     /// </summary>
-    public class Pos64Col32IShort
+    public struct Pos64Col32IShort
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -93,7 +93,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, intensity.
     /// </summary>
-    public class Pos64IShort
+    public struct Pos64IShort
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -108,7 +108,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, color.
     /// </summary>
-    public class Pos64Col32
+    public struct Pos64Col32
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -121,16 +121,16 @@ namespace Fusee.PointCloud.PointAccessorCollections
     }
 
     /// <summary>
-    /// Point type: Position, color of the classification.
+    /// Point type: Position, color of the structification.
     /// </summary>
-    public class Pos64Label8
+    public struct Pos64Label8
     {
         /// <summary>
         /// The point's coordinate in 3D space.
         /// </summary>
         public double3 Position;
         /// <summary>
-        /// The point's class label.
+        /// The point's struct label.
         /// </summary>
         public byte Label;
     }
@@ -138,7 +138,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, normal, color, intensity.
     /// </summary>
-    public class Pos64Nor32Col32IShort
+    public struct Pos64Nor32Col32IShort
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -161,7 +161,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, normal, intensity.
     /// </summary>
-    public class Pos64Nor32IShort
+    public struct Pos64Nor32IShort
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -180,7 +180,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
     /// <summary>
     /// Point type: Position, normal, color.
     /// </summary>
-    public class Pos64Nor32Col32
+    public struct Pos64Nor32Col32
     {
         /// <summary>
         /// The point's coordinate in 3D space.

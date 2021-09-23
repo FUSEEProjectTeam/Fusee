@@ -4,9 +4,7 @@ using Fusee.PointCloud.Reader.LASReader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace Fusee.PointCloud.PointAccessorCollections
 {
@@ -23,13 +21,12 @@ namespace Fusee.PointCloud.PointAccessorCollections
         /// <param name="pathToPc">The path to the las file.</param>
         /// <param name="doExchangeYZ">Determines if the Y and Z components of each point position is exchaned.</param>
         /// <returns></returns>
-        public static List<TPoint> FromLasToList<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, bool doExchangeYZ) where TPoint : new()
+        public static TPoint[] FromLasToArray<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, bool doExchangeYZ) where TPoint : new()
         {
             var reader = new LASPointReader(pathToPc);
             var pointCnt = (MetaInfo)reader.MetaInfo;
 
             var points = new TPoint[(int)pointCnt.PointCnt];
-            points = points.Select(pt => new TPoint()).ToArray();
 
             for (var i = 0; i < points.Length; i++)
                 if (!reader.ReadNextPoint(ref points[i], ptAcc)) break;
@@ -74,7 +71,7 @@ namespace Fusee.PointCloud.PointAccessorCollections
             }
 
             reader.Dispose();
-            return points.ToList();
+            return points;
         }
 
         /// <summary>
