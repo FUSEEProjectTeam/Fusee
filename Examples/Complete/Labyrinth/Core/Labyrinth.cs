@@ -387,7 +387,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                "FUSEE Simple Example",
+                "FUSEE Labyrinth Example",
                 "ButtonText",
                 UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
                 UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),

@@ -21,6 +21,7 @@ namespace Fusee.Examples.Camera.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private Transform _guiCamTransform;
 
         private Transform _mainCamTransform;
         private readonly Engine.Core.Scene.Camera _mainCam = new(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
@@ -57,7 +58,7 @@ namespace Fusee.Examples.Camera.Core
             _guiCam.ClearDepth = false;
             _guiCam.FrustumCullingOn = false;
 
-            _mainCamTransform = new Transform()
+            _mainCamTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 1, -30),
@@ -65,6 +66,18 @@ namespace Fusee.Examples.Camera.Core
             };
 
             _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
+            SceneNode guiCam = new()
+            {
+                Name = "GUICam",
+                Components = new List<SceneComponent>()
+                {
+                    _guiCamTransform,
+                    _guiCam
+                }
+            };
+
+            _gui.Children.Insert(0, guiCam);
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
