@@ -50,7 +50,7 @@ namespace Fusee.Examples.ComputeFractal.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
             RWTexture = WritableTexture.CreateForComputeShader(1024, 1024);
             _k = 1f / RWTexture.Width;
-            
+
             _rect = new StorageBuffer<double>(this, 4, sizeof(double), 0);
 
             _rectData[0] = -1.0f;
