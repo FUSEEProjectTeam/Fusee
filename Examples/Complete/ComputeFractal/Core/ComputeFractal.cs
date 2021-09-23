@@ -34,7 +34,14 @@ namespace Fusee.Examples.ComputeFractal.Core
 
         private SceneContainer _gui;
         private SceneRendererForward _guiRenderer;
+
+/* Unmerged change from project 'Fusee.Examples.ComputeFractal.Core(net5.0)'
+Before:
         private GUIText _depthFactorText;
+After:
+        private readonly GUIText _depthFactorText;
+*/
+        private readonly GUIText _depthFactorText;
         private readonly float _zNear = 0.1f;
         private readonly float _zFar = 100f;
 

@@ -216,7 +216,7 @@ namespace Fusee.Examples.NormalMap.Core
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
-            
+
             _sceneRenderer.Render(RC);
             Present();
         }
