@@ -34,28 +34,23 @@ namespace Fusee.Examples.ComputeFractal.Core
 
         private SceneContainer _gui;
         private SceneRendererForward _guiRenderer;
+        private SceneInteractionHandler _sih;
 
-/* Unmerged change from project 'Fusee.Examples.ComputeFractal.Core(net5.0)'
-Before:
         private GUIText _depthFactorText;
-After:
-        private readonly GUIText _depthFactorText;
-*/
-        private readonly GUIText _depthFactorText;
         private readonly float _zNear = 0.1f;
         private readonly float _zFar = 100f;
 
         // Init is called on startup.
         public override void Init()
         {
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Compute Shader Example");
+            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
-
+            _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GUIText>();
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
             RWTexture = WritableTexture.CreateForComputeShader(1024, 1024);
             _k = 1f / RWTexture.Width;
-
+            
             _rect = new StorageBuffer<double>(this, 4, sizeof(double), 0);
 
             _rectData[0] = -1.0f;
@@ -109,6 +104,8 @@ After:
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
             _colors.SetData(_colorData);
+
+            _sih = new SceneInteractionHandler(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -127,6 +124,16 @@ After:
 
             RC.Projection = float4x4.CreateOrthographic(Width, Height, _zNear, _zFar);
             _guiRenderer.Render(RC);
+
+            if (!Mouse.Desc.Contains("Android"))
+            {
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            }
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             Present();
         }
