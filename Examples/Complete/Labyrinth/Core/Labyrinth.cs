@@ -376,9 +376,9 @@ namespace Fusee.Examples.Labyrinth.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
                 float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -389,8 +389,8 @@ namespace Fusee.Examples.Labyrinth.Core
             var text = new TextNode(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
@@ -400,7 +400,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var timer = new TextNode(
                 "00:00.00",
                 "Timer",
-                UIElementPosition.GetAnchors(AnchorPos.TopTopRight),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
                 new MinMaxRect
                 {
                     Min = new float2(-2, 0),
@@ -747,9 +747,9 @@ namespace Fusee.Examples.Labyrinth.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
                 float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -760,8 +760,8 @@ namespace Fusee.Examples.Labyrinth.Core
             var text = new TextNode(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
@@ -771,7 +771,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",
-                UIElementPosition.GetAnchors(AnchorPos.Middle),
+                GuiElementPosition.GetAnchors(AnchorPos.Middle),
                 new MinMaxRect
                 {
                     Min = new float2(0.01f, 0),

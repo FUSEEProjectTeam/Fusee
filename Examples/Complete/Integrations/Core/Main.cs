@@ -39,7 +39,7 @@ namespace Fusee.Examples.Integrations.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Integrations Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Integrations Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);

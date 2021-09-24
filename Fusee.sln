@@ -58,7 +58,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Player.Core", 
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "io_export_fus", "src\Tools\BlenderScripts\addons\io_export_fus\io_export_fus.pyproj", "{548BA459-616B-4D04-B0A1-2E19388C4B55}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.GUI", "src\Engine\GUI\Fusee.Engine.GUI.csproj", "{26808B4A-9F15-47F0-B147-E744241B79D2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Gui", "src\Engine\GUI\Fusee.Engine.Gui.csproj", "{26808B4A-9F15-47F0-B147-E744241B79D2}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F98C2B41-CE68-465A-B091-9FDA9F74164D}"
 	ProjectSection(SolutionItems) = preProject

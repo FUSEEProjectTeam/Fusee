@@ -78,7 +78,7 @@ namespace Fusee.Examples.Starkiller.Core
             RC.ClearColor = new float4(0, 0, 0, 0);
 
             _scene = CreateScene();
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Starkiller");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Starkiller");
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }

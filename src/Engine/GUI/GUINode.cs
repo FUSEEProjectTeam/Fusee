@@ -59,7 +59,7 @@ namespace Fusee.Engine.GUI
     /// <summary>
     /// Contains convenience functions to position a UI element on its parent element.
     /// </summary>
-    public static class UIElementPosition
+    public static class GuiElementPosition
     {
         /// <summary>
         /// Sets the anchor position in percent as a <see cref="MinMaxRect"/> depending on its <see cref="AnchorPos"/>
@@ -210,7 +210,6 @@ namespace Fusee.Engine.GUI
             };
         }
     }
-
 
     /// <summary>
     /// Building block to create suitable hierarchies for using textures in the UI.

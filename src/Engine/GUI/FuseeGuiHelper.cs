@@ -16,7 +16,7 @@ namespace Fusee.Engine.GUI
     /// <summary>
     /// Static helper class which conains methods to create predefined GUIs.s
     /// </summary>
-    public static class Helper
+    public static class FuseeGuiHelper
     {
         /// <summary>
         /// Creates a <see cref="SceneContainer"/> which conatins the default Fusee-UI (Logo and app title)
@@ -42,9 +42,9 @@ namespace Fusee.Engine.GUI
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
                 float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -55,8 +55,8 @@ namespace Fusee.Engine.GUI
             var text = new TextNode(
                 title,
                 "AppTitle",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,

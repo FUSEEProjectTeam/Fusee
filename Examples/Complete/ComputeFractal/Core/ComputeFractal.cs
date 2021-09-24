@@ -43,7 +43,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
             _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GUIText>();
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).

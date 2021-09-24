@@ -48,7 +48,7 @@ namespace Fusee.Engine.Player.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            _gui = Helper.CreateDefaultGui(this, _canvasRenderMode, "FUSEE Player");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, _canvasRenderMode, "FUSEE Player");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);

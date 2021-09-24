@@ -62,8 +62,8 @@ namespace Fusee.Engine.Core
         /// <param name="noiseTexSize">Width and height of the noise texture.</param>
         public static ShaderEffect SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
         {
-            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
-            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(noiseTexSize);
+            var ssaoKernel = FuseeSsaoHelper.CreateKernel(kernelLength);
+            var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
             var ps = AssetStorage.Get<string>("SSAO.frag");

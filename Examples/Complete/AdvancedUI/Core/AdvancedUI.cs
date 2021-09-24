@@ -238,7 +238,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     uiInput.CircleCanvasPos = canvasPosCircle;
 
                     var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
-                    circle.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
+                    circle.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
 
@@ -366,8 +366,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             TextureNode fuseeLogo = new(
                 "fuseeLogo",
                 guiFuseeLogo,
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)), float2.One);
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)), float2.One);
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             SceneNode markModelContainer = new()
@@ -435,18 +435,18 @@ namespace Fusee.Examples.AdvancedUI.Core
             if (input.CircleCanvasPos.x <= _canvasWidth / 2)
             {
                 //LEFT
-                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DownDownLeft);
+                sncAnnotation.GetComponent<RectTransform>().Anchors = GuiElementPosition.GetAnchors(AnchorPos.DownDownLeft);
 
-                sncAnnotation.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(
+                sncAnnotation.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(
                     AnchorPos.DownDownLeft, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
             else
             {
                 //RIGHT
-                sncAnnotation.GetComponent<RectTransform>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DownDownRight);
+                sncAnnotation.GetComponent<RectTransform>().Anchors = GuiElementPosition.GetAnchors(AnchorPos.DownDownRight);
 
-                sncAnnotation.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(
+                sncAnnotation.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(
                     AnchorPos.DownDownRight, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
@@ -480,7 +480,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     };
                 }
 
-                sncLine.GetComponent<RectTransform>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
+                sncLine.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
 
                 Line mesh = sncLine.GetComponent<Line>();
 

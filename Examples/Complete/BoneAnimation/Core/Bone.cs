@@ -53,7 +53,7 @@ namespace Fusee.Examples.BoneAnimation.Core
             // Load the standard model
 
             _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Bone Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Bone Example");
 
             #region LEGACY CODE - REFERENCE ONLY!
             /*

@@ -52,7 +52,7 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);

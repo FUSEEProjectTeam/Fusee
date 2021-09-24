@@ -65,7 +65,7 @@ namespace Fusee.Examples.Camera.Core
                 Scale = new float3(1, 1, 1)
             };
 
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
             SceneNode guiCam = new()
             {
                 Name = "GUICam",

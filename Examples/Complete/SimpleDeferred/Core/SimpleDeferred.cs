@@ -48,7 +48,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 Translation = float3.Zero
             };
 
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);

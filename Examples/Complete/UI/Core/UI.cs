@@ -66,7 +66,7 @@ namespace Fusee.Examples.UI.Core
             var fps = new TextNode(
                 "FPS: 0.00",
                 "FPSText",
-                UIElementPosition.GetAnchors(AnchorPos.DownDownRight),
+                GuiElementPosition.GetAnchors(AnchorPos.DownDownRight),
                 new MinMaxRect
                 {
                     Min = new float2(-2, 0),
@@ -86,7 +86,7 @@ namespace Fusee.Examples.UI.Core
                 "jump\n" +
                 "quickly.",
                 "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchAll),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchAll),
                 new MinMaxRect
                 {
                     Min = new float2(1f, 0.5f),
@@ -104,12 +104,12 @@ namespace Fusee.Examples.UI.Core
 
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
 
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 2.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(_initCanvasWidth / 2 - 2.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
                 //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
@@ -128,20 +128,20 @@ namespace Fusee.Examples.UI.Core
                 //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.DownDownLeft),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
+                GuiElementPosition.GetAnchors(AnchorPos.DownDownLeft),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
 
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
+                GuiElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
                 float2.One);
 
             var quagganTextureNode1 = new TextureNode(
                 "Quaggan1",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
 
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
@@ -153,9 +153,9 @@ namespace Fusee.Examples.UI.Core
                 "testImage",
                 new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopRight, new float2(_initCanvasWidth - 6, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 3)),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopRight, new float2(_initCanvasWidth - 6, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 3)),
 
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
@@ -168,8 +168,8 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
                 1, 1, 1, 1,
@@ -180,8 +180,8 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
                 1, 1, 1, 1,
@@ -192,8 +192,8 @@ namespace Fusee.Examples.UI.Core
                 "Quaggan",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                UIElementPosition.GetAnchors(AnchorPos.StretchVertical), //Anchor is in the lower right corner. Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.StretchVertical, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchVertical), //Anchor is in the lower right corner. Anchor is in the lower left corner.
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchVertical, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
                 1, 1, 1, 1,

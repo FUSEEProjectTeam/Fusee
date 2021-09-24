@@ -43,7 +43,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = Helper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE SurfaceEffects Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE SurfaceEffects Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
