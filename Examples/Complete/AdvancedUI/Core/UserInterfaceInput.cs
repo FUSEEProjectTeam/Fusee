@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
-    internal struct UIInput
+    internal struct UserInterfaceInput
     {
         //"Position" and "Size" determine a rectangle - with "Position" as its center - that encloses the object we want to mark with UI elements.
         //Could be the tangent plane with the correct size and center at "Position".
@@ -14,7 +14,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal string SegmentationClass;
         internal float Probability;
 
-        internal UIHelper.AnnotationKind AnnotationKind;
+        internal UserInterfaceHelper.AnnotationKind AnnotationKind;
 
         //Triangles that belong to the object we want to mark.
         internal List<int> AffectedTriangles;
@@ -25,7 +25,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         internal float2 AnnotationCanvasPos;
         internal int Identifier;
 
-        public UIInput(UIHelper.AnnotationKind annotationKind, float3 pos, float2 size, string segRes, float probability)
+        public UserInterfaceInput(UserInterfaceHelper.AnnotationKind annotationKind, float3 pos, float2 size, string segRes, float probability)
         {
             Position = pos;
             Size = size;

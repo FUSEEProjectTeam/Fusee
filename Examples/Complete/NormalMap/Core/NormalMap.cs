@@ -217,11 +217,7 @@ namespace Fusee.Examples.NormalMap.Core
             float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
 
-            // Tick any animations and Render the scene loaded in Init()
-            _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
