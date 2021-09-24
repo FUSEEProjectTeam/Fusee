@@ -5,7 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
@@ -32,8 +32,8 @@ namespace Fusee.Examples.UI.Core
         private Texture _bltDestinationTex;
 
         private SceneInteractionHandler _sih;
-        private GUIButton _btnCanvas;
-        private GUIButton _btnCat;
+        private GuiButton _btnCanvas;
+        private GuiButton _btnCat;
 
         private FontMap _fontMap;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.World;
@@ -50,7 +50,7 @@ namespace Fusee.Examples.UI.Core
         private readonly float4 _canvasDefaultColor = (float4)ColorUint.Red;
         private readonly float4 _canvasHoverColor = (float4)ColorUint.OrangeRed;
 
-        private GUIText _fpsText;
+        private GuiText _fpsText;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -78,7 +78,7 @@ namespace Fusee.Examples.UI.Core
                 VerticalTextAlignment.Center
             );
 
-            _fpsText = fps.GetComponentsInChildren<GUIText>().FirstOrDefault();
+            _fpsText = fps.GetComponentsInChildren<GuiText>().FirstOrDefault();
 
             var text = new TextNode(
                 "The five\n" +
@@ -336,7 +336,7 @@ namespace Fusee.Examples.UI.Core
             var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
             _bltDestinationTex.Blt(180, 225, bltScrTex);
 
-            _btnCanvas = new GUIButton
+            _btnCanvas = new GuiButton
             {
                 Name = "Canvas_Button"
             };
@@ -346,7 +346,7 @@ namespace Fusee.Examples.UI.Core
             _btnCanvas.OnMouseExit += OnBtnCanvasExit;
             _btnCanvas.OnMouseOver += OnMouseOverBtnCanvas;
 
-            _btnCat = new GUIButton
+            _btnCat = new GuiButton
             {
                 Name = "Cat_Button"
             };

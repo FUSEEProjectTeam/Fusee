@@ -4,7 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 using System.Linq;

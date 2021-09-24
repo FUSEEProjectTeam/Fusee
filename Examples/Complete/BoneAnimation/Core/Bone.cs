@@ -2,7 +2,7 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 
 namespace Fusee.Examples.BoneAnimation.Core

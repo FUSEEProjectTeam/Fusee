@@ -11,7 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Engine.GUI
+namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// Static helper class which conains methods to create predefined GUIs.s
@@ -30,7 +30,7 @@ namespace Fusee.Engine.GUI
             var canvasWidth = rc.Width / 100f;
             var canvasHeight = rc.Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            var btnFuseeLogo = new GuiButton
             {
                 Name = "Canvas_Button"
             };

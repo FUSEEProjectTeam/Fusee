@@ -4,7 +4,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 
@@ -36,7 +36,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         private SceneRendererForward _guiRenderer;
         private SceneInteractionHandler _sih;
 
-        private GUIText _depthFactorText;
+        private GuiText _depthFactorText;
         private readonly float _zNear = 0.1f;
         private readonly float _zFar = 100f;
 
@@ -45,7 +45,7 @@ namespace Fusee.Examples.ComputeFractal.Core
         {
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
-            _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GUIText>();
+            _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GuiText>();
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
             RWTexture = WritableTexture.CreateForComputeShader(1024, 1024);

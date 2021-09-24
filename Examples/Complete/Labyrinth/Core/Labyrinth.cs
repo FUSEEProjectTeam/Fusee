@@ -6,7 +6,7 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
@@ -55,7 +55,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private float _moveX, _moveZ;
 
         // Timer display
-        private GUIText _timertext;
+        private GuiText _timertext;
 
         private FontMap _timeMap;
 
@@ -361,7 +361,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            var btnFuseeLogo = new GuiButton
             {
                 Name = "Canvas_Button"
             };
@@ -412,7 +412,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.Center
             );
 
-            _timertext = timer.GetComponentsInChildren<GUIText>().FirstOrDefault();
+            _timertext = timer.GetComponentsInChildren<GuiText>().FirstOrDefault();
 
             var canvas = new CanvasNode(
                 "Canvas",
@@ -732,7 +732,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            var btnFuseeLogo = new GuiButton
             {
                 Name = "Canvas_Button"
             };

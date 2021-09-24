@@ -6,7 +6,7 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
@@ -47,7 +47,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private readonly float _fovy = M.PiOver4;
 
-        private List<UIInput> _uiInput;
+        private List<UserInterfaceInput> _uiInput;
 
         private ScenePicker _scenePicker;
 
@@ -59,19 +59,19 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
-                UIHelper.CanvasWidthInit = Width / 100f;
-                UIHelper.CanvasHeightInit = Height / 100f;
+                UserInterfaceHelper.CanvasWidthInit = Width / 100f;
+                UserInterfaceHelper.CanvasHeightInit = Height / 100f;
             }
             else
             {
-                UIHelper.CanvasHeightInit = 16;
-                UIHelper.CanvasWidthInit = 9;
+                UserInterfaceHelper.CanvasHeightInit = 16;
+                UserInterfaceHelper.CanvasWidthInit = 9;
             }
 
-            _canvasHeight = UIHelper.CanvasHeightInit;
-            _canvasWidth = UIHelper.CanvasWidthInit;
+            _canvasHeight = UserInterfaceHelper.CanvasHeightInit;
+            _canvasWidth = UserInterfaceHelper.CanvasWidthInit;
 
-            _uiInput = new List<UIInput>();
+            _uiInput = new List<UserInterfaceInput>();
 
             _initWidth = Width;
             _initHeight = Height;
@@ -104,11 +104,11 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 float prob = (float)rnd.NextDouble();
                 prob = (float)System.Math.Round(prob, 3);
-                string dummyClass = UIHelper.DummySegmentationClasses[rnd.Next(0, UIHelper.DummySegmentationClasses.Count - 1)];
+                string dummyClass = UserInterfaceHelper.DummySegmentationClasses[rnd.Next(0, UserInterfaceHelper.DummySegmentationClasses.Count - 1)];
 
-                UIHelper.AnnotationKind annotationKind = (UIHelper.AnnotationKind)rnd.Next(0, Enum.GetNames(typeof(UIHelper.AnnotationKind)).Length);
+                UserInterfaceHelper.AnnotationKind annotationKind = (UserInterfaceHelper.AnnotationKind)rnd.Next(0, Enum.GetNames(typeof(UserInterfaceHelper.AnnotationKind)).Length);
 
-                UIInput input = new(annotationKind, middle, new float2(0.65f, 0.65f), dummyClass, prob)
+                UserInterfaceInput input = new(annotationKind, middle, new float2(0.65f, 0.65f), dummyClass, prob)
                 {
                     Identifier = i,
                     CircleCanvasPos = circleCanvasPos,
@@ -221,7 +221,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     SceneNode container = child.Children[k];
 
                     SceneNode circle = container.Children[0];
-                    UIInput uiInput = _uiInput[k];
+                    UserInterfaceInput uiInput = _uiInput[k];
 
                     //the monkey's matrices
                     SceneNode monkey = _scene.Children[0];
@@ -249,13 +249,13 @@ namespace Fusee.Examples.AdvancedUI.Core
                         uiInput.IsVisible = true;
 
                         var effect = circle.GetComponent<DefaultSurfaceEffect>();
-                        effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
+                        effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaVis);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
                         var effect = circle.GetComponent<DefaultSurfaceEffect>();
-                        effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
+                        effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaInv);
 
                     }
 
@@ -264,12 +264,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         float yPosScale = uiInput.CircleCanvasPos.y / _canvasHeight;
                         yPosScale = (yPosScale - 0.5f) * 2f;
-                        uiInput.AnnotationCanvasPos.y = uiInput.CircleCanvasPos.y - (UIHelper.AnnotationDim.y / 2) + (2 * UIHelper.AnnotationDim.y * yPosScale);
+                        uiInput.AnnotationCanvasPos.y = uiInput.CircleCanvasPos.y - (UserInterfaceHelper.AnnotationDim.y / 2) + (2 * UserInterfaceHelper.AnnotationDim.y * yPosScale);
 
                         if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT
-                            uiInput.AnnotationCanvasPos.x = UIHelper.CanvasWidthInit - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
+                            uiInput.AnnotationCanvasPos.x = UserInterfaceHelper.CanvasWidthInit - UserInterfaceHelper.AnnotationDim.x - UserInterfaceHelper.AnnotationDistToLeftOrRightEdge;
                         else
-                            uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;
+                            uiInput.AnnotationCanvasPos.x = UserInterfaceHelper.AnnotationDistToLeftOrRightEdge;
                     }
                     _uiInput[k] = uiInput;
                 }
@@ -280,7 +280,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 {
                     SceneNode container = child.Children[k];
                     SceneNode annotation = container.Children[1];
-                    UIInput uiInput = _uiInput[k];
+                    UserInterfaceInput uiInput = _uiInput[k];
 
                     if (uiInput.IsVisible)
                     {
@@ -309,7 +309,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     SceneNode container = child.Children[k];
 
                     SceneNode line = container.Children[2];
-                    UIInput uiInput = _uiInput[k];
+                    UserInterfaceInput uiInput = _uiInput[k];
 
                     if (uiInput.IsVisible)
                     {
@@ -340,8 +340,8 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
 
-            _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
-            _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
+            _canvasHeight = UserInterfaceHelper.CanvasHeightInit * _resizeScaleFactor.y;
+            _canvasWidth = UserInterfaceHelper.CanvasWidthInit * _resizeScaleFactor.x;
 
         }
 
@@ -354,7 +354,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 borderScaleFactor = canvasScaleFactor;
             }
 
-            GUIButton btnFuseeLogo = new()
+            GuiButton btnFuseeLogo = new()
             {
                 Name = "Canvas_Button"
             };
@@ -389,14 +389,14 @@ namespace Fusee.Examples.AdvancedUI.Core
             for (int i = 0; i < _uiInput.Count; i++)
             {
                 var item = _uiInput[i];
-                if (item.AnnotationKind != UIHelper.AnnotationKind.Confirmed)
+                if (item.AnnotationKind != UserInterfaceHelper.AnnotationKind.Confirmed)
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
+                    UserInterfaceHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                     "#" + i + " " + item.SegmentationClass + ", " + item.Probability.ToString(CultureInfo.GetCultureInfo("en-gb")));
                 }
                 else
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
+                    UserInterfaceHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
             }
@@ -430,7 +430,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             OpenLink("http://fusee3d.org");
         }
 
-        private void UpdateAnnotationOffsets(SceneNode sncAnnotation, UIInput input)
+        private void UpdateAnnotationOffsets(SceneNode sncAnnotation, UserInterfaceInput input)
         {
             if (input.CircleCanvasPos.x <= _canvasWidth / 2)
             {
@@ -439,7 +439,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 sncAnnotation.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(
                     AnchorPos.DownDownLeft, input.AnnotationCanvasPos,
-                    UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
+                    UserInterfaceHelper.CanvasHeightInit, UserInterfaceHelper.CanvasWidthInit, UserInterfaceHelper.AnnotationDim);
             }
             else
             {
@@ -448,11 +448,11 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                 sncAnnotation.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(
                     AnchorPos.DownDownRight, input.AnnotationCanvasPos,
-                    UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
+                    UserInterfaceHelper.CanvasHeightInit, UserInterfaceHelper.CanvasWidthInit, UserInterfaceHelper.AnnotationDim);
             }
         }
 
-        private void DrawLine(SceneNode sncLine, UIInput uiInput)
+        private void DrawLine(SceneNode sncLine, UserInterfaceInput uiInput)
         {
             if (uiInput.IsVisible)
             {
@@ -464,18 +464,18 @@ namespace Fusee.Examples.AdvancedUI.Core
                     //LEFT
                     linePoints = new List<float3>
                     {
-                        new float3(uiInput.AnnotationCanvasPos.x + UIHelper.AnnotationDim.x, uiInput.AnnotationCanvasPos.y + UIHelper.AnnotationDim.y/2,0),
+                        new float3(uiInput.AnnotationCanvasPos.x + UserInterfaceHelper.AnnotationDim.x, uiInput.AnnotationCanvasPos.y + UserInterfaceHelper.AnnotationDim.y/2,0),
                         new float3(uiInput.CircleCanvasPos.x - (uiInput.Size.x/2), uiInput.CircleCanvasPos.y,0)
                     };
                 }
                 else
                 {
                     //RIGHT
-                    float posX = _canvasWidth - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
+                    float posX = _canvasWidth - UserInterfaceHelper.AnnotationDim.x - UserInterfaceHelper.AnnotationDistToLeftOrRightEdge;
 
                     linePoints = new List<float3>
                     {
-                        new float3(posX, uiInput.AnnotationCanvasPos.y + UIHelper.AnnotationDim.y/2,0),
+                        new float3(posX, uiInput.AnnotationCanvasPos.y + UserInterfaceHelper.AnnotationDim.y/2,0),
                         new float3(uiInput.CircleCanvasPos.x + (uiInput.Size.x/2), uiInput.CircleCanvasPos.y,0)
                     };
                 }
@@ -506,22 +506,22 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
         }
 
-        private void CalculateNonIntersectingAnnotationPositions(ref UIInput input, ref Dictionary<int, float2> intersectedAnnotations, ref int iterations)
+        private void CalculateNonIntersectingAnnotationPositions(ref UserInterfaceInput input, ref Dictionary<int, float2> intersectedAnnotations, ref int iterations)
         {
             if (!input.IsVisible) return;
 
             int intersectionCount = 0;
             for (int i = 0; i < _uiInput.Count; i++)
             {
-                UIInput counterpart = _uiInput[i];
+                UserInterfaceInput counterpart = _uiInput[i];
 
                 if (counterpart.Identifier == input.Identifier || !counterpart.IsVisible || intersectedAnnotations.ContainsKey(counterpart.Identifier))
                     continue;
 
-                float halfAnnotationHeight = (UIHelper.AnnotationDim.y / 2f);
+                float halfAnnotationHeight = (UserInterfaceHelper.AnnotationDim.y / 2f);
                 float buffer = halfAnnotationHeight - (halfAnnotationHeight / 100f * 10f);
                 //If we do not multiply by the resize scale factor the intersction test will return wrong results because AnnotationCanvasPos is in the range of the size of the initial canvas.
-                bool intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos, new float2(0, buffer));
+                bool intersect = UserInterfaceHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos, new float2(0, buffer));
 
                 if (!intersect || intersectedAnnotations.ContainsKey(counterpart.Identifier)) continue;
 
@@ -556,7 +556,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 for (int i = 0; i < intersectedAnnotations.Count; i++)
                 {
                     int identifier = intersectedAnnotations.ElementAt(i).Key;
-                    UIInput thisInput = _uiInput[identifier];
+                    UserInterfaceInput thisInput = _uiInput[identifier];
                     thisInput.AnnotationCanvasPos = averagePos;
 
                     int multiplier = System.Math.Abs(i - middleIndex);
@@ -565,20 +565,20 @@ namespace Fusee.Examples.AdvancedUI.Core
                     if (intersectedAnnotations.Count % 2 == 0) //even
                     {
                         if (i == middleIndex - 1)
-                            thisInput.AnnotationCanvasPos.y -= 0.75f * UIHelper.AnnotationDim.y;
+                            thisInput.AnnotationCanvasPos.y -= 0.75f * UserInterfaceHelper.AnnotationDim.y;
                         else if (i == middleIndex)
-                            thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
+                            thisInput.AnnotationCanvasPos.y += 0.75f * UserInterfaceHelper.AnnotationDim.y;
                         else if (i > middleIndex)
-                            thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
+                            thisInput.AnnotationCanvasPos.y += (0.75f * UserInterfaceHelper.AnnotationDim.y) + (multiplier * (UserInterfaceHelper.AnnotationDim.y + UserInterfaceHelper.AnnotationDim.y / 2));
                         else if (i < middleIndex)
-                            thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
+                            thisInput.AnnotationCanvasPos.y -= (0.75f * UserInterfaceHelper.AnnotationDim.y) + ((multiplier - 1) * (UserInterfaceHelper.AnnotationDim.y + UserInterfaceHelper.AnnotationDim.y / 2));
                     }
                     else //odd
                     {
                         if (i > middleIndex)
-                            thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
+                            thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UserInterfaceHelper.AnnotationDim.y + (UserInterfaceHelper.AnnotationDim.y * multiplier);
                         else if (i < middleIndex)
-                            thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
+                            thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UserInterfaceHelper.AnnotationDim.y + (UserInterfaceHelper.AnnotationDim.y * multiplier);
                     }
 
                     _uiInput[identifier] = thisInput;
@@ -591,7 +591,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 if (i != 0 && i != intersectedAnnotations.Count - 1) continue;
                 iterations++;
                 int identifier = intersectedAnnotations.ElementAt(i).Key;
-                UIInput uiInput = _uiInput[identifier];
+                UserInterfaceInput uiInput = _uiInput[identifier];
 
                 CalculateNonIntersectingAnnotationPositions(ref uiInput, ref intersectedAnnotations, ref iterations);
             }

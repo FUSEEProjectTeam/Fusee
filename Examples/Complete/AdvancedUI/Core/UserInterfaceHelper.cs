@@ -5,13 +5,13 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
-    internal static class UIHelper
+    internal static class UserInterfaceHelper
     {
         internal static List<string> DummySegmentationClasses = new()
         {

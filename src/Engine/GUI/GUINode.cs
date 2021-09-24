@@ -8,7 +8,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.GUI
+namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// Used when positioning UI elements. Each entry corresponds to a commonly used anchor point setup.
@@ -372,7 +372,7 @@ namespace Fusee.Engine.GUI
 
             string vs = AssetStorage.Get<string>("texture.vert");
             string ps = AssetStorage.Get<string>("text.frag");
-            var textMesh = new GUIText(fontMap, text, horizontalAlignment)
+            var textMesh = new GuiText(fontMap, text, horizontalAlignment)
             {
                 Name = name + "textMesh"
             };
