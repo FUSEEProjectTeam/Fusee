@@ -8,7 +8,6 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;

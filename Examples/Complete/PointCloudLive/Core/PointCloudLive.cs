@@ -92,8 +92,8 @@ namespace Fusee.Examples.PointCloudLive.Core
                 ColorMode = (int)ColorMode.Point,
                 DoEyeDomeLighting = true,
                 DepthTex = _depthTex,
-                EDLStrength = 0.3f,
-                EDLNeighbourPixels = 1,
+                EDLStrength = 0.7f,
+                EDLNeighbourPixels = 2,
                 ScreenParams = new float2(Width, Height),
                 ClippingPlanes = _mainCam.ClippingPlanes
             };

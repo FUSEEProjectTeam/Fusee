@@ -121,7 +121,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                                 fragMainBody.Add("float encodedShadingModel = float((6 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("float encodedNeighbourPx = float((EDLNeighbourPixels & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'edl' - store EDLStrength and EDLNeighbourPixels.");
-                                fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 0.0, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(EDLStrength, encodedNeighbourPx, 0.0, encodedShadingModel);");
                             }
                             break;
                         }

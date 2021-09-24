@@ -26,7 +26,9 @@ namespace Fusee.Engine.Core.ShaderShards
     public enum LightingSetupFlags
     {
         /// <summary>
-        /// This effect uses eye dome lighting, mainly used for point cloud rendering.
+        /// This effect uses eye dome lighting and is used for point cloud rendering.
+        /// CAUTION: it will only work with <see cref="SurfaceEffect"/>s that have the needed unirom paramters.
+        /// See: <see cref="PointCloudSurfaceEffect.EDLStrength"/> and <see cref="PointCloudSurfaceEffect.EDLNeighbourPixels"/>
         /// </summary>
         Edl = 128,
 
