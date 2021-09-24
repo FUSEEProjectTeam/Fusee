@@ -178,7 +178,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("PointCloud.vert"),
+                VS = AssetStorage.Get<string>("PointCloudLod.vert"),
                 PS = AssetStorage.Get<string>("PointDepth.frag"),
                 StateSet = new RenderStateSet
                 {
@@ -221,8 +221,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             return new ShaderEffect(
                 new FxPassDeclaration
                 {
-                    VS = AssetStorage.Get<string>("PointCloud.vert"),
-                    PS = AssetStorage.Get<string>("PointCloud.frag"),
+                    VS = AssetStorage.Get<string>("PointCloudLod.vert"),
+                    PS = AssetStorage.Get<string>("PointCloudLod.frag"),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,

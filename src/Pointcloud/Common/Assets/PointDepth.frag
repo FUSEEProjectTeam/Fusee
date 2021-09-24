@@ -13,7 +13,6 @@ in float vWorldSpacePointRad;
 
 out vec4 oColor;
 
-
 void main(void)
 {	
 	vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]
@@ -28,7 +27,7 @@ void main(void)
 	default:
 		gl_FragDepth = gl_FragCoord.z;
 		break;
-	case 1: // circle						
+	case 1: // circle
 
 		float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);
 			

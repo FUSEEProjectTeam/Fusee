@@ -23,7 +23,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _pointCloud;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
         private SceneNode _node;
@@ -35,46 +35,16 @@ namespace Fusee.Examples.PointCloudLive.Core
         private Camera _mainCam;
         private bool _renderForward;
 
-        private ShaderEffect CreateDepthPassEffect(int ptSize, int ptShape, int ptMode, float2 screenParams, float initCamPosZ)
-        {
-            return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("PointCloud.vert"),
-                PS = AssetStorage.Get<string>("PointDepth.frag"),
-                StateSet = new RenderStateSet
-                {
-                    AlphaBlendEnable = true,
-                    ZEnable = true,
-                }
-            },
-            new List<IFxParamDeclaration>
-            {
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_MV", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_M", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_IV", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
-
-                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
-                new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
-
-                new FxParamDeclaration<int> {Name = "PointSize", Value = ptSize},
-                new FxParamDeclaration<int> {Name = "PointShape", Value = (int)ptShape},
-                new FxParamDeclaration<int> {Name = "PointMode", Value = (int)ptMode}
-            });
-        }
-
         // Init is called on startup.
         public override void Init()
         {
             VSync = false;
+            RC.ClearColor = new float4(1, 1, 1, 1);
 
             var accessor = new Pos64Col32_Accessor();
             _node = new SceneNode();
             _node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToArray(accessor, "D:\\LAS\\HolbeinPferd.las", true), out var box));
-            
+
             _mainCamTransform = new Transform()
             {
                 Translation = box.Center - new float3(0, 0, box.Size.z)
@@ -85,7 +55,16 @@ namespace Fusee.Examples.PointCloudLive.Core
                 BackgroundColor = float4.One
             };
 
-            _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
+            SceneNode camNode = new()
+            {
+                Name = "MainCam",
+                Components = new List<SceneComponent>()
+                {
+                    _mainCamTransform,
+                    _mainCam
+                }
+            };
+
             _pcFx = new PointCloudSurfaceEffect
             {
                 PointSize = 10,
@@ -97,23 +76,7 @@ namespace Fusee.Examples.PointCloudLive.Core
                 ScreenParams = new float2(Width, Height),
                 ClippingPlanes = _mainCam.ClippingPlanes
             };
-
             _node.Components.Insert(0, _pcFx);
-            
-            SceneNode camNode = new()
-            {
-                Name = "MainCam",
-                Components = new List<SceneComponent>()
-                {
-                    _mainCamTransform,
-                    _mainCam
-                }
-            };
-
-            _depthFx = CreateDepthPassEffect(_pcFx.PointSize, (int)PointShape.Rect, (int)PointSizeMode.FixedPixelSize, new float2(Width, Height), _mainCamTransform.Translation.z);
-            
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
 
             _pointCloud = new SceneContainer()
             {
@@ -123,22 +86,25 @@ namespace Fusee.Examples.PointCloudLive.Core
                     camNode
                 }
             };
-            
+
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_pointCloud);
+            _sceneRenderer = new SceneRendererForward(_pointCloud);
             _renderForward = _sceneRenderer.GetType() == typeof(SceneRendererForward);
+
+            if (_renderForward)
+            {
+                _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));                
+                _depthFx = CreateDepthPassEffect(_pcFx.PointSize, (int)PointShape.Rect, (int)PointSizeMode.FixedPixelSize, new float2(Width, Height), _mainCamTransform.Translation.z);
+            }
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             Diagnostics.Warn(FramesPerSecond);
-            // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             RC.Viewport(0, 0, Width, Height);
 
-            // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
@@ -175,7 +141,6 @@ namespace Fusee.Examples.PointCloudLive.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current ModelView transformation
             _mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
 
             if (_pcFx.DoEyeDomeLighting && _renderForward)
@@ -187,18 +152,12 @@ namespace Fusee.Examples.PointCloudLive.Core
                 _mainCam.RenderTexture = _depthTex;
                 _sceneRenderer.Render(RC);
                 _mainCam.RenderTexture = null;
-                
+
                 _node.RemoveComponent<ShaderEffect>();
                 _node.Components.Insert(0, _pcFx);
             }
 
             _sceneRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
-
-            
-            float n = RC.Projection.M34 / (RC.Projection.M33 - 1.0f) * -1;
-            float f = RC.Projection.M34 / (RC.Projection.M33 + 1.0f) * -1;
 
             Present();
         }
@@ -207,6 +166,34 @@ namespace Fusee.Examples.PointCloudLive.Core
         {
             _pcFx.ScreenParams = new float2(Width, Height);
             base.Resize(e);
+        }
+
+        private static ShaderEffect CreateDepthPassEffect(int ptSize, int ptShape, int ptMode, float2 screenParams, float initCamPosZ)
+        {
+            return new ShaderEffect(
+            new FxPassDeclaration
+            {
+                VS = AssetStorage.Get<string>("PointCloud.vert"),
+                PS = AssetStorage.Get<string>("PointDepth.frag"),
+                StateSet = new RenderStateSet
+                {
+                    AlphaBlendEnable = true,
+                    ZEnable = true,
+                }
+            },
+            new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_MV", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity},
+
+                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
+                new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
+
+                new FxParamDeclaration<int> {Name = "PointSize", Value = ptSize},
+                new FxParamDeclaration<int> {Name = "PointShape", Value = ptShape},
+                new FxParamDeclaration<int> {Name = "PointSizeMode", Value = ptMode},
+            });
         }
     }
 }

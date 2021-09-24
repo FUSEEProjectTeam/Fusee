@@ -56,7 +56,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private float _maxPinchSpeed;
 
@@ -82,10 +81,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 _closingRequested = value;
             }
         }
-
         private bool _closingRequested;
 
-        private bool _isTexInitialized = false;
+        private bool _isTexInitialized;
 
         private Texture _octreeTex;
         private double3 _octreeRootCenter;
@@ -149,8 +147,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             _twoTouchRepeated = false;
             _offset = float2.Zero;
             _offsetInit = float2.Zero;
-
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).            
 
             if (!UseWPF)
                 LoadPointCloudFromFile();
