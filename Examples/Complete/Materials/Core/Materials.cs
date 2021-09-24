@@ -4,7 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -59,8 +59,8 @@ namespace Fusee.Examples.Materials.Core
                             new TextNode(
                             "How-To:\n############################\n- Move with WASD\n- Left mouse button rotates spheres\n- Mouse wheel zooms",
                             "howTo",
-                            UIElementPosition.GetAnchors(AnchorPos.DownDownLeft),
-                            UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
+                            GuiElementPosition.GetAnchors(AnchorPos.DownDownLeft),
+                            GuiElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
                             fontLatoMap,
                             new float4(1, 1, 0, 1).LinearColorFromSRgb(),
                             HorizontalTextAlignment.Left,

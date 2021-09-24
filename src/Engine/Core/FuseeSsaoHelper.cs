@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Defines methods for creating the SSAO kernel and the noise texture.
     /// </summary>
-    public static class SSAOHelper
+    public static class FuseeSsaoHelper
     {
         /// <summary>
         /// Creates a hemispherical kernel with more samples closer to the center. 

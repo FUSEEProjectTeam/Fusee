@@ -6,13 +6,12 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Font = Fusee.Base.Core.Font;
@@ -56,7 +55,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private float _moveX, _moveZ;
 
         // Timer display
-        private GUIText _timertext;
+        private GuiText _timertext;
 
         private FontMap _timeMap;
 
@@ -362,7 +361,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            var btnFuseeLogo = new GuiButton
             {
                 Name = "Canvas_Button"
             };
@@ -377,9 +376,9 @@ namespace Fusee.Examples.Labyrinth.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
                 float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -388,10 +387,10 @@ namespace Fusee.Examples.Labyrinth.Core
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                "FUSEE Simple Example",
+                "FUSEE Labyrinth Example",
                 "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
@@ -401,7 +400,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var timer = new TextNode(
                 "00:00.00",
                 "Timer",
-                UIElementPosition.GetAnchors(AnchorPos.TopTopRight),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
                 new MinMaxRect
                 {
                     Min = new float2(-2, 0),
@@ -413,7 +412,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.Center
             );
 
-            _timertext = timer.GetComponentsInChildren<GUIText>().FirstOrDefault();
+            _timertext = timer.GetComponentsInChildren<GuiText>().FirstOrDefault();
 
             var canvas = new CanvasNode(
                 "Canvas",
@@ -733,7 +732,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var canvasWidth = Width / 100f;
             var canvasHeight = Height / 100f;
 
-            var btnFuseeLogo = new GUIButton
+            var btnFuseeLogo = new GuiButton
             {
                 Name = "Canvas_Button"
             };
@@ -748,9 +747,9 @@ namespace Fusee.Examples.Labyrinth.Core
                 guiFuseeLogo,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TopTopLeft),
+                GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),
                 //Define Offset and therefor the size of the element.
-                UIElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.TopTopLeft, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)),
                 float2.One
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -759,10 +758,10 @@ namespace Fusee.Examples.Labyrinth.Core
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
-                "FUSEE Simple Example",
+                "FUSEE Labyrinth Example",
                 "ButtonText",
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 (float4)ColorUint.Greenery,
                 HorizontalTextAlignment.Center,
@@ -772,7 +771,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",
-                UIElementPosition.GetAnchors(AnchorPos.Middle),
+                GuiElementPosition.GetAnchors(AnchorPos.Middle),
                 new MinMaxRect
                 {
                     Min = new float2(0.01f, 0),

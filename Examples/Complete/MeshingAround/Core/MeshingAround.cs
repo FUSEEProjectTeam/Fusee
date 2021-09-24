@@ -3,9 +3,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 

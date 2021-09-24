@@ -6,12 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Engine.GUI
+namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// Creates a text mesh for the GUI.
     /// </summary>
-    public class GUIText : Mesh
+    public class GuiText : Mesh
     {
         private readonly FontMap _fontMap;
 
@@ -88,7 +88,7 @@ namespace Fusee.Engine.GUI
         /// <param name="text"></param>
         /// <param name="horizontalAlignment">Defines the <see cref="HorizontalAlignment"/> of the text. 
         /// This is needed here because it changes the shape of the mesh.</param>
-        public GUIText(FontMap fontMap, string text, HorizontalTextAlignment horizontalAlignment)
+        public GuiText(FontMap fontMap, string text, HorizontalTextAlignment horizontalAlignment)
         {
             _fontMap = fontMap;
             _text = text;

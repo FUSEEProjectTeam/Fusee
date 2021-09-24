@@ -8,7 +8,7 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.GUI
+namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// Used when positioning UI elements. Each entry corresponds to a commonly used anchor point setup.
@@ -59,7 +59,7 @@ namespace Fusee.Engine.GUI
     /// <summary>
     /// Contains convenience functions to position a UI element on its parent element.
     /// </summary>
-    public static class UIElementPosition
+    public static class GuiElementPosition
     {
         /// <summary>
         /// Sets the anchor position in percent as a <see cref="MinMaxRect"/> depending on its <see cref="AnchorPos"/>
@@ -210,7 +210,6 @@ namespace Fusee.Engine.GUI
             };
         }
     }
-
 
     /// <summary>
     /// Building block to create suitable hierarchies for using textures in the UI.
@@ -373,7 +372,7 @@ namespace Fusee.Engine.GUI
 
             string vs = AssetStorage.Get<string>("texture.vert");
             string ps = AssetStorage.Get<string>("text.frag");
-            var textMesh = new GUIText(fontMap, text, horizontalAlignment)
+            var textMesh = new GuiText(fontMap, text, horizontalAlignment)
             {
                 Name = name + "textMesh"
             };
