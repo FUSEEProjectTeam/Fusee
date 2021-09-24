@@ -15,7 +15,7 @@ namespace Fusee.Examples.AdvancedUI.Desktop
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+            IO.IOImp = new IOImp();
 
             FileAssetProvider fap = new("Assets");
             fap.RegisterTypeHandler(

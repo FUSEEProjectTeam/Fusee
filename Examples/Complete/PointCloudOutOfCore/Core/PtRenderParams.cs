@@ -215,8 +215,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         internal ShaderEffect CreateColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, WritableTexture depthTex, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             var kernelLength = 32;
-            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
-            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(32);
+            var ssaoKernel = FuseeSsaoHelper.CreateKernel(kernelLength);
+            var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(32);
 
             return new ShaderEffect(
                 new FxPassDeclaration
