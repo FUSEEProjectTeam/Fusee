@@ -1146,7 +1146,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             gBufferRenderTarget.SetPositionTex();
             gBufferRenderTarget.SetAlbedoSpecularTex();
             gBufferRenderTarget.SetNormalTex();
-            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();
             gBufferRenderTarget.SetEmissiveTex();
 

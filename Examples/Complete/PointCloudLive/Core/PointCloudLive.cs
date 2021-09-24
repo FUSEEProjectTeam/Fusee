@@ -23,7 +23,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _pointCloud;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private bool _keys;
         private SceneNode _node;
@@ -33,6 +33,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         private PointCloudSurfaceEffect _pcFx;
         private ShaderEffect _depthFx;
         private Camera _mainCam;
+        private bool _renderForward;
 
         private ShaderEffect CreateDepthPassEffect(int ptSize, int ptShape, int ptMode, float2 screenParams, float initCamPosZ)
         {
@@ -87,17 +88,17 @@ namespace Fusee.Examples.PointCloudLive.Core
             _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
             _pcFx = new PointCloudSurfaceEffect
             {
-                PointSize = 5,
+                PointSize = 10,
                 ColorMode = (int)ColorMode.Point,
                 DoEyeDomeLighting = true,
                 DepthTex = _depthTex,
-                EDLStrength = 1f,
-                EDLNeighbourPixels = 2,
+                EDLStrength = 0.3f,
+                EDLNeighbourPixels = 1,
                 ScreenParams = new float2(Width, Height),
                 ClippingPlanes = _mainCam.ClippingPlanes
             };
 
-            _node.Components.Insert(1, _pcFx);
+            _node.Components.Insert(0, _pcFx);
             
             SceneNode camNode = new()
             {
@@ -124,7 +125,8 @@ namespace Fusee.Examples.PointCloudLive.Core
             };
             
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_pointCloud);
+            _sceneRenderer = new SceneRendererDeferred(_pointCloud);
+            _renderForward = _sceneRenderer.GetType() == typeof(SceneRendererForward);
         }
 
         // RenderAFrame is called once a frame
@@ -176,7 +178,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             // Create the camera matrix and set it as the current ModelView transformation
             _mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
 
-            if (_pcFx.DoEyeDomeLighting)
+            if (_pcFx.DoEyeDomeLighting && _renderForward)
             {
                 //Render Depth-only pass
                 _node.RemoveComponent<PointCloudSurfaceEffect>();
@@ -193,6 +195,11 @@ namespace Fusee.Examples.PointCloudLive.Core
             _sceneRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+
+            
+            float n = RC.Projection.M34 / (RC.Projection.M33 - 1.0f) * -1;
+            float f = RC.Projection.M34 / (RC.Projection.M33 + 1.0f) * -1;
+
             Present();
         }
 

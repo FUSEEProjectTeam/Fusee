@@ -1251,17 +1251,21 @@ namespace Fusee.Engine.Core
             var forwardFx = compiledEffects.ForwardFx;
             if (forwardFx != null)
             {
-                var effectParamFw = forwardFx.ActiveUniforms[hash];
-                effectParamFw.Value = paramValue;
-                effectParamFw.HasValueChanged = true;
+                if (forwardFx.ActiveUniforms.TryGetValue(hash, out var effectParamFw))
+                {
+                    effectParamFw.Value = paramValue;
+                    effectParamFw.HasValueChanged = true;
+                }
             }
 
             var deferredFx = compiledEffects.DeferredFx;
             if (deferredFx != null)
             {
-                var effectParamDf = deferredFx.ActiveUniforms[hash];
-                effectParamDf.Value = paramValue;
-                effectParamDf.HasValueChanged = true;
+                if (deferredFx.ActiveUniforms.TryGetValue(hash, out var effectParamDf))
+                {
+                    effectParamDf.Value = paramValue;
+                    effectParamDf.HasValueChanged = true;
+                }
             }
         }
 

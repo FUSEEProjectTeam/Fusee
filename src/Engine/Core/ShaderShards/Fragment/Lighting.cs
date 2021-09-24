@@ -653,7 +653,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add($"vec4 albedo = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 emission = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular]}, {VaryingNameDeclarations.TextureCoordinates});");
-
+            methodBody.Add($"specularVars.rgb /= specularVars.a;");
 
             //Lighting calculation
             //-------------------------
@@ -825,7 +825,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "else if(decodedShadingModel == uint(6))",
             "{",
                 // EDL
-                //TODO: add edl methods
+                "vec2 tempClippingPlanes = vec2(1,5000);",
+                $"vec2 tempScreenParams = textureSize({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]},0);",
+                "//vec2 uv = vec2(gl_FragCoord.x, gl_FragCoord.y);",
+                $"float linearDepth = LinearizeDepth(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, {VaryingNameDeclarations.TextureCoordinates}).x, tempClippingPlanes);",
+                "if (linearDepth > 0.1)",
+                $"    albedo *= EDLShadingFactor(specularVars.r, int(round(specularVars.g * float(0xFF))) & int(0xF), linearDepth, {VaryingNameDeclarations.TextureCoordinates}, tempScreenParams, {UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, tempClippingPlanes);",
+
                 "res = albedo;",
             "}",
 
