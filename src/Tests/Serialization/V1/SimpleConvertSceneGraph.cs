@@ -245,7 +245,7 @@ namespace Fusee.Tests.Serialization.V1
             }
 
             // Now we are sure the converted FusFile resembles the ground truth SceneContainer. We can deserialize it to test those methods.
-            var FusFileConvertedToGT = FusSceneConverter.ConvertFrom(fusFileFromGroundTruth);
+            var FusFileConvertedToGT = FusSceneConverter.ConvertFrom(fusFileFromGroundTruth, "Test.fus");
             var sceneFileFlattenedAgain = new List<Xene.IComponent>();
             FlattenScene(sceneFileFlattenedAgain, (FusFileConvertedToGT.Children[0]));
 
