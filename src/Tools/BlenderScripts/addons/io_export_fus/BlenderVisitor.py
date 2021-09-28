@@ -44,7 +44,7 @@ class BlenderVisitor:
         self.DoApplyModifiers = True
 
         self.__matrixStack = [mathutils.Matrix.Identity(4)]
-        self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)))]
+        self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)), 0.0)]
         self.__fusWriter = FusSceneWriter()
         self.__textures = []
         self.__visitors = {
@@ -65,7 +65,7 @@ class BlenderVisitor:
         # Push the absolute transformation matrix onto the stack for possible children
         self.__matrixStack.append(self.__matrixStack[-1] @ curMatrix)
         # Push the relative individual transformtion parameters (pos, rot, scale) onto the stack
-        self.__transformStack.append((curLoc, curRot, curScale))
+        self.__transformStack.append((curLoc, curRot, curScale, 0))
 
     def XFormPop(self):
         self.__matrixStack.pop()
@@ -108,7 +108,7 @@ class BlenderVisitor:
 
     def __AddTransform(self):
         """Convert the current blender obj's transformation into a FUSEE Transform component"""
-        location, rotation, scale = self.XFormGetTOSTransform()
+        location, rotation, scale, dummy = self.XFormGetTOSTransform()
         rot_eul = rotation.to_euler('YXZ')
 
         if self.DoApplyScale:
@@ -117,7 +117,8 @@ class BlenderVisitor:
         self.__fusWriter.AddTransform(
             (location.x, location.z, location.y),
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
-            (scale.x, scale.z, scale.y)
+            (scale.x, scale.z, scale.y),
+            location.z
         )
 
     def __GetProcessedBMesh(self, obj):

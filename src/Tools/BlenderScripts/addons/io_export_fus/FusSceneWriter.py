@@ -89,7 +89,7 @@ class FusSceneWriter:
 
 #### TRANSFORM COMPONENT ####
 
-    def AddTransform(self, translation, rotation, scale, name = None):
+    def AddTransform(self, translation, rotation, scale, dummy, name = None):
         """Adds a transform component to the current child node."""
         comp, inx = self.AddComponent(name)
         xform = comp.FusTransform
@@ -102,6 +102,7 @@ class FusSceneWriter:
         xform.Scale.x = scale[0]
         xform.Scale.y = scale[1]
         xform.Scale.z = scale[2]
+        xform.Dummy = translation[2]
 
 #### MATERIAL COMPONENT ####
     def TryReferenceMaterial(self, name):

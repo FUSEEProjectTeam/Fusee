@@ -303,7 +303,8 @@ namespace Fusee.Engine.Core
                 Translation = t.Translation,
                 Name = t.Name,
                 Rotation = t.Rotation,
-                Scale = t.Scale
+                Scale = t.Scale,
+                Dummy = t.Dummy
             });
         }
 

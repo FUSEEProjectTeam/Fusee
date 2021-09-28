@@ -28,6 +28,8 @@ namespace Fusee.Engine.Core.Scene
         private bool _rotationQuatDirty = true;
         private Quaternion _rotationQuat;
 
+        private float _dummyFloat;
+
         #endregion Fields
 
         #region Constructors
@@ -35,7 +37,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Creates a Transform component
         /// </summary>
-        public Transform() : this(float4x4.Identity, float4x4.Identity, float4x4.Identity)
+        public Transform() : this(float4x4.Identity, float4x4.Identity, float4x4.Identity, 0f)
         {
         }
 
@@ -45,11 +47,12 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="translation"></param>
         /// <param name="rotation"></param>
         /// <param name="scale"></param>
-        public Transform(float3 translation, float3 rotation, float3 scale)
+        public Transform(float3 translation, float3 rotation, float3 scale, float dummy)
         {
             Translation = translation;
             Rotation = rotation;
             Scale = scale;
+            Dummy = dummy;
         }
 
         /// <summary>
@@ -58,11 +61,12 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="translation"></param>
         /// <param name="rotation"></param>
         /// <param name="scale"></param>
-        public Transform(float3 translation, Quaternion rotation, float3 scale)
+        public Transform(float3 translation, Quaternion rotation, float3 scale, float dummy)
         {
             Translation = translation;
             RotationQuaternion = rotation;
             Scale = scale;
+            Dummy = dummy;
         }
 
         /// <summary>
@@ -71,11 +75,12 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="translation"></param>
         /// <param name="rotation"></param>
         /// <param name="scale"></param>
-        public Transform(float4x4 translation, float4x4 rotation, float4x4 scale)
+        public Transform(float4x4 translation, float4x4 rotation, float4x4 scale, float dummy)
         {
             TranslationMatrix = translation;
             RotationMatrix = rotation;
             ScaleMatrix = scale;
+            Dummy = dummy;
         }
 
         #endregion Constructors
@@ -231,6 +236,22 @@ namespace Fusee.Engine.Core.Scene
                 }
             }
         }
+
+        /// <summary>
+        /// The Dummy of the node.
+        /// </summary>
+        public float Dummy
+        {
+            get
+            {
+                return _dummyFloat;
+            }
+            set
+            {
+                _dummyFloat = value;
+            }
+        }
+
 
         /// <summary>
         /// The scale (size) of the node.
