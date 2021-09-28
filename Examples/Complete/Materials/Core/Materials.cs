@@ -4,7 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -31,9 +31,6 @@ namespace Fusee.Examples.Materials.Core
         {
             Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             FontMap fontLatoMap = new(fontLato, 32);
-
-            string vsTex = AssetStorage.Get<string>("texture.vert");
-            string psTex = AssetStorage.Get<string>("texture.frag");
 
             Icosphere icosphereWithTangents = new(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
@@ -62,10 +59,8 @@ namespace Fusee.Examples.Materials.Core
                             new TextNode(
                             "How-To:\n############################\n- Move with WASD\n- Left mouse button rotates spheres\n- Mouse wheel zooms",
                             "howTo",
-                            vsTex,
-                            psTex,
-                            UIElementPosition.GetAnchors(AnchorPos.DownDownLeft),
-                            UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
+                            GuiElementPosition.GetAnchors(AnchorPos.DownDownLeft),
+                            GuiElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
                             fontLatoMap,
                             new float4(1, 1, 0, 1).LinearColorFromSRgb(),
                             HorizontalTextAlignment.Left,
@@ -87,8 +82,6 @@ namespace Fusee.Examples.Materials.Core
                                 new TextNode(
                                 "Complete",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
@@ -97,8 +90,6 @@ namespace Fusee.Examples.Materials.Core
                                 VerticalTextAlignment.Center),new TextNode(
                                 "NOT YET IMPLEMENTED",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect
                                 {
@@ -126,8 +117,6 @@ namespace Fusee.Examples.Materials.Core
                                 new TextNode(
                                 "Albedo and Specular",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
@@ -151,8 +140,6 @@ namespace Fusee.Examples.Materials.Core
                                 new TextNode(
                                 "Albedo, specular and\nalbedo texture",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
@@ -176,8 +163,6 @@ namespace Fusee.Examples.Materials.Core
                                 new TextNode(
                                 "Specular texture",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
@@ -187,8 +172,6 @@ namespace Fusee.Examples.Materials.Core
                                 new TextNode(
                                 "NOT YET IMPLEMENTED",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect
                                 {
@@ -216,8 +199,6 @@ namespace Fusee.Examples.Materials.Core
                                 new TextNode(
                                 "Normal map",
                                 "desc",
-                                vsTex,
-                                psTex,
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                 new MinMaxRect(),
                                 fontLatoMap,
@@ -241,8 +222,6 @@ namespace Fusee.Examples.Materials.Core
                                      new TextNode(
                                         "Albedo and emissive",
                                         "desc",
-                                        vsTex,
-                                        psTex,
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect(),
                                         fontLatoMap,
@@ -252,8 +231,6 @@ namespace Fusee.Examples.Materials.Core
                                       new TextNode(
                                         "NOT YET IMPLEMENTED",
                                         "desc",
-                                        vsTex,
-                                        psTex,
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect
                                         {
@@ -281,8 +258,6 @@ namespace Fusee.Examples.Materials.Core
                                      new TextNode(
                                         "Albedo, emissive and\nemissive texture",
                                         "desc",
-                                        vsTex,
-                                        psTex,
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect(),
                                         fontLatoMap,
@@ -292,8 +267,6 @@ namespace Fusee.Examples.Materials.Core
                                      new TextNode(
                                         "NOT YET IMPLEMENTED",
                                         "desc",
-                                        vsTex,
-                                        psTex,
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
                                         new MinMaxRect
                                         {

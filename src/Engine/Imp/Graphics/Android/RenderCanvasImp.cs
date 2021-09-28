@@ -85,6 +85,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to render the last frame in milliseconds.
+        /// This value can be used to determine the frames per second of the application.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public float DeltaTimeUpdate
+        {
+            get
+            {
+                if (_gameView != null)
+                    return _gameView.DeltaTime;
+                return 0.01f;
+            }
+        }
+
+        /// <summary>
         /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
@@ -284,6 +302,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public event EventHandler<InitEventArgs> UnLoad;
 
         /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+
+        /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
@@ -311,6 +334,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
         protected internal void DoUnLoad()
         {
             UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        protected internal void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -424,9 +455,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        protected override void OnUpdateFrame(FrameEventArgs e)
+        {
+            if (_renderCanvasImp != null)
+                _renderCanvasImp.DoUpdate();
+        }
+
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _deltaTime = (float)_stopwatch.ElapsedMilliseconds / 1000.0f;
+            _deltaTime = _stopwatch.ElapsedMilliseconds / 1000.0f;
             _stopwatch.Restart();
 
             if (_renderCanvasImp != null)
