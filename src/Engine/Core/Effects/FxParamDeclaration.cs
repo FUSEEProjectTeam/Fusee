@@ -80,7 +80,7 @@ namespace Fusee.Engine.Core.Effects
                 throw new ArgumentException($"{val} has the wrong Type!");
             else
             {
-                if (Value != null && Value.Equals((T)val)) 
+                if (Value != null && Value.Equals((T)val))
                     return false;
                 Value = (T)val;
                 return true;

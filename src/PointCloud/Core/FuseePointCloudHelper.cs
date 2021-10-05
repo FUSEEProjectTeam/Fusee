@@ -116,7 +116,7 @@ namespace Fusee.PointCloud.Core
 
             return packedR + packedG + packedB + packedA;
         }
-        
+
         /// <summary>
         /// Returns a color for a given label/class (represented by an int).
         /// </summary>

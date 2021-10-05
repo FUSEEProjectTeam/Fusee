@@ -145,28 +145,24 @@ namespace Fusee.PointCloud.FileReader.LasReader
 
         LasPointFormat ParsePointDataByteFormatToFormatStruct(LasMetaInfo info)
         {
-            switch (info.PointDataFormat)
+            return info.PointDataFormat switch
             {
-                default:
-                    throw new ArgumentException($"Point data format with byte {info.PointDataFormat} not recognized!");
-                case 0:
-                    return new LasPointFormat
-                    {
-                        HasClassification = true,
-                        HasColor = false,
-                        HasIntensity = true,
-                        HasUserData = false
-                    };
-                case 2:
-                case 3:
-                    return new LasPointFormat
-                    {
-                        HasClassification = true,
-                        HasColor = true,
-                        HasIntensity = true,
-                        HasUserData = false
-                    };
-            }
+                0 => new LasPointFormat
+                {
+                    HasClassification = true,
+                    HasColor = false,
+                    HasIntensity = true,
+                    HasUserData = false
+                },
+                2 or 3 => new LasPointFormat
+                {
+                    HasClassification = true,
+                    HasColor = true,
+                    HasIntensity = true,
+                    HasUserData = false
+                },
+                _ => throw new ArgumentException($"Point data format with byte {info.PointDataFormat} not recognized!"),
+            };
         }
 
         #region IDisposable Support

@@ -75,7 +75,8 @@ namespace Fusee.Examples.Materials.Android
                 var app = new Core.Materials();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var rci = new RenderCanvasImp(ApplicationContext, null, delegate {
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
                     app.InitCanvas();
                     app.Run();
                 });

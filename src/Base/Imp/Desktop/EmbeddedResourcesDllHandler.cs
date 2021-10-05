@@ -25,7 +25,7 @@ namespace Fusee.Base.Imp.Desktop
                 loadedDlls.Add(dllName);
 
                 Assembly assem = Assembly.GetCallingAssembly();
-                
+
                 _ = assem.GetManifestResourceNames();
                 AssemblyName an = assem.GetName();
 

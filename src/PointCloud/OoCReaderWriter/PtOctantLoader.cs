@@ -186,7 +186,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);
             List<Mesh> meshes = new(noOfMeshes);
             var ptCnt = pointsInNode.Length;
-            
+
             int meshCnt = 0;
 
             for (int i = 0; i < ptCnt; i += maxVertCount)
@@ -207,40 +207,18 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 }
                 else
                     points = pointsInNode;
-
-                Mesh mesh;
-
-                switch (ptType)
+                Mesh mesh = ptType switch
                 {
-                    case PointType.Pos64:
-                        mesh = MeshFromPoints.GetMeshPos64(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64Col32IShort:
-                        mesh = MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64IShort:
-                        mesh = MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64Col32:
-                        mesh = MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64Label8:
-                        mesh = MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64Nor32Col32IShort:
-                        mesh = MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64Nor32IShort:
-                        mesh = MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, false, float3.Zero);
-                        break;
-                    case PointType.Pos64Nor32Col32:
-                        mesh = MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, false, float3.Zero);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}");
-                }
-                
-
+                    PointType.Pos64 => MeshFromPoints.GetMeshPos64(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Col32IShort => MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64IShort => MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Col32 => MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Label8 => MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Nor32Col32IShort => MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Nor32IShort => MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Nor32Col32 => MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, false, float3.Zero),
+                    _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
+                };
                 meshes.Add(mesh);
                 meshCnt++;
             }
@@ -532,7 +510,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         private TPoint[] LoadPointsForNode(PointAccessor<TPoint> ptAccessor, OctantD ptOctantComponent)
         {
-            var pathToFile = $"{FileFolderPath}/Octants/{ptOctantComponent.Guid.ToString("N")}.node";
+            var pathToFile = $"{FileFolderPath}/Octants/{ptOctantComponent.Guid:N}.node";
 
             if (!File.Exists(pathToFile))
                 throw new ArgumentException($"File: { ptOctantComponent.Guid }.node does not exist!");
@@ -564,12 +542,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         private int GetPtCountFromFile(OctantD ptOctantComponent)
         {
-            var pathToFile = $"{FileFolderPath}/Octants/{ptOctantComponent.Guid.ToString("N")}.node";
+            var pathToFile = $"{FileFolderPath}/Octants/{ptOctantComponent.Guid:N}.node";
 
             if (!File.Exists(pathToFile))
                 throw new ArgumentException("File: " + ptOctantComponent.Guid + ".node does not exist!");
 
-            using BinaryReader br = new BinaryReader(File.Open(pathToFile, FileMode.Open, FileAccess.Read, FileShare.Read));
+            using BinaryReader br = new(File.Open(pathToFile, FileMode.Open, FileAccess.Read, FileShare.Read));
             // step to stream position
             //br.BaseStream.Position = node.StreamPosition;
 

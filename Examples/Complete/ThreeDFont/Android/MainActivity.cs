@@ -78,7 +78,8 @@ namespace Fusee.Examples.ThreeDFont.Android
                 var app = new Core.ThreeDFont();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var rci = new RenderCanvasImp(ApplicationContext, null, delegate {
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
                     app.InitCanvas();
                     app.Run();
                 });

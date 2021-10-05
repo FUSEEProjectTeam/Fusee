@@ -25,14 +25,14 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Contains the name of the shader parameter.
         /// </summary>
-        public string Name 
-        { 
-            get { return _name; } 
-            set 
-            { 
-                _name = value; 
-                Hash = value.GetHashCode(); 
-            } 
+        public string Name
+        {
+            get { return _name; }
+            set
+            {
+                _name = value;
+                Hash = value.GetHashCode();
+            }
         }
         private string _name;
 

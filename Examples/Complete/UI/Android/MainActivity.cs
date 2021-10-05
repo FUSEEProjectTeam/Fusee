@@ -78,7 +78,8 @@ namespace Fusee.Examples.UI.Android
                 var app = new Core.UI();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var rci = new RenderCanvasImp(ApplicationContext, null, delegate {
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
                     app.InitCanvas();
                     app.Run();
                 });

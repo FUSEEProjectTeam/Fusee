@@ -21,18 +21,18 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public ShaderEffect ColorPassEf;
 
 
-        private int _lightingParamHash = "Lighting".GetHashCode();
-        private int _pointShapeParamHash = "PointShape".GetHashCode();
-        private int _pointModeParamHash = "PointMode".GetHashCode();
-        private int _colorModeParamHash = "ColorMode".GetHashCode();
-        private int _shininessParamHash = "Shininess".GetHashCode();
-        private int _pointSizeParamHash = "PointSize".GetHashCode();
-        private int _colorParamHash = "Color".GetHashCode();
-        private int _calcSSAOParamHash = "CalcSSAO".GetHashCode();
-        private int _ssaoStrengthParamHash = "SSAOStrength".GetHashCode();
-        private int _edlNeighbourPixelsParamHash = "EDLNeighbourPixels".GetHashCode();
-        private int _edlStrengthParamHash = "EDLStrength".GetHashCode();
-        private int _specularStrengthParamHash = "SpecularStrength".GetHashCode();
+        private readonly int _lightingParamHash = "Lighting".GetHashCode();
+        private readonly int _pointShapeParamHash = "PointShape".GetHashCode();
+        private readonly int _pointModeParamHash = "PointMode".GetHashCode();
+        private readonly int _colorModeParamHash = "ColorMode".GetHashCode();
+        private readonly int _shininessParamHash = "Shininess".GetHashCode();
+        private readonly int _pointSizeParamHash = "PointSize".GetHashCode();
+        private readonly int _colorParamHash = "Color".GetHashCode();
+        private readonly int _calcSSAOParamHash = "CalcSSAO".GetHashCode();
+        private readonly int _ssaoStrengthParamHash = "SSAOStrength".GetHashCode();
+        private readonly int _edlNeighbourPixelsParamHash = "EDLNeighbourPixels".GetHashCode();
+        private readonly int _edlStrengthParamHash = "EDLStrength".GetHashCode();
+        private readonly int _specularStrengthParamHash = "SpecularStrength".GetHashCode();
 
         private Lighting _lighting = Lighting.Edl;
         public Lighting Lighting

@@ -37,38 +37,18 @@ namespace Fusee.PointCloud.FileReader.LasReader
                 else
                     numberOfPointsInMesh = maxVertCount;
                 points = reader.ReadNPoints(numberOfPointsInMesh, ptAccessor);
-                Mesh mesh;
-
-                switch (ptType)
+                Mesh mesh = ptType switch
                 {
-                    case PointType.Pos64:
-                        mesh = MeshFromPoints.GetMeshPos64(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64Col32IShort:
-                        mesh = MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64IShort:
-                        mesh = MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64Col32:
-                        mesh = MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64Label8:
-                        mesh = MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64Nor32Col32IShort:
-                        mesh = MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64Nor32IShort:
-                        mesh = MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, true, float3.Zero);
-                        break;
-                    case PointType.Pos64Nor32Col32:
-                        mesh = MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, true, float3.Zero);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}");
-                }
-
+                    PointType.Pos64 => MeshFromPoints.GetMeshPos64(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64Col32IShort => MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64IShort => MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64Col32 => MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64Label8 => MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64Nor32Col32IShort => MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64Nor32IShort => MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64Nor32Col32 => MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, true, float3.Zero),
+                    _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
+                };
                 if (i == 0)
                     box = mesh.BoundingBox;
                 else

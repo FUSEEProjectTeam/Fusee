@@ -56,10 +56,10 @@ namespace Fusee.PointCloud.Core
             {
                 Resolution = res,
                 Level = 0
-            };            
+            };
             root.Grid = new PtGrid<TPoint>(PtAccessor, root, points);
             Root = root;
-            
+
             Subdivide((PtOctantWrite<TPoint>)Root);
         }
 

@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_Roughness = new List<string>()
+        public static readonly List<string> SurfOutBody_Roughness = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.roughness = IN.Roughness;"
