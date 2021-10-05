@@ -178,8 +178,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// Returns meshes for point clouds that only have position information in double precision.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
         /// <param name="pointsInNode">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode<TPoint>(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
+        public static List<Mesh> GetMeshsForNode(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
         {
             int maxVertCount = ushort.MaxValue - 1;
             var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);

@@ -7,6 +7,9 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core.Effects
 {
+    /// <summary>
+    /// <see cref="SurfaceEffect"/> for Rendering Point Clouds.
+    /// </summary>
     public class PointCloudSurfaceEffect : DefaultSurfaceEffect
     {
         /// <summary>

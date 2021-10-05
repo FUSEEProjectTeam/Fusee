@@ -2,7 +2,10 @@
 
 namespace Fusee.Engine.Core
 {
-    public sealed class FxParam
+    /// <summary>
+    /// Parameters used in <see cref="CompiledEffects"/>.
+    /// </summary>
+    internal sealed class FxParam
     {
         public ShaderParamInfo Info;
 

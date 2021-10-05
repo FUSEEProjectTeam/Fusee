@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     /// The default <see cref="Effect"/>, that is used if no other Effect is found.
     /// Provides properties to change the Diffuse Color, Specular Color, Specular Intensity and Specular Shininess.
     /// </summary>
-    public class DefaultSurfaceEffect : SurfaceEffect, IDisposable
+    public class DefaultSurfaceEffect : SurfaceEffect
     {
         #region Matrices
 
@@ -35,8 +35,6 @@ namespace Fusee.Engine.Core.Effects
         public float4x4 FUSEE_MV;
 
         #endregion
-
-        private bool _disposed;
 
         /// <summary>
         /// Creates a new instance of type DefaultSurfaceEffect.

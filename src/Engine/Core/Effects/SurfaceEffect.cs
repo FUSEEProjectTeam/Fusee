@@ -96,26 +96,44 @@ namespace Fusee.Engine.Core.Effects
         public string SurfOutVertMethod;
         //======================================================//
 
+        /// <summary>
+        /// Fragment shader "in" declaration for the uv coordinates.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public string UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
 
+        /// <summary>
+        /// Vertex shader "out" declaration for the uv coordinates.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public string UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
 
+        /// <summary>
+        /// Fragment shader "in" declaration for the vertex colors.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
 
+        /// <summary>
+        /// Vertex shader "out" declaration for the vertex colors.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
 
+        /// <summary>
+        /// Fragment shader "in" declaration for the TBN matrix.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
+        /// <summary>
+        /// Vertex shader "out" declaration for the TBN matrix.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);

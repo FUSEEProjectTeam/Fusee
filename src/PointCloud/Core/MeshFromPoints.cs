@@ -5,10 +5,13 @@ using Fusee.PointCloud.Common;
 
 namespace Fusee.PointCloud.Core
 {
+    /// <summary>
+    /// Provides static methods for creating meshes from lists of point cloud points.
+    /// </summary>
     public static class MeshFromPoints
     {
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
@@ -53,7 +56,7 @@ namespace Fusee.PointCloud.Core
 
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64Col32IShort"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
@@ -101,7 +104,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64IShort"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
@@ -145,7 +148,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64Label8"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
@@ -192,7 +195,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32IShort"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
@@ -241,7 +244,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64Nor32IShort"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
@@ -288,7 +291,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>

@@ -116,7 +116,14 @@ namespace Fusee.PointCloud.Core
 
             return packedR + packedG + packedB + packedA;
         }
-
+        
+        /// <summary>
+        /// Returns a color for a given label/class (represented by an int).
+        /// </summary>
+        /// <param name="colors">The given colors.</param>
+        /// <param name="numberOfLabels">The number of lables.</param>
+        /// <param name="label">THe label.</param>
+        /// <returns></returns>
         public static float3 LabelToColor(float3[] colors, int numberOfLabels, int label)
         {
             var numberOfColors = colors.Length;
@@ -129,7 +136,6 @@ namespace Fusee.PointCloud.Core
             var percent = (((100 / range) * label) % 100) / 100;
 
             return col1 + percent * (col2 - col1);
-
         }
     }
 }

@@ -36,6 +36,9 @@ namespace Fusee.Engine.Common
         }
         private string _name;
 
+        /// <summary>
+        /// The hash code of this ShaderParamInfo.
+        /// </summary>
         public int Hash { get; private set; }
 
         /// <summary>

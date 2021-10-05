@@ -65,8 +65,14 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         IRenderContextImp ContextImplementor { get; set; }
 
+        /// <summary>
+        /// The octant loader is responsible for the out of core loading of point cloud chunks.
+        /// </summary>
         IPtOctantLoader OocLoader { get; }
 
+        /// <summary>
+        /// The file reader is responsible for reading the point cloud data to an Octree (LOD data strucutre used for rendering).
+        /// </summary>
         IPtOctreeFileReader OocFileReader { get; }
 
         /// <summary>

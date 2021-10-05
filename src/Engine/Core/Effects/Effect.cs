@@ -90,6 +90,10 @@ namespace Fusee.Engine.Core.Effects
             return default;
         }
 
+        /// <summary>
+        /// Determines whether two Effect instances are equal.
+        /// </summary>
+        /// <param name="obj">The other Effect.</param>
         public override bool Equals(object obj)
         {
             // If parameter is null return false.
@@ -108,6 +112,10 @@ namespace Fusee.Engine.Core.Effects
             return (SessionUniqueIdentifier == p.SessionUniqueIdentifier);
         }
 
+        /// <summary>
+        /// Determines whether two Effect instances are equal.
+        /// </summary>
+        /// <param name="p">The other Effect.</param>
         public bool Equals(Effect p)
         {
             // If parameter is null return false:
@@ -120,6 +128,10 @@ namespace Fusee.Engine.Core.Effects
             return (SessionUniqueIdentifier == p.SessionUniqueIdentifier);
         }
 
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode()
         {
             return SessionUniqueIdentifier.GetHashCode();

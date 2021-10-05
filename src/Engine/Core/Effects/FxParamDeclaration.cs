@@ -25,10 +25,10 @@ namespace Fusee.Engine.Core.Effects
         Type ParamType { get; }
 
         /// <summary>
-        /// Defines in which type of shader this parameter is used in.
+        /// Sets the value of this parameter declaration. Implementations should provide a type check using <see cref="ParamType"/>.
         /// </summary>
-        IEnumerable<ShaderCategory> UsedInShaders { get; }
-
+        /// <param name="val"></param>
+        /// <returns></returns>
         bool SetValue(object val);
     }
 
@@ -69,10 +69,11 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         public Type ParamType => typeof(T);
 
-        IEnumerable<ShaderCategory> IFxParamDeclaration.UsedInShaders => _usedInShaders;
-
-        private readonly IEnumerable<ShaderCategory> _usedInShaders;
-
+        /// <summary>
+        /// Sets the value of this parameter declaration.
+        /// </summary>
+        /// <param name="val">The new parameter value.</param>
+        /// <returns></returns>
         public bool SetValue(object val)
         {
             if (ParamType != typeof(T))

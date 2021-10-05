@@ -67,6 +67,7 @@ namespace Fusee.Engine.Core
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
+        private bool _disposed;
 
         #region RenderState management properties
 
@@ -1575,12 +1576,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public uint GetRenderState(RenderState renderState)
         {
-            var currentState = CurrentRenderState.GetRenderState(renderState);
-
-            if (currentState != null)
-                return (uint)currentState;
-            else
-                return (uint)RenderStateSet.Default.GetRenderState(renderState);
+            return CurrentRenderState.GetRenderState(renderState);
         }
 
         /// <summary>
@@ -1788,27 +1784,41 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
         public void Dispose()
         {
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        private bool disposed;
+        
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if (!disposed)
+            if (!_disposed)
             {
                 _effectManager.Dispose();
                 _textureManager.Dispose();
                 _meshManager.Dispose();
 
                 // Note disposing has been done.
-                disposed = true;
+                _disposed = true;
             }
         }
 
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
         ~RenderContext()
         {
             Dispose(disposing: false);
