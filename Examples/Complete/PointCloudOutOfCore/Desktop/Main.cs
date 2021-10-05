@@ -4,7 +4,8 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PointCloudOutOfCore.Core;
-using Fusee.PointCloud.PointAccessorCollections;
+using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Core;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -45,7 +46,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var ptType = PointCloudHelper.GetPtTypeFromMetaJson(PtRenderingParams.Instance.PathToOocFile);
+            var ptType = FuseePointCloudHelper.GetPtTypeFromMetaJson(PtRenderingParams.Instance.PathToOocFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
             var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
@@ -53,7 +54,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Desktop
             var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
-            AppSetup.DoSetup(out PointCloud.Common.IPcRendering app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);
+            AppSetup.DoSetup(out IPcRendering app, ptType, PtRenderingParams.Instance.MaxNoOfVisiblePoints, PtRenderingParams.Instance.PathToOocFile);
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

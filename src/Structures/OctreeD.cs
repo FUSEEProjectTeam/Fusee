@@ -53,15 +53,14 @@ namespace Fusee.Structures
         {
             for (int i = 0; i < octant.Payload.Count; i++)
             {
-                var payload = octant.Payload[i];
-                var posInParent = GetChildPosition(octant, payload);
+                var posInParent = GetChildPosition(octant, octant.Payload[i]);
 
                 if (octant.Children[posInParent] == null)
                     octant.Children[posInParent] = octant.CreateChild(posInParent);
 
-                HandlePayload(octant, (OctantD<P>)octant.Children[posInParent], payload);
+                HandlePayload(octant, (OctantD<P>)octant.Children[posInParent], octant.Payload[i]);
             }
-            octant.Payload.Clear();
+            octant.Payload = null;
 
             for (int i = 0; i < octant.Children.Length; i++)
             {

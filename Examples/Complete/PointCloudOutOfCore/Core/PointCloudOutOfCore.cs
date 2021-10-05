@@ -4,14 +4,11 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 

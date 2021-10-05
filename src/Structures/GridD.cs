@@ -156,7 +156,7 @@ namespace Fusee.Structures
         /// <param name="startIdx">The index of the cell we want to get the neighbors for.</param>
         /// <param name="dist">The distance to the neighbors. Default is 1 - this will get the direct neighbors.</param>
         /// <returns></returns>
-        protected List<int3> GetGridNeighbourIndices(int3 startIdx, int dist = 1)
+        protected static List<int3> GetGridNeighbourIndices(int3 startIdx, int dist = 1)
         {
             var searchkernel = new List<int3>();
             var loopL = dist * 2;

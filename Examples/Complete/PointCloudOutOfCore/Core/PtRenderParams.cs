@@ -20,7 +20,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public ShaderEffect DepthPassEf;
         public ShaderEffect ColorPassEf;
 
-        
+
         private int _lightingParamHash = "Lighting".GetHashCode();
         private int _pointShapeParamHash = "PointShape".GetHashCode();
         private int _pointModeParamHash = "PointMode".GetHashCode();

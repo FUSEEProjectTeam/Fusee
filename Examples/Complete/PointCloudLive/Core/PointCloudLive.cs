@@ -6,7 +6,8 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.PointAccessorCollections;
+using Fusee.PointCloud.Core;
+using Fusee.PointCloud.FileReader.LasReader;
 using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -41,14 +42,15 @@ namespace Fusee.Examples.PointCloudLive.Core
             VSync = false;
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            var accessor = new Pos64Col32_Accessor();
             _node = new SceneNode();
-            _node.Components.AddRange(MeshFromPointList.GetMeshsForNodePos64Col32(accessor, PointCloudHelper.FromLasToArray(accessor, "D:\\LAS\\HolbeinPferd.las", true), out var box));
+
+            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes));
 
             _mainCamTransform = new Transform()
             {
-                Translation = box.Center - new float3(0, 0, box.Size.z)
+                Translation = aabbRes.Center - new float3(0, 0, aabbRes.Size.z * 2)
             };
+
             _mainCam = new Camera(ProjectionMethod.Perspective, 1f, 5000, M.PiOver4)
             {
                 FrustumCullingOn = false,
@@ -67,7 +69,7 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             _pcFx = new PointCloudSurfaceEffect
             {
-                PointSize = 10,
+                PointSize = 5,
                 ColorMode = (int)ColorMode.Point,
                 DoEyeDomeLighting = true,
                 DepthTex = _depthTex,
@@ -87,13 +89,15 @@ namespace Fusee.Examples.PointCloudLive.Core
                 }
             };
 
+
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_pointCloud);
             _renderForward = _sceneRenderer.GetType() == typeof(SceneRendererForward);
 
             if (_renderForward)
             {
-                _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));                
+                _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
                 _depthFx = CreateDepthPassEffect(_pcFx.PointSize, (int)PointShape.Rect, (int)PointSizeMode.FixedPixelSize, new float2(Width, Height), _mainCamTransform.Translation.z);
             }
         }
