@@ -19,7 +19,6 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private Transform _yes;
         private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
@@ -49,8 +48,6 @@ namespace Fusee.Examples.Simple.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
-            _yes = _rocketScene.Children.FindNodes(node => node.Name == "Cube")?.FirstOrDefault()?.GetTransform();
-            Diagnostics.Debug(_yes.Dummy);
         }
 
         // RenderAFrame is called once a frame

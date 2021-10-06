@@ -37,6 +37,8 @@ class FusSceneWriter:
         self.__curComponent = None
         self.__curMaterial = None
         self.__curMesh = None
+        self.__curAnimation = None
+        self.__curAnimationTrack = None
 
     def CurrentNode(self):
         """Returns the current node (or None if AddChild was not yet called on the current child list)."""
@@ -101,8 +103,37 @@ class FusSceneWriter:
         xform.Rotation.z = rotation[2]
         xform.Scale.x = scale[0]
         xform.Scale.y = scale[1]
-        xform.Scale.z = scale[2]
+        xform.Scale.z = scale[2] 
         xform.Dummy = translation[2]
+
+
+#### ANIMATION COMPONENT ####
+    def BeginAnimation(self, name = None):
+        if self.__curComponent == None:
+            self.__curComponent, inx = self.AddComponent(name)
+            self.__curAnimation = self.__curComponent.FusAnimation
+
+    def BeginAnimationTrack(self):
+        if self.__curAnimation != None:
+            if self.__curAnimationTrack == None:
+                self.__curAnimationTrack = self.__curAnimation.AnimationTracks.add()
+
+
+    def AddKeyframe(self, keyTime, keyValue):
+        if self.__curAnimationTrack != None:
+            keyFrame = self.__curAnimationTrack.KeyFrames.add()
+            keyFrame.Time = keyTime
+            keyFrame.FusAnimationKeyFloat.Value = keyValue
+
+    def EndAnimationTrack(self):
+        self.__curAnimationTrack = None
+
+    def EndAnimation(self):
+        self.__curAnimation = None
+        self.__curComponent = None
+
+
+    
 
 #### MATERIAL COMPONENT ####
     def TryReferenceMaterial(self, name):

@@ -42,6 +42,7 @@ class BlenderVisitor:
         self.DoApplyScale = True
         self.DoRecalcOutside = True
         self.DoApplyModifiers = True
+        self.DoBakeNLATracks = False
 
         self.__matrixStack = [mathutils.Matrix.Identity(4)]
         self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)), 0.0)]
@@ -121,6 +122,32 @@ class BlenderVisitor:
             location.z
         )
 
+    def __AddAnimationIfPresent(self, ob):
+        
+        
+
+        try:
+            selected_strips = [strip for strip in ob.animation_data.nla_tracks]
+            
+            self.__fusWriter.BeginAnimation()
+            for strip in selected_strips:
+                action = strip.strips[0].action
+                self.__fusWriter.BeginAnimationTrack()       
+                print()
+                print(strip.name)
+                print("Keyframes")
+                print("---------")
+                for fcu in action.fcurves: 
+                    print()
+                    print(fcu.data_path, fcu.array_index)
+                    for kp in fcu.keyframe_points:
+                        self.__fusWriter.AddKeyframe(kp.co[0], kp.co[1]) 
+                        print("  Frame %s: %s" % (kp.co[:]), kp.interpolation)
+                self.__fusWriter.EndAnimationTrack()
+            
+        except AttributeError:
+            selected_strips = []
+        self.__fusWriter.EndAnimation()
     def __GetProcessedBMesh(self, obj):
         """Create a modifier-applied, normal-flipped, scale-normalized, triangulated BMesh from the Blender mesh object passed. Call result.free() and del result after using the returned bmesh."""
 
@@ -433,6 +460,7 @@ class BlenderVisitor:
     def VisitMesh(self, mesh):
         self.__fusWriter.AddChild(mesh.name)
         self.__AddTransform()
+        self.__AddAnimationIfPresent(mesh)
         
         if self.DoApplyScale:
             scale = self.XFormGetTOSTransform()[2]
