@@ -729,7 +729,7 @@ namespace Fusee.Engine.Core.Effects
 
             if (disposing)
             {
-                
+
             }
 
             _disposed = true;
