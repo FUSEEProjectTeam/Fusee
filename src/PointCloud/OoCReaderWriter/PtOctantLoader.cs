@@ -137,6 +137,19 @@ namespace Fusee.PointCloud.OoCReaderWriter
         private const string _octreeTexName = "OctreeTex";
 
         /// <summary>
+        /// Creates a new instance of type <see cref="PtOctantLoader{TPoint}"/>.
+        /// </summary>
+        /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
+        /// <param name="ptType">The <see cref="PointType"/> of the point cloud that is loaded.</param>
+        public PtOctantLoader(string fileFolderPath, PointType ptType)
+        {
+            _ptType = ptType;
+            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;            
+            FileFolderPath = fileFolderPath;
+            InitCollections(Directory.GetFiles($"{FileFolderPath}\\Octants").Length);
+        }
+
+        /// <summary>
         /// Initializes the <see cref="RC"/> dependent properties and starts the loading task.
         /// </summary>
         /// <param name="rc">The RenderContext for this loader.</param>
@@ -159,71 +172,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 }
             });
             loadingTask.Start();
-        }
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="PtOctantLoader{TPoint}"/>.
-        /// </summary>
-        /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
-        /// <param name="ptType">The <see cref="PointType"/> of the point cloud that is loaded.</param>
-        public PtOctantLoader(string fileFolderPath, PointType ptType)
-        {
-            _ptType = ptType;
-            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, SceneNode>(); // visible nodes ordered by screen-projected-size;            
-            FileFolderPath = fileFolderPath;
-            InitCollections(Directory.GetFiles($"{FileFolderPath}\\Octants").Length);
-        }
-
-        /// <summary>
-        /// Returns meshes for point clouds that only have position information in double precision.
-        /// </summary>
-        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
-        /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
-        /// <param name="pointsInNode">The lists of "raw" points.</param>
-        public static List<Mesh> GetMeshsForNode(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
-        {
-            int maxVertCount = ushort.MaxValue - 1;
-            var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);
-            List<Mesh> meshes = new(noOfMeshes);
-            var ptCnt = pointsInNode.Length;
-
-            int meshCnt = 0;
-
-            for (int i = 0; i < ptCnt; i += maxVertCount)
-            {
-                int numberOfPointsInMesh;
-                if (noOfMeshes == 1)
-                    numberOfPointsInMesh = ptCnt;
-                else if (noOfMeshes == meshCnt + 1)
-                    numberOfPointsInMesh = (int)(ptCnt - maxVertCount * meshCnt);
-                else
-                    numberOfPointsInMesh = maxVertCount;
-
-                TPoint[] points;
-                if (ptCnt > maxVertCount)
-                {
-                    points = new TPoint[numberOfPointsInMesh];
-                    Array.Copy(pointsInNode, i, points, 0, numberOfPointsInMesh);
-                }
-                else
-                    points = pointsInNode;
-                Mesh mesh = ptType switch
-                {
-                    PointType.Pos64 => MeshFromPoints.GetMeshPos64(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Col32IShort => MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64IShort => MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Col32 => MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Label8 => MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Nor32Col32IShort => MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Nor32IShort => MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Nor32Col32 => MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, false, float3.Zero),
-                    _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
-                };
-                meshes.Add(mesh);
-                meshCnt++;
-            }
-
-            return meshes;
         }
 
         /// <summary>
@@ -275,7 +223,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         public void ShowOctants(SceneContainer scene)
         {
             WasSceneUpdated = false;
-            DeleteOctants(scene);
+            DeleteWireframeOctants(scene);
             foreach (var node in _nodesToRender.Values)
             {
                 var ptOctantComp = node.GetComponent<OctantD>();
@@ -303,10 +251,10 @@ namespace Fusee.PointCloud.OoCReaderWriter
         }
 
         /// <summary>
-        /// Deletes all wireframe cubes from the scene.
+        /// Octants can be visualized as wireframe cubes. This method deletes all wireframe cubes from the scene.
         /// </summary>
-        /// <param name="scene"></param>
-        public void DeleteOctants(SceneContainer scene)
+        /// <param name="scene">The <see cref="SceneContainer"/> the wireframe cubes will be deleted from.</param>
+        public void DeleteWireframeOctants(SceneContainer scene)
         {
             _ = scene.Children.RemoveAll(node => node.Name == "WireframeCube");
         }
@@ -317,6 +265,58 @@ namespace Fusee.PointCloud.OoCReaderWriter
             _determinedAsVisibleAndUnloaded = new(16, octantCnt);
             _determinedAsVisible = new(octantCnt);
             _loadedMeshs = new(octantCnt);
+        }
+
+        /// <summary>
+        /// Returns meshes for point clouds that only have position information in double precision.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
+        /// <param name="pointsInNode">The lists of "raw" points.</param>
+        private static List<Mesh> GetMeshsForNode(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
+        {
+            int maxVertCount = ushort.MaxValue - 1;
+            var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);
+            List<Mesh> meshes = new(noOfMeshes);
+            var ptCnt = pointsInNode.Length;
+
+            int meshCnt = 0;
+
+            for (int i = 0; i < ptCnt; i += maxVertCount)
+            {
+                int numberOfPointsInMesh;
+                if (noOfMeshes == 1)
+                    numberOfPointsInMesh = ptCnt;
+                else if (noOfMeshes == meshCnt + 1)
+                    numberOfPointsInMesh = (int)(ptCnt - maxVertCount * meshCnt);
+                else
+                    numberOfPointsInMesh = maxVertCount;
+
+                TPoint[] points;
+                if (ptCnt > maxVertCount)
+                {
+                    points = new TPoint[numberOfPointsInMesh];
+                    Array.Copy(pointsInNode, i, points, 0, numberOfPointsInMesh);
+                }
+                else
+                    points = pointsInNode;
+                Mesh mesh = ptType switch
+                {
+                    PointType.Pos64 => MeshFromPoints.GetMeshPos64(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Col32IShort => MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64IShort => MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Col32 => MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Label8 => MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Nor32Col32IShort => MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Nor32IShort => MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, false, float3.Zero),
+                    PointType.Pos64Nor32Col32 => MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, false, float3.Zero),
+                    _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
+                };
+                meshes.Add(mesh);
+                meshCnt++;
+            }
+
+            return meshes;
         }
 
         /// <summary>

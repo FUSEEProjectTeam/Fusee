@@ -470,7 +470,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
 
             DoShowOctants = false;
-            OocLoader.DeleteOctants(_scene);
+            OocLoader.DeleteWireframeOctants(_scene);
             IsSceneLoaded = true;
         }
 

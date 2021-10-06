@@ -8,8 +8,7 @@ using System.Diagnostics;
 namespace Fusee.PointCloud.Core
 {
     /// <summary>
-    /// Provides methods for the Pointcloud.Converter to create the ooc files according to the user-given point type.
-    /// If a Point Type is added, ad the associated case to 'CreateFilesForPtType'.
+    /// Provides methods to create the ooc files according to the user-given point type.
     /// </summary>
     public static class OoCFileGenerationHelper
     {
