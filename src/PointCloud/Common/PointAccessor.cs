@@ -535,21 +535,30 @@ namespace Fusee.PointCloud.Common
 
         #endregion
 
-        #region PointXYZINormal
+        #region Get/Set Normal
 
-        #region Getter      
+        #region Getter
+
+        /// <summary>
+        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetNormalFloat3_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetNormalFloat3_32");
         }
 
+        /// <summary>
+        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetNormalFloat3_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetNormalFloat3_64");
         }
         #endregion
 
-        #region Setter        
+        #region Setter
         public virtual void SetNormalFloat3_32(ref TPoint point, float3 val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetNormalFloat3_32");
