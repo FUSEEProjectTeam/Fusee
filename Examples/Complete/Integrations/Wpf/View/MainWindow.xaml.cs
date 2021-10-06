@@ -98,7 +98,7 @@ namespace Fusee.Examples.Integrations.Wpf.View
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
-                fuseeApp.InitCanvas();
+                fuseeApp.InitApp();
 
                 // Start the app
                 fuseeApp.Run();

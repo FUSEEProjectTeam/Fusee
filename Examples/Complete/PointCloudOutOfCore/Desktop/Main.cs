@@ -63,7 +63,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Desktop
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
 
-            app.InitCanvas();
+            app.InitApp();
 
             // Start the app
             app.Run();

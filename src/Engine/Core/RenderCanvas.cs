@@ -143,9 +143,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initializes the canvas for the rendering loop.
+        /// Initializes the application and prepares it for the rendering loop.
         /// </summary>
-        public void InitCanvas()
+        public void InitApp()
         {
             // InitImplementors();
             CanvasImplementor.Caption = GetAppName();

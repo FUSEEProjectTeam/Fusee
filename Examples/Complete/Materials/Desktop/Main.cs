@@ -58,7 +58,7 @@ namespace Fusee.Examples.Materials.Desktop
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
-            app.InitCanvas();
+            app.InitApp();
 
             // Start the app
             app.Run();

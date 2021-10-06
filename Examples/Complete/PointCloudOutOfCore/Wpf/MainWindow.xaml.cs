@@ -533,7 +533,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(App.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(App.CanvasImplementor));
 
-            App.InitCanvas();
+            App.InitApp();
         }
     }
 }
