@@ -8,14 +8,14 @@ namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Every point cloud needs a point accessor. Provides access to the point parameters like position or color.
-    /// </summary>    
+    /// </summary>
     /// <typeparam name="TPoint">The generic point type.</typeparam>
     public abstract class PointAccessor<TPoint>
     {
         #region PointT_Member
 
         /// <summary>
-        /// Gets the type of the point as list of the HasXY methods.
+        /// Returns the type of the point as list of the HasXY methods.
         /// </summary>
         /// <returns></returns>
         public List<string> GetPointType()
@@ -23,101 +23,293 @@ namespace Fusee.PointCloud.Common
             return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
         }
 
-        #region PointXYZ
-        // PointXYZ
+        #region Has Position
+
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="float3"/>.
+        /// </summary>
         public virtual bool HasPositionFloat3_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
+        /// </summary>
         public virtual bool HasPositionFloat3_64 => false;
         #endregion
 
-        #region PointXYZI
-        /// PointXYZI
+        #region Has Intensity
+
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="sbyte"/>.
+        /// </summary>
         public virtual bool HasIntensityInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="short"/>.
+        /// </summary>
         public virtual bool HasIntensityInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="int"/>.
+        /// </summary>
         public virtual bool HasIntensityInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="long"/>.
+        /// </summary>
         public virtual bool HasIntensityInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="byte"/>.
+        /// </summary>
         public virtual bool HasIntensityUInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ushort"/>.
+        /// </summary>
         public virtual bool HasIntensityUInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="uint"/>.
+        /// </summary>
         public virtual bool HasIntensityUInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ulong"/>.
+        /// </summary>
         public virtual bool HasIntensityUInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="float"/>.
+        /// </summary>
         public virtual bool HasIntensityFloat32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="double"/>.
+        /// </summary>
         public virtual bool HasIntensityFloat64 => false;
         #endregion
 
-        #region PointXYZINormal
-        // PointXYZINormal
+        #region Has Normal
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="float3"/>.
+        /// </summary>
         public virtual bool HasNormalFloat3_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="double3"/>.
+        /// </summary>
         public virtual bool HasNormalFloat3_64 => false;
         #endregion
 
-        #region PointXYZINormalRGB
-        // PointXYZINormalRGB
+        #region Has Color
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="sbyte"/>.
+        /// </summary>
         public virtual bool HasColorInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="short"/>.
+        /// </summary>
         public virtual bool HasColorInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="int"/>.
+        /// </summary>
         public virtual bool HasColorInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="long"/>.
+        /// </summary>
         public virtual bool HasColorInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="byte"/>.
+        /// </summary>
         public virtual bool HasColorUInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="ushort"/>.
+        /// </summary>
         public virtual bool HasColorUInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="uint"/>.
+        /// </summary>
         public virtual bool HasColorUInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="ulong"/>.
+        /// </summary>
         public virtual bool HasColorUInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float"/>.
+        /// </summary>
         public virtual bool HasColorFloat32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="double"/>.
+        /// </summary>
         public virtual bool HasColorFloat64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float3"/>.
+        /// </summary>
         public virtual bool HasColorFloat3_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="double3"/>.
+        /// </summary>
         public virtual bool HasColorFloat3_64 => false;
-        #endregion        
+        #endregion
 
-        #region PointXYZINormalRGBL
-        // PointXYZINormalRGBL
+        #region Has Label
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="sbyte"/>.
+        /// </summary>
         public virtual bool HasLabelInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="short"/>.
+        /// </summary>
         public virtual bool HasLabelInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="int"/>.
+        /// </summary>
         public virtual bool HasLabelInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="long"/>.
+        /// </summary>
         public virtual bool HasLabelInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="byte"/>.
+        /// </summary>
         public virtual bool HasLabelUInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="ushort"/>.
+        /// </summary>
         public virtual bool HasLabelUInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="uint"/>.
+        /// </summary>
         public virtual bool HasLabelUInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="ulong"/>.
+        /// </summary>
         public virtual bool HasLabelUInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="float"/>.
+        /// </summary>
         public virtual bool HasLabelFloat32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="double"/>.
+        /// </summary>
         public virtual bool HasLabelFloat64 => false;
         #endregion
 
-        #region PointXYZINormalRGBLCurvature
-        // PointXYZINormalRGBLCurvature
+        #region Has Curvature
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="sbyte"/>.
+        /// </summary>
         public virtual bool HasCurvatureInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="short"/>.
+        /// </summary>
         public virtual bool HasCurvatureInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="int"/>.
+        /// </summary>
         public virtual bool HasCurvatureInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="long"/>.
+        /// </summary>
         public virtual bool HasCurvatureInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="byte"/>.
+        /// </summary>
         public virtual bool HasCurvatureUInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="ushort"/>.
+        /// </summary>
         public virtual bool HasCurvatureUInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="uint"/>.
+        /// </summary>
         public virtual bool HasCurvatureUInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="ulong"/>.
+        /// </summary>
         public virtual bool HasCurvatureUInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="float"/>.
+        /// </summary>
         public virtual bool HasCurvatureFloat32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="double"/>.
+        /// </summary>
         public virtual bool HasCurvatureFloat64 => false;
         #endregion
 
-        #region PointXYZINormalRGBLCurvatureHitCount
-        // PointXYZINormalRGBLCurvatureHitCount
+        #region Has Hit Count
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="sbyte"/>.
+        /// </summary>
         public virtual bool HasHitCountInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="short"/>.
+        /// </summary>
         public virtual bool HasHitCountInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="int"/>.
+        /// </summary>
         public virtual bool HasHitCountInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="long"/>.
+        /// </summary>
         public virtual bool HasHitCountInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="byte"/>.
+        /// </summary>
         public virtual bool HasHitCountUInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="ushort"/>.
+        /// </summary>
         public virtual bool HasHitCountUInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="uint"/>.
+        /// </summary>
         public virtual bool HasHitCountUInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="ulong"/>.
+        /// </summary>
         public virtual bool HasHitCountUInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="float"/>.
+        /// </summary>
         public virtual bool HasHitCountFloat32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="double"/>.
+        /// </summary>
         public virtual bool HasHitCountFloat64 => false;
         #endregion
 
-        #region PointXYZINormalRGBLCurvatureHitCountGPSTime
-        // PointXYZINormalRGBLCurvatureHitCountGPSTime
+        #region Has GPS Time
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="sbyte"/>.
+        /// </summary>
         public virtual bool HasGPSTimeInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="short"/>.
+        /// </summary>
         public virtual bool HasGPSTimeInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="int"/>.
+        /// </summary>
         public virtual bool HasGPSTimeInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="long"/>.
+        /// </summary>
         public virtual bool HasGPSTimeInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="byte"/>.
+        /// </summary>
         public virtual bool HasGPSTimeUInt_8 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="ushort"/>.
+        /// </summary>
         public virtual bool HasGPSTimeUInt_16 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="uint"/>.
+        /// </summary>
         public virtual bool HasGPSTimeUInt_32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="ulong"/>.
+        /// </summary>
         public virtual bool HasGPSTimeUInt_64 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="float"/>.
+        /// </summary>
         public virtual bool HasGPSTimeFloat32 => false;
+        /// <summary>
+        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="double"/>.
+        /// </summary>
         public virtual bool HasGPSTimeFloat64 => false;
         #endregion
 
@@ -125,76 +317,123 @@ namespace Fusee.PointCloud.Common
 
         #region PointT_Methods
 
-        #region PointXYZ
+        #region Get/Set Position
+        /// <summary>
+        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetPositionFloat3_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat32");
         }
-
+        /// <summary>
+        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetPositionFloat3_32(ref TPoint point, float3 val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat32");
         }
-
+        /// <summary>
+        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetPositionFloat3_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat64");
         }
-
+        /// <summary>
+        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetPositionFloat3_64(ref TPoint point, double3 val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat64");
         }
         #endregion
 
-        #region PointXYZI
+        #region Get/Set Intensity
 
         #region Getter
+
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_8"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetIntensityInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_8");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_16"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref short GetIntensityInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_16");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref int GetIntensityInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_32");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref long GetIntensityInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_64");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_8"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetIntensityUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_8");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetIntensityUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_16");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetIntensityUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_32");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetIntensityUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_64");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityFloat32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref float GetIntensityFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityFloat32");
         }
-
+        /// <summary>
+        /// Returns the intensity of a point cloud point if <see cref="HasIntensityFloat64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
         public virtual ref double GetIntensityFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityFloat64");
@@ -202,51 +441,92 @@ namespace Fusee.PointCloud.Common
         #endregion
 
         #region Setter
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_8"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityInt_8(ref TPoint point, sbyte val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_8");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_16"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityInt_16(ref TPoint point, short val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_16");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityInt_32(ref TPoint point, int val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_32");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityInt_64(ref TPoint point, long val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_64");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_8"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityUInt_8(ref TPoint point, byte val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_8");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityUInt_16(ref TPoint point, ushort val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_16");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityUInt_32(ref TPoint point, uint val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_32");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityUInt_64(ref TPoint point, ulong val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_64");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityFloat32"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityFloat32(ref TPoint point, float val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityFloat32");
         }
-
+        /// <summary>
+        /// Sets the intensity of a point cloud point if <see cref="HasIntensityFloat64"/> is true.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        /// <param name="val">The new position value.</param>
         public virtual void SetIntensityFloat64(ref TPoint point, double val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityFloat64");
