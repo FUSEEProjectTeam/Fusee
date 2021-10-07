@@ -19,7 +19,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloudTemp\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj" />
   </ItemGroup>
 </Project>
 

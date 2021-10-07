@@ -10,10 +10,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj">
-			<PrivateAssets>analyzers</PrivateAssets>
-		</ProjectReference>
 		<ProjectReference Include="..\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj" />
+		<ProjectReference Include="..\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj" />
 	</ItemGroup>
 </Project>

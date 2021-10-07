@@ -17,10 +17,9 @@
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />		
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+		<ProjectReference Include="..\Common\Fusee.PointCloud.Common.csproj" />
 		<ProjectReference Include="..\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj" />
 	</ItemGroup>
 </Project>
