@@ -53,8 +53,8 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloudTemp\Common\Fusee.PointCloud.Common.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloudTemp\Core\Fusee.PointCloud.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
     <ProjectReference Include="..\Core\Fusee.Examples.PointCloudOutOfCore.Core.csproj" />
   </ItemGroup>
 
