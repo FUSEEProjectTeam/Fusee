@@ -171,7 +171,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Camera.Core"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Camera.Desktop", "Examples\Complete\Camera\Desktop\Fusee.Examples.Camera.Desktop.csproj", "{DEE1E8B6-E892-4469-B1BE-7FE27DB8A381}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointCloud", "PointCloud", "{549D61C5-EFE6-4C2B-AD19-BB84A36C5917}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointCloudTemp", "PointCloudTemp", "{549D61C5-EFE6-4C2B-AD19-BB84A36C5917}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointCloudOutOfCore", "PointCloudOutOfCore", "{19E89C4F-1A51-4DB0-926B-C7952A863A48}"
 EndProject
