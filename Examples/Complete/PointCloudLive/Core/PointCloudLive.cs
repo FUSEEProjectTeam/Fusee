@@ -170,7 +170,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         {
             if (_renderForward)
                 _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
-            
+
             _pcFx.ScreenParams = new float2(Width, Height);
             base.Resize(e);
         }
