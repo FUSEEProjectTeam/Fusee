@@ -16,7 +16,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
         /// <param name="ptType">The <see cref="PointType"/>, used to get the mesh data from the raw points.</param>
         /// <param name="pathToFile">The path to the las file.</param>
         /// <param name="box">The <see cref="AABBf"/> of the point cloud.</param>
-        public static List<Mesh> GetMeshsFromLasFile<TPoint>(PointAccessor<TPoint> ptAccessor, PointType ptType, string pathToFile, out AABBf box)
+        public static List<Mesh> GetMeshsFromLasFile<TPoint>(PointAccessor<TPoint> ptAccessor, PointType ptType, string pathToFile, out AABBf box, bool doExchangeYZ = false)
         {
             var reader = new LasPointReader(pathToFile);
             var pointCnt = ((LasMetaInfo)reader.MetaInfo).PointCnt;
@@ -39,14 +39,14 @@ namespace Fusee.PointCloud.FileReader.LasReader
                 points = reader.ReadNPoints(numberOfPointsInMesh, ptAccessor);
                 Mesh mesh = ptType switch
                 {
-                    PointType.Pos64 => MeshFromPoints.GetMeshPos64(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64Col32IShort => MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64IShort => MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64Col32 => MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64Label8 => MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64Nor32Col32IShort => MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64Nor32IShort => MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, true, float3.Zero),
-                    PointType.Pos64Nor32Col32 => MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, true, float3.Zero),
+                    PointType.Pos64 => MeshFromPoints.GetMeshPos64(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64Col32IShort => MeshFromPoints.GetMeshPos64Col32IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64IShort => MeshFromPoints.GetMeshPos64IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64Col32 => MeshFromPoints.GetMeshPos64Col32(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64Label8 => MeshFromPoints.GetMeshPos64Label8(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64Nor32Col32IShort => MeshFromPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64Nor32IShort => MeshFromPoints.GetMeshPos64Nor32IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64Nor32Col32 => MeshFromPoints.GetMeshPos64Nor32Col32(ptAccessor, points, doExchangeYZ, float3.Zero),
                     _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
                 };
                 if (i == 0)
