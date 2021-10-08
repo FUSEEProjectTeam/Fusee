@@ -2458,11 +2458,11 @@ namespace Fusee.PointCloud.Common
             return GetRawPointMethod(ref point);
         }
 
-       /// <summary>
-       /// Sets the values of a point cloud point.
-       /// </summary>
-       /// <param name="pointIn">The generic point.</param>
-       /// <param name="byteIn">The values as byte array.</param>
+        /// <summary>
+        /// Sets the values of a point cloud point.
+        /// </summary>
+        /// <param name="pointIn">The generic point.</param>
+        /// <param name="byteIn">The values as byte array.</param>
         public void SetRawPoint(ref TPoint pointIn, byte[] byteIn)
         {
             if (pointIn == null || byteIn == null || byteIn.Length < 8)
