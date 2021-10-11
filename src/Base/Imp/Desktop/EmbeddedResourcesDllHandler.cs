@@ -45,7 +45,7 @@ namespace Fusee.Base.Imp.Desktop
                     string dllPath = Path.Combine(dirName, dllName);
 
                     if (!File.Exists(dllPath) || new FileInfo(dllPath).Length != resourceStream.Length)
-                    {   
+                    {
                         using var fileStream = File.Create(dllPath);
                         resourceStream.Seek(0, SeekOrigin.Begin);
                         resourceStream.CopyTo(fileStream);
