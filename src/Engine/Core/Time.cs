@@ -9,7 +9,7 @@
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Time</code> to
-    /// directly access <see cref="FramePerSecond"/>, <see cref="DeltaTime"/> etc.
+    /// directly access <see cref="FramesPerSecond"/>, <see cref="DeltaTime"/> etc.
     /// without even typing a namespace or class name.
     /// </remarks>
     public class Time
@@ -88,7 +88,7 @@
         /// <summary>
         /// Provides the peek framerate, updated every frame (read only).
         /// </summary>
-        public static float FramePerSecond => Instance.TimeFramePerSecond;
+        public static float FramesPerSecond => Instance.TimeFramePerSecond;
 
         /// <summary>
         /// Provides the total number of rendered frames (read only).

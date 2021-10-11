@@ -78,7 +78,11 @@ namespace Fusee.Examples.SimpleDeferred.Android
                 var app = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
+                    app.InitApp();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

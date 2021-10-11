@@ -15,7 +15,7 @@ namespace Fusee.Examples.AdvancedUI.Desktop
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+            IO.IOImp = new IOImp();
 
             FileAssetProvider fap = new("Assets");
             fap.RegisterTypeHandler(
@@ -59,6 +59,8 @@ namespace Fusee.Examples.AdvancedUI.Desktop
             // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();

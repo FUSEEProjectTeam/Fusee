@@ -738,6 +738,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 paramInfo.Type = uType switch
                 {
                     ActiveUniformType.Int => typeof(int),
+                    ActiveUniformType.Bool => typeof(bool),
                     ActiveUniformType.Float => typeof(float),
                     ActiveUniformType.Double => typeof(double),
                     ActiveUniformType.FloatVec2 => typeof(float2),
@@ -1145,7 +1146,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             gBufferRenderTarget.SetPositionTex();
             gBufferRenderTarget.SetAlbedoSpecularTex();
             gBufferRenderTarget.SetNormalTex();
-            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();
             gBufferRenderTarget.SetEmissiveTex();
 
@@ -1460,6 +1461,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
+            GL.DeleteVertexArray(((MeshImp)mr).VertexArrayObject);
             GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
             ((MeshImp)mr).InvalidateVertices();
         }

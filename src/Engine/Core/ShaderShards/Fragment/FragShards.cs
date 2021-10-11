@@ -13,6 +13,29 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static readonly List<string> SurfOutBody_Color = new()
         {
+            "OUT.albedo = IN.Albedo;"
+        };
+
+        /// <summary>
+        /// Returns a default method body for a diffuse-specular lighting calculation.
+        /// </summary>
+        public static readonly List<string> SurfOutBody_VertOrAlbedoColor = new()
+        {
+            "if(ColorMode == 0)",
+            "{",
+            $"   OUT.albedo = {VaryingNameDeclarations.Color};",
+            "}",
+            "else",
+            "{",
+            "   OUT.albedo = IN.Albedo;",
+            "}",
+        };
+
+        /// <summary>
+        /// Returns a default method body for a diffuse-specular lighting calculation.
+        /// </summary>
+        public static readonly List<string> SurfOutBody_Roughness = new()
+        {
             "OUT.albedo = IN.Albedo;",
             "OUT.roughness = IN.Roughness;"
         };

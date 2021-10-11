@@ -58,7 +58,7 @@ namespace Fusee.Tests.GameWindow.Desktop
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
 
             // Initialize canvas/app and canvas implementor
-            app.InitCanvas();
+            app.InitApp();
             app.Init();
         }
     }

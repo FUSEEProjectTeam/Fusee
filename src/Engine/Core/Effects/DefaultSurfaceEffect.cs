@@ -1,5 +1,6 @@
-﻿using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Effects
@@ -17,21 +18,21 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Matrix)]
-        public static float4x4 FUSEE_MVP = float4x4.Identity;
+        public float4x4 FUSEE_MVP;
 
         /// <summary>
         /// The shader shard containing the inverse transposed model view matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Matrix)]
-        public static float4x4 FUSEE_ITMV = float4x4.Identity;
+        public float4x4 FUSEE_ITMV;
 
         /// <summary>
         /// The shader shard containing the model view matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Matrix)]
-        public static float4x4 FUSEE_MV = float4x4.Identity;
+        public float4x4 FUSEE_MV;
 
         #endregion
 
@@ -48,6 +49,9 @@ namespace Fusee.Engine.Core.Effects
         {
             SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
             SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, lightingSetup);
+            FUSEE_MVP = float4x4.Identity;
+            FUSEE_ITMV = float4x4.Identity;
+            FUSEE_MVP = float4x4.Identity;
             HandleFieldsAndProps();
         }
     }

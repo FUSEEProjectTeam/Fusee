@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core.Effects
         /// <remarks> Make sure to insert all uniform variable in "effectParameters" that are declared in the shader code.</remarks>
         public ShaderEffect(FxPassDeclaration effectPass, IEnumerable<IFxParamDeclaration> effectParameters)
         {
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
 
             RendererStates = effectPass.StateSet;
             VertexShaderSrc = effectPass.VS;
@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core.Effects
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                    ParamDecl.Add(param.Name, param);
+                    ParamDecl.Add(param.Hash, param);
             }
 
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);

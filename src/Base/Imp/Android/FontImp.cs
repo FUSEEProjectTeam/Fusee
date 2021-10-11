@@ -14,10 +14,11 @@ namespace Fusee.Base.Imp.Android
     /// </summary>
     public class FontImp : IFontImp
     {
-        internal static Library _sharpFont;
+        internal Library _sharpFont;
         internal Face _face;
         internal uint _pixelHeight;
         private bool _useKerning;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontImp"/> class. 
@@ -38,7 +39,6 @@ namespace Fusee.Base.Imp.Android
             _face = _sharpFont.NewMemoryFace(fileArray, 0);
             _useKerning = false;
         }
-
 
         /// <summary>
         /// Gets and sets a value indicating whether the kerning definition of a font should be used.
@@ -219,12 +219,41 @@ namespace Fusee.Base.Imp.Android
 
             return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
         }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _sharpFont.Dispose();
+                    _face.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        // Use interop to call the method necessary
+        // to clean up the unmanaged resource.
+        [System.Runtime.InteropServices.DllImport("Kernel32")]
+        private extern static Boolean CloseHandle(IntPtr handle);
+
+        ~FontImp()
+        {
+            Dispose(false);
+        }
     }
 
     internal class SplitToCurvePartHelper
     {
         #region Methods
-        public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
+        public static void CurvePartVertice(int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);
             partVerts.Add(vert);
@@ -244,7 +273,7 @@ namespace Fusee.Base.Imp.Android
             {
                 for (var j = 0; j <= i; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
                 //The start point is the first point in the outline.Points array.
@@ -256,7 +285,7 @@ namespace Fusee.Base.Imp.Android
             {
                 for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
 

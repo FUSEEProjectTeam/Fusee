@@ -11,9 +11,9 @@ namespace Fusee.Structures
     public abstract class GridF<P>
     {
         /// <summary>
-        /// All grid cells as three dimensional array.
+        /// All grid cells as Dictionary, using the three dimensional index as key.
         /// </summary>
-        public GridCellF<P>[,,] GridCells { get; set; }
+        public Dictionary<int3, GridCellF<P>> GridCellsDict { get; set; }
 
         /// <summary>
         /// The number of grid cells in each dimension.
@@ -58,7 +58,7 @@ namespace Fusee.Structures
             Center = center;
             NumberOfGridCells = new int3(noOfCellsX, noOfCellsY, noOfCellsZ);
             CellSize = new float3(size.x / noOfCellsX, size.y / noOfCellsY, size.z / noOfCellsZ);
-            GridCells = new GridCellF<P>[noOfCellsX, noOfCellsY, noOfCellsZ];
+            GridCellsDict = new Dictionary<int3, GridCellF<P>>();
         }
 
         /// <summary>
@@ -68,14 +68,14 @@ namespace Fusee.Structures
         {
             var lowerLeftCenter = Center - Size / 2f;
 
-            for (var x = 0; x < GridCells.GetLength(0); x++)
+            for (var x = 0; x < NumberOfGridCells.x; x++)
             {
-                for (var y = 0; y < GridCells.GetLength(1); y++)
+                for (var y = 0; y < NumberOfGridCells.y; y++)
                 {
-                    for (var z = 0; z < GridCells.GetLength(2); z++)
+                    for (var z = 0; z < NumberOfGridCells.z; z++)
                     {
-                        var cellCenter = new float3(lowerLeftCenter.x + (x * CellSize.x), lowerLeftCenter.y + (x * CellSize.y), lowerLeftCenter.z + (x * CellSize.z));
-                        GridCells[x, y, z] = new GridCellF<P>(cellCenter, CellSize);
+                        var cellCenter = new float3(lowerLeftCenter.x + (x * CellSize.x), lowerLeftCenter.y + (y * CellSize.y), lowerLeftCenter.z + (z * CellSize.z));
+                        GridCellsDict.Add(new int3(x, y, z), new GridCellF<P>(cellCenter, CellSize));
                     }
                 }
             }
@@ -122,14 +122,15 @@ namespace Fusee.Structures
             var indexY = (int)((newPos.y * NumberOfGridCells.y) / gridSize.y);
             var indexZ = (int)((newPos.z * NumberOfGridCells.z) / gridSize.z);
 
-            if (indexX < 0 || indexX >= GridCells.GetLength(0) ||
-                indexY < 0 || indexY >= GridCells.GetLength(1) ||
-                indexZ < 0 || indexZ >= GridCells.GetLength(2))
+            if (indexX < 0 || indexX >= NumberOfGridCells.x ||
+                indexY < 0 || indexY >= NumberOfGridCells.y ||
+                indexZ < 0 || indexZ >= NumberOfGridCells.z)
                 throw new ArgumentOutOfRangeException($"Position {pos} does not lie inside the grid!");
 
             cellIdx = new int3(indexX, indexY, indexZ);
 
-            return GridCells[indexX, indexY, indexZ];
+            GridCellsDict.TryGetValue(cellIdx, out var cell);
+            return cell;
         }
 
         /// <summary>

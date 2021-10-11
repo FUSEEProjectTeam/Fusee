@@ -14,10 +14,11 @@ namespace Fusee.Base.Imp.Desktop
     /// </summary>
     public class FontImp : IFontImp
     {
-        internal static Library _sharpFont;
+        internal Library _sharpFont;
         internal Face _face;
         internal uint _pixelHeight;
         private bool _useKerning;
+        private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontImp"/> class. 
@@ -40,7 +41,6 @@ namespace Fusee.Base.Imp.Desktop
             _face = _sharpFont.NewMemoryFace(fileArray, 0);
             _useKerning = false;
         }
-
 
         /// <summary>
         /// Gets and sets a value indicating whether the kerning definition of a font should be used.
@@ -221,12 +221,56 @@ namespace Fusee.Base.Imp.Desktop
 
             return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
         }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _sharpFont.Dispose();
+                    _face.Dispose();
+                }
+                _disposed = true;
+            }
+        }
+
+        // Use interop to call the method necessary
+        // to clean up the unmanaged resource.
+        [System.Runtime.InteropServices.DllImport("Kernel32")]
+        private extern static Boolean CloseHandle(IntPtr handle);
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~FontImp()
+        {
+            Dispose(false);
+        }
     }
 
     internal class SplitToCurvePartHelper
     {
         #region Methods
-        public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
+        public static void CurvePartVertice(int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
             var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);
             partVerts.Add(vert);
@@ -246,7 +290,7 @@ namespace Fusee.Base.Imp.Desktop
             {
                 for (var j = 0; j <= i; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
                 //The start point is the first point in the outline.Points array.
@@ -258,7 +302,7 @@ namespace Fusee.Base.Imp.Desktop
             {
                 for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
                 {
-                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    CurvePartVertice(j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
 

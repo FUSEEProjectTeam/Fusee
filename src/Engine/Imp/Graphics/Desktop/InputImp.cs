@@ -1,7 +1,4 @@
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using OpenTK;
-using OpenTK.Input;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
