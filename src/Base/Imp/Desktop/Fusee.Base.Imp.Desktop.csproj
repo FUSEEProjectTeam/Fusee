@@ -25,7 +25,6 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
-        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+        
     </ItemGroup>
 </Project>
