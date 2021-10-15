@@ -5,13 +5,13 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
-    internal static class UIHelper
+    internal static class UserInterfaceHelper
     {
         internal static List<string> DummySegmentationClasses = new()
         {
@@ -32,12 +32,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static float2 AnnotationDim = new(3f, 0.5f);
         internal static float4 AnnotationBorderThickness = new(6, 0.5f, 0.5f, 0.5f);
-
-        internal static string VsTex = AssetStorage.Get<string>("texture.vert");
-        internal static string PsTex = AssetStorage.Get<string>("texture.frag");
-        internal static string PsText = AssetStorage.Get<string>("text.frag");
-        internal static string VsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
-        internal static string PsNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
         internal static FontMap RalewayFontMap = new(FontRaleway, 24);
@@ -127,29 +121,25 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             TextureNode icon = new(
                 "icon",
-                VsTex,
-                PsTex,
                 iconTex,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f)),
                 float2.One
             );
 
             TextNode annotationText = new(
                 text,
                 "annotation text",
-                VsTex,
-                PsText,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
+                GuiElementPosition.CalcOffsets(AnchorPos.StretchAll, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
                 RalewayFontMap,
                 (float4)ColorUint.Black,
                 HorizontalTextAlignment.Center,
@@ -157,15 +147,13 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             TextureNode annotation = new(
                 "Annotation",
-                VsNineSlice,
-                PsNineSlice,
                 frameTex,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.DownDownLeft, pos, CanvasHeightInit, CanvasWidthInit,
+                GuiElementPosition.CalcOffsets(AnchorPos.DownDownLeft, pos, CanvasHeightInit, CanvasWidthInit,
                     AnnotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
@@ -223,7 +211,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                             Min = new float2(0.5f, 0.5f),
                             Max = new float2(0.5f, 0.5f)
                         },
-                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
+                        Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
                     },
                     new XForm
                     {
@@ -257,7 +245,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                             Min = new float2(0.5f, 0.5f),
                             Max = new float2(0.5f, 0.5f)
                         },
-                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
+                        Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
                     },
                     new XForm
                     {

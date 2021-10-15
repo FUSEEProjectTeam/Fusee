@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using System;
 
 namespace Fusee.Base.Common
 {
@@ -70,7 +71,7 @@ namespace Fusee.Base.Common
     /// <summary>
     /// Common functionality that needs to be provided by a Font implementor.
     /// </summary>
-    public interface IFontImp
+    public interface IFontImp : IDisposable
     {
         /// <summary>
         ///     Gets and sets a value indicating whether the kerning definition of a font should be used.
@@ -142,8 +143,4 @@ namespace Fusee.Base.Common
         /// <returns></returns>
         float GetUnscaledKerning(uint leftC, uint rightC);
     }
-
-
-
-
 }

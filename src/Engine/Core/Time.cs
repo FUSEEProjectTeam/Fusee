@@ -9,7 +9,7 @@
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Time</code> to
-    /// directly access <see cref="FramePerSecond"/>, <see cref="DeltaTime"/> etc.
+    /// directly access <see cref="FramesPerSecond"/>, <see cref="DeltaTime"/> etc.
     /// without even typing a namespace or class name.
     /// </remarks>
     public class Time
@@ -28,6 +28,8 @@
         private int _framePerSecond;
         private float _unsmoothedFps;
         private float _realDeltaTime;
+
+        private float _deltaTimeUpdate;
 
         internal float DeltaTimeIncrement
         {
@@ -50,6 +52,14 @@
                     _framePerSecond = 0;
                     _timeSecond = 0;
                 }
+            }
+        }
+
+        internal float DeltaTimeUpdateIncrement
+        {
+            set
+            {
+                _deltaTimeUpdate = value;
             }
         }
 
@@ -78,7 +88,7 @@
         /// <summary>
         /// Provides the peek framerate, updated every frame (read only).
         /// </summary>
-        public static float FramePerSecond => Instance.TimeFramePerSecond;
+        public static float FramesPerSecond => Instance.TimeFramePerSecond;
 
         /// <summary>
         /// Provides the total number of rendered frames (read only).
@@ -90,22 +100,31 @@
         public static long Frames => Instance.TimeFrames;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is effected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is effected by the TimeScale (read only).
         /// </summary>
         public float TimeDeltaTime => _deltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is effected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is effected by the TimeScale (read only).
         /// </summary>
         public static float DeltaTime => Instance.TimeDeltaTime;
 
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is unaffected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is unaffected by the TimeScale (read only).
         /// </summary>
         public float TimeRealDeltaTime => _realDeltaTime;
         /// <summary>
-        /// Provides the DeltaTime since the last frame in seconds that is unaffected by the TimeScale (read only).
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.RenderAFrame"/> loop, since the last frame in seconds that is unaffected by the TimeScale (read only).
         /// </summary>
         public static float RealDeltaTime => Instance.TimeRealDeltaTime;
+
+        /// <summary>
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.Update"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
+        /// </summary>
+        public float TimeDeltaTimeUpdate => _deltaTimeUpdate;
+        /// <summary>
+        /// Provides the DeltaTime, for the <see cref="RenderCanvas.Update"/> loop, since the last frame in seconds that is not effected by the TimeScale (read only).
+        /// </summary>
+        public static float DeltaTimeUpdate => Instance.TimeDeltaTimeUpdate;
 
         /// <summary>
         /// Provides the passed time since start of the application effected by TimeScale (read only).

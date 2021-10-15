@@ -1,4 +1,5 @@
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System;
@@ -11,8 +12,9 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// A surface effect contains information to build a shader program 
     /// </summary>
-    public abstract class SurfaceEffect : Effect
+    public abstract class SurfaceEffect : Effect, IDisposable
     {
+        private bool _disposed;
         internal readonly List<KeyValuePair<ShardCategory, string>> VertexShaderSrc = new();
         internal readonly List<KeyValuePair<ShardCategory, string>> GeometryShaderSrc = new();
         internal readonly List<KeyValuePair<ShardCategory, string>> FragmentShaderSrc = new();
@@ -22,21 +24,21 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
-        public static string Version = Header.Version300Es;
+        public string Version = Header.Version300Es;
 
         /// <summary>
         /// The shader shard containing the definition of PI.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
-        public static string Pi = Header.DefinePi;
+        public string Pi = Header.DefinePi;
 
         /// <summary>
         /// The shader shard containing the float precision.
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Header)]
-        public static string Precision = Header.EsPrecisionHighpFloat;
+        public string Precision = Header.EsPrecisionHighpFloat;
 
         #region MUST HAVE fields
 
@@ -62,53 +64,79 @@ namespace Fusee.Engine.Core.Effects
         /// The value is filled in the constructor using the chosen lighting setup.
         /// </summary>
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Property)]
-        public static string SurfaceOutput;
+        [FxShard(ShardCategory.SurfOutStruct)]
+        public string SurfaceOutput;
 
         /// <summary>
         /// Fragment shader "in" declaration of the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public string SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
 
         /// <summary>
         /// Vertex shader "out" declaration of the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+        public string SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.SurfOut)]
-        public static string SurfOutFragMethod;
+        public string SurfOutFragMethod;
 
         /// <summary>
         /// Shader Shard Method to modify the <see cref="SurfaceOutput"/>.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.SurfOut)]
-        public static string SurfOutVertMethod;
+        public string SurfOutVertMethod;
         //======================================================//
 
+        /// <summary>
+        /// Fragment shader "in" declaration for the uv coordinates.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
+        public string UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
 
+        /// <summary>
+        /// Vertex shader "out" declaration for the uv coordinates.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
+        public string UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
 
+        /// <summary>
+        /// Fragment shader "in" declaration for the vertex colors.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
-        public static string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
+        public string VertColorIn = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
 
+        /// <summary>
+        /// Vertex shader "out" declaration for the vertex colors.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
+        public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
+
+        /// <summary>
+        /// Fragment shader "in" declaration for the TBN matrix.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public string TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
+
+        /// <summary>
+        /// Vertex shader "out" declaration for the TBN matrix.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public string TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
         /// <summary>
         /// The shader shard containing "fu" variables (in and out parameters) like fuVertex, fuNormal etc.
@@ -116,7 +144,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public static string VertIn;
+        public string VertIn;
 
         #endregion
 
@@ -129,7 +157,17 @@ namespace Fusee.Engine.Core.Effects
         public SurfaceEffect(LightingSetupFlags lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
+
+            Version = Header.Version300Es;
+            Pi = Header.DefinePi;
+            Precision = Header.EsPrecisionHighpFloat;
+            SurfVaryingFrag = $"in {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+            SurfVaryingVert = $"out {SurfaceOut.StructName} {SurfaceOut.SurfOutVaryingName};\n";
+            UvIn = GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
+            UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
+            TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
+            TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
             LightingSetup = lightingSetup;
 
@@ -141,11 +179,13 @@ namespace Fusee.Engine.Core.Effects
             var surfInType = surfaceInput.GetType();
             var surfInName = nameof(SurfaceInput);
             HandleStruct(ShaderCategory.Fragment, surfInType);
+
             foreach (var structProp in surfInType.GetProperties())
             {
                 var paramDcl = BuildFxParamDecl(structProp, GetType().GetProperty(surfInName));
-                ParamDecl.Add(paramDcl.Name, paramDcl);
+                ParamDecl.Add(paramDcl.Hash, paramDcl);
             }
+
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
 
             var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup);
@@ -174,7 +214,8 @@ namespace Fusee.Engine.Core.Effects
             FxShaderAttribute shaderAttribute;
             FxShardAttribute shardAttribute;
 
-            foreach (var prop in t.GetProperties(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy))
+            var publicProps = GetPublicProperties(t);
+            foreach (var prop in publicProps)
             {
                 var attribs = prop.GetCustomAttributes().ToList();
 
@@ -209,20 +250,21 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
-                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            ParamDecl.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }
                     case ShardCategory.Header:
                     case ShardCategory.Main:
+                    case ShardCategory.SurfOutStruct:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                     case ShardCategory.SurfOut:
 
-                        if (prop.GetAccessors(false).Any(x => x.IsStatic) && prop.PropertyType == typeof(string))
+                        if (prop.PropertyType == typeof(string))
                             HandleShard(shaderAttribute.ShaderCategory, shardAttribute, (string)prop.GetValue(this));
                         else
-                            throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                            throw new Exception($"{t.Name} ShaderEffect: Property {prop.Name} does not contain a valid shard.");
                         continue;
                     case ShardCategory.Struct:
                         HandleStruct(shaderAttribute.ShaderCategory, prop.PropertyType);
@@ -232,7 +274,7 @@ namespace Fusee.Engine.Core.Effects
                         foreach (var structProp in prop.PropertyType.GetProperties())
                         {
                             var paramDcl = BuildFxParamDecl(structProp, prop);
-                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            ParamDecl.Add(paramDcl.Hash, paramDcl);
                         }
                         HandleUniform(shaderAttribute.ShaderCategory, prop.Name, prop.PropertyType);
                         continue;
@@ -242,7 +284,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
 
-            var allFields = t.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy);
+            var allFields = GetPublicFields(t);
             foreach (var field in allFields)
             {
                 shaderAttribute = null;
@@ -278,16 +320,17 @@ namespace Fusee.Engine.Core.Effects
                     case ShardCategory.Matrix:
                         {
                             var paramDcl = BuildFxParamDecl(field);
-                            ParamDecl.Add(paramDcl.Name, paramDcl);
+                            ParamDecl.Add(paramDcl.Hash, paramDcl);
                             HandleUniform(shaderAttribute.ShaderCategory, paramDcl.Name, paramDcl.ParamType);
                             continue;
                         }
                     case ShardCategory.Header:
                     case ShardCategory.Main:
+                    case ShardCategory.SurfOutStruct:
                     case ShardCategory.Property:
                     case ShardCategory.Method:
                     case ShardCategory.SurfOut:
-                        if (field.IsStatic && field.FieldType == typeof(string))
+                        if (field.FieldType == typeof(string))
                         {
                             var val = (string)field.GetValue(this);
                             if (val == null || val == string.Empty)
@@ -295,7 +338,7 @@ namespace Fusee.Engine.Core.Effects
                             HandleShard(shaderAttribute.ShaderCategory, shardAttribute, val);
                         }
                         else
-                            throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard. Either the property is not static or it's not a string.");
+                            throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} does not contain a valid shard.");
                         continue;
                     case ShardCategory.Struct:
                         HandleStruct(shaderAttribute.ShaderCategory, field.FieldType);
@@ -303,7 +346,6 @@ namespace Fusee.Engine.Core.Effects
                     default:
                         break;
                 }
-
             }
         }
 
@@ -603,9 +645,103 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="memberName">The name of the member which this event originated from.</param>
         protected void PropertyChangedHandler(object sender, SurfaceEffectEventArgs args, string memberName)
         {
-            GetType().GetMethod("SetFxParam")
+            GetType().GetMethods().Where(m => m.Name == "SetFxParam").Where(item => item.GetParameters()[0].ParameterType == typeof(string)).First()
             .MakeGenericMethod(args.Type)
             .Invoke(this, new object[] { memberName + "." + args.Name, args.Value });
         }
+
+        private PropertyInfo[] GetPublicProperties(Type type)
+        {
+            var propertyInfos = new List<PropertyInfo>();
+
+            var considered = new List<Type>();
+            var queue = new Queue<Type>();
+            considered.Add(type);
+            queue.Enqueue(type);
+            while (queue.Count > 0)
+            {
+                var t = queue.Dequeue();
+
+                if (t.BaseType == null || t.BaseType == typeof(SceneComponent)) break;
+                if (considered.Contains(t.BaseType)) continue;
+
+                considered.Add(t.BaseType);
+                queue.Enqueue(t.BaseType);
+
+                var typeProps = t.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+                propertyInfos.InsertRange(0, typeProps);
+            }
+
+            return propertyInfos.ToArray();
+        }
+
+        private FieldInfo[] GetPublicFields(Type type)
+        {
+            var fieldInfos = new List<FieldInfo>();
+
+            var considered = new List<Type>();
+            var queue = new Queue<Type>();
+            considered.Add(type);
+            queue.Enqueue(type);
+            while (queue.Count > 0)
+            {
+                var t = queue.Dequeue();
+
+                if (t.BaseType == null || t.BaseType == typeof(SceneComponent)) break;
+                if (considered.Contains(t.BaseType)) continue;
+
+                considered.Add(t.BaseType);
+                queue.Enqueue(t.BaseType);
+
+                var typeFields = t.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
+
+                fieldInfos.InsertRange(0, typeFields);
+            }
+
+            return fieldInfos.ToArray();
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+                return;
+
+            EffectChanged?.Invoke(this, new EffectManagerEventArgs(UniformChangedEnum.Dispose));
+
+            if (disposing)
+            {
+
+            }
+
+            _disposed = true;
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~SurfaceEffect()
+        {
+            Dispose(false);
+        }
+
     }
 }

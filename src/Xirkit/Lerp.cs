@@ -13,7 +13,6 @@ namespace Fusee.Xirkit
         /// </summary>
         public static double DoubleLerp(double val1, double val2, float time1, float time2)
         {
-
             return (val1 + ((val2 - val1) / time1) * time2);
         }
 

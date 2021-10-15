@@ -1,7 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -66,7 +65,29 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Members       
+        #region Members
+
+        /// <summary>
+        /// Used to inject functionallity that is ment to be executed when the application is shutting down.
+        /// </summary>
+        public event EventHandler<EventArgs> ApplicationIsShuttingDown;
+
+        /// <summary>
+        /// Used to stop the rendering process when the application is shutting down.
+        /// Needed when the creation and running of an application are executed in different threads.
+        /// Will invoke <see cref="ApplicationIsShuttingDown"/>.
+        /// </summary>
+        public bool IsShuttingDown
+        {
+            get { return _isShuttingDown; }
+            private set
+            {
+                _isShuttingDown = value;
+                if (_isShuttingDown)
+                    ApplicationIsShuttingDown.Invoke(this, new EventArgs());
+            }
+        }
+        private bool _isShuttingDown;
 
         /// <summary>
         ///     Gets the name of the app.
@@ -122,9 +143,9 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initializes the canvas for the rendering loop.
+        /// Initializes the application and prepares it for the rendering loop.
         /// </summary>
-        public void InitCanvas()
+        public void InitApp()
         {
             // InitImplementors();
             CanvasImplementor.Caption = GetAppName();
@@ -142,19 +163,29 @@ namespace Fusee.Engine.Core
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
             CanvasImplementor.Init += delegate { Init(); };
-            CanvasImplementor.UnLoad += delegate { DeInit(); };
+            CanvasImplementor.UnLoad += delegate
+            {
+                DeInit();
+            };
+
+            CanvasImplementor.Update += delegate
+            {
+                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+
+                Update();
+            };
 
             CanvasImplementor.Render += delegate
             {
+                if (IsShuttingDown) return;
+
                 // pre-rendering
                 Input.Instance.PreRender();
                 Time.Instance.DeltaTimeIncrement = CanvasImplementor.DeltaTime;
 
                 // rendering
-                RenderAFrame();
-
-                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
-                RC.ResetToDefaultRenderContextState();
+                if (Width != 0 || Height != 0)
+                    RenderAFrame();
 
                 // post-rendering
                 Input.Instance.PostRender();
@@ -162,6 +193,7 @@ namespace Fusee.Engine.Core
 
             CanvasImplementor.Resize += delegate
             {
+                if (IsShuttingDown) return;
                 RC.DefaultState.CanvasWidth = Width;
                 RC.DefaultState.CanvasHeight = Height;
                 Resize(new ResizeEventArgs(Width, Height));
@@ -169,12 +201,22 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        ///     Callback method to invoke user code for updating a frame.
+        /// </summary>
+        /// <remarks>
+        ///     Override this method in inherited classes of RenderCanvas to update your scene.
+        ///     Consider the code you implement here as the body of the application's loop.
+        /// </remarks>
+        public virtual void Update()
+        {
+        }
+
+        /// <summary>
         ///     Callback method to invoke user code for rendering a frame.
         /// </summary>
         /// <remarks>
         ///     Override this method in inherited classes of RenderCanvas to render 3D contents. Typically, an application will
-        ///     use the render context (<see cref="RC" />) to achieve this. Consider the code you implement here as the body of the
-        ///     application's rendering loop.
+        ///     use the render context (<see cref="RC" />) to achieve this. This loop will only run while the application is visible.
         /// </remarks>
         public virtual void RenderAFrame()
         {
@@ -240,7 +282,6 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Run()
         {
-            InitCanvas();
             CanvasImplementor.Run();
         }
 
@@ -284,11 +325,13 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Closes the GameWindow with a call to OpenTK.
+        /// Closes the GameWindow with a call to OpenTK.
         /// </summary>
         public void CloseGameWindow()
         {
+            IsShuttingDown = true;
             CanvasImplementor.CloseGameWindow();
+            RC.Dispose();
         }
 
         #endregion

@@ -78,34 +78,39 @@ namespace Fusee.Engine.Core.Effects
         Struct = 2,
 
         /// <summary>
-        /// The shader shard belongs is a property of the source shader.
+        /// The shader shard belongs is a struct of the source shader.
         /// </summary>
-        Uniform = 4,
+        SurfOutStruct = 4,
 
         /// <summary>
         /// The shader shard belongs is a property of the source shader.
         /// </summary>
-        Property = 8,
+        Uniform = 8,
+
+        /// <summary>
+        /// The shader shard belongs is a property of the source shader.
+        /// </summary>
+        Property = 16,
 
         /// <summary>
         /// The shader shard is a method of the source shader.
         /// </summary>
-        Method = 16,
+        Method = 32,
 
         /// <summary>
         /// The shader shard the surface output method of the source shader.
         /// </summary>
-        SurfOut = 32,
+        SurfOut = 64,
 
         /// <summary>
         /// The shader shard is, or is part of, the main method of the source shader.
         /// </summary>
-        Main = 63,
+        Main = 128,
 
         /// <summary>
         /// Describes a matrix, like the mvp matrix. 
         /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffect"/> because they will be updated by the SceneRenderer.
         /// </summary>
-        Matrix = 127
+        Matrix = 256
     }
 }

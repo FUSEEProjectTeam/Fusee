@@ -188,6 +188,8 @@ namespace Fusee.Engine.Player.Desktop
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
 
+                app.InitApp();
+
                 // Start the app
                 app.Run();
             }

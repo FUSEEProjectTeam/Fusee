@@ -308,6 +308,8 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
+
+            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
@@ -677,9 +679,7 @@ namespace Fusee.Engine.Core
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, true);
-            var renderStatesAfter = _rc.CurrentRenderState.Copy();
-
-            _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         /// <summary>
@@ -754,7 +754,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = MakeEffect.Default;
+            _state.Effect = _rc.DefaultEffect;
             _rc.CreateShaderProgram(_state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
@@ -797,7 +797,7 @@ namespace Fusee.Engine.Core
                     UpdateShaderParamForLight(i, _lightResults[i].Item2);
                 }
                 else
-                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive", 0);
+                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive".GetHashCode(), 0);
             }
         }
 
@@ -818,17 +818,17 @@ namespace Fusee.Engine.Core
             var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
             // Set parameters in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
-            _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
-            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
-            _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
-            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
-            _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), _rc.View * lightRes.WorldSpacePos);
+            _rc.SetGlobalEffectParam(lightParamStrings.Intensities.GetHashCode(), light.Color);
+            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance.GetHashCode(), light.MaxDistance);
+            _rc.SetGlobalEffectParam(lightParamStrings.Strength.GetHashCode(), strength);
+            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle.GetHashCode(), M.DegreesToRadians(light.OuterConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle.GetHashCode(), M.DegreesToRadians(light.InnerConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction.GetHashCode(), dirViewSpace);
+            _rc.SetGlobalEffectParam(lightParamStrings.LightType.GetHashCode(), (int)light.Type);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsActive.GetHashCode(), light.Active ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows.GetHashCode(), light.IsCastingShadows ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.Bias.GetHashCode(), light.Bias);
         }
     }
 }

@@ -1,14 +1,11 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
-using System.Collections.Generic;
-using System.Linq;
 using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Examples.ComputeFractal.Core
@@ -37,16 +34,18 @@ namespace Fusee.Examples.ComputeFractal.Core
 
         private SceneContainer _gui;
         private SceneRendererForward _guiRenderer;
-        private GUIText _depthFactorText;
+        private SceneInteractionHandler _sih;
+
+        private GuiText _depthFactorText;
         private readonly float _zNear = 0.1f;
         private readonly float _zFar = 100f;
 
         // Init is called on startup.
         public override void Init()
         {
-            _gui = CreateGui();
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
-
+            _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GuiText>();
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
             RWTexture = WritableTexture.CreateForComputeShader(1024, 1024);
@@ -105,6 +104,8 @@ namespace Fusee.Examples.ComputeFractal.Core
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
             _colors.SetData(_colorData);
+
+            _sih = new SceneInteractionHandler(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -123,6 +124,16 @@ namespace Fusee.Examples.ComputeFractal.Core
 
             RC.Projection = float4x4.CreateOrthographic(Width, Height, _zNear, _zFar);
             _guiRenderer.Render(RC);
+
+            if (!Mouse.Desc.Contains("Android"))
+            {
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            }
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             Present();
         }
@@ -168,56 +179,6 @@ namespace Fusee.Examples.ComputeFractal.Core
         private float Sawtooth(float i, float m)
         {
             return m - System.Math.Abs(i % (2 * m) - m);
-        }
-
-        private SceneContainer CreateGui()
-        {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psText = AssetStorage.Get<string>("text.frag");
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
-
-            var textNode = new TextNode(
-                "Fractal Magnification Factor: " + _depthFactor,
-                "FractalDepth",
-                vsTex,
-                psText,
-                UIElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
-                UIElementPosition.CalcOffsets(AnchorPos.StretchHorizontal, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
-                guiLatoBlack,
-                (float4)ColorUint.White,
-                HorizontalTextAlignment.Center,
-                VerticalTextAlignment.Center);
-
-            _depthFactorText = textNode.GetComponentsInChildren<GUIText>().First();
-
-            var canvas = new CanvasNode(
-                "Canvas",
-                CanvasRenderMode.Screen,
-                new MinMaxRect
-                {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    textNode
-                }
-            };
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNode>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
         }
     }
 }

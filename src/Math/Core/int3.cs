@@ -15,19 +15,19 @@ namespace Fusee.Math.Core
         #region Fields
 
         /// <summary>
-        /// The x component of the float3.
+        /// The x component of the int3.
         /// </summary>
         [ProtoMember(1)]
         public int x;
 
         /// <summary>
-        /// The y component of the float3.
+        /// The y component of the int3.
         /// </summary>
         [ProtoMember(2)]
         public int y;
 
         /// <summary>
-        /// The z component of the float3.
+        /// The z component of the int3.
         /// </summary>
         [ProtoMember(3)]
         public int z;
@@ -464,7 +464,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>
-        /// True, if left does not equa lright; false otherwise.
+        /// True, if left does not equal right; false otherwise.
         /// </returns>
         public static bool operator !=(int3 left, int3 right)
         {
@@ -472,10 +472,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Explicit cast operator to cast a double3 into a float3 value.
+        /// Explicit cast operator to cast a int into a int3 value.
         /// </summary>
-        /// <param name="i">The double3 value to cast.</param>
-        /// <returns>A float3 value.</returns>
+        /// <param name="i">The int value to cast.</param>
+        /// <returns>A int3 value.</returns>
         public static explicit operator int3(int i)
         {
             return new int3(i);

@@ -2,12 +2,12 @@
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 
-namespace Fusee.Engine.GUI
+namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// Code component that creates a button from an object in the scene graph.
     /// </summary>
-    public class GUIButton : CodeComponent
+    public class GuiButton : CodeComponent
     {
         /// <summary>
         ///     Occurs when mouse button is pressed on this button.
@@ -39,7 +39,7 @@ namespace Fusee.Engine.GUI
         /// <summary>
         /// Creates a new instance of the code component that creates a button from an object in the scene graph.
         /// </summary>
-        public GUIButton()
+        public GuiButton()
         {
             _isAttached = false;
         }
