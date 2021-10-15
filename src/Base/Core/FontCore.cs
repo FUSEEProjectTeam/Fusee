@@ -1,14 +1,14 @@
-﻿using Fusee.Math.Core;
-using Fusee.Base.Common;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Fusee.Base.Common;
+using Fusee.Math.Core;
 using SixLabors.Fonts;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace Fusee.Base.Core
 {
