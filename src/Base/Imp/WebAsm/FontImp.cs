@@ -8,6 +8,9 @@ using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System.Collections.Generic;
+using System;
+using System.Linq;
 
 namespace Fusee.Base.Imp.WebAsm
 {
@@ -23,7 +26,7 @@ namespace Fusee.Base.Imp.WebAsm
         /// Font implementation for WebAsm
         /// </summary>
         /// <param name="stream"></param>
-        public FontImp(Stream stream)
+        public FontImp(System.IO.Stream stream)
         {
             _collection = new FontCollection();
             _collection.Install(stream);

@@ -6,6 +6,10 @@ using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Base.Imp.WebAsm
 {
@@ -70,7 +74,6 @@ namespace Fusee.Base.Imp.WebAsm
                 Checker = _ => true // If it's there, we can handle it...
             });
 
-
         }
 
         /// <summary>
@@ -100,24 +103,29 @@ namespace Fusee.Base.Imp.WebAsm
         protected override async Task<Stream> GetStreamAsync(string id)
         {
             var baseAddress = WasmResourceLoader.GetLocalAddress(_runtime) + "Assets/";
-            using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
 
             Diagnostics.Debug($"Requesting '{id}' at '{baseAddress}' ...");
 
             try
             {
-                var response = await httpClient.GetAsync(id).ConfigureAwait(false);
+                var response = await httpClient.GetAsync(id);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                var stream = await response.Content.ReadAsByteArrayAsync();
+                var ms = new MemoryStream(stream); // copy to memory stream to prevent any loading issues
+                httpClient.Dispose();
+                return ms;
             }
             catch (HttpRequestException exception)
             {
                 Diagnostics.Error($"Error while loading asset {id}", exception);
+                httpClient.Dispose();
                 return null;
             }
             catch (ArgumentNullException exception)
             {
                 Diagnostics.Error($"Error while loading asset, not found {id}", exception);
+                httpClient.Dispose();
                 return null;
             }
         }
@@ -156,6 +164,75 @@ namespace Fusee.Base.Imp.WebAsm
             using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
             var response = await httpClient.GetAsync(id).ConfigureAwait(false);
             return response.StatusCode == System.Net.HttpStatusCode.OK;
+        }
+
+        public static ImageData LoadImage(Stream file)
+        {
+            try
+            {
+                using var image = Image.Load(file, out var imgFormat);
+
+                image.Mutate(x => x.AutoOrient());
+                image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
+
+
+                var bpp = image.PixelType.BitsPerPixel;
+
+                switch (image.PixelType.BitsPerPixel)
+                {
+                    case 16:
+                        {
+                            (image as Image<Rg32>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.Depth16));
+                        }
+                    case 24:
+                        {
+                            var rgb = image as Image<Rgb24>;
+                            var bgr = rgb.CloneAs<Bgr24>();
+
+                            bgr.TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Bgr24>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.RGB));
+                        }
+                    case 32:
+                        {
+                            var rgba = image as Image<Rgba32>;
+                            var bgra = rgba.CloneAs<Bgra32>();
+
+                            bgra.TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Bgra32>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.RGBA));
+                        }
+                    case 48:
+                        {
+                            var rgba = image as Image<Rgba32>;
+                            var bgra = rgba.CloneAs<Bgra32>();
+
+                            (image as Image<Rgb48>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rgb48>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.fRGB32));
+                        }
+                    case 64:
+                        {
+                            (image as Image<Rgba64>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<Rgba64>(res.ToArray());
+                            return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                new ImagePixelFormat(ColorFormat.fRGBA32));
+                        }
+                    default:
+                        throw new ArgumentException($"{bpp} Bits per pixel not supported!");
+                }
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.Error($"Error loading/converting image", ex);
+                return null;
+            }
         }
     }
 }

@@ -11,8 +11,11 @@ using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System.Runtime.InteropServices;
 using Path = System.IO.Path;
+using Stream = System.IO.Stream;
+using System;
+using System.IO;
 
-namespace Fusee.Examples.Simple.WebAsm
+namespace Fusee.Examples.Simple.Blazor
 {
     public class Main : WebAsmBase
     {
@@ -21,6 +24,8 @@ namespace Fusee.Examples.Simple.WebAsm
 
         public override void Run()
         {
+            Console.WriteLine("Starting Blazor program");
+
             // Disable colored console ouput, not supported
             Diagnostics.UseConsoleColor(false);
             Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.Verbose);
@@ -41,7 +46,7 @@ namespace Fusee.Examples.Simple.WebAsm
                 new AssetHandler
                 {
                     ReturnedType = typeof(Base.Core.Font),
-                    Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
+                    Decoder = (_, __) => throw new System.NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
@@ -66,12 +71,12 @@ namespace Fusee.Examples.Simple.WebAsm
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
+                    Decoder = (_, __) => throw new System.NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            return await FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((Stream)storage));
+                            return await FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((System.IO.Stream)storage));
                         }
                         return null;
                     },
@@ -92,32 +97,85 @@ namespace Fusee.Examples.Simple.WebAsm
 
                     try
                     {
-                        using var image = await Image.LoadAsync<Rgba32>((Stream)storage);
+                        //using var ms = new MemoryStream();
+                        //((Stream)storage).CopyTo(ms);                   
+                        using var image = await Image.LoadAsync((Stream)storage);
 
                         image.Mutate(x => x.AutoOrient());
                         image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-                        var ret = new ImageData(ReadPixels(image), image.Width, image.Height,
-                                new ImagePixelFormat(ColorFormat.RGBA));
+                        var ret = ReadPixels(image);
 
                         return ret;
 
                         // inner method to prevent Span<T> inside async method error
-                        static byte[] ReadPixels(Image<Rgba32> image)
+                        static ImageData ReadPixels(Image image)
                         {
-                            image.TryGetSinglePixelSpan(out var res);
-                            var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
-                            return resBytes.ToArray();
+                            var bpp = image.PixelType.BitsPerPixel;
+
+                            switch (image.PixelType.BitsPerPixel)
+                            {
+                                case 16:
+                                    {
+                                        (image as Image<Rg32>).TryGetSinglePixelSpan(out var res);
+                                        var resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
+                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                            new ImagePixelFormat(ColorFormat.Depth16));
+                                    }
+                                case 24:
+                                    {
+                                        var rgb = image as Image<Rgb24>;
+
+                                        rgb.TryGetSinglePixelSpan(out var res);
+                                        var resBytes = MemoryMarshal.AsBytes<Rgb24>(res.ToArray());
+                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                            new ImagePixelFormat(ColorFormat.RGB));
+                                    }
+                                case 32:
+                                    {
+                                        var rgba = image as Image<Rgba32>;
+
+                                        rgba.TryGetSinglePixelSpan(out var res);
+                                        var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                            new ImagePixelFormat(ColorFormat.RGBA));
+                                    }
+                                case 48:
+                                    {
+                                        var rgba = image as Image<Rgba32>;
+
+                                        rgba.TryGetSinglePixelSpan(out var res);
+                                        var resBytes = MemoryMarshal.AsBytes<Rgba32>(res.ToArray());
+                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                            new ImagePixelFormat(ColorFormat.fRGB32));
+                                    }
+                                case 64:
+                                    {
+                                        (image as Image<Rgba64>).TryGetSinglePixelSpan(out var res);
+                                        var resBytes = MemoryMarshal.AsBytes<Rgba64>(res.ToArray());
+                                        return new ImageData(resBytes.ToArray(), image.Width, image.Height,
+                                            new ImagePixelFormat(ColorFormat.fRGBA32));
+                                    }
+                                default:
+                                    { 
+                                        Console.WriteLine($"Error converting! {bpp}");
+
+                                        throw new ArgumentException($"{bpp} Bits per pixel not supported!");
+
+                                    }
+                            }
                         };
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Error loading/converting image {id}", ex);
+                        Console.WriteLine($"Error loading/converting image {id} {ex}");
                         Diagnostics.Error($"Error loading/converting image {id}", ex);
+
+                        // return empty 1x1 image
+                        return new ImageData(new byte[] { 0, 0, 0, 1, 0, 0, 0, 1 }, 1, 1,
+                                    new ImagePixelFormat(ColorFormat.RGBA));
+
                     }
 
-                    // return empty 1x1 image
-                    return new ImageData(new byte[] { 0, 0, 0, 1, 0, 0, 0, 1 }, 1, 1,
-                                new ImagePixelFormat(ColorFormat.RGBA));
                 },
                 Checker = (string id) =>
                 {

@@ -3,11 +3,13 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -47,10 +49,44 @@ namespace Fusee.Examples.Simple.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
+            Console.WriteLine("Loading scene");
 
 
             // Load the rocket model
-            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus");
+            //var tex = await AssetStorage.GetAsync<ImageData>("background.png");
+            //var dif = await AssetStorage.GetAsync<ImageData>("background_ddn.png");
+            //var tex2 = await AssetStorage.GetAsync<ImageData>("sponza_curtain_green_diff.png");
+
+            //_rocketScene = new SceneContainer
+            //{
+            //    Children = new List<SceneNode>
+            //    {
+            //        new SceneNode
+            //        {
+            //            Components = new List<SceneComponent>
+            //            {
+            //                new Transform(),
+            //                MakeEffect.FromBRDFTexture(
+            //                    float4.One, float4.One, 1.0f, 1.0f, 1.0f, 0.25f, 0.25f, new Texture(tex), new Texture(dif), 0.5f,  float2.One),
+            //                new Cube()
+            //            }
+            //        },
+            //        new SceneNode
+            //        {
+            //            Components = new List<SceneComponent>
+            //            {
+            //                new Transform
+            //                {
+            //                    Translation = float3.UnitX * 2
+            //                },
+            //                MakeEffect.FromDiffuseAlbedoTexture(
+            //                    float4.One, new Texture(tex2), float2.One, 0.25f),
+            //                new Cube()
+            //            }
+            //        }
+            //    }
+            //};
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
