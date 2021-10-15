@@ -1,7 +1,7 @@
 ﻿using Fusee.Base.Core;
+using SixLabors.Fonts;
 using System.IO;
 using System.Linq;
-using SixLabors.Fonts;
 
 
 namespace Fusee.Base.Imp.Android
