@@ -27,7 +27,7 @@ namespace Fusee.Base.Imp.Desktop
                 Assembly assem = Assembly.GetCallingAssembly();
                 AssemblyName an = assem.GetName();
 
-                var resourceStream = assem.GetManifestResourceStream(resourceName);
+                using var resourceStream = assem.GetManifestResourceStream(resourceName);
 
                 if (resourceStream != null && resourceStream.Length > 0)
                 {
