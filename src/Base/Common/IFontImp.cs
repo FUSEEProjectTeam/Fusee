@@ -71,7 +71,7 @@ namespace Fusee.Base.Common
     /// <summary>
     /// Common functionality that needs to be provided by a Font implementor.
     /// </summary>
-    public interface IFontImp : IDisposable
+    public interface IFontImp
     {
         /// <summary>
         ///     Gets and sets a value indicating whether the kerning definition of a font should be used.

@@ -25,36 +25,41 @@ namespace Fusee.Base.Imp.Desktop
                 loadedDlls.Add(dllName);
 
                 Assembly assem = Assembly.GetCallingAssembly();
-
-                _ = assem.GetManifestResourceNames();
                 AssemblyName an = assem.GetName();
 
-                var resourceStream = assem.GetManifestResourceStream(resourceName);
+                using var resourceStream = assem.GetManifestResourceStream(resourceName);
 
-                // The temporary folder holds one or more of the temporary DLLs
-                // It is made "unique" to avoid different versions of the DLL or architectures.
-                var tempFolder = String.Format("{0}.{1}.{2}", an.Name, an.ProcessorArchitecture, an.Version);
-
-                string dirName = Path.Combine(Path.GetTempPath(), tempFolder);
-                if (!Directory.Exists(dirName))
+                if (resourceStream != null && resourceStream.Length > 0)
                 {
-                    Directory.CreateDirectory(dirName);
+                    // The temporary folder holds one or more of the temporary DLLs
+                    // It is made "unique" to avoid different versions of the DLL or architectures.
+                    var tempFolder = String.Format("{0}.{1}.{2}", an.Name, an.ProcessorArchitecture, an.Version);
+
+                    string dirName = Path.Combine(Path.GetTempPath(), tempFolder);
+                    if (!Directory.Exists(dirName))
+                    {
+                        Directory.CreateDirectory(dirName);
+                    }
+
+                    // See if the file exists, avoid rewriting it if not necessary
+                    string dllPath = Path.Combine(dirName, dllName);
+
+                    if (!File.Exists(dllPath) || new FileInfo(dllPath).Length != resourceStream.Length)
+                    {
+                        using var fileStream = File.Create(dllPath);
+                        resourceStream.Seek(0, SeekOrigin.Begin);
+                        resourceStream.CopyTo(fileStream);
+                    }
+
+                    IntPtr h = LoadLibrary(dllPath);
+                    if (h == IntPtr.Zero)
+                    {
+                        throw new DllNotFoundException("Unable to load library: " + dllName + " from " + tempFolder);
+                    }
                 }
-
-                // See if the file exists, avoid rewriting it if not necessary
-                string dllPath = Path.Combine(dirName, dllName);
-
-                if (!File.Exists(dllPath))
+                else
                 {
-                    using var fileStream = File.Create(dllPath);
-                    resourceStream.Seek(0, SeekOrigin.Begin);
-                    resourceStream.CopyTo(fileStream);
-                }
-
-                IntPtr h = LoadLibrary(dllPath);
-                if (h == IntPtr.Zero)
-                {
-                    throw new DllNotFoundException("Unable to load library: " + dllName + " from " + tempFolder);
+                    throw new DllNotFoundException("Unable to load library: " + dllName + " from manifest resource stream: " + resourceName);
                 }
             }
         }
