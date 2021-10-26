@@ -26,7 +26,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         private SceneContainer _pointCloud;
         /* NOTE: Forward rendering requires a second render pass to create the depth map, deferred rendering does not. 
          * The latter can therefore increase the performance / fps.*/
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private bool _keys;
         private SceneNode _node;
@@ -46,7 +46,7 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             _node = new SceneNode();
 
-            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\Demo_A_06_shifted.las", out var aabbRes, true));
+            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, true));
 
             _mainCamTransform = new Transform()
             {
@@ -73,6 +73,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             {
                 PointSize = 5,
                 ColorMode = (int)ColorMode.Point,
+                PointShape = (int)PointShape.Paraboloid,
                 DoEyeDomeLighting = true,
                 DepthTex = _depthTex,
                 EDLStrength = 0.7f,
@@ -80,6 +81,7 @@ namespace Fusee.Examples.PointCloudLive.Core
                 ScreenParams = new float2(Width, Height),
                 ClippingPlanes = _mainCam.ClippingPlanes
             };
+
             _node.Components.Insert(0, _pcFx);
 
             _pointCloud = new SceneContainer()
@@ -92,7 +94,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             };
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_pointCloud);
+            _sceneRenderer = new SceneRendererDeferred(_pointCloud);
             _renderForward = _sceneRenderer.GetType() == typeof(SceneRendererForward);
 
             if (_renderForward)

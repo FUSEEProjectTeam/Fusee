@@ -24,17 +24,6 @@ namespace Fusee.Engine.Core.Effects
         }
     }
 
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    sealed class UniformAttribute : Attribute
-    {
-        public readonly string ShaderParamName;
-
-        public UniformAttribute(string shaderParamName)
-        {
-            ShaderParamName = shaderParamName;
-        }
-    }
-
     /// <summary>
     /// Used to flag which shader type a <see cref="ShaderEffect"/> property belongs to. 
     /// Supports vertex, pixel and geometry shaders.

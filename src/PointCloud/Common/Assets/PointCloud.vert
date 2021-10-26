@@ -29,7 +29,8 @@ void main(void)
 	vViewPos = FUSEE_MV * vec4(fuVertex.xyz, 1.0);
 
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
-	float slope = tan(fov / 2.0);float projFactor = ((1.0 / slope)/ -vViewPos.z)* ScreenParams.y / 2.0;
+	float slope = tan(fov / 2.0);
+	float projFactor = ((1.0 / slope)/ -vViewPos.z)* ScreenParams.y / 2.0;
 	vWorldSpacePointRad = float(PointSize) / projFactor;
 
 	float minPtSize = 1.0;
