@@ -209,7 +209,7 @@ namespace Fusee.Engine.Core
 
             effectParams.Add(new FxParamDeclaration<float4x4[]> { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
             effectParams.Add(new FxParamDeclaration<WritableArrayTexture> { Name = "ShadowMap", Value = shadowMap });
-            effectParams.Add(new FxParamDeclaration<float2[]> { Name = "ClipPlanes[0]", Value = clipPlanes });
+            effectParams.Add(new FxParamDeclaration<float2[]> { Name = $"{UniformNameDeclarations.LightMatClipPlanes}[0]", Value = clipPlanes });
 
             effectParams.AddRange(DeferredLightParams(lc.Type));
 

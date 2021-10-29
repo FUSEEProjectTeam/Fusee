@@ -853,25 +853,25 @@ namespace Fusee.Engine.Core
                 switch (lightVisRes.Item2.Light.Type)
                 {
                     case LightType.Point:
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowCubeMapHash, (WritableCubeMap)shadowParams.ShadowMap);
+                        effect.SetFxParam(UniformNameDeclarations.ShadowCubeMapHash, (WritableCubeMap)shadowParams.ShadowMap);
                         break;
                     case LightType.Legacy:
                     case LightType.Parallel:
                         if (NumberOfCascades > 1)
                         {
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
+                            effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
                             effect.SetFxParam($"{UniformNameDeclarations.LightMatClipPlanes}[0]", shadowParams.ClipPlanesForLightMat);
                             effect.SetFxParam($"{UniformNameDeclarations.LightSpaceMatrices}[0]", shadowParams.LightSpaceMatrices);
                         }
                         else
                         {
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
+                            effect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                            effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
                         }
                         break;
                     case LightType.Spot:
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
+                        effect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                        effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
                         break;
                     default:
                         break;
@@ -921,8 +921,6 @@ namespace Fusee.Engine.Core
             _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.fRGB16), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
-
-
 
             _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
         }

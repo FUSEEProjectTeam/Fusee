@@ -368,7 +368,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Hash code for the <see cref="LightSpaceMatrices"/> parameter.
         /// </summary>
-        public static int LightSpaceMatricesHash = LightSpaceMatrices.GetHashCode();
+        public static int LightSpaceMatricesHash = (LightSpaceMatrices + ArrayPostfix).GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ShadowMap.
