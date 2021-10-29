@@ -308,6 +308,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
                 new FxParamDeclaration<float4> { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
                 new FxParamDeclaration<int> { Name = UniformNameDeclarations.SsaoOn, Value = 1},
+                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.ClippingPlanes, Value = float2.Zero},
             };
         }
 

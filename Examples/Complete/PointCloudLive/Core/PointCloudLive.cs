@@ -74,9 +74,8 @@ namespace Fusee.Examples.PointCloudLive.Core
                 PointSize = 5,
                 ColorMode = (int)ColorMode.Point,
                 PointShape = (int)PointShape.Paraboloid,
-                DoEyeDomeLighting = true,
                 DepthTex = _depthTex,
-                EDLStrength = 0.7f,
+                EDLStrength = 1f,
                 EDLNeighbourPixels = 2,
                 ScreenParams = new float2(Width, Height),
                 ClippingPlanes = _mainCam.ClippingPlanes
@@ -149,7 +148,7 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             _mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
 
-            if (_pcFx.DoEyeDomeLighting && _renderForward)
+            if (_pcFx.EDLNeighbourPixels > 0 && _renderForward)
             {
                 //Render Depth-only pass
                 _node.RemoveComponent<PointCloudSurfaceEffect>();

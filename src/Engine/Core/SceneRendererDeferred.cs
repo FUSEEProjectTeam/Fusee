@@ -107,6 +107,7 @@ namespace Fusee.Engine.Core
         private bool _canUseGeometryShaders;
 
         private FrustumF _lightFrustum;
+        private Camera _currentCam;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -414,6 +415,7 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        _currentCam = cam.Item2.Camera;
                         DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam, renderTex);
                         //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
@@ -625,16 +627,16 @@ namespace Fusee.Engine.Core
 
                 if (_needToSetSSAOTex)
                 {
-                    _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.SsaoOnHash, _ssaoOn ? 1 : 0);
+                    _lightingPassEffect.SetFxParam(UniformNameDeclarations.SsaoOnHash, _ssaoOn ? 1 : 0);
                     _needToSetSSAOTex = false;
                 }
 
                 //Set background color only in last light pass to NOT blend the color (additive).
                 if (i == LightViseratorResults.Count - 1)
-                    _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
+                    _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
                 else
-                    _lightingPassEffect.SetFxParam(ShaderShards.UniformNameDeclarations.BackgroundColorHash, _texClearColor);
-
+                    _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, _texClearColor);
+                _lightingPassEffect.SetFxParam(UniformNameDeclarations.ClippingPlanes, _currentCam.ClippingPlanes);
                 _rc.SetEffect(_lightingPassEffect);
                 _rc.Render(_quad);
                 lightPassCnt++;
@@ -858,8 +860,8 @@ namespace Fusee.Engine.Core
                         if (NumberOfCascades > 1)
                         {
                             effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
-                            effect.SetFxParam("ClipPlanes[0]", shadowParams.ClipPlanesForLightMat);
-                            effect.SetFxParam("LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
+                            effect.SetFxParam($"{UniformNameDeclarations.LightMatClipPlanes}[0]", shadowParams.ClipPlanesForLightMat);
+                            effect.SetFxParam($"{UniformNameDeclarations.LightSpaceMatrices}[0]", shadowParams.LightSpaceMatrices);
                         }
                         else
                         {

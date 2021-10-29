@@ -608,13 +608,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
             else
             {
-                methodBody.Add("if(DoEyeDomeLighting == true)");
-                methodBody.Add("{");
-                methodBody.Add("    vec2 uv = vec2(gl_FragCoord.x / ScreenParams.x, gl_FragCoord.y / ScreenParams.y);");
-                methodBody.Add("    float linearDepth = LinearizeDepth(texture(DepthTex, uv).x, ClippingPlanes);");
-                methodBody.Add("    if (linearDepth > 0.1)");
-                methodBody.Add("        surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ScreenParams, DepthTex, ClippingPlanes);");
-                methodBody.Add("}");
+                methodBody.Add("vec2 uv = vec2(gl_FragCoord.x / ScreenParams.x, gl_FragCoord.y / ScreenParams.y);");
+                methodBody.Add("float linearDepth = LinearizeDepth(texture(DepthTex, uv).x, ClippingPlanes);");
+                methodBody.Add("if (linearDepth > 0.1)");
+                methodBody.Add("    surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ScreenParams, DepthTex, ClippingPlanes);");
                 methodBody.Add("return surfOut.albedo.rgb;");
             }
 
@@ -823,13 +820,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "}",
             "else if(decodedShadingModel == uint(6))",
             "{",
-                // EDL
-                "vec2 tempClippingPlanes = vec2(1,5000);",
-                $"vec2 tempScreenParams = textureSize({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]},0);",
+                // EDL                
+                $"vec2 texSize = textureSize({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]},0);",
                 "//vec2 uv = vec2(gl_FragCoord.x, gl_FragCoord.y);",
-                $"float linearDepth = LinearizeDepth(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, {VaryingNameDeclarations.TextureCoordinates}).x, tempClippingPlanes);",
+                $"float linearDepth = LinearizeDepth(texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, {VaryingNameDeclarations.TextureCoordinates}).x, {UniformNameDeclarations.ClippingPlanes});",
+
+                "int decodedPx = int(round(specularVars.g * float(0xFF))) & int(0xF);",
+
                 "if (linearDepth > 0.1)",
-                $"    albedo *= EDLShadingFactor(specularVars.r, int(round(specularVars.g * float(0xFF))) & int(0xF), linearDepth, {VaryingNameDeclarations.TextureCoordinates}, tempScreenParams, {UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, tempClippingPlanes);",
+                $"    albedo *= EDLShadingFactor(specularVars.r, decodedPx, linearDepth, {VaryingNameDeclarations.TextureCoordinates}, texSize, {UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, {UniformNameDeclarations.ClippingPlanes});",
 
                 "res = albedo;",
             "}",
@@ -1087,23 +1086,23 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 frag.Append($"for (int i = 0; i < numberOfCascades; i++)\n");
                 frag.Append(
                 @"{
-                    vec2 cp1 = ClipPlanes[i];
+                    vec2 cp1 = LightMatClipPlanes[i];
                     if(fragDepth < cp1.y)
-                    {                        
+                    {
                         thisFragmentsFirstCascade = i;  
                         if(i + 1 <= numberOfCascades - 1)
                         {
-                            vec2 cp2 = ClipPlanes[i+1];
-                            if(fragDepth < cp2.y)                                                 
+                            vec2 cp2 = LightMatClipPlanes[i+1];
+                            if(fragDepth < cp2.y)
                                 thisFragmentsSecondCascade = i+1;
                         }
                         break;
-                    }                    
+                    }
                 }
                 ");
 
                 frag.Append(@"
-                // shadow                
+                // shadow
                 if (light.isCastingShadows == 1)
                 {
                 ");
@@ -1118,8 +1117,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 frag.AppendLine($"vec4 posInLightSpace2 = (LightSpaceMatrices[thisFragmentsSecondCascade] * {UniformNameDeclarations.IView}) * fragPos;");
                 frag.Append(@"
                         float shadow2 = ShadowCalculation(ShadowMap, thisFragmentsSecondCascade, posInLightSpace2, normal, lightDir, light.bias, 1.0);    
-                        float z = ClipPlanes[thisFragmentsFirstCascade].y - ClipPlanes[thisFragmentsFirstCascade].x;
-                        float percent = (100.0/z * (fragDepth - ClipPlanes[thisFragmentsFirstCascade].x));
+                        float z = LightMatClipPlanes[thisFragmentsFirstCascade].y - LightMatClipPlanes[thisFragmentsFirstCascade].x;
+                        float percent = (100.0/z * (fragDepth - LightMatClipPlanes[thisFragmentsFirstCascade].x));
                         float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
                         if(percent >= blendStartPercent)
                             shadow = mix(shadow1, shadow2, percentNormalized);
@@ -1179,7 +1178,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             else if(thisFragmentsFirstCascade == 4)
                 cascadeColor1 = vec3(1,0.3,1);
             else if(thisFragmentsFirstCascade == 5)
-                cascadeColor1 = vec3(1,0.3f,1);                
+                cascadeColor1 = vec3(1,0.3f,1);
             if(thisFragmentsSecondCascade == 0)
                 cascadeColor2 = vec3(1,0.3f,0.3f);
             else if(thisFragmentsSecondCascade == 1)
@@ -1194,8 +1193,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 cascadeColor2 = vec3(1,0.3f,1);
             if(thisFragmentsSecondCascade != -1)
             {
-                float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
-                float z = ClipPlanes[thisFragmentsFirstCascade].y;
+                float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps");
+            frag.AppendLine($"    float z = {UniformNameDeclarations.LightMatClipPlanes}[thisFragmentsFirstCascade].y;");
+            frag.Append(@"                     
                 float percent = (100.0/z * fragDepth);
                 float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
                 if(percent >= blendStartPercent)

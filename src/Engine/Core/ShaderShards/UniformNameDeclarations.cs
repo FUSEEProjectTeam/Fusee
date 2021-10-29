@@ -364,7 +364,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public const string LightSpaceMatrices = "LightSpaceMatrices" + ArrayPostfix;
+        public const string LightSpaceMatrices = "LightSpaceMatrices";
         /// <summary>
         /// Hash code for the <see cref="LightSpaceMatrices"/> parameter.
         /// </summary>
@@ -401,6 +401,15 @@ namespace Fusee.Engine.Core.ShaderShards
         public static int PointSizeHash = PointSize.GetHashCode();
 
         #endregion
+
+        /// <summary>
+        /// The var name for the uniform ClippingPlanes variable.
+        /// </summary>
+        public const string ClippingPlanes = "ClippingPlanes";
+        /// <summary>
+        /// Hash code for the <see cref="ClippingPlanes"/> parameter.
+        /// </summary>
+        public static int ClippingPlanesNoHash = ClippingPlanes.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform PassNo variable.

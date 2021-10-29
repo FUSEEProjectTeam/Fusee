@@ -3,7 +3,6 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,23 +20,6 @@ namespace Fusee.Engine.Core.Effects
         [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Matrix)]
         public float4x4 FUSEE_P;
-
-        /// <summary>
-        /// The shader shard containing an value that is used to change the lighting calculation.
-        /// For now only Eye Dome Lighting or Unlit are supported.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public bool DoEyeDomeLighting
-        {
-            get { return _doEyeDomeLighting; }
-            set
-            {
-                _doEyeDomeLighting = value;
-                SetFxParam(nameof(DoEyeDomeLighting), _doEyeDomeLighting);
-            }
-        }
-        private bool _doEyeDomeLighting;
 
         /// <summary>
         /// The depth texture, used for eye dome lighting.
@@ -167,7 +149,6 @@ namespace Fusee.Engine.Core.Effects
         }
         private int _pointShape;
 
-
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec4, "vViewPos");
@@ -182,7 +163,7 @@ namespace Fusee.Engine.Core.Effects
 
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
-        public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");        
+        public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
 
         public static readonly List<string> CalculatePointShapeVaryings = new()
         {
@@ -223,7 +204,7 @@ namespace Fusee.Engine.Core.Effects
             "",
             "        vec4 position = vViewPos;",
             "        position.z += weight * vWorldSpacePointRad;",
-            "        position *= FUSEE_P;",
+            "        position = FUSEE_P * position;",
             "        position /= position.w;",
             "        gl_FragDepth = (position.z + 1.0) / 2.0;",
             "",
@@ -238,6 +219,7 @@ namespace Fusee.Engine.Core.Effects
         public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
             : base(LightingSetupFlags.Edl, new ColorInput() { Albedo = new float4(.5f, 0f, .5f, 1f) }, FragShards.SurfOutBody_VertOrAlbedoColor.Concat(CalculatePointShape).ToList(), VertShards.SufOutBody_Pos.Concat(CalculatePointShapeVaryings).ToList(), rendererStates)
         {
+
             RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
         }
     }
