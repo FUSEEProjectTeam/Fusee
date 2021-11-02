@@ -39,6 +39,24 @@ namespace Fusee.Engine.Core.ShaderShards
         public static int VertexColorHash = VertexColor.GetHashCode();
 
         /// <summary>
+        /// The color attribute name.
+        /// </summary>
+        public const string VertexColor1 = "fuColor1";
+        /// <summary>
+        /// Hash code for the <see cref="VertexColor"/> parameter.
+        /// </summary>
+        public static int VertexColor1Hash = VertexColor1.GetHashCode();
+
+        /// <summary>
+        /// The color attribute name.
+        /// </summary>
+        public const string VertexColor2 = "fuColor2";
+        /// <summary>
+        /// Hash code for the <see cref="VertexColor"/> parameter.
+        /// </summary>
+        public static int VertexColor2Hash = VertexColor2.GetHashCode();
+
+        /// <summary>
         /// The normal attribute name.
         /// </summary>
         public const string Normal = "fuNormal";

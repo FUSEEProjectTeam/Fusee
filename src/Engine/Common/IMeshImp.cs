@@ -72,6 +72,18 @@ namespace Fusee.Engine.Common
         /// </value>
         bool ColorsSet { get; }
 
+        
+        bool ColorsSet1 { get; }
+
+        
+        void InvalidateColors1();
+
+        
+        bool ColorsSet2 { get; }
+
+        
+        void InvalidateColors2();
+
         /// <summary>
         /// Implementation Tasks: Invalidates the triangles, e.g. reset the ElementBufferObject of this instance by setting it to 0.
         /// </summary>

@@ -24,6 +24,12 @@ namespace Fusee.Engine.Core
             if (meshImp.ColorsSet)
                 _renderContextImp.RemoveColors(meshImp);
 
+            if (meshImp.ColorsSet1)
+                _renderContextImp.RemoveColors1(meshImp);
+
+            if (meshImp.ColorsSet2)
+                _renderContextImp.RemoveColors2(meshImp);
+
             if (meshImp.UVsSet)
                 _renderContextImp.RemoveUVs(meshImp);
 
@@ -74,6 +80,12 @@ namespace Fusee.Engine.Core
                 case MeshChangedEnum.Colors:
                     _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors);
                     break;
+                case MeshChangedEnum.Colors1:
+                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors1);
+                    break;
+                case MeshChangedEnum.Colors2:
+                    _renderContextImp.SetColors(toBeUpdatedMeshImp, mesh.Colors2);
+                    break;
                 case MeshChangedEnum.Normals:
                     _renderContextImp.SetNormals(toBeUpdatedMeshImp, mesh.Normals);
                     break;
@@ -115,6 +127,12 @@ namespace Fusee.Engine.Core
 
             if (mesh.ColorsSet)
                 _renderContextImp.SetColors(meshImp, mesh.Colors);
+
+            if (mesh.ColorsSet1)
+                _renderContextImp.SetColors1(meshImp, mesh.Colors1);
+
+            if (mesh.ColorsSet2)
+                _renderContextImp.SetColors2(meshImp, mesh.Colors2);
 
             if (mesh.BoneIndicesSet)
                 _renderContextImp.SetBoneIndices(meshImp, mesh.BoneIndices);

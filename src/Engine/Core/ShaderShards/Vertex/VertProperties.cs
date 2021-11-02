@@ -21,6 +21,8 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.TextureCoordinates),
 
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor1),
+                GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.VertexColor2),
 
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneIndex),
                 GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight)

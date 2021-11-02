@@ -28,6 +28,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal int VertexBufferObject;
         internal int NormalBufferObject;
         internal int ColorBufferObject;
+        internal int ColorBufferObject1;
+        internal int ColorBufferObject2;
         internal int UVBufferObject;
         internal int BoneIndexBufferObject;
         internal int BoneWeightBufferObject;
@@ -93,6 +95,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             ColorBufferObject = 0;
         }
+        
+        public void InvalidateColors1()
+        {
+            ColorBufferObject1 = 0;
+        }
+        
+        public void InvalidateColors2()
+        {
+            ColorBufferObject2 = 0;
+        }
+
         /// <summary>
         /// Gets a value indicating whether [colors set].
         /// </summary>
@@ -100,6 +113,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         ///   <c>true</c> if [colors set]; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet { get { return ColorBufferObject != 0; } }
+        
+        public bool ColorsSet1 { get { return ColorBufferObject1 != 0; } }
+        
+        public bool ColorsSet2 { get { return ColorBufferObject2 != 0; } }
 
         /// <summary>
         /// Gets a value indicating whether [u vs set].

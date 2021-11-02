@@ -39,6 +39,8 @@ namespace Fusee.Engine.Core.Scene
 
         private ushort[] _triangles;
         private uint[] _colors;
+        private uint[] _colors1;
+        private uint[] _colors2;
 
         #endregion
 
@@ -107,6 +109,34 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet => _colors?.Length > 0;
+
+        
+        public uint[] Colors1
+        {
+            get => _colors1;
+            set
+            {
+                _colors1 = value;
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors1));
+            }
+        }
+       
+        public bool ColorsSet1 => _colors1?.Length > 0;
+
+        
+        public uint[] Colors2
+        {
+            get => _colors2;
+            set
+            {
+                _colors2 = value;
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors2));
+            }
+        }
+        
+        public bool ColorsSet2 => _colors2?.Length > 0;
 
 
         /// <summary>
