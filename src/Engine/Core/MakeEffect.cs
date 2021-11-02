@@ -236,6 +236,40 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
         /// </summary>
         /// <returns></returns>
+        public static ShaderEffect ShadowCubeMapEffectPointPrimitives(float4x4[] lightSpaceMatrices)
+        {
+            var effectParamDecls = new List<IFxParamDeclaration>
+            {
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
+                new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
+                new FxParamDeclaration<float2> { Name = "LightMatClipPlanes", Value = float2.One },
+                new FxParamDeclaration<float3> { Name = "LightPos", Value = float3.One },
+                new FxParamDeclaration<float4x4[]> { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
+            };
+
+            return new ShaderEffect(
+            new FxPassDeclaration
+            {
+                VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
+                GS = AssetStorage.Get<string>("ShadowCubeMapPointPrimitive.geom"),
+                PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
+                StateSet = new RenderStateSet
+                {
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
+                    CullMode = Cull.Clockwise,
+                    ZFunc = Compare.LessEqual,
+                    FillMode = FillMode.Point,
+                }
+
+            },
+            effectParamDecls.ToArray());
+        }
+
+        /// <summary>
+        /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
+        /// </summary>
+        /// <returns></returns>
         public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
         {
             var effectParamDecls = new List<IFxParamDeclaration>

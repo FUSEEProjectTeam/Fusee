@@ -1710,7 +1710,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         {
                             _isPtRenderingEnabled = true;
                             GL.Enable(EnableCap.ProgramPointSize);
-                            GL.Enable(EnableCap.PointSprite);
+                            //GL.Enable(EnableCap.PointSprite);
                             GL.Enable(EnableCap.VertexProgramPointSize);
                         }
                         GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);

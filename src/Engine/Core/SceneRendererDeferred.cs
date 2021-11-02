@@ -87,6 +87,7 @@ namespace Fusee.Engine.Core
         private ShaderEffect _fxaaEffect;
         private ShaderEffect _shadowEffect;
         private ShaderEffect _shadowCubeMapEffect;
+        private ShaderEffect _shadowCubeMapEffectPointPrimitives;
 
         //The following ShaderEffects cache all possible ShaderEffects, needed to render the lighting passes.
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
@@ -108,6 +109,8 @@ namespace Fusee.Engine.Core
 
         private FrustumF _lightFrustum;
         private Camera _currentCam;
+
+        private LightType _currentLightType;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -179,6 +182,13 @@ namespace Fusee.Engine.Core
                 AddWeightToMesh(mesh, wc);
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
+            if (_currentPass == RenderPasses.Shadow && _currentLightType == LightType.Point)
+            {
+                if (mesh.MeshType == (int)OpenGLPrimitiveType.Points)
+                    _rc.SetEffect(_shadowCubeMapEffectPointPrimitives, true);
+                else
+                    _rc.SetEffect(_shadowCubeMapEffect, true);
+            }
             _rc.Render(mesh, _currentPass == RenderPasses.Shadow);
             _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
@@ -658,8 +668,9 @@ namespace Fusee.Engine.Core
 
                 var key = new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light);
                 var shadowParams = CreateShadowParams(lightVisRes.Item2, key);
+                _currentLightType = lightVisRes.Item2.Light.Type;
 
-                switch (lightVisRes.Item2.Light.Type)
+                switch (_currentLightType)
                 {
                     case LightType.Point:
                         {
@@ -673,8 +684,19 @@ namespace Fusee.Engine.Core
                             else
                                 _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatricesHash, shadowParams.LightSpaceMatrices);
 
+                            if (_shadowCubeMapEffectPointPrimitives == null)
+                            {
+                                _shadowCubeMapEffectPointPrimitives = MakeEffect.ShadowCubeMapEffectPointPrimitives(shadowParams.LightSpaceMatrices);
+                                _rc.CreateShaderProgram(_shadowCubeMapEffectPointPrimitives);
+                            }
+                            else
+                                _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightSpaceMatricesHash, shadowParams.LightSpaceMatrices);
+
                             _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightMatClipPlanesHash, shadowParams.ClipPlanesForLightMat[0]);
                             _shadowCubeMapEffect.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.Item2.WorldSpacePos);
+
+                            _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightMatClipPlanesHash, shadowParams.ClipPlanesForLightMat[0]);
+                            _shadowCubeMapEffectPointPrimitives.SetFxParam(UniformNameDeclarations.LightPosHash, lightVisRes.Item2.WorldSpacePos);
                             _rc.SetEffect(_shadowCubeMapEffect, true);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMap);
@@ -689,7 +711,7 @@ namespace Fusee.Engine.Core
                         {
                             if (NumberOfCascades == 1)
                             {
-                                _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                                _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                                 _rc.SetEffect(_shadowEffect, true);
                                 _rc.SetRenderTarget((IWritableTexture)shadowParams.ShadowMap);
 
@@ -701,7 +723,7 @@ namespace Fusee.Engine.Core
                             {
                                 for (int i = 0; i < NumberOfCascades; i++)
                                 {
-                                    _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
+                                    _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[i]);
                                     _rc.SetEffect(_shadowEffect, true);
                                     _rc.SetRenderTarget((IWritableArrayTexture)shadowParams.ShadowMap, i);
 
@@ -719,7 +741,7 @@ namespace Fusee.Engine.Core
                     case LightType.Spot:
                         {
                             DoFrumstumCulling = true;
-                            _shadowEffect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                            _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                             _rc.SetEffect(_shadowEffect, false);
                             _rc.SetRenderTarget(shadowParams.ShadowMap);
 

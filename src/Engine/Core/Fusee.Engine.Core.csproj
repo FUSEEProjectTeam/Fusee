@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-    <None Remove="Assets\Shader\BRDF.vert" />
     <Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
   </ItemGroup>
 
