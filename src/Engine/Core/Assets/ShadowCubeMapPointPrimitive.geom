@@ -1,7 +1,7 @@
 ﻿#version 440 core
 
 layout (points) in;
-layout (triangle_strip, max_vertices=6) out;
+layout (points, max_vertices=6) out;
 
 uniform mat4 LightSpaceMatrices[6];
 

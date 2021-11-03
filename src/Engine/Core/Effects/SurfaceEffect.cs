@@ -638,7 +638,7 @@ namespace Fusee.Engine.Core.Effects
         }
 
         /// <summary>
-        /// Event Handler that is called on <see cref="INotifyValueChange.PropertyChanged"/>.
+        /// Event Handler that is called on <see cref="INotifyValueChange{T}.PropertyChanged"/>.
         /// </summary>
         /// <param name="sender">The sender object.</param>
         /// <param name="args">The event arguments.</param>
