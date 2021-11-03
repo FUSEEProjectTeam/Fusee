@@ -10,7 +10,7 @@
   "profiles": {
     "Fusee.Examples.Simple.Blazor": {
       "commandName": "Project",
-      "workingDirectory": "C:\\Users\\roetner\\source\\repos\\Fusee\\bin\\Debug\\Examples\\Simple\\Blazor\\",
+      "workingDirectory": "$(BaseOutputPath)\\Examples\\Simple\\Blazor\\",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
@@ -22,6 +22,7 @@
     },
     "IIS Express": {
       "commandName": "IISExpress",
+      "workingDirectory": "C:\\test",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

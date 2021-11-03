@@ -76,7 +76,7 @@ namespace Fusee.Examples.Simple.Blazor
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            return await FusSceneConverter.ConvertFrom(Serializer.Deserialize<FusFile>((System.IO.Stream)storage));
+                            return await FusSceneConverter.ConvertFromAsync(Serializer.Deserialize<FusFile>((System.IO.Stream)storage));
                         }
                         return null;
                     },

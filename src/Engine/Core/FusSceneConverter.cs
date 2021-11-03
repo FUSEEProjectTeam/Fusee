@@ -24,8 +24,20 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents.
         /// </summary>
+        /// <param name="fus"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static SceneContainer ConvertFrom(FusFile fus, string id = null)
+        {
+            return ConvertFromAsync(fus, id).Result;
+        }
+
+        /// <summary>
+        /// Traverses the given SceneContainer and creates new high level graph <see cref="Scene"/> by converting and/or splitting its components into the high level equivalents in an async manner.
+        /// </summary>
         /// <param name="fus">The FusFile to convert.</param>
-        public static async Task<SceneContainer> ConvertFrom(FusFile fus, string id = null)
+        /// <param name="id">Path to this scene used as an addition for asset retriving inside the correct folder</param>
+        public static async Task<SceneContainer> ConvertFromAsync(FusFile fus, string id = null)
         {
             if (fus == null)
             {
@@ -138,7 +150,7 @@ namespace Fusee.Engine.Core
         private readonly ConcurrentDictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
 
-        private Dictionary<SceneNode, Task<Effect>> _allEffects;
+        private readonly Dictionary<SceneNode, Task<Effect>> _allEffects;
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -166,16 +178,23 @@ namespace Fusee.Engine.Core
             _fusScene = sc;
             Traverse(sc.Children);
 
-            await Task.WhenAll(_allEffects.Values);
-
-            foreach (var k in _allEffects.Keys)
+            var fx = await Task.WhenAll(_allEffects.Values);
+            var idx = 0;
+            foreach (var key in _allEffects.Keys)
             {
-                k.RemoveComponent<Effect>();
-                k.Components.Insert(1, await _allEffects[k]);
-            }
+                key.RemoveComponent<Effect>();
+                key.Components.Insert(1, fx[idx]);
 
-            System.Console.WriteLine("Convert(FusScene sc) done");
-          
+                var currentNodeDefaultSurfaceEffect = key.GetComponent<DefaultSurfaceEffect>();
+                var mesh = key.GetComponent<Mesh>();
+                if (mesh != null && currentNodeDefaultSurfaceEffect != null && currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                {
+                    mesh.Tangents = mesh.CalculateTangents();
+                    mesh.BiTangents = mesh.CalculateBiTangents();
+                }
+
+                ++idx;
+            }
 
             return _convertedScene;
         }
@@ -196,7 +215,9 @@ namespace Fusee.Engine.Core
                 var parent = _predecessors.Peek();
 
                 if (parent.Children == null)
+                {
                     parent.Children = new ChildList();
+                }
 
                 _currentNode = new SceneNode { Name = snc.Name };
 
@@ -210,9 +231,13 @@ namespace Fusee.Engine.Core
                 _currentNode = _predecessors.Peek();
 
                 if (_convertedScene.Children != null)
+                {
                     _convertedScene.Children.Add(_currentNode);
+                }
                 else
+                {
                     _convertedScene.Children = new List<SceneNode> { _currentNode };
+                }
             }
         }
 
@@ -223,7 +248,9 @@ namespace Fusee.Engine.Core
         public void ConvAnimation(FusAnimation a)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
         }
@@ -236,7 +263,9 @@ namespace Fusee.Engine.Core
         public void ConvXForm(FusXForm xf)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.Components.Add(new XForm
             {
@@ -251,7 +280,9 @@ namespace Fusee.Engine.Core
         public void ConvXFormText(FusXFormText xft)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.AddComponent(new XFormText
             {
@@ -279,7 +310,9 @@ namespace Fusee.Engine.Core
         public void ConvCanvasTransform(FusCanvasTransform ct)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.AddComponent(new CanvasTransform(ct.CanvasRenderMode == Serialization.V1.CanvasRenderMode.Screen
                 ? Scene.CanvasRenderMode.Screen
@@ -299,7 +332,9 @@ namespace Fusee.Engine.Core
         public void ConvRectTransform(FusRectTransform rt)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.AddComponent(new RectTransform
             {
@@ -317,7 +352,9 @@ namespace Fusee.Engine.Core
         public void ConvTransform(FusTransform t)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.Components.Add(new Transform
             {
@@ -333,14 +370,15 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public async void ConvMaterial(FusMaterialStandard matComp)
+        public void ConvMaterial(FusMaterialStandard matComp)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             var effect = LookupMaterial(matComp);
             _allEffects.Add(_currentNode, effect);
-            //_currentNode.Components.Add(await effect);
         }
 
         /// <summary>
@@ -348,14 +386,15 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public async void ConvMaterial(FusMaterialBRDF matComp)
+        public void ConvMaterial(FusMaterialBRDF matComp)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             var effect = LookupMaterial(matComp);
             _allEffects.Add(_currentNode, effect);
-            //_currentNode.Components.Add(await effect);
         }
 
         /// <summary>
@@ -363,14 +402,15 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public async void ConvMaterial(FusMaterialDiffuseBRDF matComp)
+        public void ConvMaterial(FusMaterialDiffuseBRDF matComp)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             var effect = LookupMaterial(matComp);
             _allEffects.Add(_currentNode, effect);
-            //_currentNode.Components.Add(await effect);
         }
 
         /// <summary>
@@ -378,14 +418,15 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public async void ConvMaterial(FusMaterialGlossyBRDF matComp)
+        public void ConvMaterial(FusMaterialGlossyBRDF matComp)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             var effect = LookupMaterial(matComp);
             _allEffects.Add(_currentNode, effect);
-            //_currentNode.Components.Add(await effect);
         }
 
         /// <summary>
@@ -395,7 +436,9 @@ namespace Fusee.Engine.Core
         public void ConvCamComp(FusCamera cc)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             var cam = new Camera(cc.ProjectionMethod == Serialization.V1.ProjectionMethod.Orthographic ? Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic : Fusee.Engine.Core.Scene.ProjectionMethod.Perspective,
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
@@ -419,7 +462,9 @@ namespace Fusee.Engine.Core
         public void ConvMesh(FusMesh m)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             if (_meshMap.TryGetValue(m, out var mesh))
             {
@@ -446,13 +491,8 @@ namespace Fusee.Engine.Core
             };
 
             if (_currentNode.Components == null)
-                _currentNode.Components = new List<SceneComponent>();
-
-            var _currentNodeDefaultSurfaceEffect = _currentNode.GetComponent<DefaultSurfaceEffect>();
-            if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
             {
-                mesh.Tangents = mesh.CalculateTangents();
-                mesh.BiTangents = mesh.CalculateBiTangents();
+                _currentNode.Components = new List<SceneComponent>();
             }
 
             _currentNode.Components.Add(mesh);
@@ -468,7 +508,9 @@ namespace Fusee.Engine.Core
         public void ConvLight(FusLight l)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.Components.Add(new Light
             {
@@ -493,7 +535,9 @@ namespace Fusee.Engine.Core
         public void ConvBone(FusBone bone)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.Components.Add(new Bone
             {
@@ -512,7 +556,9 @@ namespace Fusee.Engine.Core
         public void ConVWeight(FusWeight w)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             var weight = new Weight
             {
@@ -539,11 +585,15 @@ namespace Fusee.Engine.Core
             if (_boneContainers.Count >= 1)
             {
                 if (weight.Joints == null) // initialize joint container
+                {
                     weight.Joints = new List<SceneNode>();
+                }
 
                 // set all bones found until this WeightComponent
                 while (_boneContainers.Count != 0)
+                {
                     weight.Joints.Add(_boneContainers.Pop());
+                }
             }
 
             _currentNode.Components.Add(weight);
@@ -557,7 +607,9 @@ namespace Fusee.Engine.Core
         public void ConvOctant(FusOctantD cc)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.AddComponent(
             new OctantD(cc.Center, cc.Size)
@@ -583,7 +635,9 @@ namespace Fusee.Engine.Core
         public void ConvOctant(FusOctantF cc)
         {
             if (_currentNode.Components == null)
+            {
                 _currentNode.Components = new List<SceneComponent>();
+            }
 
             _currentNode.AddComponent(
             new OctantF(cc.Center, cc.Size)
@@ -607,7 +661,10 @@ namespace Fusee.Engine.Core
 
         private async Task<Effect> LookupMaterial(FusMaterialStandard m)
         {
-            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+            if (_matMap.TryGetValue(m, out var sfx))
+            {
+                return sfx;
+            }
 
             var lightingSetup = m.HasSpecularChannel ? LightingSetupFlags.DiffuseSpecular : LightingSetupFlags.DiffuseOnly;
             return await GetEffectForMat(m, lightingSetup, m.HasSpecularChannel ? m.Specular.Shininess : 0f, m.HasSpecularChannel ? m.Specular.Strength : 0f, 0f);
@@ -615,25 +672,41 @@ namespace Fusee.Engine.Core
 
         private async Task<Effect> LookupMaterial(FusMaterialDiffuseBRDF m)
         {
-            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+            if (_matMap.TryGetValue(m, out var sfx))
+            {
+                return sfx;
+            }
+
             return await GetEffectForMat(m, LightingSetupFlags.DiffuseOnly, 0f, 0f, m.Roughness);
         }
 
         private async Task<Effect> LookupMaterial(FusMaterialGlossyBRDF m)
         {
-            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+            if (_matMap.TryGetValue(m, out var sfx))
+            {
+                return sfx;
+            }
+
             return await GetEffectForMat(m, LightingSetupFlags.Glossy, 0f, 0f, m.Roughness);
         }
 
         private async Task<Effect> LookupMaterial(FusMaterialBRDF m)
         {
-            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+            if (_matMap.TryGetValue(m, out var sfx))
+            {
+                return sfx;
+            }
 
             var lightingSetup = LightingSetupFlags.BRDF;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
+            {
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
+            }
+
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
+            {
                 lightingSetup |= LightingSetupFlags.NormalMap;
+            }
 
             var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
 
@@ -688,10 +761,13 @@ namespace Fusee.Engine.Core
                 sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
             else if (lightingSetup == LightingSetupFlags.BRDF)
+            {
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
+            }
             else
+            {
                 throw new System.ArgumentException("Material couldn't be resolved.");
-
+            }
 
             _matMap.Add(m, sfx);
             return sfx;
@@ -702,9 +778,14 @@ namespace Fusee.Engine.Core
             Effect sfx;
 
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
+            {
                 lightingSetup |= LightingSetupFlags.AlbedoTex;
+            }
+
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
+            {
                 lightingSetup |= LightingSetupFlags.NormalMap;
+            }
 
             var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
 
@@ -759,7 +840,9 @@ namespace Fusee.Engine.Core
                     sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, shininess, specularStrenght, roughness);
                 }
                 else
+                {
                     throw new System.ArgumentException("Material couldn't be resolved.");
+                }
             }
 
             else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
@@ -813,7 +896,9 @@ namespace Fusee.Engine.Core
                     sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness);
                 }
                 else
+                {
                     throw new System.ArgumentException("Material couldn't be resolved.");
+                }
             }
 
             else if (lightingSetup.HasFlag(LightingSetupFlags.Glossy))
@@ -867,11 +952,14 @@ namespace Fusee.Engine.Core
                     sfx = MakeEffect.FromGlossy(m.Albedo.Color, roughness);
                 }
                 else
+                {
                     throw new System.ArgumentException("Material couldn't be resolved.");
+                }
             }
             else
+            {
                 throw new System.ArgumentException("Material couldn't be resolved.");
-
+            }
 
             _matMap.Add(m, sfx);
             return sfx;
@@ -1340,11 +1428,15 @@ namespace Fusee.Engine.Core
             if (_boneContainers.Count >= 1)
             {
                 if (weight.Joints == null) // initialize joint container
+                {
                     weight.Joints = new List<FusComponent>();
+                }
 
                 // set all bones found until this WeightComponent
                 while (_boneContainers.Count != 0)
+                {
                     weight.Joints.Add(_boneContainers.Pop());
+                }
             }
 
             _currentNode.AddComponent(weight);

@@ -2,22 +2,15 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-        <RunAOTCompilation>true</RunAOTCompilation>
+
         <!--<BlazorCacheBootResources>false</BlazorCacheBootResources>-->
         <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
         <Nullable>disable</Nullable>
-        <Platforms>AnyCPU</Platforms>        
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
 
-   <PropertyGroup>
+    <PropertyGroup>
         <OutputPath>$(BaseOutputPath)\Examples\Simple\Blazor\</OutputPath>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-      <Optimize>False</Optimize>
-    </PropertyGroup>
-
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-      <Optimize>True</Optimize>
     </PropertyGroup>
 
     <ItemGroup>

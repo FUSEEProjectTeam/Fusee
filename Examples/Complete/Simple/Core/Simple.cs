@@ -114,6 +114,8 @@ namespace Fusee.Examples.Simple.Core
 
             RC.Viewport(0, 0, Width, Height);
 
+            Console.WriteLine(FramesPerSecondAverage);
+
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
