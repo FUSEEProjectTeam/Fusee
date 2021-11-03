@@ -664,7 +664,10 @@ namespace Fusee.Engine.Core
 
             foreach (var lightVisRes in LightViseratorResults)
             {
-                if (!lightVisRes.Item2.Light.IsCastingShadows || !lightVisRes.Item2.Light.Active || (lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
+                if (!lightVisRes.Item2.ReRenderShadowMap ||
+                    !lightVisRes.Item2.Light.IsCastingShadows || 
+                    !lightVisRes.Item2.Light.Active || 
+                    (lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
 
                 var key = new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light);
                 var shadowParams = CreateShadowParams(lightVisRes.Item2, key);
@@ -713,7 +716,7 @@ namespace Fusee.Engine.Core
                             {
                                 _shadowEffect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
                                 _rc.SetEffect(_shadowEffect, true);
-                                _rc.SetRenderTarget((IWritableTexture)shadowParams.ShadowMap);
+                                _rc.SetRenderTarget(shadowParams.ShadowMap);
 
                                 _lightFrustum = shadowParams.Frustums[0];
 
@@ -753,6 +756,8 @@ namespace Fusee.Engine.Core
                     default:
                         break;
                 }
+                if(_currentLightType != LightType.Legacy &&  _currentLightType != LightType.Parallel)
+                    lightVisRes.Item2.ReRenderShadowMap = false;
             }
         }
 

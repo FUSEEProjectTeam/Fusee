@@ -39,7 +39,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        public List<Tuple<SceneNode, LightResult>> LightViseratorResults
+        internal List<Tuple<SceneNode, LightResult>> LightViseratorResults
         {
             get => _lightResults;
             private set
@@ -54,6 +54,7 @@ namespace Fusee.Engine.Core
                 }
             }
         }
+        private List<Tuple<SceneNode, LightResult>> _lightResults = new();
 
         #region Traversal information
 
@@ -92,11 +93,6 @@ namespace Fusee.Engine.Core
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
         protected RendererState _state;
-
-        /// <summary>
-        /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
-        /// </summary>
-        protected List<Tuple<SceneNode, LightResult>> _lightResults = new();
 
         #endregion
 

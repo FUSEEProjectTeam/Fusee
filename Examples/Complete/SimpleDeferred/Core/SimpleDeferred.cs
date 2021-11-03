@@ -203,13 +203,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-            //if (!rotate)
-            //{
-            //    _sunTransform.RotateAround(new float3(0, 0, 0), float3.UnitX, M.DegreesToRadians(20));
-            //    rotate = true;
-            //}
-
-            //_sunTransform.RotateAround(new float3(0, 0, 0), float3.UnitX, M.DegreesToRadians(0.5f) * Time.DeltaTime * 50);
+            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f) * DeltaTime * 50, 0 ,0));
 
             var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
             if (deg < 0)

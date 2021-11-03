@@ -1,33 +1,14 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Engine.Common;
 using System;
 
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// Provides an Event for notifying a property change.
-    /// </summary>
-    public interface INotifyInputChange
-    {
-        /// <summary>
-        /// Event to notify a <see cref="SurfaceEffect"/> about a changed value of a property of this class.
-        /// </summary>
-        event EventHandler<SurfaceEffectEventArgs> PropertyChanged;
-
-        /// <summary>
-        /// This method needs to be called by the setter of each property.
-        /// A <see cref="SurfaceEffect"/> can register <see cref="Effect.SetFxParam{T}(string, T)"/> to the <see cref="PropertyChanged"/> event.
-        /// </summary>
-        /// <param name="type">The type of the property.</param>
-        /// <param name="name">The name of the property.</param>
-        /// <param name="value">The value of the property.</param>
-        void NotifyPropertyChanged(Type type, string name, object value);
-    }
-
-    /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case it only contains the albedo color.
     /// </summary>
-    public class ColorInput : INotifyInputChange
+    public class ColorInput : INotifyValueChange<SurfaceEffectEventArgs>
     {
         /// <summary>
         /// The albedo color.
@@ -41,7 +22,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedo)
                 {
                     _albedo = value;
-                    NotifyPropertyChanged(_albedo.GetType(), nameof(Albedo), _albedo);
+                    NotifyValueChanged(_albedo.GetType(), nameof(Albedo), _albedo);
                 }
             }
         }
@@ -59,7 +40,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _roughness)
                 {
                     _roughness = value;
-                    NotifyPropertyChanged(_roughness.GetType(), nameof(Roughness), _roughness);
+                    NotifyValueChanged(_roughness.GetType(), nameof(Roughness), _roughness);
                 }
             }
         }
@@ -77,7 +58,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="type">The type of the property.</param>
         /// <param name="name">The name of the property.</param>
         /// <param name="value">The value of the property.</param>
-        public void NotifyPropertyChanged(Type type, string name, object value)
+        public void NotifyValueChanged(Type type, string name, object value)
         {
             PropertyChanged?.Invoke(this, new SurfaceEffectEventArgs(type, name, value));
         }
@@ -101,7 +82,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _emission)
                 {
                     _emission = value;
-                    NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
+                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
                 }
             }
         }
@@ -118,7 +99,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _metallic)
                 {
                     _metallic = value;
-                    NotifyPropertyChanged(_metallic.GetType(), nameof(Metallic), _metallic);
+                    NotifyValueChanged(_metallic.GetType(), nameof(Metallic), _metallic);
                 }
             }
         }
@@ -135,7 +116,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _specular)
                 {
                     _specular = value;
-                    NotifyPropertyChanged(_specular.GetType(), nameof(Specular), _specular);
+                    NotifyValueChanged(_specular.GetType(), nameof(Specular), _specular);
                 }
             }
         }
@@ -152,7 +133,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _ior)
                 {
                     _ior = value;
-                    NotifyPropertyChanged(_ior.GetType(), nameof(IOR), _ior);
+                    NotifyValueChanged(_ior.GetType(), nameof(IOR), _ior);
                 }
             }
         }
@@ -169,7 +150,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _subsurface)
                 {
                     _subsurface = value;
-                    NotifyPropertyChanged(_ior.GetType(), nameof(Subsurface), _subsurface);
+                    NotifyValueChanged(_ior.GetType(), nameof(Subsurface), _subsurface);
                 }
             }
         }
@@ -187,7 +168,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _subsurfaceColor)
                 {
                     _subsurfaceColor = value;
-                    NotifyPropertyChanged(_subsurfaceColor.GetType(), nameof(SubsurfaceColor), _subsurfaceColor);
+                    NotifyValueChanged(_subsurfaceColor.GetType(), nameof(SubsurfaceColor), _subsurfaceColor);
                 }
             }
         }
@@ -212,7 +193,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _emission)
                 {
                     _emission = value;
-                    NotifyPropertyChanged(_emission.GetType(), nameof(Emission), _emission);
+                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
                 }
             }
         }
@@ -229,7 +210,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _specularStrength)
                 {
                     _specularStrength = value;
-                    NotifyPropertyChanged(_specularStrength.GetType(), nameof(SpecularStrength), _specularStrength);
+                    NotifyValueChanged(_specularStrength.GetType(), nameof(SpecularStrength), _specularStrength);
                 }
             }
         }
@@ -246,7 +227,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _shininess)
                 {
                     _shininess = value;
-                    NotifyPropertyChanged(_shininess.GetType(), nameof(Shininess), _shininess);
+                    NotifyValueChanged(_shininess.GetType(), nameof(Shininess), _shininess);
                 }
             }
         }
@@ -270,7 +251,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedoMix)
                 {
                     _albedoMix = value;
-                    NotifyPropertyChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
                 }
             }
         }
@@ -287,7 +268,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedoTex)
                 {
                     _albedoTex = value;
-                    NotifyPropertyChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
                 }
             }
         }
@@ -304,7 +285,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _normalTex)
                 {
                     _normalTex = value;
-                    NotifyPropertyChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
                 }
             }
         }
@@ -321,7 +302,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _normalMappingStrength)
                 {
                     _normalMappingStrength = value;
-                    NotifyPropertyChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
                 }
             }
         }
@@ -338,7 +319,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _texTiles)
                 {
                     _texTiles = value;
-                    NotifyPropertyChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
                 }
             }
         }
@@ -362,7 +343,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedoMix)
                 {
                     _albedoMix = value;
-                    NotifyPropertyChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
                 }
             }
         }
@@ -379,7 +360,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedoTex)
                 {
                     _albedoTex = value;
-                    NotifyPropertyChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
                 }
             }
         }
@@ -396,7 +377,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _texTiles)
                 {
                     _texTiles = value;
-                    NotifyPropertyChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
                 }
             }
         }
@@ -420,7 +401,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _normalTex)
                 {
                     _normalTex = value;
-                    NotifyPropertyChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
                 }
             }
         }
@@ -437,7 +418,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _normalMappingStrength)
                 {
                     _normalMappingStrength = value;
-                    NotifyPropertyChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
                 }
             }
         }
@@ -461,7 +442,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedoMix)
                 {
                     _albedoMix = value;
-                    NotifyPropertyChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
                 }
             }
         }
@@ -478,7 +459,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _albedoTex)
                 {
                     _albedoTex = value;
-                    NotifyPropertyChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
                 }
             }
         }
@@ -495,7 +476,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _normalTex)
                 {
                     _normalTex = value;
-                    NotifyPropertyChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
                 }
             }
         }
@@ -512,7 +493,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _normalMappingStrength)
                 {
                     _normalMappingStrength = value;
-                    NotifyPropertyChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
                 }
             }
         }
@@ -529,7 +510,7 @@ namespace Fusee.Engine.Core.Effects
                 if (value != _texTiles)
                 {
                     _texTiles = value;
-                    NotifyPropertyChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
                 }
             }
         }
