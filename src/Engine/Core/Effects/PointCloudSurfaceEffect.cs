@@ -149,23 +149,39 @@ namespace Fusee.Engine.Core.Effects
         }
         private int _pointShape;
 
+        /// <summary>
+        /// The in variable for the view position in the fragment shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec4, "vViewPos");
 
+        /// <summary>
+        /// The out variable for the view position in the vertex shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec4, "vViewPos");
 
+        /// <summary>
+        /// The in variable for the point radius in the fragment shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Property)]
         public readonly string WorldSpacePointRadIn = GLSL.CreateIn(GLSL.Type.Float, "vWorldSpacePointRad");
 
+        /// <summary>
+        /// The out variable for the point radius in the vertex shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Property)]
         public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
 
-        public static readonly List<string> CalculatePointShapeVaryings = new()
+        private static readonly List<string> CalculatePointShapeVaryings = new()
         {
             $"vViewPos = {UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0);",
             $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
@@ -177,7 +193,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Fragment Shader Shard for linearizing a depth value using the clipping planes of the current camera.
         /// </summary>
-        public static readonly List<string> CalculatePointShape = new()
+        private static readonly List<string> CalculatePointShape = new()
         {
             "vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]",
             "float weight;",

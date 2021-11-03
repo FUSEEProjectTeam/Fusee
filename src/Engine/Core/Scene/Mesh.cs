@@ -102,6 +102,7 @@ namespace Fusee.Engine.Core.Scene
                 MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether a color is set.
         /// </summary>
@@ -110,7 +111,12 @@ namespace Fusee.Engine.Core.Scene
         /// </value>
         public bool ColorsSet => _colors?.Length > 0;
 
-        
+        /// <summary>
+        /// Gets and sets the color of a single vertex.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
         public uint[] Colors1
         {
             get => _colors1;
@@ -121,10 +127,21 @@ namespace Fusee.Engine.Core.Scene
                 MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors1));
             }
         }
-       
+
+        /// <summary>
+        /// Gets a value indicating whether a color is set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
+        /// </value>
         public bool ColorsSet1 => _colors1?.Length > 0;
 
-        
+        /// <summary>
+        /// Gets and sets the color of a single vertex.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
         public uint[] Colors2
         {
             get => _colors2;
@@ -135,7 +152,13 @@ namespace Fusee.Engine.Core.Scene
                 MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors2));
             }
         }
-        
+
+        /// <summary>
+        /// Gets a value indicating whether a color is set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
+        /// </value>
         public bool ColorsSet2 => _colors2?.Length > 0;
 
 
