@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -7,97 +7,6 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
-    /// <summary>
-    /// This struct saves a light and all its parameters, as found by a Visitor.
-    /// </summary>
-    public struct LightResult
-    {
-        /// <summary>
-        /// The light component as present (1 to n times) in the scene graph.
-        /// </summary>
-        public Light Light { get; private set; }
-
-        /// <summary>
-        /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
-        /// Therefore the LightComponent itself has no position information - it gets set while traversing the scene graph.
-        /// </summary>
-        public float3 WorldSpacePos { get; set; }
-
-        /// <summary>
-        /// The rotation matrix. Determines the direction of the light, also set while traversing the scene graph.
-        /// </summary>
-        public float4x4 Rotation { get; set; }
-
-        /// <summary>
-        /// The session unique identifier of tis LightResult.
-        /// </summary>
-        public Suid Id;
-
-        /// <summary>
-        /// Creates a new instance of type LightResult.
-        /// </summary>
-        /// <param name="light">The LightComponent.</param>
-        public LightResult(Light light)
-        {
-            Light = light;
-            WorldSpacePos = float3.Zero;
-            Rotation = float4x4.Identity;
-            Id = Suid.GenerateSuid();
-        }
-
-        /// <summary>
-        /// Override for the Equals method.
-        /// </summary>
-        /// <param name="obj">The object to compare with.</param>       
-        public override bool Equals(object obj)
-        {
-            var lc = (LightResult)obj;
-            return Id.Equals(lc.Id);
-        }
-
-        /// <summary>
-        /// Override of the == operator.
-        /// </summary>
-        /// <param name="thisLc">The first LightResult that will be compared with a second one.</param>
-        /// <param name="otherLc">The second LightResult that will be compared with the first one.</param>        
-        public static bool operator ==(LightResult thisLc, LightResult otherLc)
-        {
-            return otherLc.Id.Equals(thisLc.Id);
-        }
-
-        /// <summary>
-        /// Override of the != operator.
-        /// </summary>
-        /// <param name="thisLc">The first LightResult that will be compared with a second one.</param>
-        /// <param name="otherLc">The second LightResult that will be compared with the first one.</param>
-        public static bool operator !=(LightResult thisLc, LightResult otherLc)
-        {
-            return !otherLc.Id.Equals(thisLc.Id);
-        }
-
-        /// <summary>
-        /// Override of the GetHashCode method.
-        /// Returns the session unique identifier as hash code.
-        /// </summary>  
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode();
-        }
-
-    }
-
-    internal struct CameraResult
-    {
-        public Camera Camera { get; private set; }
-
-        public float4x4 View { get; private set; }
-
-        public CameraResult(Camera cam, float4x4 view)
-        {
-            Camera = cam;
-            View = view;
-        }
-    }
 
     internal class PrepassVisitorState : VisitorState
     {
@@ -139,6 +48,8 @@ namespace Fusee.Engine.Core
         private RenderContext _rc;
         private bool _isCtcInitialized = false;
 
+        private int _currentLight;
+
         public PrePassVisitor()
         {
             _state = new RendererState();
@@ -149,7 +60,8 @@ namespace Fusee.Engine.Core
         public void PrePassTraverse(SceneContainer sc, RenderContext rc)
         {
             _rc = rc;
-            LightPrepassResuls.Clear();
+            _currentLight = 0;
+            //LightPrepassResuls.Clear();
             CameraPrepassResults.Clear();
             Traverse(sc.Children);
         }
@@ -410,13 +322,23 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnLight(Light lightComponent)
         {
-            var lightResult = new LightResult(lightComponent)
+            if (LightPrepassResuls.Count - 1 < _currentLight)
             {
-                Rotation = _state.Model.RotationComponent(),
-                WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
-            };
+                var lightResult = new LightResult(lightComponent)
+                {
+                    Rotation = _state.Model.RotationComponent(),
+                    WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
+                };
 
-            LightPrepassResuls.Add(new Tuple<SceneNode, LightResult>(CurrentNode, lightResult));
+                LightPrepassResuls.Add(new Tuple<SceneNode, LightResult>(CurrentNode, lightResult));
+            }
+            else
+            {
+                var currentRes = LightPrepassResuls[_currentLight];
+                currentRes.Item2.Rotation = _state.Model.RotationComponent();
+                currentRes.Item2.WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34);
+            }
+            _currentLight++;
         }
 
         [VisitMethod]
