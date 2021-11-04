@@ -105,6 +105,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportYStart { get; private set; }
 
+        /// <summary>
+        /// Gets and sets the distances to the current viewing frustums clipping planes.
+        /// </summary>
+        public float2 ClippingPlanesDist { get; private set; }
+
         #endregion
 
         #region Shader Management fields
@@ -328,6 +333,7 @@ namespace Fusee.Engine.Core
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
                 RenderFrustum.CalculateFrustumPlanes(_projection * View);
+                ClippingPlanesDist = CalculateClippingPlanesFromProjection();
             }
         }
 
@@ -1780,6 +1786,15 @@ namespace Fusee.Engine.Core
             {
                 throw new Exception("Error while rendering pass ", ex);
             }
+        }
+
+        private float2 CalculateClippingPlanesFromProjection()
+        {
+            var C = Projection.M33;
+            var D = Projection.M34;
+            float f = D / (C - 1.0f) * -1;
+            float n = D / (C + 1.0f) * -1;
+            return new float2(n, f);
         }
 
         #endregion

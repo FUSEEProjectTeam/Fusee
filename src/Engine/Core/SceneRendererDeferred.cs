@@ -108,7 +108,6 @@ namespace Fusee.Engine.Core
         private bool _canUseGeometryShaders;
 
         private FrustumF _lightFrustum;
-        private Camera _currentCam;
 
         private LightType _currentLightType;
 
@@ -425,7 +424,6 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
-                        _currentCam = cam.Item2.Camera;
                         DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam, renderTex);
                         //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
@@ -646,7 +644,7 @@ namespace Fusee.Engine.Core
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
                 else
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, _texClearColor);
-                _lightingPassEffect.SetFxParam(UniformNameDeclarations.ClippingPlanes, _currentCam.ClippingPlanes);
+                _lightingPassEffect.SetFxParam(UniformNameDeclarations.ClippingPlanes, _rc.ClippingPlanesDist);
                 _rc.SetEffect(_lightingPassEffect);
                 _rc.Render(_quad);
                 lightPassCnt++;
