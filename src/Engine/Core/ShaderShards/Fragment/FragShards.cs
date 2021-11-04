@@ -74,7 +74,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "OUT.metallic = IN.Metallic;",
             "OUT.ior = IN.IOR;",
             "OUT.specular = IN.Specular;",
-            "OUT.subsurface = IN.Subsurface;"
+            "OUT.subsurface = IN.Subsurface;",
+            "OUT.subsurfaceColor = IN.SubsurfaceColor;"
         };
 
         /// <summary>

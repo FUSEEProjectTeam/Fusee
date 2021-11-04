@@ -698,13 +698,14 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
+        /// <param name="subsurfaceColor">Subsurface scattering base color.</param>
         /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
         /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromBRDF(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface)
+        public static DefaultSurfaceEffect FromBRDF(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface)
         {
             var input = new BRDFInput()
             {
@@ -714,7 +715,8 @@ namespace Fusee.Engine.Core
                 Metallic = metallic,
                 Specular = specular,
                 IOR = ior,
-                Subsurface = subsurface
+                Subsurface = subsurface,
+                SubsurfaceColor = subsurfaceColor
             };
             return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
         }
@@ -724,6 +726,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
+        /// <param name="subsurfaceColor">Subsurface scattering base color.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
@@ -732,7 +735,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
+        public static DefaultSurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
@@ -745,6 +748,7 @@ namespace Fusee.Engine.Core
                 Specular = specular,
                 IOR = ior,
                 Subsurface = subsurface,
+                SubsurfaceColor = subsurfaceColor,
                 TexTiles = texTiles
             };
 
@@ -757,6 +761,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
+        /// <param name="subsurfaceColor">Subsurface scattering base color.</param>
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
@@ -765,7 +770,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
+        public static DefaultSurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
@@ -776,6 +781,7 @@ namespace Fusee.Engine.Core
                 Specular = specular,
                 IOR = ior,
                 Subsurface = subsurface,
+                SubsurfaceColor = subsurfaceColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles
@@ -790,6 +796,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
+        /// <param name="subsurfaceColor">Subsurface scattering base color.</param>
         /// <param name="albedoTex">The albedo texture.</param>
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="normalTex">The normal map.</param>
@@ -800,7 +807,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFTexture(float4 albedoColor, float4 emissionColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
+        public static DefaultSurfaceEffect FromBRDFTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
         {
             var input = new TextureInputBRDF()
             {
@@ -813,6 +820,7 @@ namespace Fusee.Engine.Core
                 Specular = specular,
                 IOR = ior,
                 Subsurface = subsurface,
+                SubsurfaceColor = subsurfaceColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles
