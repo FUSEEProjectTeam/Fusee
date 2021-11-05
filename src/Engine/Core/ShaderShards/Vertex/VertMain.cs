@@ -56,8 +56,8 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             var vertMainBody = new List<string>
             {
                 $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.ChangeSurfVert}();",
-                $"vec4 changedVert = {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
-                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
+                $"vec3 changedVert = {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
+                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2}, 1.0)).xyz;",
             };
 
             if (!setup.HasFlag(LightingSetupFlags.Unlit) && !setup.HasFlag(LightingSetupFlags.Edl))
@@ -76,7 +76,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"TBN = mat3(T,B,{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
-            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
+            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(changedVert, 1.0);");
             vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
 
             if (doRenderPoints)

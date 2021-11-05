@@ -88,7 +88,7 @@ namespace Fusee.Engine.Core.ShaderShards
         internal static readonly string ChangeSurfVert = "ChangeSurfVert";
 
         #region Variables that can be changed in a Shader Shard
-        internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec4, "position");
+        internal static readonly Tuple<GLSL.Type, string> Pos = new(GLSL.Type.Vec3, "position");
         internal static readonly Tuple<GLSL.Type, string> Normal = new(GLSL.Type.Vec3, "normal");
         internal static readonly Tuple<GLSL.Type, string> Albedo = new(GLSL.Type.Vec4, "albedo");
         internal static readonly Tuple<GLSL.Type, string> Emission = new(GLSL.Type.Vec4, "emission");
@@ -106,11 +106,11 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<LightingSetupFlags, LightingSetupShards> _lightingSetupCache = new();
 
-        private static readonly string DefaultUnlitOut = $"{StructName}(vec4(0), vec4(0))";
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";
-        private static readonly string DefaultDiffSpecOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0)";
-        private static readonly string DefaultGlossyOut = $"{StructName}(vec4(0), vec4(0), vec3(0), 0.0)";
-        private static readonly string DerfafultBRDFOut = $"{StructName}(vec4(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
+        private static readonly string DefaultUnlitOut = $"{StructName}(vec3(0), vec4(0))";
+        private static readonly string DefaultDiffuseOut = $"{StructName}(vec3(0), vec4(0), vec3(0), 0.0)";
+        private static readonly string DefaultDiffSpecOut = $"{StructName}(vec3(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0)";
+        private static readonly string DefaultGlossyOut = $"{StructName}(vec3(0), vec4(0), vec3(0), 0.0)";
+        private static readonly string DerfafultBRDFOut = $"{StructName}(vec3(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.

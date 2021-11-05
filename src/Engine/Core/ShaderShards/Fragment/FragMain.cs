@@ -60,11 +60,41 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
                 if (texName == ssaoString) continue;
+
+                var shadingModel = 0;
+                if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
+                {
+                    shadingModel = 1;
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
+                {
+                    shadingModel = 2;
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
+                {
+                    shadingModel = 3;
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.Unlit))
+                {
+                    shadingModel = 4;
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.Glossy))
+                {
+                    shadingModel = 5;
+                }
+                else if (lightingSetup.HasFlag(LightingSetupFlags.Edl))
+                {
+                    shadingModel = 6;
+                }
+
                 switch (i)
                 {
                     case (int)RenderTargetTextureTypes.Position:
-                        fragMainBody.Add($"{texName} = vec4(surfOut.position);");
-                        break;
+                        {
+                            fragMainBody.Add($"float encodedShadingModel = float(({shadingModel} & 0xF) | 0) / float(0xFF);");
+                            fragMainBody.Add($"{texName} = vec4(surfOut.position, encodedShadingModel);");
+                            break;
+                        }
                     case (int)RenderTargetTextureTypes.Albedo:
                         fragMainBody.Add($"{texName} = surfOut.albedo;");
 
@@ -90,38 +120,32 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         {
                             if (lightingSetup.HasFlag(LightingSetupFlags.BRDF))
                             {
-                                fragMainBody.Add("float encodedShadingModel = float((1 & 0xF) | 0) / float(0xFF);");
-                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, surfOut.ior);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
                             {
-                                fragMainBody.Add("float encodedShadingModel = float((2 & 0xF) | 0) / float(0xFF);");
-                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength, surfOut.shininess, surfOut.roughness, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength, surfOut.shininess, surfOut.roughness, 0.0);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
                             {
-                                fragMainBody.Add("float encodedShadingModel = float((3 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'diffuse only' - store just roughness.");
-                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.roughness, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.roughness, 0.0);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.Unlit))
                             {
-                                fragMainBody.Add("float encodedShadingModel = float((4 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'unlit' - store just that.");
-                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, 0.0);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.Glossy))
                             {
-                                fragMainBody.Add("float encodedShadingModel = float((5 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'glossy' - store just roughness.");
-                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.roughness, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.roughness, 0.0);");
                             }
                             else if (lightingSetup.HasFlag(LightingSetupFlags.Edl))
                             {
-                                fragMainBody.Add("float encodedShadingModel = float((6 & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("float encodedNeighbourPx = float((EDLNeighbourPixels & 0xF) | 0) / float(0xFF);");
                                 fragMainBody.Add("//Shading model is 'edl' - store EDLStrength and EDLNeighbourPixels.");
-                                fragMainBody.Add($"{texName} = vec4(EDLStrength, encodedNeighbourPx, 0.0, encodedShadingModel);");
+                                fragMainBody.Add($"{texName} = vec4(EDLStrength, encodedNeighbourPx, 0.0, 0.0);");
                             }
                             break;
                         }

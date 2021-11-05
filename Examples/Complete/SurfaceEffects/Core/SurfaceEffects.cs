@@ -22,7 +22,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -132,7 +132,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 

@@ -729,7 +729,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.AddRange(
             new List<string>() {
             "vec3 viewDir = normalize(-fragPos.xyz);",
-            "uint decodedShadingModel = uint(round(specularVars.a * float(0xFF))) & uint(0xF);",
+            "uint decodedShadingModel = uint(round(fragPos.a * float(0xFF))) & uint(0xF);",
 
             "if(decodedShadingModel == uint(2))",
             "{",
@@ -759,6 +759,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float roughness = specularVars.r;",
                 "float metallic = specularVars.g;",
                 "float specular = specularVars.b;",
+                "float ior = specularVars.a;",
 
                 "//placeholder for future subsurface implementation.",
                 "float subsurface = 0.0;",
@@ -771,7 +772,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"float VdotH = clamp(dot(viewDir, halfV), 0.0, 1.0);",
                 $"float LdotH = clamp(dot(lightDir, halfV), 0.0, 1.0);",
 
-                $"vec3 F0 = mix(vec3(0.04, 0.04, 0.04), albedo.rgb, metallic);",
+                $"vec3 F0 = GetF0(albedo.rgb, ior, metallic);",
                 $"float LdotH5 = SchlickFresnel(NdotV);",
                 $"vec3 F = F0 + (1.0 - F0) * LdotH5;",
 

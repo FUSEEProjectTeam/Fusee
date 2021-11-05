@@ -871,7 +871,7 @@ namespace Fusee.Engine.Core
             frag.Append(Lighting.EDLShadingFactor());
             frag.Append(Lighting.SchlickFresnel());
             frag.Append(Lighting.G1());
-            //frag.Append(Lighting.GetF0());
+            frag.Append(Lighting.GetF0());
             frag.Append(Lighting.LambertDiffuseComponent());
             frag.Append(Lighting.OrenNayarDiffuseComponent());
             frag.Append(Lighting.DisneyDiffuseComponent());

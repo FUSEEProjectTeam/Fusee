@@ -80,13 +80,13 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetPositionTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGB32));
+            RenderTextures[(int)RenderTargetTextureTypes.Position] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>
         /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>       
-        public void SetAlbedoSpecularTex()
+        public void SetAlbedoTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Albedo] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }

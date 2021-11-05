@@ -73,7 +73,7 @@ namespace Fusee.Engine.Core
         /// The number of shadow maps, generated when using cascaded shadow mapping for parallel lights.
         /// If set to 1 standard shadow mapping is used.
         /// </summary>
-        public int NumberOfCascades = 1;
+        public int NumberOfCascades = 3;
 
         private bool _needToSetSSAOTex = false;
 

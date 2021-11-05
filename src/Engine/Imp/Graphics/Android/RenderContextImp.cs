@@ -1121,7 +1121,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             var gBufferRenderTarget = new RenderTarget(res);
             gBufferRenderTarget.SetPositionTex();
-            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetAlbedoTex();
             gBufferRenderTarget.SetNormalTex();
             gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();

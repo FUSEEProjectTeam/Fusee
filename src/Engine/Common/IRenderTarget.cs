@@ -43,7 +43,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        void SetAlbedoSpecularTex();
+        void SetAlbedoTex();
 
         /// <summary>
         /// Generates a normal texture and sets it at the correct position in the RenderTextures Array.
