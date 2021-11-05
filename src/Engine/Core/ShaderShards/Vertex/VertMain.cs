@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(LightingSetupFlags setup, bool doRenderPoints)
+        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, bool doRenderPoints)
         {
             var vertMainBody = new List<string>
             {
@@ -60,15 +60,15 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2}, 1.0)).xyz;",
             };
 
-            if (!setup.HasFlag(LightingSetupFlags.Unlit) && !setup.HasFlag(LightingSetupFlags.Edl))
+            if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
             {
                 vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
             }
 
-            if (setup.HasFlag(LightingSetupFlags.AlbedoTex) || setup.HasFlag(LightingSetupFlags.NormalMap))
+            if (texSetup.HasFlag(TextureSetup.AlbedoTex) || texSetup.HasFlag(TextureSetup.NormalMap))
                 vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
-            if (setup.HasFlag(LightingSetupFlags.NormalMap))
+            if (texSetup.HasFlag(TextureSetup.NormalMap))
             {
                 vertMainBody.Add($"vec3 T = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
                 vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}.xyz, 0.0)));");

@@ -361,7 +361,7 @@ namespace Fusee.Engine.Core
             {
                 Albedo = albedoColor
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.Unlit, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
+            return new DefaultSurfaceEffect(ShadingModel.Unlit, TextureSetup.NoTextures, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
         }
 
         /// <summary>
@@ -374,7 +374,6 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static DefaultSurfaceEffect FromUnlitAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix)
         {
-            var lightingSetup = LightingSetupFlags.Unlit | LightingSetupFlags.AlbedoTex;
             var input = new TextureInputColorUnlit()
             {
                 Albedo = albedoColor,
@@ -382,7 +381,7 @@ namespace Fusee.Engine.Core
                 AlbedoMix = albedoMix,
                 TexTiles = texTiles
             };
-            return new DefaultSurfaceEffect(lightingSetup, input, FragShards.SurfOutBody_Textures(lightingSetup), VertShards.SufOutBody_Pos);
+            return new DefaultSurfaceEffect(ShadingModel.Unlit, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.Unlit, TextureSetup.AlbedoTex), VertShards.SufOutBody_Pos);
         }
 
         #endregion
@@ -402,7 +401,7 @@ namespace Fusee.Engine.Core
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseOnly, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, TextureSetup.NoTextures, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -425,8 +424,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -447,9 +445,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles,
                 Roughness = roughness
             };
-
-            var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -475,8 +471,8 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, texSetup), VertShards.SufOutBody_PosNorm);
         }
 
         #endregion
@@ -502,7 +498,7 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.DiffuseSpecular, input, FragShards.SurfOutBody_DiffSpecular, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, TextureSetup.NoTextures, input, FragShards.SurfOutBody_DiffSpecular, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -529,9 +525,8 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles,
                 Roughness = roughness
             };
-
-            var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -559,8 +554,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -592,8 +586,8 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.DiffuseSpecular | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, texSetup), VertShards.SufOutBody_PosNorm);
         }
         #endregion
 
@@ -612,7 +606,7 @@ namespace Fusee.Engine.Core
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.Glossy, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.Glossy, TextureSetup.NoTextures, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -635,8 +629,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.Glossy | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.Glossy, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -658,8 +651,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.Glossy | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.Glossy, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -685,8 +677,8 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            var lighingSetup = LightingSetupFlags.Glossy | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+            return new DefaultSurfaceEffect(ShadingModel.Glossy, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, texSetup), VertShards.SufOutBody_PosNorm);
         }
 
         #endregion
@@ -718,7 +710,7 @@ namespace Fusee.Engine.Core
                 Subsurface = subsurface,
                 SubsurfaceColor = subsurfaceColor
             };
-            return new DefaultSurfaceEffect(LightingSetupFlags.BRDF, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.BRDF, TextureSetup.NoTextures, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -752,8 +744,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.BRDF, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -787,8 +778,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            return new DefaultSurfaceEffect(ShadingModel.BRDF, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -826,8 +816,8 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            var lighingSetup = LightingSetupFlags.BRDF | LightingSetupFlags.AlbedoTex | LightingSetupFlags.NormalMap;
-            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+            return new DefaultSurfaceEffect(ShadingModel.BRDF, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, texSetup), VertShards.SufOutBody_PosNorm);
         }
         #endregion
 

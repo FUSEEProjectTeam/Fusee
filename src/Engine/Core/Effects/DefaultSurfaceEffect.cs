@@ -39,16 +39,17 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Creates a new instance of type DefaultSurfaceEffect.
         /// </summary>
-        /// <param name="lightingSetup">See <see cref="SurfaceEffect.LightingSetup"/>.</param>
+        /// <param name="shadingModel">See <see cref="SurfaceEffect.ShadingModel"/>.</param>
+        /// <param name="texSetup">The type of textures this efect uses.</param>
         /// <param name="input">See <see cref="SurfaceEffect.SurfaceInput"/>.</param>
         /// <param name="surfOutFragBody">The method body for the <see cref="SurfaceEffect.SurfOutFragMethod"/></param>
         /// <param name="surfOutVertBody">The method body for the <see cref="SurfaceEffect.SurfOutVertMethod"/></param>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
-        public DefaultSurfaceEffect(LightingSetupFlags lightingSetup, ColorInput input, List<string> surfOutFragBody, List<string> surfOutVertBody, RenderStateSet rendererStates = null)
-            : base(lightingSetup, input, rendererStates)
+        public DefaultSurfaceEffect(ShadingModel shadingModel, TextureSetup texSetup, ColorInput input, List<string> surfOutFragBody, List<string> surfOutVertBody, RenderStateSet rendererStates = null)
+            : base(shadingModel, texSetup, input, rendererStates)
         {
             SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
-            SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, lightingSetup);
+            SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, shadingModel);
             FUSEE_MVP = float4x4.Identity;
             FUSEE_ITMV = float4x4.Identity;
             FUSEE_MVP = float4x4.Identity;

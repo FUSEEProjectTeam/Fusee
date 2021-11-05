@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the in (with prefix "fu") and out parameters of the vertex shader, depending on the given ShaderEffectProps.
         /// </summary>
         /// <returns></returns>
-        public static string InParams(LightingSetupFlags setup)
+        public static string InParams(TextureSetup texSetup)
         {
             var vertProps = new List<string>
             {
@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             };
 
-            if (setup.HasFlag(LightingSetupFlags.NormalMap))
+            if (texSetup.HasFlag(TextureSetup.NormalMap))
             {
                 vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Tangent));
                 vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Bitangent));

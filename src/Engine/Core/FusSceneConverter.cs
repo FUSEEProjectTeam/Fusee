@@ -7,6 +7,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Serialization.V1;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -424,7 +425,7 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
 
             var _currentNodeDefaultSurfaceEffect = _currentNode.GetComponent<DefaultSurfaceEffect>();
-            if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.TextureSetup.HasFlag(TextureSetup.NormalMap))
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -584,37 +585,37 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = m.HasSpecularChannel ? LightingSetupFlags.DiffuseSpecular : LightingSetupFlags.DiffuseOnly;
+            var lightingSetup = m.HasSpecularChannel ? ShadingModel.DiffuseSpecular : ShadingModel.DiffuseOnly;
             return GetEffectForMat(m, lightingSetup, m.HasSpecularChannel ? m.Specular.Shininess : 0f, m.HasSpecularChannel ? m.Specular.Strength : 0f, 0f);
         }
 
         private Effect LookupMaterial(FusMaterialDiffuseBRDF m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
-            return GetEffectForMat(m, LightingSetupFlags.DiffuseOnly, 0f, 0f, m.Roughness);
+            return GetEffectForMat(m, ShadingModel.DiffuseOnly, 0f, 0f, m.Roughness);
         }
 
         private Effect LookupMaterial(FusMaterialGlossyBRDF m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
-            return GetEffectForMat(m, LightingSetupFlags.Glossy, 0f, 0f, m.Roughness);
+            return GetEffectForMat(m, ShadingModel.Glossy, 0f, 0f, m.Roughness);
         }
 
         private Effect LookupMaterial(FusMaterialBRDF m)
         {
             if (_matMap.TryGetValue(m, out var sfx)) return sfx;
 
-            var lightingSetup = LightingSetupFlags.BRDF;
+            var textureSetup = TextureSetup.NoTextures;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
-                lightingSetup |= LightingSetupFlags.AlbedoTex;
+                textureSetup |= TextureSetup.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
-                lightingSetup |= LightingSetupFlags.NormalMap;
+                textureSetup |= TextureSetup.NormalMap;
 
             var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
             var subsurfaceColor = m.BRDF?.SubsurfaceColor == null ? new float3() : m.BRDF.SubsurfaceColor;
 
             //TODO: Texture Tiles instead of float2.One - can they be exported?
-            if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            if (textureSetup.HasFlag(TextureSetup.AlbedoTex) && !textureSetup.HasFlag(TextureSetup.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
@@ -626,7 +627,7 @@ namespace Fusee.Engine.Core
                 }
                 sfx = MakeEffect.FromBRDFAlbedoTexture(m.Albedo.Color, emissive, subsurfaceColor, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, m.Albedo.Mix, float2.One);
             }
-            else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            else if (!textureSetup.HasFlag(TextureSetup.AlbedoTex) && textureSetup.HasFlag(TextureSetup.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                 {
@@ -638,7 +639,7 @@ namespace Fusee.Engine.Core
                 }
                 sfx = MakeEffect.FromBRDFNormalTexture(m.Albedo.Color, emissive, subsurfaceColor, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, normalTex, m.NormalMap.Intensity, float2.One);
             }
-            else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+            else if (textureSetup.HasFlag(TextureSetup.AlbedoTex) && textureSetup.HasFlag(TextureSetup.NormalMap))
             {
                 if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                 {
@@ -658,29 +659,29 @@ namespace Fusee.Engine.Core
                 }
                 sfx = MakeEffect.FromBRDFTexture(m.Albedo.Color, emissive, subsurfaceColor, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity);
             }
-            else if (lightingSetup == LightingSetupFlags.BRDF)
+            else if (textureSetup == TextureSetup.NoTextures)
+            {
                 sfx = MakeEffect.FromBRDF(m.Albedo.Color, emissive, subsurfaceColor, m.BRDF.Roughness, m.BRDF.Metallic, m.BRDF.Specular, m.BRDF.IOR, m.BRDF.Subsurface);
-            else
-                throw new System.ArgumentException("Material couldn't be resolved.");
+            }
 
             _matMap.Add(m, sfx);
             return sfx;
         }
 
-        private Effect GetEffectForMat(FusMaterialBase m, LightingSetupFlags lightingSetup, float shininess, float specularStrenght, float roughness)
+        private Effect GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrenght, float roughness)
         {
             Effect sfx;
-
+            var texSetup = TextureSetup.NoTextures;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
-                lightingSetup |= LightingSetupFlags.AlbedoTex;
+                texSetup |= TextureSetup.AlbedoTex;
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
-                lightingSetup |= LightingSetupFlags.NormalMap;
+                texSetup |= TextureSetup.NormalMap;
 
             var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
 
-            if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular))
+            if (lightingSetup == ShadingModel.DiffuseSpecular)
             {
-                if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                if (texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
@@ -692,7 +693,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromDiffuseSpecularAlbedoTexture(m.Albedo.Color, emissive, albedoTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, roughness);
                 }
-                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
@@ -704,7 +705,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromDiffuseSpecularNormalTexture(m.Albedo.Color, emissive, normalTex, m.NormalMap.Intensity, float2.One.PerpendicularLeft, shininess, specularStrenght, roughness);
                 }
-                else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
@@ -724,7 +725,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromDiffuseSpecularTexture(m.Albedo.Color, emissive, albedoTex, normalTex, m.Albedo.Mix, float2.One, shininess, specularStrenght, m.NormalMap.Intensity, roughness);
                 }
-                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, emissive, shininess, specularStrenght, roughness);
                 }
@@ -732,9 +733,9 @@ namespace Fusee.Engine.Core
                     throw new System.ArgumentException("Material couldn't be resolved.");
             }
 
-            else if (lightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly))
+            else if (lightingSetup == ShadingModel.DiffuseOnly)
             {
-                if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                if (texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
@@ -746,7 +747,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromDiffuseAlbedoTexture(m.Albedo.Color, albedoTex, float2.One, m.Albedo.Mix, roughness);
                 }
-                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
@@ -758,7 +759,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromDiffuseNormalTexture(m.Albedo.Color, normalTex, m.NormalMap.Intensity, float2.One, roughness);
                 }
-                else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
@@ -778,7 +779,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromDiffuseTexture(m.Albedo.Color, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity, roughness);
                 }
-                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness);
                 }
@@ -786,9 +787,9 @@ namespace Fusee.Engine.Core
                     throw new System.ArgumentException("Material couldn't be resolved.");
             }
 
-            else if (lightingSetup.HasFlag(LightingSetupFlags.Glossy))
+            else if (lightingSetup == ShadingModel.Glossy)
             {
-                if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                if (texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
@@ -800,7 +801,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromGlossyAlbedoTexture(m.Albedo.Color, albedoTex, float2.One, m.Albedo.Mix, roughness);
                 }
-                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.NormalMap.Texture, out var normalTex))
                     {
@@ -812,7 +813,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromGlossyNormalTexture(m.Albedo.Color, normalTex, m.NormalMap.Intensity, float2.One, roughness);
                 }
-                else if (lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     if (!_texMap.TryGetValue(m.Albedo.Texture, out var albedoTex))
                     {
@@ -832,7 +833,7 @@ namespace Fusee.Engine.Core
                     }
                     sfx = MakeEffect.FromGlossyTexture(m.Albedo.Color, albedoTex, normalTex, m.Albedo.Mix, float2.One, m.NormalMap.Intensity, roughness);
                 }
-                else if (!lightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) && !lightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     sfx = MakeEffect.FromGlossy(m.Albedo.Color, roughness);
                 }
@@ -1008,10 +1009,10 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvEffect(DefaultSurfaceEffect effect)
         {
-            if (effect.LightingSetup.HasFlag(LightingSetupFlags.BRDF))
+            if (effect.ShadingModel == ShadingModel.BRDF)
             {
                 var mat = new FusMaterialBRDF() { Albedo = new AlbedoChannel() };
-                if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                if (effect.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.TextureSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
@@ -1066,13 +1067,13 @@ namespace Fusee.Engine.Core
                 _currentNode.AddComponent(mat);
 
             }
-            else if (effect.LightingSetup.HasFlag(LightingSetupFlags.DiffuseSpecular) ||
-                    effect.LightingSetup.HasFlag(LightingSetupFlags.DiffuseOnly) ||
-                    effect.LightingSetup.HasFlag(LightingSetupFlags.Unlit) ||
-                    effect.LightingSetup.HasFlag(LightingSetupFlags.Glossy))
+            else if (effect.ShadingModel == ShadingModel.DiffuseSpecular ||
+                    effect.ShadingModel == ShadingModel.DiffuseOnly ||
+                    effect.ShadingModel == ShadingModel.Unlit ||
+                    effect.ShadingModel == ShadingModel.Glossy)
             {
                 var mat = new FusMaterialStandard();
-                if (effect.LightingSetup.HasFlag(LightingSetupFlags.AlbedoTex) || effect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                if (effect.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.TextureSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     var surfaceInput = (TextureInputSpecular)effect.SurfaceInput;
 
@@ -1120,6 +1121,8 @@ namespace Fusee.Engine.Core
 
                 _currentNode.AddComponent(mat);
             }
+            else
+                throw new InvalidOperationException("Invalid ShadingModel!");
         }
 
         /// <summary>

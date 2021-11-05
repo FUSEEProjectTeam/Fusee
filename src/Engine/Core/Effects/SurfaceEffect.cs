@@ -44,10 +44,16 @@ namespace Fusee.Engine.Core.Effects
 
         //================== Surface Shard IN ==========================//
         /// <summary>
-        /// See <see cref="LightingSetupFlags"/>. 
-        /// These flags are used to gather the appropriate lighting methods and shader parameters.
+        /// See <see cref="ShaderShards.ShadingModel"/>. 
+        /// These enum is used to gather the appropriate lighting methods and shader parameters.
         /// </summary>
-        public LightingSetupFlags LightingSetup;
+        public ShadingModel ShadingModel;
+
+        /// <summary>
+        /// See <see cref="ShaderShards.TextureSetup"/>. 
+        /// These flags are used to gather the appropriate shader parameters for the given textures.
+        /// </summary>
+        public TextureSetup TextureSetup;
 
         /// <summary>
         /// User-defined input struct. Must derive from <see cref="ColorInput"/>. 
@@ -151,10 +157,11 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Creates a new Instance of type SurfaceEffect.
         /// </summary>
-        /// <param name="lightingSetup">The <see cref="LightingSetupFlags"/>.</param>
+        /// <param name="shadingModel">The <see cref="ShaderShards.ShadingModel"/>.</param>
+        /// <param name="textureSetup">The type of textures this effect will use.</param>
         /// <param name="surfaceInput"><see cref="SurfaceInput"/>. Provides the values used to modify the <see cref="SurfaceOut"/>.</param>
         /// <param name="renderStateSet">Optional. If no <see cref="RenderStateSet"/> is given a default one will be added.</param>
-        public SurfaceEffect(LightingSetupFlags lightingSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
+        public SurfaceEffect(ShadingModel shadingModel, TextureSetup textureSetup, ColorInput surfaceInput, RenderStateSet renderStateSet = null)
         {
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);
             ParamDecl = new Dictionary<int, IFxParamDeclaration>();
@@ -169,9 +176,10 @@ namespace Fusee.Engine.Core.Effects
             TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
             TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
 
-            LightingSetup = lightingSetup;
+            ShadingModel = shadingModel;
+            TextureSetup = textureSetup;
 
-            VertIn = ShaderShards.Vertex.VertProperties.InParams(lightingSetup);
+            VertIn = ShaderShards.Vertex.VertProperties.InParams(textureSetup);
 
             SurfaceInput = surfaceInput;
             SurfaceInput.PropertyChanged += (object sender, SurfaceEffectEventArgs args) => PropertyChangedHandler(sender, args, nameof(SurfaceInput));
@@ -188,7 +196,7 @@ namespace Fusee.Engine.Core.Effects
 
             HandleUniform(ShaderCategory.Fragment, nameof(SurfaceInput), surfInType);
 
-            var lightingShards = SurfaceOut.GetLightingSetupShards(LightingSetup);
+            var lightingShards = SurfaceOut.GetShadingModelShards(this.ShadingModel);
             SurfaceOutput = lightingShards.StructDecl;
 
             if (renderStateSet == null)
