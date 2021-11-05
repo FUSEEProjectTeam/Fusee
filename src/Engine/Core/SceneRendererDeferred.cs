@@ -73,7 +73,7 @@ namespace Fusee.Engine.Core
         /// The number of shadow maps, generated when using cascaded shadow mapping for parallel lights.
         /// If set to 1 standard shadow mapping is used.
         /// </summary>
-        public int NumberOfCascades = 3;
+        public int NumberOfCascades = 1;
 
         private bool _needToSetSSAOTex = false;
 
@@ -92,7 +92,8 @@ namespace Fusee.Engine.Core
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
         private ShaderEffect _lightingPassEffectOther; //needed when a light of another type is rendered;
         private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
-        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;           
+        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;
+        private ShaderEffect _lightingPassEffectNoCascades; //needed when a parallel light is rendered without cascaded shadow mapping;
 
         private IRenderTarget _gBufferRenderTarget;
 
@@ -587,12 +588,12 @@ namespace Fusee.Engine.Core
                                 }
                                 else
                                 {
-                                    if (_lightingPassEffectOther == null)
+                                    if (_lightingPassEffectNoCascades == null)
                                     {
-                                        _lightingPassEffectOther = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
-                                        _rc.CreateShaderProgram(_lightingPassEffectOther);
+                                        _lightingPassEffectNoCascades = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
+                                        _rc.CreateShaderProgram(_lightingPassEffectNoCascades);
                                     }
-                                    _lightingPassEffect = _lightingPassEffectOther;
+                                    _lightingPassEffect = _lightingPassEffectNoCascades;
                                 }
                                 break;
                             }
@@ -732,7 +733,7 @@ namespace Fusee.Engine.Core
                     default:
                         break;
                 }
-                if(_currentLightType != LightType.Legacy &&  _currentLightType != LightType.Parallel)
+                if(lightVisRes.Item2.Light.Type != LightType.Legacy && lightVisRes.Item2.Light.Type != LightType.Parallel && NumberOfCascades > 1)
                     lightVisRes.Item2.ReRenderShadowMap = false;
             }
         }
@@ -862,19 +863,19 @@ namespace Fusee.Engine.Core
                     case LightType.Parallel:
                         if (NumberOfCascades > 1)
                         {
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
+                            effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
                             effect.SetFxParam("ClipPlanes[0]", shadowParams.ClipPlanesForLightMat);
                             effect.SetFxParam("LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
                         }
                         else
                         {
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                            effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
+                            effect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                            effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
                         }
                         break;
                     case LightType.Spot:
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
-                        effect.SetFxParam(ShaderShards.UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
+                        effect.SetFxParam(UniformNameDeclarations.LightSpaceMatrixHash, shadowParams.LightSpaceMatrices[0]);
+                        effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, (WritableTexture)shadowParams.ShadowMap);
                         break;
                     default:
                         break;
