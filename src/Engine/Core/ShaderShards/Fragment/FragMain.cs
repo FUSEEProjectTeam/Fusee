@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         "result += ApplyLight(allLights[i], surfOut, ambientCo);",
                     "}",
                     //$"oFragmentColor = vec4(GammaCorrection(result.rgb, 1.0/2.0)+ ambient, surfOut.albedo.a);"
-                    $"oFragmentColor = vec4(EncodeSRGB(result.rgb) + ambient, surfOut.albedo.a);"
+                    $"oFragmentColor = vec4(EncodeSRGB(result.rgb + ambient), surfOut.albedo.a);"
                 });
             }
             else

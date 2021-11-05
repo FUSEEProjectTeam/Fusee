@@ -22,7 +22,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -37,6 +37,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private DefaultSurfaceEffect _gold_brdfFx;
         private DefaultSurfaceEffect _paint_brdfFx;
         private DefaultSurfaceEffect _rubber_brdfFx;
+        private DefaultSurfaceEffect _subsurf_brdfFx;
 
         private DefaultSurfaceEffect _testFx;
 
@@ -49,7 +50,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1).LinearColorFromSRgb();
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("monkeys.fus");
@@ -76,6 +77,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             (
                 albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(0, 0, 0, 0),
+                subsurfaceColor: float3.Zero,
                 roughness: 0.2f,
                 metallic: 1,
                 specular: 0,
@@ -88,17 +90,19 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 //ColorUint.Greenery, 
                 new float4(float4.LinearColorFromSRgb(0x708828FF)),
                 emissionColor: new float4(),
+                subsurfaceColor: float3.Zero,
                 roughness: 0.05f,
                 metallic: 0,
                 specular: 1f,
                 ior: 1.46f,
                 subsurface: 0
-            ); ;
+            );
 
             _rubber_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(),
+                subsurfaceColor: float3.Zero,
                 roughness: 1.0f,
                 metallic: 0,
                 specular: 0.1f,
@@ -106,7 +110,19 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 subsurface: 0
             );
 
-            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
+            _subsurf_brdfFx = MakeEffect.FromBRDF
+            (
+                albedoColor: new float4(float4.LinearColorFromSRgb(0xDEB887FF)),
+                emissionColor: new float4(),
+                subsurfaceColor: new float3(1, 0, 0),
+                roughness: 0.508f,
+                metallic: 0,
+                specular: 0.079f,
+                ior: 1.4f,
+                subsurface: 0.1f
+            );
+
+            _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = _paint_brdfFx;
             _rocketScene.Children[3].Components[1] = _gold_brdfFx;
@@ -116,7 +132,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
             monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
