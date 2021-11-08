@@ -1018,17 +1018,21 @@ namespace Fusee.Engine.Core
                         Color = surfaceInput.Albedo
                     };
 
-                    if (surfaceInput.AlbedoTex != null)
+                    if (surfaceInput.AlbedoTex != null && surfaceInput.AlbedoTex is Texture)
                     {
+                        Texture albedoTex = surfaceInput.AlbedoTex as Texture;
+
                         mat.Albedo.Mix = surfaceInput.AlbedoMix;
-                        mat.Albedo.Texture = surfaceInput.AlbedoTex?.PathAndName;
+                        mat.Albedo.Texture = albedoTex?.PathAndName;
                     }
 
-                    if (surfaceInput.NormalTex != null)
+                    if (surfaceInput.NormalTex != null && surfaceInput.NormalTex is Texture)
                     {
+                        Texture normalTex = surfaceInput.NormalTex as Texture;
+
                         mat.NormalMap = new NormapMapChannel()
                         {
-                            Texture = surfaceInput.NormalTex.PathAndName,
+                            Texture = normalTex.PathAndName,
                             Intensity = surfaceInput.NormalMappingStrength
                         };
                     }
@@ -1080,17 +1084,21 @@ namespace Fusee.Engine.Core
                         Color = surfaceInput.Albedo
                     };
 
-                    if (surfaceInput.AlbedoTex != null)
+                    if (surfaceInput.AlbedoTex != null && surfaceInput.AlbedoTex is Texture)
                     {
+                        Texture albedoTex = surfaceInput.AlbedoTex as Texture;
+
                         mat.Albedo.Mix = surfaceInput.AlbedoMix;
-                        mat.Albedo.Texture = surfaceInput.AlbedoTex?.PathAndName;
+                        mat.Albedo.Texture = albedoTex?.PathAndName;
                     }
 
-                    if (surfaceInput.NormalTex != null)
+                    if (surfaceInput.NormalTex != null && surfaceInput.NormalTex is Texture)
                     {
+                        Texture normalTex = surfaceInput.NormalTex as Texture;
+
                         mat.NormalMap = new NormapMapChannel()
                         {
-                            Texture = surfaceInput.NormalTex.PathAndName,
+                            Texture = normalTex.PathAndName,
                             Intensity = surfaceInput.NormalMappingStrength
                         };
                     }

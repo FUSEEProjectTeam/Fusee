@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Engine.Common;
 using System;
 
 namespace Fusee.Engine.Core.Effects
@@ -279,7 +280,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo texture.
         /// </summary>
-        public Texture AlbedoTex
+        public ITextureBase AlbedoTex
         {
             get => _albedoTex;
             set
@@ -291,12 +292,12 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _albedoTex;
+        private ITextureBase _albedoTex;
 
         /// <summary>
         /// The normal texture.
         /// </summary>
-        public Texture NormalTex
+        public ITextureBase NormalTex
         {
             get => _normalTex;
             set
@@ -308,7 +309,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _normalTex;
+        private ITextureBase _normalTex;
 
         /// <summary>
         /// The normal texture.
@@ -371,7 +372,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo texture.
         /// </summary>
-        public Texture AlbedoTex
+        public ITextureBase AlbedoTex
         {
             get => _albedoTex;
             set
@@ -383,7 +384,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _albedoTex;
+        private ITextureBase _albedoTex;
 
         /// <summary>
         /// The normal texture.
@@ -412,7 +413,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The normal texture.
         /// </summary>
-        public Texture NormalTex
+        public ITextureBase NormalTex
         {
             get => _normalTex;
             set
@@ -424,7 +425,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _normalTex;
+        private ITextureBase _normalTex;
 
         /// <summary>
         /// The normal texture.
@@ -470,7 +471,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo texture.
         /// </summary>
-        public Texture AlbedoTex
+        public ITextureBase AlbedoTex
         {
             get => _albedoTex;
             set
@@ -482,12 +483,12 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _albedoTex;
+        private ITextureBase _albedoTex;
 
         /// <summary>
         /// The normal texture.
         /// </summary>
-        public Texture NormalTex
+        public ITextureBase NormalTex
         {
             get => _normalTex;
             set
@@ -499,7 +500,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private Texture _normalTex;
+        private ITextureBase _normalTex;
 
         /// <summary>
         /// The normal texture.
