@@ -104,10 +104,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _defaultColor;
+                    _selectedNode.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _defaultColor;
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _selectedColor;
+                _selectedNode.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _selectedColor;
             }
         }
 

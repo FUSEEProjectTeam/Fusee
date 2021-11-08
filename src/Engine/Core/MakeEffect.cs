@@ -21,7 +21,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
-        public static SurfaceEffect Default() => FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22, 1.0f);
+        public static SurfaceEffectBase Default() => FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22, 1.0f);
 
         #region Deferred
 
@@ -355,13 +355,13 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="albedoColor">The albedo color.</param>
         /// <returns></returns>
-        public static DefaultSurfaceEffect FromUnlit(float4 albedoColor)
+        public static SurfaceEffect FromUnlit(float4 albedoColor)
         {
-            var input = new ColorInput()
+            var input = new UnlitInput()
             {
                 Albedo = albedoColor
             };
-            return new DefaultSurfaceEffect(ShadingModel.Unlit, TextureSetup.NoTextures, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
         }
 
         /// <summary>
@@ -372,16 +372,16 @@ namespace Fusee.Engine.Core
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <returns></returns>
-        public static DefaultSurfaceEffect FromUnlitAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix)
+        public static SurfaceEffect FromUnlitAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix)
         {
-            var input = new TextureInputColorUnlit()
+            var input = new TextureInputUnlit()
             {
                 Albedo = albedoColor,
                 AlbedoTex = albedoTex,
                 AlbedoMix = albedoMix,
                 TexTiles = texTiles
             };
-            return new DefaultSurfaceEffect(ShadingModel.Unlit, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.Unlit, TextureSetup.AlbedoTex), VertShards.SufOutBody_Pos);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Unlit, TextureSetup.AlbedoTex), VertShards.SufOutBody_Pos);
         }
 
         #endregion
@@ -394,14 +394,14 @@ namespace Fusee.Engine.Core
         /// <param name="albedoColor">The diffuse color the resulting effect.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f)
+        public static SurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f)
         {
-            var input = new ColorInput()
+            var input = new DiffuseInput()
             {
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, TextureSetup.NoTextures, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -413,9 +413,9 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromDiffuseAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix, float roughness = 0f)
         {
-            var input = new TextureInputColor()
+            var input = new TextureInputDiffuse()
             {
                 Albedo = albedoColor,
                 AlbedoTex = albedoTex,
@@ -424,7 +424,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -435,17 +435,18 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static DefaultSurfaceEffect FromDiffuseNormalTexture(float4 albedoColor, Texture normalTex, float normalMapStrength, float2 texTiles, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseNormalTexture(float4 albedoColor, Texture normalTex, float normalMapStrength, float2 texTiles, float roughness = 0f)
         {
-            var input = new TextureInputColor()
+            var input = new TextureInputDiffuse()
             {
                 Albedo = albedoColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles,
-                Roughness = roughness
+                Roughness = roughness,
+                AlbedoMix = 0.0f
             };
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -458,9 +459,9 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static DefaultSurfaceEffect FromDiffuseTexture(float4 albedoColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseTexture(float4 albedoColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f, float roughness = 0f)
         {
-            var input = new TextureInputColor()
+            var input = new TextureInputDiffuse()
             {
                 Albedo = albedoColor,
                 AlbedoMix = albedoMix,
@@ -472,7 +473,7 @@ namespace Fusee.Engine.Core
             };
 
             var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseOnly, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, texSetup), VertShards.SufOutBody_PosNorm);
         }
 
         #endregion
@@ -488,7 +489,7 @@ namespace Fusee.Engine.Core
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float4 emissionColor, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
         {
             var input = new SpecularInput()
             {
@@ -498,7 +499,7 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, TextureSetup.NoTextures, input, FragShards.SurfOutBody_DiffSpecular, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_DiffSpecular, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -512,7 +513,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float4 emissionColor, Texture albedoTex, float albedoMix, float2 texTiles, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseSpecularAlbedoTexture(float4 albedoColor, float4 emissionColor, Texture albedoTex, float albedoMix, float2 texTiles, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
         {
             var input = new TextureInputSpecular()
             {
@@ -526,7 +527,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
             
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -540,7 +541,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float4 emissionColor, Texture normalTex, float normalMapStrength, float2 texTiles, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseSpecularNormalTexture(float4 albedoColor, float4 emissionColor, Texture normalTex, float normalMapStrength, float2 texTiles, float shininess = 255, float specularStrength = 0.0f, float roughness = 0f)
         {
             var input = new TextureInputSpecular()
             {
@@ -551,10 +552,11 @@ namespace Fusee.Engine.Core
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles,
-                Roughness = roughness
+                Roughness = roughness,
+                AlbedoMix = 0.0f
             };
 
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -570,7 +572,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static DefaultSurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float4 emissionColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float shininess = 255, float specularStrength = 0.5f, float normalMapStrength = 0.5f, float roughness = 0f)
+        public static SurfaceEffect FromDiffuseSpecularTexture(float4 albedoColor, float4 emissionColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float shininess = 255, float specularStrength = 0.5f, float normalMapStrength = 0.5f, float roughness = 0f)
         {
             var input = new TextureInputSpecular()
             {
@@ -587,7 +589,7 @@ namespace Fusee.Engine.Core
             };
 
             var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new DefaultSurfaceEffect(ShadingModel.DiffuseSpecular, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, texSetup), VertShards.SufOutBody_PosNorm);
         }
         #endregion
 
@@ -599,14 +601,14 @@ namespace Fusee.Engine.Core
         /// <param name="albedoColor">The albedo color the resulting effect.</param>
         /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f)
+        public static SurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f)
         {
-            var input = new ColorInput()
+            var input = new GlossyInput()
             {
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new DefaultSurfaceEffect(ShadingModel.Glossy, TextureSetup.NoTextures, input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -618,9 +620,9 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromGlossyAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix, float roughness = 0f)
+        public static SurfaceEffect FromGlossyAlbedoTexture(float4 albedoColor, Texture albedoTex, float2 texTiles, float albedoMix, float roughness = 0f)
         {
-            var input = new TextureInputColor()
+            var input = new TextureInputGlossy()
             {
                 Albedo = albedoColor,
                 AlbedoTex = albedoTex,
@@ -629,7 +631,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            return new DefaultSurfaceEffect(ShadingModel.Glossy, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -640,18 +642,19 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
-        public static DefaultSurfaceEffect FromGlossyNormalTexture(float4 albedoColor, Texture normalTex, float normalMapStrength, float2 texTiles, float roughness = 0f)
+        public static SurfaceEffect FromGlossyNormalTexture(float4 albedoColor, Texture normalTex, float normalMapStrength, float2 texTiles, float roughness = 0f)
         {
-            var input = new TextureInputColor()
+            var input = new TextureInputGlossy()
             {
                 Albedo = albedoColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles,
-                Roughness = roughness
+                Roughness = roughness,
+                AlbedoMix = 0.0f
             };
 
-            return new DefaultSurfaceEffect(ShadingModel.Glossy, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -664,9 +667,9 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
-        public static DefaultSurfaceEffect FromGlossyTexture(float4 albedoColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f, float roughness = 0f)
+        public static SurfaceEffect FromGlossyTexture(float4 albedoColor, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f, float roughness = 0f)
         {
-            var input = new TextureInputColor()
+            var input = new TextureInputGlossy()
             {
                 Albedo = albedoColor,
                 AlbedoMix = albedoMix,
@@ -678,7 +681,7 @@ namespace Fusee.Engine.Core
             };
 
             var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new DefaultSurfaceEffect(ShadingModel.Glossy, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, texSetup), VertShards.SufOutBody_PosNorm);
         }
 
         #endregion
@@ -697,7 +700,7 @@ namespace Fusee.Engine.Core
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static DefaultSurfaceEffect FromBRDF(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface)
+        public static SurfaceEffect FromBRDF(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface)
         {
             var input = new BRDFInput()
             {
@@ -710,7 +713,7 @@ namespace Fusee.Engine.Core
                 Subsurface = subsurface,
                 SubsurfaceColor = subsurfaceColor
             };
-            return new DefaultSurfaceEffect(ShadingModel.BRDF, TextureSetup.NoTextures, input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -727,7 +730,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
+        public static SurfaceEffect FromBRDFAlbedoTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, float albedoMix, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
@@ -744,7 +747,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            return new DefaultSurfaceEffect(ShadingModel.BRDF, TextureSetup.AlbedoTex, input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -761,7 +764,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
+        public static SurfaceEffect FromBRDFNormalTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture normalTex, float normalMapStrength, float2 texTiles)
         {
             var input = new TextureInputBRDF()
             {
@@ -775,10 +778,11 @@ namespace Fusee.Engine.Core
                 SubsurfaceColor = subsurfaceColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
-                TexTiles = texTiles
+                TexTiles = texTiles,
+                AlbedoMix = 0.0f
             };
 
-            return new DefaultSurfaceEffect(ShadingModel.BRDF, TextureSetup.NormalMap, input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
         }
 
         /// <summary>
@@ -797,7 +801,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static DefaultSurfaceEffect FromBRDFTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromBRDFTexture(float4 albedoColor, float4 emissionColor, float3 subsurfaceColor, float roughness, float metallic, float specular, float ior, float subsurface, Texture albedoTex, Texture normalTex, float albedoMix, float2 texTiles, float normalMapStrength = 0.5f)
         {
             var input = new TextureInputBRDF()
             {
@@ -817,7 +821,7 @@ namespace Fusee.Engine.Core
             };
 
             var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new DefaultSurfaceEffect(ShadingModel.BRDF, texSetup, input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, texSetup), VertShards.SufOutBody_PosNorm);
         }
         #endregion
 

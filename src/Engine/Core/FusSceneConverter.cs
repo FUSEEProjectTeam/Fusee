@@ -424,8 +424,8 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            var _currentNodeDefaultSurfaceEffect = _currentNode.GetComponent<DefaultSurfaceEffect>();
-            if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.TextureSetup.HasFlag(TextureSetup.NormalMap))
+            var _currentNodeDefaultSurfaceEffect = _currentNode.GetComponent<SurfaceEffect>();
+            if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -1007,12 +1007,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="effect"></param>
         [VisitMethod]
-        public void ConvEffect(DefaultSurfaceEffect effect)
+        public void ConvEffect(SurfaceEffect effect)
         {
-            if (effect.ShadingModel == ShadingModel.BRDF)
+            if (effect.SurfaceInput.ShadingModel == ShadingModel.BRDF)
             {
                 var mat = new FusMaterialBRDF() { Albedo = new AlbedoChannel() };
-                if (effect.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.TextureSetup.HasFlag(TextureSetup.NormalMap))
+                if (effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
@@ -1067,13 +1067,13 @@ namespace Fusee.Engine.Core
                 _currentNode.AddComponent(mat);
 
             }
-            else if (effect.ShadingModel == ShadingModel.DiffuseSpecular ||
-                    effect.ShadingModel == ShadingModel.DiffuseOnly ||
-                    effect.ShadingModel == ShadingModel.Unlit ||
-                    effect.ShadingModel == ShadingModel.Glossy)
+            else if (effect.SurfaceInput.ShadingModel == ShadingModel.DiffuseSpecular ||
+                    effect.SurfaceInput.ShadingModel == ShadingModel.DiffuseOnly ||
+                    effect.SurfaceInput.ShadingModel == ShadingModel.Unlit ||
+                    effect.SurfaceInput.ShadingModel == ShadingModel.Glossy)
             {
                 var mat = new FusMaterialStandard();
-                if (effect.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.TextureSetup.HasFlag(TextureSetup.NormalMap))
+                if (effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
                 {
                     var surfaceInput = (TextureInputSpecular)effect.SurfaceInput;
 

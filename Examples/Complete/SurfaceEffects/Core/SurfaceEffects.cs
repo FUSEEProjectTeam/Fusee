@@ -34,12 +34,13 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
         private bool _keys;
 
-        private DefaultSurfaceEffect _gold_brdfFx;
-        private DefaultSurfaceEffect _paint_brdfFx;
-        private DefaultSurfaceEffect _rubber_brdfFx;
-        private DefaultSurfaceEffect _subsurf_brdfFx;
+        private SurfaceEffect _gold_brdfFx;
+        private SurfaceEffect _paint_brdfFx;
+        private SurfaceEffect _rubber_brdfFx;
+        private SurfaceEffect _subsurf_brdfFx;
 
-        private DefaultSurfaceEffect _testFx;
+        private SurfaceEffect _testFx;
+        private SurfaceEffect _testEdlFx;
 
         // Init is called on startup.
         public override void Init()
@@ -58,10 +59,9 @@ namespace Fusee.Examples.SurfaceEffects.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
 
-            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            _testFx = new DefaultSurfaceEffect(
-                ShadingModel.DiffuseSpecular, texSetup,new TextureInputSpecular(),
-                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, texSetup),
+            var surfInput = new TextureInputSpecular();
+            _testFx = new SurfaceEffect(surfInput,
+                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(surfInput.ShadingModel, surfInput.TextureSetup),
                 Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
 
             _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
@@ -122,7 +122,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 subsurface: 0.1f
             );
 
-            _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
+            _rocketScene.Children[0].Components[1] = _testEdlFx;//_subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = _paint_brdfFx;
             _rocketScene.Children[3].Components[1] = _gold_brdfFx;

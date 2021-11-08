@@ -267,13 +267,13 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasHoverColor;
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _canvasHoverColor;
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasDefaultColor;
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _canvasDefaultColor;
         }
 
         public void OnBtnCatDown(CodeComponent sender)

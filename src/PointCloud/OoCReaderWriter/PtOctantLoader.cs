@@ -127,7 +127,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         private ConcurrentDictionary<Guid, SceneNode> _globalLoadingCache;                     // nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
 
         private readonly WireframeCube wfc = new();
-        private DefaultSurfaceEffect _wfcEffect;
+        private SurfaceEffect _wfcEffect;
         private readonly int _sceneUpdateTime = 33; // in ms
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
@@ -156,7 +156,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         public void Init(RenderContext rc)
         {
             RC = rc;
-            _wfcEffect = (DefaultSurfaceEffect)RC.DefaultEffect;
+            _wfcEffect = (SurfaceEffect)RC.DefaultEffect;
 
             Task loadingTask = new(() =>
             {

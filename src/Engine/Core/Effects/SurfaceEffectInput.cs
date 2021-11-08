@@ -1,6 +1,7 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Engine.Common;
 using System;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core.Effects
 {
@@ -8,8 +9,11 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case it only contains the albedo color.
     /// </summary>
-    public class ColorInput : INotifyValueChange<SurfaceEffectEventArgs>
+    public class UnlitInput : INotifyValueChange<SurfaceEffectEventArgs>
     {
+        public ShadingModel ShadingModel { get; protected set; } = ShadingModel.Unlit;
+        public TextureSetup TextureSetup { get; protected set; } = TextureSetup.NoTextures;
+
         /// <summary>
         /// The albedo color.
         /// </summary>
@@ -29,6 +33,30 @@ namespace Fusee.Engine.Core.Effects
         private float4 _albedo;
 
         /// <summary>
+        /// Event to notify a <see cref="SurfaceEffectBase"/> about a changed value of a property of this class.
+        /// </summary>
+        public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;
+
+        /// <summary>
+        /// This method needs to be called by the setter of each property.
+        /// A <see cref="SurfaceEffectBase"/> can register <see cref="Effect.SetFxParam{T}(string, T)"/> to the <see cref="PropertyChanged"/> event.
+        /// </summary>
+        /// <param name="type">The type of the property.</param>
+        /// <param name="name">The name of the property.</param>
+        /// <param name="value">The value of the property.</param>
+        public void NotifyValueChanged(Type type, string name, object value)
+        {
+            PropertyChanged?.Invoke(this, new SurfaceEffectEventArgs(type, name, value));
+        }
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case it only contains the albedo color.
+    /// </summary>
+    public class DiffuseInput : UnlitInput
+    {
+        /// <summary>
         /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
         /// </summary>
         public float Roughness
@@ -46,29 +74,30 @@ namespace Fusee.Engine.Core.Effects
         }
         private float _roughness;
 
-        /// <summary>
-        /// Event to notify a <see cref="SurfaceEffect"/> about a changed value of a property of this class.
-        /// </summary>
-        public event EventHandler<SurfaceEffectEventArgs> PropertyChanged;
-
-        /// <summary>
-        /// This method needs to be called by the setter of each property.
-        /// A <see cref="SurfaceEffect"/> can register <see cref="Effect.SetFxParam{T}(string, T)"/> to the <see cref="PropertyChanged"/> event.
-        /// </summary>
-        /// <param name="type">The type of the property.</param>
-        /// <param name="name">The name of the property.</param>
-        /// <param name="value">The value of the property.</param>
-        public void NotifyValueChanged(Type type, string name, object value)
+        public DiffuseInput()
         {
-            PropertyChanged?.Invoke(this, new SurfaceEffectEventArgs(type, name, value));
+            ShadingModel = ShadingModel.DiffuseOnly;
         }
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case it only contains the albedo color.
+    /// </summary>
+    public class GlossyInput : DiffuseInput
+    {
+        public GlossyInput()
+        {
+            ShadingModel = ShadingModel.Glossy;
+        }
+        
     }
 
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for a BRDF lighting calculation.
     /// </summary>
-    public class BRDFInput : ColorInput
+    public class BRDFInput : DiffuseInput
     {
         /// <summary>
         /// The albedo color.
@@ -173,13 +202,19 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float3 _subsurfaceColor;
+
+        public BRDFInput()
+        {
+            ShadingModel = ShadingModel.BRDF;
+            TextureSetup = TextureSetup.NoTextures;
+        }
     }
 
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
-    public class SpecularInput : ColorInput
+    public class SpecularInput : DiffuseInput
     {
         /// <summary>
         /// The albedo color.
@@ -232,6 +267,208 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _shininess;
+
+        public SpecularInput()
+        {
+            ShadingModel = ShadingModel.DiffuseSpecular;
+            TextureSetup = TextureSetup.NoTextures;
+        }
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case for specular lighting with strength and shininess.
+    /// </summary>
+    public class TextureInputUnlit : UnlitInput
+    {
+        /// <summary>
+        /// The mix between albedo texture and albedo color.
+        /// </summary>
+        public float AlbedoMix
+        {
+            get => _albedoMix;
+            set
+            {
+                if (value != _albedoMix)
+                {
+                    _albedoMix = value;
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                }
+            }
+        }
+        private float _albedoMix;
+
+        /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture AlbedoTex
+        {
+            get => _albedoTex;
+            set
+            {
+                if (value != _albedoTex)
+                {
+                    _albedoTex = value;
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                }
+            }
+        }
+        private Texture _albedoTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public Texture NormalTex
+        {
+            get => _normalTex;
+            set
+            {
+                if (value != _normalTex)
+                {
+                    _normalTex = value;
+                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                }
+            }
+        }
+        private Texture _normalTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float NormalMappingStrength
+        {
+            get => _normalMappingStrength;
+            set
+            {
+                if (value != _normalMappingStrength)
+                {
+                    _normalMappingStrength = value;
+                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                }
+            }
+        }
+        private float _normalMappingStrength = 1f;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles = float2.One;
+
+        public TextureInputUnlit()
+        {
+            ShadingModel = ShadingModel.Unlit;
+            TextureSetup = TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+        }
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// In this case for specular lighting with strength and shininess.
+    /// </summary>
+    public class TextureInputDiffuse : DiffuseInput
+    {
+        /// <summary>
+        /// The mix between albedo texture and albedo color.
+        /// </summary>
+        public float AlbedoMix
+        {
+            get => _albedoMix;
+            set
+            {
+                if (value != _albedoMix)
+                {
+                    _albedoMix = value;
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                }
+            }
+        }
+        private float _albedoMix;
+
+        /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture AlbedoTex
+        {
+            get => _albedoTex;
+            set
+            {
+                if (value != _albedoTex)
+                {
+                    _albedoTex = value;
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                }
+            }
+        }
+        private Texture _albedoTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public Texture NormalTex
+        {
+            get => _normalTex;
+            set
+            {
+                if (value != _normalTex)
+                {
+                    _normalTex = value;
+                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                }
+            }
+        }
+        private Texture _normalTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float NormalMappingStrength
+        {
+            get => _normalMappingStrength;
+            set
+            {
+                if (value != _normalMappingStrength)
+                {
+                    _normalMappingStrength = value;
+                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                }
+            }
+        }
+        private float _normalMappingStrength = 1f;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles = float2.One;
+
+        public TextureInputDiffuse()
+        {
+            ShadingModel = ShadingModel.DiffuseOnly;
+            TextureSetup = TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+        }
     }
 
     /// <summary>
@@ -324,13 +561,19 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float2 _texTiles = float2.One;
+
+        public TextureInputSpecular()
+        {
+            ShadingModel = ShadingModel.DiffuseSpecular;
+            TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+        }
     }
 
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
     /// In this case for specular lighting with strength and shininess.
     /// </summary>
-    public class TextureInputColorUnlit : ColorInput
+    public class TextureInputGlossy : GlossyInput
     {
         /// <summary>
         /// The mix between albedo texture and albedo color.
@@ -369,30 +612,6 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The normal texture.
         /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles = float2.One;
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
-    /// </summary>
-    public class TextureInputColor : TextureInputColorUnlit
-    {
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
         public Texture NormalTex
         {
             get => _normalTex;
@@ -423,6 +642,29 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _normalMappingStrength = 1f;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles = float2.One;
+
+        public TextureInputGlossy()
+        {
+            ShadingModel = ShadingModel.Glossy;
+            TextureSetup = TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+        }
     }
 
     /// <summary>
@@ -515,5 +757,20 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float2 _texTiles;
+
+        public TextureInputBRDF()
+        {
+            ShadingModel = ShadingModel.BRDF;
+            TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
+        }
     }
+    
+    public class EdlInput : UnlitInput
+    {
+        public EdlInput()
+        {
+            ShadingModel = ShadingModel.Edl;
+        }
+    }
+
 }

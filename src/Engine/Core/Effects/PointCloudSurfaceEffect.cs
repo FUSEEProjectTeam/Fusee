@@ -1,6 +1,4 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
@@ -8,9 +6,9 @@ using Fusee.Math.Core;
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// <see cref="SurfaceEffect"/> for Rendering Point Clouds.
+    /// <see cref="SurfaceEffectBase"/> for Rendering Point Clouds.
     /// </summary>
-    public class PointCloudSurfaceEffect : DefaultSurfaceEffect
+    public class PointCloudSurfaceEffect : SurfaceEffect
     {
         /// <summary>
         /// The shader shard containing an value that is used to change the lighting calculation.
@@ -146,7 +144,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
-            : base(ShadingModel.Edl, TextureSetup.NoTextures, new ColorInput() { Albedo = new float4(.5f, 0f, .5f, 1f) }, FragShards.SurfOutBody_VertOrAlbedoColor, VertShards.SufOutBody_Pos, rendererStates)
+            : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) }, FragShards.SurfOutBody_VertOrAlbedoColor, VertShards.SufOutBody_Pos, rendererStates)
         {
             RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
         }

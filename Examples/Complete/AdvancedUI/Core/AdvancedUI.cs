@@ -235,13 +235,13 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         uiInput.IsVisible = true;
 
-                        var effect = circle.GetComponent<DefaultSurfaceEffect>();
+                        var effect = circle.GetComponent<SurfaceEffect>();
                         effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaVis);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
-                        var effect = circle.GetComponent<DefaultSurfaceEffect>();
+                        var effect = circle.GetComponent<SurfaceEffect>();
                         effect.SetDiffuseAlphaInShaderEffect(UserInterfaceHelper.alphaInv);
 
                     }

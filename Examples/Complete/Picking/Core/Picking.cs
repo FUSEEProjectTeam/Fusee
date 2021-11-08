@@ -128,13 +128,13 @@ namespace Fusee.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-                        var ef = _currentPick.Node.GetComponent<DefaultSurfaceEffect>();
+                        var ef = _currentPick.Node.GetComponent<SurfaceEffect>();
                         ef.SurfaceInput.Albedo = _oldColor;
                     }
 
                     if (newPick != null)
                     {
-                        var ef = newPick.Node.GetComponent<DefaultSurfaceEffect>();
+                        var ef = newPick.Node.GetComponent<SurfaceEffect>();
                         _oldColor = ef.SurfaceInput.Albedo;
                         ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
                     }

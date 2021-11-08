@@ -117,7 +117,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
-        public SurfaceEffect DefaultEffect;
+        public SurfaceEffectBase DefaultEffect;
 
         /// <summary>
         /// The currently used <see cref="Effect"/> is set in <see cref="SetEffect(Effect, bool)"/>.
@@ -1037,7 +1037,7 @@ namespace Fusee.Engine.Core
                     }
                     else
                     {
-                        var surfEffect = (SurfaceEffect)ef;
+                        var surfEffect = (SurfaceEffectBase)ef;
 
                         var doRenderPoints = false;
                         if (efType == typeof(PointCloudSurfaceEffect))
@@ -1049,15 +1049,15 @@ namespace Fusee.Engine.Core
                         //May be difficult because we'd need to remove or add them (and only them) depending on the render method
                         if (fx == null) //effect was never build before
                         {
-                            surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.ShadingModel, surfEffect.TextureSetup, doRenderPoints)));
-                            foreach (var dcl in SurfaceEffect.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
+                            surfEffect.VertexShaderSrc.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Vertex.VertMain.VertexMain(surfEffect.SurfaceInput.ShadingModel, surfEffect.SurfaceInput.TextureSetup, doRenderPoints)));
+                            foreach (var dcl in SurfaceEffectBase.CreateForwardLightingParamDecls(ShaderShards.Fragment.Lighting.NumberOfLightsForward))
                                 surfEffect.ParamDecl.Add(dcl.Hash, dcl);
                         }
 
                         if (renderForward)
                         {
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.ShadingModel)));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.AssembleLightingMethods(surfEffect.SurfaceInput.ShadingModel)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.ForwardLighting(surfEffect.SurfaceInput.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.Lighting.LightStructDeclaration));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.FixedNumberLightArray));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.ColorOut()));
@@ -1066,12 +1066,12 @@ namespace Fusee.Engine.Core
                         {
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Property, ShaderShards.Fragment.FragProperties.GBufferOut()));
                             renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Method, ShaderShards.Fragment.Lighting.ColorManagementMethods()));
-                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
+                            renderDependentShards.Add(new KeyValuePair<ShardCategory, string>(ShardCategory.Main, ShaderShards.Fragment.FragMain.RenderToGBuffer(surfEffect.SurfaceInput.ShadingModel, nameof(surfEffect.SurfaceInput), SurfaceOut.StructName)));
                         }
 
-                        vert = SurfaceEffect.JoinShards(surfEffect.VertexShaderSrc);
-                        geom = SurfaceEffect.JoinShards(surfEffect.GeometryShaderSrc);
-                        frag = SurfaceEffect.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
+                        vert = SurfaceEffectBase.JoinShards(surfEffect.VertexShaderSrc);
+                        geom = SurfaceEffectBase.JoinShards(surfEffect.GeometryShaderSrc);
+                        frag = SurfaceEffectBase.JoinShards(surfEffect.FragmentShaderSrc, renderDependentShards);
                     }
                     var shaderOnGpu = _rci.CreateShaderProgram(vert, frag, geom);
                     var activeUniforms = _rci.GetActiveUniformsList(shaderOnGpu).ToDictionary(info => info.Hash, info => info);

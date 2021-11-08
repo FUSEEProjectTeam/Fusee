@@ -90,6 +90,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             switch (shadingModel)
             {
                 case ShadingModel.Unlit:
+                case ShadingModel.Edl:
                     break;
                 case ShadingModel.DiffuseSpecular:
                     res.Add("OUT.specularStrength = IN.SpecularStrength;");
@@ -109,8 +110,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     res.Add("OUT.subsurface = IN.Subsurface;");
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
                     res.Add("OUT.emission = IN.Emission;");
-                    break;
-                case ShadingModel.Edl:
                     break;
                 default:
                     break;

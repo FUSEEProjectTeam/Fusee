@@ -135,7 +135,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _cornerbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    cornerstone.GetComponent<DefaultSurfaceEffect>(),
+                                    cornerstone.GetComponent<SurfaceEffect>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
                             Name = "Cornerstone" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -153,7 +153,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallXbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallX.GetComponent<DefaultSurfaceEffect>(),
+                                    wallX.GetComponent<SurfaceEffect>(),
                                     wallX.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -171,7 +171,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallZbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallZ.GetComponent<DefaultSurfaceEffect>(),
+                                    wallZ.GetComponent<SurfaceEffect>(),
                                     wallZ.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -189,7 +189,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
                                     },
-                                    head.GetComponent<DefaultSurfaceEffect>(),
+                                    head.GetComponent<SurfaceEffect>(),
                                     head.GetComponent<Mesh>()
                                 },
                             Name = "Head",
@@ -217,7 +217,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                             {
                                                 Translation = new float3(0,0,0)
                                             },
-                                            ball.GetComponent<DefaultSurfaceEffect>(),
+                                            ball.GetComponent<SurfaceEffect>(),
                                             ball.GetComponent<Mesh>()
                                         },
                                     Name = "Body",

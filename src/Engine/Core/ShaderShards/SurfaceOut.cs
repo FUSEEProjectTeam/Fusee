@@ -75,24 +75,24 @@ namespace Fusee.Engine.Core.ShaderShards
 
         /// <summary>
         /// This effect uses eye dome lighting and is used for point cloud rendering.
-        /// CAUTION: it will only work with <see cref="SurfaceEffect"/>s that have the needed unirom paramters.
+        /// CAUTION: it will only work with <see cref="SurfaceEffectBase"/>s that have the needed unirom paramters.
         /// See: <see cref="PointCloudSurfaceEffect.EDLStrength"/> and <see cref="PointCloudSurfaceEffect.EDLNeighbourPixels"/>
         /// </summary>
         Edl = 32
     }
 
     /// <summary>
-    /// Contains all needed information to define the <see cref="SurfaceEffect.SurfaceOutput"/>.
+    /// Contains all needed information to define the <see cref="SurfaceEffectBase.SurfaceOutput"/>.
     /// </summary>
     public static class SurfaceOut
     {
         /// <summary>
-        /// The surface effects "out"-struct (<see cref="SurfaceEffect.SurfaceOutput"/>) always has this type in the shader code.
+        /// The surface effects "out"-struct (<see cref="SurfaceEffectBase.SurfaceOutput"/>) always has this type in the shader code.
         /// </summary>
         public const string StructName = "SurfOut";
 
         /// <summary>
-        /// The surface effects "out"-struct (<see cref="SurfaceEffect.SurfaceOutput"/>) always has this variable name in the shader code.
+        /// The surface effects "out"-struct (<see cref="SurfaceEffectBase.SurfaceOutput"/>) always has this variable name in the shader code.
         /// </summary>
         public const string SurfOutVaryingName = "surfOut";
 
@@ -125,7 +125,7 @@ namespace Fusee.Engine.Core.ShaderShards
         private static readonly string DerfafultBRDFOut = $"{StructName}(vec3(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
 
         /// <summary>
-        /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
+        /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffectBase.SurfaceOutput"/> struct.
         /// </summary>
         /// <param name="setup">The <see cref="ShadingModel"/> that decides what the appropriate struct is.</param>
         /// <returns></returns>
@@ -188,10 +188,10 @@ namespace Fusee.Engine.Core.ShaderShards
         }
 
         /// <summary>
-        /// Returns the GLSL method that modifies the values of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
+        /// Returns the GLSL method that modifies the values of the <see cref="SurfaceEffectBase.SurfaceOutput"/> struct.
         /// </summary>
         /// <param name="methodBody">User-written shader code for modifying.</param>
-        /// <param name="inputType">The type of the <see cref="SurfaceEffect.SurfaceInput"/> struct.</param>
+        /// <param name="inputType">The type of the <see cref="SurfaceEffectBase.SurfaceInput"/> struct.</param>
         /// <returns></returns>
         public static string GetChangeSurfFragMethod(List<string> methodBody, Type inputType)
         {
@@ -205,7 +205,7 @@ namespace Fusee.Engine.Core.ShaderShards
         }
 
         /// <summary>
-        /// Returns the GLSL method that modifies the values of the <see cref="SurfaceEffect.SurfaceOutput"/> struct.
+        /// Returns the GLSL method that modifies the values of the <see cref="SurfaceEffectBase.SurfaceOutput"/> struct.
         /// </summary>
         /// <param name="methodBody">User-written shader code for modifying.</param>
         /// <param name="setup">The lighting setup.</param>
