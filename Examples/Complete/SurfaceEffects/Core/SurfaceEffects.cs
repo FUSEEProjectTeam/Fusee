@@ -3,7 +3,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
@@ -122,7 +121,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 subsurface: 0.1f
             );
 
-            _rocketScene.Children[0].Components[1] = _testEdlFx;//_subsurf_brdfFx;
+            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = _paint_brdfFx;
             _rocketScene.Children[3].Components[1] = _gold_brdfFx;

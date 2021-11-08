@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core.ShaderShards
     }
 
     /// <summary>
-    /// Used to create the correct Surface Effect for the given lighting parameters.
+    /// Used to create the correct Surface Effect for a given lighting calculation.
     /// </summary>
     public enum ShadingModel
     {

@@ -1,17 +1,24 @@
-﻿using Fusee.Math.Core;
-using Fusee.Engine.Common;
-using System;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Math.Core;
+using System;
 
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
+    /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
     /// In this case it only contains the albedo color.
     /// </summary>
     public class UnlitInput : INotifyValueChange<SurfaceEffectEventArgs>
     {
+        /// <summary>
+        /// The <see cref="ShaderShards.ShadingModel"/>, appropriate for this Input.
+        /// </summary>
         public ShadingModel ShadingModel { get; protected set; } = ShadingModel.Unlit;
+
+        /// <summary>
+        /// The <see cref="ShaderShards.TextureSetup"/>.
+        /// </summary>
         public TextureSetup TextureSetup { get; protected set; } = TextureSetup.NoTextures;
 
         /// <summary>
@@ -51,8 +58,8 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case it only contains the albedo color.
+    /// Class that can be used to collect properties that will serve as uniforms for diffuse only lighting calculation.
+    /// In addition to the albedo color this Input provides a Roughness value.
     /// </summary>
     public class DiffuseInput : UnlitInput
     {
@@ -74,6 +81,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float _roughness;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="DiffuseInput"/>.
+        /// </summary>
         public DiffuseInput()
         {
             ShadingModel = ShadingModel.DiffuseOnly;
@@ -81,21 +91,23 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case it only contains the albedo color.
+    /// Class that can be used to collect properties that will serve as uniforms for a glossy lighting calculation.
+    /// In addition to the albedo color this Input provides a Roughness value.
     /// </summary>
     public class GlossyInput : DiffuseInput
     {
+        /// <summary>
+        /// Creates a new instance of type <see cref="GlossyInput"/>.
+        /// </summary>
         public GlossyInput()
         {
             ShadingModel = ShadingModel.Glossy;
         }
-        
+
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for a BRDF lighting calculation.
+    /// Class that can be used to collect properties that will serve as uniforms for a BRDF lighting calculation.
     /// </summary>
     public class BRDFInput : DiffuseInput
     {
@@ -203,6 +215,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float3 _subsurfaceColor;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="BRDFInput"/>.
+        /// </summary>
         public BRDFInput()
         {
             ShadingModel = ShadingModel.BRDF;
@@ -211,8 +226,7 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// Class that can be used to collect properties that will serve as uniforms for specular lighting with strength and shininess.
     /// </summary>
     public class SpecularInput : DiffuseInput
     {
@@ -268,6 +282,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float _shininess;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="SpecularInput"/>.
+        /// </summary>
         public SpecularInput()
         {
             ShadingModel = ShadingModel.DiffuseSpecular;
@@ -276,8 +293,8 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class TextureInputUnlit : UnlitInput
     {
@@ -366,6 +383,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float2 _texTiles = float2.One;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="TextureInputUnlit"/>.
+        /// </summary>
         public TextureInputUnlit()
         {
             ShadingModel = ShadingModel.Unlit;
@@ -374,8 +394,8 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// Class that can be used to collect properties that will serve as uniforms for diffuse only lighting calculation.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class TextureInputDiffuse : DiffuseInput
     {
@@ -464,6 +484,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float2 _texTiles = float2.One;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="TextureInputDiffuse"/>.
+        /// </summary>
         public TextureInputDiffuse()
         {
             ShadingModel = ShadingModel.DiffuseOnly;
@@ -472,8 +495,8 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// Class that can be used to collect properties that will serve as uniforms for specular lighting with strength and shininess.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class TextureInputSpecular : SpecularInput
     {
@@ -562,6 +585,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float2 _texTiles = float2.One;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="TextureInputSpecular"/>.
+        /// </summary>
         public TextureInputSpecular()
         {
             ShadingModel = ShadingModel.DiffuseSpecular;
@@ -570,8 +596,8 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// Class that can be used to collect properties that will serve as uniforms for a glossy lighting calculation.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class TextureInputGlossy : GlossyInput
     {
@@ -660,6 +686,9 @@ namespace Fusee.Engine.Core.Effects
         }
         private float2 _texTiles = float2.One;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="TextureInputGlossy"/>.
+        /// </summary>
         public TextureInputGlossy()
         {
             ShadingModel = ShadingModel.Glossy;
@@ -668,8 +697,8 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a specific lighting setup.
-    /// In this case for specular lighting with strength and shininess.
+    /// Class that can be used to collect properties that will serve as uniforms for a BRDF lighting calculation.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class TextureInputBRDF : BRDFInput
     {
@@ -758,19 +787,28 @@ namespace Fusee.Engine.Core.Effects
         }
         private float2 _texTiles;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="TextureInputBRDF"/>.
+        /// </summary>
         public TextureInputBRDF()
         {
             ShadingModel = ShadingModel.BRDF;
             TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
         }
     }
-    
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for eye dome lighting.
+    /// NOTE: This Input is only compatible with <see cref="PointCloudSurfaceEffect"/>s right now.
+    /// </summary>
     public class EdlInput : UnlitInput
     {
+        /// <summary>
+        /// Creates a new instance of type <see cref="EdlInput"/>.
+        /// </summary>
         public EdlInput()
         {
             ShadingModel = ShadingModel.Edl;
         }
     }
-
 }
