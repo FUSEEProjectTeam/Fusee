@@ -150,7 +150,7 @@ namespace Fusee.Engine.Core
         private readonly ConcurrentDictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
 
-        private readonly Dictionary<SceneNode, FusMaterialBase> _allEffects;
+        private readonly Dictionary<FusMaterialBase, List<SceneNode>> _allEffects;
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -170,7 +170,7 @@ namespace Fusee.Engine.Core
             _texMap = new ConcurrentDictionary<string, Texture>();
             _boneContainers = new Stack<SceneNode>();
 
-            _allEffects = new Dictionary<SceneNode, FusMaterialBase>();
+            _allEffects = new Dictionary<FusMaterialBase, List<SceneNode>>();
         }
 
         internal async Task<SceneContainer> Convert(FusScene sc)
@@ -180,10 +180,9 @@ namespace Fusee.Engine.Core
 
             // During scene traversal we collect all effects but do not create them, yet
             // within this loop the look up and texture retrival is being performed in an asynchronous way            
-            var idx = 0;
-            foreach (var node in _allEffects.Keys)
+
+            foreach (var mat in _allEffects.Keys)
             {
-                var mat = _allEffects[node];
                 Effect effect = null;
 
                 if (mat is FusMaterialStandard m)
@@ -204,20 +203,27 @@ namespace Fusee.Engine.Core
                     continue;
                 }
 
-                node.RemoveComponent<Effect>();
-                var t = node.GetComponent<Transform>();
-                node.Components.Insert(t == null ? 0 : 1, effect); // insert after transform but before mesh or any other component
-
-                // calculate tangents and bitangets if normal mapping is enabled for this material/effect
-                var currentNodeDefaultSurfaceEffect = node.GetComponent<DefaultSurfaceEffect>();
-                var mesh = node.GetComponent<Mesh>();
-                if (mesh != null && currentNodeDefaultSurfaceEffect != null && currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                foreach (var node in _allEffects[mat])
                 {
-                    mesh.Tangents = mesh.CalculateTangents();
-                    mesh.BiTangents = mesh.CalculateBiTangents();
-                }
+                    if (node.GetComponents<Effect>().Count() > 0)
+                    {
+                        Diagnostics.Warn($"Node {node} already contains an effect, multiple effects can't be rendered or be used, yet!");
+                    }
 
-                ++idx;
+                    // always insert after transform but before any other component to not break 
+                    // code which relies upon this oder
+                    var hasTransform = node.GetComponent<Transform>() != null;
+                    node.Components.Insert(hasTransform ? 1 : 0 , effect); 
+
+                    // calculate tangents and bitangets if normal mapping is enabled for this material/effect
+                    var currentNodeDefaultSurfaceEffect = node.GetComponent<DefaultSurfaceEffect>();
+                    var mesh = node.GetComponent<Mesh>();
+                    if (mesh != null && currentNodeDefaultSurfaceEffect != null && currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                    {
+                        mesh.Tangents = mesh.CalculateTangents();
+                        mesh.BiTangents = mesh.CalculateBiTangents();
+                    }
+                }
             }
 
             return _convertedScene;
@@ -401,8 +407,19 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            //var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, matComp);
+            if (!_allEffects.TryGetValue(matComp, out var sfx))
+            {
+                sfx = new List<SceneNode>
+                {
+                    _currentNode
+                };
+
+                _allEffects[matComp] = sfx;
+            }
+            else
+            {
+                sfx.Add(_currentNode);
+            }
         }
 
         /// <summary>
@@ -417,8 +434,19 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            //var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, matComp);
+            if (!_allEffects.TryGetValue(matComp, out var sfx))
+            {
+                sfx = new List<SceneNode>
+                {
+                    _currentNode
+                };
+
+                _allEffects[matComp] = sfx;
+            }
+            else
+            {
+                sfx.Add(_currentNode);
+            }
         }
 
         /// <summary>
@@ -433,8 +461,19 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            //var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, matComp);
+            if (!_allEffects.TryGetValue(matComp, out var sfx))
+            {
+                sfx = new List<SceneNode>
+                {
+                    _currentNode
+                };
+
+                _allEffects[matComp] = sfx;
+            }
+            else
+            {
+                sfx.Add(_currentNode);
+            }
         }
 
         /// <summary>
@@ -449,8 +488,19 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            //var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, matComp);
+            if (!_allEffects.TryGetValue(matComp, out var sfx))
+            {
+                sfx = new List<SceneNode>
+                {
+                    _currentNode
+                };
+
+                _allEffects[matComp] = sfx;
+            }
+            else
+            {
+                sfx.Add(_currentNode);
+            }
         }
 
         /// <summary>
