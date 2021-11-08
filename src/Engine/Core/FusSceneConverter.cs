@@ -213,7 +213,7 @@ namespace Fusee.Engine.Core
                     // always insert after transform but before any other component to not break 
                     // code which relies upon this oder
                     var hasTransform = node.GetComponent<Transform>() != null;
-                    node.Components.Insert(hasTransform ? 1 : 0 , effect); 
+                    node.Components.Insert(hasTransform ? 1 : 0, effect);
 
                     // calculate tangents and bitangets if normal mapping is enabled for this material/effect
                     var currentNodeDefaultSurfaceEffect = node.GetComponent<DefaultSurfaceEffect>();
