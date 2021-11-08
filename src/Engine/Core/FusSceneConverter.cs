@@ -175,7 +175,7 @@ namespace Fusee.Engine.Core
 
         internal async Task<SceneContainer> Convert(FusScene sc)
         {
-            _fusScene = sc;         
+            _fusScene = sc;
             Traverse(sc.Children);
 
             // During scene traversal we collect all effects but do not create them, yet
@@ -198,7 +198,7 @@ namespace Fusee.Engine.Core
                 if (mat is FusMaterialBRDF b)
                     effect = await LookupMaterial(b);
 
-                if(effect == null)
+                if (effect == null)
                 {
                     Diagnostics.Warn($"Material skipped.");
                     continue;
