@@ -157,7 +157,7 @@ namespace Fusee.Examples.Simple.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
-            var view = mtxCam * mtxRot;
+            var view = mtxCam * mtxRot * float4x4.CreateTranslation(0, -7, 0);
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 

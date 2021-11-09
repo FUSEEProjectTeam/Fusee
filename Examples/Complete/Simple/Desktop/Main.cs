@@ -41,7 +41,7 @@ namespace Fusee.Examples.Simple.Desktop
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                        return await FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
                     Decoder = (string id, object storage) =>
                     {

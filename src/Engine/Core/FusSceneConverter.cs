@@ -150,7 +150,7 @@ namespace Fusee.Engine.Core
         private readonly ConcurrentDictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
 
-        private readonly Dictionary<SceneNode, Task<Effect>> _allEffects;
+        private readonly Dictionary<SceneNode, FusMaterialBase> _allEffects;
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -170,7 +170,7 @@ namespace Fusee.Engine.Core
             _texMap = new ConcurrentDictionary<string, Texture>();
             _boneContainers = new Stack<SceneNode>();
 
-            _allEffects = new Dictionary<SceneNode, Task<Effect>>();
+            _allEffects = new Dictionary<SceneNode, FusMaterialBase>();
         }
 
         internal async Task<SceneContainer> Convert(FusScene sc)
@@ -178,15 +178,39 @@ namespace Fusee.Engine.Core
             _fusScene = sc;
             Traverse(sc.Children);
 
-            var fx = await Task.WhenAll(_allEffects.Values);
+            // During scene traversal we collect all effects but do not create them, yet
+            // within this loop the look up and texture retrival is being performed in an asynchronous way            
             var idx = 0;
-            foreach (var key in _allEffects.Keys)
+            foreach (var node in _allEffects.Keys)
             {
-                key.RemoveComponent<Effect>();
-                key.Components.Insert(1, fx[idx]);
+                var mat = _allEffects[node];
+                Effect effect = null;
 
-                var currentNodeDefaultSurfaceEffect = key.GetComponent<DefaultSurfaceEffect>();
-                var mesh = key.GetComponent<Mesh>();
+                if (mat is FusMaterialStandard m)
+                    effect = await LookupMaterial(m);
+
+                if (mat is FusMaterialGlossyBRDF g)
+                    effect = await LookupMaterial(g);
+
+                if (mat is FusMaterialDiffuseBRDF d)
+                    effect = await LookupMaterial(d);
+
+                if (mat is FusMaterialBRDF b)
+                    effect = await LookupMaterial(b);
+
+                if (effect == null)
+                {
+                    Diagnostics.Warn($"Material skipped.");
+                    continue;
+                }
+
+                node.RemoveComponent<Effect>();
+                var t = node.GetComponent<Transform>();
+                node.Components.Insert(t == null ? 0 : 1, effect); // insert after transform but before mesh or any other component
+
+                // calculate tangents and bitangets if normal mapping is enabled for this material/effect
+                var currentNodeDefaultSurfaceEffect = node.GetComponent<DefaultSurfaceEffect>();
+                var mesh = node.GetComponent<Mesh>();
                 if (mesh != null && currentNodeDefaultSurfaceEffect != null && currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
                 {
                     mesh.Tangents = mesh.CalculateTangents();
@@ -377,8 +401,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, effect);
+            //var effect = LookupMaterial(matComp);
+            _allEffects.Add(_currentNode, matComp);
         }
 
         /// <summary>
@@ -393,8 +417,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, effect);
+            //var effect = LookupMaterial(matComp);
+            _allEffects.Add(_currentNode, matComp);
         }
 
         /// <summary>
@@ -409,8 +433,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, effect);
+            //var effect = LookupMaterial(matComp);
+            _allEffects.Add(_currentNode, matComp);
         }
 
         /// <summary>
@@ -425,8 +449,8 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            var effect = LookupMaterial(matComp);
-            _allEffects.Add(_currentNode, effect);
+            //var effect = LookupMaterial(matComp);
+            _allEffects.Add(_currentNode, matComp);
         }
 
         /// <summary>
@@ -766,7 +790,7 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                throw new System.ArgumentException("Material couldn't be resolved.");
+                Diagnostics.Error($"Material {m} with lighting setup {lightingSetup} couldn't be resolved.");
             }
 
             _matMap.Add(m, sfx);
@@ -775,7 +799,7 @@ namespace Fusee.Engine.Core
 
         private async Task<Effect> GetEffectForMat(FusMaterialBase m, LightingSetupFlags lightingSetup, float shininess, float specularStrenght, float roughness)
         {
-            Effect sfx;
+            Effect sfx = null;
 
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
             {
@@ -841,7 +865,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    throw new System.ArgumentException("Material couldn't be resolved.");
+                    Diagnostics.Error($"Material {m} with lighting setup {lightingSetup} couldn't be resolved.");
                 }
             }
 
@@ -897,7 +921,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    throw new System.ArgumentException("Material couldn't be resolved.");
+                    Diagnostics.Error($"Material {m} with lighting setup {lightingSetup} couldn't be resolved.");
                 }
             }
 
@@ -953,12 +977,12 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    throw new System.ArgumentException("Material couldn't be resolved.");
+                    Diagnostics.Error($"Material {m} with lighting setup {lightingSetup} couldn't be resolved.");
                 }
             }
             else
             {
-                throw new System.ArgumentException("Material couldn't be resolved.");
+                Diagnostics.Error($"Material {m} with lighting setup {lightingSetup} couldn't be resolved.");
             }
 
             _matMap.Add(m, sfx);

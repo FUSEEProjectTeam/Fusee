@@ -24,6 +24,8 @@ namespace Fusee.Examples.Simple.Blazor
 
         public override void Run()
         {
+          
+
             Console.WriteLine("Starting Blazor program");
 
             // Disable colored console ouput, not supported
@@ -37,7 +39,7 @@ namespace Fusee.Examples.Simple.Blazor
             base.Run();
 
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.WebAsm.IOImp();
+            Base.Core.IO.IOImp = new Fusee.Base.Imp.WebAsm.IO();
 
             #region FAP
 

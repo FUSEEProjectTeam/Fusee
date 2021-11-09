@@ -26,7 +26,7 @@
 
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.JSInterop" Version="6.0.0-rc.2.21480.10" />
+      <PackageReference Include="Microsoft.JSInterop" Version="6.0.0" />
     </ItemGroup>
 
     <ItemGroup>

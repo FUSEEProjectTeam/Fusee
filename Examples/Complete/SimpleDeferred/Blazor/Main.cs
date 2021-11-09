@@ -35,7 +35,7 @@ namespace Fusee.Examples.SimpleDeferred.Blazor
             base.Run();
 
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.WebAsm.IOImp();
+            Base.Core.IO.IOImp = new Fusee.Base.Imp.WebAsm.IO();
 
             #region FAP
 

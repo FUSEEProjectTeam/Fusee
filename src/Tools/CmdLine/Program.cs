@@ -9,12 +9,16 @@ namespace Fusee.Tools.CmdLine
         [STAThread]
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, Server, ProtoSchema>(args)
+            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, Server, Web, ProtoSchema>(args)
                 .WithParsed<Install>(install =>
                 {
                     install.Run();
                 })
                 .WithParsed<Pack>(pack =>
+                {
+                    pack.Run();
+                })
+                .WithParsed<Web>(pack =>
                 {
                     pack.Run();
                 })

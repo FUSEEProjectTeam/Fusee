@@ -1,0 +1,26 @@
+﻿@page "/"
+@using System.Runtime.CompilerServices
+@using System.Diagnostics.CodeAnalysis
+@inject IJSRuntime JS
+
+
+@code
+{
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            // inject native javascript methods
+            //_ = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Fusee.Engine.Imp.Graphics.WebAsm/Fusee.Engine.Imp.Graphics.WebAsm.Native.js");
+
+            var program = new Fusee.Base.Imp.WebAsm.WebAsmProgram();
+            var main = new Main();
+            program.Start(main, (IJSInProcessRuntime)JS);
+        }
+
+
+
+        await base.OnAfterRenderAsync(firstRender);
+    }
+}

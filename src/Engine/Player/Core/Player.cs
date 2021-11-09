@@ -59,9 +59,8 @@ namespace Fusee.Engine.Player.Core
 
         public async void LoadAssets()
         {
-
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
 
             // Initialize the information text line.
             var textToDisplay = "FUSEE 3D Scene";
@@ -75,7 +74,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " on " + _scene.Header.CreationDate;
             }
 
-            _gui = CreateGui();
+            _gui = await CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -161,7 +160,7 @@ namespace Fusee.Engine.Player.Core
 
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
             // Zoom & Roll
-            if (Touch.TwoPoint)
+            if (Touch != null && Touch.TwoPoint)
             {
                 if (!_twoTouchRepeated)
                 {
@@ -194,7 +193,7 @@ namespace Fusee.Engine.Player.Core
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
 
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
                 float2 touchVel;
@@ -239,7 +238,7 @@ namespace Fusee.Engine.Player.Core
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
             var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
 
-            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter; ;
+            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar) * mtxOffset;
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
@@ -248,7 +247,7 @@ namespace Fusee.Engine.Player.Core
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
@@ -277,11 +276,11 @@ namespace Fusee.Engine.Player.Core
 
         }
 
-        private SceneContainer CreateGui()
+        private async Task<SceneContainer> CreateGui()
         {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-            var psText = AssetStorage.Get<string>("text.frag");
+            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
+            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
+            var psText = await AssetStorage.GetAsync<string>("text.frag");
 
             var btnFuseeLogo = new GUIButton
             {
@@ -291,7 +290,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNode(
                 "fuseeLogo",
                 vsTex,
@@ -318,7 +317,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " on " + _scene.Header.CreationDate;
             }
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
             var text = new TextNode(
