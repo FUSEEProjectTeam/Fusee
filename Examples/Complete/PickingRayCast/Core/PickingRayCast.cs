@@ -95,14 +95,14 @@ namespace Fusee.Examples.PickingRayCast.Core
 
             // Create the robot model
             _scene = CreateScene();
+            _gui = CreateGui();
 
             _scene.Children.Add(cam);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRayCaster = new SceneRayCaster(_scene);
+            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Clockwise);
 
-            _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -161,16 +161,16 @@ namespace Fusee.Examples.PickingRayCast.Core
                 {
                     Name = "Cube",
                     Components = new List<SceneComponent>()
+                    {
+                        new Transform()
                         {
-                            new Transform()
-                            {
-                                Rotation = float3.Zero,
-                                Translation = origin + (direction * 10),
-                                Scale = new float3(.5f, .5f, .5f)
-                            },
-                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
-                            new Engine.Core.Primitives.Cube()
-                        }
+                            Rotation = _camTransform.Rotation,
+                            Translation = origin + (direction * 10),
+                            Scale = new float3(.5f, .5f, .5f)
+                        },
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
+                        new Engine.Core.Primitives.Cube()
+                    }
                 };
                 _scene.Children.Add(cube);
 
@@ -178,16 +178,16 @@ namespace Fusee.Examples.PickingRayCast.Core
                 {
                     Name = "Cube",
                     Components = new List<SceneComponent>()
+                    {
+                        new Transform()
                         {
-                            new Transform()
-                            {
-                                Rotation = float3.Zero,
-                                Translation = origin + (direction * 20),
-                                Scale = new float3(.5f, .5f, .5f)
-                            },
-                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
-                            new Engine.Core.Primitives.Cube()
-                        }
+                            Rotation = _camTransform.Rotation,
+                            Translation = origin + (direction * 20),
+                            Scale = new float3(.5f, .5f, .5f)
+                        },
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
+                        new Engine.Core.Primitives.Cube()
+                    }
                 };
                 _scene.Children.Add(cube2);
 
@@ -195,18 +195,35 @@ namespace Fusee.Examples.PickingRayCast.Core
                 {
                     Name = "Cube",
                     Components = new List<SceneComponent>()
+                    {
+                        new Transform()
                         {
-                            new Transform()
-                            {
-                                Rotation = float3.Zero,
-                                Translation = origin + (direction * 30),
-                                Scale = new float3(.5f, .5f, .5f)
-                            },
-                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
-                            new Engine.Core.Primitives.Cube()
-                        }
+                            Rotation = _camTransform.Rotation,
+                            Translation = origin + (direction * 30),
+                            Scale = new float3(.5f, .5f, .5f)
+                        },
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
+                        new Engine.Core.Primitives.Cube()
+                    }
                 };
                 _scene.Children.Add(cube3);
+
+                var line = new SceneNode()
+                {
+                    Name = "Line",
+                    Components = new List<SceneComponent>()
+                    {
+                        new Engine.Core.Primitives.Line(new List<float3>()
+                        {
+                            origin,
+                            origin + (direction * 10),
+                            origin + (direction * 20),
+                            origin + (direction * 30)
+                        }, 0.1f),
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Black, float4.Zero, 4.0f, 1f),
+                    }
+                };
+                _scene.Children.Add(line);
 
 
                 _pick = false;
