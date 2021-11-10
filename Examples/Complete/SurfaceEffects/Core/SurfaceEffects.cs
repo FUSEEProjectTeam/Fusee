@@ -59,12 +59,9 @@ namespace Fusee.Examples.SurfaceEffects.Core
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
 
             var surfInput = new TextureInputSpecular();
-            _testFx = new SurfaceEffect(surfInput,
-                Engine.Core.ShaderShards.Fragment.FragShards.SurfOutBody_Textures(surfInput.ShadingModel, surfInput.TextureSetup),
-                Engine.Core.ShaderShards.Vertex.VertShards.SufOutBody_PosNorm);
+            _testFx = new SurfaceEffect(surfInput);
 
-            _testFx.SurfaceInput.Albedo = new float4(1.0f, 0, 0, 1.0f);
-
+            ((TextureInputSpecular)_testFx.SurfaceInput).Albedo = new float4(1.0f, 0, 0, 1.0f);
             ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoTex = albedoTex;
             ((TextureInputSpecular)_testFx.SurfaceInput).NormalTex = normalTex;
             ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoMix = 1.0f;

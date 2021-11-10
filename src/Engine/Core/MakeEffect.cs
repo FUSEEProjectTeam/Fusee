@@ -5,7 +5,6 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
-using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -357,11 +356,11 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static SurfaceEffect FromUnlit(float4 albedoColor)
         {
-            var input = new UnlitInput()
+            var input = new SurfaceInput()
             {
                 Albedo = albedoColor
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_Pos);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -381,7 +380,7 @@ namespace Fusee.Engine.Core
                 AlbedoMix = albedoMix,
                 TexTiles = texTiles
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Unlit, TextureSetup.AlbedoTex), VertShards.SufOutBody_Pos);
+            return new SurfaceEffect(input);
         }
 
         #endregion
@@ -401,7 +400,7 @@ namespace Fusee.Engine.Core
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -424,7 +423,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -446,7 +445,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness,
                 AlbedoMix = 0.0f
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -471,9 +470,8 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles,
                 Roughness = roughness
             };
-
-            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseOnly, texSetup), VertShards.SufOutBody_PosNorm);
+            
+            return new SurfaceEffect(input);
         }
 
         #endregion
@@ -499,7 +497,7 @@ namespace Fusee.Engine.Core
                 SpecularStrength = specularStrength,
                 Roughness = roughness
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_DiffSpecular, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -527,7 +525,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
             
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -556,7 +554,7 @@ namespace Fusee.Engine.Core
                 AlbedoMix = 0.0f
             };
 
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -587,9 +585,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles,
                 Roughness = roughness
             };
-
-            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.DiffuseSpecular, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
         #endregion
 
@@ -608,7 +604,7 @@ namespace Fusee.Engine.Core
                 Albedo = albedoColor,
                 Roughness = roughness
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Color, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -631,7 +627,7 @@ namespace Fusee.Engine.Core
                 Roughness = roughness
             };
 
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -654,7 +650,7 @@ namespace Fusee.Engine.Core
                 AlbedoMix = 0.0f
             };
 
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -679,9 +675,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles,
                 Roughness = roughness
             };
-
-            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.Glossy, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         #endregion
@@ -713,7 +707,7 @@ namespace Fusee.Engine.Core
                 Subsurface = subsurface,
                 SubsurfaceColor = subsurfaceColor
             };
-            return new SurfaceEffect(input, FragShards.SurfOutBody_BRDF, VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -747,7 +741,7 @@ namespace Fusee.Engine.Core
                 TexTiles = texTiles
             };
 
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.AlbedoTex), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -782,7 +776,7 @@ namespace Fusee.Engine.Core
                 AlbedoMix = 0.0f
             };
 
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, TextureSetup.NormalMap), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
 
         /// <summary>
@@ -819,9 +813,7 @@ namespace Fusee.Engine.Core
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles
             };
-
-            var texSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-            return new SurfaceEffect(input, FragShards.SurfOutBody_Textures(ShadingModel.BRDF, texSetup), VertShards.SufOutBody_PosNorm);
+            return new SurfaceEffect(input);
         }
         #endregion
 

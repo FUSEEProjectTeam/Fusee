@@ -3,6 +3,12 @@ using System;
 namespace Fusee.Engine.Core.Effects
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    sealed class NoUniformAttribute : Attribute
+    {
+        
+    }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     sealed class FxShaderAttribute : Attribute
     {
         public readonly ShaderCategory ShaderCategory;
@@ -21,17 +27,6 @@ namespace Fusee.Engine.Core.Effects
         public FxShardAttribute(ShardCategory category)
         {
             ShardCategory = category;
-        }
-    }
-
-    [AttributeUsage(AttributeTargets.Property, Inherited = false, AllowMultiple = false)]
-    sealed class UniformAttribute : Attribute
-    {
-        public readonly string ShaderParamName;
-
-        public UniformAttribute(string shaderParamName)
-        {
-            ShaderParamName = shaderParamName;
         }
     }
 

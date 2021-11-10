@@ -46,7 +46,7 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             _node = new SceneNode();
 
-            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\Demo_A_06_shifted.las", out var aabbRes, true));
+            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, true));
 
             _mainCamTransform = new Transform()
             {

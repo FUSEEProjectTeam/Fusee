@@ -9,16 +9,18 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
     /// In this case it only contains the albedo color.
     /// </summary>
-    public class UnlitInput : INotifyValueChange<SurfaceEffectEventArgs>
+    public class SurfaceInput : INotifyValueChange<SurfaceEffectEventArgs>
     {
         /// <summary>
         /// The <see cref="ShaderShards.ShadingModel"/>, appropriate for this Input.
         /// </summary>
+        [NoUniform]
         public ShadingModel ShadingModel { get; protected set; } = ShadingModel.Unlit;
 
         /// <summary>
         /// The <see cref="ShaderShards.TextureSetup"/>.
         /// </summary>
+        [NoUniform]
         public TextureSetup TextureSetup { get; protected set; } = TextureSetup.NoTextures;
 
         /// <summary>
@@ -61,7 +63,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for diffuse only lighting calculation.
     /// In addition to the albedo color this Input provides a Roughness value.
     /// </summary>
-    public class DiffuseInput : UnlitInput
+    public class DiffuseInput : SurfaceInput
     {
         /// <summary>
         /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
@@ -296,7 +298,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
     /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
-    public class TextureInputUnlit : UnlitInput
+    public class TextureInputUnlit : SurfaceInput
     {
         /// <summary>
         /// The mix between albedo texture and albedo color.
@@ -801,7 +803,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for eye dome lighting.
     /// NOTE: This Input is only compatible with <see cref="PointCloudSurfaceEffect"/>s right now.
     /// </summary>
-    public class EdlInput : UnlitInput
+    public class EdlInput : SurfaceInput
     {
         /// <summary>
         /// Creates a new instance of type <see cref="EdlInput"/>.

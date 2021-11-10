@@ -1,4 +1,6 @@
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.ShaderShards.Fragment;
+using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
@@ -43,11 +45,19 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="surfOutFragBody">The method body for the <see cref="SurfaceEffectBase.SurfOutFragMethod"/></param>
         /// <param name="surfOutVertBody">The method body for the <see cref="SurfaceEffectBase.SurfOutVertMethod"/></param>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
-        public SurfaceEffect(UnlitInput input, List<string> surfOutFragBody, List<string> surfOutVertBody, RenderStateSet rendererStates = null)
+        public SurfaceEffect(SurfaceInput input, List<string> surfOutVertBody = null, List<string> surfOutFragBody = null, RenderStateSet rendererStates = null)
             : base(input, rendererStates)
         {
-            SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
-            SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, input.ShadingModel);
+            if(surfOutFragBody != null)
+                SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
+            else
+                SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(FragShards.SurfOutBody(input), input.GetType());
+
+            if(surfOutVertBody != null)
+                SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, input.ShadingModel);
+            else
+                SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(VertShards.SurfOutBody(input), input.ShadingModel);
+
             FUSEE_MVP = float4x4.Identity;
             FUSEE_ITMV = float4x4.Identity;
             FUSEE_MVP = float4x4.Identity;
