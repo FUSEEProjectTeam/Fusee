@@ -139,91 +139,20 @@ namespace Fusee.Examples.PickingRayCast.Core
 
             if (_pick)
             {
+                // Convert Screen coordinates to world coordinates
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
                 var ray_eye = float4x4.Transform(RC.InvProjection, new float4(pickPosClip.x, pickPosClip.y, 0, 1));
                 ray_eye.w = 0;
                 var ray_cam = float4x4.Transform(RC.InvView, ray_eye).xyz;
                 ray_cam.Normalize();
 
+                // Create Ray
                 float3 origin = _camTransform.Translation;
                 float3 direction = float4x4.Transform(_camTransform.Matrix().RotationComponent(), ray_cam);
-
                 Rayf ray = new Rayf(origin, direction);
 
-                var hits = _sceneRayCaster.RayCast(ray);
-                foreach (var hit in hits)
-                {
-                    Console.WriteLine("Hit: " + hit.Node.Name);
-                }
-
-
-                var cube = new SceneNode()
-                {
-                    Name = "Cube",
-                    Components = new List<SceneComponent>()
-                    {
-                        new Transform()
-                        {
-                            Rotation = _camTransform.Rotation,
-                            Translation = origin + (direction * 10),
-                            Scale = new float3(.5f, .5f, .5f)
-                        },
-                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
-                        new Engine.Core.Primitives.Cube()
-                    }
-                };
-                _scene.Children.Add(cube);
-
-                var cube2 = new SceneNode()
-                {
-                    Name = "Cube",
-                    Components = new List<SceneComponent>()
-                    {
-                        new Transform()
-                        {
-                            Rotation = _camTransform.Rotation,
-                            Translation = origin + (direction * 20),
-                            Scale = new float3(.5f, .5f, .5f)
-                        },
-                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
-                        new Engine.Core.Primitives.Cube()
-                    }
-                };
-                _scene.Children.Add(cube2);
-
-                var cube3 = new SceneNode()
-                {
-                    Name = "Cube",
-                    Components = new List<SceneComponent>()
-                    {
-                        new Transform()
-                        {
-                            Rotation = _camTransform.Rotation,
-                            Translation = origin + (direction * 30),
-                            Scale = new float3(.5f, .5f, .5f)
-                        },
-                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
-                        new Engine.Core.Primitives.Cube()
-                    }
-                };
-                _scene.Children.Add(cube3);
-
-                var line = new SceneNode()
-                {
-                    Name = "Line",
-                    Components = new List<SceneComponent>()
-                    {
-                        new Engine.Core.Primitives.Line(new List<float3>()
-                        {
-                            origin,
-                            origin + (direction * 10),
-                            origin + (direction * 20),
-                            origin + (direction * 30)
-                        }, 0.1f),
-                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Black, float4.Zero, 4.0f, 1f),
-                    }
-                };
-                _scene.Children.Add(line);
+                // RayCast and get the result closest to the camera
+                var castHit = _sceneRayCaster.RayCast(ray).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
 
 
                 _pick = false;
@@ -368,21 +297,25 @@ namespace Fusee.Examples.PickingRayCast.Core
                 var y = rand.Next(-10, 10);
                 var z = rand.Next(-10, 10);
 
+                var mesh = new Engine.Core.Primitives.Cube();
+                mesh.BoundingBox = new AABBf(mesh.Vertices);
+
                 var cube = new SceneNode()
                 {
                     Name = "Cube" + i,
                     Components = new List<SceneComponent>()
+                    {
+                        new Transform()
                         {
-                            new Transform()
-                            {
-                                Rotation = float3.Zero,
-                                Translation = new float3(x, y, z),
-                                Scale = new float3(1f, 1f, 1f)
-                            },
-                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Gray, float4.Zero, 4.0f, 1f),
-                            new Engine.Core.Primitives.Cube()
-                        }
+                            Rotation = float3.Zero,
+                            Translation = new float3(x, y, z),
+                            Scale = new float3(1f, 1f, 1f)
+                        },
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Gray, float4.Zero, 4.0f, 1f),
+                        mesh
+                    }
                 };
+
                 scene.Children.Add(cube);
             }
 

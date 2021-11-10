@@ -187,7 +187,8 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
-            if (!mesh.BoundingBox.IntersectRay(Ray)) return;
+            // AABB intersection currently throwing some errors.
+            //if (!mesh.BoundingBox.IntersectRay(Ray)) return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
