@@ -21,7 +21,7 @@ namespace Fusee.Engine.Core.Effects
         /// The <see cref="ShaderShards.TextureSetup"/>.
         /// </summary>
         [NoUniform]
-        public TextureSetup TextureSetup { get; protected set; } = TextureSetup.NoTextures;
+        public TextureSetup TextureSetup { get; set; } = TextureSetup.NoTextures;
 
         /// <summary>
         /// The albedo color.

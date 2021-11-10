@@ -375,6 +375,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputUnlit()
             {
+                TextureSetup = TextureSetup.AlbedoTex,
                 Albedo = albedoColor,
                 AlbedoTex = albedoTex,
                 AlbedoMix = albedoMix,
@@ -416,6 +417,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputDiffuse()
             {
+                TextureSetup = TextureSetup.AlbedoTex,
                 Albedo = albedoColor,
                 AlbedoTex = albedoTex,
                 AlbedoMix = albedoMix,
@@ -438,6 +440,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputDiffuse()
             {
+                TextureSetup = TextureSetup.NormalMap,
                 Albedo = albedoColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
@@ -515,6 +518,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputSpecular()
             {
+                TextureSetup = TextureSetup.AlbedoTex,
                 Albedo = albedoColor,
                 Emission = emissionColor,
                 Shininess = shininess,
@@ -543,6 +547,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputSpecular()
             {
+                TextureSetup = TextureSetup.NormalMap,
                 Albedo = albedoColor,
                 Emission = emissionColor,
                 Shininess = shininess,
@@ -620,6 +625,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputGlossy()
             {
+                TextureSetup = TextureSetup.AlbedoTex,
                 Albedo = albedoColor,
                 AlbedoTex = albedoTex,
                 AlbedoMix = albedoMix,
@@ -642,6 +648,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputGlossy()
             {
+                TextureSetup = TextureSetup.NormalMap,
                 Albedo = albedoColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
@@ -728,6 +735,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputBRDF()
             {
+                TextureSetup = TextureSetup.AlbedoTex,
                 Albedo = albedoColor,
                 Emission = emissionColor,
                 AlbedoMix = albedoMix,
@@ -762,6 +770,7 @@ namespace Fusee.Engine.Core
         {
             var input = new TextureInputBRDF()
             {
+                TextureSetup = TextureSetup.NormalMap,
                 Albedo = albedoColor,
                 Emission = emissionColor,
                 Roughness = roughness,
