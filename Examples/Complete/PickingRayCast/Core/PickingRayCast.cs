@@ -48,6 +48,11 @@ namespace Fusee.Examples.PickingRayCast.Core
         private bool _pick;
         private float2 _pickPos;
 
+        private Camera _cam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private Transform _camTransform;
+        private Transform _guiCamTransform;
+
         // Init is called on startup.
         public override void Init()
         {
@@ -57,11 +62,41 @@ namespace Fusee.Examples.PickingRayCast.Core
             _canvasHeight = _initCanvasHeight;
             _canvasWidth = _initCanvasWidth;
 
+            _cam.Viewport = new float4(0, 0, 100, 100);
+            _cam.BackgroundColor = new float4(1f, 1f, 1f, 1);
+            _cam.Layer = -1;
+
+            _guiCam.ClearColor = false;
+            _guiCam.ClearDepth = false;
+            _guiCam.FrustumCullingOn = false;
+
+            _camTransform = _guiCamTransform = new Transform()
+            {
+                Rotation = float3.Zero,
+                Translation = new float3(0, 20, 20),
+                Scale = new float3(1, 1, 1)
+            };
+
+            var rotation = float4x4.LookAt(_camTransform.Translation, new float3(0, 0, 0), float3.UnitY);
+            _camTransform.Rotate(rotation);
+
+            SceneNode cam = new SceneNode()
+            {
+                Name = "Cam",
+                Components = new List<SceneComponent>()
+                {
+                    _camTransform,
+                    _cam,
+                }
+            };
+
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Create the robot model
             _scene = CreateScene();
+
+            _scene.Children.Add(cam);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
@@ -81,105 +116,105 @@ namespace Fusee.Examples.PickingRayCast.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-            // Mouse and keyboard movement
-            if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
-            {
-                _keys = true;
-            }
-
             if (Input.Mouse.LeftButton)
             {
                 _pick = true;
                 _pickPos = Input.Mouse.Position;
-                _keys = false;
-                _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
             }
-            else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+
+            if (Input.Mouse.RightButton)
+            {
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+            }
+
+            if (Input.Keyboard.IsKeyUp(KeyCodes.Space))
             {
                 _pick = true;
-                _pickPos = Input.Touch.GetPosition(TouchPoints.Touchpoint_0);
-                var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
-            }
-            else
-            {
-                _pick = false;
-                if (_keys)
-                {
-                    _angleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
-                }
-                else
-                {
-                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
-                }
+                _pickPos = new float2(Width / 2, Height / 2);
             }
 
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            _camTransform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
 
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            // Check
             if (_pick)
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
+                var ray_eye = float4x4.Transform(RC.InvProjection, new float4(pickPosClip.x, pickPosClip.y, 0, 1));
+                ray_eye.w = 0;
+                var ray_cam = float4x4.Transform(RC.InvView, ray_eye).xyz;
+                ray_cam.Normalize();
 
-                RC.View = mtxCam * mtxRot;
+                float3 origin = _camTransform.Translation;
+                float3 direction = float4x4.Transform(_camTransform.Matrix().RotationComponent(), ray_cam);
 
-                float3 origin = RC.View.Translation();
-                float3 direction = float4x4.Transform(RC.View.RotationComponent(), new float3(0, 0, 1));
+                Rayf ray = new Rayf(origin, direction);
 
-                Console.WriteLine(origin);
-                Console.WriteLine(direction);
-
-                RayCastResult newPick = _sceneRayCaster.RayCast(new Rayf(origin, direction)).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
-                Diagnostics.Debug(newPick);
-
-                if (newPick?.Node != _currentPick?.Node)
+                var hits = _sceneRayCaster.RayCast(ray);
+                foreach (var hit in hits)
                 {
-                    if (_currentPick != null)
-                    {
-                        var ef = _currentPick.Node.GetComponent<DefaultSurfaceEffect>();
-                        ef.SurfaceInput.Albedo = _oldColor;
-                    }
-
-                    if (newPick != null)
-                    {
-                        var ef = newPick.Node.GetComponent<DefaultSurfaceEffect>();
-                        _oldColor = ef.SurfaceInput.Albedo;
-                        ef.SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
-                    }
-                    _currentPick = newPick;
+                    Console.WriteLine("Hit: " + hit.Node.Name);
                 }
+
+
+                var cube = new SceneNode()
+                {
+                    Name = "Cube",
+                    Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = origin + (direction * 10),
+                                Scale = new float3(.5f, .5f, .5f)
+                            },
+                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
+                            new Engine.Core.Primitives.Cube()
+                        }
+                };
+                _scene.Children.Add(cube);
+
+                var cube2 = new SceneNode()
+                {
+                    Name = "Cube",
+                    Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = origin + (direction * 20),
+                                Scale = new float3(.5f, .5f, .5f)
+                            },
+                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
+                            new Engine.Core.Primitives.Cube()
+                        }
+                };
+                _scene.Children.Add(cube2);
+
+                var cube3 = new SceneNode()
+                {
+                    Name = "Cube",
+                    Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = origin + (direction * 30),
+                                Scale = new float3(.5f, .5f, .5f)
+                            },
+                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
+                            new Engine.Core.Primitives.Cube()
+                        }
+                };
+                _scene.Children.Add(cube3);
+
 
                 _pick = false;
             }
 
-            RC.View = mtxCam * mtxRot;
-            RC.Projection = perspective;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-
-            RC.Projection = orthographic;
-            // Constantly check for interactive objects.
-            if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-
-            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -255,11 +290,22 @@ namespace Fusee.Examples.PickingRayCast.Core
                 }
             };
 
+            SceneNode cam = new SceneNode()
+            {
+                Name = "GUICam",
+                Components = new List<SceneComponent>()
+                {
+                    _guiCamTransform,
+                    _guiCam
+                }
+            };
+
             return new SceneContainer
             {
                 Children = new List<SceneNode>
                 {
                     //Add canvas.
+                    cam,
                     canvas
                 }
             };
@@ -286,89 +332,44 @@ namespace Fusee.Examples.PickingRayCast.Core
 
         private SceneContainer CreateScene()
         {
-            return new SceneContainer
+            var scene = new SceneContainer
             {
                 Header = new SceneHeader
                 {
-                    CreationDate = "April 2017",
-                    CreatedBy = "mch@hs-furtwangen.de",
-                    Generator = "Handcoded with pride",
+                    CreationDate = "July 2021",
+                    CreatedBy = "Jonas Haller",
+                    Generator = "Handcoded with pride :)",
                 },
-                Children = new List<SceneNode>
-                {
-                    new SceneNode
-                    {
-                        Name = "Base",
-                        Components = new List<SceneComponent>
-                        {
-                           new Transform { Scale = float3.One },
-                           MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
-                           CreateCuboid(new float3(100, 20, 100))
-                        },
-                        Children = new ChildList
-                        {
-                            new SceneNode
-                            {
-                                Name = "Arm01",
-                                Components = new List<SceneComponent>
-                                {
-                                   new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green, float4.Zero, 4.0f, 1f),
-                                   CreateCuboid(new float3(20, 100, 20))
-                                },
-                                Children = new ChildList
-                                {
-                                    new SceneNode
-                                    {
-                                        Name = "Arm02Rot",
-                                        Components = new List<SceneComponent>
-                                        {
-                                            new Transform {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
-                                        },
-                                        Children = new ChildList
-                                        {
-                                            new SceneNode
-                                            {
-                                                Name = "Arm02",
-                                                Components = new List<SceneComponent>
-                                                {
-                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
-                                                    CreateCuboid(new float3(20, 100, 20))
-                                                },
-                                                Children = new ChildList
-                                                {
-                                                    new SceneNode
-                                                    {
-                                                        Name = "Arm03Rot",
-                                                        Components = new List<SceneComponent>
-                                                        {
-                                                            new Transform {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
-                                                        },
-                                                        Children = new ChildList
-                                                        {
-                                                            new SceneNode
-                                                            {
-                                                                Name = "Arm03",
-                                                                Components = new List<SceneComponent>
-                                                                {
-                                                                    new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
-                                                                    CreateCuboid(new float3(20, 100, 20))
-                                                                }
-                                                            },
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                        }
-                                    }
-                                }
-                            },
-                        }
-                    },
-                }
+                Children = new List<SceneNode> { }
             };
+
+            var rand = new Random();
+
+            for (int i = 0; i < 20; i++)
+            {
+                var x = rand.Next(-10, 10);
+                var y = rand.Next(-10, 10);
+                var z = rand.Next(-10, 10);
+
+                var cube = new SceneNode()
+                {
+                    Name = "Cube" + i,
+                    Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = new float3(x, y, z),
+                                Scale = new float3(1f, 1f, 1f)
+                            },
+                            MakeEffect.FromDiffuseSpecular((float4)ColorUint.Gray, float4.Zero, 4.0f, 1f),
+                            new Engine.Core.Primitives.Cube()
+                        }
+                };
+                scene.Children.Add(cube);
+            }
+
+            return scene;
         }
 
 
