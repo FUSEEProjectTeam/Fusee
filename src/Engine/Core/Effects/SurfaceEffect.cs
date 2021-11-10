@@ -48,10 +48,16 @@ namespace Fusee.Engine.Core.Effects
         public SurfaceEffect(SurfaceInput input, List<string> surfOutVertBody = null, List<string> surfOutFragBody = null, RenderStateSet rendererStates = null)
             : base(input, rendererStates)
         {
-            if(surfOutFragBody != null)
-                SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, input.GetType());
+            var inputType = input.GetType();
+            if (surfOutFragBody != null)
+                SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(surfOutFragBody, inputType);
             else
-                SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(FragShards.SurfOutBody(input), input.GetType());
+            {
+                if(input.TextureSetup != TextureSetup.NoTextures)
+                    SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(FragShards.SurfOutBody_Textures(input), inputType);
+                else
+                    SurfOutFragMethod = SurfaceOut.GetChangeSurfFragMethod(FragShards.SurfOutBody(input), inputType);
+            }
 
             if(surfOutVertBody != null)
                 SurfOutVertMethod = SurfaceOut.GetChangeSurfVertMethod(surfOutVertBody, input.ShadingModel);
