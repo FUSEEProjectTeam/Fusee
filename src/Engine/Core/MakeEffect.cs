@@ -300,6 +300,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Subsurface]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},

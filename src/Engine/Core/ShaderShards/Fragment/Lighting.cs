@@ -661,6 +661,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add($"vec4 fragPos = vec4(posTexVal.xyz, 1.0);");
             methodBody.Add($"vec4 albedo = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 emission = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec4 subsurfaceVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular]}, {VaryingNameDeclarations.TextureCoordinates});");
 
             //Lighting calculation
@@ -771,8 +772,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float ior = specularVars.a;",
 
                 "//placeholder for future subsurface implementation.",
-                "float subsurface = 0.0;",
-                "vec3 subsurfaceColor = vec3(1.0);",
+                "float subsurface = subsurfaceVars.a;",
+                "vec3 subsurfaceColor = subsurfaceVars.rgb;",
 
                 $"vec3 halfV = normalize(lightDir + viewDir);",
                 $"float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);",

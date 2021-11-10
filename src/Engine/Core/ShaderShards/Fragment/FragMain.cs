@@ -86,7 +86,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Normal:
                         {
                             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
-                                fragMainBody.Add($"{texName} = vec4(normalize(surfOut.normal.xyz), 1.0);");
+                                fragMainBody.Add($"{texName} = vec4(normalize(surfOut.{SurfaceOut.Normal.Item2}.xyz), 1.0);");
                             else
                                 fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 1.0, 1.0);");
                         }
@@ -97,7 +97,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Emission:
                         if (shadingModel != (ShadingModel.DiffuseOnly) && shadingModel != (ShadingModel.Glossy) && shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
                         {
-                            fragMainBody.Add($"{texName} = surfOut.emission;");
+                            fragMainBody.Add($"{texName} = surfOut.{SurfaceOut.Emission.Item2};");
+                        }
+                        break;
+                    case (int)RenderTargetTextureTypes.Subsurface:
+                        if (shadingModel == ShadingModel.BRDF)
+                        {
+                            fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.SubsurfaceColor.Item2}.rgb, surfOut.{SurfaceOut.Subsurface.Item2});");
                         }
                         break;
                     case (int)RenderTargetTextureTypes.Specular:
@@ -105,14 +111,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                             switch (shadingModel)
                             {
                                 case ShadingModel.BRDF:
-                                    fragMainBody.Add($"{texName} = vec4(surfOut.roughness, surfOut.metallic, surfOut.specular, surfOut.ior);");
+                                    fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Metallic.Item2}, surfOut.{SurfaceOut.Specular.Item2}, surfOut.{SurfaceOut.IOR.Item2});");
                                     break;
                                 case ShadingModel.DiffuseSpecular:
-                                    fragMainBody.Add($"{texName} = vec4(surfOut.specularStrength, surfOut.shininess, surfOut.roughness, 0.0);");
+                                    fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.SpecularStrength.Item2}, surfOut.{SurfaceOut.Shininess.Item2}, surfOut.{SurfaceOut.Roughness.Item2}, 0.0);");
                                     break;
                                 case ShadingModel.DiffuseOnly:
                                     fragMainBody.Add("//Shading model is 'diffuse only' - store just roughness.");
-                                    fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.roughness, 0.0);");
+                                    fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.{SurfaceOut.Roughness.Item2}, 0.0);");
                                     break;
                                 case ShadingModel.Unlit:
                                     fragMainBody.Add("//Shading model is 'unlit' - store just that.");
@@ -120,7 +126,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                                     break;
                                 case ShadingModel.Glossy:
                                     fragMainBody.Add("//Shading model is 'glossy' - store just roughness.");
-                                    fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.roughness, 0.0);");
+                                    fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.{SurfaceOut.Roughness.Item2}, 0.0);");
                                     break;
                                 case ShadingModel.Edl:
                                     fragMainBody.Add("float encodedNeighbourPx = float((EDLNeighbourPixels & 0xF) | 0) / float(0xFF);");

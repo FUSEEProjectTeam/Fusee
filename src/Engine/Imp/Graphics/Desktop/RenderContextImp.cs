@@ -1149,6 +1149,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();
             gBufferRenderTarget.SetEmissiveTex();
+            gBufferRenderTarget.SetSubsurfaceTex();
 
             return gBufferRenderTarget;
         }

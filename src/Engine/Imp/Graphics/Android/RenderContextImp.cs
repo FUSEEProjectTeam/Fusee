@@ -1126,6 +1126,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();
             gBufferRenderTarget.SetEmissiveTex();
+            gBufferRenderTarget.SetSubsurfaceTex();
 
             return gBufferRenderTarget;
         }

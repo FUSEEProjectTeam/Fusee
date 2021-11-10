@@ -124,11 +124,19 @@ namespace Fusee.Engine.Imp.Shared
         }
 
         /// <summary>
-        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// Generates a emissive texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
         public void SetEmissiveTex()
         {
             RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGB));
+        }
+
+        /// <summary>
+        /// Generates a subsurface texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
+        public void SetSubsurfaceTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.Subsurface] = WritableTexture.CreateSubsurfaceTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>

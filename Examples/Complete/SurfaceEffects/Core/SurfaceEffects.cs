@@ -115,10 +115,10 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 metallic: 0,
                 specular: 0.079f,
                 ior: 1.4f,
-                subsurface: 0.1f
+                subsurface: 0.3f
             );
 
-            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
+            _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
             _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
             _rocketScene.Children[2].Components[1] = _paint_brdfFx;
             _rocketScene.Children[3].Components[1] = _gold_brdfFx;
