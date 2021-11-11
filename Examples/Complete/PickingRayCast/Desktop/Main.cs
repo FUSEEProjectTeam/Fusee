@@ -7,7 +7,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
-using Path = Fusee.Base.Common.Path;
+using Path = System.IO.Path;
 
 namespace Fusee.Examples.PickingRayCast.Desktop
 {
@@ -57,6 +57,8 @@ namespace Fusee.Examples.PickingRayCast.Desktop
             // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();
