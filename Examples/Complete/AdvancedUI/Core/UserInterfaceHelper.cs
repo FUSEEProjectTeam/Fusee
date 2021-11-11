@@ -54,11 +54,11 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new(AssetStorage.Get<ImageData>("check-circle.png"), false, TextureFilterMode.Linear);
         private static readonly Texture _iconConfirmed = new(AssetStorage.Get<ImageData>("check-circle_filled.png"), false, TextureFilterMode.Linear);
 
-        internal static readonly SurfaceEffectBase GreenEffect = MakeEffect.FromDiffuseSpecular(Green, float4.Zero);
-        internal static readonly SurfaceEffectBase YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow, float4.Zero);
-        internal static readonly SurfaceEffectBase GrayEffect = MakeEffect.FromDiffuseSpecular(Gray, float4.Zero);
+        internal static readonly SurfaceEffectBase GreenEffect = MakeEffect.FromDiffuseSpecular(Green);
+        internal static readonly SurfaceEffectBase YellowEffect = MakeEffect.FromDiffuseSpecular(Yellow);
+        internal static readonly SurfaceEffectBase GrayEffect = MakeEffect.FromDiffuseSpecular(Gray);
 
-        internal static readonly SurfaceEffectBase OccludedDummyEffect = MakeEffect.FromDiffuseSpecular((float4)ColorUint.White, float4.Zero);
+        internal static readonly SurfaceEffectBase OccludedDummyEffect = MakeEffect.FromDiffuseSpecular((float4)ColorUint.White);
 
         private static readonly float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
@@ -217,7 +217,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "circle" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, float4.Zero),
+                    MakeEffect.FromDiffuseSpecular(col),
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
@@ -251,7 +251,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         Name = "line" + "_XForm",
                     },
-                    MakeEffect.FromDiffuseSpecular(col, float4.Zero),
+                    MakeEffect.FromDiffuseSpecular(col),
                 }
             };
         }

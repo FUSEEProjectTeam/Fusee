@@ -4,9 +4,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Fusee.Examples.NormalMap.Core
 {
@@ -69,7 +67,7 @@ namespace Fusee.Examples.NormalMap.Core
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"));
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"));
 
-            var normalMappingEffect = MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, albedoTex, normalTex, 1.0f, new float2(2, 2), 85, 0.2f, 0.3f);
+            var normalMappingEffect = MakeEffect.FromDiffuseSpecular(float4.One, 0.2f, 85, 0.1f, float4.Zero, albedoTex, 1.0f, new float2(2, 2), normalTex);
             normalMappingEffect.RendererStates.AlphaBlendEnable = true;
             normalMappingEffect.RendererStates.SourceBlend = Blend.SourceAlpha;
             normalMappingEffect.RendererStates.DestinationBlend = Blend.InverseSourceAlpha;

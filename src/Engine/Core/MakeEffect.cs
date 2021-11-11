@@ -358,7 +358,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static SurfaceEffect FromUnlit(float4 albedoColor, Texture albedoTex = null, float2 texTiles = new float2(), float albedoMix = 0)
         {
-            var input = new TextureInputUnlit()
+            var input = new UnlitInput()
             {
                 TextureSetup = albedoTex != null ? TextureSetup.AlbedoTex : TextureSetup.NoTextures,
                 Albedo = albedoColor,
@@ -381,7 +381,7 @@ namespace Fusee.Engine.Core
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         public static SurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f, Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
-            var input = new TextureInputDiffuse()
+            var input = new DiffuseInput()
             {
                 Albedo = albedoColor,
                 AlbedoMix = albedoMix,
@@ -417,7 +417,7 @@ namespace Fusee.Engine.Core
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
         public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float roughness = 0f, float shininess = 255, float specularStrength = 0.5f, float4 emissionColor = new float4(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
-            var input = new TextureInputSpecular()
+            var input = new SpecularInput()
             {
                 Albedo = albedoColor,
                 Emission = emissionColor,
@@ -453,7 +453,7 @@ namespace Fusee.Engine.Core
         /// <param name="roughness">Used to calculate the GGX microfacet distribution.</param>
         public static SurfaceEffect FromGlossy(float4 albedoColor, float roughness = 0f, Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
-            var input = new TextureInputGlossy()
+            var input = new GlossyInput()
             {
                 Albedo = albedoColor,
                 AlbedoMix = albedoMix,
@@ -492,7 +492,7 @@ namespace Fusee.Engine.Core
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
         public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float4 emissionColor= new float4(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
-            var input = new TextureInputBRDF()
+            var input = new BRDFInput()
             {
                 Albedo = albedoColor,
                 Emission = emissionColor,

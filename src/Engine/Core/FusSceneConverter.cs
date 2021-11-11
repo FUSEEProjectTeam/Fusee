@@ -1014,7 +1014,7 @@ namespace Fusee.Engine.Core
                 var mat = new FusMaterialBRDF() { Albedo = new AlbedoChannel() };
                 if (effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
                 {
-                    var surfaceInput = (TextureInputBRDF)effect.SurfaceInput;
+                    var surfaceInput = (BRDFInput)effect.SurfaceInput;
                     mat.Albedo = new AlbedoChannel()
                     {
                         Color = surfaceInput.Albedo
@@ -1075,7 +1075,7 @@ namespace Fusee.Engine.Core
                 var mat = new FusMaterialStandard();
                 if (effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.AlbedoTex) || effect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
                 {
-                    var surfaceInput = (TextureInputSpecular)effect.SurfaceInput;
+                    var surfaceInput = (SpecularInput)effect.SurfaceInput;
 
                     mat.Albedo = new AlbedoChannel()
                     {

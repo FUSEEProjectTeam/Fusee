@@ -182,7 +182,7 @@ namespace Fusee.Examples.Picking.Core
                         Components = new List<SceneComponent>
                         {
                            new Transform { Scale = float3.One },
-                           MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero, 4.0f, 1f),
+                           MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red),
                            CreateCuboid(new float3(100, 20, 100))
                         },
                         Children = new ChildList
@@ -193,7 +193,7 @@ namespace Fusee.Examples.Picking.Core
                                 Components = new List<SceneComponent>
                                 {
                                    new Transform {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green, float4.Zero, 4.0f, 1f),
+                                   MakeEffect.FromDiffuseSpecular((float4)ColorUint.Green),
                                    CreateCuboid(new float3(20, 100, 20))
                                 },
                                 Children = new ChildList
@@ -213,7 +213,7 @@ namespace Fusee.Examples.Picking.Core
                                                 Components = new List<SceneComponent>
                                                 {
                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow, float4.Zero, 4.0f, 1f),
+                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Yellow),
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
                                                 Children = new ChildList
@@ -233,7 +233,7 @@ namespace Fusee.Examples.Picking.Core
                                                                 Components = new List<SceneComponent>
                                                                 {
                                                                     new Transform {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue, float4.Zero, 4.0f, 1f),
+                                                                    MakeEffect.FromDiffuseSpecular((float4)ColorUint.Blue),
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }
                                                             },

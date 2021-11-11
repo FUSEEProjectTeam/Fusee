@@ -223,7 +223,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            canvas.AddComponent(MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero));
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 

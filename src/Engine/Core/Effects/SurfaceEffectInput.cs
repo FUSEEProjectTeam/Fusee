@@ -9,7 +9,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
     /// In this case it only contains the albedo color.
     /// </summary>
-    public class SurfaceInput : INotifyValueChange<SurfaceEffectEventArgs>
+    public abstract class SurfaceInput : INotifyValueChange<SurfaceEffectEventArgs>
     {
         /// <summary>
         /// The <see cref="ShaderShards.ShadingModel"/>, appropriate for this Input.
@@ -60,8 +60,74 @@ namespace Fusee.Engine.Core.Effects
     }
 
     /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
+    /// In addition this input provides properties for albedo and normal textures.
+    /// </summary>
+    public class UnlitInput : SurfaceInput
+    {
+        /// <summary>
+        /// The mix between albedo texture and albedo color.
+        /// </summary>
+        public float AlbedoMix
+        {
+            get => _albedoMix;
+            set
+            {
+                if (value != _albedoMix)
+                {
+                    _albedoMix = value;
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                }
+            }
+        }
+        private float _albedoMix;
+
+        /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture AlbedoTex
+        {
+            get => _albedoTex;
+            set
+            {
+                if (value != _albedoTex)
+                {
+                    _albedoTex = value;
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                }
+            }
+        }
+        private Texture _albedoTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles = float2.One;
+
+        /// <summary>
+        /// Creates a new instance of type <see cref="UnlitInput"/>.
+        /// </summary>
+        public UnlitInput()
+        {
+            ShadingModel = ShadingModel.Unlit;
+        }
+    }
+
+    /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for diffuse only lighting calculation.
-    /// In addition to the albedo color this Input provides a Roughness value.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class DiffuseInput : SurfaceInput
     {
@@ -84,11 +150,163 @@ namespace Fusee.Engine.Core.Effects
         private float _roughness;
 
         /// <summary>
+        /// The mix between albedo texture and albedo color.
+        /// </summary>
+        public float AlbedoMix
+        {
+            get => _albedoMix;
+            set
+            {
+                if (value != _albedoMix)
+                {
+                    _albedoMix = value;
+                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
+                }
+            }
+        }
+        private float _albedoMix;
+
+        /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture AlbedoTex
+        {
+            get => _albedoTex;
+            set
+            {
+                if (value != _albedoTex)
+                {
+                    _albedoTex = value;
+                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
+                }
+            }
+        }
+        private Texture _albedoTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public Texture NormalTex
+        {
+            get => _normalTex;
+            set
+            {
+                if (value != _normalTex)
+                {
+                    _normalTex = value;
+                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
+                }
+            }
+        }
+        private Texture _normalTex;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float NormalMappingStrength
+        {
+            get => _normalMappingStrength;
+            set
+            {
+                if (value != _normalMappingStrength)
+                {
+                    _normalMappingStrength = value;
+                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
+                }
+            }
+        }
+        private float _normalMappingStrength = 1f;
+
+        /// <summary>
+        /// The normal texture.
+        /// </summary>
+        public float2 TexTiles
+        {
+            get => _texTiles;
+            set
+            {
+                if (value != _texTiles)
+                {
+                    _texTiles = value;
+                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
+                }
+            }
+        }
+        private float2 _texTiles = float2.One;
+
+        /// <summary>
         /// Creates a new instance of type <see cref="DiffuseInput"/>.
         /// </summary>
         public DiffuseInput()
         {
             ShadingModel = ShadingModel.DiffuseOnly;
+        }
+    }
+
+    /// <summary>
+    /// Class that can be used to collect properties that will serve as uniforms for specular lighting with strength and shininess.
+    /// In addition this input provides properties for albedo and normal textures.
+    /// </summary>
+    public class SpecularInput : DiffuseInput
+    {
+        /// <summary>
+        /// The albedo color.
+        /// </summary>
+        public float4 Emission
+        {
+            get => _emission;
+
+            set
+            {
+                if (value != _emission)
+                {
+                    _emission = value;
+                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
+                }
+            }
+        }
+        private float4 _emission;
+
+        /// <summary>
+        /// The strength of the specular lighting.
+        /// </summary>
+        public float SpecularStrength
+        {
+            get => _specularStrength;
+            set
+            {
+                if (value != _specularStrength)
+                {
+                    _specularStrength = value;
+                    NotifyValueChanged(_specularStrength.GetType(), nameof(SpecularStrength), _specularStrength);
+                }
+            }
+        }
+        private float _specularStrength;
+
+        /// <summary>
+        /// The shininess of the specular lighting.
+        /// </summary>
+        public float Shininess
+        {
+            get => _shininess;
+            set
+            {
+                if (value != _shininess)
+                {
+                    _shininess = value;
+                    NotifyValueChanged(_shininess.GetType(), nameof(Shininess), _shininess);
+                }
+            }
+        }
+        private float _shininess;
+
+        /// <summary>
+        /// Creates a new instance of type <see cref="SpecularInput"/>.
+        /// </summary>
+        public SpecularInput()
+        {
+            ShadingModel = ShadingModel.DiffuseSpecular;
         }
     }
 
@@ -110,6 +328,7 @@ namespace Fusee.Engine.Core.Effects
 
     /// <summary>
     /// Class that can be used to collect properties that will serve as uniforms for a BRDF lighting calculation.
+    /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
     public class BRDFInput : DiffuseInput
     {
@@ -234,580 +453,10 @@ namespace Fusee.Engine.Core.Effects
         }
         private Texture _thicknessMap;
 
-
         /// <summary>
         /// Creates a new instance of type <see cref="BRDFInput"/>.
         /// </summary>
         public BRDFInput()
-        {
-            ShadingModel = ShadingModel.BRDF;
-            TextureSetup = TextureSetup.NoTextures;
-        }
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for specular lighting with strength and shininess.
-    /// </summary>
-    public class SpecularInput : DiffuseInput
-    {
-        /// <summary>
-        /// The albedo color.
-        /// </summary>
-        public float4 Emission
-        {
-            get => _emission;
-
-            set
-            {
-                if (value != _emission)
-                {
-                    _emission = value;
-                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
-                }
-            }
-        }
-        private float4 _emission;
-
-        /// <summary>
-        /// The strength of the specular lighting.
-        /// </summary>
-        public float SpecularStrength
-        {
-            get => _specularStrength;
-            set
-            {
-                if (value != _specularStrength)
-                {
-                    _specularStrength = value;
-                    NotifyValueChanged(_specularStrength.GetType(), nameof(SpecularStrength), _specularStrength);
-                }
-            }
-        }
-        private float _specularStrength;
-
-        /// <summary>
-        /// The shininess of the specular lighting.
-        /// </summary>
-        public float Shininess
-        {
-            get => _shininess;
-            set
-            {
-                if (value != _shininess)
-                {
-                    _shininess = value;
-                    NotifyValueChanged(_shininess.GetType(), nameof(Shininess), _shininess);
-                }
-            }
-        }
-        private float _shininess;
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="SpecularInput"/>.
-        /// </summary>
-        public SpecularInput()
-        {
-            ShadingModel = ShadingModel.DiffuseSpecular;
-            TextureSetup = TextureSetup.NoTextures;
-        }
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a effect that does no lighting calculation.
-    /// In addition this input provides properties for albedo and normal textures.
-    /// </summary>
-    public class TextureInputUnlit : SurfaceInput
-    {
-        /// <summary>
-        /// The mix between albedo texture and albedo color.
-        /// </summary>
-        public float AlbedoMix
-        {
-            get => _albedoMix;
-            set
-            {
-                if (value != _albedoMix)
-                {
-                    _albedoMix = value;
-                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
-                }
-            }
-        }
-        private float _albedoMix;
-
-        /// <summary>
-        /// The albedo texture.
-        /// </summary>
-        public Texture AlbedoTex
-        {
-            get => _albedoTex;
-            set
-            {
-                if (value != _albedoTex)
-                {
-                    _albedoTex = value;
-                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
-                }
-            }
-        }
-        private Texture _albedoTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public Texture NormalTex
-        {
-            get => _normalTex;
-            set
-            {
-                if (value != _normalTex)
-                {
-                    _normalTex = value;
-                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
-                }
-            }
-        }
-        private Texture _normalTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float NormalMappingStrength
-        {
-            get => _normalMappingStrength;
-            set
-            {
-                if (value != _normalMappingStrength)
-                {
-                    _normalMappingStrength = value;
-                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
-                }
-            }
-        }
-        private float _normalMappingStrength = 1f;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles = float2.One;
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="TextureInputUnlit"/>.
-        /// </summary>
-        public TextureInputUnlit()
-        {
-            ShadingModel = ShadingModel.Unlit;
-        }
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for diffuse only lighting calculation.
-    /// In addition this input provides properties for albedo and normal textures.
-    /// </summary>
-    public class TextureInputDiffuse : DiffuseInput
-    {
-        /// <summary>
-        /// The mix between albedo texture and albedo color.
-        /// </summary>
-        public float AlbedoMix
-        {
-            get => _albedoMix;
-            set
-            {
-                if (value != _albedoMix)
-                {
-                    _albedoMix = value;
-                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
-                }
-            }
-        }
-        private float _albedoMix;
-
-        /// <summary>
-        /// The albedo texture.
-        /// </summary>
-        public Texture AlbedoTex
-        {
-            get => _albedoTex;
-            set
-            {
-                if (value != _albedoTex)
-                {
-                    _albedoTex = value;
-                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
-                }
-            }
-        }
-        private Texture _albedoTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public Texture NormalTex
-        {
-            get => _normalTex;
-            set
-            {
-                if (value != _normalTex)
-                {
-                    _normalTex = value;
-                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
-                }
-            }
-        }
-        private Texture _normalTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float NormalMappingStrength
-        {
-            get => _normalMappingStrength;
-            set
-            {
-                if (value != _normalMappingStrength)
-                {
-                    _normalMappingStrength = value;
-                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
-                }
-            }
-        }
-        private float _normalMappingStrength = 1f;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles = float2.One;
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="TextureInputDiffuse"/>.
-        /// </summary>
-        public TextureInputDiffuse()
-        {
-            ShadingModel = ShadingModel.DiffuseOnly;
-            TextureSetup = TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
-        }
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for specular lighting with strength and shininess.
-    /// In addition this input provides properties for albedo and normal textures.
-    /// </summary>
-    public class TextureInputSpecular : SpecularInput
-    {
-        /// <summary>
-        /// The mix between albedo texture and albedo color.
-        /// </summary>
-        public float AlbedoMix
-        {
-            get => _albedoMix;
-            set
-            {
-                if (value != _albedoMix)
-                {
-                    _albedoMix = value;
-                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
-                }
-            }
-        }
-        private float _albedoMix;
-
-        /// <summary>
-        /// The albedo texture.
-        /// </summary>
-        public Texture AlbedoTex
-        {
-            get => _albedoTex;
-            set
-            {
-                if (value != _albedoTex)
-                {
-                    _albedoTex = value;
-                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
-                }
-            }
-        }
-        private Texture _albedoTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public Texture NormalTex
-        {
-            get => _normalTex;
-            set
-            {
-                if (value != _normalTex)
-                {
-                    _normalTex = value;
-                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
-                }
-            }
-        }
-        private Texture _normalTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float NormalMappingStrength
-        {
-            get => _normalMappingStrength;
-            set
-            {
-                if (value != _normalMappingStrength)
-                {
-                    _normalMappingStrength = value;
-                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
-                }
-            }
-        }
-        private float _normalMappingStrength = 1f;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles = float2.One;
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="TextureInputSpecular"/>.
-        /// </summary>
-        public TextureInputSpecular()
-        {
-            ShadingModel = ShadingModel.DiffuseSpecular;
-        }
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a glossy lighting calculation.
-    /// In addition this input provides properties for albedo and normal textures.
-    /// </summary>
-    public class TextureInputGlossy : GlossyInput
-    {
-        /// <summary>
-        /// The mix between albedo texture and albedo color.
-        /// </summary>
-        public float AlbedoMix
-        {
-            get => _albedoMix;
-            set
-            {
-                if (value != _albedoMix)
-                {
-                    _albedoMix = value;
-                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
-                }
-            }
-        }
-        private float _albedoMix;
-
-        /// <summary>
-        /// The albedo texture.
-        /// </summary>
-        public Texture AlbedoTex
-        {
-            get => _albedoTex;
-            set
-            {
-                if (value != _albedoTex)
-                {
-                    _albedoTex = value;
-                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
-                }
-            }
-        }
-        private Texture _albedoTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public Texture NormalTex
-        {
-            get => _normalTex;
-            set
-            {
-                if (value != _normalTex)
-                {
-                    _normalTex = value;
-                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
-                }
-            }
-        }
-        private Texture _normalTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float NormalMappingStrength
-        {
-            get => _normalMappingStrength;
-            set
-            {
-                if (value != _normalMappingStrength)
-                {
-                    _normalMappingStrength = value;
-                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
-                }
-            }
-        }
-        private float _normalMappingStrength = 1f;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles = float2.One;
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="TextureInputGlossy"/>.
-        /// </summary>
-        public TextureInputGlossy()
-        {
-            ShadingModel = ShadingModel.Glossy;
-        }
-    }
-
-    /// <summary>
-    /// Class that can be used to collect properties that will serve as uniforms for a BRDF lighting calculation.
-    /// In addition this input provides properties for albedo and normal textures.
-    /// </summary>
-    public class TextureInputBRDF : BRDFInput
-    {
-        /// <summary>
-        /// The mix between albedo texture and albedo color.
-        /// </summary>
-        public float AlbedoMix
-        {
-            get => _albedoMix;
-            set
-            {
-                if (value != _albedoMix)
-                {
-                    _albedoMix = value;
-                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
-                }
-            }
-        }
-        private float _albedoMix;
-
-        /// <summary>
-        /// The albedo texture.
-        /// </summary>
-        public Texture AlbedoTex
-        {
-            get => _albedoTex;
-            set
-            {
-                if (value != _albedoTex)
-                {
-                    _albedoTex = value;
-                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
-                }
-            }
-        }
-        private Texture _albedoTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public Texture NormalTex
-        {
-            get => _normalTex;
-            set
-            {
-                if (value != _normalTex)
-                {
-                    _normalTex = value;
-                    NotifyValueChanged(_normalTex.GetType(), nameof(NormalTex), _normalTex);
-                }
-            }
-        }
-        private Texture _normalTex;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float NormalMappingStrength
-        {
-            get => _normalMappingStrength;
-            set
-            {
-                if (value != _normalMappingStrength)
-                {
-                    _normalMappingStrength = value;
-                    NotifyValueChanged(_normalMappingStrength.GetType(), nameof(NormalMappingStrength), _normalMappingStrength);
-                }
-            }
-        }
-        private float _normalMappingStrength;
-
-        /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles;
-
-        /// <summary>
-        /// Creates a new instance of type <see cref="TextureInputBRDF"/>.
-        /// </summary>
-        public TextureInputBRDF()
         {
             ShadingModel = ShadingModel.BRDF;
         }

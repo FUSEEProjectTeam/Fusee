@@ -352,7 +352,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, specular, albedo texture",
                                         Translation = new float3(-5, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecularAlbedoTexture
+                                    MakeEffect.FromDiffuseSpecular
                                     (
                                         albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                         emissionColor: float4.Zero,
@@ -407,7 +407,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "specular texture - not impl.",
                                         Translation = new float3(0, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecular(float4.One, float4.Zero, 85, 0.5f),
+                                    MakeEffect.FromDiffuseSpecular(float4.One, 0f, 85, 0.5f),
                                     icosphereWithTangents
                                 }
                             },
@@ -443,7 +443,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, emissive - not impl.",
                                         Translation = new float3(10, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecularAlbedoTexture(
+                                    MakeEffect.FromDiffuseSpecular(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
                                     albedoTex: albedoTex,
@@ -463,7 +463,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "albedo, emissive, emissive texture - not impl.",
                                         Translation = new float3(15, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecularAlbedoTexture(
+                                    MakeEffect.FromDiffuseSpecular(
                                     albedoColor: new float4(0.39f, 0.19f, 0, 1).LinearColorFromSRgb(),
                                     emissionColor: float4.Zero,
                                     albedoTex: albedoTex,
