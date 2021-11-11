@@ -409,7 +409,6 @@ namespace Fusee.Engine.Core.Effects
         public TextureInputUnlit()
         {
             ShadingModel = ShadingModel.Unlit;
-            TextureSetup = TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
         }
     }
 
@@ -611,7 +610,6 @@ namespace Fusee.Engine.Core.Effects
         public TextureInputSpecular()
         {
             ShadingModel = ShadingModel.DiffuseSpecular;
-            TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
         }
     }
 
@@ -712,7 +710,6 @@ namespace Fusee.Engine.Core.Effects
         public TextureInputGlossy()
         {
             ShadingModel = ShadingModel.Glossy;
-            TextureSetup = TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
         }
     }
 
@@ -813,7 +810,6 @@ namespace Fusee.Engine.Core.Effects
         public TextureInputBRDF()
         {
             ShadingModel = ShadingModel.BRDF;
-            TextureSetup = TextureSetup.AlbedoTex | TextureSetup.NormalMap;
         }
     }
 

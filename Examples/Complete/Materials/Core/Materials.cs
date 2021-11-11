@@ -305,7 +305,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "complete",
                                         Translation = new float3(-15, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecularTexture(
+                                    MakeEffect.FromDiffuseSpecular(
                                         albedoColor : (float4.One * 0.25f).LinearColorFromSRgb(),
                                         emissionColor: float4.Zero,
                                         shininess : 25f,
@@ -420,7 +420,7 @@ namespace Fusee.Examples.Materials.Core
                                         Name = "normal map",
                                         Translation = new float3(5, 0, 0)
                                     },
-                                    MakeEffect.FromDiffuseSpecularTexture(
+                                    MakeEffect.FromDiffuseSpecular(
                                             albedoColor: (float4.One * 0.25f).LinearColorFromSRgb(),
                                             emissionColor: float4.Zero,
                                             shininess: 200f,
