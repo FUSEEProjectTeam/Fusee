@@ -3,9 +3,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
@@ -22,7 +20,7 @@ namespace Fusee.Examples.MeshingAround.Core
         // Init is called on startup.
         public override void Init()
         {
-            PolyBoundary outlineOne = new PolyBoundary //CCW!!
+            PolyBoundary outlineOne = new()
             {
                 Points = new List<float3>
                 {
@@ -36,7 +34,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            PolyBoundary outlineOneHole = new PolyBoundary //CW!!
+            PolyBoundary outlineOneHole = new()
             {
                 Points = new List<float3>
                 {
@@ -48,7 +46,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = false
             };
 
-            PolyBoundary outlineTwo = new PolyBoundary //CCW!!
+            PolyBoundary outlineTwo = new()
             {
                 Points = new List<float3>
                 {
@@ -60,7 +58,7 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            PolyBoundary outlineThree = new PolyBoundary //CCW!!
+            PolyBoundary outlineThree = new()
             {
                 Points = new List<float3>
                 {
@@ -71,32 +69,32 @@ namespace Fusee.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            List<PolyBoundary> geomOutlinesOne = new List<PolyBoundary> { outlineOne, outlineOneHole };
-            Geometry geomOne = new Geometry(geomOutlinesOne);
+            List<PolyBoundary> geomOutlinesOne = new() { outlineOne, outlineOneHole };
+            Geometry geomOne = new(geomOutlinesOne);
             geomOne.Extrude2DPolygon(0.5f, true);
             geomOne.Triangulate();
-            JometriMesh meshOne = new JometriMesh(geomOne);
+            JometriMesh meshOne = new(geomOne);
 
-            List<PolyBoundary> geomCubeOutlines = new List<PolyBoundary> { outlineTwo };
-            Geometry geomCube = new Geometry(geomCubeOutlines);
+            List<PolyBoundary> geomCubeOutlines = new() { outlineTwo };
+            Geometry geomCube = new(geomCubeOutlines);
             geomCube.Extrude2DPolygon(1, false);
             //geomCube.Extrude2DPolygon(1, true);
             geomCube.Triangulate();
-            JometriMesh cube = new JometriMesh(geomCube);
+            JometriMesh cube = new(geomCube);
 
-            List<PolyBoundary> geomTriangleOutlines = new List<PolyBoundary> { outlineThree };
-            Geometry geomTri = new Geometry(geomTriangleOutlines);
+            List<PolyBoundary> geomTriangleOutlines = new() { outlineThree };
+            Geometry geomTri = new(geomTriangleOutlines);
             geomTri.Triangulate();
-            JometriMesh triangle = new JometriMesh(geomTri);
+            JometriMesh triangle = new(geomTri);
 
             ////////////////// Fill SceneNode ////////////////////////////////
-            SceneNode parentNode = new SceneNode
+            SceneNode parentNode = new()
             {
                 Components = new List<SceneComponent>(),
                 Children = new ChildList()
             };
 
-            Transform parentTrans = new Transform
+            Transform parentTrans = new()
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -105,16 +103,16 @@ namespace Fusee.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            SceneNode sceneNodeCOne = new SceneNode { Components = new List<SceneComponent>() };
+            SceneNode sceneNodeCOne = new() { Components = new List<SceneComponent>() };
 
-            Mesh meshCOne = new Mesh
+            Mesh meshCOne = new()
             {
                 Vertices = meshOne.Vertices,
                 Triangles = meshOne.Triangles,
                 Normals = meshOne.Normals,
             };
 
-            Transform tranC = new Transform
+            Transform tranC = new()
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -124,15 +122,15 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCOne.Components.Add(tranC);
             sceneNodeCOne.Components.Add(meshCOne);
             ///////////////////////////////////////////////////////////
-            SceneNode sceneNodeCCube = new SceneNode { Components = new List<SceneComponent>() };
+            SceneNode sceneNodeCCube = new() { Components = new List<SceneComponent>() };
 
-            Mesh meshCCube = new Mesh
+            Mesh meshCCube = new()
             {
                 Vertices = cube.Vertices,
                 Triangles = cube.Triangles,
                 Normals = cube.Normals,
             };
-            Transform tranCube = new Transform
+            Transform tranCube = new()
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -142,15 +140,15 @@ namespace Fusee.Examples.MeshingAround.Core
             sceneNodeCCube.Components.Add(tranCube);
             sceneNodeCCube.Components.Add(meshCCube);
             //////////////////////////////////////////////////////////////////
-            SceneNode sceneNodeCTri = new SceneNode { Components = new List<SceneComponent>() };
+            SceneNode sceneNodeCTri = new() { Components = new List<SceneComponent>() };
 
-            Mesh meshCTri = new Mesh
+            Mesh meshCTri = new()
             {
                 Vertices = triangle.Vertices,
                 Triangles = triangle.Triangles,
                 Normals = triangle.Normals,
             };
-            Transform tranTri = new Transform
+            Transform tranTri = new()
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -196,11 +194,6 @@ namespace Fusee.Examples.MeshingAround.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
         }
 
         // Is called when the window was resized

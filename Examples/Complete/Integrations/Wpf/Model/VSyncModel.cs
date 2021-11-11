@@ -15,7 +15,7 @@ namespace Fusee.Examples.Integrations.Wpf.Model
             set
             {
                 _vsync = value;
-                OnPropertyChanged("VSync");
+                OnPropertyChanged(nameof(VSync));
             }
         }
 

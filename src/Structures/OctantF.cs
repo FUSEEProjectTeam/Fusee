@@ -117,37 +117,18 @@ namespace Fusee.Structures
         /// <returns></returns>
         public static float3 CalcChildCenterAtPos(int posInParent, float parentSize, float3 parentCenter)
         {
-            float3 childCenter;
             var childsHalfSize = parentSize / 4f;
-            switch (posInParent)
+            var childCenter = posInParent switch
             {
-                default:
-                case 0:
-                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 1:
-                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 2:
-                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-                case 3:
-                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-                case 4:
-                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 5:
-                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize);
-                    break;
-                case 6:
-                    childCenter = new float3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-                case 7:
-                    childCenter = new float3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize);
-                    break;
-            }
-
+                1 => new float3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize),
+                2 => new float3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize),
+                3 => new float3(parentCenter.x + childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z + childsHalfSize),
+                4 => new float3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize),
+                5 => new float3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z - childsHalfSize),
+                6 => new float3(parentCenter.x - childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize),
+                7 => new float3(parentCenter.x + childsHalfSize, parentCenter.y + childsHalfSize, parentCenter.z + childsHalfSize),
+                _ => new float3(parentCenter.x - childsHalfSize, parentCenter.y - childsHalfSize, parentCenter.z - childsHalfSize),
+            };
             return childCenter;
         }
 

@@ -11,7 +11,30 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_Color = new List<string>()
+        public static readonly List<string> SurfOutBody_Color = new()
+        {
+            "OUT.albedo = IN.Albedo;"
+        };
+
+        /// <summary>
+        /// Returns a default method body for a diffuse-specular lighting calculation.
+        /// </summary>
+        public static readonly List<string> SurfOutBody_VertOrAlbedoColor = new()
+        {
+            "if(ColorMode == 0)",
+            "{",
+            $"   OUT.albedo = {VaryingNameDeclarations.Color};",
+            "}",
+            "else",
+            "{",
+            "   OUT.albedo = IN.Albedo;",
+            "}",
+        };
+
+        /// <summary>
+        /// Returns a default method body for a diffuse-specular lighting calculation.
+        /// </summary>
+        public static readonly List<string> SurfOutBody_Roughness = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.roughness = IN.Roughness;"
@@ -20,7 +43,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_DiffSpecular = new List<string>()
+        public static readonly List<string> SurfOutBody_DiffSpecular = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.specularStrength = IN.SpecularStrength;",
@@ -32,7 +55,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for rendering into a G-Buffer.
         /// </summary>
-        public static readonly List<string> SurfOutBody_GBuffer = new List<string>()
+        public static readonly List<string> SurfOutBody_GBuffer = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.emission = IN.Emission;",
@@ -43,7 +66,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns a default method body for a physically based diffuse-specular lighting calculation.
         /// </summary>
-        public static readonly List<string> SurfOutBody_BRDF = new List<string>()
+        public static readonly List<string> SurfOutBody_BRDF = new()
         {
             "OUT.albedo = IN.Albedo;",
             "OUT.emission = IN.Emission;",

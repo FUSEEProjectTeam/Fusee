@@ -73,7 +73,7 @@ namespace Fusee.Xene
         where TComponent : class, IComponent
     {
         private IEnumerable<TNode> _rootList;
-        private readonly Queue<TItem> _itemQueue = new Queue<TItem>(1);
+        private readonly Queue<TItem> _itemQueue = new(1);
 
         // unfortunate Two-step instantiation forced by C#'s poor generic constraint system which doesn't allow to constraint a parameter-taking constructor
         // Step 1: Create the instance

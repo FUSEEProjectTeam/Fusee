@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public class OBBState : VisitorState
         {
-            private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
+            private readonly CollapsingStateStack<float4x4> _modelView = new();
 
             /// <summary>
             /// The model view matrix.
@@ -41,9 +41,9 @@ namespace Fusee.Engine.Core
         }
 
         //private SceneContainer _sc;
-        private IEnumerable<SceneNode> _sncList;
-        private OBBState _state = new OBBState();
-        private List<float3> _allVerticesOfCurrentScene = new List<float3>();
+        private readonly IEnumerable<SceneNode> _sncList;
+        private readonly OBBState _state = new();
+        private readonly List<float3> _allVerticesOfCurrentScene = new();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
@@ -92,7 +92,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnTransform(Transform transform)
         {
-            _state.ModelView *= transform.Matrix();
+            _state.ModelView *= transform.Matrix;
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
         public class AABBState : VisitorState
         {
-            private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
+            private readonly CollapsingStateStack<float4x4> _modelView = new();
 
             /// <summary>
             /// The model view matrix.
@@ -172,8 +172,8 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private IEnumerable<SceneNode> _sncList;
-        private AABBState _state = new AABBState();
+        private readonly IEnumerable<SceneNode> _sncList;
+        private readonly AABBState _state = new();
         private bool _boxValid;
         private AABBf _result;
 
@@ -226,7 +226,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnTransform(Transform transform)
         {
-            _state.ModelView *= transform.Matrix();
+            _state.ModelView *= transform.Matrix;
         }
 
         /// <summary>

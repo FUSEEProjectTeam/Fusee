@@ -348,9 +348,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="PlaneF"/>.</param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() != typeof(PlaneF)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj?.GetType() != typeof(PlaneF)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
 
             var other = (PlaneF)obj;
             return
@@ -365,15 +365,7 @@ namespace Fusee.Math.Core
         /// </summary>        
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 29 + A.GetHashCode();
-                hash = hash * 29 + B.GetHashCode();
-                hash = hash * 29 + C.GetHashCode();
-                hash = hash * 29 + D.GetHashCode();
-                return hash;
-            }
+            return HashCode.Combine(A, B, C, D);
         }
 
         #endregion

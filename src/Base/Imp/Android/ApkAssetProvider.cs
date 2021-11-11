@@ -5,7 +5,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Base.Imp.Android
 {
@@ -14,7 +13,7 @@ namespace Fusee.Base.Imp.Android
     /// </summary>
     public class ApkAssetProvider : StreamAssetProvider
     {
-        Context _androidContext;
+        readonly Context _androidContext;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApkAssetProvider" /> class.
@@ -31,41 +30,29 @@ namespace Fusee.Base.Imp.Android
                 Decoder = (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    return ext switch
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return FileDecoder.LoadImage((Stream)storage);
-                    }
-                    return null;
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" => FileDecoder.LoadImage((Stream)storage),
+                        _ => null,
+                    };
                 },
                 DecoderAsync = async (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    return ext switch
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false);
-                    }
-                    return null;
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" => await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false),
+                        _ => null,
+                    };
                 },
                 Checker = (string id) =>
                 {
                     string ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    return ext switch
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return true;
-                    }
-                    return false;
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" => true,
+                        _ => false,
+                    };
                 }
             });
 
@@ -103,12 +90,10 @@ namespace Fusee.Base.Imp.Android
         }
 
         /// <summary>
-        /// Checks the existence of the identified asset using <see cref="File.Exists"/>
+        /// Checks the existence of the identified asset.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
-        /// <returns>
-        /// true if a stream can be created.
-        /// </returns>
+        /// <returns>true if the asset exists.</returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         protected override bool CheckExists(string id)
         {
@@ -135,6 +120,11 @@ namespace Fusee.Base.Imp.Android
             return _androidContext.Assets.Open(id);
         }
 
+        /// <summary>
+        /// Checks the existence of the identified asset
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>true if the asset exists.</returns>
         protected override Task<bool> CheckExistsAsync(string id)
         {
             return Task.Factory.StartNew(() =>

@@ -122,7 +122,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public const int SI_NO_BUTTON = -1;
         public const int SI_EVENT = 0x0001;
         public const int SI_AVERAGE_EVENTS = 1;
-
         #endregion
 
         #region Structs
@@ -326,7 +325,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public static SpwRetVal SiGetDeviceImageFileName(IntPtr hdl, out string path)
         {
             SpwRetVal tmpRetVal;
-            SiDeviceIconPath devicePathStruct = new SiDeviceIconPath();
+            SiDeviceIconPath devicePathStruct = new();
             int len = SI_STRSIZE;
             tmpRetVal = pfnSiGetDeviceImageFileName(hdl, ref devicePathStruct, ref len);
             path = devicePathStruct.path;
@@ -336,7 +335,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public static SpwRetVal SiGetDeviceName(IntPtr hdl, out string name)
         {
             SpwRetVal tmpRetVal;
-            SiDeviceName deviceNameStruct = new SiDeviceName();
+            SiDeviceName deviceNameStruct = new();
             tmpRetVal = pfnSiGetDeviceName(hdl, ref deviceNameStruct);
             name = deviceNameStruct.name;
             return tmpRetVal;
@@ -345,12 +344,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
         public static SpwRetVal SiGetButtonName(IntPtr hdl, uint buttonNumber, out string name)
         {
             SpwRetVal tmpRetVal;
-            SiButtonName buttonNameStruct = new SiButtonName();
+            SiButtonName buttonNameStruct = new();
             tmpRetVal = pfnSiGetButtonName(hdl, buttonNumber, ref buttonNameStruct);
             name = buttonNameStruct.name;
             return tmpRetVal;
         }
-
         #endregion
     }
 }
@@ -383,20 +381,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <summary>
         /// Dispatching Thread
         /// </summary>
-        private readonly System.Threading.Thread eventThread;
+        private readonly Thread eventThread;
 
         /// <summary>
         /// Buffer for Events
         /// </summary>
-        private readonly Dictionary<SiApp.SiEventType, EventArgs> eventBuffer = new Dictionary<SiApp.SiEventType, EventArgs>();
+        private readonly Dictionary<SiApp.SiEventType, EventArgs> eventBuffer = new();
+
         /// <summary>
         /// The 3Dconnexion device.
         /// </summary>
         /// <param name="appName"></param>
         public _3DconnexionDevice(string appName)
         {
-            this.AppName = appName;
-            eventThread = new System.Threading.Thread(EventThreadLoop)
+            AppName = appName;
+            eventThread = new Thread(EventThreadLoop)
             {
                 IsBackground = true,
                 Name = "3Dconnexion-Event-Dispatcher"
@@ -489,7 +488,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             {
                 if (IsAvailable)
                 {
-                    var ret = SiApp.SiGetDeviceImageFileName(_deviceHandle, out var path);
+                    _ = SiApp.SiGetDeviceImageFileName(_deviceHandle, out var path);
                     return path;
                 }
                 return null;
@@ -507,50 +506,32 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             if (IsAvailable)
                 return; //Init already done.
 
-            SiApp.SpwRetVal v = SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR;
-
-            v = SiApp.SiInitialize();
-
-            //try
-            //{
-            //    v = SiApp.SiInitialize();
-            //}
-            //catch
-            //{
-            //    // throw new _3DxException("Driver not installed.");
-            //    Diagnostics.Log("3DX Driver is not installed");
-            //    eventThread.Abort();
-            //    Dispose();
-            //    return;
-            //}
+            SiApp.SpwRetVal v = SiApp.SiInitialize();
 
             if (v == SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR)
                 throw new _3DxException("Unable to load SiApp DLL");
 
 
             var o = default(SiApp.SiOpenData);
-            SiApp.SiOpenWinInit(ref o, windowHandle);
+            _ = SiApp.SiOpenWinInit(ref o, windowHandle);
 
             _deviceHandle = SiApp.SiOpen(this.AppName, SiApp.SI_ANY_DEVICE, IntPtr.Zero, SiApp.SI_EVENT, ref o);
             if (_deviceHandle == IntPtr.Zero)
             {
-                SiApp.SiTerminate();
+                _ = SiApp.SiTerminate();
                 throw new _3DxException("Unable to open device");
             }
 
-            string devName;
-            SiApp.SiGetDeviceName(_deviceHandle, out devName);
+            SiApp.SiGetDeviceName(_deviceHandle, out string devName);
 
             this.DeviceName = devName;
 
             this.DeviceID = SiApp.SiGetDeviceID(_deviceHandle);
 
-            SiApp.SiDevInfo info = default(SiApp.SiDevInfo);
+            SiApp.SiDevInfo info = default;
             SiApp.SiGetDeviceInfo(_deviceHandle, ref info);
 
             this.FirmwareVersion = info.firmware;
-
-
         }
 
         /// <summary>
@@ -558,14 +539,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// </summary>
         public void CloseDevice()
         {
-
-
             if (_deviceHandle != IntPtr.Zero)
             {
                 SiApp.SiClose(_deviceHandle);
                 _deviceHandle = IntPtr.Zero;
             }
-
         }
 
         /// <summary>
@@ -576,12 +554,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <param name="lParam"></param>
         public void ProcessWindowMessage(int msg, IntPtr wParam, IntPtr lParam)
         {
-            if (this.IsDisposed) //We don't throw an Exception in the Message Loop, just return
+            if (IsDisposed) //We don't throw an Exception in the Message Loop, just return
                 return;
 
-            SiApp.SiGetEventData evd = default(SiApp.SiGetEventData);
+            SiApp.SiGetEventData evd = default;
             SiApp.SiGetEventWinInit(ref evd, msg, wParam, lParam);
-            SiApp.SiSpwEvent_SpwData edata = default(SiApp.SiSpwEvent_SpwData);
+            SiApp.SiSpwEvent_SpwData edata = default;
             var t = SiApp.SiGetEvent(_deviceHandle, SiApp.SI_AVERAGE_EVENTS, ref evd, ref edata);
             if (t == SiApp.SpwRetVal.SI_IS_EVENT)
             {
@@ -609,8 +587,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// </summary>
         protected virtual void OnZeroPoint()
         {
-            if (ZeroPoint != null)
-                ZeroPoint(this, EventArgs.Empty);
+            ZeroPoint?.Invoke(this, EventArgs.Empty);
         }
         /// <summary>
         /// Is called if the mouse is moved. 
@@ -618,41 +595,39 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// <param name="args"></param>
         protected virtual void OnMotion(MotionEventArgs args)
         {
-            if (Motion != null)
-                Motion(this, args);
+            Motion?.Invoke(this, args);
         }
-
-        //protected virtual void OnDeviceChange(DeviceChangeEventArgs args)
-        //{
-        //    if (DeviceChange != null)
-        //        DeviceChange(this, args);
-        //}
 
         #region IDisposable Member
 
-        /// <summary>
-        /// Disposes of the device.
-        /// </summary>
         public void Dispose()
         {
-            if (!this.IsDisposed)
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!IsDisposed)
             {
                 CloseDevice();
                 ZeroPoint = null;
                 Motion = null;
+                IsDisposed = true;
+
+                //eventThread.Join();
             }
-            this.IsDisposed = true;
         }
 
         #endregion
 
         private void EventThreadLoop()
         {
-            while (!this.IsDisposed)
+            while (!IsDisposed)
             {
                 lock (eventBuffer)
                 {
-                    while (eventBuffer.Count == 0)
+                    while (eventBuffer.Count == 0 || !IsDisposed)
                         Monitor.Wait(eventBuffer);
                     foreach (var c in eventBuffer)
                     {
@@ -719,12 +694,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         public DeviceChangeEventArgs(int deviceId, int type)
         {
             this.DeviceID = deviceId;
-            switch (type)
+            Type = type switch
             {
-                case 0: Type = EDeviceChangeType.CONNECTED; break;
-                case 1: Type = EDeviceChangeType.DISCONNECTED; break;
-                default: Type = EDeviceChangeType.UNKNOWN; break;
-            }
+                0 => EDeviceChangeType.CONNECTED,
+                1 => EDeviceChangeType.DISCONNECTED,
+                _ => EDeviceChangeType.UNKNOWN,
+            };
         }
     }
 
@@ -789,7 +764,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         public static MotionEventArgs FromEventArray(int[] data)
         {
             if (data == null)
-                throw new ArgumentNullException("data");
+                throw new ArgumentNullException(nameof(data));
             if (data.Length < 6)
                 throw new ArgumentException("data array to small");
 

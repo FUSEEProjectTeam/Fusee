@@ -22,7 +22,6 @@ namespace Fusee.Base.Common
             _assetHandlers = new Dictionary<Type, AssetHandler>();
         }
 
-
         /// <summary>
         /// Determines whether this instance can handle assets of the specified type (in general).
         /// </summary>
@@ -116,7 +115,6 @@ namespace Fusee.Base.Common
         {
             if (!CheckExists(id))
             {
-                type = null;
                 return false;
             }
 

@@ -6,7 +6,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.SurfaceEffects.Desktop
 {
@@ -36,7 +35,7 @@ namespace Fusee.Examples.SurfaceEffects.Desktop
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
@@ -52,10 +51,10 @@ namespace Fusee.Examples.SurfaceEffects.Desktop
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
             // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-            // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-            // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();

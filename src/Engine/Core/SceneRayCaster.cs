@@ -114,7 +114,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public class RayCasterState : VisitorState
         {
-            private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            private readonly CollapsingStateStack<float4x4> _model = new();
 
             /// <summary>
             /// The registered model.
@@ -158,8 +158,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that are hit by the ray and that can be iterated over.
         /// </summary>
-        /// <param name="origin">The origin of the ray (in world space).</param>
-        /// <param name="direction">The direction of the ray (in world space).</param>
+        /// <param name="ray"></param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
         public IEnumerable<RayCastResult> RayCast(Rayf ray)
         {
@@ -176,7 +175,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderTransform(Transform transform)
         {
-            State.Model *= transform.Matrix();
+            State.Model *= transform.Matrix;
         }
 
         /// <summary>

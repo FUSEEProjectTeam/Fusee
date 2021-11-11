@@ -324,7 +324,7 @@ namespace Fusee.Math.Core
                 }
             }
             //Adds the last control point to maintain the order of the points.
-            yield return controlPoints[controlPoints.Count - 1];
+            yield return controlPoints[^1];
         }
 
         /// <summary>
@@ -403,7 +403,7 @@ namespace Fusee.Math.Core
             const double max = 0.55;
 
             var a = verts[0];
-            var b = verts[verts.Length - 1];
+            var b = verts[^1];
 
             var t = RandomT(rnd, min, max);
             var vertNearMiddle = CalcPoint((float)t, verts);
@@ -430,7 +430,7 @@ namespace Fusee.Math.Core
             const double max = 0.55;
 
             var a = verts[0];
-            var b = verts[verts.Length - 1];
+            var b = verts[^1];
 
             var t = RandomT(rnd, min, max);
             var vertNearMiddle = CalcPoint((float)t, verts);
@@ -481,7 +481,7 @@ namespace Fusee.Math.Core
                 .Determinant;
 
             var area = 0.5 * det;
-            if (area < 1) area = area * -1;
+            if (area < 1) area *= -1;
 
             if (area < threshold)
                 return true;
@@ -528,7 +528,7 @@ namespace Fusee.Math.Core
                 }
             }
             //Manually adds the last control point to maintain the order of the points
-            yield return controlPoints[controlPoints.Count - 1];
+            yield return controlPoints[^1];
         }
     }
 

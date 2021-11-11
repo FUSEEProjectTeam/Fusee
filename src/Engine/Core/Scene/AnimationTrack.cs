@@ -151,6 +151,6 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The list of key frames ordered by time.
         /// </summary>
-        public List<AnimationKeyBase> KeyFrames = new List<AnimationKeyBase>();
+        public List<AnimationKeyBase> KeyFrames = new();
     }
 }

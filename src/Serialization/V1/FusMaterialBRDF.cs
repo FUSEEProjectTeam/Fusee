@@ -20,7 +20,7 @@ namespace Fusee.Serialization.V1
         /// Contains all variables for a physically-based lighting calculation using a bidirectional reflectance distribution function.
         /// </summary>
         [ProtoMember(2)]
-        public BRDFChannel? BRDF;
+        public BRDFChannel BRDF;
 
         #region equals
 

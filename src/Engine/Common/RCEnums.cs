@@ -553,7 +553,6 @@ namespace Fusee.Engine.Common
         RightStickY = 3,
         LeftTrigger = 4,
         RightTrigger = 5
-
 #pragma warning restore 1591
     }
 
@@ -631,5 +630,18 @@ namespace Fusee.Engine.Common
         // (int) Touchpoint0 + i)
 #pragma warning restore 1591
         // Resharper restore InconsistentNaming
+    }
+
+    /// <summary>
+    /// Describes the platform of the current renderer. This can be used in shaders to do platform dependent things.
+    /// </summary>
+    public enum FuseePlatformId : int
+    {
+#pragma warning disable 1591
+        Undefined = 0,
+        Desktop = 1,
+        Android = 2,
+        Wasm = 3
+#pragma warning restore 1591
     }
 }

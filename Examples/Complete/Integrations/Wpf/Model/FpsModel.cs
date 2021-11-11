@@ -15,7 +15,7 @@ namespace Fusee.Examples.Integrations.Wpf.Model
             set
             {
                 _fps = value;
-                OnPropertyChanged("Fps");
+                OnPropertyChanged(nameof(Fps));
             }
         }
 

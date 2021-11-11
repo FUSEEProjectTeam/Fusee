@@ -13,7 +13,6 @@ using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.SurfaceEffects.Android
 {
@@ -62,7 +61,7 @@ namespace Fusee.Examples.SurfaceEffects.Android
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                                return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                             }
                             return null;
                         },
@@ -76,7 +75,11 @@ namespace Fusee.Examples.SurfaceEffects.Android
                 var app = new Core.SurfaceEffects();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                var rci = new RenderCanvasImp(ApplicationContext, null, delegate
+                {
+                    app.InitApp();
+                    app.Run();
+                });
                 app.CanvasImplementor = rci;
                 app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 

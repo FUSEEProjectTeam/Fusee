@@ -2,16 +2,18 @@
 using Fusee.Engine.Core.Effects;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-    internal class EffectManager
+    internal class EffectManager : IDisposable
     {
         private readonly RenderContext _rc;
+        private readonly Stack<Effect> _effectsToBeDeleted = new();
+        private readonly Dictionary<Suid, Effect> _allEffects = new();
 
-        private readonly Stack<Effect> _effectsToBeDeleted = new Stack<Effect>();
-
-        private readonly Dictionary<Suid, Effect> _allEffects = new Dictionary<Suid, Effect>();
+        // Track whether Dispose has been called.
+        private bool disposed = false;
 
         private void EffectChanged(object sender, EffectManagerEventArgs args)
         {
@@ -26,7 +28,7 @@ namespace Fusee.Engine.Core
                     _effectsToBeDeleted.Push(senderSF);
                     break;
                 case UniformChangedEnum.Update:
-                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedUniformName, args.ChangedUniformValue);
+                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedUniformHash, args.ChangedUniformValue);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"EffectChanged event called with unknown arguments: {args}, calling Effect: {sender as Effect}");
@@ -41,7 +43,6 @@ namespace Fusee.Engine.Core
             ef.EffectChanged += EffectChanged;
 
             _allEffects.Add(ef.SessionUniqueIdentifier, ef);
-
         }
 
         /// <summary>
@@ -66,12 +67,42 @@ namespace Fusee.Engine.Core
             while (_effectsToBeDeleted.Count > 0)
             {
                 var tmPop = _effectsToBeDeleted.Pop();
-                // remove one Effect from _allEffects
+                // Remove one Effect from _allEffects
                 _allEffects.Remove(tmPop.SessionUniqueIdentifier);
                 // Remove one Effect from Memory
                 _rc.RemoveShader(tmPop);
             }
         }
 
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if (!disposed)
+            {
+                Cleanup();
+
+                for (int i = 0; i < _allEffects.Count; i++)
+                {
+                    var fx = _allEffects.ElementAt(i);
+                    _allEffects.Remove(fx.Key);
+                    // Remove one Effect from Memory
+                    _rc.RemoveShader(fx.Value);
+                }
+
+                // Note disposing has been done.
+                disposed = true;
+            }
+        }
+
+        ~EffectManager()
+        {
+            Dispose(disposing: false);
+        }
     }
 }

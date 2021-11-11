@@ -7,7 +7,6 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.AdvancedUI.Desktop
 {
@@ -16,9 +15,9 @@ namespace Fusee.Examples.AdvancedUI.Desktop
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
-            IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+            IO.IOImp = new IOImp();
 
-            FileAssetProvider fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            FileAssetProvider fap = new("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -49,7 +48,7 @@ namespace Fusee.Examples.AdvancedUI.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            Core.AdvancedUI app = new Core.AdvancedUI();
+            Core.AdvancedUI app = new();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
@@ -58,10 +57,10 @@ namespace Fusee.Examples.AdvancedUI.Desktop
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
             // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-            // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-            // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();

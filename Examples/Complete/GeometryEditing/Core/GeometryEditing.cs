@@ -3,7 +3,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using System;
@@ -30,7 +29,6 @@ namespace Fusee.Examples.GeometryEditing.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
         private readonly float4x4 _sceneScale = float4x4.CreateScale(1);
-        private float4x4 _projection;
         private float _keyTimeout = 1;
 
         private bool _twoTouchRepeated;
@@ -41,7 +39,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private Dictionary<int, Geometry> _activeGeometrys;
 
-        private readonly Random rng = new Random();
+        private readonly Random rng = new();
 
         //picking
         private float2 _pickPos;
@@ -63,7 +61,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                 Children = new ChildList()
             };
 
-            Transform parentTrans = new Transform
+            Transform parentTrans = new()
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
@@ -82,14 +80,6 @@ namespace Fusee.Examples.GeometryEditing.Core
             RC.ClearColor = new float4(.7f, .7f, .7f, 1);
 
             _activeGeometrys = new Dictionary<int, Geometry>();
-
-            //Create Geometry
-            //Geometry sphere = CreateGeometry.CreateSpehreGeometry(2,22,11);
-            //sphere = SubdivisionSurface.CatmullClarkSubdivision(sphere);
-            //AddGeometryToSceneNode(sphere, new float3(0,0,0));
-
-            //Geometry cuboid = CreateGeometry.CreateCuboidGeometry(5, 2, 5);
-            //AddGeometryToSceneNode(cuboid, new float3(-5,0,0));
         }
 
         // RenderAFrame is called once a frame
@@ -114,10 +104,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<ShaderEffect>().SetFxParam(UniformNameDeclarations.Albedo, _defaultColor);
+                    _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _defaultColor;
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<ShaderEffect>().SetFxParam(UniformNameDeclarations.Albedo, _selectedColor);
+                _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _selectedColor;
             }
         }
 
@@ -145,7 +135,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Keyboard.GetKey(KeyCodes.D4) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
-                Geometry geometry = CreatePrimitiveGeometry.CreateSpehreGeometry(1, 30, 15);
+                Geometry geometry = CreatePrimitiveGeometry.CreateSphereGeometry(1, 30, 15);
                 AddGeometryToSceneNode(geometry, new float3(0, 0, 0));
             }
             _keyTimeout -= DeltaTime;
@@ -163,7 +153,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             }
             if (_isTranslating)
             {
-                float3 worldPos = new float3(Mouse.Velocity.x * .0001f, Mouse.Velocity.y * -.0001f, Mouse.WheelVel * .001f);
+                float3 worldPos = new(Mouse.Velocity.x * .0001f, Mouse.Velocity.y * -.0001f, Mouse.WheelVel * .001f);
                 _selectedNode.GetTransform().Translation += worldPos.xyz;
 
                 if (Mouse.LeftButton)
@@ -193,7 +183,7 @@ namespace Fusee.Examples.GeometryEditing.Core
                 int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
                 _activeGeometrys.Remove(currentGeometryIndex);
 
-                Dictionary<int, Geometry> zwerg = new Dictionary<int, Geometry>();
+                Dictionary<int, Geometry> zwerg = new();
                 foreach (int key in _activeGeometrys.Keys)
                 {
                     if (key > currentGeometryIndex)
@@ -228,8 +218,8 @@ namespace Fusee.Examples.GeometryEditing.Core
                 _activeGeometrys[currentGeometryIndex] = copy;
                 currentSelectedGeometry.Triangulate();
 
-                JometriMesh geometryMesh = new JometriMesh(currentSelectedGeometry);
-                Mesh meshComponent = new Mesh
+                JometriMesh geometryMesh = new(currentSelectedGeometry);
+                Mesh meshComponent = new()
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -251,8 +241,8 @@ namespace Fusee.Examples.GeometryEditing.Core
                 _activeGeometrys[currentGeometryIndex] = copy;
                 currentSelectedGeometry.Triangulate();
 
-                JometriMesh geometryMesh = new JometriMesh(currentSelectedGeometry);
-                Mesh meshComponent = new Mesh
+                JometriMesh geometryMesh = new(currentSelectedGeometry);
+                Mesh meshComponent = new()
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -274,8 +264,8 @@ namespace Fusee.Examples.GeometryEditing.Core
                 _activeGeometrys[currentGeometryIndex] = copy;
                 currentSelectedGeometry.Triangulate();
 
-                JometriMesh geometryMesh = new JometriMesh(currentSelectedGeometry);
-                Mesh meshComponent = new Mesh
+                JometriMesh geometryMesh = new(currentSelectedGeometry);
+                Mesh meshComponent = new()
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -382,17 +372,17 @@ namespace Fusee.Examples.GeometryEditing.Core
         {
             Geometry newGeo = geometry.CloneGeometry();
             newGeo.Triangulate();
-            JometriMesh geometryMesh = new JometriMesh(newGeo);
+            JometriMesh geometryMesh = new(newGeo);
 
-            SceneNode sceneNodeContainer = new SceneNode { Components = new List<SceneComponent>() };
+            SceneNode sceneNodeContainer = new() { Components = new List<SceneComponent>() };
 
-            Mesh meshComponent = new Mesh
+            Mesh meshComponent = new()
             {
                 Vertices = geometryMesh.Vertices,
                 Triangles = geometryMesh.Triangles,
                 Normals = geometryMesh.Normals,
             };
-            Transform translationComponent = new Transform
+            Transform translationComponent = new()
             {
                 Rotation = float3.Zero,
                 Scale = new float3(1, 1, 1),

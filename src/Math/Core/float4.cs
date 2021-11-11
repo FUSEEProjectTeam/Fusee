@@ -42,32 +42,32 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length float4 that points towards the x-axis.
         /// </summary>
-        public static float4 UnitX = new float4(1, 0, 0, 0);
+        public static readonly float4 UnitX = new(1, 0, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float4 that points towards the y-axis.
         /// </summary>
-        public static float4 UnitY = new float4(0, 1, 0, 0);
+        public static readonly float4 UnitY = new(0, 1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float4 that points towards the z-axis.
         /// </summary>
-        public static float4 UnitZ = new float4(0, 0, 1, 0);
+        public static readonly float4 UnitZ = new(0, 0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length float4 that points towards the w-axis.
         /// </summary>
-        public static float4 UnitW = new float4(0, 0, 0, 1);
+        public static readonly float4 UnitW = new(0, 0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length float4.
         /// </summary>
-        public static float4 Zero = new float4(0, 0, 0, 0);
+        public static readonly float4 Zero = new(0, 0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly float4 One = new float4(1, 1, 1, 1);
+        public static readonly float4 One = new(1, 1, 1, 1);
 
         // <summary>
         // Defines the size of the float4 struct in bytes.
@@ -181,23 +181,14 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (idx)
+                return idx switch
                 {
-                    case 0:
-                        return x;
-
-                    case 1:
-                        return y;
-
-                    case 2:
-                        return z;
-
-                    case 3:
-                        return w;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float4 type");
-                }
+                    0 => x,
+                    1 => y,
+                    2 => z,
+                    3 => w,
+                    _ => throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float4 type"),
+                };
             }
             set
             {
@@ -755,12 +746,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        public float2 xy { get => new float2(x, y); set { x = value.x; y = value.y; } }
+        public float2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets and sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-        public float3 xyz { get => new float3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
+        public float3 xyz { get => new(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         #endregion Swizzle
 
@@ -965,7 +956,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is float4))
                 return false;

@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// Collection of all uniform parameters of this effect. See <see cref="IFxParamDeclaration"/>.
         /// </summary>
-        public Dictionary<string, IFxParamDeclaration> ParamDecl { get; protected set; }
+        public Dictionary<int, IFxParamDeclaration> ParamDecl { get; protected set; }
 
         /// <summary>
         /// The renderer states that are applied for this effect, e.g. the blend and alpha mode.
@@ -45,26 +45,33 @@ namespace Fusee.Engine.Core.Effects
         {
             if (ParamDecl != null)
             {
-                if (ParamDecl.ContainsKey(name))
-                {
-                    var type = ParamDecl[name].GetType();
-                    var valueFieldInfo = type.GetField("Value");
-                    var val = valueFieldInfo.GetValue(ParamDecl[name]);
+                var hash = name.GetHashCode();
+                SetFxParam(hash, value);
+            }
+        }
 
-                    //Implemented using reflections and not "(FxParamDeclaration<T>)ParamDecl[name]" because 
-                    //we get a InvalidCast exception when coming from the RC (Render(Mesh)) and T is of type "object" but ParamDecl[name] "T" isn't.
-                    type.GetField("Value").SetValue(ParamDecl[name], value);
+        /// <summary>
+        /// Set effect parameter
+        /// </summary>
+        /// <param name="hash">Hash of the uniform variable. Retrieved by name.GetHashCode().</param>
+        /// <param name="value">Value of the uniform variable</param>
+        public void SetFxParam<T>(int hash, T value)
+        {
+            if (ParamDecl.ContainsKey(hash))
+            {
+                var dcl = ParamDecl[hash];
 
-                    EffectManagerEventArgs.Changed = UniformChangedEnum.Update;
-                    EffectManagerEventArgs.ChangedUniformName = name;
-                    EffectManagerEventArgs.ChangedUniformValue = value;
+                if (!ParamDecl[hash].SetValue(value)) return;
 
-                    EffectChanged?.Invoke(this, EffectManagerEventArgs);
-                }
-                else
-                {
-                    Diagnostics.Warn($"Trying to set unknown parameter {name}! Ignoring change....");
-                }
+                EffectManagerEventArgs.Changed = UniformChangedEnum.Update;
+                EffectManagerEventArgs.ChangedUniformHash = hash;
+                EffectManagerEventArgs.ChangedUniformValue = value;
+
+                EffectChanged?.Invoke(this, EffectManagerEventArgs);
+            }
+            else
+            {
+                Diagnostics.Warn($"Trying to set unknown parameter! Ignoring change....");
             }
         }
 
@@ -75,11 +82,59 @@ namespace Fusee.Engine.Core.Effects
         /// <returns></returns>
         public T GetFxParam<T>(string name)
         {
-            if (ParamDecl.TryGetValue(name, out var dcl))
+            var hash = name.GetHashCode();
+            if (ParamDecl.TryGetValue(hash, out var dcl))
             {
                 return ((FxParamDeclaration<T>)dcl).Value;
             }
             return default;
+        }
+
+        /// <summary>
+        /// Determines whether two Effect instances are equal.
+        /// </summary>
+        /// <param name="obj">The other Effect.</param>
+        public override bool Equals(object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            if (obj is not Effect p)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (SessionUniqueIdentifier == p.SessionUniqueIdentifier);
+        }
+
+        /// <summary>
+        /// Determines whether two Effect instances are equal.
+        /// </summary>
+        /// <param name="p">The other Effect.</param>
+        public bool Equals(Effect p)
+        {
+            // If parameter is null return false:
+            if (p == null)
+            {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (SessionUniqueIdentifier == p.SessionUniqueIdentifier);
+        }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return SessionUniqueIdentifier.GetHashCode();
         }
     }
 }

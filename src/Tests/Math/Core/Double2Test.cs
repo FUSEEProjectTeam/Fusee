@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class Double2Test
     {
@@ -352,10 +352,8 @@ namespace Fusee.Test.Math.Core
         [MemberData(nameof(GetBarycentric))]
         public void GetBarycentric_Edges(double2 a, double2 b, double2 c, double uExpected, double vExpected, double2 point)
         {
-            double uActual;
-            double vActual;
 
-            double2.GetBarycentric(a, b, c, point, out uActual, out vActual);
+            double2.GetBarycentric(a, b, c, point, out double uActual, out double vActual);
 
             Assert.Equal(uExpected, uActual);
             Assert.Equal(vExpected, vActual);

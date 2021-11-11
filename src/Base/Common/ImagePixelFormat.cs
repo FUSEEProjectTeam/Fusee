@@ -28,19 +28,27 @@ namespace Fusee.Base.Common
         {
             get
             {
-                return ColorFormat == ColorFormat.RGBA || ColorFormat == ColorFormat.uiRgb8
-                    ? 4
-                    : ColorFormat == ColorFormat.RGB
-                        ? 3
-                        : ColorFormat == ColorFormat.Depth24 || ColorFormat == ColorFormat.Depth16
-                            ? 3
-                            : ColorFormat == ColorFormat.Intensity
-                                ? 1
-                                : ColorFormat == ColorFormat.fRGB16 || ColorFormat == ColorFormat.fRGB32 //GL_FLOAT: 4byte per component
-                                    ? 12
-                                    : ColorFormat == ColorFormat.fRGBA16
-                                        ? 16
-                                            : 0;
+                return
+                    ColorFormat == ColorFormat.Intensity
+                    ? 1 :
+                    ColorFormat == ColorFormat.Depth16
+                    ? 2 :
+                    ColorFormat == ColorFormat.RGB ||
+                    ColorFormat == ColorFormat.Depth24 ||
+                    ColorFormat == ColorFormat.uiRgb8
+                    ? 3 :
+                    ColorFormat == ColorFormat.RGBA
+                    ? 4 :
+                    ColorFormat == ColorFormat.fRGB16
+                    ? 6 :
+                    ColorFormat == ColorFormat.fRGBA16
+                    ? 8 :
+                    ColorFormat == ColorFormat.fRGB32
+                    ? 12 :
+                    ColorFormat == ColorFormat.iRGBA32 ||
+                    ColorFormat == ColorFormat.fRGBA32
+                    ? 16 :
+                    0;
             }
         }
 

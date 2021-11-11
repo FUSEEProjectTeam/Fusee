@@ -21,6 +21,19 @@ namespace Fusee.Engine.Common
     public interface IMeshImp
     {
         /// <summary>
+        /// Implementation Task: Invalidates the VertexArrayObject of the mesh.
+        /// </summary>
+        void InvalidateVertexArrayObject();
+
+        /// <summary>
+        /// Implementation Tasks: Get a value indicating whether [VertexArrayObject set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if VertexArrayObject is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool VertexArrayObjectSet { get; }
+
+        /// <summary>
         /// Implementation Task: Invalidates the vertices of the mesh, e.g. reset the VertexBufferObject of this instance by setting it to 0.
         /// </summary>
         void InvalidateVertices();

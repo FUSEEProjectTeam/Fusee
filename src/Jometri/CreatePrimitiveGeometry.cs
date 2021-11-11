@@ -54,7 +54,7 @@ namespace Fusee.Jometri
         /// <param name="horizontalResolution">Lines of latitude, smallest value is 3.</param> 
         /// <param name="verticalResolution">Lines of longitude, smallest value is 3.</param>
         /// <returns>A UV-Sphere centered in the world coordinate system as a DCEL.</returns>
-        public static Geometry CreateSpehreGeometry(float radius, int horizontalResolution, int verticalResolution)
+        public static Geometry CreateSphereGeometry(float radius, int horizontalResolution, int verticalResolution)
         {
             //check input
             if (radius <= 0) throw new ArgumentException("Radius can not be <= 0");
@@ -503,7 +503,7 @@ namespace Fusee.Jometri
             //create and add vertices 
             for (var i = 0; i < 5; i++)
             {
-                Vertex current = new Vertex(pyramid.CreateVertHandleId(), positions[i]);
+                Vertex current = new(pyramid.CreateVertHandleId(), positions[i]);
                 if (i < 4) current.IncidentHalfEdge = i * 4 + 1;
                 if (i == 4) current.IncidentHalfEdge = 3;
                 pyramid.DictVertices.Add(current.Handle, current);

@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(LightingSetupFlags setup)
+        public static string VertexMain(LightingSetupFlags setup, bool doRenderPoints)
         {
             var vertMainBody = new List<string>
             {
@@ -60,7 +60,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
             };
 
-            if (!setup.HasFlag(LightingSetupFlags.Unlit))
+            if (!setup.HasFlag(LightingSetupFlags.Unlit) && !setup.HasFlag(LightingSetupFlags.Edl))
             {
                 vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
             }
@@ -77,6 +77,10 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             }
 
             vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
+            vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+
+            if (doRenderPoints)
+                vertMainBody.Add($"gl_PointSize = float({UniformNameDeclarations.PointSize});");
 
             //TODO: needed when bone animation is working (again)
             //vertMainBody.Add(effectProps.MeshProbs.HasWeightMap

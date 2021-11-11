@@ -14,7 +14,6 @@ using Fusee.Serialization;
 using System;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
-using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.App.$ext_safeprojectname$.Android
 {
@@ -56,7 +55,7 @@ public class MainActivity : Activity
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                        return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });

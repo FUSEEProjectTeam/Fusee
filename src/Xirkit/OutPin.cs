@@ -11,7 +11,7 @@ namespace Fusee.Xirkit
     /// <seealso cref="Pin"/>
     public class OutPin<T> : Pin, IOutPin
     {
-        private List<InPin<T>> _links;
+        private readonly List<InPin<T>> _links;
         private IMemberAccessor<T> _memberAccessor;
         /// <summary>
         /// Gets and sets the member accessor.

@@ -1,7 +1,7 @@
-<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
+<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
   <PropertyGroup>
     <PackageId>Fusee.Android</PackageId>
-    <TargetFramework>MonoAndroid81</TargetFramework>
+    <TargetFramework>MonoAndroid90</TargetFramework>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
