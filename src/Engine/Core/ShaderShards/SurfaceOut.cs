@@ -40,6 +40,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         NormalMap = 2,
 
+        /// <summary>
+        /// Does this Effect have a thickness map?
+        /// </summary>
+        ThicknessMap = 4
+
     }
 
     /// <summary>

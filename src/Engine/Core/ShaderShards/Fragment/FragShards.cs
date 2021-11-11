@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     {
         /// <summary>
         /// Returns a default method body for a given lighting calculation.
-        /// <param name="surfInput">The surface input class. Needed to receive the shading model.</param>
+        /// <param name="surfInput">The surface input class. Needed to receive the shading model and texture setup.</param>
         /// </summary>
         public static List<string> SurfOutBody(SurfaceInput surfInput)
         {
@@ -21,59 +21,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             switch (surfInput.ShadingModel)
             {
                 case ShadingModel.Unlit:
-                    res.Add("OUT.albedo = IN.Albedo;");
-                    break;
-                case ShadingModel.Edl:
-                    res.Add("if(ColorMode == 0)");
-                    res.Add("{");
-                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color};");
-                    res.Add("}");
-                    res.Add("else");
-                    res.Add("{");
-                    res.Add("   OUT.albedo = IN.Albedo;");
-                    res.Add("}");
-                    break;
-                case ShadingModel.DiffuseSpecular:
-                    res.Add("OUT.albedo = IN.Albedo;");
-                    res.Add("OUT.specularStrength = IN.SpecularStrength;");
-                    res.Add("OUT.shininess = IN.Shininess;");
-                    res.Add("OUT.roughness = IN.Roughness;");
-                    res.Add("OUT.emission = IN.Emission;");
-                    break;
-                case ShadingModel.DiffuseOnly:
-                case ShadingModel.Glossy:
-                    res.Add("OUT.albedo = IN.Albedo;");
-                    res.Add("OUT.roughness = IN.Roughness;");
-                    break;
-                case ShadingModel.BRDF:
-                    res.Add("OUT.albedo = IN.Albedo;");
-                    res.Add("OUT.roughness = IN.Roughness;");
-                    res.Add("OUT.metallic = IN.Metallic;");
-                    res.Add("OUT.ior = IN.IOR;");
-                    res.Add("OUT.specular = IN.Specular;");
-                    res.Add("OUT.subsurface = IN.Subsurface;");
-                    res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
-                    res.Add("OUT.emission = IN.Emission;");
-                    res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
-                    res.Add($"OUT.thickness = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
-                    break;
-                default:
-                    throw new ArgumentException("Invalid ShadingModel!");
-            }
-            return res;
-        }
-
-        /// <summary>
-        /// Returns a default method body for a given lighting calculation.
-        /// <param name="surfInput">The surface input class. Needed to receive the shading model and texture setup.</param>
-        /// </summary>
-        public static List<string> SurfOutBody_Textures(SurfaceInput surfInput)
-        {
-            var res = new List<string>();
-
-            switch (surfInput.ShadingModel)
-            {
-                case ShadingModel.Unlit:
                 case ShadingModel.Edl:
                     break;
                 case ShadingModel.DiffuseSpecular:
@@ -95,7 +42,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
                     res.Add("OUT.emission = IN.Emission;");
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
-                    res.Add($"OUT.thickness = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");
@@ -122,6 +68,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     "OUT.normal = normalize(TBN * N);"
                 });
             }
+
+            if (surfInput.ShadingModel != ShadingModel.BRDF) return res;
+
+            if (surfInput.TextureSetup.HasFlag(TextureSetup.ThicknessMap))
+                res.Add($"OUT.thickness = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
+            else
+                res.Add($"OUT.thickness = 1.0;");
             return res;
         }
     }

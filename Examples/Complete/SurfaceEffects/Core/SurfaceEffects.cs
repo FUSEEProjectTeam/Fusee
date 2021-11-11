@@ -69,7 +69,8 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 IOR = 1.54f,
                 Subsurface = 0.15f,
                 SubsurfaceColor = new float3(1,0,0),
-                ThicknessMap = thicknessTex
+                ThicknessMap = thicknessTex,
+                TextureSetup = Engine.Core.ShaderShards.TextureSetup.ThicknessMap
             };
             _testFx = new SurfaceEffect(surfInput);
 

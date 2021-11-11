@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The texture coordinates variable name.
         /// </summary>
-        public const string TextureCoordinates = "vUV";
+        public const string TextureCoordinates = "vUv";
 
         /// <summary>
         /// The view direction variable name.

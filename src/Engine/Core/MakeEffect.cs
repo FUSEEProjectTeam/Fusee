@@ -484,13 +484,14 @@ namespace Fusee.Engine.Core
         /// <param name="albedoMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="normalTex">The normal map.</param>
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
+        /// <param name="thicknessMap">A texture containing the thickness of an object. Used for subsurface scattering.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">The roughness of the specular and diffuse reflection.</param>
         /// <param name="metallic">Value used to blend between the metallic and the dielectric model. </param>
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float4 emissionColor= new float4(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float4 emissionColor = new float4(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f, Texture thicknessMap = null)
         {
             var input = new BRDFInput()
             {
@@ -506,7 +507,8 @@ namespace Fusee.Engine.Core
                 SubsurfaceColor = subsurfaceColor,
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
-                TexTiles = texTiles
+                TexTiles = texTiles,
+                ThicknessMap = thicknessMap
             };
 
             var texSetup = TextureSetup.NoTextures;
@@ -514,6 +516,8 @@ namespace Fusee.Engine.Core
                 texSetup |= TextureSetup.AlbedoTex;
             if (normalTex != null)
                 texSetup |= TextureSetup.NormalMap;
+            if (thicknessMap != null)
+                texSetup |= TextureSetup.ThicknessMap;
             input.TextureSetup = texSetup;
 
             return new SurfaceEffect(input);
