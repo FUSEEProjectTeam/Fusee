@@ -139,6 +139,7 @@ namespace Fusee.Engine.Core
         /// The constructor to initialize a new SceneRayCaster.
         /// </summary>
         /// <param name="scene">The <see cref="SceneContainer"/> to use.</param>
+        /// <param name="cullMode">The <see cref="Cull"/> mode to use.</param>
         public SceneRayCaster(SceneContainer scene, Cull cullMode = Cull.None)
             : base(scene.Children)
         {
@@ -187,8 +188,8 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
-            // AABB intersection currently throwing some errors.
-            //if (!mesh.BoundingBox.IntersectRay(Ray)) return;
+            AABBf box = State.Model * mesh.BoundingBox;
+            if (!box.IntersectRay(Ray)) return;
 
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
