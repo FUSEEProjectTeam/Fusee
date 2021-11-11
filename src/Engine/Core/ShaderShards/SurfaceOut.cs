@@ -114,6 +114,7 @@ namespace Fusee.Engine.Core.ShaderShards
         internal static readonly Tuple<GLSL.Type, string> IOR = new(GLSL.Type.Float, "ior");
         internal static readonly Tuple<GLSL.Type, string> Subsurface = new(GLSL.Type.Float, "subsurface");
         internal static readonly Tuple<GLSL.Type, string> SubsurfaceColor = new(GLSL.Type.Vec3, "subsurfaceColor");
+        internal static readonly Tuple<GLSL.Type, string> Thickness = new(GLSL.Type.Float, "thickness");
         #endregion
 
         private static readonly Dictionary<ShadingModel, ShadingModelShards> _shadingModelCache = new();
@@ -122,7 +123,7 @@ namespace Fusee.Engine.Core.ShaderShards
         private static readonly string DefaultDiffuseOut = $"{StructName}(vec3(0), vec4(0), vec3(0), 0.0)";
         private static readonly string DefaultDiffSpecOut = $"{StructName}(vec3(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0)";
         private static readonly string DefaultGlossyOut = $"{StructName}(vec3(0), vec4(0), vec3(0), 0.0)";
-        private static readonly string DerfafultBRDFOut = $"{StructName}(vec3(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1))";
+        private static readonly string DerfafultBRDFOut = $"{StructName}(vec3(0), vec4(0), vec4(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1), 0.0)";
 
         /// <summary>
         /// Returns the GLSL default constructor and declaration of the <see cref="SurfaceEffectBase.SurfaceOutput"/> struct.
@@ -253,6 +254,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 dcl.Add($"  {GLSL.DecodeType(IOR.Item1)} {IOR.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(Subsurface.Item1)} {Subsurface.Item2};");
                 dcl.Add($"  {GLSL.DecodeType(SubsurfaceColor.Item1)} {SubsurfaceColor.Item2};");
+                dcl.Add($"  {GLSL.DecodeType(Thickness.Item1)} {Thickness.Item2};");
             }
             dcl.Add("};\n");
             return string.Join("\n", dcl);

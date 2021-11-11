@@ -21,7 +21,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -53,21 +53,25 @@ namespace Fusee.Examples.SurfaceEffects.Core
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1).LinearColorFromSRgb();
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("monkeys.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("monkey.fus");
 
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
+            var thicknessTex = new Texture(AssetStorage.Get<ImageData>("monkey-thickness.png"), true, TextureFilterMode.LinearMipmapLinear);
 
-            var surfInput = new TextureInputSpecular();
+            var surfInput = new BRDFInput()
+            {
+                Albedo = new float4(68f/256, 59f / 256, 49f / 256, 1.0f),
+                Emission = float4.Zero,
+                Roughness = 0.5f,
+                Metallic = 0,
+                Specular = 0.5f,
+                IOR = 1.54f,
+                Subsurface = 0.15f,
+                SubsurfaceColor = new float3(1,0,0),
+                ThicknessMap = thicknessTex
+            };
             _testFx = new SurfaceEffect(surfInput);
-
-            ((TextureInputSpecular)_testFx.SurfaceInput).Albedo = new float4(1.0f, 0, 0, 1.0f);
-            ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoTex = albedoTex;
-            ((TextureInputSpecular)_testFx.SurfaceInput).NormalTex = normalTex;
-            ((TextureInputSpecular)_testFx.SurfaceInput).AlbedoMix = 1.0f;
-            ((TextureInputSpecular)_testFx.SurfaceInput).Shininess = 5f;
-            ((TextureInputSpecular)_testFx.SurfaceInput).SpecularStrength = 1f;
-            ((TextureInputSpecular)_testFx.SurfaceInput).TexTiles = new float2(3, 3);
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (
@@ -118,17 +122,13 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 subsurface: 0.3f
             );
 
-            _rocketScene.Children[0].Components[1] = _subsurf_brdfFx;
-            _rocketScene.Children[1].Components[1] = _rubber_brdfFx;
-            _rocketScene.Children[2].Components[1] = _paint_brdfFx;
-            _rocketScene.Children[3].Components[1] = _gold_brdfFx;
-
-            var monkeyOne = (Mesh)_rocketScene.Children[0].Components[2];
-            monkeyOne.Tangents = monkeyOne.CalculateTangents();
-            monkeyOne.BiTangents = monkeyOne.CalculateBiTangents();
+            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
+            //_rocketScene.Children[1].Components[1] = _rubber_brdfFx;
+            //_rocketScene.Children[2].Components[1] = _paint_brdfFx;
+            //_rocketScene.Children[3].Components[1] = _gold_brdfFx;
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 

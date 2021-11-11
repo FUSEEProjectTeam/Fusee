@@ -55,6 +55,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
                     res.Add("OUT.emission = IN.Emission;");
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
+                    res.Add($"OUT.thickness = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");
@@ -94,6 +95,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
                     res.Add("OUT.emission = IN.Emission;");
                     res.Add("OUT.subsurfaceColor = IN.SubsurfaceColor;");
+                    res.Add($"OUT.thickness = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
                     break;
                 default:
                     throw new ArgumentException("Invalid ShadingModel!");

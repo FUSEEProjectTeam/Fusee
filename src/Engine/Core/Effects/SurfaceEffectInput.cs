@@ -218,6 +218,24 @@ namespace Fusee.Engine.Core.Effects
         private float3 _subsurfaceColor;
 
         /// <summary>
+        /// The albedo texture.
+        /// </summary>
+        public Texture ThicknessMap
+        {
+            get => _thicknessMap;
+            set
+            {
+                if (value != _thicknessMap)
+                {
+                    _thicknessMap = value;
+                    NotifyValueChanged(_thicknessMap.GetType(), nameof(ThicknessMap), _thicknessMap);
+                }
+            }
+        }
+        private Texture _thicknessMap;
+
+
+        /// <summary>
         /// Creates a new instance of type <see cref="BRDFInput"/>.
         /// </summary>
         public BRDFInput()

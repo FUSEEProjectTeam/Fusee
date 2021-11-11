@@ -291,7 +291,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float Fss90 = LdotH * LdotH * roughness;",
                 "float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);",
                 "float ss = 1.25 * (Fss * (1.0 / max((NdotL + NdotV), 0.001) - 0.5) + 0.5);",
-                "return mix((albedo) * Fd * NdotL, (subsurfaceColor) * ss, subsurface);"
+                "return mix((albedo) * Fd * NdotL, (subsurfaceColor) * thickness * ss, subsurface);"
             };
             return GLSL.CreateMethod(GLSL.Type.Vec3, "DisneyDiffuseLighting",
                 new[]
@@ -303,6 +303,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Float, "roughness"),
                     GLSL.CreateVar(GLSL.Type.Float, "subsurface"),
                     GLSL.CreateVar(GLSL.Type.Vec3, "subsurfaceColor"),
+                    GLSL.CreateVar(GLSL.Type.Float, "thickness"),
                 }, methodBody);
         }
 
@@ -588,7 +589,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         methodBody.Add($"float LdotH5 = SchlickFresnel(NdotV);");
                         methodBody.Add($"vec3 F = F0 + (1.0 - F0) * LdotH5;");
 
-                        methodBody.Add($"Idif = DisneyDiffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2}, surfOut.{SurfaceOut.SubsurfaceColor.Item2}.rgb);");
+                        methodBody.Add($"Idif = DisneyDiffuseLighting(surfOut.albedo.rgb, NdotL, NdotV, LdotH, surfOut.{SurfaceOut.Roughness.Item2}, surfOut.{SurfaceOut.Subsurface.Item2}, surfOut.{SurfaceOut.SubsurfaceColor.Item2}.rgb, surfOut.{SurfaceOut.Thickness.Item2});");
                         methodBody.Add($"Ispe = specularLighting(NdotL, NdotV, LdotH, NdotH, surfOut.{SurfaceOut.Roughness.Item2}, F);");
 
                         methodBody.Add($"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.");
@@ -786,7 +787,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"float LdotH5 = SchlickFresnel(NdotV);",
                 $"vec3 F = F0 + (1.0 - F0) * LdotH5;",
 
-                "vec3 diff = DisneyDiffuseLighting(albedo.rgb, NdotL, NdotV, LdotH, roughness, subsurface, subsurfaceColor);",
+                "vec3 diff = DisneyDiffuseLighting(albedo.rgb, NdotL, NdotV, LdotH, roughness, subsurface, subsurfaceColor, 1.0);",
                 "vec3 spec = specularLighting(NdotL, NdotV, LdotH, NdotH, roughness, F);",
 
                 $"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.",

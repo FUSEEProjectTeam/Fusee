@@ -65,8 +65,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
             }
 
-            if (texSetup.HasFlag(TextureSetup.AlbedoTex) || texSetup.HasFlag(TextureSetup.NormalMap))
-                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
+            vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
             if (texSetup.HasFlag(TextureSetup.NormalMap))
             {
