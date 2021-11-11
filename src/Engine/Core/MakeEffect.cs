@@ -370,7 +370,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Builds a simple shader effect with diffuse component.
+        /// Builds a simple shader effect with diffuse lighting component.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="albedoTex">The albedo texture.</param>
@@ -403,7 +403,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Builds a simple shader effect with diffuse and specular color.
+        /// Builds a simple shader effect with diffuse and specular lighting components.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
@@ -442,7 +442,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Builds a simple shader effect with diffuse component.
+        /// Builds a simple shader effect for a glossy lighting (full metallic setup).
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="albedoTex">The albedo texture.</param>
@@ -475,7 +475,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Builds a simple shader effect with diffuse and specular color.
+        /// Builds a simple shader effect for physicalli-base lighting using a bidirectional reflectance distribution function.
         /// </summary>
         /// <param name="albedoColor">The albedo color of the resulting effect.</param>
         /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>

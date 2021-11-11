@@ -1,3 +1,4 @@
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -7,7 +8,6 @@ using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-
 
 namespace Fusee.Examples.SurfaceEffects.Core
 {
@@ -20,7 +20,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _rocketScene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
@@ -37,9 +37,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private SurfaceEffect _paint_brdfFx;
         private SurfaceEffect _rubber_brdfFx;
         private SurfaceEffect _subsurf_brdfFx;
-
-        private SurfaceEffect _testFx;
-        private SurfaceEffect _testEdlFx;
+        private SurfaceEffect _brick_brdfFx;
 
         // Init is called on startup.
         public override void Init()
@@ -53,26 +51,56 @@ namespace Fusee.Examples.SurfaceEffects.Core
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1).LinearColorFromSRgb();
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("monkey.fus");
+            _scene = AssetStorage.Get<SceneContainer>("monkey.fus");
+
+            var lightNode = new SceneNode()
+            {
+                Components = new System.Collections.Generic.List<SceneComponent>{
+                    new Transform()
+                    {
+                        Rotation = new float3(new float3(M.DegreesToRadians(180), 0, 0)),
+                        Translation = new float3(0, 0,-7),
+                        Scale = float3.One
+                    },
+                    new Light()
+                    {
+                        Type = LightType.Spot,
+                        Color = new float4(0.6f, 0.8f, 1, 1),
+                        MaxDistance = 500,
+                        Active = true,
+                        OuterConeAngle = 45,
+                        InnerConeAngle = 30,
+                        IsCastingShadows = true,
+                        Bias = 0.0000001f
+                    }
+                }
+            };
+            _scene.Children.Insert(0, lightNode);
+
+            var monkeyMesh = _scene.Children[1].GetComponent<Mesh>();
+            monkeyMesh.Tangents = monkeyMesh.CalculateTangents();
+            monkeyMesh.BiTangents = monkeyMesh.CalculateBiTangents();
+
+            for (int i = -2; i < 2; i++)
+            {
+                _scene.Children.Add(
+                    new SceneNode()
+                    {
+                        Components = new System.Collections.Generic.List<SceneComponent>{
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = i < 0 ? new float3(i * 3,0,0) : new float3(i * 3 + 3,0,0),
+                                Scale = float3.One
+                            },
+                            monkeyMesh
+                        }
+                    });
+            }
 
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
-            var thicknessTex = new Texture(AssetStorage.Get<ImageData>("monkey-thickness.png"), true, TextureFilterMode.LinearMipmapLinear);
-
-            var surfInput = new BRDFInput()
-            {
-                Albedo = new float4(68f/256, 59f / 256, 49f / 256, 1.0f),
-                Emission = float4.Zero,
-                Roughness = 0.5f,
-                Metallic = 0,
-                Specular = 0.5f,
-                IOR = 1.54f,
-                Subsurface = 0.15f,
-                SubsurfaceColor = new float3(1,0,0),
-                ThicknessMap = thicknessTex,
-                TextureSetup = Engine.Core.ShaderShards.TextureSetup.ThicknessMap
-            };
-            _testFx = new SurfaceEffect(surfInput);
+            var thicknessTex = new Texture(AssetStorage.Get<ImageData>("monkey-thickness-1.png"), true, TextureFilterMode.LinearMipmapLinear);
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (
@@ -88,8 +116,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
 
             _paint_brdfFx = MakeEffect.FromBRDF
             (
-                //ColorUint.Greenery, 
-                new float4(float4.LinearColorFromSRgb(0x708828FF)),
+                new float4(float4.LinearColorFromSRgb(0x39979cFF)),
                 emissionColor: new float4(),
                 subsurfaceColor: float3.Zero,
                 roughness: 0.05f,
@@ -111,25 +138,51 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 subsurface: 0
             );
 
+            _brick_brdfFx = MakeEffect.FromBRDF
+            (
+                albedoColor: float4.One,
+                albedoMix: 1.0f,
+                albedoTex: albedoTex,
+                normalMapStrength: 0.5f,
+                normalTex: normalTex,
+                texTiles: new float2(3, 3),
+                emissionColor: new float4(),
+                subsurfaceColor: float3.Zero,
+                roughness: 0.3f,
+                metallic: 0,
+                specular: 0.8f,
+                ior: 1.519f,
+                subsurface: 0
+
+            );
+
             _subsurf_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(float4.LinearColorFromSRgb(0xDEB887FF)),
+                albedoColor: new float4(178f / 256, 135f / 256, 100f / 256, 1.0f).LinearColorFromSRgb(),
                 emissionColor: new float4(),
-                subsurfaceColor: new float3(1, 0, 0),
+                subsurfaceColor: new float3(1, 0, 0).LinearColorFromSRgb(),
                 roughness: 0.508f,
                 metallic: 0,
                 specular: 0.079f,
                 ior: 1.4f,
-                subsurface: 0.3f
+                subsurface: 0.2f,
+                albedoTex: null,
+                albedoMix: 0,
+                texTiles: float2.One,
+                normalTex: null,
+                normalMapStrength: 0,
+                thicknessMap: thicknessTex
             );
 
-            _rocketScene.Children[0].Components[1] = _testFx;//_subsurf_brdfFx;
-            //_rocketScene.Children[1].Components[1] = _rubber_brdfFx;
-            //_rocketScene.Children[2].Components[1] = _paint_brdfFx;
-            //_rocketScene.Children[3].Components[1] = _gold_brdfFx;
+
+            _scene.Children[1].Components[1] = _brick_brdfFx;
+            _scene.Children[2].Components.Insert(1, _rubber_brdfFx);
+            _scene.Children[3].Components.Insert(1, _gold_brdfFx);
+            _scene.Children[4].Components.Insert(1, _subsurf_brdfFx);
+            _scene.Children[5].Components.Insert(1, _paint_brdfFx);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 

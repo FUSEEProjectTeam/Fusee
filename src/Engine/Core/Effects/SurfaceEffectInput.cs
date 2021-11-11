@@ -323,7 +323,6 @@ namespace Fusee.Engine.Core.Effects
         {
             ShadingModel = ShadingModel.Glossy;
         }
-
     }
 
     /// <summary>
