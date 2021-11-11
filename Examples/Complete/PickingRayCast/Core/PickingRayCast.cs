@@ -11,7 +11,6 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fusee.Examples.PickingRayCast.Core
 {
@@ -19,49 +18,31 @@ namespace Fusee.Examples.PickingRayCast.Core
     public class PickingRayCast : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleVelHorz;
 
         private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
+        private const float Damping = 0.0005f;
 
         private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
         private SceneRayCaster _sceneRayCaster;
 
-        private bool _keys;
-
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
-        private float _initCanvasWidth;
-        private float _initCanvasHeight;
-        private float _canvasWidth = 16;
-        private float _canvasHeight = 9;
 
-        private RayCastResult _currentPick;
-        private float4 _oldColor;
         private bool _pick;
         private float2 _pickPos;
 
-        private Camera _cam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-        private readonly Camera _guiCam = new Fusee.Engine.Core.Scene.Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private Camera _cam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private Transform _camTransform;
         private Transform _guiCamTransform;
 
         // Init is called on startup.
         public override void Init()
         {
-            _initCanvasWidth = Width / 100f;
-            _initCanvasHeight = Height / 100f;
-
-            _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
             _cam.Viewport = new float4(0, 0, 100, 100);
             _cam.BackgroundColor = new float4(1f, 1f, 1f, 1);
             _cam.Layer = -1;
@@ -113,46 +94,46 @@ namespace Fusee.Examples.PickingRayCast.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             RC.Viewport(0, 0, Width, Height);
 
+
+            // Mouse Controls
             if (Input.Mouse.LeftButton)
             {
                 _pick = true;
                 _pickPos = Input.Mouse.Position;
             }
-
             if (Input.Mouse.RightButton)
             {
-                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
-            }
-
-            if (Input.Keyboard.IsKeyUp(KeyCodes.Space))
-            {
-                _pick = true;
-                _pickPos = new float2(Width / 2, Height / 2);
+                _angleVelHorz = RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * Damping;
             }
 
             _camTransform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
 
 
+            // Check for hits
             if (_pick)
             {
                 // Convert Screen coordinates to world coordinates
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
+                
                 var ray_eye = float4x4.Transform(RC.InvProjection, new float4(pickPosClip.x, pickPosClip.y, 0, 1));
                 ray_eye.w = 0;
+
                 var ray_cam = float4x4.Transform(RC.InvView, ray_eye).xyz;
                 ray_cam.Normalize();
 
                 // Create Ray
                 float3 origin = _camTransform.Translation;
                 float3 direction = float4x4.Transform(_camTransform.Matrix().RotationComponent(), ray_cam);
+                
                 Rayf ray = new Rayf(origin, direction);
 
                 // RayCast and get the result closest to the camera
                 var castHit = _sceneRayCaster.RayCast(ray).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
+
+                if (castHit != null)
+                    castHit.Node.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
 
 
                 _pick = false;
@@ -160,15 +141,10 @@ namespace Fusee.Examples.PickingRayCast.Core
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
         }
 
         private SceneContainer CreateGui()
@@ -256,26 +232,7 @@ namespace Fusee.Examples.PickingRayCast.Core
                 }
             };
         }
-
-        public void BtnLogoEnter(CodeComponent sender)
-        {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
-        }
-
-        public void BtnLogoExit(CodeComponent sender)
-        {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
-        }
-
-        public void BtnLogoDown(CodeComponent sender)
-        {
-            OpenLink("http://fusee3d.org");
-        }
-
+        
         private SceneContainer CreateScene()
         {
             var scene = new SceneContainer
@@ -322,117 +279,28 @@ namespace Fusee.Examples.PickingRayCast.Core
             return scene;
         }
 
-
-        public static Mesh CreateCuboid(float3 size)
+        public void BtnLogoEnter(CodeComponent sender)
         {
-            return new Mesh
-            {
-                Vertices = new[]
-                {
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
+        }
 
-                Triangles = new ushort[]
-                {
-                    // front face
-                    0, 2, 1, 0, 3, 2,
+        public void BtnLogoExit(CodeComponent sender)
+        {
+            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
+        }
 
-                    // right face
-                    4, 6, 5, 4, 7, 6,
+        public void BtnLogoDown(CodeComponent sender)
+        {
+            OpenLink("http://fusee3d.org");
+        }
 
-                    // back face
-                    8, 10, 9, 8, 11, 10,
-
-                    // left face
-                    12, 14, 13, 12, 15, 14,
-
-                    // top face
-                    16, 18, 17, 16, 19, 18,
-
-                    // bottom face
-                    20, 22, 21, 20, 23, 22
-                },
-
-                Normals = new[]
-                {
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0)
-                },
-
-                UVs = new[]
-                {
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0)
-                },
-                BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
-            };
+        private InputDevice Creator(IInputDeviceImp device)
+        {
+            throw new NotImplementedException();
         }
     }
 }
