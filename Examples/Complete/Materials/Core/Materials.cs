@@ -56,7 +56,7 @@ namespace Fusee.Examples.Materials.Core
                     {
                         Children = new ChildList
                         {
-                            new TextNode(
+                            TextNode.Create(
                             "How-To:\n############################\n- Move with WASD\n- Left mouse button rotates spheres\n- Mouse wheel zooms",
                             "howTo",
                             GuiElementPosition.GetAnchors(AnchorPos.DownDownLeft),
@@ -79,7 +79,7 @@ namespace Fusee.Examples.Materials.Core
                         },
                         Children = new ChildList
                         {
-                                new TextNode(
+                                TextNode.Create(
                                 "Complete",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -87,7 +87,7 @@ namespace Fusee.Examples.Materials.Core
                                 fontLatoMap,
                                 (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center),new TextNode(
+                                VerticalTextAlignment.Center),TextNode.Create(
                                 "NOT YET IMPLEMENTED",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -114,7 +114,7 @@ namespace Fusee.Examples.Materials.Core
                         },
                         Children = new ChildList
                         {
-                                new TextNode(
+                                TextNode.Create(
                                 "Albedo and Specular",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -137,7 +137,7 @@ namespace Fusee.Examples.Materials.Core
                         },
                         Children = new ChildList
                         {
-                                new TextNode(
+                                TextNode.Create(
                                 "Albedo, specular and\nalbedo texture",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -160,7 +160,7 @@ namespace Fusee.Examples.Materials.Core
                         },
                         Children = new ChildList
                         {
-                                new TextNode(
+                                TextNode.Create(
                                 "Specular texture",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -169,7 +169,7 @@ namespace Fusee.Examples.Materials.Core
                                 (float4)ColorUint.Black,
                                 HorizontalTextAlignment.Left,
                                 VerticalTextAlignment.Center),
-                                new TextNode(
+                                TextNode.Create(
                                 "NOT YET IMPLEMENTED",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -196,7 +196,7 @@ namespace Fusee.Examples.Materials.Core
                         },
                         Children = new ChildList
                         {
-                                new TextNode(
+                                TextNode.Create(
                                 "Normal map",
                                 "desc",
                                 MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -219,7 +219,7 @@ namespace Fusee.Examples.Materials.Core
                                 },
                                 Children = new ChildList
                                 {
-                                     new TextNode(
+                                     TextNode.Create(
                                         "Albedo and emissive",
                                         "desc",
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -228,7 +228,7 @@ namespace Fusee.Examples.Materials.Core
                                         (float4)ColorUint.Black,
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center),
-                                      new TextNode(
+                                      TextNode.Create(
                                         "NOT YET IMPLEMENTED",
                                         "desc",
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -255,7 +255,7 @@ namespace Fusee.Examples.Materials.Core
                                 },
                                 Children = new ChildList
                                 {
-                                     new TextNode(
+                                     TextNode.Create(
                                         "Albedo, emissive and\nemissive texture",
                                         "desc",
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),
@@ -264,7 +264,7 @@ namespace Fusee.Examples.Materials.Core
                                         (float4)ColorUint.Black,
                                         HorizontalTextAlignment.Left,
                                         VerticalTextAlignment.Center),
-                                     new TextNode(
+                                     TextNode.Create(
                                         "NOT YET IMPLEMENTED",
                                         "desc",
                                         MinMaxRect.FromCenterSize(float2.Zero, float2.One),

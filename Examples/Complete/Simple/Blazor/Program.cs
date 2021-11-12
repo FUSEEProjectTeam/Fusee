@@ -1,5 +1,5 @@
 using Fusee.Base.Core;
-using Fusee.Base.Imp.WebAsm;
+using Fusee.Base.Imp.Blazor;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -10,11 +10,8 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
-        {
-            // inject native javascript methods
-            //_ = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/Fusee.Engine.Imp.Graphics.WebAsm/Fusee.Engine.Imp.Graphics.WebAsm.Native.js");
-
-            var program = new Fusee.Base.Imp.WebAsm.WebAsmProgram();
+        {         
+            var program = new Fusee.Base.Imp.Blazor.BlazorProgramm();
             var main = new Main();
             program.Start(main, (IJSInProcessRuntime)JS);
         }

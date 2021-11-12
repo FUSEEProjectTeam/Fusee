@@ -63,7 +63,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor = canvasScaleFactor;
             }
 
-            var fps = new TextNode(
+            var fps = TextNode.Create(
                 "FPS: 0.00",
                 "FPSText",
                 GuiElementPosition.GetAnchors(AnchorPos.DownDownRight),
@@ -80,7 +80,7 @@ namespace Fusee.Examples.UI.Core
 
             _fpsText = fps.GetComponentsInChildren<GuiText>().FirstOrDefault();
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "The five\n" +
                 "boxing wizards\n" +
                 "jump\n" +
@@ -97,7 +97,7 @@ namespace Fusee.Examples.UI.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            var catTextureNode = new TextureNode(
+            var catTextureNode = TextureNode.Create(
                 "Cat",
                 //Set the albedo texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"), false, TextureFilterMode.Linear),
@@ -117,11 +117,11 @@ namespace Fusee.Examples.UI.Core
                 4, 4, 4, 4,
                 borderScaleFactor
 
-            )
-            { Children = new ChildList() { text } };
+            );
+            catTextureNode.Children = new ChildList() { text };
             catTextureNode.Components.Add(_btnCat);
 
-            var bltTextureNode = new TextureNode(
+            var bltTextureNode = TextureNode.Create(
                 "Blt",
                 //Set the albedo texture you want to use.
                 _bltDestinationTex,
@@ -136,7 +136,7 @@ namespace Fusee.Examples.UI.Core
                 GuiElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)),
                 float2.One);
 
-            var quagganTextureNode1 = new TextureNode(
+            var quagganTextureNode1 = TextureNode.Create(
                 "Quaggan1",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
@@ -149,7 +149,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var nineSliceTextureNode = new TextureNode(
+            var nineSliceTextureNode = TextureNode.Create(
                 "testImage",
                 new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
@@ -161,10 +161,10 @@ namespace Fusee.Examples.UI.Core
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
                 2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
-            )
-            { Children = new ChildList() { quagganTextureNode1, text } };
+            );
+            nineSliceTextureNode.Children = new ChildList() { quagganTextureNode1, text };
 
-            var quagganTextureNode = new TextureNode(
+            var quagganTextureNode = TextureNode.Create(
                 "Quaggan",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
@@ -176,7 +176,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode2 = new TextureNode(
+            var quagganTextureNode2 = TextureNode.Create(
                 "Quaggan",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
@@ -188,7 +188,7 @@ namespace Fusee.Examples.UI.Core
                 borderScaleFactor
             );
 
-            var quagganTextureNode3 = new TextureNode(
+            var quagganTextureNode3 = TextureNode.Create(
                 "Quaggan",
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg"), false, TextureFilterMode.Linear),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.

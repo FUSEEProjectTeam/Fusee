@@ -357,7 +357,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
-            TextureNode fuseeLogo = new(
+            TextureNode fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 guiFuseeLogo,
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),

@@ -16,13 +16,13 @@
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
         <PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="6.0.0" />
-
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 
         <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
     </ItemGroup>
 
     <ItemGroup>
-		<ProjectReference Include="..\..\..\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+		<ProjectReference Include="..\..\..\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
 		<ProjectReference Include="..\..\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
 		<ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj" />
     </ItemGroup>
@@ -30,14 +30,4 @@
     <ItemGroup>
         <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
     </ItemGroup>
-
-    <!--<Target Name="MovingAssetsToServerRoot" BeforeTargets="PostBuildEvent">
-        <ItemGroup>
-            <AssetsDir Include="$(OutputPath)$(TargetFramework)\Assets\**\*.*" />
-        </ItemGroup>
-        <Message Text="Moving 'Assets' folder to http server root folder" Importance="high" />
-        <Move SourceFiles="@(AssetsDir)" DestinationFolder="$(OutputPath)$(TargetFramework)\wwwroot\Assets\%(RecursiveDir)" />
-        <RemoveDir Directories="$(OutputPath)$(TargetFramework)\Assets" />
-    </Target>-->
-
 </Project>

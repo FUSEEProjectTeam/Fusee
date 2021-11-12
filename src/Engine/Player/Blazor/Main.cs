@@ -1,16 +1,15 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
-using Fusee.Base.Imp.WebAsm;
+using Fusee.Base.Imp.Blazor;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Imp.Graphics.WebAsm;
+using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
 using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -20,7 +19,7 @@ using Stream = System.IO.Stream;
 
 namespace Fusee.Engine.Player.Blazor
 {
-    public class Main : WebAsmBase
+    public class Main : BlazorBase
     {
         private RenderCanvasImp _canvasImp;
         private RenderCanvas app2Inject;
@@ -36,16 +35,16 @@ namespace Fusee.Engine.Player.Blazor
             base.Run();
 
             // Inject Fusee.Engine.Base InjectMe dependencies
-            Base.Core.IO.IOImp = new Fusee.Base.Imp.WebAsm.IO();
+            Base.Core.IO.IOImp = new Fusee.Base.Imp.Blazor.IO();
 
             #region FAP
 
-            var fap = new Fusee.Base.Imp.WebAsm.AssetProvider(Runtime);
+            var fap = new AssetProvider(Runtime);
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(Base.Core.Font),
-                    Decoder = (_, __) => throw new System.NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
+                    Decoder = (_, __) => throw new System.NotImplementedException("Non-async decoder isn't supported in Blazor builds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
@@ -70,7 +69,7 @@ namespace Fusee.Engine.Player.Blazor
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = (_, __) => throw new System.NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
+                    Decoder = (_, __) => throw new System.NotImplementedException("Non-async decoder isn't supported in Blazor builds"),
                     DecoderAsync = async (string id, object storage) =>
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
@@ -89,7 +88,7 @@ namespace Fusee.Engine.Player.Blazor
             fap.RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(Base.Core.ImageData),
-                Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in WebAsmBuilds"),
+                Decoder = (_, __) => throw new NotImplementedException("Non-async decoder isn't supported in Blazor builds"),
                 DecoderAsync = async (string id, object storage) =>
                 {
                     var ext = Path.GetExtension(id).ToLower();
@@ -189,7 +188,7 @@ namespace Fusee.Engine.Player.Blazor
 
             try
             {
-                var baseAddress = WasmResourceLoader.GetLocalAddress(Runtime);
+                var baseAddress = BlazorAssetProvider.GetLocalAddress(Runtime);
                 using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
                 var response = await httpClient.GetAsync("Fusee.App.dll");
 
