@@ -201,7 +201,7 @@ namespace Fusee.Engine.Player.Blazor
                     throw new DllNotFoundException("Error loading. Neither Fusee.App.dll nor Fusee.Engine.Player.Core.dll found! Abort.");
                 }
 
-                    var res = await response.Content.ReadAsByteArrayAsync();
+                var res = await response.Content.ReadAsByteArrayAsync();
 
                 var assembly = Assembly.Load(res);
 
