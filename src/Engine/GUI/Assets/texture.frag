@@ -4,7 +4,7 @@
 precision highp float;
 #endif
 
-in vec2 vUV;
+in vec2 vUv;
 in vec3 vMVNormal;
 
 uniform sampler2D AlbedoTexture;
@@ -36,7 +36,7 @@ void main()
 	vec3 L = vec3(0.0, 0.0, -1.0);
 
     vec3 lightColor = vec3(1.0, 1.0, 1.0);
-    vec4 texCol = texture(AlbedoTexture, vUV * AlbedoTextureTiles);
+    vec4 texCol = texture(AlbedoTexture, vUv * AlbedoTextureTiles);
     
     texCol = vec4(DecodeSRgb(texCol.rgb), texCol.a);
     float linearLuminance = (0.2126 * texCol.r) + (0.7152 * texCol.g) + (0.0722 * texCol.b);

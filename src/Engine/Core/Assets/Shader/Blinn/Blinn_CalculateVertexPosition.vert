@@ -14,7 +14,7 @@ uniform mat4 FUSEE_MV;
 
 uniform float uPointSize;
 
-out vec2 vUV;
+out vec2 vUv;
 out vec4 vColor;
 
 out vec3 vNormal;
@@ -29,7 +29,7 @@ vec4 CalculateVertexPosition()
     vViewPos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;  
 
 	// set color and uv
-	vUV = fuUV;
+	vUv = fuUV;
 	vColor = fuColor;
 
 	// return position
