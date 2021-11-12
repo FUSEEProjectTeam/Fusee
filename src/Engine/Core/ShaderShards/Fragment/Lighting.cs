@@ -491,9 +491,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var res = new List<string>();
 
-            var attPtLight = $"float att = attenuationPointComponent(surfOut.{SurfaceOut.Pos.Item2}.xyz, light.position, light.maxDistance);";
-            var attSpotLight = $"float att = attenuationPointComponent(surfOut.{SurfaceOut.Pos.Item2}.xyz, light.position, light.maxDistance) * attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);";
             var attParallel = "float att = 1.0; //no attenuation --> parallel or legacy light";
+            var attPtLight = $"att = attenuationPointComponent(surfOut.{SurfaceOut.Pos.Item2}.xyz, light.position, light.maxDistance);";
+            var attSpotLight = $"att = attenuationConeComponent(light.direction, L, light.innerConeAngle, light.outerConeAngle);";
 
             res.Add(attParallel);
 
