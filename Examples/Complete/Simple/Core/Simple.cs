@@ -45,7 +45,7 @@ namespace Fusee.Examples.Simple.Core
 
 
             // Load the rocket model
-            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");           
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
