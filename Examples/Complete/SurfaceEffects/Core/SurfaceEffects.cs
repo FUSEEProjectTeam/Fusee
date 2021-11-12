@@ -39,6 +39,10 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private SurfaceEffect _subsurf_brdfFx;
         private SurfaceEffect _brick_brdfFx;
 
+        private SurfaceEffect _glossy_Fx;
+        private SurfaceEffect _emissive_Fx;
+
+
         // Init is called on startup.
         public override void Init()
         {
@@ -174,8 +178,11 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 thicknessMap: thicknessTex
             );
 
+            _glossy_Fx = MakeEffect.FromGlossy(float4.One, 0.4f);
 
-            _scene.Children[1].Components[1] = _brick_brdfFx;
+            _emissive_Fx = MakeEffect.FromDiffuseSpecular(float4.One, 0.5f, 255, 0.5f, float4.LinearColorFromSRgb(0x2A84FAFF));
+
+            _scene.Children[1].Components[1] = _emissive_Fx;//_brick_brdfFx;
             _scene.Children[2].Components.Insert(1, _rubber_brdfFx);
             _scene.Children[3].Components.Insert(1, _gold_brdfFx);
             _scene.Children[4].Components.Insert(1, _subsurf_brdfFx);
