@@ -86,7 +86,7 @@ namespace Fusee.Base.Common
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         public async Task<object> GetAssetAsync(string id, Type type)
-        {   
+        {
             var stream = await GetStreamAsync(id);
 
             if (stream == null)

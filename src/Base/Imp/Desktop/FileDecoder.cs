@@ -1,16 +1,16 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.ColorSpaces.Conversion;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
-using SixLabors.ImageSharp.Formats;
-using SixLabors.ImageSharp.ColorSpaces.Conversion;
 
 namespace Fusee.Base.Imp.Desktop
 {

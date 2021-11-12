@@ -9,11 +9,11 @@ using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
-using System;
-using System.IO;
 
 namespace Fusee.Examples.Simple.Blazor
 {
@@ -156,7 +156,7 @@ namespace Fusee.Examples.Simple.Blazor
                                             new ImagePixelFormat(ColorFormat.fRGBA32));
                                     }
                                 default:
-                                    { 
+                                    {
                                         Console.WriteLine($"Error converting! {bpp}");
 
                                         throw new ArgumentException($"{bpp} Bits per pixel not supported!");

@@ -1,16 +1,16 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
-using System.Numerics;
 using SixLabors.Fonts;
-using Font = SixLabors.Fonts.Font;
-using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Drawing.Processing;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using Font = SixLabors.Fonts.Font;
 
 namespace Fusee.Base.Imp.WebAsm
 {
@@ -278,4 +278,3 @@ namespace Fusee.Base.Imp.WebAsm
         #endregion
     }
 }
-
