@@ -8,7 +8,7 @@ using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
 
-namespace Fusee.Examples.Bone.Desktop
+namespace Fusee.Examples.BoneAnimation.Desktop
 {
     public class Bone
     {
@@ -43,7 +43,7 @@ namespace Fusee.Examples.Bone.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Fusee.Examples.Bone.Core.Bone();
+            var app = new Fusee.Examples.BoneAnimation.Core.Bone();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             var appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
@@ -52,10 +52,10 @@ namespace Fusee.Examples.Bone.Desktop
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
             // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-            // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-            // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();

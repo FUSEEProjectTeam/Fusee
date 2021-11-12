@@ -5,7 +5,7 @@ using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Engine.GUI
+namespace Fusee.Engine.Gui
 {
     /// <summary>
     /// Needed for adding interactions/events to objects in the scene graph.
@@ -86,7 +86,7 @@ namespace Fusee.Engine.GUI
         /// </summary>
         /// <param name="btn">The button to invoke an interaction on.</param>
         [VisitMethod]
-        public void InvokeInteraction(GUIButton btn)
+        public void InvokeInteraction(GuiButton btn)
         {
             if (CurrentNode == _pickResCache && _pickResCache != _pickRes)
             {

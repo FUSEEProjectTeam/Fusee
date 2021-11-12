@@ -115,23 +115,16 @@ namespace Fusee.Base.Core
 
         private static string SeverityLevelToString(SeverityLevel lvl)
         {
-            switch (lvl)
+            return lvl switch
             {
-                case SeverityLevel.Verbose:
-                    return "Verbose";
-                case SeverityLevel.Debug:
-                    return "Debug";
-                case SeverityLevel.Info:
-                    return "Info";
-                case SeverityLevel.Warn:
-                    return "Warning";
-                case SeverityLevel.Error:
-                    return "Error";
-                case SeverityLevel.None:
-                    return "None";
-            }
-
-            return "Error while parsing severity level";
+                SeverityLevel.Verbose => "Verbose",
+                SeverityLevel.Debug => "Debug",
+                SeverityLevel.Info => "Info",
+                SeverityLevel.Warn => "Warning",
+                SeverityLevel.Error => "Error",
+                SeverityLevel.None => "None",
+                _ => "Error while parsing severity level",
+            };
         }
 
         private static void ColorConsoleOutput(SeverityLevel lvl)

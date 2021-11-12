@@ -15,19 +15,19 @@ namespace Fusee.Serialization.V1
         /// The weight map. Contains as many entries as the object containing this node's geometry has vertices.
         /// </summary>
         [ProtoMember(1)]
-        public List<VertexWeightList> WeightMap = new List<VertexWeightList>();
+        public List<VertexWeightList> WeightMap = new();
 
         /// <summary>
         /// The joint objects controlling the geometry.
         /// </summary>
         [ProtoMember(2)]
-        public List<FusComponent> Joints = new List<FusComponent>();
+        public List<FusComponent> Joints = new();
 
         /// <summary>
         /// The binding matrices defining the object's untransformed state.
         /// </summary>
         [ProtoMember(3)]
-        public List<float4x4> BindingMatrices = new List<float4x4>();
+        public List<float4x4> BindingMatrices = new();
 
     }
 

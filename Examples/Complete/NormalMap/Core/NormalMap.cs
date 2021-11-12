@@ -80,7 +80,7 @@ namespace Fusee.Examples.NormalMap.Core
             _mesh.BiTangents = _mesh.CalculateBiTangents();
             _scene.Children[0].Components.Insert(1, normalMappingEffect);
 
-            AABBCalculator aabbc = new AABBCalculator(_scene);
+            AABBCalculator aabbc = new(_scene);
             AABBf? bbox = aabbc.GetBox();
             if (bbox != null)
             {
@@ -217,17 +217,8 @@ namespace Fusee.Examples.NormalMap.Core
             float4x4 mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * RC.Projection;
 
-            // Tick any animations and Render the scene loaded in Init()
-            _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
         }
 
         // Is called when the window was resized

@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Examples.Starkiller.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Starkiller.Desktop</PackageId>
     <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>

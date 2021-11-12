@@ -13,7 +13,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// This is a default render canvas implementation creating its own rendering window.
     /// </summary>
-    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp
+    public class RenderCanvasImp : RenderCanvasImpBase, IRenderCanvasImp, IDisposable
     {
         #region Fields
 
@@ -93,6 +93,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to update the last frame in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public float DeltaTimeUpdate
+        {
+            get
+            {
+                if (_gameWindow != null)
+                    return _gameWindow.DeltaTimeUpdate;
+                return 0.01f;
+            }
+        }
+
+        /// <summary>
         /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
@@ -102,7 +119,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public bool VerticalSync
         {
             get => (_gameWindow != null) && _gameWindow.VSync == OpenTK.Windowing.Common.VSyncMode.On;
-            set { if (_gameWindow != null) _gameWindow.VSync = (value) ? OpenTK.Windowing.Common.VSyncMode.On : OpenTK.Windowing.Common.VSyncMode.Off; }
+            set { if (_gameWindow != null) _gameWindow.VSync = value ? OpenTK.Windowing.Common.VSyncMode.On : OpenTK.Windowing.Common.VSyncMode.Off; }
         }
 
         /// <summary>
@@ -184,7 +201,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
         /// <param name="appIcon">The icon for the render window.</param>
-        public RenderCanvasImp(Icon appIcon)
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
+        public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
             Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
@@ -200,19 +218,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
 
             WindowHandle = new WindowHandle()
             {
-                Handle = _gameWindow.Handle
+                Handle = _gameWindow.Context.WindowPtr
             };
 
             _gameWindow.CenterWindow();
+            if (_gameWindow.IsMultiThreaded)
+                _gameWindow.Context.MakeNoneCurrent();
         }
 
         /// <summary>
@@ -220,25 +240,27 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="width">The width of the render window.</param>
         /// <param name="height">The height of the render window.</param>
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         /// <remarks>The window created by this constructor is not visible. Should only be used for internal testing.</remarks>
-        public RenderCanvasImp(int width, int height)
+        public RenderCanvasImp(int width, int height, bool isMultithreaded = false)
         {
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, true, isMultithreaded);
             }
             catch
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
 
             WindowHandle = new WindowHandle()
             {
-                Handle = _gameWindow.Handle
+                Handle = _gameWindow.Context.WindowPtr
             };
 
             _gameWindow.IsVisible = false;
-            _gameWindow.MakeCurrent();
+            if (_gameWindow.IsMultiThreaded)
+                _gameWindow.Context.MakeNoneCurrent();
         }
 
         /// <summary>
@@ -327,16 +349,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void CloseGameWindow()
         {
             if (_gameWindow != null)
+            {
                 _gameWindow.Close();
+                _gameWindow.ProcessEvents();
+                _gameWindow.Dispose();
+            }
         }
 
         /// <summary>
-        /// Presents this application instance. Call this function after rendering to show the final image. 
+        /// Presents this application instance. Call this function after rendering to show the final image.
         /// After Present is called the render buffers get flushed.
         /// </summary>
         public void Present()
         {
-            if (_gameWindow != null)
+            if (!_gameWindow.IsExiting)
                 _gameWindow.SwapBuffers();
         }
 
@@ -358,7 +384,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (link.StartsWith("http://"))
             {
                 //UseShellExecute needs to be set to true in .net 3.0. See:https://github.com/dotnet/corefx/issues/33714
-                ProcessStartInfo psi = new ProcessStartInfo
+                ProcessStartInfo psi = new()
                 {
                     FileName = link,
                     UseShellExecute = true
@@ -373,7 +399,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void Run()
         {
             if (_gameWindow != null)
+            {
+                _gameWindow.UpdateFrequency = 60;
+                _gameWindow.RenderFrequency = 0;
+
                 _gameWindow.Run();
+            }
         }
 
         /// <summary>
@@ -384,9 +415,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns></returns>
         public Bitmap ShootCurrentFrame(int width, int height)
         {
-            this.DoInit();
-            this.DoRender();
-            this.DoResize(width, height);
+            DoInit();
+            DoRender();
+            DoResize(width, height);
 
             var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
             var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
@@ -439,6 +470,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public event EventHandler<InitEventArgs> UnLoad;
         /// <summary>
+        /// Occurs when [update].
+        /// </summary>
+        public event EventHandler<RenderEventArgs> Update;
+        /// <summary>
         /// Occurs when [render].
         /// </summary>
         public event EventHandler<RenderEventArgs> Render;
@@ -456,17 +491,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoInit()
         {
-            if (Init != null)
-                Init(this, new InitEventArgs());
+            Init?.Invoke(this, new InitEventArgs());
         }
 
         /// <summary>
-        /// Does the unload of this instance. 
+        /// Does the unload of this instance.
         /// </summary>
         protected internal void DoUnLoad()
         {
-            if (UnLoad != null)
-                UnLoad(this, new InitEventArgs());
+            UnLoad?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does the update of this instance.
+        /// </summary>
+        protected internal void DoUpdate()
+        {
+            Update?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -474,8 +515,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoRender()
         {
-            if (Render != null)
-                Render(this, new RenderEventArgs());
+            Render?.Invoke(this, new RenderEventArgs());
         }
 
         /// <summary>
@@ -483,8 +523,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         protected internal void DoResize(int width, int height)
         {
-            if (Resize != null)
-                Resize(this, new ResizeEventArgs(width, height));
+            Resize?.Invoke(this, new ResizeEventArgs(width, height));
         }
 
         #endregion
@@ -505,6 +544,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// The delta time in milliseconds.
         /// </value>
         public float DeltaTime { get; private set; }
+
+        /// <summary>
+        /// Gets the delta time.
+        /// The delta time is the time that was required to update the last frame in milliseconds.
+        /// </summary>
+        /// <value>
+        /// The delta time in milliseconds.
+        /// </value>
+        public float DeltaTimeUpdate { get; private set; }
 
         /// <summary>
         /// Gets and sets a value indicating whether [blending].
@@ -530,19 +578,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-        public IntPtr Handle
-        {
-            get
-            {
-                IntPtr hwnd;
-                unsafe
-                {
-                    hwnd = this.Context.WindowPtr;
-                }
-                return hwnd;
-            }
-        }
-
         #endregion
 
         #region Constructors
@@ -553,11 +588,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
         /// <param name="antiAliasing">if set to <c>true</c> [anti aliasing] is on.</param>
-        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing)
-            : base(GameWindowSettings.Default, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
+        /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
+        public RenderCanvasGameWindow(RenderCanvasImp renderCanvasImp, int width, int height, bool antiAliasing, bool isMultithreaded = false)
+            : base(new GameWindowSettings { IsMultiThreaded = isMultithreaded }, new NativeWindowSettings { Size = new OpenTK.Mathematics.Vector2i(width, height), Profile = OpenTK.Windowing.Common.ContextProfile.Core, Flags = OpenTK.Windowing.Common.ContextFlags.ForwardCompatible })
         {
             _renderCanvasImp = renderCanvasImp;
-
             _renderCanvasImp.BaseWidth = width;
             _renderCanvasImp.BaseHeight = height;
         }
@@ -606,23 +641,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _renderCanvasImp.BaseHeight = e.Height;
                 _renderCanvasImp.DoResize(e.Width, e.Height);
             }
-
-            /*
-            GL.Viewport(0, 0, Width, Height);
-
-            float aspect_ratio = Width / (float)Height;
-            Matrix4 perspective = Matrix4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspect_ratio, 1, 64);
-            GL.MatrixMode(MatrixMode.Projection);
-            GL.LoadMatrix(ref perspective);
-             * */
         }
 
         protected override void OnUpdateFrame(OpenTK.Windowing.Common.FrameEventArgs args)
         {
             base.OnUpdateFrame(args);
 
+            DeltaTimeUpdate = (float)args.Time;
+
             if (KeyboardState.IsKeyPressed(OpenTK.Windowing.GraphicsLibraryFramework.Keys.F11))
                 WindowState = (WindowState != OpenTK.Windowing.Common.WindowState.Fullscreen) ? OpenTK.Windowing.Common.WindowState.Fullscreen : OpenTK.Windowing.Common.WindowState.Normal;
+
+            _renderCanvasImp?.DoUpdate();
         }
 
         protected override void OnRenderFrame(OpenTK.Windowing.Common.FrameEventArgs args)
@@ -631,8 +661,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             DeltaTime = (float)args.Time;
 
-            if (_renderCanvasImp != null)
-                _renderCanvasImp.DoRender();
+            _renderCanvasImp?.DoRender();
         }
 
         #endregion

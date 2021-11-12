@@ -303,7 +303,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         ///     Provides the singleton Instance of the Input Class.
         /// </summary>
-        public static Input Instance => _instance ?? (_instance = new Input());
+        public static Input Instance => _instance ??= new Input();
         /// <summary>
         /// Registers the type of input device available.
         /// </summary>
@@ -318,7 +318,7 @@ namespace Fusee.Engine.Core
 
             // Reconnect any existing devices matching the predicate
             // List<string> matchingDevices = (from device in _inputDevices.Values where device.DeviceImp != null && match(device.DeviceImp) select device.Id).ToList();
-            List<string> matchingDevices = new List<string>();
+            List<string> matchingDevices = new();
             foreach (var device in _inputDevices.Values)
             {
                 if (device.DeviceImp != null && match(device.DeviceImp)) matchingDevices.Add(device.Id);
@@ -409,15 +409,13 @@ namespace Fusee.Engine.Core
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
 
-            IInputDriverImp driver = sender as IInputDriverImp;
-            if (driver == null) throw new InvalidOperationException("Device connecting from unknown driver " + sender.ToString());
+            if (sender is not IInputDriverImp driver) throw new InvalidOperationException("Device connecting from unknown driver " + sender.ToString());
 
             if (args == null || args.InputDeviceImp == null)
                 throw new ArgumentNullException(nameof(args), "Device or InputDeviceImp must not be null");
 
             string deviceKey = driver.DriverId + "_" + args.InputDeviceImp.Id;
-            InputDevice existingDevice;
-            if (_inputDevices.TryGetValue(deviceKey, out existingDevice))
+            if (_inputDevices.TryGetValue(deviceKey, out InputDevice existingDevice))
             {
                 existingDevice.Reconnect(args.InputDeviceImp);
             }
@@ -434,12 +432,10 @@ namespace Fusee.Engine.Core
         private void OnDeviceImpDisconnected(object sender, DeviceImpDisconnectedArgs args)
         {
             if (sender == null) throw new ArgumentNullException(nameof(sender));
-            IInputDriverImp driver = sender as IInputDriverImp;
-            if (driver == null) throw new InvalidOperationException("Device disconnecting from unknown driver " + sender.ToString());
+            if (sender is not IInputDriverImp driver) throw new InvalidOperationException("Device disconnecting from unknown driver " + sender.ToString());
 
             string deviceKey = driver.DriverId + "_" + args.Id;
-            InputDevice existingDevice;
-            if (_inputDevices.TryGetValue(deviceKey, out existingDevice))
+            if (_inputDevices.TryGetValue(deviceKey, out InputDevice existingDevice))
             {
                 existingDevice.Disconnect();
             }

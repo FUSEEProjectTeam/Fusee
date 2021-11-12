@@ -15,19 +15,19 @@ namespace Fusee.Math.Core
         #region Fields
 
         /// <summary>
-        /// The x component of the float3.
+        /// The x component of the int3.
         /// </summary>
         [ProtoMember(1)]
         public int x;
 
         /// <summary>
-        /// The y component of the float3.
+        /// The y component of the int3.
         /// </summary>
         [ProtoMember(2)]
         public int y;
 
         /// <summary>
-        /// The z component of the float3.
+        /// The z component of the int3.
         /// </summary>
         [ProtoMember(3)]
         public int z;
@@ -85,27 +85,27 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length float3 that points towards the x-axis.
         /// </summary>
-        public static readonly float3 UnitX = new float3(1, 0, 0);
+        public static readonly float3 UnitX = new(1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length float3 that points towards the y-axis.
         /// </summary>
-        public static readonly float3 UnitY = new float3(0, 1, 0);
+        public static readonly float3 UnitY = new(0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length float3 that points towards the z-axis.
         /// </summary>
-        public static readonly float3 UnitZ = new float3(0, 0, 1);
+        public static readonly float3 UnitZ = new(0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length float3.
         /// </summary>
-        public static readonly float3 Zero = new float3(0, 0, 0);
+        public static readonly float3 Zero = new(0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly float3 One = new float3(1, 1, 1);
+        public static readonly float3 One = new(1, 1, 1);
 
         // <summary>
         // Defines the size of the float3 struct in bytes.
@@ -464,7 +464,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>
-        /// True, if left does not equa lright; false otherwise.
+        /// True, if left does not equal right; false otherwise.
         /// </returns>
         public static bool operator !=(int3 left, int3 right)
         {
@@ -472,10 +472,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Explicit cast operator to cast a double3 into a float3 value.
+        /// Explicit cast operator to cast a int into a int3 value.
         /// </summary>
-        /// <param name="i">The double3 value to cast.</param>
-        /// <returns>A float3 value.</returns>
+        /// <param name="i">The int value to cast.</param>
+        /// <returns>A int3 value.</returns>
         public static explicit operator int3(int i)
         {
             return new int3(i);
@@ -543,7 +543,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// True if the instances are equal; false otherwise.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is int3))
                 return false;

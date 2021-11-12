@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     /// <summary>
     /// This test is comparing all rotation conversions with the results in Unity3D.
     /// </summary>
     public class RotationConversionTest
     {
-        float precision = 1E-05f;
+        readonly float precision = 1E-05f;
 
         private readonly ITestOutputHelper output;
 
@@ -22,8 +22,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-        public void EulerToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void EulerToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 _1, float3 _2)
         {
             var valid = false;
             var expected = quaternion;
@@ -46,8 +45,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-        public void EulerToMatrix(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void EulerToMatrix(string text, float3 euler, Quaternion _1, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = matrix;
@@ -77,8 +75,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-        public void QuaternionToEuler(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void QuaternionToEuler(string text, float3 euler, Quaternion quaternion, float4x4 _1, float3 _2)
         {
             var valid = false;
             var expected = euler;
@@ -105,8 +102,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-        public void QuaternionToMatrix(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void QuaternionToMatrix(string text, float3 _1, Quaternion quaternion, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = matrix;
@@ -136,8 +132,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-        public void MatrixToEuler(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void MatrixToEuler(string text, float3 euler, Quaternion _1, float4x4 matrix, float3 _2)
         {
             var valid = false;
 
@@ -165,8 +160,7 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetRotation))]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters")]
-        public void MatrixToQuaternion(string text, float3 euler, Quaternion quaternion, float4x4 matrix, float3 euler2)
+        public void MatrixToQuaternion(string text, float3 _1, Quaternion quaternion, float4x4 matrix, float3 _2)
         {
             var valid = false;
             var expected = quaternion;

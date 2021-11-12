@@ -66,7 +66,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Caches SceneNodes and their model matrices. Used when visiting a <see cref="Bone"/>.
         /// </summary>
-        protected Dictionary<SceneNode, float4x4> _boneMap = new Dictionary<SceneNode, float4x4>();
+        protected Dictionary<SceneNode, float4x4> _boneMap = new();
 
         /// <summary>
         /// Manages animations.
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
-        protected List<Tuple<SceneNode, LightResult>> _lightResults = new List<Tuple<SceneNode, LightResult>>();
+        protected List<Tuple<SceneNode, LightResult>> _lightResults = new();
 
         #endregion
 
@@ -126,12 +126,12 @@ namespace Fusee.Engine.Core
             {
                 Rotation = new float4x4
                 (
-                    new float4(_rc.InvView.Row0.xyz, 0),
                     new float4(_rc.InvView.Row1.xyz, 0),
                     new float4(_rc.InvView.Row2.xyz, 0),
+                    new float4(_rc.InvView.Row3.xyz, 0),
                     float4.UnitW
                  ),
-                WorldSpacePos = _rc.InvView.Column3.xyz
+                WorldSpacePos = _rc.InvView.Column4.xyz
             }));
         }
 
@@ -207,22 +207,15 @@ namespace Fusee.Engine.Core
                             // else if (typeof(float3).IsAssignableFrom(t))
                             case TypeId.Float3:
                                 {
-                                    Channel<float3>.LerpFunc lerpFunc;
-                                    switch (animTrackContainer.LerpType)
+                                    Channel<float3>.LerpFunc lerpFunc = animTrackContainer.LerpType switch
                                     {
-                                        case LerpType.Lerp:
-                                            lerpFunc = Lerp.Float3Lerp;
-                                            break;
-                                        case LerpType.Slerp:
-                                            lerpFunc = Lerp.Float3QuaternionSlerp;
-                                            break;
-                                        default:
-                                            // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
-                                            // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
-                                            throw new InvalidOperationException(
-                                                "Unknown lerp type: animTrackContainer.LerpType: " +
-                                                (int)animTrackContainer.LerpType);
-                                    }
+                                        LerpType.Lerp => Lerp.Float3Lerp,
+                                        LerpType.Slerp => Lerp.Float3QuaternionSlerp,
+                                        _ => throw new InvalidOperationException(
+             "Unknown lerp type: animTrackContainer.LerpType: " +
+             (int)animTrackContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                               // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                                    };
                                     var channel = new Channel<float3>(lerpFunc);
                                     foreach (AnimationKeyFloat3 key in animTrackContainer.KeyFrames)
                                     {
@@ -270,7 +263,7 @@ namespace Fusee.Engine.Core
         public virtual void SetContext(RenderContext rc)
         {
             if (rc == null)
-                throw new ArgumentNullException("rc");
+                throw new ArgumentNullException(nameof(rc));
 
             if (rc != _rc)
             {
@@ -315,6 +308,8 @@ namespace Fusee.Engine.Core
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
+
+            _rc.ClearGlobalEffectParamsDirtyFlag();
         }
 
         private void PerCamRender(Tuple<SceneNode, CameraResult> cam)
@@ -380,10 +375,9 @@ namespace Fusee.Engine.Core
 
             var trans = boneContainer.GetGlobalTranslation();
             var rot = boneContainer.GetGlobalRotation();
+            _ = float4x4.CreateTranslation(trans) * rot; //TODO: ???
 
-            var currentModel = float4x4.CreateTranslation(trans) * rot; //TODO: ???
-
-            if (!_boneMap.TryGetValue(boneContainer, out var transform))
+            if (!_boneMap.TryGetValue(boneContainer, out _))
                 _boneMap.Add(boneContainer, _rc.Model);
             else
                 _boneMap[boneContainer] = _rc.Model;
@@ -396,8 +390,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderWeight(Weight weight)
         {
-            var boneArray = new float4x4[weight.Joints.Count()];
-            for (var i = 0; i < weight.Joints.Count(); i++)
+            var boneArray = new float4x4[weight.Joints.Count];
+            for (var i = 0; i < weight.Joints.Count; i++)
             {
                 var tmp = weight.BindingMatrices[i];
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
@@ -571,35 +565,20 @@ namespace Fusee.Engine.Core
                 scaleY = 1 / _state.UiRect.Size.y;
 
                 //Calculate translation according to alignment
-                switch (xfc.HorizontalAlignment)
+                translationX = xfc.HorizontalAlignment switch
                 {
-                    case HorizontalTextAlignment.Left:
-                        translationX = -_state.UiRect.Size.x / 2;
-                        break;
-                    case HorizontalTextAlignment.Center:
-                        translationX = -xfc.Width / 2;
-                        break;
-                    case HorizontalTextAlignment.Right:
-                        translationX = _state.UiRect.Size.x / 2 - xfc.Width;
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
-
-                switch (xfc.VerticalAlignment)
+                    HorizontalTextAlignment.Left => -_state.UiRect.Size.x / 2,
+                    HorizontalTextAlignment.Center => -xfc.Width / 2,
+                    HorizontalTextAlignment.Right => _state.UiRect.Size.x / 2 - xfc.Width,
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
+                translationY = xfc.VerticalAlignment switch
                 {
-                    case VerticalTextAlignment.Top:
-                        translationY = _state.UiRect.Size.y / 2;
-                        break;
-                    case VerticalTextAlignment.Center:
-                        translationY = xfc.Height / 2;
-                        break;
-                    case VerticalTextAlignment.Bottom:
-                        translationY = xfc.Height - (_state.UiRect.Size.y / 2);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
+                    VerticalTextAlignment.Top => _state.UiRect.Size.y / 2,
+                    VerticalTextAlignment.Center => xfc.Height / 2,
+                    VerticalTextAlignment.Bottom => xfc.Height - (_state.UiRect.Size.y / 2),
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
             }
             else
             {
@@ -608,35 +587,20 @@ namespace Fusee.Engine.Core
                 scaleY = 1 / _state.UiRect.Size.y * scaleFactor;
 
                 //Calculate translation according to alignment by scaling the rectangle size
-                switch (xfc.HorizontalAlignment)
+                translationX = xfc.HorizontalAlignment switch
                 {
-                    case HorizontalTextAlignment.Left:
-                        translationX = -_state.UiRect.Size.x * invScaleFactor / 2;
-                        break;
-                    case HorizontalTextAlignment.Center:
-                        translationX = -xfc.Width / 2;
-                        break;
-                    case HorizontalTextAlignment.Right:
-                        translationX = _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
-
-                switch (xfc.VerticalAlignment)
+                    HorizontalTextAlignment.Left => -_state.UiRect.Size.x * invScaleFactor / 2,
+                    HorizontalTextAlignment.Center => -xfc.Width / 2,
+                    HorizontalTextAlignment.Right => _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width,
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
+                translationY = xfc.VerticalAlignment switch
                 {
-                    case VerticalTextAlignment.Top:
-                        translationY = _state.UiRect.Size.y * invScaleFactor / 2;
-                        break;
-                    case VerticalTextAlignment.Center:
-                        translationY = xfc.Height / 2;
-                        break;
-                    case VerticalTextAlignment.Bottom:
-                        translationY = xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
+                    VerticalTextAlignment.Top => _state.UiRect.Size.y * invScaleFactor / 2,
+                    VerticalTextAlignment.Center => xfc.Height / 2,
+                    VerticalTextAlignment.Bottom => xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2),
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
             }
 
             var translation = float4x4.CreateTranslation(translationX, translationY, 0);
@@ -715,9 +679,7 @@ namespace Fusee.Engine.Core
 
             var renderStatesBefore = _rc.CurrentRenderState.Copy();
             _rc.Render(mesh, true);
-            var renderStatesAfter = _rc.CurrentRenderState.Copy();
-
-            _state.RenderUndoStates = renderStatesBefore.Delta(renderStatesAfter);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
         }
 
         /// <summary>
@@ -792,7 +754,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = MakeEffect.Default;
+            _state.Effect = _rc.DefaultEffect;
             _rc.CreateShaderProgram(_state.Effect);
             _state.RenderUndoStates = new RenderStateSet();
             _state.RenderLayer = new RenderLayer();
@@ -835,7 +797,7 @@ namespace Fusee.Engine.Core
                     UpdateShaderParamForLight(i, _lightResults[i].Item2);
                 }
                 else
-                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive", 0);
+                    _rc.SetGlobalEffectParam($"allLights[{i}].isActive".GetHashCode(), 0);
             }
         }
 
@@ -856,17 +818,17 @@ namespace Fusee.Engine.Core
             var lightParamStrings = Lighting.LightPararamStringsAllLights[position];
 
             // Set parameters in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
-            _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
-            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
-            _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
-            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
-            _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
-            _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace.GetHashCode(), _rc.View * lightRes.WorldSpacePos);
+            _rc.SetGlobalEffectParam(lightParamStrings.Intensities.GetHashCode(), light.Color);
+            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance.GetHashCode(), light.MaxDistance);
+            _rc.SetGlobalEffectParam(lightParamStrings.Strength.GetHashCode(), strength);
+            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle.GetHashCode(), M.DegreesToRadians(light.OuterConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle.GetHashCode(), M.DegreesToRadians(light.InnerConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction.GetHashCode(), dirViewSpace);
+            _rc.SetGlobalEffectParam(lightParamStrings.LightType.GetHashCode(), (int)light.Type);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsActive.GetHashCode(), light.Active ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows.GetHashCode(), light.IsCastingShadows ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.Bias.GetHashCode(), light.Bias);
         }
     }
 }

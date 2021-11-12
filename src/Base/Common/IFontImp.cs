@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using System;
 
 namespace Fusee.Base.Common
 {
@@ -142,8 +143,4 @@ namespace Fusee.Base.Common
         /// <returns></returns>
         float GetUnscaledKerning(uint leftC, uint rightC);
     }
-
-
-
-
 }

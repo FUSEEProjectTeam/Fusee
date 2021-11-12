@@ -298,9 +298,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBf"/>.</param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
+            if (obj?.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'AABBf'.");
 
             var other = (AABBf)obj;
             return max.Equals(other.max) && min.Equals(other.min);
@@ -311,13 +311,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + max.GetHashCode();
-                hash = hash * 23 + min.GetHashCode();
-                return hash;
-            }
+            return HashCode.Combine(max, min);
         }
     }
 }

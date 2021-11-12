@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<RootNamespace>Fusee.PointCloud.Common</RootNamespace>
+		<TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
+		<Description>Fusee PointCloud Common</Description>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.PointCloud.Common</OutputPath>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+		<PackageReference Include="System.Memory" Version="4.5.4" />
+
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj"/>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj"/>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj"/>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
+</Project>

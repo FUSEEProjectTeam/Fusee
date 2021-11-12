@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Core.Effects
 {
@@ -21,13 +20,13 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="effectParameters">The uniform parameters as collections of <see cref="IFxParamDeclaration"/>.</param>
         public ComputeShader(string shaderCode, IEnumerable<IFxParamDeclaration> effectParameters)
         {
-            ParamDecl = new Dictionary<string, IFxParamDeclaration>();
+            ParamDecl = new Dictionary<int, IFxParamDeclaration>();
             ComputeShaderSrc = shaderCode;
 
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                    ParamDecl.Add(param.Name, param);
+                    ParamDecl.Add(param.Hash, param);
             }
 
             EffectManagerEventArgs = new EffectManagerEventArgs(UniformChangedEnum.Unchanged);

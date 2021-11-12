@@ -28,7 +28,7 @@ namespace Fusee.Serialization.V1
         /// The albedo channel.
         /// </summary>
         [ProtoMember(1)]
-        public AlbedoChannel? Albedo;
+        public AlbedoChannel Albedo;
         #endregion
 
         #region Emission
@@ -44,7 +44,7 @@ namespace Fusee.Serialization.V1
         /// The emissive channel.
         /// </summary>
         [ProtoMember(3)]
-        public AlbedoChannel? Emissive;
+        public AlbedoChannel Emissive;
         #endregion
 
         #region NormalMap
@@ -60,7 +60,7 @@ namespace Fusee.Serialization.V1
         /// The normal map channel.
         /// </summary>
         [ProtoMember(4)]
-        public NormapMapChannel? NormalMap;
+        public NormapMapChannel NormalMap;
         #endregion
 
         #region equals

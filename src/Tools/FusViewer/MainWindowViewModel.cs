@@ -42,7 +42,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             {
                 _caller.PathToFile = openFileDialog.FileName;
                 using var stream = File.OpenRead(openFileDialog.FileName);
-                _caller.CurrentContainer = FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>(stream));
+                _caller.CurrentContainer = FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>(stream), openFileDialog.FileName);
             }
         }
 
@@ -89,12 +89,6 @@ namespace Fusee.Tools.FusViewer.ViewModel
             return true;
         }
 
-        private readonly MainWindowViewModel _caller;
-
-        public ViewInPlayerCmd(MainWindowViewModel caller)
-        {
-            _caller = caller;
-        }
         public void Execute(object parameter)
         {
             // TODO: Spawn fusee window   
@@ -130,7 +124,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             }
         }
 
-        public List<TreeItem> SceneAsTreeView => new List<TreeItem> { _sceneAsTreeItem };
+        public List<TreeItem> SceneAsTreeView => new() { _sceneAsTreeItem };
 
         private string _pathToFile;
         private SceneContainer _scene;
@@ -150,8 +144,6 @@ namespace Fusee.Tools.FusViewer.ViewModel
         public ICommand OpenFusFile => new OpenFusFileCmd(this);
 
         public ICommand SaveAsJSON => new SaveAsJSONCmd(this);
-
-        public ICommand ViewInPlayer => new ViewInPlayerCmd(this);
     }
 
     public class SceneToTreeConv : Visitor<SceneNode, SceneComponent>
@@ -428,7 +420,7 @@ namespace Fusee.Tools.FusViewer.ViewModel
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Camera Component",
-                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
+                Desc = $"{camComp}, Mode: {camComp.ProjectionMethod}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 

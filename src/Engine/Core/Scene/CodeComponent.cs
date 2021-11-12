@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>

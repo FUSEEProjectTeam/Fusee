@@ -15,7 +15,7 @@ namespace Fusee.Examples.Integrations.Wpf.Model
             set
             {
                 _x = value;
-                OnPropertyChanged("X");
+                OnPropertyChanged(nameof(X));
             }
         }
         public float Y
@@ -27,7 +27,7 @@ namespace Fusee.Examples.Integrations.Wpf.Model
             set
             {
                 _y = value;
-                OnPropertyChanged("Y");
+                OnPropertyChanged(nameof(Y));
             }
         }
         public float Z
@@ -39,7 +39,7 @@ namespace Fusee.Examples.Integrations.Wpf.Model
             set
             {
                 _z = value;
-                OnPropertyChanged("Z");
+                OnPropertyChanged(nameof(Z));
             }
         }
 

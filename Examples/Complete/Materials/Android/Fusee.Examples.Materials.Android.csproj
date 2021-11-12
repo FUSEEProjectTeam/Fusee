@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Materials.Android</RootNamespace>
@@ -17,7 +17,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v9.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v11.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -87,9 +87,9 @@
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Fusee.Engine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.Gui.csproj">
       <Project>{26808b4a-9f15-47f0-b147-e744241b79d2}</Project>
-      <Name>Fusee.Engine.GUI</Name>
+      <Name>Fusee.Engine.Gui</Name>
     </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>

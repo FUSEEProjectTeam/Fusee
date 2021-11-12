@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public static VideoManager Instance
         {
-            get { return _instance ?? (_instance = new VideoManager()); }
+            get { return _instance ??= new VideoManager(); }
         }
     }
 }

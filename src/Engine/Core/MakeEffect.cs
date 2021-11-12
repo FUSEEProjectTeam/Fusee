@@ -22,7 +22,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The default <see cref="Effect"/>, that is used if a <see cref="SceneNode"/> has a mesh but no effect.
         /// </summary>
-        public static SurfaceEffect Default { get; } = FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22, 1.0f);
+        public static SurfaceEffect Default() => FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1.0f), new float4(), 22, 1.0f);
 
         #region Deferred
 
@@ -63,8 +63,8 @@ namespace Fusee.Engine.Core
         /// <param name="noiseTexSize">Width and height of the noise texture.</param>
         public async static Task<ShaderEffect> SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
         {
-            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
-            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(noiseTexSize);
+            var ssaoKernel = FuseeSsaoHelper.CreateKernel(kernelLength);
+            var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
             var ps = await AssetStorage.GetAsync<string>("SSAO.frag");
@@ -114,18 +114,10 @@ namespace Fusee.Engine.Core
             float blurKernelSize;
             switch (ssaoRenderTex.Width)
             {
-                case (int)TexRes.Low:
-                    blurKernelSize = 2.0f;
-                    break;
-                default:
-                case (int)TexRes.Middle:
-                    blurKernelSize = 4.0f;
-                    break;
-                case (int)TexRes.High:
-                    blurKernelSize = 8.0f;
-                    break;
-            }
-
+                (int)TexRes.Low => 2.0f,
+                (int)TexRes.High => 8.0f,
+                _ => 4.0f,
+            };
             if (blurKernelSize != 4.0f)
             {
                 var lines = frag.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
@@ -311,6 +303,7 @@ namespace Fusee.Engine.Core
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Ssao], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Ssao]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Specular]},
                 new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Emission]},
+                new FxParamDeclaration<IWritableTexture> { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.Depth]},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
@@ -322,29 +315,24 @@ namespace Fusee.Engine.Core
 
         private static List<IFxParamDeclaration> DeferredLightParams(LightType type)
         {
-            switch (type)
+            return type switch
             {
-                case LightType.Point:
-                    return new List<IFxParamDeclaration>()
+                LightType.Point => new List<IFxParamDeclaration>()
                     {
                         new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
                         new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
                         new FxParamDeclaration<float> { Name = "light.maxDistance", Value = 0.0f },
                         new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
                         new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    };
-                case LightType.Legacy:
-                case LightType.Parallel:
-                    return new List<IFxParamDeclaration>()
+                    },
+                LightType.Legacy or LightType.Parallel => new List<IFxParamDeclaration>()
                     {
                         new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
                         new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
                         new FxParamDeclaration<float> { Name = "light.strength", Value = 0.0f },
                         new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    };
-                default:
-                case LightType.Spot:
-                    return new List<IFxParamDeclaration>()
+                    },
+                _ => new List<IFxParamDeclaration>()
                     {
                         new FxParamDeclaration<float3> { Name = "light.position", Value = new float3(0, 0, -1.0f) },
                         new FxParamDeclaration<float4> { Name = "light.intensities", Value = float4.Zero },
@@ -354,8 +342,8 @@ namespace Fusee.Engine.Core
                         new FxParamDeclaration<float> { Name = "light.innerConeAngle", Value = 0.0f },
                         new FxParamDeclaration<float3> { Name = "light.direction", Value = float3.Zero },
                         new FxParamDeclaration<int> { Name = "light.isActive", Value = 1 }
-                    };
-            }
+                    },
+            };
         }
 
         #endregion
@@ -872,6 +860,9 @@ namespace Fusee.Engine.Core
 
             //Lighting methods
             //------------------------------------------
+            frag.Append(Lighting.LinearizeDepth());
+            frag.Append(Lighting.EDLResponse());
+            frag.Append(Lighting.EDLShadingFactor());
             frag.Append(Lighting.SchlickFresnel());
             frag.Append(Lighting.G1());
             //frag.Append(Lighting.GetF0());

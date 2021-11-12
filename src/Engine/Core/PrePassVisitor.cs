@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
 
     internal class PrepassVisitorState : VisitorState
     {
-        private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+        private readonly CollapsingStateStack<float4x4> _model = new();
 
         /// <summary>
         /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
@@ -349,35 +349,20 @@ namespace Fusee.Engine.Core
                 scaleY = 1 / _state.UiRect.Size.y;
 
                 //Calculate translation according to alignment
-                switch (xfc.HorizontalAlignment)
+                translationX = xfc.HorizontalAlignment switch
                 {
-                    case HorizontalTextAlignment.Left:
-                        translationX = -_state.UiRect.Size.x / 2;
-                        break;
-                    case HorizontalTextAlignment.Center:
-                        translationX = -xfc.Width / 2;
-                        break;
-                    case HorizontalTextAlignment.Right:
-                        translationX = _state.UiRect.Size.x / 2 - xfc.Width;
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
-
-                switch (xfc.VerticalAlignment)
+                    HorizontalTextAlignment.Left => -_state.UiRect.Size.x / 2,
+                    HorizontalTextAlignment.Center => -xfc.Width / 2,
+                    HorizontalTextAlignment.Right => _state.UiRect.Size.x / 2 - xfc.Width,
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
+                translationY = xfc.VerticalAlignment switch
                 {
-                    case VerticalTextAlignment.Top:
-                        translationY = _state.UiRect.Size.y / 2;
-                        break;
-                    case VerticalTextAlignment.Center:
-                        translationY = xfc.Height / 2;
-                        break;
-                    case VerticalTextAlignment.Bottom:
-                        translationY = xfc.Height - (_state.UiRect.Size.y / 2);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
+                    VerticalTextAlignment.Top => _state.UiRect.Size.y / 2,
+                    VerticalTextAlignment.Center => xfc.Height / 2,
+                    VerticalTextAlignment.Bottom => xfc.Height - (_state.UiRect.Size.y / 2),
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
             }
             else
             {
@@ -386,35 +371,20 @@ namespace Fusee.Engine.Core
                 scaleY = 1 / _state.UiRect.Size.y * scaleFactor;
 
                 //Calculate translation according to alignment by scaling the rectangle size
-                switch (xfc.HorizontalAlignment)
+                translationX = xfc.HorizontalAlignment switch
                 {
-                    case HorizontalTextAlignment.Left:
-                        translationX = -_state.UiRect.Size.x * invScaleFactor / 2;
-                        break;
-                    case HorizontalTextAlignment.Center:
-                        translationX = -xfc.Width / 2;
-                        break;
-                    case HorizontalTextAlignment.Right:
-                        translationX = _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
-
-                switch (xfc.VerticalAlignment)
+                    HorizontalTextAlignment.Left => -_state.UiRect.Size.x * invScaleFactor / 2,
+                    HorizontalTextAlignment.Center => -xfc.Width / 2,
+                    HorizontalTextAlignment.Right => _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width,
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
+                translationY = xfc.VerticalAlignment switch
                 {
-                    case VerticalTextAlignment.Top:
-                        translationY = _state.UiRect.Size.y * invScaleFactor / 2;
-                        break;
-                    case VerticalTextAlignment.Center:
-                        translationY = xfc.Height / 2;
-                        break;
-                    case VerticalTextAlignment.Bottom:
-                        translationY = xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2);
-                        break;
-                    default:
-                        throw new ArgumentException("Invalid Horizontal Alignment");
-                }
+                    VerticalTextAlignment.Top => _state.UiRect.Size.y * invScaleFactor / 2,
+                    VerticalTextAlignment.Center => xfc.Height / 2,
+                    VerticalTextAlignment.Bottom => xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2),
+                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
+                };
             }
 
             var translation = float4x4.CreateTranslation(translationX, translationY, 0);

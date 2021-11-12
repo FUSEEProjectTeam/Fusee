@@ -315,9 +315,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     internal class TouchNullDevImp : IInputDeviceImp
     {
-        private Dictionary<int, AxisImpDescription> _tpAxisDescs;
-        private Dictionary<int, ButtonImpDescription> _tpButtonDescs;
-        private int _nTouchPointsSupported = 5;
+        private readonly Dictionary<int, AxisImpDescription> _tpAxisDescs;
+        private readonly Dictionary<int, ButtonImpDescription> _tpButtonDescs;
+        private readonly int _nTouchPointsSupported = 5;
 
 
         /// <summary>
@@ -325,74 +325,76 @@ namespace Fusee.Engine.Core
         /// </summary>        
         public TouchNullDevImp()
         {
-            _tpAxisDescs = new Dictionary<int, AxisImpDescription>(_nTouchPointsSupported * 2 + 5);
-            _tpAxisDescs[(int)TouchAxes.ActiveTouchpoints] = new AxisImpDescription
+            _tpAxisDescs = new Dictionary<int, AxisImpDescription>(_nTouchPointsSupported * 2 + 5)
             {
-                AxisDesc = new AxisDescription
+                [(int)TouchAxes.ActiveTouchpoints] = new AxisImpDescription
                 {
-                    Name = $"Active Touchpoints",
-                    Id = (int)TouchAxes.ActiveTouchpoints,
-                    Direction = AxisDirection.Unknown,
-                    Nature = AxisNature.Unknown,
-                    Bounded = AxisBoundedType.Unbound
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = $"Active Touchpoints",
+                        Id = (int)TouchAxes.ActiveTouchpoints,
+                        Direction = AxisDirection.Unknown,
+                        Nature = AxisNature.Unknown,
+                        Bounded = AxisBoundedType.Unbound
+                    },
+                    PollAxis = true
                 },
-                PollAxis = true
-            };
-            _tpAxisDescs[(int)TouchAxes.MinX] = new AxisImpDescription
-            {
-                AxisDesc = new AxisDescription
+                [(int)TouchAxes.MinX] = new AxisImpDescription
                 {
-                    Name = "MinX",
-                    Id = (int)TouchAxes.MinX,
-                    Direction = AxisDirection.X,
-                    Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Unbound,
-                    MinValueOrAxis = float.NaN,
-                    MaxValueOrAxis = float.NaN
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MinX",
+                        Id = (int)TouchAxes.MinX,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
                 },
-                PollAxis = true
-            };
-            _tpAxisDescs[(int)TouchAxes.MaxX] = new AxisImpDescription
-            {
-                AxisDesc = new AxisDescription
+                [(int)TouchAxes.MaxX] = new AxisImpDescription
                 {
-                    Name = "MaxX",
-                    Id = (int)TouchAxes.MaxX,
-                    Direction = AxisDirection.X,
-                    Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Unbound,
-                    MinValueOrAxis = float.NaN,
-                    MaxValueOrAxis = float.NaN
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MaxX",
+                        Id = (int)TouchAxes.MaxX,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
                 },
-                PollAxis = true
-            };
-            _tpAxisDescs[(int)TouchAxes.MinY] = new AxisImpDescription
-            {
-                AxisDesc = new AxisDescription
+                [(int)TouchAxes.MinY] = new AxisImpDescription
                 {
-                    Name = "MinY",
-                    Id = (int)TouchAxes.MinY,
-                    Direction = AxisDirection.Y,
-                    Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Unbound,
-                    MinValueOrAxis = float.NaN,
-                    MaxValueOrAxis = float.NaN
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MinY",
+                        Id = (int)TouchAxes.MinY,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
                 },
-                PollAxis = true
-            };
-            _tpAxisDescs[(int)TouchAxes.MaxY] = new AxisImpDescription
-            {
-                AxisDesc = new AxisDescription
+                [(int)TouchAxes.MaxY] = new AxisImpDescription
                 {
-                    Name = "MaxY",
-                    Id = (int)TouchAxes.MaxY,
-                    Direction = AxisDirection.Y,
-                    Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Unbound,
-                    MinValueOrAxis = float.NaN,
-                    MaxValueOrAxis = float.NaN
-                },
-                PollAxis = true
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "MaxY",
+                        Id = (int)TouchAxes.MaxY,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Unbound,
+                        MinValueOrAxis = float.NaN,
+                        MaxValueOrAxis = float.NaN
+                    },
+                    PollAxis = true
+                }
             };
 
             for (var i = 0; i < _nTouchPointsSupported; i++)
@@ -520,9 +522,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     internal class KeyMouseTouchNullInputDriverImp : IInputDriverImp
     {
-        KeyNullDevImp _keyNullDevImp = new KeyNullDevImp();
-        MouseNullDevImp _mouseNullDevImp = new MouseNullDevImp();
-        TouchNullDevImp _touchNullDevImp = new TouchNullDevImp();
+        readonly KeyNullDevImp _keyNullDevImp = new();
+        readonly MouseNullDevImp _mouseNullDevImp = new();
+        readonly TouchNullDevImp _touchNullDevImp = new();
 
         /// <summary>
         /// List the devices/device types supported by this driver.

@@ -15,11 +15,11 @@ namespace Fusee.Base.Core
         /// </summary>
         public IFontImp _fontImp;
 
-        private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
+        private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new();
 
-        private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
+        private readonly Dictionary<uint, Curve> _glyphCurveChache = new();
 
-        private readonly Dictionary<uint, float> _glyphAdvanceCache = new Dictionary<uint, float>();
+        private readonly Dictionary<uint, float> _glyphAdvanceCache = new();
 
 
         /// <summary>
@@ -57,8 +57,7 @@ namespace Fusee.Base.Core
         /// <returns>An information record about the character.</returns>
         public GlyphInfo GetGlyphInfo(uint c)
         {
-            GlyphInfo ret;
-            if (_glyphInfoCache.TryGetValue(c, out ret))
+            if (_glyphInfoCache.TryGetValue(c, out GlyphInfo ret))
                 return ret;
 
             // its not in the cache...
@@ -75,8 +74,7 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public Curve GetGlyphCurve(uint c)
         {
-            Curve curve;
-            if (_glyphCurveChache.TryGetValue(c, out curve))
+            if (_glyphCurveChache.TryGetValue(c, out Curve curve))
                 return curve;
 
             // its not in the cache...
@@ -93,8 +91,7 @@ namespace Fusee.Base.Core
         /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
-            float ret;
-            if (_glyphAdvanceCache.TryGetValue(c, out ret))
+            if (_glyphAdvanceCache.TryGetValue(c, out float ret))
                 return ret;
 
             ret = _fontImp.GetUnscaledAdvance(c);

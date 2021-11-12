@@ -49,35 +49,35 @@ namespace Fusee.Math.Core
         /// Top row of the matrix
         /// </summary>
         [ProtoMember(1)]
-        public double4 Row0;
+        public double4 Row1;
 
         /// <summary>
         /// 2nd row of the matrix
         /// </summary>
         [ProtoMember(2)]
-        public double4 Row1;
+        public double4 Row2;
 
         /// <summary>
         /// 3rd row of the matrix
         /// </summary>
         [ProtoMember(3)]
-        public double4 Row2;
+        public double4 Row3;
 
         /// <summary>
         /// Bottom row of the matrix
         /// </summary>
         [ProtoMember(4)]
-        public double4 Row3;
+        public double4 Row4;
 
         /// <summary>
         /// The identity matrix
         /// </summary>
-        public static double4x4 Identity = new double4x4(double4.UnitX, double4.UnitY, double4.UnitZ, double4.UnitW);
+        public static readonly double4x4 Identity = new(double4.UnitX, double4.UnitY, double4.UnitZ, double4.UnitW);
 
         /// <summary>
         /// The zero matrix
         /// </summary>
-        public static double4x4 Zero = new double4x4(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
+        public static readonly double4x4 Zero = new(double4.Zero, double4.Zero, double4.Zero, double4.Zero);
 
         #endregion Fields
 
@@ -86,47 +86,47 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        /// <param name="row0">Top row of the matrix</param>
-        /// <param name="row1">Second row of the matrix</param>
-        /// <param name="row2">Third row of the matrix</param>
-        /// <param name="row3">Bottom row of the matrix</param>
-        public double4x4(double4 row0, double4 row1, double4 row2, double4 row3)
+        /// <param name="row1">Top row of the matrix</param>
+        /// <param name="row2">Second row of the matrix</param>
+        /// <param name="row3">Third row of the matrix</param>
+        /// <param name="row4">Bottom row of the matrix</param>
+        public double4x4(double4 row1, double4 row2, double4 row3, double4 row4)
         {
-            Row0 = row0;
             Row1 = row1;
             Row2 = row2;
             Row3 = row3;
+            Row4 = row4;
         }
 
         /// <summary>
         /// Constructs a new instance.
         /// </summary>
-        /// <param name="m00">First item of the first row of the matrix.</param>
-        /// <param name="m01">Second item of the first row of the matrix.</param>
-        /// <param name="m02">Third item of the first row of the matrix.</param>
-        /// <param name="m03">Fourth item of the first row of the matrix.</param>
-        /// <param name="m10">First item of the second row of the matrix.</param>
-        /// <param name="m11">Second item of the second row of the matrix.</param>
-        /// <param name="m12">Third item of the second row of the matrix.</param>
-        /// <param name="m13">Fourth item of the second row of the matrix.</param>
-        /// <param name="m20">First item of the third row of the matrix.</param>
-        /// <param name="m21">Second item of the third row of the matrix.</param>
-        /// <param name="m22">Third item of the third row of the matrix.</param>
-        /// <param name="m23">First item of the third row of the matrix.</param>
-        /// <param name="m30">Fourth item of the fourth row of the matrix.</param>
-        /// <param name="m31">Second item of the fourth row of the matrix.</param>
-        /// <param name="m32">Third item of the fourth row of the matrix.</param>
-        /// <param name="m33">Fourth item of the fourth row of the matrix.</param>
+        /// <param name="m11">First item of the first row of the matrix.</param>
+        /// <param name="m12">Second item of the first row of the matrix.</param>
+        /// <param name="m13">Third item of the first row of the matrix.</param>
+        /// <param name="m14">Fourth item of the first row of the matrix.</param>
+        /// <param name="m21">First item of the second row of the matrix.</param>
+        /// <param name="m22">Second item of the second row of the matrix.</param>
+        /// <param name="m23">Third item of the second row of the matrix.</param>
+        /// <param name="m24">Fourth item of the second row of the matrix.</param>
+        /// <param name="m31">First item of the third row of the matrix.</param>
+        /// <param name="m32">Second item of the third row of the matrix.</param>
+        /// <param name="m33">Third item of the third row of the matrix.</param>
+        /// <param name="m34">First item of the third row of the matrix.</param>
+        /// <param name="m41">Fourth item of the fourth row of the matrix.</param>
+        /// <param name="m42">Second item of the fourth row of the matrix.</param>
+        /// <param name="m43">Third item of the fourth row of the matrix.</param>
+        /// <param name="m44">Fourth item of the fourth row of the matrix.</param>
         public double4x4(
-            double m00, double m01, double m02, double m03,
-            double m10, double m11, double m12, double m13,
-            double m20, double m21, double m22, double m23,
-            double m30, double m31, double m32, double m33)
+            double m11, double m12, double m13, double m14,
+            double m21, double m22, double m23, double m24,
+            double m31, double m32, double m33, double m34,
+            double m41, double m42, double m43, double m44)
         {
-            Row0 = new double4(m00, m01, m02, m03);
-            Row1 = new double4(m10, m11, m12, m13);
-            Row2 = new double4(m20, m21, m22, m23);
-            Row3 = new double4(m30, m31, m32, m33);
+            Row1 = new double4(m11, m12, m13, m14);
+            Row2 = new double4(m21, m22, m23, m24);
+            Row3 = new double4(m31, m32, m33, m34);
+            Row4 = new double4(m41, m42, m43, m44);
         }
 
         #endregion Constructors
@@ -138,58 +138,58 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The determinant of this matrix
         /// </summary>
-        public double Determinant => Row0.x * Row1.y * Row2.z * Row3.w - Row0.x * Row1.y * Row2.w * Row3.z + Row0.x * Row1.z * Row2.w * Row3.y -
-                    Row0.x * Row1.z * Row2.y * Row3.w
-                    + Row0.x * Row1.w * Row2.y * Row3.z - Row0.x * Row1.w * Row2.z * Row3.y - Row0.y * Row1.z * Row2.w * Row3.x +
-                    Row0.y * Row1.z * Row2.x * Row3.w
-                    - Row0.y * Row1.w * Row2.x * Row3.z + Row0.y * Row1.w * Row2.z * Row3.x - Row0.y * Row1.x * Row2.z * Row3.w +
-                    Row0.y * Row1.x * Row2.w * Row3.z
-                    + Row0.z * Row1.w * Row2.x * Row3.y - Row0.z * Row1.w * Row2.y * Row3.x + Row0.z * Row1.x * Row2.y * Row3.w -
-                    Row0.z * Row1.x * Row2.w * Row3.y
-                    + Row0.z * Row1.y * Row2.w * Row3.x - Row0.z * Row1.y * Row2.x * Row3.w - Row0.w * Row1.x * Row2.y * Row3.z +
-                    Row0.w * Row1.x * Row2.z * Row3.y
-                    - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
-                    Row0.w * Row1.z * Row2.y * Row3.x;
+        public double Determinant => Row1.x * Row2.y * Row3.z * Row4.w - Row1.x * Row2.y * Row3.w * Row4.z + Row1.x * Row2.z * Row3.w * Row4.y -
+                    Row1.x * Row2.z * Row3.y * Row4.w
+                    + Row1.x * Row2.w * Row3.y * Row4.z - Row1.x * Row2.w * Row3.z * Row4.y - Row1.y * Row2.z * Row3.w * Row4.x +
+                    Row1.y * Row2.z * Row3.x * Row4.w
+                    - Row1.y * Row2.w * Row3.x * Row4.z + Row1.y * Row2.w * Row3.z * Row4.x - Row1.y * Row2.x * Row3.z * Row4.w +
+                    Row1.y * Row2.x * Row3.w * Row4.z
+                    + Row1.z * Row2.w * Row3.x * Row4.y - Row1.z * Row2.w * Row3.y * Row4.x + Row1.z * Row2.x * Row3.y * Row4.w -
+                    Row1.z * Row2.x * Row3.w * Row4.y
+                    + Row1.z * Row2.y * Row3.w * Row4.x - Row1.z * Row2.y * Row3.x * Row4.w - Row1.w * Row2.x * Row3.y * Row4.z +
+                    Row1.w * Row2.x * Row3.z * Row4.y
+                    - Row1.w * Row2.y * Row3.z * Row4.x + Row1.w * Row2.y * Row3.x * Row4.z - Row1.w * Row2.z * Row3.x * Row4.y +
+                    Row1.w * Row2.z * Row3.y * Row4.x;
 
         /// <summary>
         /// Returns the trace of this matrix
         /// </summary>
-        public double Trace => Row0.x + Row1.y + Row2.z + Row3.w;
+        public double Trace => Row1.x + Row2.y + Row3.z + Row4.w;
 
         /// <summary>
         /// The first column of this matrix
         /// </summary>
-        public double4 Column0
+        public double4 Column1
         {
-            get => new double4(Row0.x, Row1.x, Row2.x, Row3.x);
-            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
+            get => new(Row1.x, Row2.x, Row3.x, Row4.x);
+            set { Row1.x = value.x; Row2.x = value.y; Row3.x = value.z; Row4.x = value.w; }
         }
 
         /// <summary>
         /// The second column of this matrix
         /// </summary>
-        public double4 Column1
+        public double4 Column2
         {
-            get => new double4(Row0.y, Row1.y, Row2.y, Row3.y);
-            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
+            get => new(Row1.y, Row2.y, Row3.y, Row4.y);
+            set { Row1.y = value.x; Row2.y = value.y; Row3.y = value.z; Row4.y = value.w; }
         }
 
         /// <summary>
         /// The third column of this matrix
         /// </summary>
-        public double4 Column2
+        public double4 Column3
         {
-            get => new double4(Row0.z, Row1.z, Row2.z, Row3.z);
-            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
+            get => new(Row1.z, Row2.z, Row3.z, Row4.z);
+            set { Row1.z = value.x; Row2.z = value.y; Row3.z = value.z; Row4.z = value.w; }
         }
 
         /// <summary>
         /// The fourth column of this matrix
         /// </summary>
-        public double4 Column3
+        public double4 Column4
         {
-            get => new double4(Row0.w, Row1.w, Row2.w, Row3.w);
-            set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
+            get => new(Row1.w, Row2.w, Row3.w, Row4.w);
+            set { Row1.w = value.x; Row2.w = value.y; Row3.w = value.z; Row4.w = value.w; }
         }
 
         /// <summary>
@@ -197,8 +197,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M11
         {
-            get => Row0.x;
-            set => Row0.x = value;
+            get => Row1.x;
+            set => Row1.x = value;
         }
 
         /// <summary>
@@ -206,8 +206,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M12
         {
-            get => Row0.y;
-            set => Row0.y = value;
+            get => Row1.y;
+            set => Row1.y = value;
         }
 
         /// <summary>
@@ -215,8 +215,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M13
         {
-            get => Row0.z;
-            set => Row0.z = value;
+            get => Row1.z;
+            set => Row1.z = value;
         }
 
         /// <summary>
@@ -224,8 +224,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M14
         {
-            get => Row0.w;
-            set => Row0.w = value;
+            get => Row1.w;
+            set => Row1.w = value;
         }
 
         /// <summary>
@@ -233,8 +233,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M21
         {
-            get => Row1.x;
-            set => Row1.x = value;
+            get => Row2.x;
+            set => Row2.x = value;
         }
 
         /// <summary>
@@ -242,8 +242,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M22
         {
-            get => Row1.y;
-            set => Row1.y = value;
+            get => Row2.y;
+            set => Row2.y = value;
         }
 
         /// <summary>
@@ -251,8 +251,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M23
         {
-            get => Row1.z;
-            set => Row1.z = value;
+            get => Row2.z;
+            set => Row2.z = value;
         }
 
         /// <summary>
@@ -260,8 +260,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M24
         {
-            get => Row1.w;
-            set => Row1.w = value;
+            get => Row2.w;
+            set => Row2.w = value;
         }
 
         /// <summary>
@@ -269,8 +269,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M31
         {
-            get => Row2.x;
-            set => Row2.x = value;
+            get => Row3.x;
+            set => Row3.x = value;
         }
 
         /// <summary>
@@ -278,8 +278,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M32
         {
-            get => Row2.y;
-            set => Row2.y = value;
+            get => Row3.y;
+            set => Row3.y = value;
         }
 
         /// <summary>
@@ -287,8 +287,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M33
         {
-            get => Row2.z;
-            set => Row2.z = value;
+            get => Row3.z;
+            set => Row3.z = value;
         }
 
         /// <summary>
@@ -296,8 +296,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M34
         {
-            get => Row2.w;
-            set => Row2.w = value;
+            get => Row3.w;
+            set => Row3.w = value;
         }
 
         /// <summary>
@@ -305,8 +305,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M41
         {
-            get => Row3.x;
-            set => Row3.x = value;
+            get => Row4.x;
+            set => Row4.x = value;
         }
 
         /// <summary>
@@ -314,8 +314,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M42
         {
-            get => Row3.y;
-            set => Row3.y = value;
+            get => Row4.y;
+            set => Row4.y = value;
         }
 
         /// <summary>
@@ -323,8 +323,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M43
         {
-            get => Row3.z;
-            set => Row3.z = value;
+            get => Row4.z;
+            set => Row4.z = value;
         }
 
         /// <summary>
@@ -332,8 +332,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public double M44
         {
-            get => Row3.w;
-            set => Row3.w = value;
+            get => Row4.w;
+            set => Row4.w = value;
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace Fusee.Math.Core
         /// <remarks>
         /// The offset part of the matrix consists of the M14, M24 and M34 components (in row major order notation).
         /// </remarks>
-        public double3 Offset => new double3(Row0.w, Row1.w, Row2.w);
+        public double3 Offset => new(Row1.w, Row2.w, Row3.w);
 
         #endregion Properties
 
@@ -360,42 +360,33 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (i)
+                return i switch
                 {
-                    case 0:
-                        return Row0[j];
-
-                    case 1:
-                        return Row1[j];
-
-                    case 2:
-                        return Row2[j];
-
-                    case 3:
-                        return Row3[j];
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
-                }
+                    0 => Row1[j],
+                    1 => Row2[j],
+                    2 => Row3[j],
+                    3 => Row4[j],
+                    _ => throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type"),
+                };
             }
             set
             {
                 switch (i)
                 {
                     case 0:
-                        Row0[j] = value;
-                        break;
-
-                    case 1:
                         Row1[j] = value;
                         break;
 
-                    case 2:
+                    case 1:
                         Row2[j] = value;
                         break;
 
-                    case 3:
+                    case 2:
                         Row3[j] = value;
+                        break;
+
+                    case 3:
+                        Row4[j] = value;
                         break;
 
                     default:
@@ -541,10 +532,10 @@ namespace Fusee.Math.Core
             var cos = (double)System.Math.Cos(angle);
             var sin = (double)System.Math.Sin(angle);
 
-            result.Row0 = double4.UnitX;
-            result.Row1 = new double4(0.0f, cos, -sin, 0.0f);
-            result.Row2 = new double4(0.0f, sin, cos, 0.0f);
-            result.Row3 = double4.UnitW;
+            result.Row1 = double4.UnitX;
+            result.Row2 = new double4(0.0f, cos, -sin, 0.0f);
+            result.Row3 = new double4(0.0f, sin, cos, 0.0f);
+            result.Row4 = double4.UnitW;
 
             return result;
         }
@@ -561,10 +552,10 @@ namespace Fusee.Math.Core
             var cos = (double)System.Math.Cos(angle);
             var sin = (double)System.Math.Sin(angle);
 
-            result.Row0 = new double4(cos, 0.0f, sin, 0.0f);
-            result.Row1 = double4.UnitY;
-            result.Row2 = new double4(-sin, 0.0f, cos, 0.0f);
-            result.Row3 = double4.UnitW;
+            result.Row1 = new double4(cos, 0.0f, sin, 0.0f);
+            result.Row2 = double4.UnitY;
+            result.Row3 = new double4(-sin, 0.0f, cos, 0.0f);
+            result.Row4 = double4.UnitW;
 
             return result;
         }
@@ -581,10 +572,10 @@ namespace Fusee.Math.Core
             var cos = (double)System.Math.Cos(angle);
             var sin = (double)System.Math.Sin(angle);
 
-            result.Row0 = new double4(cos, -sin, 0.0f, 0.0f);
-            result.Row1 = new double4(sin, cos, 0.0f, 0.0f);
-            result.Row2 = double4.UnitZ;
-            result.Row3 = double4.UnitW;
+            result.Row1 = new double4(cos, -sin, 0.0f, 0.0f);
+            result.Row2 = new double4(sin, cos, 0.0f, 0.0f);
+            result.Row3 = double4.UnitZ;
+            result.Row4 = double4.UnitW;
 
             return result;
         }
@@ -682,7 +673,7 @@ namespace Fusee.Math.Core
         public static double3 RotMatToEuler(double4x4 rotMat)
         {
             //Matrix is beeing handled as a multidimentional array to ensure that the rotation order can be changed easily in the future.
-            var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
+            var m = new[] { rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray(), rotMat.Row4.ToArray() };
 
             var eul1 = new double[3];
             var eul2 = new double[3];
@@ -731,7 +722,7 @@ namespace Fusee.Math.Core
         public static double4x4 CreateOrthographicOffCenterRH(double left, double right, double bottom, double top, double zNear,
                                                          double zFar)
         {
-            double4x4 result = new double4x4();
+            double4x4 result = new();
 
             double invRL = 1 / (right - left);
             double invTB = 1 / (top - bottom);
@@ -763,7 +754,7 @@ namespace Fusee.Math.Core
         public static double4x4 CreateOrthographicOffCenter(double left, double right, double bottom, double top, double zNear,
                                                            double zFar)
         {
-            double4x4 result = new double4x4();
+            double4x4 result = new();
 
             double invRL = 1 / (right - left);
             double invTB = 1 / (top - bottom);
@@ -808,15 +799,15 @@ namespace Fusee.Math.Core
             double4x4 result;
 
             if (fovy <= 0 || fovy > System.Math.PI)
-                throw new ArgumentOutOfRangeException("fovy");
+                throw new ArgumentOutOfRangeException(nameof(fovy));
             if (aspect <= 0)
-                throw new ArgumentOutOfRangeException("aspect");
+                throw new ArgumentOutOfRangeException(nameof(aspect));
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             double yMax = zNear * (double)System.Math.Tan(0.5f * fovy);
             double yMin = -yMax;
@@ -862,11 +853,11 @@ namespace Fusee.Math.Core
             double4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             double x = (2.0f * zNear) / (right - left);
             double y = (2.0f * zNear) / (top - bottom);
@@ -908,11 +899,11 @@ namespace Fusee.Math.Core
             double4x4 result;
 
             if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
             if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
+                throw new ArgumentOutOfRangeException(nameof(zFar));
             if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
+                throw new ArgumentOutOfRangeException(nameof(zNear));
 
             double x = (2.0f * zNear) / (right - left);
             double y = (2.0f * zNear) / (top - bottom);
@@ -964,10 +955,10 @@ namespace Fusee.Math.Core
         public static double4x4 Scale(double x, double y, double z)
         {
             double4x4 result;
-            result.Row0 = double4.UnitX * x;
-            result.Row1 = double4.UnitY * y;
-            result.Row2 = double4.UnitZ * z;
-            result.Row3 = double4.UnitW;
+            result.Row1 = double4.UnitX * x;
+            result.Row2 = double4.UnitY * y;
+            result.Row3 = double4.UnitZ * z;
+            result.Row4 = double4.UnitW;
             return result;
         }
 
@@ -1262,27 +1253,27 @@ namespace Fusee.Math.Core
         {
             //1. Save translation and scale
             var translVec = mat.Translation();
-            var invScaleX = 1 / mat.Column0.xyz.Length;
-            var invScaleY = 1 / mat.Column1.xyz.Length;
-            var invScaleZ = 1 / mat.Column2.xyz.Length;
+            var invScaleX = 1 / mat.Column1.xyz.Length;
+            var invScaleY = 1 / mat.Column2.xyz.Length;
+            var invScaleZ = 1 / mat.Column3.xyz.Length;
 
             //2. Get rotation only 
 
             //2.1 Eliminate translation
-            mat.Column3 = double4.UnitW;
+            mat.Column4 = double4.UnitW;
 
             //2.2 Eliminate scale
-            mat.Column0 /= mat.Column0.Length;
             mat.Column1 /= mat.Column1.Length;
             mat.Column2 /= mat.Column2.Length;
+            mat.Column3 /= mat.Column3.Length;
 
             //3. Invert rotation part
             mat = mat.Transpose();
 
             //4. Invert scale
-            mat.Column0 *= invScaleX;
-            mat.Column1 *= invScaleY;
-            mat.Column2 *= invScaleZ;
+            mat.Column1 *= invScaleX;
+            mat.Column2 *= invScaleY;
+            mat.Column3 *= invScaleZ;
 
             //5. Invert translation
             var invTranslation = mat * (-1 * translVec);
@@ -1305,7 +1296,7 @@ namespace Fusee.Math.Core
         /// <returns>The transpose of the given matrix</returns>
         public static double4x4 Transpose(double4x4 mat)
         {
-            return new double4x4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
+            return new double4x4(mat.Column1, mat.Column2, mat.Column3, mat.Column4);
         }
 
         #endregion Transpose
@@ -1392,9 +1383,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 TransformPerspective(double4x4 mat, double3 vec)
         {
-            double3 result = new double3();
+            double3 result = new();
 
-            double4 v = new double4(vec, 1);
+            double4 v = new(vec, 1);
             v = mat * v;
             result.x = v.x / v.w;
             result.y = v.y / v.w;
@@ -1468,9 +1459,9 @@ namespace Fusee.Math.Core
         {
             var scale = double3.One;
 
-            scale.x = mat.Column0.Length;
-            scale.y = mat.Column1.Length;
-            scale.z = mat.Column2.Length;
+            scale.x = mat.Column1.Length;
+            scale.y = mat.Column2.Length;
+            scale.z = mat.Column3.Length;
 
             return scale;
         }
@@ -1639,7 +1630,7 @@ namespace Fusee.Math.Core
             if (provider == null)
                 provider = CultureInfo.CurrentCulture;
 
-            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
+            return string.Format(provider, "{0}\n{1}\n{2}\n{3}", Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider), Row4.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -1652,7 +1643,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
+            return Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode() ^ Row4.GetHashCode();
         }
 
         #endregion public override int GetHashCode()
@@ -1664,7 +1655,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object to compare this instance to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is double4x4))
                 return false;
@@ -1685,7 +1676,7 @@ namespace Fusee.Math.Core
         /// </summary>       
         public bool IsAffine =>
                 // Column order notation
-                (Row3 == double4.UnitW);
+                (Row4 == double4.UnitW);
 
         /// <summary>Indicates whether the current matrix is equal to another matrix.</summary>
         /// <param name="other">A matrix to compare with this matrix.</param>
@@ -1693,10 +1684,10 @@ namespace Fusee.Math.Core
         public bool Equals(double4x4 other)
         {
             return
-                Row0 == other.Row0 &&
                 Row1 == other.Row1 &&
                 Row2 == other.Row2 &&
-                Row3 == other.Row3;
+                Row3 == other.Row3 &&
+                Row4 == other.Row4;
         }
 
         #endregion IEquatable<Matrix4> Members

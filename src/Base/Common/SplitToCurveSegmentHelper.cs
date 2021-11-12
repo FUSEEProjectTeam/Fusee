@@ -154,7 +154,7 @@ namespace Fusee.Base.Common
                     segment.Vertices = segmentVerts;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException($"Cannot handle {Type}");
             }
 
             return segment;
@@ -190,7 +190,7 @@ namespace Fusee.Base.Common
                     segment.Vertices = segmentVerts;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException($"Cannot handle {Type}");
             }
             segment.Vertices = segmentVerts;
             return segment;
@@ -220,7 +220,7 @@ namespace Fusee.Base.Common
                     segments.RemoveAt(i + 1);
                     //Sets the for loop one step back, to check the "new" CurvePart with its follower.
                     if (i >= 0)
-                        i = i - 1;
+                        i--;
                 }
             }
             FixSegments(segments);

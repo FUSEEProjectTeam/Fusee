@@ -1,6 +1,8 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -40,7 +42,7 @@ namespace Fusee.Base.Imp.Desktop
 
                 image.Mutate(x => x.AutoOrient());
                 image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
-             
+
 
                 var bpp = image.PixelType.BitsPerPixel;
 
@@ -48,8 +50,8 @@ namespace Fusee.Base.Imp.Desktop
                 {
                     case 16:
                         {
-                            (image as Image<Rg32>).TryGetSinglePixelSpan(out var res);
-                            var resBytes = MemoryMarshal.AsBytes<Rg32>(res.ToArray());
+                            (image as Image<L16>).TryGetSinglePixelSpan(out var res);
+                            var resBytes = MemoryMarshal.AsBytes<L16>(res.ToArray());
                             return new ImageData(resBytes.ToArray(), image.Width, image.Height,
                                 new ImagePixelFormat(ColorFormat.Depth16));
                         }
@@ -75,9 +77,6 @@ namespace Fusee.Base.Imp.Desktop
                         }
                     case 48:
                         {
-                            var rgba = image as Image<Rgba32>;
-                            var bgra = rgba.CloneAs<Bgra32>();
-
                             (image as Image<Rgb48>).TryGetSinglePixelSpan(out var res);
                             var resBytes = MemoryMarshal.AsBytes<Rgb48>(res.ToArray());
                             return new ImageData(resBytes.ToArray(), image.Width, image.Height,
