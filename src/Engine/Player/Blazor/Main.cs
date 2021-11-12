@@ -14,22 +14,25 @@ using Path = System.IO.Path;
 using Stream = System.IO.Stream;
 using System;
 using System.IO;
+using System.Reflection;
+using System.Net.Http;
+using System.Linq;
 
 namespace Fusee.Engine.Player.Blazor
 {
     public class Main : WebAsmBase
     {
         private RenderCanvasImp _canvasImp;
-        private Core.Player _app;
+        private RenderCanvas app2Inject;
 
-        public override void Run()
+        public async override void Run()
         {
             Console.WriteLine("Starting Blazor program");
 
             // Disable colored console ouput, not supported
             Diagnostics.UseConsoleColor(false);
             Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.Verbose);
-         
+
             base.Run();
 
             // Inject Fusee.Engine.Base InjectMe dependencies
@@ -152,7 +155,7 @@ namespace Fusee.Engine.Player.Blazor
                                             new ImagePixelFormat(ColorFormat.fRGBA32));
                                     }
                                 default:
-                                    { 
+                                    {
                                         Console.WriteLine($"Error converting! {bpp}");
 
                                         throw new ArgumentException($"{bpp} Bits per pixel not supported!");
@@ -184,16 +187,35 @@ namespace Fusee.Engine.Player.Blazor
 
             #endregion
 
-            _app = new Core.Player();
+            try
+            {
+                var baseAddress = WasmResourceLoader.GetLocalAddress(Runtime);
+                using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+                var response = await httpClient.GetAsync("Fusee.App.dll");
 
-            // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            _canvasImp = new RenderCanvasImp(canvas, Runtime, gl, canvasWidth, canvasHeight);
-            _app.CanvasImplementor = _canvasImp;
-            _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
-            Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor, Runtime));
+                if (!response.IsSuccessStatusCode)
+                    response = await httpClient.GetAsync("Fusee.Engine.Player.Core.dll");
+
+                var res = await response.Content.ReadAsByteArrayAsync();
+
+                var assembly = Assembly.Load(res);
+
+                var tApp = assembly.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                app2Inject = (RenderCanvas)Activator.CreateInstance(tApp);
+
+                // Inject Fusee.Engine InjectMe dependencies (hard coded)
+                _canvasImp = new RenderCanvasImp(canvas, Runtime, gl, canvasWidth, canvasHeight);
+                app2Inject.CanvasImplementor = _canvasImp;
+                app2Inject.ContextImplementor = new RenderContextImp(app2Inject.CanvasImplementor);
+                Input.AddDriverImp(new RenderCanvasInputDriverImp(app2Inject.CanvasImplementor, Runtime));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error loading DLL: {ex}");
+            }
 
             // Start the app
-            _app.Run();
+            app2Inject.Run();
         }
 
         public override void Update(double elapsedMilliseconds)
@@ -210,7 +232,7 @@ namespace Fusee.Engine.Player.Blazor
         public override void Resize(int width, int height)
         {
             base.Resize(width, height);
-            _canvasImp.DoResize(width, height);
+            _canvasImp?.DoResize(width, height);
         }
     }
 }

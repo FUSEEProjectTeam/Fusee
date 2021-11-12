@@ -34,9 +34,9 @@ namespace Fusee.Examples.Picking.Core
         private const float ZFar = 1000;
         private readonly float _fovy = M.PiOver4;
 
-        private SceneRendererForward _guiRenderer;
-        private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
+        //private SceneRendererForward _guiRenderer;
+        //private SceneContainer _gui;
+        //private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
@@ -67,10 +67,10 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-            _gui = CreateGui();
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-            _guiRenderer = new SceneRendererForward(_gui);
+            //_gui = CreateGui();
+            //// Create the interaction handler
+            //_sih = new SceneInteractionHandler(_gui);
+            //_guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -95,7 +95,7 @@ namespace Fusee.Examples.Picking.Core
                 _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
             }
-            else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _pick = true;
                 _pickPos = Input.Touch.GetPosition(TouchPoints.Touchpoint_0);
@@ -166,14 +166,14 @@ namespace Fusee.Examples.Picking.Core
 
             RC.Projection = orthographic;
             // Constantly check for interactive objects.
-            if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-
-            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-            _guiRenderer.Render(RC);
+            //if (!Input.Mouse.Desc.Contains("Android"))
+            //    _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
+            //
+            //if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            //{
+            //    _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            //}
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -261,16 +261,16 @@ namespace Fusee.Examples.Picking.Core
 
         public void BtnLogoEnter(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
+           // var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+           // effect.SetFxParam(UniformNameDeclarations.Albedo, (float4)ColorUint.Black);
+           // effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 0.8f);
         }
 
         public void BtnLogoExit(CodeComponent sender)
         {
-            var effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
-            effect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
-            effect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
+            //svar effect = _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffect>();
+            //seffect.SetFxParam(UniformNameDeclarations.Albedo, float4.One);
+            //seffect.SetFxParam(UniformNameDeclarations.AlbedoMix, 1f);
         }
 
         public void BtnLogoDown(CodeComponent sender)

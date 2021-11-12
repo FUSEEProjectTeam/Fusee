@@ -53,7 +53,7 @@ namespace Fusee.Examples.Simple.Core
 
 
             // Load the rocket model
-            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
             //var tex = await AssetStorage.GetAsync<ImageData>("background.png");
             //var dif = await AssetStorage.GetAsync<ImageData>("background_ddn.png");
             //var tex2 = await AssetStorage.GetAsync<ImageData>("sponza_curtain_green_diff.png");
@@ -114,7 +114,7 @@ namespace Fusee.Examples.Simple.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-            Console.WriteLine(FramesPerSecondAverage);
+            //Console.WriteLine(FramesPerSecondAverage);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -157,7 +157,7 @@ namespace Fusee.Examples.Simple.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
-            var view = mtxCam * mtxRot * float4x4.CreateTranslation(0, -7, 0);
+            var view = mtxCam * mtxRot;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
@@ -219,7 +219,7 @@ namespace Fusee.Examples.Simple.Core
             var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = new TextNode(
-                "FUSEE Simple Example",
+                "FUSEE 3D on Blazor :)",
                 "ButtonText",
                 vsTex,
                 psText,

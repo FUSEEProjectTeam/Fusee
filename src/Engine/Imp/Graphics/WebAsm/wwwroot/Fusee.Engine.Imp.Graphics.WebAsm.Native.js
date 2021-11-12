@@ -27,10 +27,12 @@ window.init = (instance) => {
         DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnMouseWheel', evt.deltaY);
     });
 
-    cvs.addEventListener("touchstart", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchStart', evt); });
-    cvs.addEventListener("touchmove", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchMove', evt); });
-    cvs.addEventListener("touchcancel", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchCancel', evt); });
-    cvs.addEventListener("touchend", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchEnd', evt); });
+    // fake mouse behaviour
+    cvs.addEventListener("touchstart", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchStart', evt.touches[0].identifier); });
+    cvs.addEventListener("touchmove", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchMove', evt.touches[0].clientX, evt.touches[0].clientY); });
+    // cancel event with mouse behaviour breaks application
+    //cvs.addEventListener("touchcancel", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchCancel', evt.changedTouches[0].identifier); });
+    cvs.addEventListener("touchend", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.WebAsm', 'OnTouchEnd', evt.changedTouches[0].identifier); });
 
 
     // Loading and installation of event listener complete, hide loading overlay

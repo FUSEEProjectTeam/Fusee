@@ -58,32 +58,32 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             OnMouseWheel?.Invoke(null, delta);
         }
 
-        // Deserialzation of EventArgs seems to be broken
-
+        // Deserialzation of TouchEventArgs seems to be broken
         [JSInvokable("OnTouchStart")]
-        public static void TouchStart(TouchEventArgs args)
+        public static void TouchStart(int args)
         {
-            var dbgBreak = args;
+            OnMouseDown?.Invoke(null, args);         
         }
 
 
         [JSInvokable("OnTouchEnd")]
-        public static void TouchEnd(TouchEventArgs delta)
+        public static void TouchEnd(int args)
         {
-
+            OnMouseUp?.Invoke(null, args);
         }
 
 
         [JSInvokable("OnTouchCancel")]
-        public static void TouchCancel(TouchEventArgs delta)
+        public static void TouchCancel(int args)
         {
-
+            OnMouseUp?.Invoke(null, args);
         }
 
 
         [JSInvokable("OnTouchMove")]
-        public static void TouchMove(TouchEventArgs delta)
+        public static void TouchMove(float x, float y)
         {
+            OnMouseMove?.Invoke(null, new float2(x, y));
         }
     }
 

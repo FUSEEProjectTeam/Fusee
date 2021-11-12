@@ -2,8 +2,8 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
-
-        <!--<BlazorCacheBootResources>false</BlazorCacheBootResources>-->
+		<BlazorEnableCompression>false</BlazorEnableCompression>
+        <BlazorCacheBootResources>false</BlazorCacheBootResources>
         <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
         <Nullable>disable</Nullable>
         <Platforms>AnyCPU</Platforms>

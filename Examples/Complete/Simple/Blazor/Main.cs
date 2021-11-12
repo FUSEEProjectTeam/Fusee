@@ -24,8 +24,6 @@ namespace Fusee.Examples.Simple.Blazor
 
         public override void Run()
         {
-          
-
             Console.WriteLine("Starting Blazor program");
 
             // Disable colored console ouput, not supported
