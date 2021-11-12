@@ -92,7 +92,7 @@ namespace Fusee.Base.Imp.Desktop
             catch (Exception ex)
             {
                 Diagnostics.Error($"Error loading/converting image", ex);
-                return null;
+                return new ImageData();
             }
         }
     }
