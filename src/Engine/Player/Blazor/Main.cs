@@ -196,7 +196,12 @@ namespace Fusee.Engine.Player.Blazor
                 if (!response.IsSuccessStatusCode)
                     response = await httpClient.GetAsync("Fusee.Engine.Player.Core.dll");
 
-                var res = await response.Content.ReadAsByteArrayAsync();
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new DllNotFoundException("Error loading. Neither Fusee.App.dll nor Fusee.Engine.Player.Core.dll found! Abort.");
+                }
+
+                    var res = await response.Content.ReadAsByteArrayAsync();
 
                 var assembly = Assembly.Load(res);
 
@@ -213,6 +218,8 @@ namespace Fusee.Engine.Player.Blazor
             {
                 Console.WriteLine($"Error loading DLL: {ex}");
             }
+
+            app2Inject.InitApp();
 
             // Start the app
             app2Inject.Run();

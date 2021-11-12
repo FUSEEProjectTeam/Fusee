@@ -31,6 +31,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         private int _width;
         private int _height;
+
         /// <summary>
         /// Gets he width of the rendering window.
         /// </summary>
@@ -74,7 +75,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <summary>
         /// Delta time increment, needed for update independent rendering
         /// </summary>
-        public float DeltaTimeUpdate => throw new NotImplementedException();
+        /// TODO(MR): implement
+        public float DeltaTimeUpdate => 0;
 
         /// <summary>
         /// Occurs during initialization.
@@ -128,7 +130,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public void Present()
         {
             // Nothing to do in WebGL
-            Update?.Invoke(this, null);
+            //Update?.Invoke(this, null);
         }
 
         /// <summary>

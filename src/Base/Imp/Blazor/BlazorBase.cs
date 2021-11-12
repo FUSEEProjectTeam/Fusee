@@ -61,7 +61,7 @@ namespace Fusee.Base.Imp.Blazor
             WebGLContextAttributes ctxAttr = new WebGLContextAttributes(canvas)
             {
                 Alpha = false,
-                Antialias = true,
+                Antialias = false, // visible vertices edge glitches with antialias
                 PremultipliedAlpha = false,
                 Depth = true,
                 PowerPreference = "high-performance",

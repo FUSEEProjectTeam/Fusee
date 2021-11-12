@@ -48,7 +48,7 @@ namespace Fusee.Engine.Player.Core
             // Load the standard model
             _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
 
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, _canvasRenderMode, "FUSEE Player");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, _canvasRenderMode, "FUSEE Player");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);

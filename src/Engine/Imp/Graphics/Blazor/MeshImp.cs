@@ -166,7 +166,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// <exception cref="System.NotImplementedException"></exception>
         public void InvalidateVertexArrayObject()
         {
-            throw new System.NotImplementedException();
+            VertexArrayObject = null;
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// <summary>
         /// Returns a vertex array object set
         /// </summary>
-        public bool VertexArrayObjectSet => throw new System.NotImplementedException();
+        public bool VertexArrayObjectSet => VertexArrayObject != null;
 
         #endregion
     }

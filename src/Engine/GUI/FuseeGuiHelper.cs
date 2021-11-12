@@ -63,7 +63,7 @@ namespace Fusee.Engine.Gui
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
-            var guiLatoBlack = new FontMap(fontLato, 24);
+            var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = await TextNode.CreateAsync(
                 title,

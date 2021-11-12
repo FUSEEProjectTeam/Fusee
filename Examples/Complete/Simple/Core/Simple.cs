@@ -43,7 +43,6 @@ namespace Fusee.Examples.Simple.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
 
@@ -72,8 +71,6 @@ namespace Fusee.Examples.Simple.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
-
-            //Console.WriteLine(FramesPerSecondAverage);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
