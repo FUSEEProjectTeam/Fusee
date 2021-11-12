@@ -7,6 +7,7 @@ using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
+using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -15,23 +16,19 @@ namespace Fusee.Examples.Materials.Core
     [FuseeApplication(Name = "FUSEE Materials Example", Description = "Showcases different material options.")]
     public class Materials : RenderCanvas
     {
-        // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
-
-        private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
-
         private SceneContainer _scene;
         private SceneRendererDeferred _sceneRenderer;
 
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
+        private Transform _camTransform;
+        private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
 
+        // angle variables
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private const float RotationSpeed = 7;
         private bool _keys;
 
         private SurfaceEffect _gold_brdfFx;
@@ -53,7 +50,7 @@ namespace Fusee.Examples.Materials.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.8f, 0.9f, 1, 1).LinearColorFromSRgb();
+            _campComp.BackgroundColor = new float4(0.8f, 0.9f, 1, 1).LinearColorFromSRgb();
 
             BuildScene();
 
@@ -135,13 +132,13 @@ namespace Fusee.Examples.Materials.Core
             _glossy_Fx = MakeEffect.FromGlossy(new float4(1,0,0,1), 0.4f);
             _emissive_Fx = MakeEffect.FromDiffuseSpecular(float4.One, 0.5f, 255, 0.5f, float4.LinearColorFromSRgb(0x2A84FAFF));
 
-            _scene.Children[2].Components.Insert(1, _emissive_Fx);
-            _scene.Children[3].Components.Insert(1, _brick_brdfFx);
-            _scene.Children[4].Components.Insert(1, _rubber_brdfFx);
-            _scene.Children[5].Components.Insert(1, _gold_brdfFx);
-            _scene.Children[6].Components.Insert(1, _subsurf_brdfFx);
-            _scene.Children[7].Components.Insert(1, _paint_brdfFx);
-            _scene.Children[8].Components.Insert(1, _glossy_Fx);
+            _scene.Children[3].Components.Insert(1, _emissive_Fx);
+            _scene.Children[4].Components.Insert(1, _brick_brdfFx);
+            _scene.Children[5].Components.Insert(1, _rubber_brdfFx);
+            _scene.Children[6].Components.Insert(1, _gold_brdfFx);
+            _scene.Children[7].Components.Insert(1, _subsurf_brdfFx);
+            _scene.Children[8].Components.Insert(1, _paint_brdfFx);
+            _scene.Children[9].Components.Insert(1, _glossy_Fx);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererDeferred(_scene);
@@ -155,17 +152,6 @@ namespace Fusee.Examples.Materials.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
-
-            if (Keyboard.IsKeyDown(KeyCodes.W))
-            {
-                if (_paint_brdfFx.SurfaceInput.Albedo.g <= 1.0f)
-                    _paint_brdfFx.SurfaceInput.Albedo += new float4(0, 0.2f, 0, 0);
-            }
-            if (Keyboard.IsKeyDown(KeyCodes.S))
-            {
-                if (_paint_brdfFx.SurfaceInput.Albedo.g >= 0.0f)
-                    _paint_brdfFx.SurfaceInput.Albedo -= new float4(0, 0.2f, 0, 0);
-            }
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -190,45 +176,31 @@ namespace Fusee.Examples.Materials.Core
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
                 }
             }
 
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            _angleHorz -= _angleVelHorz;
+            _angleVert -= _angleVelVert;
+            _angleVelHorz = 0;
+            _angleVelVert = 0;
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -7, 0, 0, 0, 0, 1, 0);
-
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 5);
+            
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
+            //_campComp.ProjectionMethod = ProjectionMethod.Orthographic;
+            //if (!Mouse.Desc.Contains("Android"))
+            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            //if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            //{
+            //    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            //}
 
-            RC.Projection = orthographic;
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
-            _guiRenderer.Render(RC);
-
+            //_guiRenderer.Render(RC);
+            //_campComp.ProjectionMethod = ProjectionMethod.Perspective;
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
@@ -238,10 +210,29 @@ namespace Fusee.Examples.Materials.Core
             // Load the rocket model
             _scene = AssetStorage.Get<SceneContainer>("monkey.fus");
 
+            _camTransform = new Transform()
+            {
+                Rotation = float3.Zero,
+                Translation = new float3(0, 5f, -15),
+                Scale = float3.One
+            };
+
+            _scene.Children.Add(
+                new SceneNode()
+                {
+                    Name = "Cam",
+                    Components = new List<SceneComponent>()
+                    {
+                        _camTransform,
+                        _campComp
+                    }
+                }
+            );
+
             var lightNode = new SceneNode()
             {
                 Name = "Light",
-                Components = new System.Collections.Generic.List<SceneComponent>{
+                Components = new List<SceneComponent>{
                     new Transform()
                     {
                         Rotation = new float3(new float3(M.DegreesToRadians(45), 0, 0)),
