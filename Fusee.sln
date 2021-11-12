@@ -179,13 +179,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Serialization", "Serializat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AssetStorage", "AssetStorage", "{928043B9-4288-4E44-BBE8-DDC283EA41A9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SurfaceEffects", "SurfaceEffects", "{64A3E471-73D4-420D-9F9A-3A219660BF53}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Materials", "Materials", "{64A3E471-73D4-420D-9F9A-3A219660BF53}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SurfaceEffects.Core", "Examples\Complete\SurfaceEffects\Core\Fusee.Examples.SurfaceEffects.Core.csproj", "{16DF559F-0BB4-4FBB-A4E5-E53E65549B09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Materials.Core", "Examples\Complete\Materials\Core\Fusee.Examples.Materials.Core.csproj", "{16DF559F-0BB4-4FBB-A4E5-E53E65549B09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SurfaceEffects.Desktop", "Examples\Complete\SurfaceEffects\Desktop\Fusee.Examples.SurfaceEffects.Desktop.csproj", "{C73B445A-4B90-4372-85CC-1D2A33CB314B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Materials.Desktop", "Examples\Complete\Materials\Desktop\Fusee.Examples.Materials.Desktop.csproj", "{C73B445A-4B90-4372-85CC-1D2A33CB314B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.SurfaceEffects.Android", "Examples\Complete\SurfaceEffects\Android\Fusee.Examples.SurfaceEffects.Android.csproj", "{85302355-1F4C-415A-8310-D154AFEE5F04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Materials.Android", "Examples\Complete\Materials\Android\Fusee.Examples.Materials.Android.csproj", "{85302355-1F4C-415A-8310-D154AFEE5F04}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RenderLayer", "RenderLayer", "{34064EB3-8E57-4570-844B-A34CDF9ADFF2}"
 EndProject

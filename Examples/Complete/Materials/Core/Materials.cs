@@ -12,7 +12,7 @@ using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.Materials.Core
 {
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE Materials Example", Description = "Showcases different material options.")]
     public class Materials : RenderCanvas
     {
         // angle variables
