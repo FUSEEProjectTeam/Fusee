@@ -427,8 +427,8 @@ namespace Fusee.Engine.Core
             var _currentNodeDefaultSurfaceEffect = _currentNode.GetComponent<SurfaceEffect>();
             if (_currentNodeDefaultSurfaceEffect != null && _currentNodeDefaultSurfaceEffect.SurfaceInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
             {
-                mesh.Tangents = mesh.CalculateTangents();
-                mesh.BiTangents = mesh.CalculateBiTangents();
+                mesh.CalculateTangents();
+                mesh.CalculateBiTangents();
             }
 
             _currentNode.Components.Add(mesh);

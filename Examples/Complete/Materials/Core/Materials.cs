@@ -21,6 +21,7 @@ namespace Fusee.Examples.Materials.Core
 
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Camera _guiCampComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -44,7 +45,24 @@ namespace Fusee.Examples.Materials.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE SurfaceEffects Example");
+            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Materials Example");
+            _gui.Children.Insert(0, new SceneNode()
+            {
+                Components = new List<SceneComponent>() {
+                    new Transform
+                    {
+                        Rotation = float3.Zero,
+                        Translation = float3.Zero,
+                        Scale = float3.One
+                    },
+                    new Camera (ProjectionMethod.Orthographic, 1, 1000, M.PiOver4)
+                    {
+                        ClearColor = false,
+                        ClearDepth = false,
+                        FrustumCullingOn = false
+                    }
+                }
+            });
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -99,7 +117,7 @@ namespace Fusee.Examples.Materials.Core
                 albedoColor: float4.One,
                 albedoMix: 1.0f,
                 albedoTex: albedoTex,
-                normalMapStrength: 0.5f,
+                normalMapStrength: 1f,
                 normalTex: normalTex,
                 texTiles: new float2(3, 3),
                 emissionColor: new float4(),
@@ -186,22 +204,21 @@ namespace Fusee.Examples.Materials.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 5);
-            
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 5);            
             _sceneRenderer.Render(RC);
 
-            //Constantly check for interactive objects.
-            //_campComp.ProjectionMethod = ProjectionMethod.Orthographic;
-            //if (!Mouse.Desc.Contains("Android"))
-            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            //if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            //{
-            //    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            //}
+            _guiRenderer.Render(RC);
 
-            //_guiRenderer.Render(RC);
-            //_campComp.ProjectionMethod = ProjectionMethod.Perspective;
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+            if (!Mouse.Desc.Contains("Android"))
+            {
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            }
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+
             Present();
         }
     
@@ -236,7 +253,7 @@ namespace Fusee.Examples.Materials.Core
                     new Transform()
                     {
                         Rotation = new float3(new float3(M.DegreesToRadians(45), 0, 0)),
-                        Translation = new float3(0, 15, -15),
+                        Translation = new float3(0, 10, -15),
                         Scale = float3.One
                     },
                     new Light()
@@ -252,12 +269,13 @@ namespace Fusee.Examples.Materials.Core
                     }
                 }
             };
+
             _scene.Children.Insert(0, lightNode);
             var monkeyMesh = _scene.Children[1].GetComponent<Mesh>();
             _scene.Children.RemoveAt(1);
 
-            monkeyMesh.Tangents = monkeyMesh.CalculateTangents();
-            monkeyMesh.BiTangents = monkeyMesh.CalculateBiTangents();
+            monkeyMesh.CalculateTangents();
+            monkeyMesh.CalculateBiTangents();
 
             var checkerboardTex = new Texture(AssetStorage.Get<ImageData>("checkerboard.png"), true, TextureFilterMode.LinearMipmapLinear);
 
@@ -265,7 +283,7 @@ namespace Fusee.Examples.Materials.Core
             new SceneNode()
             {
                 Name = $"Plane",
-                Components = new System.Collections.Generic.List<SceneComponent>{
+                Components = new List<SceneComponent>{
                     new Transform()
                     {
                         Rotation = new float3(M.DegreesToRadians(90), 0, 0),
