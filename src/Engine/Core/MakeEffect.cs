@@ -111,8 +111,7 @@ namespace Fusee.Engine.Core
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
             var frag = await AssetStorage.GetAsync<string>("SimpleBlur.frag");
-            float blurKernelSize;
-            switch (ssaoRenderTex.Width)
+            var blurKernelSize = ssaoRenderTex.Width switch
             {
                 (int)TexRes.Low => 2.0f,
                 (int)TexRes.High => 8.0f,
@@ -126,17 +125,17 @@ namespace Fusee.Engine.Core
             }
 
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
-                PS = frag,
-                StateSet = new RenderStateSet
+                new FxPassDeclaration
                 {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
+                    VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
+                    PS = frag,
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                    }
 
-            },
+                },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = "InputTex", Value = ssaoRenderTex},

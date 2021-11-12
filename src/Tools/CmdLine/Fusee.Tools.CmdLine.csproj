@@ -3,7 +3,6 @@
     <PackageId>Fusee.Tools.CmdLine</PackageId>
     <AssemblyName>fusee</AssemblyName>
     <TargetFramework>net6.0</TargetFramework>
-    <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fusee</ToolCommandName>
@@ -44,18 +43,12 @@
     <PackageReference Include="CommandLineParser" Version="2.9.0-preview1" />
     <!-- Do not update Google.Protobuf.Tools without testing a clean built Blender addon -->
     <PackageReference Include="Google.Protobuf.Tools" Version="3.19.1" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+
     <PackageReference Include="Microsoft.Win32.Registry" Version="6.0.0-preview.5.21301.5" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
 
     <PackageReference Include="Google.Protobuf.Tools" Version="3.11.4" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+   
     <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
     <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
     <Description>Fusee Serialization</Description>
     <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Serialization</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
@@ -16,7 +16,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0">
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

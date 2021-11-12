@@ -68,6 +68,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
         public IWindowHandle WindowHandle => throw new NotImplementedException();
 
+        public float DeltaTimeUpdate => throw new NotImplementedException();
+
         /// <summary>
         /// Occurs during initialization.
         /// </summary>
@@ -87,6 +89,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Occurs when resizing.
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
+        public event EventHandler<RenderEventArgs> Update;
 
         /// <summary>
         /// Closes the game window.

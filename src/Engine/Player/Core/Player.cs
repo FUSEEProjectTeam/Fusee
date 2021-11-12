@@ -43,7 +43,7 @@ namespace Fusee.Engine.Player.Core
 
         private bool _isLoaded;
 
-        public void LoadAssets()
+        public async void LoadAssets()
         {
             // Load the standard model
             _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);

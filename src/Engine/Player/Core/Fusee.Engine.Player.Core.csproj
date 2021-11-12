@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>net6.0</TargetFrameworks>
-    <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <OutputPath>$(BaseOutputPath)\Player\Core\</OutputPath>
   </PropertyGroup>
@@ -18,7 +18,7 @@
 
   <ItemGroup>
     <None Remove="Assets\Model.fus" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.0">
+
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
