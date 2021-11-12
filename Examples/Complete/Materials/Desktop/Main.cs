@@ -7,7 +7,7 @@ using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
 
-namespace Fusee.Examples.SurfaceEffects.Desktop
+namespace Fusee.Examples.Materials.Desktop
 {
     public class SurfaceEffects
     {
@@ -42,7 +42,7 @@ namespace Fusee.Examples.SurfaceEffects.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.SurfaceEffects();
+            var app = new Core.Materials();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

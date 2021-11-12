@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.SurfaceEffects.Android</RootNamespace>
-    <AssemblyName>Fusee.Examples.SurfaceEffects.Android</AssemblyName>
+    <RootNamespace>Fusee.Examples.Materials.Android</RootNamespace>
+    <AssemblyName>Fusee.Examples.Materials.Android</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
@@ -32,7 +32,7 @@
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkSkip />
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
-    <BundleAssemblies>False</BundleAssemblies>
+    <BundleAssemblies>false</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
     <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
@@ -40,6 +40,10 @@
     <Debugger>Xamarin</Debugger>
     <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <OutputPath>..\..\..\..\bin\Debug\Examples\Materials\Android\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -50,6 +54,11 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <MonoDroidLinkMode>Full</MonoDroidLinkMode>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
+    <OutputPath>..\..\..\..\bin\Release\Examples\Materials\Android\</OutputPath>
   </PropertyGroup>
   <!-- External References -->
   <ItemGroup>
@@ -95,9 +104,9 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Fusee.Examples.SurfaceEffects.Core.csproj">
+    <ProjectReference Include="..\Core\Fusee.Examples.Materials.Core.csproj">
       <Project>{16df559f-0bb4-4fbb-a4e5-e53e65549b09}</Project>
-      <Name>Fusee.Examples.SurfaceEffects.Core</Name>
+      <Name>Fusee.Examples.Materials.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->

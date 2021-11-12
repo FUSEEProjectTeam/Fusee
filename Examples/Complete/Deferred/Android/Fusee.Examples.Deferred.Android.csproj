@@ -59,6 +59,7 @@
     <EnableLLVM>false</EnableLLVM>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <BundleAssemblies>false</BundleAssemblies>
+    <OutputPath>..\..\..\..\bin\Release\Examples\Deferred\Android\</OutputPath>
   </PropertyGroup>
   <!-- External References -->
   <ItemGroup>

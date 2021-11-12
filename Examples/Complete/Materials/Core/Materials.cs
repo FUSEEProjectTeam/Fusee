@@ -10,10 +10,10 @@ using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
-namespace Fusee.Examples.SurfaceEffects.Core
+namespace Fusee.Examples.Materials.Core
 {
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
-    public class SurfaceEffects : RenderCanvas
+    public class Materials : RenderCanvas
     {
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
