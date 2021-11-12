@@ -14,7 +14,7 @@ using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
 
-namespace Fusee.Examples.SimpleDeferred.Android
+namespace Fusee.Examples.Deferred.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
@@ -75,7 +75,7 @@ namespace Fusee.Examples.SimpleDeferred.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
+                var app = new Core.Deferred();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var rci = new RenderCanvasImp(ApplicationContext, null, delegate

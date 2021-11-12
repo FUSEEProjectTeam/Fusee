@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.SimpleDeferred.Android</RootNamespace>
-    <AssemblyName>Fusee.Examples.SimpleDeferred.Android</AssemblyName>
+    <RootNamespace>Fusee.Examples.Deferred.Android</RootNamespace>
+    <AssemblyName>Fusee.Examples.Deferred.Android</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
@@ -44,6 +44,7 @@
     <EnableLLVM>false</EnableLLVM>
     <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
     <RegisterForComInterop>false</RegisterForComInterop>
+    <OutputPath>..\..\..\..\bin\Debug\Examples\Deferred\Android\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -54,6 +55,10 @@
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <MonoDroidLinkMode>Full</MonoDroidLinkMode>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
+    <AndroidEnableProfiledAot>false</AndroidEnableProfiledAot>
+    <BundleAssemblies>false</BundleAssemblies>
   </PropertyGroup>
   <!-- External References -->
   <ItemGroup>
@@ -99,9 +104,9 @@
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Fusee.Examples.SimpleDeferred.Core.csproj">
-      <Project>{9741f5e5-ec1e-4f97-908c-c8dc3bfb3e93}</Project>
-      <Name>Fusee.Examples.SimpleDeferred.Core</Name>
+    <ProjectReference Include="..\Core\Fusee.Examples.Deferred.Core.csproj">
+      <Project>{26e2363d-2b35-4647-818a-bc6d0f18a34e}</Project>
+      <Name>Fusee.Examples.Deferred.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->

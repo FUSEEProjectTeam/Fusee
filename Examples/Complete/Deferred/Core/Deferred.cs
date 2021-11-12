@@ -9,10 +9,10 @@ using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
-namespace Fusee.Examples.SimpleDeferred.Core
+namespace Fusee.Examples.Deferred.Core
 {
     [FuseeApplication(Name = "FUSEE Deferred Rendering Example", Description = "")]
-    public class SimpleDeferred : RenderCanvas
+    public class Deferred : RenderCanvas
     {
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
