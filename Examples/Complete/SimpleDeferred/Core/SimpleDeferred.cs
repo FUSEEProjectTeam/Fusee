@@ -39,7 +39,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        private bool _loaded = false;
+        private readonly bool _loaded = false;
 
         private async void Load()
         {

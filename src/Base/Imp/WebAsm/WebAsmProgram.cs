@@ -53,7 +53,7 @@ namespace Fusee.Base.Imp.WebAsm
             divCanvasName = "div_canvas";
             canvasName = "canvas";
 
-            using var window = Runtime.GetGlobalObject<IJSInProcessObjectReference>("window");          
+            using var window = Runtime.GetGlobalObject<IJSInProcessObjectReference>("window");
 
             var windowWidth = window.GetObjectProperty<int>(runtime, "innerWidth");
             var windowHeight = window.GetObjectProperty<int>(runtime, "innerHeight");

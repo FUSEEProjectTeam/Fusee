@@ -9,14 +9,14 @@ using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
+using System;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Net.Http;
-using System.Linq;
 
 namespace Fusee.Engine.Player.Blazor
 {

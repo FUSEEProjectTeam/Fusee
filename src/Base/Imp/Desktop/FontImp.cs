@@ -1,7 +1,7 @@
 ﻿using Fusee.Base.Core;
 using SixLabors.Fonts;
-using System.IO;
 using System;
+using System.IO;
 using System.Linq;
 
 namespace Fusee.Base.Imp.Desktop
@@ -23,4 +23,3 @@ namespace Fusee.Base.Imp.Desktop
         }
     }
 }
-

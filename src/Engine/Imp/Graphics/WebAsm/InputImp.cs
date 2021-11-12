@@ -62,7 +62,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         [JSInvokable("OnTouchStart")]
         public static void TouchStart(int args)
         {
-            OnMouseDown?.Invoke(null, args);         
+            OnMouseDown?.Invoke(null, args);
         }
 
 
