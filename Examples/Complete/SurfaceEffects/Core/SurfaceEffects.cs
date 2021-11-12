@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -21,7 +22,7 @@ namespace Fusee.Examples.SurfaceEffects.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -52,55 +53,9 @@ namespace Fusee.Examples.SurfaceEffects.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1).LinearColorFromSRgb();
+            RC.ClearColor = new float4(0.8f, 0.9f, 1, 1).LinearColorFromSRgb();
 
-            // Load the rocket model
-            _scene = AssetStorage.Get<SceneContainer>("monkey.fus");
-
-            var lightNode = new SceneNode()
-            {
-                Components = new System.Collections.Generic.List<SceneComponent>{
-                    new Transform()
-                    {
-                        Rotation = new float3(new float3(M.DegreesToRadians(180), 0, 0)),
-                        Translation = new float3(0, 0,-7),
-                        Scale = float3.One
-                    },
-                    new Light()
-                    {
-                        Type = LightType.Spot,
-                        Color = new float4(0.6f, 0.8f, 1, 1),
-                        MaxDistance = 500,
-                        Active = true,
-                        OuterConeAngle = 45,
-                        InnerConeAngle = 30,
-                        IsCastingShadows = true,
-                        Bias = 0.0000001f
-                    }
-                }
-            };
-            _scene.Children.Insert(0, lightNode);
-
-            var monkeyMesh = _scene.Children[1].GetComponent<Mesh>();
-            monkeyMesh.Tangents = monkeyMesh.CalculateTangents();
-            monkeyMesh.BiTangents = monkeyMesh.CalculateBiTangents();
-
-            for (int i = -2; i < 2; i++)
-            {
-                _scene.Children.Add(
-                    new SceneNode()
-                    {
-                        Components = new System.Collections.Generic.List<SceneComponent>{
-                            new Transform()
-                            {
-                                Rotation = float3.Zero,
-                                Translation = i < 0 ? new float3(i * 3,0,0) : new float3(i * 3 + 3,0,0),
-                                Scale = float3.One
-                            },
-                            monkeyMesh
-                        }
-                    });
-            }
+            BuildScene();
 
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
             var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
@@ -157,7 +112,6 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 specular: 0.8f,
                 ior: 1.519f,
                 subsurface: 0
-
             );
 
             _subsurf_brdfFx = MakeEffect.FromBRDF
@@ -178,18 +132,19 @@ namespace Fusee.Examples.SurfaceEffects.Core
                 thicknessMap: thicknessTex
             );
 
-            _glossy_Fx = MakeEffect.FromGlossy(float4.One, 0.4f);
-
+            _glossy_Fx = MakeEffect.FromGlossy(new float4(1,0,0,1), 0.4f);
             _emissive_Fx = MakeEffect.FromDiffuseSpecular(float4.One, 0.5f, 255, 0.5f, float4.LinearColorFromSRgb(0x2A84FAFF));
 
-            _scene.Children[1].Components[1] = _emissive_Fx;//_brick_brdfFx;
-            _scene.Children[2].Components.Insert(1, _rubber_brdfFx);
-            _scene.Children[3].Components.Insert(1, _gold_brdfFx);
-            _scene.Children[4].Components.Insert(1, _subsurf_brdfFx);
-            _scene.Children[5].Components.Insert(1, _paint_brdfFx);
+            _scene.Children[2].Components.Insert(1, _emissive_Fx);
+            _scene.Children[3].Components.Insert(1, _brick_brdfFx);
+            _scene.Children[4].Components.Insert(1, _rubber_brdfFx);
+            _scene.Children[5].Components.Insert(1, _gold_brdfFx);
+            _scene.Children[6].Components.Insert(1, _subsurf_brdfFx);
+            _scene.Children[7].Components.Insert(1, _paint_brdfFx);
+            _scene.Children[8].Components.Insert(1, _glossy_Fx);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_scene);
+            _sceneRenderer = new SceneRendererDeferred(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
@@ -277,5 +232,101 @@ namespace Fusee.Examples.SurfaceEffects.Core
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
+    
+        private void BuildScene()
+        {
+            // Load the rocket model
+            _scene = AssetStorage.Get<SceneContainer>("monkey.fus");
+
+            var lightNode = new SceneNode()
+            {
+                Name = "Light",
+                Components = new System.Collections.Generic.List<SceneComponent>{
+                    new Transform()
+                    {
+                        Rotation = new float3(new float3(M.DegreesToRadians(45), 0, 0)),
+                        Translation = new float3(0, 15, -15),
+                        Scale = float3.One
+                    },
+                    new Light()
+                    {
+                        Type = LightType.Spot,
+                        Color = new float4(0.6f, 0.8f, 1, 1),
+                        MaxDistance = 50,
+                        Active = true,
+                        OuterConeAngle = 30,
+                        InnerConeAngle = 15,
+                        IsCastingShadows = true,
+                        Bias = 0.00000001f
+                    }
+                }
+            };
+            _scene.Children.Insert(0, lightNode);
+            var monkeyMesh = _scene.Children[1].GetComponent<Mesh>();
+            _scene.Children.RemoveAt(1);
+
+            monkeyMesh.Tangents = monkeyMesh.CalculateTangents();
+            monkeyMesh.BiTangents = monkeyMesh.CalculateBiTangents();
+
+            var checkerboardTex = new Texture(AssetStorage.Get<ImageData>("checkerboard.png"), true, TextureFilterMode.LinearMipmapLinear);
+
+            _scene.Children.Add(
+            new SceneNode()
+            {
+                Name = $"Plane",
+                Components = new System.Collections.Generic.List<SceneComponent>{
+                    new Transform()
+                    {
+                        Rotation = new float3(M.DegreesToRadians(90), 0, 0),
+                        Translation = new float3(0, -1, 0),
+                        Scale = new float3(50, 50,0.1f)
+                    },
+                    MakeEffect.FromDiffuse(float4.One, 0, checkerboardTex, 1f, new float2(2,2)),
+                    new Plane()
+                }
+            });
+
+            int count = 0;
+            for (int z = 0; z < 2; z++)
+            {
+                for (int x = -1; x < 2; x++)
+                {
+                    count++;
+                    _scene.Children.Add(
+                    new SceneNode()
+                    {
+                        Name = $"Monkey_{count}",
+                        Components = new System.Collections.Generic.List<SceneComponent>{
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Translation = new float3(x * 4, 0 ,(-1 + z) * 4),
+                                Scale = float3.One
+                            },
+                            monkeyMesh
+                        }
+                    });
+
+                    if (x == 1 && z == 1)
+                    {
+                        _scene.Children.Add(
+                        new SceneNode()
+                        {
+                            Name = $"Monkey_{count}",
+                            Components = new System.Collections.Generic.List<SceneComponent>{
+                                new Transform()
+                                {
+                                    Rotation = float3.Zero,
+                                    Translation = new float3(0, 0 ,z * 4),
+                                    Scale = float3.One
+                                },
+                                monkeyMesh
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    
     }
 }
