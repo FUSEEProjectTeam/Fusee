@@ -12,6 +12,7 @@ using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
 
@@ -56,7 +57,7 @@ namespace Fusee.Examples.Simple.Blazor
                                 _fontImp = new FontImp((Stream)storage)
                             };
 
-                            return font;
+                            return await Task.FromResult(font);
                         }
 
                         return null;

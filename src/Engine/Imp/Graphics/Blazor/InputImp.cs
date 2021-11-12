@@ -10,75 +10,140 @@ using System.Linq;
 
 namespace Fusee.Engine.Imp.Graphics.Blazor
 {
+    /// <summary>
+    /// Register to these event handler to be called when
+    /// values are being passed from Javascript
+    /// </summary>
     public static class EventHandler
     {
-
+        /// <summary>
+        /// Called upon keyboard key down
+        /// </summary>
         public static EventHandler<int> OnKeyDown;
+
+        /// <summary>
+        /// Called upon keyboard key up
+        /// </summary>
         public static EventHandler<int> OnKeyUp;
 
+        /// <summary>
+        /// Called upon mouse  down
+        /// </summary>
         public static EventHandler<int> OnMouseDown;
+
+        /// <summary>
+        /// Called upon mouse up
+        /// </summary>
         public static EventHandler<int> OnMouseUp;
+
+        /// <summary>
+        /// Called upon mouse move
+        /// </summary>
         public static EventHandler<float2> OnMouseMove;
+
+        /// <summary>
+        /// Called upon mouse wheel
+        /// </summary>
         public static EventHandler<float> OnMouseWheel;
 
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="btn"></param>
         [JSInvokable("OnKeyDown")]
         public static void KeyDown(int btn)
         {
             OnKeyDown?.Invoke(null, btn);
         }
 
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="btn"></param>
         [JSInvokable("OnKeyUp")]
         public static void KeyUp(int btn)
         {
             OnKeyUp?.Invoke(null, btn);
         }
 
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="btn"></param>
         [JSInvokable("OnMouseDown")]
         public static void MouseDown(int btn)
         {
             OnMouseDown?.Invoke(null, btn);
         }
 
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="btn"></param>
         [JSInvokable("OnMouseUp")]
         public static void MouseUp(int btn)
         {
             OnMouseUp?.Invoke(null, btn);
         }
 
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         [JSInvokable("OnMouseMove")]
         public static void MouseMove(float x, float y)
         {
             OnMouseMove?.Invoke(null, new float2(x, y));
         }
 
+
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="delta"></param>
         [JSInvokable("OnMouseWheel")]
         public static void Wheel(float delta)
         {
             OnMouseWheel?.Invoke(null, delta);
         }
 
-        // Deserialzation of TouchEventArgs seems to be broken
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="args"></param>
+        /// Deserialzation of TouchEventArgs seems to be broken
         [JSInvokable("OnTouchStart")]
         public static void TouchStart(int args)
         {
             OnMouseDown?.Invoke(null, args);
         }
 
-
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="args"></param>
         [JSInvokable("OnTouchEnd")]
         public static void TouchEnd(int args)
         {
             OnMouseUp?.Invoke(null, args);
         }
 
-
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="args"></param>
         [JSInvokable("OnTouchCancel")]
         public static void TouchCancel(int args)
         {
             OnMouseUp?.Invoke(null, args);
         }
 
-
+        /// <summary>
+        /// Called from Javascript
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         [JSInvokable("OnTouchMove")]
         public static void TouchMove(float x, float y)
         {
@@ -604,7 +669,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <summary>
         /// Should be called by the driver only.
         /// </summary>
-        /// <param name="">The JavaScript canvas.</param>
+        /// <param name="_">The JavaScript canvas.</param>
         /// <param name="runtime"></param>
         internal KeyboardDeviceImp(IJSObjectReference _, IJSRuntime runtime)
         {
@@ -840,10 +905,9 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// Initializes a new instance of the <see cref="MouseDeviceImp" /> class.
         /// </summary>
         /// <param name="canvas">The (JavaScript) canvas object.</param>
+        /// <param name="runtime">The Javascript runtime</param>
         public MouseDeviceImp(IJSObjectReference canvas, IJSRuntime runtime)
         {
-
-
             _currentMouseWheel = 0;
 
             _canvas = canvas;
@@ -1251,6 +1315,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// Implements a touch device for windows.
         /// </summary>
         /// <param name="canvas"></param>
+        /// <param name="runtime">The Javascript runtime</param>
         public TouchDeviceImp(IJSObjectReference canvas, IJSRuntime runtime)
         {
             _canvas = canvas;

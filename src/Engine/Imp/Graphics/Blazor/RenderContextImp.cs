@@ -909,7 +909,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             set => gl2.ClearDepth(value);
         }
 
-        public FuseePlatformId FuseePlatformId => FuseePlatformId.Desktop;
+        /// <summary>
+        /// Returns the current underlying rendering platform 
+        /// </summary>
+        public FuseePlatformId FuseePlatformId => FuseePlatformId.Blazor;
 
         /// <summary>
         /// Clears the specified flags.
@@ -2399,7 +2402,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Sets the texture filter mode
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="filterMode"></param>
         public void SetTextureFilterMode(ITextureHandle tex, TextureFilterMode filterMode)
         {
             gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
@@ -2408,6 +2415,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, glMinMagFilter.Item2);
         }
 
+        /// <summary>
+        /// Sets the texture wrapping mode
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="wrapMode"></param>
         public void SetTextureWrapMode(ITextureHandle tex, TextureWrapMode wrapMode)
         {
             gl2.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
@@ -2417,11 +2429,22 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
         }
 
+        /// <summary>
+        /// Creates an writable array texture
+        /// Not supported for WebGL2 ?
+        /// </summary>
+        /// <param name="img"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public ITextureHandle CreateTexture(IWritableArrayTexture img)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Sets the vertex array object
+        /// </summary>
+        /// <param name="mr"></param>
         public void SetVertexArrayObject(IMeshImp mr)
         {
             if (((MeshImp)mr).VertexArrayObject == null)
@@ -2432,16 +2455,36 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         #endregion
 
+        /// <summary>
+        /// Sets an <see cref="IWritableArrayTexture"/> as render target
+        /// Not supported in WebGL2 ?
+        /// </summary>
+        /// <param name="tex"></param>
+        /// <param name="layer"></param>
+        /// <param name="texHandle"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Creates a computeshader programm
+        /// Not supported in WebGL2 ?
+        /// </summary>
+        /// <param name="cs"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public IShaderHandle CreateShaderProgramCompute(string cs = null)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Genereates a GBuffer target
+        /// </summary>
+        /// <param name="res"></param>
+        /// <returns></returns>
         public IRenderTarget CreateGBufferTarget(TexRes res)
         {
             RenderTarget gBufferRenderTarget = new RenderTarget(res);
@@ -2455,46 +2498,106 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             return gBufferRenderTarget;
         }
 
+        /// <summary>
+        /// Returns the shader storage buffer list
+        /// Not supported in WebGL2 ?
+        /// </summary>
+        /// <param name="shaderProgram"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Returns a shader uniform param based on a name
+        /// Not supported in WebGL2 ?
+        /// </summary>
+        /// <param name="shaderProgram"></param>
+        /// <param name="paramName"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
         public IShaderParam GetShaderUniformParam(IShaderHandle shaderProgram, string paramName)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Sets the shader param, casts to float first
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="val"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void SetShaderParam(IShaderParam param, double val)
         {
-            throw new NotImplementedException();
+            gl2.Uniform1f(((ShaderParam)param).handle, (float)val);
         }
 
+        /// <summary>
+        /// Sets an shader param to an image
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="texId"></param>
+        /// <param name="texTarget"></param>
+        /// <param name="format"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void SetShaderParamImage(IShaderParam param, ITextureHandle texId, TextureType texTarget, ImagePixelFormat format)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not supported?
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="storageBuffer"></param>
+        /// <param name="data"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void StorageBufferSetData<T>(IStorageBuffer storageBuffer, T[] data) where T : struct
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not supported?
+        /// </summary>
+        /// <param name="storageBufferHandle"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void DeleteStorageBuffer(IBufferHandle storageBufferHandle)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not supported?
+        /// </summary>
+        /// <param name="currentProgram"></param>
+        /// <param name="buffer"></param>
+        /// <param name="ssboName"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void ConnectBufferToShaderStorage(IShaderHandle currentProgram, IStorageBuffer buffer, string ssboName)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not supported?
+        /// </summary>
+        /// <param name="kernelIndex"></param>
+        /// <param name="threadGroupsX"></param>
+        /// <param name="threadGroupsY"></param>
+        /// <param name="threadGroupsZ"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not supported?
+        /// </summary>
+        /// <exception cref="NotImplementedException"></exception>
         public void MemoryBarrier()
         {
             throw new NotImplementedException();

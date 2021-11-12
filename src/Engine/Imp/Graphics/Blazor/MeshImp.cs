@@ -160,6 +160,10 @@ namespace Fusee.Engine.Imp.Blazor
             NElements = 0;
         }
 
+        /// <summary>
+        /// Remove vertex array object from GPU
+        /// </summary>
+        /// <exception cref="System.NotImplementedException"></exception>
         public void InvalidateVertexArrayObject()
         {
             throw new System.NotImplementedException();
@@ -178,6 +182,9 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public OpenGLPrimitiveType MeshType { get; set; }
 
+        /// <summary>
+        /// Returns a vertex array object set
+        /// </summary>
         public bool VertexArrayObjectSet => throw new System.NotImplementedException();
 
         #endregion

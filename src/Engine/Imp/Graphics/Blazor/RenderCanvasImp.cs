@@ -66,8 +66,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <exception cref="NotImplementedException"></exception>
         public bool Fullscreen { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        /// <summary>
+        /// Window handle to native underlying window, not suitable for Blazor
+        /// </summary>
         public IWindowHandle WindowHandle => throw new NotImplementedException();
 
+        /// <summary>
+        /// Delta time increment, needed for update independent rendering
+        /// </summary>
         public float DeltaTimeUpdate => throw new NotImplementedException();
 
         /// <summary>
@@ -89,6 +95,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// Occurs when resizing.
         /// </summary>
         public event EventHandler<ResizeEventArgs> Resize;
+
+        /// <summary>
+        /// Occurs when updating.
+        /// </summary>
         public event EventHandler<RenderEventArgs> Update;
 
         /// <summary>
