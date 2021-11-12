@@ -84,7 +84,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <summary>
         /// Occurs when unloading.
         /// </summary>
-        
+
         public event EventHandler<InitEventArgs> UnLoad;
 
         /// <summary>
