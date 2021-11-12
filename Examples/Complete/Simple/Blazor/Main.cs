@@ -196,6 +196,8 @@ namespace Fusee.Examples.Simple.Blazor
             _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
             Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor, Runtime));
 
+            _app.InitApp();
+
             // Start the app
             _app.Run();
         }

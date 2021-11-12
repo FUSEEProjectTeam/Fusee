@@ -10,6 +10,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Gui
 {
@@ -27,6 +28,18 @@ namespace Fusee.Engine.Gui
         /// <returns></returns>
         public static SceneContainer CreateDefaultGui(RenderCanvas rc, CanvasRenderMode canvasRenderMode, string title)
         {
+            return CreateDefaultGuiAsync(rc, canvasRenderMode, title).Result;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="SceneContainer"/> which conatins the default Fusee-UI (Logo and app title)
+        /// </summary>
+        /// <param name="rc">The <see cref="RenderCanvas"/>.</param>
+        /// <param name="canvasRenderMode">The <see cref="CanvasRenderMode"/> which is used to render the GUI.</param>
+        /// <param name="title">The app title.</param>
+        /// <returns></returns>
+        public static async Task<SceneContainer> CreateDefaultGuiAsync(RenderCanvas rc, CanvasRenderMode canvasRenderMode, string title)
+        {
             var canvasWidth = rc.Width / 100f;
             var canvasHeight = rc.Height / 100f;
 
@@ -35,8 +48,8 @@ namespace Fusee.Engine.Gui
                 Name = "Canvas_Button"
             };
 
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
+            var fuseeLogo = await TextureNode.CreateAsync(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -49,10 +62,10 @@ namespace Fusee.Engine.Gui
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = await TextNode.CreateAsync(
                 title,
                 "AppTitle",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),

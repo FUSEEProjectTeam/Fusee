@@ -22,8 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
+		<ProjectReference Include="..\..\..\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+		<ProjectReference Include="..\..\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
 		<ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj" />
     </ItemGroup>
 
