@@ -14,10 +14,6 @@
         <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
     </PropertyGroup>
 
-    <ItemGroup>
-        <EmbeddedResource Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
-    </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>

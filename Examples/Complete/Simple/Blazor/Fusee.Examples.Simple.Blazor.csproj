@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\..\..\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
         <ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj" />
     </ItemGroup>
 

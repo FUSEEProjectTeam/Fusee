@@ -7,7 +7,7 @@
         <Nullable>disable</Nullable>
         <Platforms>AnyCPU</Platforms>
         <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
-        <DefineConstants>$(DefineConstants);PLATFORM_WASM</DefineConstants>
+        <DefineConstants>$(DefineConstants);PLATFORM_BLAZOR</DefineConstants>
         <RunAOTCompilation>true</RunAOTCompilation>
     </PropertyGroup>
 
