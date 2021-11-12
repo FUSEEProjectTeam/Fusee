@@ -14,6 +14,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
 
@@ -54,7 +55,7 @@ namespace Fusee.Engine.Player.Blazor
                                 _fontImp = new FontImp((Stream)storage)
                             };
 
-                            return font;
+                            return await Task.FromResult(font);
                         }
 
                         return null;

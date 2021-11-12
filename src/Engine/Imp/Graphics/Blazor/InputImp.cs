@@ -183,12 +183,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         // The WebGL canvas. Will be set in the c# constructor
         internal IJSObjectReference _canvas;
-        internal IJSObjectReference _window;
         internal IJSRuntime runtime;
         private readonly KeyboardDeviceImp _keyboard;
         private readonly MouseDeviceImp _mouse;
-        private readonly TouchDeviceImp _touch;
-        private readonly GamePadDeviceImp _gamePad;
+        //private readonly TouchDeviceImp _touch;
+        //private readonly GamePadDeviceImp _gamePad;
 
         /// <summary>
         /// Devices supported by this driver: One mouse and one keyboard.

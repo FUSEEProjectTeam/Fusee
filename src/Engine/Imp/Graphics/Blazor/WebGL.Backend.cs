@@ -287,7 +287,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
         }
 
-        public new bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
+        public bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
 
         public void TexImage2D(
          uint target,

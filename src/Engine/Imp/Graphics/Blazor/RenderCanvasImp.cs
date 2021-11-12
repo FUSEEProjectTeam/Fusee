@@ -84,6 +84,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <summary>
         /// Occurs when unloading.
         /// </summary>
+        
         public event EventHandler<InitEventArgs> UnLoad;
 
         /// <summary>
@@ -107,7 +108,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <remarks>Not needed in WebGL.</remarks>
         public void CloseGameWindow()
         {
-            // throw new NotImplementedException();
+            UnLoad?.Invoke(this, null);
         }
 
         /// <summary>
@@ -127,6 +128,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public void Present()
         {
             // Nothing to do in WebGL
+            Update?.Invoke(this, null);
         }
 
         /// <summary>
