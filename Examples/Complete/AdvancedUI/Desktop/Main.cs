@@ -52,6 +52,8 @@ namespace Fusee.Examples.AdvancedUI.Desktop
                     Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
 
+            AssetStorage.RegisterProvider(fap);
+
             Core.AdvancedUI app = new();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)

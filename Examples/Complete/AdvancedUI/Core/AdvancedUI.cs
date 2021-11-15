@@ -57,8 +57,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Init is called on startup.
         public override void Init()
         {
-            _gui = CreateGui();
-
             if (_canvasRenderMode == CanvasRenderMode.Screen)
             {
                 UserInterfaceHelper.CanvasWidthInit = Width / 100f;
@@ -121,6 +119,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 _uiInput.Add(input);
             }
 
+            _gui = CreateGui();
 
 
             // Create the interaction handler
