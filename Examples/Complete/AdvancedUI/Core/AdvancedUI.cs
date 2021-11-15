@@ -121,7 +121,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 _uiInput.Add(input);
             }
 
-            
+
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
