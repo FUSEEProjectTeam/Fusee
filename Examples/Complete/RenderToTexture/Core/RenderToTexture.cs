@@ -18,30 +18,110 @@ namespace Fusee.Examples.RenderToTexture.Core
     [FuseeApplication(Name = "FUSEE Texture Rendering Example", Description = "An example on how to render a camera to a texture.")]
     public class RenderToTexture : RenderCanvas
     {
-        // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
-
-        private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
-
-        private SceneContainer _rocketScene;
+        private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
-
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
-        private bool _keys;
+        private readonly Engine.Core.Scene.Camera _renderCam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 5, 100, M.PiOver4);
+        private readonly Engine.Core.Scene.Camera _mainCam = new Engine.Core.Scene.Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private Transform _renderCamTransform;
+        private Transform _mainCamTransform;
+
+        private WritableTexture _renderTexture = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), 500, 500);
 
         // Init is called on startup.
         public override void Init()
         {
+            _mainCam.Viewport = new float4(0, 0, 100, 100);
+            _mainCam.BackgroundColor = new float4(1f, 1f, 1f, 1);
+            _mainCam.Layer = 10;
+
+            _renderCam.Viewport = new float4(0, 0, 10, 10);
+            _renderCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
+            _renderCam.Layer = 20;
+            _renderCam.RenderTexture = _renderTexture;
+
+            _mainCamTransform = new Transform()
+            {
+                Rotation = new float3(0, 0, 0),
+                Translation = new float3(0, 20, 20),
+                Scale = new float3(1, 1, 1),
+            };
+            var rotation = float4x4.LookAt(_mainCamTransform.Translation, new float3(0, -5, 0), float3.UnitY);
+            _mainCamTransform.Rotate(rotation.RotationComponent());
+
+
+            SceneNode mainCam = new SceneNode()
+            {
+                Name = "MainCam",
+                Components = new List<SceneComponent>()
+                {
+                    _mainCamTransform,
+                    _mainCam,
+                }
+            };
+
+            _renderCamTransform = new Transform()
+            {
+                Rotation = float3.Zero,
+                Translation = new float3(0, 5, -20),
+                Scale = new float3(1, 1, 1),
+            };
+
+            SceneNode renderCam = new SceneNode()
+            {
+                Name = "RenderCam",
+                Components = new List<SceneComponent>()
+                {
+                    _renderCamTransform,
+                    _renderCam,
+                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.Zero),
+                    new Engine.Core.Primitives.Cube(),
+
+                },
+                Children = new ChildList()
+                {
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Scale = new float3(0.5f, 0.5f, 1f),
+                                Translation = new float3(0,0, 1f)
+                            },
+                            new Engine.Core.Primitives.Cube()
+                        }
+                    }
+                }
+            };
+
+            SceneNode plane = new SceneNode()
+            {
+                Name = "Plane",
+                Components = new List<SceneComponent>()
+                {
+                    new Transform
+                    {
+                        Rotation = new float3(0, M.Pi, 0),
+                        Translation = new float3(0, 5, 20),
+                        Scale = float3.One
+                    },
+                    MakeEffect.FromDiffuseRenderTexture((float4)ColorUint.Red, _renderTexture, new float2(1, 1), .5f),
+                    new Engine.Core.Primitives.Plane()
+                }
+            };
+
             _gui = CreateGui();
+            _scene = CreateScene();
+
+            _scene.Children.Add(mainCam);
+            _scene.Children.Add(renderCam);
+            _scene.Children.Add(plane);
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -49,11 +129,8 @@ namespace Fusee.Examples.RenderToTexture.Core
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketFus.fus");
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
@@ -66,66 +143,12 @@ namespace Fusee.Examples.RenderToTexture.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
-            {
-                _keys = true;
-            }
 
-            if (Mouse.LeftButton)
-            {
-                _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-            }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }
-            else
-            {
-                if (_keys)
-                {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
-                }
-            }
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-
-            var view = mtxCam * mtxRot;
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            _mainCamTransform.RotateAround(new float3(0, -50, 0), new float3(0, DeltaTime * 0.2f, 0));
 
             // Render the scene loaded in Init()
-            RC.View = view;
-            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
-
-            //Constantly check for interactive objects.
-
-            RC.Projection = orthographic;
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -204,6 +227,47 @@ namespace Fusee.Examples.RenderToTexture.Core
                     canvas
                 }
             };
+        }
+
+        private SceneContainer CreateScene()
+        {
+            var scene = new SceneContainer
+            {
+                Header = new SceneHeader
+                {
+                    CreationDate = "November 2021",
+                    CreatedBy = "Jonas Haller",
+                    Generator = "Handcoded with pride :)",
+                },
+                Children = new List<SceneNode> { },
+            };
+
+            var rand = new System.Random();
+
+            for (int i = 0; i < 20; i++)
+            {
+                int x = rand.Next(-10, 10);
+                int y = rand.Next(-10, 10);
+                int z = rand.Next(-10, 10);
+
+                var cube = new SceneNode
+                {
+                    Name = "Cube" + i,
+                    Components = new List<SceneComponent>
+                    {
+                        new Transform {
+                            Translation=new float3(x, y, z),
+                            Scale = float3.One
+                        },
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Gray, float4.Zero, 4.0f, 1f),
+                        new Engine.Core.Primitives.Cube()
+                    }
+                };
+
+                scene.Children.Add(cube);
+            }
+
+            return scene;
         }
 
         public void BtnLogoEnter(CodeComponent sender)

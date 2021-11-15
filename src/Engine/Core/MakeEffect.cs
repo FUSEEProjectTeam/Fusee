@@ -442,6 +442,21 @@ namespace Fusee.Engine.Core
             return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
         }
 
+        public static DefaultSurfaceEffect FromDiffuseRenderTexture(float4 albedoColor, WritableTexture albedoTex, float2 texTiles, float albedoMix, float roughness = 0f)
+        {
+            var input = new TextureInputColor()
+            {
+                Albedo = albedoColor,
+                AlbedoTex = albedoTex,
+                AlbedoMix = albedoMix,
+                TexTiles = texTiles,
+                Roughness = roughness
+            };
+
+            var lighingSetup = LightingSetupFlags.DiffuseOnly | LightingSetupFlags.AlbedoTex;
+            return new DefaultSurfaceEffect(lighingSetup, input, FragShards.SurfOutBody_Textures(lighingSetup), VertShards.SufOutBody_PosNorm);
+        }
+
         /// <summary>
         /// Builds a simple shader effect with diffuse component.
         /// </summary>
