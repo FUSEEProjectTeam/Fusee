@@ -119,6 +119,34 @@ namespace Fusee.Engine.Core.Effects
         public string VertColorOut = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color);
 
         /// <summary>
+        /// Fragment shader "in" declaration for the vertex colors.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public string VertColor1In = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color1);
+
+        /// <summary>
+        /// Vertex shader "out" declaration for the vertex colors.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public string VertColor1Out = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color1);
+
+        /// <summary>
+        /// Fragment shader "in" declaration for the vertex colors.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public string VertColor2In = GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Color2);
+
+        /// <summary>
+        /// Vertex shader "out" declaration for the vertex colors.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public string VertColor2Out = GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color2);
+
+        /// <summary>
         /// Fragment shader "in" declaration for the TBN matrix.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]

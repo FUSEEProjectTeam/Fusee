@@ -465,7 +465,7 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for eye dome lighting.
     /// NOTE: This Input is only compatible with <see cref="PointCloudSurfaceEffect"/>s right now.
     /// </summary>
-    public class EdlInput : SurfaceInput
+    public class EdlInput : UnlitInput
     {
         /// <summary>
         /// Creates a new instance of type <see cref="EdlInput"/>.

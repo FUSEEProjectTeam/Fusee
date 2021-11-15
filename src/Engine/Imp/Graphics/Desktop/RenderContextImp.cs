@@ -1659,6 +1659,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             }
+            if (((MeshImp)mr).ColorBufferObject1 != 0)
+            {
+                GL.EnableVertexAttribArray(AttributeLocations.Color1AttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
+                GL.VertexAttribPointer(AttributeLocations.Color1AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
+            }
+            if (((MeshImp)mr).ColorBufferObject2 != 0)
+            {
+                GL.EnableVertexAttribArray(AttributeLocations.Color2AttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
+                GL.VertexAttribPointer(AttributeLocations.Color2AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
+            }
             if (((MeshImp)mr).UVBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.UvAttribLocation);

@@ -886,8 +886,8 @@ namespace Fusee.Engine.Core
                         if (NumberOfCascades > 1)
                         {
                             effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
-                            effect.SetFxParam("ClipPlanes[0]", shadowParams.ClipPlanesForLightMat);
-                            effect.SetFxParam("LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
+                            effect.SetFxParam($"{UniformNameDeclarations.LightMatClipPlanes}[0]", shadowParams.ClipPlanesForLightMat);
+                            effect.SetFxParam($"{UniformNameDeclarations.LightSpaceMatrices}[0]", shadowParams.LightSpaceMatrices);
                         }
                         else
                         {

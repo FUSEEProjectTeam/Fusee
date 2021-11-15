@@ -43,6 +43,16 @@ namespace Fusee.Engine.Core.ShaderShards
         public static readonly string Color = "vColor";
 
         /// <summary>
+        /// The vertex colors variable name.
+        /// </summary>
+        public static readonly string Color1 = "vColor1";
+
+        /// <summary>
+        /// The vertex colors variable name.
+        /// </summary>
+        public static readonly string Color2 = "vColor2";
+
+        /// <summary>
         /// The vertex position variable name.
         /// </summary>
         public const string Position = "vPos";

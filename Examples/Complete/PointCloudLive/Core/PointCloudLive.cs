@@ -26,7 +26,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         private SceneContainer _pointCloud;
         /* NOTE: Forward rendering requires a second render pass to create the depth map, deferred rendering does not. 
          * The latter can therefore increase the performance / fps.*/
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
         private SceneNode _node;
@@ -93,7 +93,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             };
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_pointCloud);
+            _sceneRenderer = new SceneRendererForward(_pointCloud);
             _renderForward = _sceneRenderer.GetType() == typeof(SceneRendererForward);
 
             if (_renderForward)
