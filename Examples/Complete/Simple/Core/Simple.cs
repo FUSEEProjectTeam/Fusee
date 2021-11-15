@@ -35,8 +35,7 @@ namespace Fusee.Examples.Simple.Core
 
         private async void Load()
         {
-            Console.WriteLine("Loading scene");
-
+            Console.WriteLine("Loading scene ...");
 
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
@@ -64,8 +63,6 @@ namespace Fusee.Examples.Simple.Core
 
         public override void Update()
         {
-            Console.WriteLine($"Update called {DeltaTimeUpdate}");
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -110,14 +107,11 @@ namespace Fusee.Examples.Simple.Core
         {
             if (!_loaded) return;
 
-            Console.WriteLine($"RAF called {DeltaTime}");
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            RC.Viewport(0, 0, Width, Height);
-
-
+            RC.Viewport(0, 0, Width, Height);          
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);

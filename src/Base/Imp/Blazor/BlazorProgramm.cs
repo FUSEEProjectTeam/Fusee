@@ -3,6 +3,7 @@ using Fusee.Math.Core;
 using Microsoft.JSInterop;
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Fusee.Base.Imp.Blazor
 {
@@ -73,6 +74,7 @@ namespace Fusee.Base.Imp.Blazor
 
         /// <summary>
         /// Main application loop, triggered via Javascript RequestAnimationFrame
+        /// Runs with 60 fps if possible
         /// </summary>
         /// <param name="milliseconds"></param>
         [JSInvokable]
@@ -80,11 +82,11 @@ namespace Fusee.Base.Imp.Blazor
         {
             double elapsedMilliseconds = milliseconds - previousMilliseconds;
             previousMilliseconds = milliseconds;
-            SW.Start();
 
+            // calculate time from last render call + time it took to update the method
+            SW.Start();
             mainExecutable.Update(elapsedMilliseconds);
             var updateDelta = elapsedMilliseconds + SW.ElapsedMilliseconds;
-
             SW.Stop();
 
             mainExecutable.Draw(updateDelta);
