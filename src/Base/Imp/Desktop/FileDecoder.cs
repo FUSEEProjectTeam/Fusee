@@ -1,5 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
+
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -34,7 +35,11 @@ namespace Fusee.Base.Imp.Desktop
         {
             try
             {
-                var image = Image.Load(file, out var imgFormat);
+                using var ms = new MemoryStream();
+                file.CopyTo(ms);
+                ms.Position = 0;
+
+                var image = Image.Load(ms, out var imgFormat);
 
                 image.Mutate(x => x.AutoOrient());
                 image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));

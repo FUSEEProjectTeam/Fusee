@@ -9,6 +9,7 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
+
 	</ItemGroup>
 
 	<ItemGroup>
@@ -25,6 +26,5 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-
 	</ItemGroup>
 </Project>

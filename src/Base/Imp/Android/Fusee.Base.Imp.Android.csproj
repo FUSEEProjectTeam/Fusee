@@ -6,20 +6,20 @@
         <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Android</OutputPath>
         <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
     </PropertyGroup>
-    
+
     <ItemGroup>
         <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
-        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
-    </ItemGroup>
+		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
+	</ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-       
+
     </ItemGroup>
-	
+
     <ItemGroup>
         <Reference Include="System.Numerics" />
         <Reference Include="System.Numerics.Vectors" />
@@ -30,6 +30,6 @@
         </ProjectReference>
         <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
             <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>      
+        </ProjectReference>
     </ItemGroup>
 </Project>
