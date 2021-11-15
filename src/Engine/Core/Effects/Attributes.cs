@@ -3,6 +3,12 @@ using System;
 namespace Fusee.Engine.Core.Effects
 {
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
+    sealed class NoUniformAttribute : Attribute
+    {
+        
+    }
+
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     sealed class FxShaderAttribute : Attribute
     {
         public readonly ShaderCategory ShaderCategory;
@@ -50,7 +56,7 @@ namespace Fusee.Engine.Core.Effects
     /// <summary>
     /// Used to describe the type of shader shard. A shard is a piece of shader code, usually in form of a static string.
     /// The category is used to sort the shards in order to build the complete shader source code from them.
-    /// Furthermore this it can be used to describe special behavior of a shader shard in the <see cref="SurfaceEffect"/>.
+    /// Furthermore this it can be used to describe special behavior of a shader shard in the <see cref="SurfaceEffectBase"/>.
     /// The order is given by the values of the enumeration.
     /// </summary>
     [Flags]
@@ -98,7 +104,7 @@ namespace Fusee.Engine.Core.Effects
 
         /// <summary>
         /// Describes a matrix, like the mvp matrix. 
-        /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffect"/> because they will be updated by the SceneRenderer.
+        /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffectBase"/> because they will be updated by the SceneRenderer.
         /// </summary>
         Matrix = 256
     }

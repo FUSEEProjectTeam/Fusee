@@ -174,6 +174,17 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Create a texture that is intended to save subsurface color and strength.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <param name="pxFormat">The color format of this texture.</param>
+        public static WritableTexture CreateSubsurfaceTex(int width, int height, ImagePixelFormat pxFormat)
+        {
+            return new WritableTexture(RenderTargetTextureTypes.Subsurface, pxFormat, width, height, false, TextureFilterMode.Linear);
+        }
+
+        /// <summary>
         /// Create a texture that is intended to save normal information.
         /// </summary>
         /// <param name="width">Width in px.</param>

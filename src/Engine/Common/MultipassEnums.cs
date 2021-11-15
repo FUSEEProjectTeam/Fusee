@@ -38,7 +38,12 @@
         /// <summary>
         /// Contains the emissive color.
         /// </summary>
-        Emission
+        Emission,
+
+        /// <summary>
+        /// Contains the subsurface color and strength.
+        /// </summary>
+        Subsurface
     }
 
     /// <summary>

@@ -14,7 +14,7 @@ using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
 
-namespace Fusee.Examples.Materials.Android
+namespace Fusee.Examples.SurfaceEffects.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
@@ -72,7 +72,7 @@ namespace Fusee.Examples.Materials.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Materials();
+                var app = new Core.SurfaceEffects();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var rci = new RenderCanvasImp(ApplicationContext, null, delegate

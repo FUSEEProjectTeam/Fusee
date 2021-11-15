@@ -9,25 +9,21 @@ using System.Reflection;
 
 namespace Fusee.Examples.Materials.Desktop
 {
-    public class Materials
+    public class SurfaceEffects
     {
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            FileAssetProvider fap = new("Assets");
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
-                        {
-                            return null;
-                        }
-
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
@@ -46,7 +42,7 @@ namespace Fusee.Examples.Materials.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            Core.Materials app = new();
+            var app = new Core.Materials();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

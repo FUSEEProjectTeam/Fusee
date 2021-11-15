@@ -104,10 +104,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             {
                 if (_selectedNode != null)
                 {
-                    _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _defaultColor;
+                    _selectedNode.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _defaultColor;
                 }
                 _selectedNode = selectedNode;
-                _selectedNode.GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _selectedColor;
+                _selectedNode.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _selectedColor;
             }
         }
 
@@ -390,7 +390,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             };
 
             sceneNodeContainer.Components.Add(translationComponent);
-            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor, float4.Zero));
+            sceneNodeContainer.Components.Add(MakeEffect.FromDiffuseSpecular(_defaultColor));
             sceneNodeContainer.Components.Add(meshComponent);
 
             _parentNode.Children.Add(sceneNodeContainer);

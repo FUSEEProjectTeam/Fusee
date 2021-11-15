@@ -223,7 +223,7 @@ namespace Fusee.Examples.UI.Core
                 }
             };
 
-            canvas.AddComponent(MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red, float4.Zero));
+            canvas.AddComponent(MakeEffect.FromDiffuseSpecular((float4)ColorUint.Red));
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
@@ -267,13 +267,13 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasHoverColor;
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _canvasHoverColor;
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<DefaultSurfaceEffect>().SurfaceInput.Albedo = _canvasDefaultColor;
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<SurfaceEffect>().SurfaceInput.Albedo = _canvasDefaultColor;
         }
 
         public void OnBtnCatDown(CodeComponent sender)

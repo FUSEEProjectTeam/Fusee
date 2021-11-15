@@ -35,11 +35,11 @@ namespace Fusee.Examples.RenderLayerEx.Core
 
             var rocketTransform = rocket.Children[0].GetTransform();
 
-            var grayShEf = gray.GetComponent<DefaultSurfaceEffect>();
+            var grayShEf = gray.GetComponent<SurfaceEffect>();
             var grayMesh = gray.GetComponent<Mesh>();
-            var whiteShEf = white.GetComponent<DefaultSurfaceEffect>();
+            var whiteShEf = white.GetComponent<SurfaceEffect>();
             var whiteMesh = white.GetComponent<Mesh>();
-            var greenShEf = green.GetComponent<DefaultSurfaceEffect>();
+            var greenShEf = green.GetComponent<SurfaceEffect>();
             var greenMesh = green.GetComponent<Mesh>();
 
             // RenderLayer Components

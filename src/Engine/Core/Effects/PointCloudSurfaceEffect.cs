@@ -1,5 +1,4 @@
 ﻿using Fusee.Engine.Common;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
@@ -9,9 +8,9 @@ using System.Linq;
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// <see cref="SurfaceEffect"/> for Rendering Point Clouds.
+    /// <see cref="SurfaceEffectBase"/> for Rendering Point Clouds.
     /// </summary>
-    public class PointCloudSurfaceEffect : DefaultSurfaceEffect
+    public class PointCloudSurfaceEffect : SurfaceEffect
     {
 
         /// <summary>
@@ -233,7 +232,7 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
-            : base(LightingSetupFlags.Edl, new ColorInput() { Albedo = new float4(.5f, 0f, .5f, 1f) }, FragShards.SurfOutBody_VertOrAlbedoColor.Concat(CalculatePointShape).ToList(), VertShards.SufOutBody_Pos.Concat(CalculatePointShapeVaryings).ToList(), rendererStates)
+            : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) }, null, null, rendererStates)
         {
 
             RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);

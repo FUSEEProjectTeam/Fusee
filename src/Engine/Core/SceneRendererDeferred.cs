@@ -93,7 +93,8 @@ namespace Fusee.Engine.Core
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
         private ShaderEffect _lightingPassEffectOther; //needed when a light of another type is rendered;
         private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
-        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;           
+        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;
+        private ShaderEffect _lightingPassEffectNoCascades; //needed when a parallel light is rendered without cascaded shadow mapping;
 
         private IRenderTarget _gBufferRenderTarget;
 
@@ -597,12 +598,12 @@ namespace Fusee.Engine.Core
                                 }
                                 else
                                 {
-                                    if (_lightingPassEffectOther == null)
+                                    if (_lightingPassEffectNoCascades == null)
                                     {
-                                        _lightingPassEffectOther = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
-                                        _rc.CreateShaderProgram(_lightingPassEffectOther);
+                                        _lightingPassEffectNoCascades = MakeEffect.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMap);
+                                        _rc.CreateShaderProgram(_lightingPassEffectNoCascades);
                                     }
-                                    _lightingPassEffect = _lightingPassEffectOther;
+                                    _lightingPassEffect = _lightingPassEffectNoCascades;
                                 }
                                 break;
                             }
@@ -754,7 +755,7 @@ namespace Fusee.Engine.Core
                     default:
                         break;
                 }
-                if(_currentLightType != LightType.Legacy &&  _currentLightType != LightType.Parallel)
+                if(lightVisRes.Item2.Light.Type != LightType.Legacy && lightVisRes.Item2.Light.Type != LightType.Parallel && NumberOfCascades > 1)
                     lightVisRes.Item2.ReRenderShadowMap = false;
             }
         }
@@ -885,8 +886,8 @@ namespace Fusee.Engine.Core
                         if (NumberOfCascades > 1)
                         {
                             effect.SetFxParam(UniformNameDeclarations.ShadowMapHash, shadowParams.ShadowMap);
-                            effect.SetFxParam($"{UniformNameDeclarations.LightMatClipPlanes}[0]", shadowParams.ClipPlanesForLightMat);
-                            effect.SetFxParam($"{UniformNameDeclarations.LightSpaceMatrices}[0]", shadowParams.LightSpaceMatrices);
+                            effect.SetFxParam("ClipPlanes[0]", shadowParams.ClipPlanesForLightMat);
+                            effect.SetFxParam("LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
                         }
                         else
                         {
