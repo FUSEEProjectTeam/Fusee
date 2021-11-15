@@ -56,8 +56,22 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 res.Add($"OUT.albedo = vec4(mix, texCol.a);");
             }
             else
-                res.Add("OUT.albedo = IN.Albedo;");
+            {
+                if(surfInput.ShadingModel != ShadingModel.Edl)
+                    res.Add("OUT.albedo = IN.Albedo;");
+                else
+                {
+                    res.Add("if(ColorMode == 0)");
+                    res.Add("{");
+                    res.Add($"   OUT.albedo = {VaryingNameDeclarations.Color};");
+                    res.Add("}");
+                    res.Add("else");
+                    res.Add("{");
+                    res.Add("   OUT.albedo = IN.Albedo;");
+                    res.Add("}");
+                }
 
+            }
             if (surfInput.TextureSetup.HasFlag(TextureSetup.NormalMap))
             {
                 res.AddRange(new List<string>
