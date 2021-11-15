@@ -677,13 +677,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "vec4 lighting = vec4(0);",
             "",
             "float ambientCo = 0.1;",
-            "vec4 ambient = vec4(0,0,0,1);",
-            "vec4 diffuse = vec4(0,0,0,1);",
-            "vec4 specular = vec4(0,0,0,1);",
-            "vec4 lightColor = vec4(0,0,0,1);",
+            "vec3 ambient = vec3(0,0,0);",
+            "vec3 diffuse = vec3(0,0,0);",
+            "vec3 specular = vec3(0,0,0);",
+            "vec3 lightColor = vec3(0,0,0);",
             $"if({UniformNameDeclarations.RenderPassNo} == 0)",
             "{",
-                "ambient = vec4(albedo.rgb * ambientCo, albedo.a);",
+                "ambient = albedo.rgb * ambientCo;",
 
                 $"if({UniformNameDeclarations.SsaoOn} == 1)",
                 "{",
@@ -703,11 +703,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             //Light variables
             methodBody.AddRange(new List<string>()
             {
-            $"vec4 res = vec4(0,0,0,1.0);",
+            $"vec3 res = vec3(0,0,0);",
             "float shadow = 0.0;",
             "if(light.isActive == 1)",
             "{",
-                "lightColor = light.intensities;",
+                "lightColor = light.intensities.rgb;",
                 "vec3 lightPosition = light.position;",
                 "vec3 lightDir = normalize(lightPosition - fragPos.xyz);",
             });
@@ -750,11 +750,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "if(specularVars.b > 0.0){",
                     $"float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);",
                     $"float NdotV = clamp(dot(normal, viewDir), 0.0, 1.0);",
-                    $"diffuse = vec4(OrenNayarDiffuseLighting(albedo.rgb, NdotL, NdotV, normal, lightDir, viewDir, specularVars.b), albedo.a);",
+                    $"diffuse = OrenNayarDiffuseLighting(albedo.rgb, NdotL, NdotV, normal, lightDir, viewDir, specularVars.b);",
                 "}",
                 "else{",
-                    "diffuse = vec4(vec3(LambertDiffuseLighting(normal, lightDir)), 1.0);",
-                    "diffuse = diffuse * albedo;",
+                    "diffuse = vec3(LambertDiffuseLighting(normal, lightDir));",
+                    "diffuse = diffuse * albedo.rgb;",
                 "}",
                 // specular
                 "float shininess = specularVars.g;",
@@ -762,7 +762,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "",
                 "float specularTerm = specularLighting(normal, lightDir, viewDir, shininess);",
                 "",
-                "specular = vec4(specularTerm, specularTerm, specularTerm, 1.0);",
+                "specular = vec3(specularTerm, specularTerm, specularTerm);",
                 "res = diffuse + specular;",
 
             "}",
@@ -808,13 +808,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "else if(decodedShadingModel == uint(3))",
             "{",
                 // diffuse 
-                "diffuse = vec4(vec3(LambertDiffuseLighting(normal, lightDir)), 1.0);",
-                "res = diffuse * albedo;",
+                $"float NdotL = clamp(dot(normal, lightDir), 0.0, 1.0);",
+                $"float NdotV = clamp(dot(normal, viewDir), 0.0, 1.0);",
+                $"diffuse = OrenNayarDiffuseLighting(albedo.rgb, NdotL, NdotV, normal, lightDir, viewDir, 0.5);",
+                "res = diffuse * albedo.rgb;",
             "}",
             "else if(decodedShadingModel == uint(4))",
             "{",
                 // unlit
-                "res = albedo;",
+                "res = albedo.rgb;",
             "}",
             "else if(decodedShadingModel == uint(5))",
             "{",
@@ -833,7 +835,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"vec3 F = F0 + (1.0 - F0) * LdotH5;",
 
                 "vec3 spec = specularLighting(NdotL, NdotV, LdotH, NdotH, roughness, F);",
-                "res = vec4(spec * albedo.rgb, 1.0);",
+                "res = spec * albedo.rgb;",
             "}",
             "else if(decodedShadingModel == uint(6))",
             "{",
@@ -845,7 +847,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "if (linearDepth > 0.1)",
                 $"    albedo *= EDLShadingFactor(specularVars.r, int(round(specularVars.g * float(0xFF))) & int(0xF), linearDepth, {VaryingNameDeclarations.TextureCoordinates}, tempScreenParams, {UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Depth]}, tempClippingPlanes);",
 
-                "res = albedo;",
+                "res = albedo.rgb;",
             "}",
 
             });
@@ -862,7 +864,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "if(specularVars.a != 4.0) //4.0 == unlit",
                 "{",
                     $"float strength = (1.0 - ambientCo) * light.strength;",
-                    $"lighting = vec4(emission.rgb, 1.0) + ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);",
+                    $"lighting = vec4(emission.rgb + ambient.rgb + ((1.0 - shadow) * res * attenuation * strength * lightColor), albedo.a);",
                 "}",
                 "else",
                 "{",

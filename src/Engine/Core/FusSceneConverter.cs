@@ -745,7 +745,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.Add(m.Albedo.Texture, albedoTex);
                     }
-                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, albedoTex, m.Albedo.Mix, float2.One);
+                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, emissive.rgb, albedoTex, m.Albedo.Mix, float2.One);
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
@@ -757,7 +757,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.Add(m.NormalMap.Texture, normalTex);
                     }
-                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, null, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
+                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, emissive.rgb, null, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
                 }
                 else if (texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
@@ -777,11 +777,11 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.Add(m.NormalMap.Texture, normalTex);
                     }
-                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, albedoTex, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
+                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, emissive.rgb, albedoTex, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
-                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness);
+                    sfx = MakeEffect.FromDiffuse(m.Albedo.Color, roughness, emissive.rgb);
                 }
                 else
                     throw new System.ArgumentException("Material couldn't be resolved.");

@@ -379,7 +379,8 @@ namespace Fusee.Engine.Core
         /// <param name="normalMapStrength">The strength of the normal mapping effect.</param>
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static SurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f, Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        /// <param name="emissionColor">If this color isn't black the material emits it. Note that this will not have any effect on global illumination yet.</param>
+        public static SurfaceEffect FromDiffuse(float4 albedoColor, float roughness = 0f, float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new DiffuseInput()
             {
@@ -389,7 +390,8 @@ namespace Fusee.Engine.Core
                 NormalTex = normalTex,
                 NormalMappingStrength = normalMapStrength,
                 TexTiles = texTiles,
-                Roughness = roughness
+                Roughness = roughness,
+                Emission = emissionColor
             };
 
             var texSetup = TextureSetup.NoTextures;
