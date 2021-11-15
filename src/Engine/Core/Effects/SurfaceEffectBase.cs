@@ -266,7 +266,7 @@ namespace Fusee.Engine.Core.Effects
 
                 switch (shardAttribute.ShardCategory)
                 {
-                    case ShardCategory.Matrix:
+                    case ShardCategory.InternalUniform:
                     case ShardCategory.Uniform:
                         {
                             var paramDcl = BuildFxParamDecl(prop);
@@ -337,7 +337,7 @@ namespace Fusee.Engine.Core.Effects
                 {
                     case ShardCategory.Uniform:
                         throw new Exception($"{t.Name} ShaderEffect: Field {field.Name} must be a Property that calls SetFxParam in the setter.");
-                    case ShardCategory.Matrix:
+                    case ShardCategory.InternalUniform:
                         {
                             var paramDcl = BuildFxParamDecl(field);
                             ParamDecl.Add(paramDcl.Hash, paramDcl);

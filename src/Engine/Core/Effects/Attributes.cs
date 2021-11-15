@@ -102,10 +102,9 @@ namespace Fusee.Engine.Core.Effects
         /// </summary>
         Main = 128,
 
-        /// <summary>
-        /// Describes a matrix, like the mvp matrix. 
+        /// <summary> 
         /// Those are uniforms in the shader code but should not be properties of a <see cref="SurfaceEffectBase"/> because they will be updated by the SceneRenderer.
         /// </summary>
-        Matrix = 256
+        InternalUniform = 256
     }
 }

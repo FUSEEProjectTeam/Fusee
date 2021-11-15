@@ -4,6 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
@@ -76,9 +77,7 @@ namespace Fusee.Examples.PointCloudLive.Core
                 PointShape = (int)PointShape.Paraboloid,
                 DepthTex = _depthTex,
                 EDLStrength = 1f,
-                EDLNeighbourPixels = 2,
-                ScreenParams = new float2(Width, Height),
-                ClippingPlanes = _mainCam.ClippingPlanes
+                EDLNeighbourPixels = 2
             };
 
             _node.Components.Insert(0, _pcFx);
@@ -99,7 +98,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             if (_renderForward)
             {
                 _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
-                _depthFx = CreateDepthPassEffect(_pcFx.PointSize, (int)PointShape.Rect, (int)PointSizeMode.FixedPixelSize, new float2(Width, Height), _mainCamTransform.Translation.z);
+                _depthFx = CreateDepthPassEffect(_pcFx.PointSize, (int)PointShape.Rect, (int)PointSizeMode.FixedPixelSize, new float2(Width, Height));
             }
         }
 
@@ -171,12 +170,10 @@ namespace Fusee.Examples.PointCloudLive.Core
         {
             if (_renderForward)
                 _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
-
-            _pcFx.ScreenParams = new float2(Width, Height);
             base.Resize(e);
         }
 
-        private static ShaderEffect CreateDepthPassEffect(int ptSize, int ptShape, int ptMode, float2 screenParams, float initCamPosZ)
+        private static ShaderEffect CreateDepthPassEffect(int ptSize, int ptShape, int ptMode, float2 screenParams)
         {
             return new ShaderEffect(
             new FxPassDeclaration
@@ -191,14 +188,13 @@ namespace Fusee.Examples.PointCloudLive.Core
             },
             new List<IFxParamDeclaration>
             {
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_MV", Value = float4x4.Identity},
-                new FxParamDeclaration<float4x4> {Name = "FUSEE_P", Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
+                new FxParamDeclaration<float4x4> {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
 
-                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
-                new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
+                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
 
-                new FxParamDeclaration<int> {Name = "PointSize", Value = ptSize},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = ptSize},
                 new FxParamDeclaration<int> {Name = "PointShape", Value = ptShape},
                 new FxParamDeclaration<int> {Name = "PointSizeMode", Value = ptMode},
             });

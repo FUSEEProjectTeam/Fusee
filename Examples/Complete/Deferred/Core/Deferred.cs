@@ -84,8 +84,7 @@ namespace Fusee.Examples.Deferred.Core
                         DepthTex = null,
                         EDLStrength = 1f,
                         EDLNeighbourPixels = 2,
-                        ScreenParams = new float2(Width, Height),
-                        ClippingPlanes = _campComp.ClippingPlanes
+                        FUSEE_ScreenParams = new float2(Width, Height)
                     }
                 }
             };

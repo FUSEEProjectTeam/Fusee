@@ -13,28 +13,49 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class SurfaceEffect : SurfaceEffectBase
     {
-        #region Matrices
+        #region Internal/Global Uniforms (set by the Engine)
 
         /// <summary>
         /// The shader shard containing the model view projection matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Matrix)]
+        [FxShard(ShardCategory.InternalUniform)]
         public float4x4 FUSEE_MVP;
 
         /// <summary>
         /// The shader shard containing the inverse transposed model view matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Matrix)]
+        [FxShard(ShardCategory.InternalUniform)]
         public float4x4 FUSEE_ITMV;
 
         /// <summary>
         /// The shader shard containing the model view matrix uniform which should NOT be settable via property because they get updated internally.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
-        [FxShard(ShardCategory.Matrix)]
+        [FxShard(ShardCategory.InternalUniform)]
         public float4x4 FUSEE_MV;
+
+        /// <summary>
+        /// The shader shard containing the projection matrix uniform which should NOT be settable via property because they get updated internally.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.InternalUniform)]
+        public float4x4 FUSEE_P;
+
+        /// <summary>
+        /// Used to lineraize the values form the depth map.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.InternalUniform)]
+        public float2 FUSEE_ClippingPlanes;
+
+        /// <summary>
+        /// The width and height of the render canvas in px.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.InternalUniform)]
+        public float2 FUSEE_ViewportPx;
 
         #endregion
 

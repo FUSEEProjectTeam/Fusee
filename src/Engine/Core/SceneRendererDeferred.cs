@@ -645,7 +645,6 @@ namespace Fusee.Engine.Core
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
                 else
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, _texClearColor);
-                _lightingPassEffect.SetFxParam(UniformNameDeclarations.ClippingPlanes, _rc.ClippingPlanesDist);
                 _rc.SetEffect(_lightingPassEffect);
                 _rc.Render(_quad);
                 lightPassCnt++;

@@ -104,12 +104,7 @@ namespace Fusee.Engine.Core
         /// Gets and sets the y coordinate of viewport's lower left (starting) point.
         /// </summary>
         public int ViewportYStart { get; private set; }
-
-        /// <summary>
-        /// Gets and sets the distances to the current viewing frustums clipping planes.
-        /// </summary>
-        public float2 ClippingPlanesDist { get; private set; }
-
+        
         #endregion
 
         #region Shader Management fields
@@ -333,7 +328,7 @@ namespace Fusee.Engine.Core
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
                 RenderFrustum.CalculateFrustumPlanes(_projection * View);
-                ClippingPlanesDist = CalculateClippingPlanesFromProjection();
+                SetGlobalEffectParam(UniformNameDeclarations.ClippingPlanesHash, CalculateClippingPlanesFromProjection());
             }
         }
 
@@ -853,6 +848,7 @@ namespace Fusee.Engine.Core
             ViewportHeight = height;
             ViewportXStart = x;
             ViewportYStart = y;
+            SetGlobalEffectParam(UniformNameDeclarations.ViewportPxHash, new float2(width, height));
         }
 
         #region Image Data related methods

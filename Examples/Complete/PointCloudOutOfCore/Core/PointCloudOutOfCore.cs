@@ -4,6 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
@@ -348,8 +349,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             {
                 _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
-                PtRenderingParams.Instance.DepthPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
-                PtRenderingParams.Instance.ColorPassEf.SetFxParam("ScreenParams", new float2(Width, Height));
+                PtRenderingParams.Instance.DepthPassEf.SetFxParam(UniformNameDeclarations.ViewportPx, new float2(Width, Height));
+                PtRenderingParams.Instance.ColorPassEf.SetFxParam(UniformNameDeclarations.ViewportPx, new float2(Width, Height));
                 PtRenderingParams.Instance.ColorPassEf.SetFxParam("DepthTex", _depthTex);
             }
 

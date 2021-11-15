@@ -423,11 +423,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform ClippingPlanes variable.
         /// </summary>
-        public const string ClippingPlanes = "ClippingPlanes";
+        public const string ClippingPlanes = "FUSEE_ClippingPlanes";
         /// <summary>
         /// Hash code for the <see cref="ClippingPlanes"/> parameter.
         /// </summary>
-        public static int ClippingPlanesNoHash = ClippingPlanes.GetHashCode();
+        public static int ClippingPlanesHash = ClippingPlanes.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform PassNo variable.
@@ -450,11 +450,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform ScreenParams (width and height of the window).
         /// </summary>
-        public const string ScreenParams = "ScreenParams";
+        public const string ViewportPx = "FUSEE_ViewportPx";
         /// <summary>
-        /// Hash code for the <see cref="ScreenParams"/> parameter.
+        /// Hash code for the <see cref="ViewportPx"/> parameter.
         /// </summary>
-        public static int ScreenParamsHash = ScreenParams.GetHashCode();
+        public static int ViewportPxHash = ViewportPx.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform AmbientStrength variable within the pixel shaders.

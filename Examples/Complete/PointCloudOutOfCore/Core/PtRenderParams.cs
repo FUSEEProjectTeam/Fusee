@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System;
@@ -195,7 +196,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 new FxParamDeclaration<float4x4> {Name = "FUSEE_IV", Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
 
-                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
+                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
                 new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
 
                 new FxParamDeclaration<int> {Name = "PointSize", Value = Size},
@@ -240,7 +241,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 new FxParamDeclaration<float4x4> {Name = "FUSEE_V", Value = float4x4.Identity},
 
                 new FxParamDeclaration<float2> {Name = "ClipPlaneDist", Value = clipPlaneDist},
-                new FxParamDeclaration<float2> {Name = "ScreenParams", Value = screenParams},
+                new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
                 new FxParamDeclaration<float> {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
                 new FxParamDeclaration<float4> {Name = "Color", Value = SingleColor},
 

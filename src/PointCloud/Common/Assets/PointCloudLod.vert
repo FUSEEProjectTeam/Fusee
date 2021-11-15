@@ -2,7 +2,7 @@
 
 precision highp float;
 
-uniform vec2 ScreenParams;
+uniform vec2 FUSEE_ViewportPx;
 uniform int PointMode;
 uniform int PointSize;
 
@@ -216,7 +216,7 @@ void main(void)
 
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
 	float slope = tan(fov / 2.0);
-	float projFactor = ((1.0 / slope)/ -vViewPos.z)* ScreenParams.y / 2.0;
+	float projFactor = ((1.0 / slope)/ -vViewPos.z)* FUSEE_ViewportPx.y / 2.0;
 	vWorldSpacePointRad = float(PointSize) / projFactor;	
 
 	vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz; //FUSEE_ITMV - normal matrix for transformation into world space;
@@ -244,7 +244,7 @@ void main(void)
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
 			float worldPtSize = float(PointSize);
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
+			ptSize = ((FUSEE_ViewportPx.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 		//Octree level-dependent
@@ -253,14 +253,14 @@ void main(void)
 			float spacing = pow(0.5, float(OctantLevel));
 			
 			float worldPtSize = float(PointSize) * spacing;
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
+			ptSize = ((FUSEE_ViewportPx.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 		//level of detail
 		case 3:
 		{
 			float worldPtSize = float(PointSize) / (pow(2.0, float(getLevelOfDetail())));
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
+			ptSize = ((FUSEE_ViewportPx.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}	
 	}

@@ -13,14 +13,6 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class PointCloudSurfaceEffect : SurfaceEffect
     {
-
-        /// <summary>
-        /// The shader shard containing the projection matrix uniform which should NOT be settable via property because they get updated internally.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Matrix)]
-        public float4x4 FUSEE_P;
-
         /// <summary>
         /// The depth texture, used for eye dome lighting.
         /// </summary>
@@ -68,38 +60,6 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private int _edlNeighbourPixels;
-
-        /// <summary>
-        /// Used to lineraize the values form the depth map.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public float2 ClippingPlanes
-        {
-            get { return _clippingPlanes; }
-            set
-            {
-                _clippingPlanes = value;
-                SetFxParam(nameof(ClippingPlanes), _clippingPlanes);
-            }
-        }
-        private float2 _clippingPlanes;
-
-        /// <summary>
-        /// The width and height of the render canvas in px.
-        /// </summary>
-        [FxShader(ShaderCategory.Vertex | ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public float2 ScreenParams
-        {
-            get { return _screenParams; }
-            set
-            {
-                _screenParams = value;
-                SetFxParam(nameof(ScreenParams), _screenParams);
-            }
-        }
-        private float2 _screenParams;
 
         /// <summary>
         /// The shader shard containing the Color Mode.
@@ -186,7 +146,7 @@ namespace Fusee.Engine.Core.Effects
             $"vViewPos = {UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0);",
             $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
             "float slope = tan(fov / 2.0);",
-            $"float projFactor = ((1.0 / slope) / -vViewPos.z) * {nameof(ScreenParams)}.y / 2.0;",
+            $"float projFactor = ((1.0 / slope) / -vViewPos.z) * {UniformNameDeclarations.ViewportPx}.y / 2.0;",
             $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
         };
 
