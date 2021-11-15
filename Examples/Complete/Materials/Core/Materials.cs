@@ -18,7 +18,7 @@ namespace Fusee.Examples.Materials.Core
     public class Materials : RenderCanvas
     {
         private SceneRendererDeferred _renderer;
-        private SceneRendererForward _guiDescRenderer;
+        private readonly SceneRendererForward _guiDescRenderer;
 
         private float _alpha, _beta;
         private float _zoom = -25f;
@@ -30,16 +30,15 @@ namespace Fusee.Examples.Materials.Core
         public override void Init()
         {
             Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            FontMap fontLatoMap = new(fontLato, 32);
+            _ = new(fontLato, 32);
 
             Icosphere icosphereWithTangents = new(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
             icosphereWithTangents.BiTangents = icosphereWithTangents.CalculateBiTangents();
 
             icosphereWithTangents.BoundingBox = new AABBf(icosphereWithTangents.Vertices);
-
-            float canvasWidth = Width / 100f;
-            float canvasHeight = Height / 100f;
+            _ = Width / 100f;
+            _ = Height / 100f;
 
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("albedoTex.jpg"));
             var normalTex = new Texture(AssetStorage.Get<ImageData>("normalTex.jpg"));
@@ -364,7 +363,7 @@ namespace Fusee.Examples.Materials.Core
                                     ),
                                     icosphereWithTangents
                                 }
-                            },                            
+                            },
                             new SceneNode
                             {
                                 Components = new List<SceneComponent>

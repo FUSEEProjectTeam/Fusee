@@ -261,7 +261,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             //if (_renderDeferred)
             //    _sceneRendererDeferred.Render(RC);
             //else
-                _sceneRendererForward.Render(RC);
+            _sceneRendererForward.Render(RC);
 
             //_guiRenderer.Render(RC);
 

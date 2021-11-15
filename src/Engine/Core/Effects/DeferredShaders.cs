@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Fusee.Engine.Core.ShaderShards;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core.Effects
 {

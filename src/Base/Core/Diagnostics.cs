@@ -46,8 +46,8 @@ namespace Fusee.Base.Core
                             f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(!string.IsNullOrEmpty(callerFile) ? "[" + Path.GetFileName(callerFile) + "]" : "")} [{caller}(){(lineNumber != 0 ? ":" + lineNumber : "")}] {msg}";
                         }
 
-                        f += (ex != null ? $",\nException: {ex.ToString()}" : "");
-                        f += (ex?.InnerException != null ? $",\nInner exception: {ex.InnerException.ToString()}" : "");
+                        f += (ex != null ? $",\nException: {ex}" : "");
+                        f += (ex?.InnerException != null ? $",\nInner exception: {ex.InnerException}" : "");
 
                         if (args != null)
                         {
