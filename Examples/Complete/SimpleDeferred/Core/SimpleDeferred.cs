@@ -20,7 +20,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _sponzaScene;
-        private SceneRendererDeferred _sceneRendererDeferred;
+        //private SceneRendererDeferred _sceneRendererDeferred;
         private SceneRendererForward _sceneRendererForward;
 
         private SceneContainer _gui;
@@ -39,18 +39,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        private readonly bool _loaded = false;
-
-        private async void Load()
+        public async void Load()
         {
-            VSync = false;
-
-            _camTransform = new Transform()
-            {
-                Scale = float3.One,
-                Translation = float3.Zero
-            };
-
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
 
             // Create the interaction handler
@@ -157,16 +147,27 @@ namespace Fusee.Examples.SimpleDeferred.Core
             );
 
             // Wrap a SceneRenderer around the scene.
-            _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
+            //_sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
             _sceneRendererForward = new SceneRendererForward(_sponzaScene);
 
-            // Wrap a SceneRenderer around the GUI.
+            _load = true;
         }
+
+        private bool _load = false;
 
         // Init is called on startup.
         public override void Init()
         {
+            VSync = false;
+
+            _camTransform = new Transform()
+            {
+                Scale = float3.One,
+                Translation = float3.Zero
+            };
+
             Load();
+            // Wrap a SceneRenderer around the GUI.
         }
 
         private bool _renderDeferred = true;
@@ -174,7 +175,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_loaded) return;
+            if (!_load) return;
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -217,11 +218,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _keys = true;
             }
 
-            if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
-
-            if (Keyboard.IsKeyDown(KeyCodes.G))
-                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
+            //if (Keyboard.IsKeyDown(KeyCodes.F))
+            //    _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
+            //
+            //if (Keyboard.IsKeyDown(KeyCodes.G))
+            //    _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
 
             if (Mouse.LeftButton)
             {
@@ -229,7 +230,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
-            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
@@ -257,9 +258,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
             else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
                 _renderDeferred = true;
 
-            if (_renderDeferred)
-                _sceneRendererDeferred.Render(RC);
-            else
+            //if (_renderDeferred)
+            //    _sceneRendererDeferred.Render(RC);
+            //else
                 _sceneRendererForward.Render(RC);
 
             //_guiRenderer.Render(RC);
@@ -267,7 +268,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.

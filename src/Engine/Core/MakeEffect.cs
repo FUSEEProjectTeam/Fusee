@@ -33,14 +33,14 @@ namespace Fusee.Engine.Core
         /// <param name="screenParams">The width and height of the screen.</param>
         // see: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-        public async static Task<ShaderEffect> FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
+        public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
         {
             return new ShaderEffect(
 
             new FxPassDeclaration
             {
-                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
-                PS = await AssetStorage.GetAsync<string>("FXAA.frag"),
+                VS = DeferredShaders.DeferredVert,
+                PS = DeferredShaders.FXAAFragShader,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -61,13 +61,13 @@ namespace Fusee.Engine.Core
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
         /// <param name="noiseTexSize">Width and height of the noise texture.</param>
-        public async static Task<ShaderEffect> SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
+        public static ShaderEffect SSAORenderTargetTextureEffect(IRenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, int noiseTexSize)
         {
             var ssaoKernel = FuseeSsaoHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var ps = await AssetStorage.GetAsync<string>("SSAO.frag");
+            var ps = DeferredShaders.SSAO;
 
             if (kernelLength != 64)
             {
@@ -80,7 +80,7 @@ namespace Fusee.Engine.Core
 
             new FxPassDeclaration
             {
-                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
+                VS = DeferredShaders.DeferredVert,
                 PS = ps,
                 StateSet = new RenderStateSet
                 {
@@ -107,10 +107,10 @@ namespace Fusee.Engine.Core
         /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
         /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>
-        public async static Task<ShaderEffect> SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
+        public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var frag = await AssetStorage.GetAsync<string>("SimpleBlur.frag");
+            var frag = DeferredShaders.SimpleBlur;
             var blurKernelSize = ssaoRenderTex.Width switch
             {
                 (int)TexRes.Low => 2.0f,
@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
                 new FxPassDeclaration
                 {
-                    VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
+                    VS = DeferredShaders.DeferredVert,
                     PS = frag,
                     StateSet = new RenderStateSet
                     {
@@ -145,13 +145,13 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public async static Task<ShaderEffect> DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -173,7 +173,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
+                VS = DeferredShaders.DeferredVert,
                 PS = CreateDeferredLightingPixelShader(lc),
                 StateSet = new RenderStateSet
                 {
@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// [Parallel light only] ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The cascaded shadow maps.</param>
@@ -198,7 +198,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
-        public async static Task<ShaderEffect> DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, WritableArrayTexture shadowMap, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -217,7 +217,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = await AssetStorage.GetAsync<string>("Deferred.vert"),
+                VS = DeferredShaders.DeferredVert,
                 PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
                 StateSet = new RenderStateSet
                 {
@@ -237,7 +237,7 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
         /// </summary>
         /// <returns></returns>
-        public async static Task<ShaderEffect> ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
+        public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
         {
             var effectParamDecls = new List<IFxParamDeclaration>
             {
@@ -251,9 +251,9 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = await AssetStorage.GetAsync<string>("ShadowCubeMap.vert"),
-                GS = await AssetStorage.GetAsync<string>("ShadowCubeMap.geom"),
-                PS = await AssetStorage.GetAsync<string>("ShadowCubeMap.frag"),
+                VS = DeferredShaders.ShadowCubeMapVert,
+                GS = DeferredShaders.ShadowCubeMapGeom,
+                PS = DeferredShaders.ShadowCubeMapFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -270,13 +270,13 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
         /// </summary>
         /// <returns></returns>
-        public async static Task<ShaderEffect> ShadowMapEffect()
+        public static ShaderEffect ShadowMapEffect()
         {
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = await AssetStorage.GetAsync<string>("ShadowMap.vert"),
-                PS = await AssetStorage.GetAsync<string>("ShadowMap.frag"),
+                VS = DeferredShaders.ShadowCubeMapVert,
+                PS = DeferredShaders.ShadowCubeMapFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -289,6 +289,8 @@ namespace Fusee.Engine.Core
             {
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
+                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.LightMatClipPlanes, Value = float2.Zero},
+                new FxParamDeclaration<float3> { Name = UniformNameDeclarations.LightPos, Value = float3.Zero}
             });
         }
 
@@ -848,7 +850,7 @@ namespace Fusee.Engine.Core
             frag.Append(FragProperties.ColorOut());
 
             //Shadow calculation methods
-            //-------------------------------------- 
+            //--------------------------------------
             if (isCascaded)
                 frag.Append(Lighting.ShadowCalculationCascaded());
             else if (lc.Type == LightType.Point)

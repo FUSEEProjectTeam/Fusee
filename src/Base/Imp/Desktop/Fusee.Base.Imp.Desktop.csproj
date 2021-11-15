@@ -1,47 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
-    <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
-    <Description>Fusee Base Imp Desktop</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Desktop</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
-    <PropertyGroup>
-        
-        <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
-        <Description>Fusee Base Imp Desktop</Description>
-        <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Desktop</OutputPath>
-        <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-    </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
+		<Description>Fusee Base Imp Desktop</Description>
+		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Desktop</OutputPath>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
+	<ItemGroup>
+		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
+	</ItemGroup>
 
-      <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
-      <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
-  </ItemGroup>
-    <ItemGroup>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+
+	</ItemGroup>
 </Project>

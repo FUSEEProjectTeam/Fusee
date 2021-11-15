@@ -332,6 +332,15 @@ namespace Fusee.Engine.Core.ShaderShards
 
         #endregion
 
+        #region FXAA
+
+        /// <summary>
+        /// The texture name for the lighted scene
+        /// </summary>
+        public const string LightedSceneTexture = "LIGHTED_SCENE_TEX";
+
+        #endregion
+
         #region Shadow mapping
 
         /// <summary>
@@ -361,6 +370,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         public static int LightSpaceMatrixHash = LightSpaceMatrix.GetHashCode();
 
+
+        /// <summary>
+        /// The var name for the uniform LightSpaceMatrix with 6 elements e.g. LightSpaceMatrices[6].
+        /// </summary>
+        public const string LightSpaceMatrices6 = "LightSpaceMatrices[6]";
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
@@ -401,6 +415,8 @@ namespace Fusee.Engine.Core.ShaderShards
         public static int PointSizeHash = PointSize.GetHashCode();
 
         #endregion
+
+
 
         /// <summary>
         /// The var name for the uniform PassNo variable.

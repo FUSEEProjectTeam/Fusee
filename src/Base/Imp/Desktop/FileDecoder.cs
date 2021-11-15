@@ -1,11 +1,7 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.ColorSpaces.Conversion;
-using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
@@ -38,7 +34,7 @@ namespace Fusee.Base.Imp.Desktop
         {
             try
             {
-                using var image = Image.Load(file, out var imgFormat);
+                var image = Image.Load(file, out var imgFormat);
 
                 image.Mutate(x => x.AutoOrient());
                 image.Mutate(x => x.RotateFlip(RotateMode.None, FlipMode.Vertical));
@@ -70,7 +66,7 @@ namespace Fusee.Base.Imp.Desktop
                             var rgba = image as Image<Rgba32>;
                             var bgra = rgba.CloneAs<Bgra32>();
 
-                            bgra.TryGetSinglePixelSpan(out var res);
+                            var success = bgra.TryGetSinglePixelSpan(out var res);
                             var resBytes = MemoryMarshal.AsBytes<Bgra32>(res.ToArray());
                             return new ImageData(resBytes.ToArray(), image.Width, image.Height,
                                 new ImagePixelFormat(ColorFormat.RGBA));
