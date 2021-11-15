@@ -97,7 +97,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Emission:
                         if (shadingModel != (ShadingModel.DiffuseOnly) && shadingModel != (ShadingModel.Glossy) && shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
                         {
-                            fragMainBody.Add($"{texName} = surfOut.{SurfaceOut.Emission.Item2};");
+                            if (shadingModel == ShadingModel.BRDF)
+                                fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, surfOut.{SurfaceOut.Thickness.Item2});");
+                            else
+                                fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, 1.0);");
                         }
                         break;
                     case (int)RenderTargetTextureTypes.Subsurface:

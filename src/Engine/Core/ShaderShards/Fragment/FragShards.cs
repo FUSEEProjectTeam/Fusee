@@ -72,9 +72,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             if (surfInput.ShadingModel != ShadingModel.BRDF) return res;
 
             if (surfInput.TextureSetup.HasFlag(TextureSetup.ThicknessMap))
-                res.Add($"OUT.thickness = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
+                res.Add($"OUT.{SurfaceOut.Thickness.Item2} = texture(IN.ThicknessMap, { VaryingNameDeclarations.TextureCoordinates}).r;");
             else
-                res.Add($"OUT.thickness = 1.0;");
+                res.Add($"OUT.{SurfaceOut.Thickness.Item2} = 1.0;");
             return res;
         }
     }

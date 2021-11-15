@@ -128,7 +128,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetEmissiveTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGB));
+            RenderTextures[(int)RenderTargetTextureTypes.Emission] = WritableTexture.CreateEmissionTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.RGBA));
         }
 
         /// <summary>

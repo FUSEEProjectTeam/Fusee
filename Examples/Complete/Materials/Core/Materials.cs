@@ -21,7 +21,6 @@ namespace Fusee.Examples.Materials.Core
 
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-        private readonly Camera _guiCampComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -29,7 +28,7 @@ namespace Fusee.Examples.Materials.Core
 
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
-        private const float RotationSpeed = 7;
+        private const float MovementSpeed = 0.0035f;
         private bool _keys;
 
         private SurfaceEffect _gold_brdfFx;
@@ -79,7 +78,7 @@ namespace Fusee.Examples.Materials.Core
             _gold_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(1.0f, 227f / 256f, 157f / 256, 1.0f).LinearColorFromSRgb(),
-                emissionColor: new float4(0, 0, 0, 0),
+                emissionColor: float3.Zero,
                 subsurfaceColor: float3.Zero,
                 roughness: 0.2f,
                 metallic: 1,
@@ -91,7 +90,7 @@ namespace Fusee.Examples.Materials.Core
             _paint_brdfFx = MakeEffect.FromBRDF
             (
                 new float4(float4.LinearColorFromSRgb(0x39979cFF)),
-                emissionColor: new float4(),
+                emissionColor: float3.Zero,
                 subsurfaceColor: float3.Zero,
                 roughness: 0.05f,
                 metallic: 0,
@@ -103,7 +102,7 @@ namespace Fusee.Examples.Materials.Core
             _rubber_brdfFx = MakeEffect.FromBRDF
             (
                 albedoColor: new float4(214f / 256f, 84f / 256f, 68f / 256f, 1.0f).LinearColorFromSRgb(),
-                emissionColor: new float4(),
+                emissionColor: float3.Zero,
                 subsurfaceColor: float3.Zero,
                 roughness: 1.0f,
                 metallic: 0,
@@ -120,7 +119,7 @@ namespace Fusee.Examples.Materials.Core
                 normalMapStrength: 1f,
                 normalTex: normalTex,
                 texTiles: new float2(3, 3),
-                emissionColor: new float4(),
+                emissionColor: float3.Zero,
                 subsurfaceColor: float3.Zero,
                 roughness: 0.3f,
                 metallic: 0,
@@ -131,14 +130,14 @@ namespace Fusee.Examples.Materials.Core
 
             _subsurf_brdfFx = MakeEffect.FromBRDF
             (
-                albedoColor: new float4(178f / 256, 135f / 256, 100f / 256, 1.0f).LinearColorFromSRgb(),
-                emissionColor: new float4(),
-                subsurfaceColor: new float3(1, 0, 0).LinearColorFromSRgb(),
+                albedoColor: float4.LinearColorFromSRgb(0xE5C298FF),
+                emissionColor: float3.Zero,
+                subsurfaceColor: new float3(0.3f, 0, 0).LinearColorFromSRgb(),
                 roughness: 0.508f,
                 metallic: 0,
                 specular: 0.079f,
                 ior: 1.4f,
-                subsurface: 0.2f,
+                subsurface: 1f,
                 albedoTex: null,
                 albedoMix: 0,
                 texTiles: float2.One,
@@ -148,7 +147,7 @@ namespace Fusee.Examples.Materials.Core
             );
 
             _glossy_Fx = MakeEffect.FromGlossy(new float4(1,0,0,1), 0.4f);
-            _emissive_Fx = MakeEffect.FromDiffuseSpecular(float4.One, 0.5f, 255, 0.5f, float4.LinearColorFromSRgb(0x2A84FAFF));
+            _emissive_Fx = MakeEffect.FromDiffuseSpecular(float4.One, 0.5f, 255, 0.5f, float3.LinearColorFromSRgb(0x2A84FA));
 
             _scene.Children[3].Components.Insert(1, _emissive_Fx);
             _scene.Children[4].Components.Insert(1, _brick_brdfFx);
@@ -180,22 +179,22 @@ namespace Fusee.Examples.Materials.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = -MovementSpeed * Mouse.XVel * DeltaTime;
+                _angleVelVert = -MovementSpeed * Mouse.YVel * DeltaTime;
             }
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = -MovementSpeed * touchVel.x * DeltaTime;
+                _angleVelVert = -MovementSpeed * touchVel.y * DeltaTime;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = MovementSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = MovementSpeed * Keyboard.UpDownAxis * DeltaTime;
                 }
             }
 

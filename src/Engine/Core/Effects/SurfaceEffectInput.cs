@@ -252,7 +252,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo color.
         /// </summary>
-        public float4 Emission
+        public float3 Emission
         {
             get => _emission;
 
@@ -265,7 +265,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private float4 _emission;
+        private float3 _emission;
 
         /// <summary>
         /// The strength of the specular lighting.
@@ -334,7 +334,7 @@ namespace Fusee.Engine.Core.Effects
         /// <summary>
         /// The albedo color.
         /// </summary>
-        public float4 Emission
+        public float3 Emission
         {
             get => _emission;
 
@@ -347,7 +347,7 @@ namespace Fusee.Engine.Core.Effects
                 }
             }
         }
-        private float4 _emission;
+        private float3 _emission;
 
         /// <summary>
         /// Value used to blend between the metallic and the dielectric model.

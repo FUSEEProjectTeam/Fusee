@@ -564,7 +564,7 @@ namespace Fusee.Tests.Serialization.V1
                        },
                        MakeEffect.FromDiffuseSpecular(
                            albedoColor: (float4)ColorUint.Red,
-                           emissionColor: float4.Zero,
+                           emissionColor: float3.Zero,
                            shininess: 4.0f,
                            specularStrength: 1.0f),
 
@@ -623,7 +623,7 @@ namespace Fusee.Tests.Serialization.V1
                                 new Transform {Translation=new float3(0, 60, 0),  Scale = new float3(20, 100, 20) },
                                 MakeEffect.FromDiffuseSpecular(
                                     albedoColor: (float4)ColorUint.Green,
-                                    emissionColor: float4.Zero,
+                                    emissionColor: float3.Zero,
                                     specularStrength: 1.0f,
                                     shininess: 4.0f),
                                 new Cube()
@@ -651,7 +651,7 @@ namespace Fusee.Tests.Serialization.V1
                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
                                                 MakeEffect.FromDiffuseSpecular(
                                                     albedoColor: (float4)ColorUint.Yellow,
-                                                    emissionColor: float4.Zero,
+                                                    emissionColor: float3.Zero,
                                                     specularStrength: 1.0f,
                                                     shininess: 4.0f),
                                                 new Cube()
@@ -675,7 +675,7 @@ namespace Fusee.Tests.Serialization.V1
                                                                 new Transform {Translation=new float3(0, 40, 0),  Scale = new float3(20, 100, 20) },
                                                                 MakeEffect.FromDiffuseSpecular(
                                                                                     albedoColor: (float4)ColorUint.Blue,
-                                                                                    emissionColor: float4.Zero,
+                                                                                    emissionColor: float3.Zero,
                                                                                     specularStrength: 1.0f,
                                                                                     shininess: 4.0f),
                                                                 new Cube()

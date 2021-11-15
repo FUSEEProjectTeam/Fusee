@@ -415,7 +415,7 @@ namespace Fusee.Engine.Core
         /// <param name="texTiles">The number of times the textures are repeated in x and y direction.</param>
         /// <param name="specularStrength">The resulting effects specular intensity.</param>
         /// <param name="roughness">If 0.0 (default value) the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.</param>
-        public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float roughness = 0f, float shininess = 255, float specularStrength = 0.5f, float4 emissionColor = new float4(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
+        public static SurfaceEffect FromDiffuseSpecular(float4 albedoColor, float roughness = 0f, float shininess = 255, float specularStrength = 0.5f, float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f)
         {
             var input = new SpecularInput()
             {
@@ -491,7 +491,7 @@ namespace Fusee.Engine.Core
         /// <param name="specular">Amount of dielectric specular reflection. </param>
         /// <param name="ior">The index of refraction. Note that this is set to 0.04 for dielectrics when rendering deferred.</param>
         /// <param name="subsurface">Mix between diffuse and subsurface scattering.</param>
-        public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float4 emissionColor = new float4(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f, Texture thicknessMap = null)
+        public static SurfaceEffect FromBRDF(float4 albedoColor, float roughness, float metallic, float specular, float ior, float subsurface = 0f, float3 subsurfaceColor = new float3(), float3 emissionColor = new float3(), Texture albedoTex = null, float albedoMix = 0f, float2 texTiles = new float2(), Texture normalTex = null, float normalMapStrength = 0.5f, Texture thicknessMap = null)
         {
             var input = new BRDFInput()
             {

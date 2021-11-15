@@ -611,7 +611,7 @@ namespace Fusee.Engine.Core
             if (m.NormalMap?.Texture != null && m.NormalMap.Texture != "")
                 textureSetup |= TextureSetup.NormalMap;
 
-            var emissive = m.Emissive?.Color == null ? new float4() : m.Emissive.Color;
+            var emissive = m.Emissive?.Color == null ? new float3() : m.Emissive.Color.rgb;
             var subsurfaceColor = m.BRDF?.SubsurfaceColor == null ? new float3() : m.BRDF.SubsurfaceColor;
 
             //TODO: Texture Tiles instead of float2.One - can they be exported?
@@ -691,7 +691,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.Add(m.Albedo.Texture, albedoTex);
                     }
-                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive, albedoTex, m.Albedo.Mix, float2.One);
+                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive.rgb, albedoTex, m.Albedo.Mix, float2.One);
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
@@ -703,7 +703,7 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.Add(m.NormalMap.Texture, normalTex);
                     }
-                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive, null, 0f, float2.One, normalTex, m.NormalMap.Intensity);
+                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive.rgb, null, 0f, float2.One, normalTex, m.NormalMap.Intensity);
                 }
                 else if (texSetup.HasFlag(TextureSetup.AlbedoTex) && texSetup.HasFlag(TextureSetup.NormalMap))
                 {
@@ -723,11 +723,11 @@ namespace Fusee.Engine.Core
                         };
                         _texMap.Add(m.NormalMap.Texture, normalTex);
                     }
-                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive, albedoTex, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
+                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive.rgb, albedoTex, m.Albedo.Mix, float2.One, normalTex, m.NormalMap.Intensity);
                 }
                 else if (!texSetup.HasFlag(TextureSetup.AlbedoTex) && !texSetup.HasFlag(TextureSetup.NormalMap))
                 {
-                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive);
+                    sfx = MakeEffect.FromDiffuseSpecular(m.Albedo.Color, roughness, shininess, specularStrength, emissive.rgb);
                 }
                 else
                     throw new ArgumentException("Material couldn't be resolved.");

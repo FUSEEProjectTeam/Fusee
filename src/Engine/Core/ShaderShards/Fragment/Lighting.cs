@@ -291,7 +291,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float Fss90 = LdotH * LdotH * roughness;",
                 "float Fss = mix(1.0, Fss90, FL) * mix(1.0, Fss90, FV);",
                 "float ss = 1.25 * (Fss * (1.0 / max((NdotL + NdotV), 0.001) - 0.5) + 0.5);",
-                "return mix((albedo) * Fd * NdotL, (subsurfaceColor) * thickness * ss, subsurface);"
+                "return mix(albedo * Fd * NdotL, subsurfaceColor * thickness * ss, subsurface);"
             };
             return GLSL.CreateMethod(GLSL.Type.Vec3, "DisneyDiffuseLighting",
                 new[]
@@ -661,7 +661,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add($"vec4 posTexVal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position]}, {VaryingNameDeclarations.TextureCoordinates});");
             methodBody.Add($"vec4 fragPos = vec4(posTexVal.xyz, 1.0);");
             methodBody.Add($"vec4 albedo = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
-            methodBody.Add($"vec4 emission = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec4 emissionAndThickness = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec3 emission = emissionAndThickness.rgb;");
+            methodBody.Add($"float thickness = emissionAndThickness.a;");
             methodBody.Add($"vec4 subsurfaceVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Subsurface]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Specular]}, {VaryingNameDeclarations.TextureCoordinates});");
 
@@ -787,7 +789,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"float LdotH5 = SchlickFresnel(NdotV);",
                 $"vec3 F = F0 + (1.0 - F0) * LdotH5;",
 
-                "vec3 diff = DisneyDiffuseLighting(albedo.rgb, NdotL, NdotV, LdotH, roughness, subsurface, subsurfaceColor, 1.0);",
+                "vec3 diff = DisneyDiffuseLighting(albedo.rgb, NdotL, NdotV, LdotH, roughness, subsurface, subsurfaceColor, thickness);",
                 "vec3 spec = specularLighting(NdotL, NdotV, LdotH, NdotH, roughness, F);",
 
                 $"//Diffuse color, taking the metallic value into account - metals do not have a diffuse component.",
@@ -860,7 +862,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "if(specularVars.a != 4.0) //4.0 == unlit",
                 "{",
                     $"float strength = (1.0 - ambientCo) * light.strength;",
-                    $"lighting = emission + ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);",
+                    $"lighting = vec4(emission.rgb, 1.0) + ambient + ((1.0 - shadow) * res * attenuation * strength * lightColor);",
                 "}",
                 "else",
                 "{",
