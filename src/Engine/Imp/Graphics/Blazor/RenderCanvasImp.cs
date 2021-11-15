@@ -75,8 +75,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <summary>
         /// Delta time increment, needed for update independent rendering
         /// </summary>
-        /// TODO(MR): implement
-        public float DeltaTimeUpdate => 0;
+        public float DeltaTimeUpdate { get; set; }
 
         /// <summary>
         /// Occurs during initialization.
@@ -129,8 +128,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </summary>
         public void Present()
         {
-            // Nothing to do in WebGL
-            //Update?.Invoke(this, null);
+            // Nothing to do in WebGL            
         }
 
         /// <summary>
@@ -195,6 +193,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public void DoInit()
         {
             Init?.Invoke(this, new InitEventArgs());
+        }
+
+        /// <summary>
+        /// Does perform the update of this instance
+        /// </summary>
+        public void DoUpdate()
+        {
+            Update?.Invoke(this, null);
         }
 
         /// <summary>

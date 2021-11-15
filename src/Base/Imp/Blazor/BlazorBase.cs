@@ -90,7 +90,7 @@ namespace Fusee.Base.Imp.Blazor
         /// <summary>
         /// Draw elements on canvas
         /// </summary>
-        public virtual void Draw()
+        public virtual void Draw(double elapsedMilliseconds)
         {
             gl.Enable(WebGLRenderingContextBase.DEPTH_TEST);
 

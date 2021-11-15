@@ -206,12 +206,17 @@ namespace Fusee.Examples.Simple.Blazor
         public override void Update(double elapsedMilliseconds)
         {
             if (_canvasImp != null)
-                _canvasImp.DeltaTime = (float)(elapsedMilliseconds / 1000.0);
+                _canvasImp.DeltaTimeUpdate = (float)(elapsedMilliseconds / 1000.0);
+
+            _canvasImp?.DoUpdate();
         }
 
-        public override void Draw()
+        public override void Draw(double elapsedMilliseconds)
         {
-            _canvasImp?.DoRender();
+            if (_canvasImp != null)
+                _canvasImp.DeltaTime = (float)(elapsedMilliseconds / 1000.0);
+
+            _canvasImp?.DoRender();        
         }
 
         public override void Resize(int width, int height)

@@ -2,7 +2,7 @@ using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Microsoft.JSInterop;
 using System;
-
+using System.Diagnostics;
 
 namespace Fusee.Base.Imp.Blazor
 {
@@ -68,6 +68,9 @@ namespace Fusee.Base.Imp.Blazor
             mainExecutable?.Resize(newX, newY);
         }
 
+        private static readonly Stopwatch _sw;
+        private static Stopwatch SW => _sw ?? new Stopwatch();
+
         /// <summary>
         /// Main application loop, triggered via Javascript RequestAnimationFrame
         /// </summary>
@@ -77,9 +80,14 @@ namespace Fusee.Base.Imp.Blazor
         {
             double elapsedMilliseconds = milliseconds - previousMilliseconds;
             previousMilliseconds = milliseconds;
+            SW.Start();
 
             mainExecutable.Update(elapsedMilliseconds);
-            mainExecutable.Draw();
+            var updateDelta = elapsedMilliseconds + SW.ElapsedMilliseconds;
+
+            SW.Stop();
+          
+            mainExecutable.Draw(updateDelta);
         }
 
         private void RequestAnimationFrame()
