@@ -49,7 +49,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Desktop
             var ptType = FuseePointCloudHelper.GetPtTypeFromMetaJson(PtRenderingParams.Instance.PathToOocFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
-            var genericType = Type.GetType("Fusee.PointCloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.PointCloud.PointAccessorCollections");
+            var genericType = Type.GetType("Fusee.PointCloud.Common." + ptEnumName + ", " + "Fusee.PointCloud.Common");
 
             var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);

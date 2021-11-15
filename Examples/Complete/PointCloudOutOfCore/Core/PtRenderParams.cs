@@ -15,7 +15,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         public ConcurrentDictionary<int, object> ShaderParamsToUpdate = new();
         public int MaxNoOfVisiblePoints = 500000;
-        public string PathToOocFile = "D://HolbeinPferdOctree";
+        public string PathToOocFile = "D://PW_ooc//Demo_A_06-Cloud02";
 
         public ShaderEffect DepthPassEf;
         public ShaderEffect ColorPassEf;
