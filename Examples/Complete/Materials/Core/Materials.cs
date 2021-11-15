@@ -289,7 +289,7 @@ namespace Fusee.Examples.Materials.Core
                         Translation = new float3(0, -1, 0),
                         Scale = new float3(50, 50,0.1f)
                     },
-                    MakeEffect.FromDiffuse(float4.One, 0, checkerboardTex, 1f, new float2(2,2)),
+                    MakeEffect.FromDiffuse(float4.One, 0, float3.Zero, checkerboardTex, 1f, new float2(2,2)),
                     new Plane()
                 }
             });

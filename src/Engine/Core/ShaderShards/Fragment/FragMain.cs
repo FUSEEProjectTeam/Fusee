@@ -94,14 +94,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Depth:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
-                    case (int)RenderTargetTextureTypes.Emission:
-                        if (shadingModel != (ShadingModel.DiffuseOnly) && shadingModel != (ShadingModel.Glossy) && shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
-                        {
+                    case (int)RenderTargetTextureTypes.Emission:                        
                             if (shadingModel == ShadingModel.BRDF)
                                 fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, surfOut.{SurfaceOut.Thickness.Item2});");
                             else
                                 fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, 1.0);");
-                        }
                         break;
                     case (int)RenderTargetTextureTypes.Subsurface:
                         if (shadingModel == ShadingModel.BRDF)
@@ -119,17 +116,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                                 case ShadingModel.DiffuseSpecular:
                                     fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.SpecularStrength.Item2}, surfOut.{SurfaceOut.Shininess.Item2}, surfOut.{SurfaceOut.Roughness.Item2}, 0.0);");
                                     break;
+                                case ShadingModel.Glossy:
                                 case ShadingModel.DiffuseOnly:
-                                    fragMainBody.Add("//Shading model is 'diffuse only' - store just roughness.");
+                                    fragMainBody.Add("//Shading model is 'diffuse only' or 'glossy' - store just roughness.");
                                     fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.{SurfaceOut.Roughness.Item2}, 0.0);");
                                     break;
                                 case ShadingModel.Unlit:
                                     fragMainBody.Add("//Shading model is 'unlit' - store just that.");
                                     fragMainBody.Add($"{texName} = vec4(0.0, 0.0, 0.0, 0.0);");
-                                    break;
-                                case ShadingModel.Glossy:
-                                    fragMainBody.Add("//Shading model is 'glossy' - store just roughness.");
-                                    fragMainBody.Add($"{texName} = vec4(0.0, 0.0, surfOut.{SurfaceOut.Roughness.Item2}, 0.0);");
                                     break;
                                 case ShadingModel.Edl:
                                     fragMainBody.Add("float encodedNeighbourPx = float((EDLNeighbourPixels & 0xF) | 0) / float(0xFF);");

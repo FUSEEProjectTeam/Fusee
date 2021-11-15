@@ -124,10 +124,10 @@ namespace Fusee.Engine.Core.ShaderShards
 
         private static readonly Dictionary<ShadingModel, ShadingModelShards> _shadingModelCache = new();
 
-        private static readonly string DefaultUnlitOut = $"{StructName}(vec3(0), vec4(0))";
-        private static readonly string DefaultDiffuseOut = $"{StructName}(vec3(0), vec4(0), vec3(0), 0.0)";
+        private static readonly string DefaultUnlitOut = $"{StructName}(vec3(0), vec4(0), vec3(0))";
+        private static readonly string DefaultDiffuseOut = $"{StructName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0)";
         private static readonly string DefaultDiffSpecOut = $"{StructName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0)";
-        private static readonly string DefaultGlossyOut = $"{StructName}(vec3(0), vec4(0), vec3(0), 0.0)";
+        private static readonly string DefaultGlossyOut = $"{StructName}(vec3(0), vec4(0),vec3(0), vec3(0), 0.0)";
         private static readonly string DerfafultBRDFOut = $"{StructName}(vec3(0), vec4(0), vec3(0), vec3(0), 0.0, 0.0, 0.0, 0.0, 0.0, vec3(1), 0.0)";
 
         /// <summary>
@@ -237,8 +237,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 $"  {GLSL.DecodeType(Albedo.Item1)} {Albedo.Item2};"
             };
 
-            if (setup.HasFlag(ShadingModel.DiffuseSpecular) || setup.HasFlag(ShadingModel.BRDF))
-                dcl.Add($"  {GLSL.DecodeType(Emission.Item1)} {Emission.Item2};");
+            dcl.Add($"  {GLSL.DecodeType(Emission.Item1)} {Emission.Item2};");
 
             if (!setup.HasFlag(ShadingModel.Unlit) && !setup.HasFlag(ShadingModel.Edl))
                 dcl.Add($"  {GLSL.DecodeType(Normal.Item1)} {Normal.Item2};");

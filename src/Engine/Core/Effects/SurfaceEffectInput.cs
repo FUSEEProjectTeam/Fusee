@@ -129,8 +129,26 @@ namespace Fusee.Engine.Core.Effects
     /// Class that can be used to collect properties that will serve as uniforms for diffuse only lighting calculation.
     /// In addition this input provides properties for albedo and normal textures.
     /// </summary>
-    public class DiffuseInput : SurfaceInput
+    public class DiffuseInput : UnlitInput
     {
+        /// <summary>
+        /// The albedo color.
+        /// </summary>
+        public float3 Emission
+        {
+            get => _emission;
+
+            set
+            {
+                if (value != _emission)
+                {
+                    _emission = value;
+                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
+                }
+            }
+        }
+        private float3 _emission;
+
         /// <summary>
         /// The roughness value. If 0.0 the diffuse component gives standard Lambertian reflection, higher values activate the Oren-Nayar calculation.
         /// </summary>
@@ -148,40 +166,6 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private float _roughness;
-
-        /// <summary>
-        /// The mix between albedo texture and albedo color.
-        /// </summary>
-        public float AlbedoMix
-        {
-            get => _albedoMix;
-            set
-            {
-                if (value != _albedoMix)
-                {
-                    _albedoMix = value;
-                    NotifyValueChanged(_albedoMix.GetType(), nameof(AlbedoMix), _albedoMix);
-                }
-            }
-        }
-        private float _albedoMix;
-
-        /// <summary>
-        /// The albedo texture.
-        /// </summary>
-        public Texture AlbedoTex
-        {
-            get => _albedoTex;
-            set
-            {
-                if (value != _albedoTex)
-                {
-                    _albedoTex = value;
-                    NotifyValueChanged(_albedoTex.GetType(), nameof(AlbedoTex), _albedoTex);
-                }
-            }
-        }
-        private Texture _albedoTex;
 
         /// <summary>
         /// The normal texture.
@@ -218,23 +202,6 @@ namespace Fusee.Engine.Core.Effects
         private float _normalMappingStrength = 1f;
 
         /// <summary>
-        /// The normal texture.
-        /// </summary>
-        public float2 TexTiles
-        {
-            get => _texTiles;
-            set
-            {
-                if (value != _texTiles)
-                {
-                    _texTiles = value;
-                    NotifyValueChanged(_texTiles.GetType(), nameof(TexTiles), _texTiles);
-                }
-            }
-        }
-        private float2 _texTiles = float2.One;
-
-        /// <summary>
         /// Creates a new instance of type <see cref="DiffuseInput"/>.
         /// </summary>
         public DiffuseInput()
@@ -249,24 +216,6 @@ namespace Fusee.Engine.Core.Effects
     /// </summary>
     public class SpecularInput : DiffuseInput
     {
-        /// <summary>
-        /// The albedo color.
-        /// </summary>
-        public float3 Emission
-        {
-            get => _emission;
-
-            set
-            {
-                if (value != _emission)
-                {
-                    _emission = value;
-                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
-                }
-            }
-        }
-        private float3 _emission;
-
         /// <summary>
         /// The strength of the specular lighting.
         /// </summary>

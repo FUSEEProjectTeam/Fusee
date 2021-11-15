@@ -20,8 +20,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             switch (surfInput.ShadingModel)
             {
-                case ShadingModel.Unlit:
                 case ShadingModel.Edl:
+                case ShadingModel.Unlit:
+                    res.Add("OUT.emission = vec3(0);"); 
                     break;
                 case ShadingModel.DiffuseSpecular:
                     res.Add("OUT.specularStrength = IN.SpecularStrength;");
@@ -30,7 +31,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     res.Add("OUT.emission = IN.Emission;");
                     break;
                 case ShadingModel.DiffuseOnly:
+                    res.Add("OUT.emission = IN.Emission;");
+                    break;
                 case ShadingModel.Glossy:
+                    res.Add("OUT.emission = vec3(0);");
                     res.Add("OUT.roughness = IN.Roughness;");
                     break;
                 case ShadingModel.BRDF:
