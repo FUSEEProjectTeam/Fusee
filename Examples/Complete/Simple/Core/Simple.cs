@@ -117,7 +117,7 @@ namespace Fusee.Examples.Simple.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-          
+
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);

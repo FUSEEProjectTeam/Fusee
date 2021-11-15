@@ -86,7 +86,7 @@ namespace Fusee.Base.Imp.Blazor
             var updateDelta = elapsedMilliseconds + SW.ElapsedMilliseconds;
 
             SW.Stop();
-          
+
             mainExecutable.Draw(updateDelta);
         }
 

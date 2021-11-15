@@ -216,7 +216,7 @@ namespace Fusee.Examples.Simple.Blazor
             if (_canvasImp != null)
                 _canvasImp.DeltaTime = (float)(elapsedMilliseconds / 1000.0);
 
-            _canvasImp?.DoRender();        
+            _canvasImp?.DoRender();
         }
 
         public override void Resize(int width, int height)
