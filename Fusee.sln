@@ -295,6 +295,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Base.Imp.Blazor", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Graphics.Blazor", "src\Engine\Imp\Graphics\Blazor\Fusee.Engine.Imp.Graphics.Blazor.csproj", "{717241B4-F2AA-4124-807A-68DB3C73157F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Camera.Blazor", "Examples\Complete\Camera\Blazor\Fusee.Examples.Camera.Blazor.csproj", "{AF490CC7-1711-4780-B065-4EEC0C23C55A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -1760,6 +1762,19 @@ Global
 		{717241B4-F2AA-4124-807A-68DB3C73157F}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{717241B4-F2AA-4124-807A-68DB3C73157F}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{717241B4-F2AA-4124-807A-68DB3C73157F}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1892,6 +1907,7 @@ Global
 		{E327FC67-1306-429D-9180-01BCD68A21A0} = {15338FBD-C26A-45E2-ACF8-202DA51448CB}
 		{FD216844-88A5-4BC3-80FF-880EEC7320F8} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{717241B4-F2AA-4124-807A-68DB3C73157F} = {6295AB06-EBE4-4887-A811-20737F6F8645}
+		{AF490CC7-1711-4780-B065-4EEC0C23C55A} = {C69C84C2-4C82-461B-B6AF-807BB341EEB8}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
