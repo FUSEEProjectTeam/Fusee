@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<RootNamespace>Fusee.PointCloud.Core</RootNamespace>
-		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 
 		<Description>Fusee PointCloud Core</Description>
 	</PropertyGroup>

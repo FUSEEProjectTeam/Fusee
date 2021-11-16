@@ -53,7 +53,7 @@ namespace Fusee.Examples.Materials.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            Core.Materials app = new();
+            var app = new Core.Materials();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
