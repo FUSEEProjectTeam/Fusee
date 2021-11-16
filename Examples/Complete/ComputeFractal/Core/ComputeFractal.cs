@@ -12,7 +12,7 @@ namespace Fusee.Examples.ComputeFractal.Core
 {
     //see: https://www.reddit.com/r/Unity3D/comments/7pa6bq/drawing_mandelbrot_fractal_using_gpu_compute/
 
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE ComputeFractal Example", Description = "A very simple example.")]
     public class ComputeFractal : RenderCanvas
     {
         private readonly Plane _plane = new();
