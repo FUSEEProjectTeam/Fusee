@@ -108,6 +108,29 @@ jobs:
         name: fusee-desktop-${{ matrix.os }}-examples
         path: bin/Release/Examples/**/Desktop/
 
+  buildblazor:
+    needs: [tests]
+    name: Build Blazor
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Setup dotnet macos workload
+      run: dotnet workload install macos
+    - name: Build Release-Desktop
+      run: dotnet build -c Release-Blazor Fusee.sln
+
   buildandroid:
     name: Build Android
     needs: [tests]
