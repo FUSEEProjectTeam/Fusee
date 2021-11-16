@@ -39,12 +39,10 @@ namespace Fusee.Examples.Picking.Core
         private bool _pick;
         private float2 _pickPos;
 
-        // Init is called on startup.
-        public override void Init()
-        {
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+        private bool _loaded;
 
+        private async void Load()
+        {
             // Create the robot model
             _scene = CreateScene();
 
@@ -52,15 +50,28 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example");
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            _loaded = true;
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(1, 1, 1, 1);
+
+            Load();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_loaded) return;
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -151,14 +162,14 @@ namespace Fusee.Examples.Picking.Core
 
             RC.Projection = orthographic;
             // Constantly check for interactive objects.
-            //if (!Input.Mouse.Desc.Contains("Android"))
-            //    _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
-            //
-            //if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
-            //{
-            //    _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            //}
-            //_guiRenderer.Render(RC);
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch != null && Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

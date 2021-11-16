@@ -385,6 +385,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         public const uint VERTEX_SHADER = 0x8B31;
 
+        public const uint COMPUTE_SHADER = 0x91B9;
+
         public const uint MAX_VERTEX_ATTRIBS = 0x8869;
 
         public const uint MAX_VERTEX_UNIFORM_VECTORS = 0x8DFB;

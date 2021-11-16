@@ -910,7 +910,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         }
 
         /// <summary>
-        /// Returns the current underlying rendering platform 
+        /// Returns the current underlying rendering platform
         /// </summary>
         public FuseePlatformId FuseePlatformId => FuseePlatformId.Blazor;
 
@@ -2477,7 +2477,29 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <exception cref="NotImplementedException"></exception>
         public IShaderHandle CreateShaderProgramCompute(string cs = null)
         {
-            throw new NotImplementedException();
+            var info = string.Empty;
+            // Compile compute shader
+            var computeObject = new WebGLShader();
+            if (!string.IsNullOrEmpty(cs))
+            {
+                computeObject = gl2.CreateShader(COMPUTE_SHADER);
+
+                gl2.ShaderSource(computeObject, cs);
+                gl2.CompileShader(computeObject);
+                info = gl2.GetShaderInfoLog(computeObject);
+            }
+
+            if (info != string.Empty)
+                throw new ApplicationException(info);
+
+            var program = gl2.CreateProgram();
+
+            gl2.AttachShader(program, computeObject);
+            gl2.LinkProgram(program); //Must be called AFTER BindAttribLocation
+            gl2.DetachShader(program, computeObject);
+            gl2.DeleteShader(computeObject);
+
+            return new ShaderHandleImp { Handle = program };
         }
 
         /// <summary>
