@@ -281,24 +281,6 @@ namespace Fusee.Engine.Core.Effects
     public class BRDFInput : DiffuseInput
     {
         /// <summary>
-        /// The albedo color.
-        /// </summary>
-        public float3 Emission
-        {
-            get => _emission;
-
-            set
-            {
-                if (value != _emission)
-                {
-                    _emission = value;
-                    NotifyValueChanged(_emission.GetType(), nameof(Emission), _emission);
-                }
-            }
-        }
-        private float3 _emission;
-
-        /// <summary>
         /// Value used to blend between the metallic and the dielectric model.
         /// </summary>
         public float Metallic
