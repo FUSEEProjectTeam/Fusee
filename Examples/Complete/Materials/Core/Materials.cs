@@ -18,8 +18,6 @@ namespace Fusee.Examples.Materials.Core
     public class Materials : RenderCanvas
     {
         private SceneRendererDeferred _renderer;
-        private readonly SceneRendererForward _guiDescRenderer;
-
         private float _alpha, _beta;
         private float _zoom = -25f;
         private float _offsetX, _offsetY = 0;
@@ -29,7 +27,7 @@ namespace Fusee.Examples.Materials.Core
         // Init is called on startup.
         public override void Init()
         {
-            Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            _ = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             Icosphere icosphereWithTangents = new(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
