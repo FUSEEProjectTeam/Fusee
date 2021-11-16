@@ -6,6 +6,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 {
 #pragma warning disable MEN002
 #pragma warning disable 1591
+
+    /// <summary>
+    /// Based upon the incredible work of the EvergineTeam
+    /// https://github.com/EvergineTeam/WebGL.NET/tree/master/src/WebGLDotNET
+    /// </summary>
     public partial class WebGLContextAttributes
     {
         public bool Alpha
