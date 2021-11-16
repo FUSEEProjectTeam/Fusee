@@ -16,6 +16,7 @@ components are released under:
 - SixLabors.Font - https://github.com/SixLabors/Fonts - Apache License 2.0
 - SixLabors.ImageSharp - https://github.com/SixLabors/ImageSharp - Apache License 2.0
 - SourcLink - https://github.com/dotnet/sourcelink - MIT
+- WebGL.NET - https://github.com/EvergineTeam/WebGL.NET - MIT
 - Xamarin.Android SDK - https://github.com/xamarin/xamarin-android - MIT
 - xUnit.net - https://github.com/xunit/xunit - Apache License 2.0 / MIT
 
