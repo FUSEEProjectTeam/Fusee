@@ -59,7 +59,7 @@ namespace Fusee.Base.Imp.Blazor
         /// <param name="c"></param>
         public Curve GetGlyphCurve(uint c)
         {
-            Curve curve = new Curve
+            Curve curve = new()
             {
                 CurveParts = new List<CurvePart>()
             };
@@ -79,8 +79,8 @@ namespace Fusee.Base.Imp.Blazor
             // Freetype contours are defined by their end points.
             short[] curvePartEndPoints = glyph.Instance.EndPoints.Select(x => (short)x).ToArray();
 
-            List<byte> partTags = new List<byte>();
-            List<float3> partVerts = new List<float3>();
+            List<byte> partTags = new();
+            List<float3> partVerts = new();
 
             //Writes points of a freetype contour into a CurvePart,
             for (int i = 0; i <= orgPointCoords.Length; i++)
@@ -207,7 +207,7 @@ namespace Fusee.Base.Imp.Blazor
 
             img.TryGetSinglePixelSpan(out Span<Rgba32> res);
 
-            ImageData ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), width, height, new ImagePixelFormat(ColorFormat.Intensity));
+            ImageData ret = new(res.ToArray().Select(x => x.A).ToArray(), width, height, new ImagePixelFormat(ColorFormat.Intensity));
 
             return ret;
         }
@@ -236,14 +236,14 @@ namespace Fusee.Base.Imp.Blazor
 
         public static void CurvePartVertice(CurvePart cp, int j, Vector2[] orgPointCoords, List<float3> partVerts)
         {
-            float3 vert = new float3(orgPointCoords[j].X, orgPointCoords[j].Y, 0);
+            float3 vert = new(orgPointCoords[j].X, orgPointCoords[j].Y, 0);
             partVerts.Add(vert);
         }
 
         public static CurvePart CreateCurvePart(Vector2[] orgPointCoords, byte[] pointTags, short[] curvePartEndPoints, int i, List<float3> partVerts, List<byte> partTags)
         {
             int index = Array.IndexOf(curvePartEndPoints, (short)i);
-            CurvePart cp = new CurvePart
+            CurvePart cp = new()
             {
                 IsClosed = true,
                 CurveSegments = new List<CurveSegment>()

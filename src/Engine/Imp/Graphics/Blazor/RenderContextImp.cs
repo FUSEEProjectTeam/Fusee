@@ -113,17 +113,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         private int GetWrapMode(TextureWrapMode wrapMode)
         {
-            switch (wrapMode)
+            return wrapMode switch
             {
+                TextureWrapMode.MirroredRepeat => (int)MIRRORED_REPEAT,
+                TextureWrapMode.ClampToBorder or TextureWrapMode.ClampToEdge => (int)CLAMP_TO_EDGE,
                 // case TextureWrapMode.Repeat:
-                default:
-                    return (int)REPEAT;
-                case TextureWrapMode.MirroredRepeat:
-                    return (int)MIRRORED_REPEAT;
-                case TextureWrapMode.ClampToBorder:
-                case TextureWrapMode.ClampToEdge:
-                    return (int)CLAMP_TO_EDGE;
-            }
+                _ => (int)REPEAT,
+            };
         }
 
         private uint GetDepthCompareFunc(Compare compareFunc)
@@ -212,29 +208,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             Diagnostics.Warn("GetEmptyArray", null, new object[] { tex });
 
-            switch (tex.PixelFormat.ColorFormat)
+            return tex.PixelFormat.ColorFormat switch
             {
-                case ColorFormat.RGBA:
-                    return new int[tex.Width * tex.Height * 4];
-                case ColorFormat.RGB:
-                    return new int[tex.Width * tex.Height * 3];
+                ColorFormat.RGBA => new int[tex.Width * tex.Height * 4],
+                ColorFormat.RGB => new int[tex.Width * tex.Height * 3],
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case ColorFormat.Intensity:
-                    return new int[tex.Width * tex.Height];
-                case ColorFormat.Depth24:
-                case ColorFormat.Depth16:
-                    return new int[tex.Width * tex.Height];
-                case ColorFormat.uiRgb8:
-                    return new int[tex.Width * tex.Height * 4];
-                case ColorFormat.fRGB32:
-                case ColorFormat.fRGB16:
-                    return new float[tex.Width * tex.Height * 3];
-                case ColorFormat.fRGBA16:
-                    return new float[tex.Width * tex.Height * 4];
-                default:
-                    throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}");
-            }
-
+                ColorFormat.Intensity => new int[tex.Width * tex.Height],
+                ColorFormat.Depth24 or ColorFormat.Depth16 => new int[tex.Width * tex.Height],
+                ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
+                ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
+                ColorFormat.fRGBA16 => new float[tex.Width * tex.Height * 4],
+                _ => throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}"),
+            };
         }
 
         /// <summary>
@@ -282,8 +267,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.BindTexture(TEXTURE_2D, id);
 
             Tuple<int, int> glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            int minFilter = glMinMagFilter.Item1;
-            int magFilter = glMinMagFilter.Item2;
+            _ = glMinMagFilter.Item1;
+            _ = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
@@ -314,8 +299,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.BindTexture(TEXTURE_2D, id);
 
             Tuple<int, int> glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            int minFilter = glMinMagFilter.Item1;
-            int magFilter = glMinMagFilter.Item2;
+            _ = glMinMagFilter.Item1;
+            _ = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
@@ -570,7 +555,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public IList<ShaderParamInfo> GetActiveUniformsList(IShaderHandle shaderProgram)
         {
             ShaderHandleImp sProg = (ShaderHandleImp)shaderProgram;
-            List<ShaderParamInfo> paramList = new List<ShaderParamInfo>();
+            List<ShaderParamInfo> paramList = new();
 
             int nParams = gl2.GetProgramParameter(sProg.Handle, ACTIVE_UNIFORMS);
 
@@ -578,7 +563,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 WebGLActiveInfo activeInfo = gl2.GetActiveUniform(sProg.Handle, i);
 
-                ShaderParamInfo paramInfo = new ShaderParamInfo
+                ShaderParamInfo paramInfo = new()
                 {
                     Name = activeInfo.Name,
                     Size = activeInfo.Size
@@ -586,40 +571,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
-                switch (uType)
+                paramInfo.Type = uType switch
                 {
-                    case INT:
-                        paramInfo.Type = typeof(int);
-                        break;
-                    case FLOAT:
-                        paramInfo.Type = typeof(float);
-                        break;
-                    case FLOAT_VEC2:
-                        paramInfo.Type = typeof(float2);
-                        break;
-                    case FLOAT_VEC3:
-                        paramInfo.Type = typeof(float3);
-                        break;
-                    case FLOAT_VEC4:
-                        paramInfo.Type = typeof(float4);
-                        break;
-                    case FLOAT_MAT4:
-                        paramInfo.Type = typeof(float4x4);
-                        break;
-                    case SAMPLER_2D:
-                    case UNSIGNED_INT_SAMPLER_2D:
-                    case INT_SAMPLER_2D:
-                    case SAMPLER_2D_SHADOW:
-                        paramInfo.Type = typeof(ITextureBase);
-                        break;
-                    case SAMPLER_CUBE_SHADOW:
-                    case SAMPLER_CUBE:
-                        paramInfo.Type = typeof(IWritableCubeMap);
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
+                    INT => typeof(int),
+                    FLOAT => typeof(float),
+                    FLOAT_VEC2 => typeof(float2),
+                    FLOAT_VEC3 => typeof(float3),
+                    FLOAT_VEC4 => typeof(float4),
+                    FLOAT_MAT4 => typeof(float4x4),
+                    SAMPLER_2D or UNSIGNED_INT_SAMPLER_2D or INT_SAMPLER_2D or SAMPLER_2D_SHADOW => typeof(ITextureBase),
+                    SAMPLER_CUBE_SHADOW or SAMPLER_CUBE => typeof(IWritableCubeMap),
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
                 paramList.Add(paramInfo);
             }
             return paramList;
@@ -1634,66 +1597,44 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         internal static uint BlendOperationToOgl(BlendOperation bo)
         {
-            switch (bo)
+            return bo switch
             {
-                case BlendOperation.Add:
-                    return FUNC_ADD;
-                case BlendOperation.Subtract:
-                    return FUNC_SUBTRACT;
-                case BlendOperation.ReverseSubtract:
-                    return FUNC_REVERSE_SUBTRACT;
-                case BlendOperation.Minimum:
-                    throw new NotSupportedException("MIN blending mode not supported in WebGL!");
-                case BlendOperation.Maximum:
-                    throw new NotSupportedException("MAX blending mode not supported in WebGL!");
-                default:
-                    throw new ArgumentOutOfRangeException($"Invalid argument: {bo}");
-            }
+                BlendOperation.Add => FUNC_ADD,
+                BlendOperation.Subtract => FUNC_SUBTRACT,
+                BlendOperation.ReverseSubtract => FUNC_REVERSE_SUBTRACT,
+                BlendOperation.Minimum => throw new NotSupportedException("MIN blending mode not supported in WebGL!"),
+                BlendOperation.Maximum => throw new NotSupportedException("MAX blending mode not supported in WebGL!"),
+                _ => throw new ArgumentOutOfRangeException($"Invalid argument: {bo}"),
+            };
         }
 
         internal static BlendOperation BlendOperationFromOgl(uint bom)
         {
-            switch (bom)
+            return bom switch
             {
-                case FUNC_ADD:
-                    return BlendOperation.Add;
-                case FUNC_SUBTRACT:
-                    return BlendOperation.Subtract;
-                case FUNC_REVERSE_SUBTRACT:
-                    return BlendOperation.ReverseSubtract;
-                default:
-                    throw new ArgumentOutOfRangeException($"Invalid argument: {bom}");
-            }
+                FUNC_ADD => BlendOperation.Add,
+                FUNC_SUBTRACT => BlendOperation.Subtract,
+                FUNC_REVERSE_SUBTRACT => BlendOperation.ReverseSubtract,
+                _ => throw new ArgumentOutOfRangeException($"Invalid argument: {bom}"),
+            };
         }
 
         internal static uint BlendToOgl(Blend blend, bool isForAlpha = false)
         {
-            switch (blend)
+            return blend switch
             {
-                case Blend.Zero:
-                    return (int)ZERO;
-                case Blend.One:
-                    return (int)ONE;
-                case Blend.SourceColor:
-                    return (int)SRC_COLOR;
-                case Blend.InverseSourceColor:
-                    return (int)ONE_MINUS_SRC_COLOR;
-                case Blend.SourceAlpha:
-                    return (int)SRC_ALPHA;
-                case Blend.InverseSourceAlpha:
-                    return (int)ONE_MINUS_SRC_ALPHA;
-                case Blend.DestinationAlpha:
-                    return (int)DST_ALPHA;
-                case Blend.InverseDestinationAlpha:
-                    return (int)ONE_MINUS_DST_ALPHA;
-                case Blend.DestinationColor:
-                    return (int)DST_COLOR;
-                case Blend.InverseDestinationColor:
-                    return (int)ONE_MINUS_DST_COLOR;
-                case Blend.BlendFactor:
-                    return (uint)(int)((isForAlpha) ? CONSTANT_ALPHA : CONSTANT_COLOR);
-                case Blend.InverseBlendFactor:
-                    return (uint)(int)((isForAlpha) ? ONE_MINUS_CONSTANT_ALPHA : ONE_MINUS_CONSTANT_COLOR);
+                Blend.Zero => (int)ZERO,
+                Blend.One => (int)ONE,
+                Blend.SourceColor => (int)SRC_COLOR,
+                Blend.InverseSourceColor => (int)ONE_MINUS_SRC_COLOR,
+                Blend.SourceAlpha => (int)SRC_ALPHA,
+                Blend.InverseSourceAlpha => (int)ONE_MINUS_SRC_ALPHA,
+                Blend.DestinationAlpha => (int)DST_ALPHA,
+                Blend.InverseDestinationAlpha => (int)ONE_MINUS_DST_ALPHA,
+                Blend.DestinationColor => (int)DST_COLOR,
+                Blend.InverseDestinationColor => (int)ONE_MINUS_DST_COLOR,
+                Blend.BlendFactor => (uint)(int)((isForAlpha) ? CONSTANT_ALPHA : CONSTANT_COLOR),
+                Blend.InverseBlendFactor => (uint)(int)((isForAlpha) ? ONE_MINUS_CONSTANT_ALPHA : ONE_MINUS_CONSTANT_COLOR),
                 // Ignored...
                 // case Blend.SourceAlphaSaturated:
                 //     break;
@@ -1705,44 +1646,28 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 //    break;
                 //case Blend.InverseSourceColor2:
                 //    break;
-                default:
-                    throw new ArgumentOutOfRangeException("blend");
-            }
+                _ => throw new ArgumentOutOfRangeException("blend"),
+            };
         }
 
         internal static Blend BlendFromOgl(uint bf)
         {
-            switch (bf)
+            return bf switch
             {
-                case ZERO:
-                    return Blend.Zero;
-                case ONE:
-                    return Blend.One;
-                case SRC_COLOR:
-                    return Blend.SourceColor;
-                case ONE_MINUS_SRC_COLOR:
-                    return Blend.InverseSourceColor;
-                case SRC_ALPHA:
-                    return Blend.SourceAlpha;
-                case ONE_MINUS_SRC_ALPHA:
-                    return Blend.InverseSourceAlpha;
-                case DST_ALPHA:
-                    return Blend.DestinationAlpha;
-                case ONE_MINUS_DST_ALPHA:
-                    return Blend.InverseDestinationAlpha;
-                case DST_COLOR:
-                    return Blend.DestinationColor;
-                case ONE_MINUS_DST_COLOR:
-                    return Blend.InverseDestinationColor;
-                case CONSTANT_COLOR:
-                case CONSTANT_ALPHA:
-                    return Blend.BlendFactor;
-                case ONE_MINUS_CONSTANT_COLOR:
-                case ONE_MINUS_CONSTANT_ALPHA:
-                    return Blend.InverseBlendFactor;
-                default:
-                    throw new ArgumentOutOfRangeException("blend");
-            }
+                ZERO => Blend.Zero,
+                ONE => Blend.One,
+                SRC_COLOR => Blend.SourceColor,
+                ONE_MINUS_SRC_COLOR => Blend.InverseSourceColor,
+                SRC_ALPHA => Blend.SourceAlpha,
+                ONE_MINUS_SRC_ALPHA => Blend.InverseSourceAlpha,
+                DST_ALPHA => Blend.DestinationAlpha,
+                ONE_MINUS_DST_ALPHA => Blend.InverseDestinationAlpha,
+                DST_COLOR => Blend.DestinationColor,
+                ONE_MINUS_DST_COLOR => Blend.InverseDestinationColor,
+                CONSTANT_COLOR or CONSTANT_ALPHA => Blend.BlendFactor,
+                ONE_MINUS_CONSTANT_COLOR or ONE_MINUS_CONSTANT_ALPHA => Blend.InverseBlendFactor,
+                _ => throw new ArgumentOutOfRangeException("blend"),
+            };
         }
 
         /// <summary>
@@ -1916,36 +1841,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     {
                         uint depFunc;
                         depFunc = gl2.GetParameter(DEPTH_FUNC);
-                        Compare ret;
-                        switch (depFunc)
+                        var ret = depFunc switch
                         {
-                            case NEVER:
-                                ret = Compare.Never;
-                                break;
-                            case LESS:
-                                ret = Compare.Less;
-                                break;
-                            case EQUAL:
-                                ret = Compare.Equal;
-                                break;
-                            case LEQUAL:
-                                ret = Compare.LessEqual;
-                                break;
-                            case GREATER:
-                                ret = Compare.Greater;
-                                break;
-                            case NOTEQUAL:
-                                ret = Compare.NotEqual;
-                                break;
-                            case GEQUAL:
-                                ret = Compare.GreaterEqual;
-                                break;
-                            case ALWAYS:
-                                ret = Compare.Always;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException("depFunc", "Value " + depFunc + " not handled");
-                        }
+                            NEVER => Compare.Never,
+                            LESS => Compare.Less,
+                            EQUAL => Compare.Equal,
+                            LEQUAL => Compare.LessEqual,
+                            GREATER => Compare.Greater,
+                            NOTEQUAL => Compare.NotEqual,
+                            GEQUAL => Compare.GreaterEqual,
+                            ALWAYS => Compare.Always,
+                            _ => throw new ArgumentOutOfRangeException("depFunc", "Value " + depFunc + " not handled"),
+                        };
                         return (uint)ret;
                     }
                 case RenderState.ZEnable:
@@ -2005,7 +1912,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 case RenderState.BlendFactor:
                     {
                         uint c = gl2.GetParameter(BLEND_COLOR);
-                        ColorUint uintCol = new ColorUint(c);
+                        ColorUint uintCol = new(c);
                         return (uint)uintCol.ToRgba();
                     }
                 default:
@@ -2167,7 +2074,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             if (!renderTarget.IsDepthOnly)
             {
-                List<uint> attachments = new List<uint>();
+                List<uint> attachments = new();
 
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
@@ -2286,15 +2193,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns>uint</returns>
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
-            switch (capability)
+            return capability switch
             {
-                case HardwareCapability.CanRenderDeferred:
-                    return 0U;
-                case HardwareCapability.CanUseGeometryShaders:
-                    return 0U; //WASM uses OpenGL es, where no geometry shaders can be used.
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
-            }
+                HardwareCapability.CanRenderDeferred => 0U,
+                HardwareCapability.CanUseGeometryShaders => 0U,//WASM uses OpenGL es, where no geometry shaders can be used.
+                _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
+            };
         }
 
         /// <summary>
@@ -2348,7 +2252,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = Fusee.Base.Core.ImageData.CreateImage(w, h, ColorUint.Black);
-            byte[] pixelDataTA = image.PixelData; // Uint8Array.From(image.PixelData);
+            _ = image.PixelData; // Uint8Array.From(image.PixelData);
             // TODO(MR): Check!
             gl2.ReadPixels(x, y, w, h, RGB /* yuk, yuk ??? */, UNSIGNED_BYTE, 0);
             return image;
@@ -2509,7 +2413,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns></returns>
         public IRenderTarget CreateGBufferTarget(TexRes res)
         {
-            RenderTarget gBufferRenderTarget = new RenderTarget(res);
+            RenderTarget gBufferRenderTarget = new(res);
             gBufferRenderTarget.SetPositionTex();
             gBufferRenderTarget.SetAlbedoSpecularTex();
             gBufferRenderTarget.SetNormalTex();

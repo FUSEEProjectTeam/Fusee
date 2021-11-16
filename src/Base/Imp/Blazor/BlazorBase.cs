@@ -58,7 +58,7 @@ namespace Fusee.Base.Imp.Blazor
 
             canvasWidth = canvas.GetObjectProperty<int>(runtime, "width");
             canvasHeight = canvas.GetObjectProperty<int>(runtime, "height");
-            WebGLContextAttributes ctxAttr = new WebGLContextAttributes(canvas)
+            WebGLContextAttributes ctxAttr = new(canvas)
             {
                 Alpha = false,
                 Antialias = false, // visible vertices edge glitches with antialias
