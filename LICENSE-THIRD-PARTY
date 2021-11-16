@@ -2,6 +2,25 @@ Fusee contains freely available open source software and assets. They are govern
 by their respective license terms and conditions. As the time of writing, these
 components are released under:
 
+- .NET SDK - https://github.com/dotnet/sdk - MIT
+- .NET Blazor SDK - https://github.com/dotnet/blazor - Apache License 2.0
+- Command Line Parser Library - https://github.com/commandlineparser/commandline - MIT
+- Json.NET - https://github.com/JamesNK/Newtonsoft.Json - MIT
+- LASlib - https://github.com/LAStools/LAStools/tree/master/LASlib - LGPL
+- Lato - https://fonts.google.com/specimen/Lato - SIL Open Font License 1.1
+- OpenTK - http://www.opentk.com/ - MIT
+- Potree - https://github.com/potree/potree - BSD 2-Clause "Simplified" License
+- Protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified
+- Protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0
+- SixLabors.Font - https://github.com/SixLabors/Fonts - Apache License 2.0
+- SixLabors.ImageSharp - https://github.com/SixLabors/ImageSharp - Apache License 2.0
+- SourcLink - https://github.com/dotnet/sourcelink - MIT
+- Xamarin.Android SDK - https://github.com/xamarin/xamarin-android - MIT
+- xUnit.net - https://github.com/xunit/xunit - Apache License 2.0 / MIT
+
+
+Software that is used by older versions of Fusee:
+
 - Aforge - http://www.aforgenet.com/ - LGPL v3 / GPL v3 | Version: 2.2.5
 - Bullet Physics - http://bulletphysics.org/ - zlib license | Version:
 - Cabin.ttf - http://www.google.com/fonts/specimen/Cabin - SIL Open Font License 1.1
@@ -11,21 +30,16 @@ components are released under:
 - Libmpg123 - http://www.mpg123.de/ - LGPL 2.1 | Version:
 - Lidgren - https://github.com/lidgren/lidgren-network-gen3 - MIT | Version: git commit 5df02d
 - NUnit - http://www.nunit.org/ - based on zlib/libpng | Version: 3.0.0 Under Development
-- OpenTK - http://www.opentk.com/ - MIT | Version: git commit 95d677
 - Opentype.js - https://github.com/nodebox/opentype.js - MIT | Version: git commit effe26
-- Protobuf - https://code.google.com/p/protobuf/ - BSD New/Simplified | Version:
-- Protobuf-net - https://code.google.com/p/protobuf-net/ - Apache License 2.0 | Version:
 - SFML - http://www.sfml-dev.org/ - zlib/libpng | Version:
 - SlimDX - http://slimdx.org/ - MIT/X11 | Version:
 - SharpFont - https://github.com/Robmaister/SharpFont - MIT | Version: git commit 7f0e43
 - SoundJS - http://www.createjs.com/#!/SoundJS - MIT | Version: 0.6.0
 
+
 -------------------------------------------------------------------------------
 
-
 The MIT License (MIT)
-
-Copyright (c) 2014 FuseeProjectTeam
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -45,9 +59,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
 -------------------------------------------------------------------------------
-
 
 The zlib/libpng License
 
@@ -66,9 +78,7 @@ misrepresented as being the original software.
 
 -------------------------------------------------------------------------------
 
------------------------------------------------------------
 SIL OPEN FONT LICENSE Version 1.1 - 26 February 2007
------------------------------------------------------------
 
 PREAMBLE
 The goals of the Open Font License (OFL) are to stimulate worldwide
@@ -152,3 +162,69 @@ INCLUDING ANY GENERAL, SPECIAL, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL
 DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
+
+-------------------------------------------------------------------------------
+
+BSD New/Simplified
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are
+met:
+
+    * Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following disclaimer
+    in the documentation and/or other materials provided with the
+    distribution.
+    * Neither the name of Google Inc. nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+Code generated by the Protocol Buffer compiler is owned by the owner
+of the input file used when generating it.  This code is not
+standalone and requires a support library to be linked with it.  This
+support library is itself covered by the above license.
+
+-------------------------------------------------------------------------------
+
+BSD 2-Clause "Simplified" License
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this
+   list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice,
+   this list of conditions and the following disclaimer in the documentation
+   and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
