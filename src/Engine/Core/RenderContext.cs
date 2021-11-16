@@ -204,6 +204,7 @@ namespace Fusee.Engine.Core
             get => _view;
             set
             {
+                if (_view == value) return;
                 _view = value;
 
                 _modelViewOK = false;
@@ -257,6 +258,8 @@ namespace Fusee.Engine.Core
             get => _model;
             set
             {
+                if (_model == value) return;
+
                 _model = value;
 
                 _modelViewOK = false;
@@ -310,6 +313,7 @@ namespace Fusee.Engine.Core
             get => _projection;
             set
             {
+                if (_projection == value) return;
                 // Update matrix
                 _projection = value;
 
@@ -481,7 +485,6 @@ namespace Fusee.Engine.Core
                 return _invProjection;
             }
         }
-
 
         /// <summary>
         /// The inverse of the ModelViewProjection matrix.
