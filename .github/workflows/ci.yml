@@ -128,7 +128,7 @@ jobs:
         dotnet-version: 6.0.x
     - name: Setup dotnet macos workload
       run: dotnet workload install macos
-    - name: Build Release-Desktop
+    - name: Build Release-Blazor
       run: dotnet build -c Release-Blazor Fusee.sln
 
   buildandroid:
@@ -141,6 +141,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.x
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
     - name: Build with MSBuild
