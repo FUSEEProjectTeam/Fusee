@@ -112,7 +112,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             for (int i = 0; i < args.Length; i++)
             {
-                object arg = args[i];
+                _ = args[i];
 
                 //if (arg is ITypedArray typedArray && typedArray != null)
                 //{
@@ -221,7 +221,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     }
                     else
                     {
-                        List<object> argArray = new List<object>();
+                        List<object> argArray = new();
                         foreach (object item in (System.Array)arg)
                         {
                             argArray.Add(item);

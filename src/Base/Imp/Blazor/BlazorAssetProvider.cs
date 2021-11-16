@@ -58,7 +58,7 @@ namespace Fusee.Base.Imp.Blazor
             _baseDir = (string.IsNullOrEmpty(baseDir)) ? "Assets" : baseDir;
             _runtime = runtime;
 
-            if (_baseDir[_baseDir.Length - 1] != '/')
+            if (_baseDir[^1] != '/')
                 _baseDir += '/';
 
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
@@ -68,7 +68,7 @@ namespace Fusee.Base.Imp.Blazor
                 DecoderAsync = async (string _, object storage) =>
                 {
                     Stream storageStream = (Stream)storage;
-                    using StreamReader streamReader = new StreamReader(storageStream, Encoding.ASCII);
+                    using StreamReader streamReader = new(storageStream, Encoding.ASCII);
                     return await streamReader.ReadToEndAsync().ConfigureAwait(false);
                 },
                 Checker = _ => true // If it's there, we can handle it...
@@ -87,7 +87,7 @@ namespace Fusee.Base.Imp.Blazor
         protected override Stream GetStream(string id)
         {
             string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
-            using HttpClient httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             Task<HttpResponseMessage> response = httpClient.GetAsync(id);
             return response.Result.Content.ReadAsStreamAsync().Result;
         }
@@ -103,7 +103,7 @@ namespace Fusee.Base.Imp.Blazor
         protected override async Task<Stream> GetStreamAsync(string id)
         {
             string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
-            HttpClient httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
 
             Diagnostics.Debug($"Requesting '{id}' at '{baseAddress}' ...");
 
@@ -112,7 +112,7 @@ namespace Fusee.Base.Imp.Blazor
                 HttpResponseMessage response = await httpClient.GetAsync(id);
                 response.EnsureSuccessStatusCode();
                 byte[] stream = await response.Content.ReadAsByteArrayAsync();
-                MemoryStream ms = new MemoryStream(stream); // copy to memory stream to prevent any loading issues
+                MemoryStream ms = new(stream); // copy to memory stream to prevent any loading issues
                 httpClient.Dispose();
                 return ms;
             }
@@ -143,7 +143,7 @@ namespace Fusee.Base.Imp.Blazor
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
-            using HttpClient httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             Task<HttpResponseMessage> response = httpClient.GetAsync(id);
             return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
         }
@@ -161,7 +161,7 @@ namespace Fusee.Base.Imp.Blazor
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
-            using HttpClient httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             HttpResponseMessage response = await httpClient.GetAsync(id).ConfigureAwait(false);
             return response.StatusCode == System.Net.HttpStatusCode.OK;
         }

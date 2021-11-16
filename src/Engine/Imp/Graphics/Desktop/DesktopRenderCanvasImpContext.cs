@@ -10,7 +10,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     internal class DesktopRenderCanvasImpContext : SynchronizationContext
     {
         private readonly ConcurrentQueue<Tuple<SendOrPostCallback, object?>> _allCallbacks =
-    new ConcurrentQueue<Tuple<SendOrPostCallback, object?>>();
+    new();
 
 
         public override void Post(SendOrPostCallback d, object? state)

@@ -1109,24 +1109,16 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <returns>The value at the given axis.</returns>
         public float GetAxis(int iAxisId)
         {
-            switch (iAxisId)
+            return iAxisId switch
             {
-                case (int)MouseAxes.X:
-                case (int)MouseAxes.Y:
-                    throw new InvalidOperationException("MouseAxes.X/Y are event-based axes. Do not call GetAxis!");
-                case (int)MouseAxes.Wheel:
-                    return _currentMouseWheel;
-                case (int)MouseAxes.MinX:
-                    return 0;
-                case (int)MouseAxes.MaxX:
-                    return GetWindowWidth();
-                case (int)MouseAxes.MinY:
-                    return 0;
-                case (int)MouseAxes.MaxY:
-                    //return 9999;
-                    return GetWindowHeight();
-            }
-            throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
+                (int)MouseAxes.X or (int)MouseAxes.Y => throw new InvalidOperationException("MouseAxes.X/Y are event-based axes. Do not call GetAxis!"),
+                (int)MouseAxes.Wheel => _currentMouseWheel,
+                (int)MouseAxes.MinX => 0,
+                (int)MouseAxes.MaxX => GetWindowWidth(),
+                (int)MouseAxes.MinY => 0,
+                (int)MouseAxes.MaxY => GetWindowHeight(),//return 9999;
+                _ => throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis."),
+            };
         }
 
         /// <summary>
