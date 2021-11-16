@@ -171,26 +171,26 @@ namespace Fusee.Base.Imp.Desktop
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a file stream to the asset.</returns>
-        protected override async Task<Stream> GetStreamAsync(string id)
+        protected override Task<Stream> GetStreamAsync(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
             if (Path.IsPathRooted(id))
-                return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
+                return Task.FromResult(new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)); // open stream async
 
             // Path seems relative. First see if the file exists at the current working directory
             if (File.Exists(id))
-                return new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
+                return Task.FromResult(new FileStream(id, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)); // open stream async
 
             // At last, look at the specified base directories
             foreach (var baseDir in _baseDirs)
             {
                 string path = Path.Combine(baseDir, id);
                 if (File.Exists(path))
-                    return new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true); // open stream async
+                    return Task.FromResult(new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)); // open stream async
             }
-            return null;
+            return Task.FromResult(null);
 
         }
 
