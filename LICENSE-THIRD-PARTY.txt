@@ -1,7 +1,3 @@
-Fusee is licensed under the MIT license (see below).
-
--------------------------------------------------------------------------------
-
 Fusee contains freely available open source software and assets. They are governed
 by their respective license terms and conditions. As the time of writing, these
 components are released under:
