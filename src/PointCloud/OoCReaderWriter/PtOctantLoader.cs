@@ -9,6 +9,7 @@ using Fusee.PointCloud.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -108,6 +109,11 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         public int PointThreshold { get; set; } = 1000000;
 
+        ///The amount of milliseconds needed to pass before rendering next frame
+        public const double UpdateRate = 1000 / 30d;
+        private double _frameCapCounter = UpdateRate;
+        private Stopwatch _timer = new();
+
         private float _minProjSizeModifier = 0.1f;
         private readonly PointType _ptType;
 
@@ -157,18 +163,26 @@ namespace Fusee.PointCloud.OoCReaderWriter
         {
             RC = rc;
             _wfcEffect = (SurfaceEffect)RC.DefaultEffect;
-
+            _timer.Start();
             Task loadingTask = new(() =>
             {
                 Thread.CurrentThread.Name = "OocLoader";
                 while (!IsShuttingDown)
                 {
-                    if (_globalLoadingCache.IsEmpty)
-                        continue;
-
-                    _globalLoadingCache.OrderByDescending(kvp => kvp.Value.GetComponent<OctantD>().ProjectedScreenSize);
-
-                    LoadNode(PtAcc);
+                    if (_timer.ElapsedMilliseconds >= _frameCapCounter)
+                    {
+                        if (!_globalLoadingCache.IsEmpty)
+                        {
+                            _globalLoadingCache.OrderByDescending(kvp => kvp.Value.GetComponent<OctantD>().ProjectedScreenSize);
+                            LoadNode(PtAcc);
+                        }
+                        _frameCapCounter += UpdateRate;
+                    }
+                    if (_timer.ElapsedMilliseconds >= 1000)
+                    {
+                        _frameCapCounter = 0;
+                        _timer.Restart();
+                    }
                 }
             });
             loadingTask.Start();

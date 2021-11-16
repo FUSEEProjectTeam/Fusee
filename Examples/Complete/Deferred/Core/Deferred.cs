@@ -83,8 +83,7 @@ namespace Fusee.Examples.Deferred.Core
                         PointShape = (int)PointShape.Paraboloid,
                         DepthTex = null,
                         EDLStrength = 1f,
-                        EDLNeighbourPixels = 2,
-                        FUSEE_ScreenParams = new float2(Width, Height)
+                        EDLNeighbourPixels = 2
                     }
                 }
             };
@@ -197,6 +196,7 @@ namespace Fusee.Examples.Deferred.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            Diagnostics.Warn(FramesPerSecond);
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
