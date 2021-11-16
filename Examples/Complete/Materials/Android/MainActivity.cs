@@ -14,7 +14,7 @@ using Fusee.Serialization;
 using System.IO;
 using Font = Fusee.Base.Core.Font;
 
-namespace Fusee.Examples.SurfaceEffects.Android
+namespace Fusee.Examples.Materials.Android
 {
     [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
@@ -72,7 +72,7 @@ namespace Fusee.Examples.SurfaceEffects.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.SurfaceEffects();
+                var app = new Core.Materials();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var rci = new RenderCanvasImp(ApplicationContext, null, delegate
@@ -85,8 +85,8 @@ namespace Fusee.Examples.SurfaceEffects.Android
 
                 SetContentView(rci.View);
 
-                Engine.Core.Input.AddDriverImp(
-                    new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
+                Input.AddDriverImp(
+                    new RenderCanvasInputDriverImp(app.CanvasImplementor));
                 // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvasImplementor));
                 // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
             }
