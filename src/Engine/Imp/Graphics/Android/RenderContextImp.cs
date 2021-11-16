@@ -266,6 +266,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     format = PixelFormat.Rgba;
                     pxType = PixelType.UnsignedByte;
                     break;
+                case ColorFormat.fRGBA32:
+                    // SHOULD:
+                    //internalFormat = PixelInternalFormat.Rgba32f;
+                    //format = PixelFormat.Rgba;
+                    //pxType = PixelType.Float;
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.UnsignedByte;
+                    break;
+                case ColorFormat.iRGBA32:
+                    // SHOULD:
+                    //internalFormat = PixelInternalFormat.Rgba32f;
+                    //format = PixelFormat.Rgba;
+                    //pxType = PixelType.Float;
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Rgba;
+                    pxType = PixelType.UnsignedByte;
+                    break;
 
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
