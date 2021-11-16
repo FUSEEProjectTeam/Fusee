@@ -63,15 +63,14 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             ShininessVal.Text = PtRenderingParams.Instance.Shininess.ToString();
             SpecStrength.Value = PtRenderingParams.Instance.SpecularStrength;
-
-            var col = PtRenderingParams.Instance.SingleColor;
-            SingleColor.SelectedColor = System.Windows.Media.Color.FromScRgb(col.a, col.r, col.g, col.b);
             SSAOStrength.IsEnabled = PtRenderingParams.Instance.CalcSSAO;
 
-            if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
-                SingleColor.IsEnabled = false;
-            else
-                SingleColor.IsEnabled = true;
+            //ColorPicker is unavailable right now
+            //var col = PtRenderingParams.Instance.SingleColor;
+            //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
+            //    SingleColor.IsEnabled = false;
+            //else
+            //    SingleColor.IsEnabled = true;
 
             InnerGrid.IsEnabled = false;
         }
@@ -316,10 +315,11 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
             PtRenderingParams.Instance.ColorMode = (ColorMode)e.AddedItems[0];
 
-            if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
-                SingleColor.IsEnabled = false;
-            else
-                SingleColor.IsEnabled = true;
+            //ColorPicker is unavailable right now
+            //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
+            //    SingleColor.IsEnabled = false;
+            //else
+            //    SingleColor.IsEnabled = true;
         }
 
         private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
