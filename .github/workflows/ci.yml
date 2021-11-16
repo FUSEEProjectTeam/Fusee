@@ -20,6 +20,10 @@ jobs:
       DOTNET_NOLOGO: true
     steps:
     - uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: dotnet tool restore
       run: dotnet tool restore
     - name: dotnet format folder
@@ -49,6 +53,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: AssetStorage
       run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
     - name: Math
@@ -78,6 +86,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
     - name: Upload Player-Artifact
