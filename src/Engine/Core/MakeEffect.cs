@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
             var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var ps = DeferredShaders.SSAOFrag ;
+            var ps = DeferredShaders.SSAOFrag;
 
             if (kernelLength != 64)
             {
