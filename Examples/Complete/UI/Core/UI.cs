@@ -151,7 +151,7 @@ namespace Fusee.Examples.UI.Core
 
             var nineSliceTextureNode = TextureNode.Create(
                 "testImage",
-                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
+                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.jpg")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 

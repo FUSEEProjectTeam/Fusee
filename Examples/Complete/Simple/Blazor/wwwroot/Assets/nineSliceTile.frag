@@ -64,15 +64,19 @@ void main()
 			float uvX = bringInRange(p1.x , p1.x + width / Tile.x, p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
-			outColor = vec4(texture(AlbedoTexture, vec2(uvX , uvY)) * AlbedoMix) * Albedo *  max(dot(N, L), 0.0);
+            vec4 baseColor = texture(AlbedoTexture, vec2(uvX, uvY)) * AlbedoMix * Albedo;
+            vec3 diff = baseColor.rgb *  max(dot(N, L), 0.0);        
+            outColor = vec4(diff, baseColor.a);
 		}
 		//Last tile
 		else if(currentTileX == Tile.x) 
 		{
 			float uvX = bringInRange(p1.x + (width * (currentTileX / Tile.x)), p1.x + width, p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
-
-			outColor = vec4(texture(AlbedoTexture, vec2(uvX, uvY)) * AlbedoMix) * Albedo *  max(dot(N, L), 0.0);	
+			
+            vec4 baseColor = texture(AlbedoTexture, vec2(uvX, uvY)) * AlbedoMix * Albedo;
+            vec3 diff = baseColor.rgb *  max(dot(N, L), 0.0);        
+            outColor = vec4(diff, baseColor.a);
 		}
 		//Every tile inbetween
 		else 
@@ -80,9 +84,14 @@ void main()
 			float uvX = bringInRange( p1.x + (width * (currentTileX / Tile.x)), p1.x + (width * ((currentTileX + 1.0) / Tile.x)), p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
-			outColor = vec4(texture(AlbedoTexture, vec2(uvX , uvY)) * AlbedoMix) * Albedo *  max(dot(N, L), 0.0);
+            vec4 baseColor = texture(AlbedoTexture, vec2(uvX , uvY)) * AlbedoMix * Albedo;
+            vec3 diff = baseColor.rgb *  max(dot(N, L), 0.0);        
+            outColor = vec4(diff, baseColor.a);
 		}	
 	}
-	else
-		outColor = vec4(texture(AlbedoTexture,vUV) * AlbedoMix)* Albedo *  max(dot(N, L), 0.0);	
+	else{
+        vec4 baseColor = texture(AlbedoTexture, vUV) * AlbedoMix* Albedo;
+        vec3 diff = baseColor.rgb *  max(dot(N, L), 0.0);        
+		outColor = vec4(diff, baseColor.a);
+    }
 }
