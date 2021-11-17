@@ -1,62 +1,58 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-        <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
-        <Description>Fusee Engine Core</Description>
-        <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Core</OutputPath>
-        <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-    </PropertyGroup>
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
-    <Description>Fusee Engine Core</Description>
-    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Core</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<Description>Fusee Engine Core</Description>
+		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Core</OutputPath>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+	</PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<Description>Fusee Engine Core</Description>
+		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Core</OutputPath>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-        <Compile Remove="NuGet\**" />
-        <EmbeddedResource Remove="NuGet\**" />
-        <None Remove="NuGet\**" />
-        <Content Remove="C:\Users\roetner\source\repos\Fusee\\\art\Deliverables\FuseeIcon128WithTextSquare.png" />
-        <None Remove="Assets\Shader\BRDF.vert" />
-    </ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+		<Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
+	</ItemGroup>
 
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-    </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
 </Project>

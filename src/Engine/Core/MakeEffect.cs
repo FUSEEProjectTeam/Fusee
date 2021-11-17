@@ -40,7 +40,7 @@ namespace Fusee.Engine.Core
             new FxPassDeclaration
             {
                 VS = DeferredShaders.DeferredVert,
-                PS = DeferredShaders.FXAAFragShader,
+                PS = DeferredShaders.FXAAFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
             var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var ps = DeferredShaders.SSAO;
+            var ps = DeferredShaders.SSAOFrag;
 
             if (kernelLength != 64)
             {
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var frag = DeferredShaders.SimpleBlur;
+            var frag = DeferredShaders.BlurFrag;
             var blurKernelSize = ssaoRenderTex.Width switch
             {
                 (int)TexRes.Low => 2.0f,
