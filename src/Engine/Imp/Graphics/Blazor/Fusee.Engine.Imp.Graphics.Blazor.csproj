@@ -12,7 +12,7 @@
     </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Imp.Graphics.Blazor</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 

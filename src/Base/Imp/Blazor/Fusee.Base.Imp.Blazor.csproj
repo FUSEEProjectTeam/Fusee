@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Blazor</OutputPath>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
 

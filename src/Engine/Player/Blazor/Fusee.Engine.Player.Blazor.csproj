@@ -7,7 +7,7 @@
         <Nullable>disable</Nullable>
         <Platforms>AnyCPU</Platforms>
 		<IsPackable>false</IsPackable>
-		<OutputPath>$(BaseOutputPath)\Player\Core\</OutputPath>
+		<OutputPath>$(BaseOutputPath)\Player\Blazor\</OutputPath>
     </PropertyGroup>
 
 
