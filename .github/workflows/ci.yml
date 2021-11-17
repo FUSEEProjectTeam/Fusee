@@ -130,8 +130,10 @@ jobs:
       run: dotnet workload install macos
     - name: Build Release-Blazor
       run: dotnet build -c Release-Blazor Fusee.sln
+    - name: Install wasm-tools workload
+      run: dotnet workload install wasm-tools
     - name: Publish F.E.Player.Blazor
-      run: dotnet publish -c Debug -p:PublishProfile=FolderProfileDebug src\Engine\Player\Blazor\Fusee.Engine.Player.Blazor.csproj
+      run: dotnet publish -c Debug -p:PublishProfile=FolderProfileDebug src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
     - name: Upload Player-Artifact
       uses: actions/upload-artifact@v2
       with:
