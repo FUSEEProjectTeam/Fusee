@@ -20,8 +20,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _sponzaScene;
-        //private SceneRendererDeferred _sceneRendererDeferred;
+        private SceneRendererDeferred _sceneRendererDeferred;
         private SceneRendererForward _sceneRendererForward;
+        private SceneRendererForward _guiRenderer;
 
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
@@ -41,7 +42,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         public async void Load()
         {
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -147,8 +148,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
             );
 
             // Wrap a SceneRenderer around the scene.
-            //_sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
+            _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
             _sceneRendererForward = new SceneRendererForward(_sponzaScene);
+            _guiRenderer = new SceneRendererForward(_gui);
 
             _load = true;
         }
@@ -218,11 +220,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _keys = true;
             }
 
-            //if (Keyboard.IsKeyDown(KeyCodes.F))
-            //    _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
-            //
-            //if (Keyboard.IsKeyDown(KeyCodes.G))
-            //    _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
+            if (Keyboard.IsKeyDown(KeyCodes.F))
+                _sceneRendererDeferred.FxaaOn = !_sceneRendererDeferred.FxaaOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.G))
+                _sceneRendererDeferred.SsaoOn = !_sceneRendererDeferred.SsaoOn;
 
             if (Mouse.LeftButton)
             {
@@ -258,10 +260,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
             else if (Keyboard.IsKeyDown(KeyCodes.F1) && !_renderDeferred)
                 _renderDeferred = true;
 
-            //if (_renderDeferred)
-            //    _sceneRendererDeferred.Render(RC);
-            //else
-            _sceneRendererForward.Render(RC);
+            if (_renderDeferred)
+                _sceneRendererDeferred.Render(RC);
+            else
+                _sceneRendererForward.Render(RC);
 
             //_guiRenderer.Render(RC);
 

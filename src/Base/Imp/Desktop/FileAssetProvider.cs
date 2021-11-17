@@ -61,7 +61,7 @@ namespace Fusee.Base.Imp.Desktop
                     var ext = Path.GetExtension(id).ToLower();
                     return ext switch
                     {
-                        ".jpg" or ".jpeg" or ".png" or ".bmp" => FileDecoder.LoadImage((Stream)storage),
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => FileDecoder.LoadImage((Stream)storage),
                         _ => null,
                     };
                 },
@@ -70,7 +70,7 @@ namespace Fusee.Base.Imp.Desktop
                     var ext = Path.GetExtension(id).ToLower();
                     return ext switch
                     {
-                        ".jpg" or ".jpeg" or ".png" or ".bmp" => await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false),
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false),
                         _ => null,
                     };
                 },
@@ -79,7 +79,7 @@ namespace Fusee.Base.Imp.Desktop
                     var ext = Path.GetExtension(id).ToLower();
                     return ext switch
                     {
-                        ".jpg" or ".jpeg" or ".png" or ".bmp" => true,
+                        ".jpg" or ".jpeg" or ".png" or ".bmp" or ".tga" => true,
                         _ => false,
                     };
                 }

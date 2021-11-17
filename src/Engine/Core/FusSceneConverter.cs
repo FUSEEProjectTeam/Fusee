@@ -216,9 +216,8 @@ namespace Fusee.Engine.Core
                     node.Components.Insert(hasTransform ? 1 : 0, effect);
 
                     // calculate tangents and bitangets if normal mapping is enabled for this material/effect
-                    var currentNodeDefaultSurfaceEffect = node.GetComponent<DefaultSurfaceEffect>();
                     var mesh = node.GetComponent<Mesh>();
-                    if (mesh != null && currentNodeDefaultSurfaceEffect != null && currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                    if (mesh != null )
                     {
                         mesh.Tangents = mesh.CalculateTangents();
                         mesh.BiTangents = mesh.CalculateBiTangents();
