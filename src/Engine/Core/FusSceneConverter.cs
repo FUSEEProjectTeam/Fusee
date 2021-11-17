@@ -217,7 +217,7 @@ namespace Fusee.Engine.Core
 
                     // calculate tangents and bitangets if normal mapping is enabled for this material/effect
                     var mesh = node.GetComponent<Mesh>();
-                    if (mesh != null )
+                    if (mesh != null)
                     {
                         mesh.Tangents = mesh.CalculateTangents();
                         mesh.BiTangents = mesh.CalculateBiTangents();
