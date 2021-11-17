@@ -13,14 +13,11 @@
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
-    <ItemGroup>
-        <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-        <Compile Remove="NuGet\**" />
-        <EmbeddedResource Remove="NuGet\**" />
-        <None Remove="NuGet\**" />
-        <Content Remove="C:\Users\roetner\source\repos\Fusee\\\art\Deliverables\FuseeIcon128WithTextSquare.png" />
-        <None Remove="Assets\Shader\BRDF.vert" />
-    </ItemGroup>
+	<ItemGroup>
+		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+		<None Remove="Assets\Shader\BRDF.vert" />
+		<Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
+	</ItemGroup>
 
 
   <ItemGroup>
