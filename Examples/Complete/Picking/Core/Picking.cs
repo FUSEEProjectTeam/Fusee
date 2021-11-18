@@ -156,7 +156,7 @@ namespace Fusee.Examples.Picking.Core
 
                 _pick = false;
             }
-            
+
             _sceneRenderer.Render(RC);
 
             //Set the matrices for rendering the UI
