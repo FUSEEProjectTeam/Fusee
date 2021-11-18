@@ -179,7 +179,7 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
 
             // During scene traversal we collect all effects but do not create them, yet
-            // within this loop the look up and texture retrival is being performed in an asynchronous way            
+            // within this loop the look up and texture retrival is being performed in an asynchronous way
 
             foreach (var mat in _allEffects.Keys)
             {
@@ -210,15 +210,14 @@ namespace Fusee.Engine.Core
                         Diagnostics.Warn($"Node {node} already contains an effect, multiple effects can't be rendered or be used, yet!");
                     }
 
-                    // always insert after transform but before any other component to not break 
+                    // always insert after transform but before any other component to not break
                     // code which relies upon this oder
                     var hasTransform = node.GetComponent<Transform>() != null;
                     node.Components.Insert(hasTransform ? 1 : 0, effect);
 
                     // calculate tangents and bitangets if normal mapping is enabled for this material/effect
-                    var currentNodeDefaultSurfaceEffect = node.GetComponent<DefaultSurfaceEffect>();
                     var mesh = node.GetComponent<Mesh>();
-                    if (mesh != null && currentNodeDefaultSurfaceEffect != null && currentNodeDefaultSurfaceEffect.LightingSetup.HasFlag(LightingSetupFlags.NormalMap))
+                    if (mesh != null)
                     {
                         mesh.Tangents = mesh.CalculateTangents();
                         mesh.BiTangents = mesh.CalculateBiTangents();
@@ -282,7 +281,7 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             }
 
-            // TODO: Test animation and refactor animation method from scene renderer to this converter 
+            // TODO: Test animation and refactor animation method from scene renderer to this converter
         }
 
 
@@ -1105,7 +1104,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvAnimation(Animation a)
         {
-            // TODO: Test animation and refactor animation method from scene renderer to this converter 
+            // TODO: Test animation and refactor animation method from scene renderer to this converter
         }
 
         ///<summary>

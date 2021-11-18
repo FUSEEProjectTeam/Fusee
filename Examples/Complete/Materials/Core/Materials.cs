@@ -18,8 +18,6 @@ namespace Fusee.Examples.Materials.Core
     public class Materials : RenderCanvas
     {
         private SceneRendererDeferred _renderer;
-        private SceneRendererForward _guiDescRenderer;
-
         private float _alpha, _beta;
         private float _zoom = -25f;
         private float _offsetX, _offsetY = 0;
@@ -29,258 +27,18 @@ namespace Fusee.Examples.Materials.Core
         // Init is called on startup.
         public override void Init()
         {
-            Font fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            FontMap fontLatoMap = new(fontLato, 32);
+            _ = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             Icosphere icosphereWithTangents = new(5);
             icosphereWithTangents.Tangents = icosphereWithTangents.CalculateTangents();
             icosphereWithTangents.BiTangents = icosphereWithTangents.CalculateBiTangents();
 
             icosphereWithTangents.BoundingBox = new AABBf(icosphereWithTangents.Vertices);
-
-            float canvasWidth = Width / 100f;
-            float canvasHeight = Height / 100f;
+            _ = Width / 100f;
+            _ = Height / 100f;
 
             var albedoTex = new Texture(AssetStorage.Get<ImageData>("albedoTex.jpg"));
             var normalTex = new Texture(AssetStorage.Get<ImageData>("normalTex.jpg"));
-
-            SceneContainer guiDescriptionScene = new()
-            {
-                Children = new List<SceneNode>
-                {
-                    new CanvasNode("Canvas", CanvasRenderMode.World, new MinMaxRect
-                    {
-                        Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                        Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                    })
-                    {
-                        Children = new ChildList
-                        {
-                            new TextNode(
-                            "How-To:\n############################\n- Move with WASD\n- Left mouse button rotates spheres\n- Mouse wheel zooms",
-                            "howTo",
-                            GuiElementPosition.GetAnchors(AnchorPos.DownDownLeft),
-                            GuiElementPosition.CalcOffsets(AnchorPos.DownDownLeft, new float2(-11, -5), canvasHeight, canvasWidth, new float2(12, 1)),
-                            fontLatoMap,
-                            new float4(1, 1, 0, 1).LinearColorFromSRgb(),
-                            HorizontalTextAlignment.Left,
-                            VerticalTextAlignment.Center)
-                        }
-                    },
-                    new CanvasNode("Complete", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Name = "TextTransform",
-                                Translation = new float3(-15, 2.5f, 0)
-                            }
-                        },
-                        Children = new ChildList
-                        {
-                                new TextNode(
-                                "Complete",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect(),
-                                fontLatoMap,
-                                (float4)ColorUint.Black,
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center),new TextNode(
-                                "NOT YET IMPLEMENTED",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect
-                                {
-                                    Max = new float2(0, 0),
-                                    Min = new float2(0, -1.25f)
-                                },
-                                fontLatoMap,
-                                new float4(1,0,0,0.5f),
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center)
-                        }
-                    },
-                    new CanvasNode("Albedo and specular", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Name = "TextTransform",
-                                Translation = new float3(-10, 2.5f, 0)
-                            }
-                        },
-                        Children = new ChildList
-                        {
-                                new TextNode(
-                                "Albedo and Specular",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect(),
-                                fontLatoMap,
-                                (float4)ColorUint.Black,
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center)
-                        }
-                    },
-                    new CanvasNode("Albedo, specular and albedo texture", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Name = "TextTransform",
-                                Translation = new float3(-5, 2.5f, 0)
-                            }
-                        },
-                        Children = new ChildList
-                        {
-                                new TextNode(
-                                "Albedo, specular and\nalbedo texture",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect(),
-                                fontLatoMap,
-                                (float4)ColorUint.Black,
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center)
-                        }
-                    },
-                    new CanvasNode("Specular texture", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Name = "TextTransform",
-                                Translation = new float3(0, 2.5f, 0)
-                            }
-                        },
-                        Children = new ChildList
-                        {
-                                new TextNode(
-                                "Specular texture",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect(),
-                                fontLatoMap,
-                                (float4)ColorUint.Black,
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center),
-                                new TextNode(
-                                "NOT YET IMPLEMENTED",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect
-                                {
-                                    Max = new float2(0, 0),
-                                    Min = new float2(0, -1.25f)
-                                },
-                                fontLatoMap,
-                                new float4(1,0,0,0.75f).LinearColorFromSRgb(),
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center)
-                        }
-                    },
-                    new CanvasNode("Normal map", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                    {
-                        Components = new List<SceneComponent>
-                        {
-                            new Transform
-                            {
-                                Name = "TextTransform",
-                                Translation = new float3(5, 2.5f, 0)
-                            }
-                        },
-                        Children = new ChildList
-                        {
-                                new TextNode(
-                                "Normal map",
-                                "desc",
-                                MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                new MinMaxRect(),
-                                fontLatoMap,
-                                (float4)ColorUint.Black,
-                                HorizontalTextAlignment.Left,
-                                VerticalTextAlignment.Center)
-                        }
-                    },
-                    new CanvasNode("Albedo and emissive", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                            {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Name = "TextTransform",
-                                        Translation = new float3(10, 2.5f, 0)
-                                    }
-                                },
-                                Children = new ChildList
-                                {
-                                     new TextNode(
-                                        "Albedo and emissive",
-                                        "desc",
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect(),
-                                        fontLatoMap,
-                                        (float4)ColorUint.Black,
-                                        HorizontalTextAlignment.Left,
-                                        VerticalTextAlignment.Center),
-                                      new TextNode(
-                                        "NOT YET IMPLEMENTED",
-                                        "desc",
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect
-                                        {
-                                            Max = new float2(0, 0),
-                                            Min = new float2(0, -1.25f)
-                                        },
-                                        fontLatoMap,
-                                        new float4(1,0,0,0.75f).LinearColorFromSRgb(),
-                                        HorizontalTextAlignment.Left,
-                                        VerticalTextAlignment.Center)
-                                }
-                            },
-                    new CanvasNode("Albedo and emissive with texture", CanvasRenderMode.World, MinMaxRect.FromCenterSize(float2.Zero, float2.One))
-                            {
-                                Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Name = "TextTransform",
-                                        Translation = new float3(15, 3, 0)
-                                    }
-                                },
-                                Children = new ChildList
-                                {
-                                     new TextNode(
-                                        "Albedo, emissive and\nemissive texture",
-                                        "desc",
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect(),
-                                        fontLatoMap,
-                                        (float4)ColorUint.Black,
-                                        HorizontalTextAlignment.Left,
-                                        VerticalTextAlignment.Center),
-                                     new TextNode(
-                                        "NOT YET IMPLEMENTED",
-                                        "desc",
-                                        MinMaxRect.FromCenterSize(float2.Zero, float2.One),
-                                        new MinMaxRect
-                                        {
-                                            Max = new float2(0, 0),
-                                            Min = new float2(0, -1.75f)
-                                        },
-                                        fontLatoMap,
-                                        new float4(1,0,0,0.75f).LinearColorFromSRgb(),
-                                        HorizontalTextAlignment.Left,
-                                        VerticalTextAlignment.Center)
-                                }
-                            }
-                }
-            };
 
             _scene = new SceneContainer
             {
@@ -318,7 +76,7 @@ namespace Fusee.Examples.Materials.Core
 
                                         //SpecularMix = 1f,
                                         //SpecularTexture = "specularTex.jpg",
-                                        
+
                                         //EmissiveColor = new float4(0, 1, 1, 1),
                                         //EmissiveMix = 0.5f,
                                         //EmissiveTexture = "emissiveTex.jpg"
@@ -365,39 +123,6 @@ namespace Fusee.Examples.Materials.Core
                                     icosphereWithTangents
                                 }
                             },
-                            // ---- Specular Textures are not implemented yet. There is no fitting shader! ---- //
-                            //new SceneNode
-                            //{
-                            //    Components = new List<SceneComponent>
-                            //    {
-                            //        new Transform
-                            //        {
-                            //            Name = "specular texture",
-                            //            Translation = new float3(0, 0, 0)
-                            //        },
-                            //        ShaderCodeBuilder.MakeShaderEffectFromShaderEffectPropsProto(new ShaderEffectProps
-                            //        {
-                            //            MatProbs =
-                            //            {
-                            //                HasAlbedo = true,
-                            //                HasAlbedoTexture = true,
-                            //                HasSpecular = true,
-                            //                HasSpecularTexture = true
-                            //            },
-                            //            MatType = MaterialType.Standard,
-                            //            MatValues =
-                            //            {
-                            //                AlbedoColor = new float4(0.39f, 0.19f, 0, 1),
-                            //                SpecularColor = float4.One,
-                            //                SpecularIntensity = 2f,
-                            //                SpecularShininess = 25f,
-                            //                SpecularMix = 1f, // TODO: Implement in ShaderShards
-                            //                SpecularTexture = "specularTex.jpg" // TODO: Implement in ShaderShards
-                            //            }
-                            //        }),
-                            //        icosphereWithTangents
-                            //    }
-                            //},
                             new SceneNode
                             {
                                 Components = new List<SceneComponent>
@@ -479,7 +204,7 @@ namespace Fusee.Examples.Materials.Core
                 }
             };
 
-            _guiDescRenderer = new SceneRendererForward(guiDescriptionScene);
+            //_guiDescRenderer = new SceneRendererForward(guiDescriptionScene);
             _renderer = new SceneRendererDeferred(_scene);
         }
 
@@ -500,7 +225,7 @@ namespace Fusee.Examples.Materials.Core
                 _beta -= speed.y * 0.00001f;
             }
 
-            // damping            
+            // damping
             float curDamp = (float)System.Math.Exp(-0.8 * Time.DeltaTime);
             _alpha *= curDamp;
             _beta *= curDamp;
@@ -518,7 +243,7 @@ namespace Fusee.Examples.Materials.Core
 
             _renderer.Render(RC);
 
-            _guiDescRenderer.Render(RC);
+            //_guiDescRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

@@ -12,7 +12,7 @@ namespace Fusee.Examples.ComputeFractal.Core
 {
     //see: https://www.reddit.com/r/Unity3D/comments/7pa6bq/drawing_mandelbrot_fractal_using_gpu_compute/
 
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE ComputeFractal Example", Description = "A very simple example.")]
     public class ComputeFractal : RenderCanvas
     {
         private readonly Plane _plane = new();
@@ -40,10 +40,11 @@ namespace Fusee.Examples.ComputeFractal.Core
         private readonly float _zNear = 0.1f;
         private readonly float _zFar = 100f;
 
-        // Init is called on startup.
-        public override void Init()
+        private bool _loaded;
+
+        private async void Load()
         {
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
             _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GuiText>();
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
@@ -74,7 +75,7 @@ namespace Fusee.Examples.ComputeFractal.Core
 
             _computeShader = new ComputeShader(
 
-                shaderCode: AssetStorage.Get<string>("MandelbrotFractal.comp"),
+                shaderCode: await AssetStorage.GetAsync<string>("MandelbrotFractal.comp"),
                 effectParameters: new IFxParamDeclaration[]
                 {
                     new FxParamDeclaration<WritableTexture> { Name = "destTex", Value = RWTexture},
@@ -88,8 +89,8 @@ namespace Fusee.Examples.ComputeFractal.Core
 
              new FxPassDeclaration
              {
-                 VS = AssetStorage.Get<string>("RenderTexToScreen.vert"),
-                 PS = AssetStorage.Get<string>("RenderTexToScreen.frag"),
+                 VS = await AssetStorage.GetAsync<string>("RenderTexToScreen.vert"),
+                 PS = await AssetStorage.GetAsync<string>("RenderTexToScreen.frag"),
                  StateSet = new RenderStateSet
                  {
                      AlphaBlendEnable = false,
@@ -106,11 +107,21 @@ namespace Fusee.Examples.ComputeFractal.Core
             _colors.SetData(_colorData);
 
             _sih = new SceneInteractionHandler(_gui);
+
+            _loaded = true;
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            Load();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_loaded) return;
+
             MoveFractal();
             RWTexture.AsImage = true;
             RC.SetEffect(_computeShader);

@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateIn(Type type, string varName)
         {
-            return $"in  {DecodeType(type)} {varName};\n";
+            return $"in {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateVar(Type type, string varName)

@@ -13,13 +13,17 @@ on:
   
 jobs:
   lint:
-    runs-on: windows-latest
+    runs-on: windows-2022
     name: Linting
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
     steps:
     - uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: dotnet tool restore
       run: dotnet tool restore
     - name: dotnet format folder
@@ -44,11 +48,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: AssetStorage
       run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
     - name: Math
@@ -73,11 +81,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ 'windows-latest', 'ubuntu-latest', 'macos-latest' ]
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
     - name: Upload Player-Artifact
@@ -96,16 +108,56 @@ jobs:
         name: fusee-desktop-${{ matrix.os }}-examples
         path: bin/Release/Examples/**/Desktop/
 
+  buildblazor:
+    needs: [tests]
+    name: Build Blazor
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Setup dotnet macos workload
+      run: dotnet workload install macos
+    - name: Build Release-Blazor
+      run: dotnet build -c Release-Blazor Fusee.sln
+    - name: Install wasm-tools workload
+      run: dotnet workload install wasm-tools
+    - name: Publish F.E.Player.Blazor
+      run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
+    - name: Upload Player-Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-blazor-${{ matrix.os }}-player
+        path: bin/Release/Player/Blazor/net6.0/publish/
+
   buildandroid:
     name: Build Android
     needs: [tests]
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
-    runs-on: windows-latest
+    runs-on: windows-2022
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: '[17.0,]'  
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
     - name: Build with MSBuild
@@ -117,7 +169,7 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -125,6 +177,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Setup .NET 6.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v1
         with:
