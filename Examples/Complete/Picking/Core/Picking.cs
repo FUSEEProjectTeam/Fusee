@@ -125,12 +125,14 @@ namespace Fusee.Examples.Picking.Core
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
+            //Set the matrices before the "pick" and rendering of the scene
+            RC.View = mtxCam * mtxRot;
+            RC.Projection = perspective;
+
             // Check
             if (_pick)
             {
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
-
-                RC.View = mtxCam * mtxRot;
 
                 PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
                 Diagnostics.Debug(newPick);
@@ -154,13 +156,13 @@ namespace Fusee.Examples.Picking.Core
 
                 _pick = false;
             }
-
-            RC.View = mtxCam * mtxRot;
-            RC.Projection = perspective;
-            // Render the scene loaded in Init()
+            
             _sceneRenderer.Render(RC);
 
+            //Set the matrices for rendering the UI
+            RC.View = RC.DefaultState.View;
             RC.Projection = orthographic;
+
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
