@@ -53,6 +53,16 @@ namespace Fusee.Engine.Core.ShaderShards
         public static readonly string Color2 = "vColor2";
 
         /// <summary>
+        /// The global color result name.
+        /// </summary>
+        public static readonly string ColorOut = "oColor";
+
+        /// <summary>
+        /// The fragment position
+        /// </summary>
+        public static readonly string FragPos = "FragPos";
+
+        /// <summary>
         /// The vertex position variable name.
         /// </summary>
         public const string Position = "vPos";

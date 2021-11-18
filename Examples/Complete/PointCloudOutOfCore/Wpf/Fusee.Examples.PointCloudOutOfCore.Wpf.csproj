@@ -3,7 +3,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.PointCloudOutOfCore.Wpf</RootNamespace>
     <PackageId>Fusee.Examples.PointCloudOutOfCore.Wpf</PackageId>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <OutputType>WinExe</OutputType>

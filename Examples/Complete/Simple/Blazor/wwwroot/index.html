@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Fusee.Examples.Simple.Blazor</title>
+    <base href="/" /> 
+    <link href="manifest.json" rel="manifest" />
+</head>
+
+<body style="overflow: hidden;">
+
+    <div id="LoadingOverlay" style="position:absolute;width:100%;height:100%;z-index:999;background-color:white;">Loading...</div>
+
+    <div id="app">
+    </div>
+
+    <script src="./_framework/blazor.webassembly.js"></script>
+    <script>navigator.serviceWorker.register('service-worker.js');</script>
+    <script src="./_content/Fusee.Engine.Imp.Graphics.Blazor/Fusee.Engine.Imp.Graphics.Blazor.Native.js"></script>
+</body>
+</html>

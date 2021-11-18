@@ -1,11 +1,20 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <OutputPath>$(BaseOutputPath)\Examples\Integrations\Wpf\</OutputPath>
     <UseWPF>true</UseWPF>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Core\**" />
+    <Compile Remove="Frontend\**" />
+    <EmbeddedResource Remove="Core\**" />
+    <EmbeddedResource Remove="Frontend\**" />
+    <None Remove="Core\**" />
+    <None Remove="Frontend\**" />
+    <Page Remove="Core\**" />
+    <Page Remove="Frontend\**" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />

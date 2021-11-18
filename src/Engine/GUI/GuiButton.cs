@@ -51,7 +51,7 @@ namespace Fusee.Engine.Gui
             if (!_isAttached)
             {
                 Input.Mouse.ButtonValueChanged += OnMouse;
-                Input.Touch.ButtonValueChanged += OnMouse; //ToDo: Define OnTouch()
+                if (Input.Touch != null) Input.Touch.ButtonValueChanged += OnMouse; //ToDo: Define OnTouch()
                 Input.Mouse.AxisValueChanged += OnAxisChanged;
 
                 OnMouseEnter?.Invoke(this);
@@ -62,7 +62,7 @@ namespace Fusee.Engine.Gui
         internal void DetachEvents()
         {
             Input.Mouse.ButtonValueChanged -= OnMouse;
-            Input.Touch.ButtonValueChanged -= OnMouse; //ToDo: Define OnTouch()
+            if (Input.Touch != null) Input.Touch.ButtonValueChanged -= OnMouse; //ToDo: Define OnTouch()
             Input.Mouse.AxisValueChanged -= OnAxisChanged;
 
             OnMouseExit?.Invoke(this);

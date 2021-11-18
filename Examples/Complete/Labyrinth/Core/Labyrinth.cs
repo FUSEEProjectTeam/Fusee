@@ -370,7 +370,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -386,7 +386,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
@@ -397,7 +397,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.Center);
 
             // Create stopwatch
-            var timer = new TextNode(
+            var timer = TextNode.Create(
                 "00:00.00",
                 "Timer",
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
@@ -741,7 +741,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -757,7 +757,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
@@ -767,7 +767,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            var endtime = new TextNode(
+            var endtime = TextNode.Create(
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",

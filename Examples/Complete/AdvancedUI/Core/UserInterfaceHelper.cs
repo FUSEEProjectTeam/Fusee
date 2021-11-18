@@ -119,7 +119,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private static SceneNode CreateAnnotation(float2 pos, float borderScaleFactor, string text, Texture iconTex, Texture frameTex)
         {
-            TextureNode icon = new(
+            TextureNode icon = TextureNode.Create(
                 "icon",
                 iconTex,
                 new MinMaxRect
@@ -131,7 +131,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 float2.One
             );
 
-            TextNode annotationText = new(
+            TextNode annotationText = TextNode.Create(
                 text,
                 "annotation text",
                 new MinMaxRect
@@ -145,7 +145,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            TextureNode annotation = new(
+            TextureNode annotation = TextureNode.Create(
                 "Annotation",
                 frameTex,
                 new MinMaxRect
