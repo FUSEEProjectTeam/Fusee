@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
+		<BlazorEnableCompression>false</BlazorEnableCompression>
+        <BlazorCacheBootResources>false</BlazorCacheBootResources>
+        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
+        <Nullable>disable</Nullable>
+        <Platforms>AnyCPU</Platforms>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Examples\Camera\Blazor\</OutputPath>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
+        <PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="6.0.0" />
+
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
+        <ProjectReference Include="..\Core\Fusee.Examples.Camera.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+    </ItemGroup>
+
+    <Target Name="MovingAssetsToServerRoot" BeforeTargets="PostBuildEvent">
+        <ItemGroup>
+            <AssetsDir Include="$(OutputPath)$(TargetFramework)\Assets\**\*.*" />
+        </ItemGroup>
+        <Message Text="Moving 'Assets' folder to http server root folder" Importance="high" />
+        <Move SourceFiles="@(AssetsDir)" DestinationFolder="$(OutputPath)$(TargetFramework)\wwwroot\Assets\%(RecursiveDir)" />
+        <RemoveDir Directories="$(OutputPath)$(TargetFramework)\Assets" />
+    </Target>
+
+</Project>

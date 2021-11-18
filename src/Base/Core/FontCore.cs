@@ -199,15 +199,26 @@ namespace Fusee.Base.Core
 
             var width = (int)System.Math.Max(1, System.Math.Round(size.Width));
             var height = (int)System.Math.Max(1, size.Height);
+            Span<Rgba32> res = null;
+            bitmapLeft = 0;
+            bitmapTop = 0;
+            try
+            {
+                using var img = CreateImage(drawingOptions, Convert.ToChar(c).ToString(),
+                    options.Font, width, height,
+                    options.Origin, Color.Black);
 
-            using var img = CreateImage(drawingOptions, Convert.ToChar(c).ToString(),
-                options.Font, width, height,
-                options.Origin, Color.Black);
+                bitmapLeft = (int)size.Left;
+                bitmapTop = -(int)size.Top;
 
-            bitmapLeft = (int)size.Left;
-            bitmapTop = -(int)size.Top;
-
-            img.TryGetSinglePixelSpan(out var res);
+                img.TryGetSinglePixelSpan(out res);
+            }
+            // invalid (unknown) chars 
+            catch (Exception)
+            {
+                Diagnostics.Warn($"Generating glyph for char {c}:{Convert.ToChar(c)} failed, skipping");
+                return new ImageData(0, 0);
+            }
 
             var ret = new ImageData(res.ToArray().Select(x => x.A).ToArray(), width, height, new ImagePixelFormat(ColorFormat.Intensity));
 

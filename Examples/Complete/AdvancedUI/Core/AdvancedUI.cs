@@ -121,6 +121,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _gui = CreateGui();
 
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -357,7 +358,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             Texture guiFuseeLogo = new(AssetStorage.Get<ImageData>("FuseeText.png"));
-            TextureNode fuseeLogo = new(
+            TextureNode fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 guiFuseeLogo,
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopLeft),

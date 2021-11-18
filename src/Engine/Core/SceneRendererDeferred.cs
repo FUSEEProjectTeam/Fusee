@@ -10,6 +10,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -63,7 +64,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// This value is used for cascaded shadow mapping.
-        /// The viewing frustum is split according to the Parallel Split Shadow Maps algorithm. 
+        /// The viewing frustum is split according to the Parallel Split Shadow Maps algorithm.
         /// With this, the lambda value specifies a weight that adapts the logarithmic view frustum split according to the far planes of a uniform split.
         /// A value in the range [0;1] is expected. If it falls outside this range the value is clamped.
         /// </summary>
@@ -91,8 +92,8 @@ namespace Fusee.Engine.Core
         //The following ShaderEffects cache all possible ShaderEffects, needed to render the lighting passes.
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
         private ShaderEffect _lightingPassEffectOther; //needed when a light of another type is rendered;
-        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
-        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;           
+        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;
+        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;
 
         private IRenderTarget _gBufferRenderTarget;
 
@@ -101,7 +102,7 @@ namespace Fusee.Engine.Core
         private WritableTexture _blurRenderTex;
         private WritableTexture _lightedSceneTex; //Do post-pro effects like FXAA on this texture.
 
-        private readonly Dictionary<Tuple<SceneNode, Light>, ShadowParams> _shadowparams; //One per Light       
+        private readonly Dictionary<Tuple<SceneNode, Light>, ShadowParams> _shadowparams; //One per Light
 
         private RenderPasses _currentPass;
         private bool _canUseGeometryShaders;
@@ -114,7 +115,7 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
         /// <param name="renderLayer"></param>
         /// <param name="texRes">The g-buffer texture resolution.</param>
-        /// <param name="shadowMapRes">The shadow map resolution.</param>       
+        /// <param name="shadowMapRes">The shadow map resolution.</param>
         public SceneRendererDeferred(SceneContainer sc, RenderLayers renderLayer = RenderLayers.Default, TexRes texRes = TexRes.Middle, TexRes shadowMapRes = TexRes.Middle) : base(sc, renderLayer)
         {
             Diagnostics.Warn($"Alpha blend is disabled for deferred rendering for now - {RenderState.AlphaBlendEnable} is locked (see SceneRendererDeferred.RenderAllPasses()).");
@@ -145,8 +146,8 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set, 
-        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// If a Mesh is visited and it has a <see cref="Weight"/> the BoneIndices and  BoneWeights get set,
+        /// the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
@@ -389,13 +390,13 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Rendering        
+        #region Rendering
 
         /// <summary>
         /// Renders the scene.
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>
-        /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>        
+        /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>
         public void Render(RenderContext rc, WritableTexture renderTex = null)
         {
             SetContext(rc);
@@ -459,7 +460,7 @@ namespace Fusee.Engine.Core
 
         private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex = null)
         {
-            var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.            
+            var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.
             var preRenderLockedStates = new Dictionary<RenderState, KeyValuePair<bool, uint>>(_rc.LockedStates);
             _rc.SetRenderState(RenderState.AlphaBlendEnable, 0, true);
 
@@ -519,7 +520,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Renders one (lighting calculation) pass for each light and blends the results together. 
+        /// Renders one (lighting calculation) pass for each light and blends the results together.
         /// Alternatively it would be possible to iterate the lights in the shader, but this would create a more complex shader. Additionally it would be more difficult to implement a dynamic number of lights.
         /// The iteration here should not prove critical, due to the scene only consisting of a single quad.
         /// </summary>

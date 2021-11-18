@@ -10,6 +10,7 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -38,8 +39,8 @@ namespace Fusee.Engine.Core
 
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
-                PS = AssetStorage.Get<string>("FXAA.frag"),
+                VS = DeferredShaders.DeferredVert,
+                PS = DeferredShaders.FXAAFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -66,7 +67,7 @@ namespace Fusee.Engine.Core
             var ssaoNoiseTex = FuseeSsaoHelper.CreateNoiseTex(noiseTexSize);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var ps = AssetStorage.Get<string>("SSAO.frag");
+            var ps = DeferredShaders.SSAOFrag;
 
             if (kernelLength != 64)
             {
@@ -79,7 +80,7 @@ namespace Fusee.Engine.Core
 
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = DeferredShaders.DeferredVert,
                 PS = ps,
                 StateSet = new RenderStateSet
                 {
@@ -109,7 +110,7 @@ namespace Fusee.Engine.Core
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
-            var frag = AssetStorage.Get<string>("SimpleBlur.frag");
+            var frag = DeferredShaders.BlurFrag;
             var blurKernelSize = ssaoRenderTex.Width switch
             {
                 (int)TexRes.Low => 2.0f,
@@ -124,17 +125,17 @@ namespace Fusee.Engine.Core
             }
 
             return new ShaderEffect(
-            new FxPassDeclaration
-            {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
-                PS = frag,
-                StateSet = new RenderStateSet
+                new FxPassDeclaration
                 {
-                    AlphaBlendEnable = false,
-                    ZEnable = true,
-                }
+                    VS = DeferredShaders.DeferredVert,
+                    PS = frag,
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                    }
 
-            },
+                },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = "InputTex", Value = ssaoRenderTex},
@@ -144,11 +145,11 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
@@ -172,7 +173,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = DeferredShaders.DeferredVert,
                 PS = CreateDeferredLightingPixelShader(lc),
                 StateSet = new RenderStateSet
                 {
@@ -189,7 +190,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// [Parallel light only] ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
-        /// </summary> 
+        /// </summary>
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The cascaded shadow maps.</param>
@@ -216,7 +217,7 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("Deferred.vert"),
+                VS = DeferredShaders.DeferredVert,
                 PS = CreateDeferredLightingPixelShader(lc, true, numberOfCascades),
                 StateSet = new RenderStateSet
                 {
@@ -250,9 +251,9 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
-                GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
-                PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
+                VS = DeferredShaders.ShadowCubeMapVert,
+                GS = DeferredShaders.ShadowCubeMapGeom,
+                PS = DeferredShaders.ShadowCubeMapFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -274,8 +275,8 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("ShadowMap.vert"),
-                PS = AssetStorage.Get<string>("ShadowMap.frag"),
+                VS = DeferredShaders.ShadowCubeMapVert,
+                PS = DeferredShaders.ShadowCubeMapFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -288,6 +289,8 @@ namespace Fusee.Engine.Core
             {
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
+                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.LightMatClipPlanes, Value = float2.Zero},
+                new FxParamDeclaration<float3> { Name = UniformNameDeclarations.LightPos, Value = float3.Zero}
             });
         }
 
@@ -847,7 +850,7 @@ namespace Fusee.Engine.Core
             frag.Append(FragProperties.ColorOut());
 
             //Shadow calculation methods
-            //-------------------------------------- 
+            //--------------------------------------
             if (isCascaded)
                 frag.Append(Lighting.ShadowCalculationCascaded());
             else if (lc.Type == LightType.Point)

@@ -23,9 +23,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private SceneRendererDeferred _sceneRendererDeferred;
         private SceneRendererForward _sceneRendererForward;
 
-        private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
-
         private bool _keys;
 
         private Transform _sunTransform;
@@ -39,28 +36,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
 
-        // Init is called on startup.
-        public override void Init()
+        public async void Load()
         {
-            VSync = false;
-
-            _camTransform = new Transform()
-            {
-                Scale = float3.One,
-                Translation = float3.Zero
-            };
-
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
-
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
-            _sponzaScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            _sponzaScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus");
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };
@@ -159,6 +142,23 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
             _sceneRendererForward = new SceneRendererForward(_sponzaScene);
 
+            _load = true;
+        }
+
+        private bool _load = false;
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            VSync = false;
+
+            _camTransform = new Transform()
+            {
+                Scale = float3.One,
+                Translation = float3.Zero
+            };
+
+            Load();
             // Wrap a SceneRenderer around the GUI.
         }
 
@@ -167,6 +167,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_load) return;
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -252,14 +254,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _sceneRendererDeferred.Render(RC);
             else
                 _sceneRendererForward.Render(RC);
-
-            //_guiRenderer.Render(RC);
-
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

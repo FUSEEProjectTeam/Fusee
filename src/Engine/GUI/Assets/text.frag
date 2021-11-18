@@ -33,7 +33,7 @@ void main()
     vec4 texCol = texture(AlbedoTexture, vUV * AlbedoTextureTiles);
     vec3 mixCol = mix(Albedo.xyz, texCol.xyz, AlbedoMix);    
 
-    if (FUSEE_PLATFORM_ID == 1)
+    if (FUSEE_PLATFORM_ID == 1 || FUSEE_PLATFORM_ID == 3) // Desktop or Blazor
     {
         objCol = vec4(mixCol.rgb, texCol.r);
     }

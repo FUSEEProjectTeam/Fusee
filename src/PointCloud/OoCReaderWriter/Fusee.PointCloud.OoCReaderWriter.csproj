@@ -2,7 +2,7 @@
 	<PropertyGroup>
 		<RootNamespace>Fusee.PointCloud.OoCReaderWriter</RootNamespace>
 		<PackageId>Fusee.PointCloud.OoCReaderWriter</PackageId>
-		<TargetFrameworks>net5.0</TargetFrameworks>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<Description>Fusee PointCloud OoCReaderWriter</Description>
 	</PropertyGroup>
 

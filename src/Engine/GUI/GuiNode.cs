@@ -7,6 +7,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Gui
 {
@@ -232,15 +233,38 @@ namespace Fusee.Engine.Gui
         /// <param name="borderThicknessRight">Border thickness for the right border.</param>
         /// <param name="borderThicknessTop">Border thickness for the top border.</param>
         /// <returns></returns>
-        public TextureNode(string name, Texture tex, MinMaxRect anchors,
+        public static TextureNode Create(string name, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
         {
+            return CreateAsync(name, tex, anchors, offsets, tiles, borders, borderThicknessLeft, borderThicknessRight, borderThicknessTop, borderThicknessBottom, borderScaleFactor).Result;
+        }
+
+        /// <summary>
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
+        /// By default the border thickness is calculated relative to a unit plane. For a thicker border set the border thickness to the desired value, 2 means a twice as thick border.
+        /// </summary>
+        /// <param name="name">Name of the SceneNodeContainer.</param>
+        /// /<param name="tex">Diffuse texture.</param>
+        /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
+        /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
+        /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
+        /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
+        /// <param name="borderThicknessBottom">Border thickness for the bottom border.</param>
+        /// <param name="borderScaleFactor">Default value is 1. Set this to scale the border thickness if you use canvas render mode SCREEN.</param>
+        /// <param name="borderThicknessLeft">Border thickness for the left border.</param>
+        /// <param name="borderThicknessRight">Border thickness for the right border.</param>
+        /// <param name="borderThicknessTop">Border thickness for the top border.</param>
+        /// <returns></returns>
+        public static async Task<TextureNode> CreateAsync(string name, Texture tex, MinMaxRect anchors,
+        MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
+        {
+            var node = new TextureNode();
             var borderThickness = new float4(borderThicknessLeft, borderThicknessRight, borderThicknessTop,
                 borderThicknessBottom);
-            var vs = AssetStorage.Get<string>("nineSlice.vert");
-            var ps = AssetStorage.Get<string>("nineSliceTile.frag");
-            Name = name;
-            Components = new List<SceneComponent>
+            var vs = await AssetStorage.GetAsync<string>("nineSlice.vert");
+            var ps = await AssetStorage.GetAsync<string>("nineSliceTile.frag");
+            node.Name = name;
+            node.Components = new List<SceneComponent>
             {
                 new RectTransform
                 {
@@ -289,6 +313,26 @@ namespace Fusee.Engine.Gui
                         }),
                 new NineSlicePlane()
             };
+
+            return node;
+        }
+
+        private TextureNode()
+        { }
+
+        /// <summary>
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
+        /// </summary>
+        /// <param name="name">Name of the SceneNodeContainer.</param>
+        /// /<param name="tex">Diffuse texture.</param>
+        /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
+        /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
+        /// <param name="diffuseTexTiles">The tiling of the diffuse texture.</param>
+        /// <returns></returns>
+        public static TextureNode Create(string name, Texture tex, MinMaxRect anchors,
+            MinMaxRect offsets, float2 diffuseTexTiles)
+        {
+            return CreateAsync(name, tex, anchors, offsets, diffuseTexTiles).Result;
         }
 
         /// <summary>
@@ -300,13 +344,16 @@ namespace Fusee.Engine.Gui
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="diffuseTexTiles">The tiling of the diffuse texture.</param>
         /// <returns></returns>
-        public TextureNode(string name, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets, float2 diffuseTexTiles)
+        public static async Task<TextureNode> CreateAsync(string name, Texture tex, MinMaxRect anchors,
+        MinMaxRect offsets, float2 diffuseTexTiles)
         {
-            var vs = AssetStorage.Get<string>("texture.vert");
-            var ps = AssetStorage.Get<string>("texture.frag");
-            Name = name;
-            Components = new List<SceneComponent>
+            var node = new TextureNode();
+
+            var vs = await AssetStorage.GetAsync<string>("texture.vert");
+            var ps = await AssetStorage.GetAsync<string>("texture.frag");
+
+            node.Name = name;
+            node.Components = new List<SceneComponent>
             {
                 new RectTransform
                 {
@@ -347,6 +394,8 @@ namespace Fusee.Engine.Gui
                         }),
                 new Plane()
             };
+
+            return node;
         }
     }
 
@@ -355,6 +404,9 @@ namespace Fusee.Engine.Gui
     /// </summary>
     public class TextNode : SceneNode
     {
+        private TextNode()
+        { }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="TextNode"/> class.
         /// </summary>
@@ -366,12 +418,30 @@ namespace Fusee.Engine.Gui
         /// <param name="color">The color.</param>
         /// <param name="horizontalAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s x-axis.</param>
         /// <param name="verticalTextAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s y-axis.</param>
-        public TextNode(string text, string name, MinMaxRect anchors, MinMaxRect offsets,
-            FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.Left, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.Top)
+        public static TextNode Create(string text, string name, MinMaxRect anchors, MinMaxRect offsets,
+    FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.Left, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.Top)
         {
+            return CreateAsync(text, name, anchors, offsets, fontMap, color, horizontalAlignment, verticalTextAlignment).Result;
+        }
 
-            string vs = AssetStorage.Get<string>("texture.vert");
-            string ps = AssetStorage.Get<string>("text.frag");
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextNode"/> class.
+        /// </summary>
+        /// <param name="text">The text you want to display.</param>
+        /// <param name="name">The name of the SceneNodeContainer.</param>
+        /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
+        /// <param name="offsets">The offsets.</param>
+        /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
+        /// <param name="color">The color.</param>
+        /// <param name="horizontalAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s x-axis.</param>
+        /// <param name="verticalTextAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s y-axis.</param>
+        public static async Task<TextNode> CreateAsync(string text, string name, MinMaxRect anchors, MinMaxRect offsets,
+        FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.Left, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.Top)
+        {
+            var node = new TextNode();
+
+            string vs = await AssetStorage.GetAsync<string>("texture.vert");
+            string ps = await AssetStorage.GetAsync<string>("text.frag");
             var textMesh = new GuiText(fontMap, text, horizontalAlignment)
             {
                 Name = name + "textMesh"
@@ -385,8 +455,8 @@ namespace Fusee.Engine.Gui
                 VerticalAlignment = verticalTextAlignment
             };
 
-            Name = name;
-            Components = new List<SceneComponent>
+            node.Name = name;
+            node.Components = new List<SceneComponent>
             {
                 new RectTransform
                 {
@@ -400,7 +470,7 @@ namespace Fusee.Engine.Gui
                 }
             };
 
-            Children = new ChildList()
+            node.Children = new ChildList()
             {
                 new SceneNode()
                 {
@@ -443,7 +513,7 @@ namespace Fusee.Engine.Gui
                      }
                 }
             };
-
+            return node;
         }
     }
 }
