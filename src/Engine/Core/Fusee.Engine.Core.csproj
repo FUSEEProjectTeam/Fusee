@@ -1,23 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
-		<Description>Fusee Engine Core</Description>
-		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Core</OutputPath>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-		<ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-	</PropertyGroup>
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+
+		<IsPackable>true</IsPackable>
 		<Description>Fusee Engine Core</Description>
-		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Engine.Core</OutputPath>
-		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
@@ -48,4 +37,5 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 	</ItemGroup>
+	
 </Project>

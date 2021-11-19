@@ -1,35 +1,24 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
-    <PropertyGroup>
-        <TargetFramework>MonoAndroid11.0</TargetFramework>
-        <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
-        <Description>Fusee Base Imp Android</Description>
-        <OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Android</OutputPath>
-        <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-    </PropertyGroup>
+	
+	<PropertyGroup>
+		<TargetFramework>MonoAndroid11.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+		
+		<IsPackable>true</IsPackable>
+		<Description>Fusee Base Imp Android</Description>
+	</PropertyGroup>
 
-    <ItemGroup>
-        <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+
+		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
 	</ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="System.Numerics" />
-        <Reference Include="System.Numerics.Vectors" />
-    </ItemGroup>
-        <ItemGroup>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-            <PrivateAssets>analyzers</PrivateAssets>
-        </ProjectReference>
-    </ItemGroup>
+	
 </Project>
