@@ -307,8 +307,8 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("ShadowMap.vert"),
-                PS = AssetStorage.Get<string>("ShadowMap.frag"),
+                VS = DeferredShaders.ShadowMapVert,
+                PS = DeferredShaders.ShadowMapFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,

@@ -375,6 +375,47 @@ namespace Fusee.Engine.Core.Effects
             }
         }
 
+        public static string ShadowMapVert
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.EsPrecisionHighpFloat);
+
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Model));
+                sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));
+
+                sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
+                {
+                    $"gl_Position = {UniformNameDeclarations.LightSpaceMatrix} * {UniformNameDeclarations.Model} * vec4({UniformNameDeclarations.Vertex}, 1.0);",
+                }));
+
+                return sb.ToString();
+            }
+        }
+
+        public static string ShadowMapFrag
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine("#extension GL_ARB_explicit_uniform_location : enable");
+                sb.AppendLine(Header.EsPrecisionHighpFloat);
+                sb.AppendLine("layout (location = 0) out vec4 Depth;");
+
+                sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
+                {
+                    $"float d = gl_FragCoord.z;",
+                    "Depth = vec4(d, d, d, 1.0);"
+                }));
+
+                return sb.ToString();
+            }
+        }
+
         /// <summary>
         /// Ready to use shadow cube map vertices shader
         /// </summary>

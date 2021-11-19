@@ -159,7 +159,6 @@ namespace Fusee.Examples.Deferred.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            Diagnostics.Warn(FramesPerSecond);
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

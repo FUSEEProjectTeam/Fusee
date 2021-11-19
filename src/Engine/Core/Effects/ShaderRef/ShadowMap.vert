@@ -2,7 +2,7 @@
 precision highp float;
                 
 uniform mat4 LightSpaceMatrix;
-uniform mat4 FUSEE_M;              
+uniform mat4 FUSEE_M;
 in vec3 fuVertex; 
 
 void main() 
