@@ -4,6 +4,7 @@
     
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
+	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <PublishSingleFile>true</PublishSingleFile>
     <OutputPath>$(BaseOutputPath)\Player\Desktop\</OutputPath>
   </PropertyGroup>
