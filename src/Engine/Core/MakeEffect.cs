@@ -250,9 +250,9 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
-                GS = AssetStorage.Get<string>("ShadowCubeMapPointPrimitive.geom"),
-                PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
+                VS = DeferredShaders.ShadowCubeMapVert,
+                GS = DeferredShaders.ShadowCubeMapPointPrimitiveGeom,
+                PS = DeferredShaders.ShadowCubeMapFrag,
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,

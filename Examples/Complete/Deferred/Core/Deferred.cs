@@ -23,9 +23,6 @@ namespace Fusee.Examples.Deferred.Core
         private SceneRendererDeferred _sceneRendererDeferred;
         private SceneRendererForward _sceneRendererForward;
 
-        private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
-
         private bool _keys;
 
         private Transform _sunTransform;
@@ -49,11 +46,6 @@ namespace Fusee.Examples.Deferred.Core
                 Scale = float3.One,
                 Translation = float3.Zero
             };
-
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Deferred Rendering Example");
-
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
@@ -247,14 +239,6 @@ namespace Fusee.Examples.Deferred.Core
                 _sceneRendererDeferred.Render(RC);
             else
                 _sceneRendererForward.Render(RC);
-
-            //_guiRenderer.Render(RC);
-
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

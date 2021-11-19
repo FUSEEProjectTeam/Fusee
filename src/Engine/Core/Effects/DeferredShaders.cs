@@ -342,6 +342,40 @@ namespace Fusee.Engine.Core.Effects
         }
 
         /// <summary>
+        /// Ready to use shadow cube map geometry shader
+        /// </summary>
+        public static string ShadowCubeMapPointPrimitiveGeom
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(Header.Version440Core);
+                sb.AppendLine("layout (points) in;");
+                sb.AppendLine("layout (points, max_vertices=6) out;");
+
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrices6));
+
+                sb.AppendLine(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.FragPos));
+
+                sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
+                {
+                "for(int face = 0; face < 6; face++)",
+                "{",
+                "   gl_Layer = face; // built-in variable that specifies to which face we render.",
+                "",
+                "   FragPos = gl_in[0].gl_Position;",
+                "   gl_Position = LightSpaceMatrices[face] * FragPos;",
+                "   EmitVertex();",
+                "",
+                "  EndPrimitive();",
+                "}"
+                }));
+
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
         /// Ready to use shadow cube map vertices shader
         /// </summary>
         public static string ShadowCubeMapVert
