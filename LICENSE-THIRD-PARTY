@@ -4,7 +4,6 @@ components are released under:
 
 - .NET SDK - https://github.com/dotnet/sdk - MIT
 - .NET Blazor SDK - https://github.com/dotnet/blazor - Apache License 2.0
-- Blender - https://www.blender.org - GNU GPL
 - Command Line Parser Library - https://github.com/commandlineparser/commandline - MIT
 - Json.NET - https://github.com/JamesNK/Newtonsoft.Json - MIT
 - LASlib - https://github.com/LAStools/LAStools/tree/master/LASlib - LGPL
