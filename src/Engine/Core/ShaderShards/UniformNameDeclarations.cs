@@ -39,6 +39,24 @@ namespace Fusee.Engine.Core.ShaderShards
         public static int VertexColorHash = VertexColor.GetHashCode();
 
         /// <summary>
+        /// The color attribute name.
+        /// </summary>
+        public const string VertexColor1 = "fuColor1";
+        /// <summary>
+        /// Hash code for the <see cref="VertexColor"/> parameter.
+        /// </summary>
+        public static int VertexColor1Hash = VertexColor1.GetHashCode();
+
+        /// <summary>
+        /// The color attribute name.
+        /// </summary>
+        public const string VertexColor2 = "fuColor2";
+        /// <summary>
+        /// Hash code for the <see cref="VertexColor"/> parameter.
+        /// </summary>
+        public static int VertexColor2Hash = VertexColor2.GetHashCode();
+
+        /// <summary>
         /// The normal attribute name.
         /// </summary>
         public const string Normal = "fuNormal";
@@ -378,11 +396,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public const string LightSpaceMatrices = "LightSpaceMatrices" + ArrayPostfix;
+        public const string LightSpaceMatrices = "LightSpaceMatrices";
         /// <summary>
         /// Hash code for the <see cref="LightSpaceMatrices"/> parameter.
         /// </summary>
-        public static int LightSpaceMatricesHash = LightSpaceMatrices.GetHashCode();
+        public static int LightSpaceMatricesHash = (LightSpaceMatrices + ArrayPostfix).GetHashCode();
 
         /// <summary>
         /// The var name for the uniform ShadowMap.
@@ -419,6 +437,15 @@ namespace Fusee.Engine.Core.ShaderShards
 
 
         /// <summary>
+        /// The var name for the uniform ClippingPlanes variable.
+        /// </summary>
+        public const string ClippingPlanes = "FUSEE_ClippingPlanes";
+        /// <summary>
+        /// Hash code for the <see cref="ClippingPlanes"/> parameter.
+        /// </summary>
+        public static int ClippingPlanesHash = ClippingPlanes.GetHashCode();
+
+        /// <summary>
         /// The var name for the uniform PassNo variable.
         /// </summary>
         public const string RenderPassNo = "PassNo";
@@ -439,11 +466,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform ScreenParams (width and height of the window).
         /// </summary>
-        public const string ScreenParams = "ScreenParams";
+        public const string ViewportPx = "FUSEE_ViewportPx";
         /// <summary>
-        /// Hash code for the <see cref="ScreenParams"/> parameter.
+        /// Hash code for the <see cref="ViewportPx"/> parameter.
         /// </summary>
-        public static int ScreenParamsHash = ScreenParams.GetHashCode();
+        public static int ViewportPxHash = ViewportPx.GetHashCode();
 
         /// <summary>
         /// The var name for the uniform AmbientStrength variable within the pixel shaders.
@@ -611,6 +638,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Enum.GetName(typeof(RenderTargetTextureTypes), 4),
             Enum.GetName(typeof(RenderTargetTextureTypes), 5),
             Enum.GetName(typeof(RenderTargetTextureTypes), 6),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 7),
         };
     }
 }

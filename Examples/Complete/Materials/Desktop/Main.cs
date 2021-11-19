@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Fusee.Examples.Materials.Desktop
 {
-    public class Materials
+    public class SurfaceEffects
     {
         public static void Main()
         {

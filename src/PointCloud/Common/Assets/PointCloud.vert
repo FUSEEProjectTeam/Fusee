@@ -2,14 +2,13 @@
 
 precision highp float;
 
-uniform vec2 ScreenParams;
+uniform vec2 FUSEE_ViewportPx;
 uniform int PointSizeMode;
 uniform int PointSize;
 
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_MV;
 uniform mat4 FUSEE_P;
-uniform float InitCamPosZ;
 
 out vec4 vClipPos;
 out vec4 vViewPos;
@@ -29,7 +28,8 @@ void main(void)
 	vViewPos = FUSEE_MV * vec4(fuVertex.xyz, 1.0);
 
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
-	float slope = tan(fov / 2.0);float projFactor = ((1.0 / slope)/ -vViewPos.z)* ScreenParams.y / 2.0;
+	float slope = tan(fov / 2.0);
+	float projFactor = ((1.0 / slope)/ -vViewPos.z)* FUSEE_ViewportPx.y / 2.0;
 	vWorldSpacePointRad = float(PointSize) / projFactor;
 
 	float minPtSize = 1.0;
@@ -49,12 +49,9 @@ void main(void)
 		case 1:
 		{ 
 			//In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away
-
-			//Formula that relates to the given PointSie (in px) and the camera position
-			//ptSize = (PointSize / vClipPos.w) * InitCamPosZ;
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
-			ptSize = ((ScreenParams.y / 2.0) * (float(PointSize) / ( slope * vViewPos.z))) / pointSizeDivisor;
+			ptSize = ((FUSEE_ViewportPx.y / 2.0) * (float(PointSize) / ( slope * vViewPos.z))) / pointSizeDivisor;
 			break;
 		}
 	}
@@ -65,5 +62,5 @@ void main(void)
 		ptSize = maxPtSize;
 
 	gl_PointSize = ptSize;
-	gl_Position = vClipPos;	
+	gl_Position = vClipPos;
 }

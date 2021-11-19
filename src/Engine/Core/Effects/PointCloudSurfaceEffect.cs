@@ -1,36 +1,20 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Engine.Core.ShaderShards.Vertex;
 using Fusee.Math.Core;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// <see cref="SurfaceEffect"/> for Rendering Point Clouds.
+    /// <see cref="SurfaceEffectBase"/> for Rendering Point Clouds.
     /// </summary>
-    public class PointCloudSurfaceEffect : DefaultSurfaceEffect
+    public class PointCloudSurfaceEffect : SurfaceEffect
     {
         /// <summary>
-        /// The shader shard containing an value that is used to change the lighting calculation.
-        /// For now only Eye Dome Lighting or Unlit are supported.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public bool DoEyeDomeLighting
-        {
-            get { return _doEyeDomeLighting; }
-            set
-            {
-                _doEyeDomeLighting = value;
-                SetFxParam(nameof(DoEyeDomeLighting), _doEyeDomeLighting);
-            }
-        }
-        private bool _doEyeDomeLighting;
-
-        /// <summary>
-        /// The shader shard containing the strength of the eye dome lighting.
+        /// The depth texture, used for eye dome lighting.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
@@ -62,7 +46,7 @@ namespace Fusee.Engine.Core.Effects
         private float _edlStrength;
 
         /// <summary>
-        /// The shader shard containing the strength of the eye dome lighting.
+        /// Determines how many neighbouring pixels shall be used in the eye dome lighting calculation.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
         [FxShard(ShardCategory.Uniform)]
@@ -76,38 +60,6 @@ namespace Fusee.Engine.Core.Effects
             }
         }
         private int _edlNeighbourPixels;
-
-        /// <summary>
-        /// The shader shard containing the strength of the eye dome lighting.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public float2 ClippingPlanes
-        {
-            get { return _clippingPlanes; }
-            set
-            {
-                _clippingPlanes = value;
-                SetFxParam(nameof(ClippingPlanes), _clippingPlanes);
-            }
-        }
-        private float2 _clippingPlanes;
-
-        /// <summary>
-        /// The shader shard containing the strength of the eye dome lighting.
-        /// </summary>
-        [FxShader(ShaderCategory.Fragment)]
-        [FxShard(ShardCategory.Uniform)]
-        public float2 ScreenParams
-        {
-            get { return _screenParams; }
-            set
-            {
-                _screenParams = value;
-                SetFxParam(nameof(ScreenParams), _screenParams);
-            }
-        }
-        private float2 _screenParams;
 
         /// <summary>
         /// The shader shard containing the Color Mode.
@@ -126,7 +78,7 @@ namespace Fusee.Engine.Core.Effects
         private int _colorMode;
 
         /// <summary>
-        /// The shader shard containing the Point Size.
+        /// Shape of the points.
         /// </summary>
         [FxShader(ShaderCategory.Vertex)]
         [FxShard(ShardCategory.Uniform)]
@@ -142,11 +94,109 @@ namespace Fusee.Engine.Core.Effects
         private int _pointSize;
 
         /// <summary>
-        /// Creates a new instance of type DefaultSurfaceEffect.
+        /// The shader shard containing the Point Size.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Uniform)]
+        public int PointShape
+        {
+            get { return _pointShape; }
+            set
+            {
+                _pointShape = value;
+                SetFxParam(nameof(PointShape), _pointShape);
+            }
+        }
+        private int _pointShape;
+
+        /// <summary>
+        /// The in variable for the view position in the fragment shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public readonly string ViewPosIn = GLSL.CreateIn(GLSL.Type.Vec4, "vViewPos");
+
+        /// <summary>
+        /// The out variable for the view position in the vertex shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public readonly string ViewPosOut = GLSL.CreateOut(GLSL.Type.Vec4, "vViewPos");
+
+        /// <summary>
+        /// The in variable for the point radius in the fragment shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
+        [FxShader(ShaderCategory.Fragment)]
+        [FxShard(ShardCategory.Property)]
+        public readonly string WorldSpacePointRadIn = GLSL.CreateIn(GLSL.Type.Float, "vWorldSpacePointRad");
+
+        /// <summary>
+        /// The out variable for the point radius in the vertex shader.
+        /// Used for paraboloid shaped points.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Property)]
+        public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
+
+        private static readonly List<string> CalculatePointShapeVaryings = new()
+        {
+            $"vViewPos = {UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0);",
+            $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
+            "float slope = tan(fov / 2.0);",
+            $"float projFactor = ((1.0 / slope) / -vViewPos.z) * {UniformNameDeclarations.ViewportPx}.y / 2.0;",
+            $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
+        };
+
+        /// <summary>
+        /// Fragment Shader Shard for linearizing a depth value using the clipping planes of the current camera.
+        /// </summary>
+        private static readonly List<string> CalculatePointShape = new()
+        {
+            "vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]",
+            "float weight;",
+            "",
+            "switch (PointShape)",
+            "{",
+            "    case 0: // default = square",
+            "    default:",
+            "        gl_FragDepth = gl_FragCoord.z;",
+            "        break;",
+            "    case 1: // circle	",
+            "",
+            "        float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);",
+            "",
+            "        if(distanceFromCenter > 1.0)",
+            "            discard;",
+            "",
+            "        gl_FragDepth = gl_FragCoord.z;",
+            "",
+            "        break;",
+            "    case 2: //paraboloid",
+            "",
+            "        weight = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0)); //paraboloid weight function",
+            "",
+            "        vec4 position = vViewPos;",
+            "        position.z += weight * vWorldSpacePointRad;",
+            "        position = FUSEE_P * position;",
+            "        position /= position.w;",
+            "        gl_FragDepth = (position.z + 1.0) / 2.0;",
+            "",
+            "        break;",
+            "}"
+        };
+
+        /// <summary>
+        /// Creates a new instance of type PointCloudSurfaceEffect.
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
-            : base(LightingSetupFlags.Edl, new ColorInput() { Albedo = new float4(.5f, 0f, .5f, 1f) }, FragShards.SurfOutBody_VertOrAlbedoColor, VertShards.SufOutBody_Pos, rendererStates)
+            : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
+                  VertShards.SurfOutBody(ShadingModel.Edl).Concat(CalculatePointShapeVaryings).ToList(),
+                  FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape).ToList(),
+                  rendererStates)
         {
             RendererStates.SetRenderState(RenderState.FillMode, (uint)FillMode.Point);
         }

@@ -4,7 +4,7 @@ in vec3 fuVertex;
 in vec3 fuNormal;
 in vec2 fuUV;
 
-out vec2 vUV;
+out vec2 vUv;
 out vec3 vMVNormal;
 out vec4 fragBorders;
 
@@ -64,109 +64,109 @@ vec4 calculateGlPosAccordingToUvs()
     float offsetB = borders.w;                
 
 	//left bottom corner
-    if(isFloatEqual(vUV.x, 1.0/3.0) && isFloatEqual(vUV.y, 1.0/3.0))	
+    if(isFloatEqual(vUv.x, 1.0/3.0) && isFloatEqual(vUv.y, 1.0/3.0))	
     {
          //Set Vertex and UV in unit plane, according to given border. 
 		 gl_Position = vec4(-(0.5-offsetL), -(0.5-offsetB), 0.0, 1.0);		 
-		 vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		 vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 
 		 //Translate the Vertex according to the scaling of the plane.
 		 vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.x,borderThickness.w), offsetL, true, offsetB, true, xVec, yVec);
          return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
     }
-	if(isFloatEqual(vUV.x, 1.0/3.0) && isFloatEqual(vUV.y, 0.0))
+	if(isFloatEqual(vUv.x, 1.0/3.0) && isFloatEqual(vUv.y, 0.0))
     {
 		gl_Position = vec4(-(0.5-offsetL), -0.5, 0.0, 1.0);
-		vUV = vec2(gl_Position.x,gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x,gl_Position.y) + vec2(0.5,0.5);
 
 		vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.x,borderThickness.w), offsetL, true, 0.0, true, xVec, yVec);
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
-	if(isFloatEqual(vUV.y, 1.0/3.0) && isFloatEqual(vUV.x, 0.0))
+	if(isFloatEqual(vUv.y, 1.0/3.0) && isFloatEqual(vUv.x, 0.0))
     {
 		gl_Position = vec4(-0.5, -(0.5-offsetB), 0.0, 1.0);			
-		vUV = vec2(gl_Position.x,gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x,gl_Position.y) + vec2(0.5,0.5);
 
         vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.x,borderThickness.w), 0.0, true, offsetB, true, xVec, yVec);
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
 	//left top corner
-	if(isFloatEqual(vUV.x, 1.0/3.0) && isFloatEqual(vUV.y, 2.0/3.0))
+	if(isFloatEqual(vUv.x, 1.0/3.0) && isFloatEqual(vUv.y, 2.0/3.0))
     {
          gl_Position = vec4(-(0.5-offsetL), (0.5-offsetT), 0.0, 1.0);		 
-		 vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		 vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 		 
 		 vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.x,borderThickness.z), offsetL, true, offsetT, false, xVec, yVec);
          return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
     }
-	if(isFloatEqual(vUV.x, 1.0/3.0) && isFloatEqual(vUV.y, 1.0))
+	if(isFloatEqual(vUv.x, 1.0/3.0) && isFloatEqual(vUv.y, 1.0))
     {
 		gl_Position = vec4(-(0.5-offsetL), 0.5, 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);		
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);		
 
 		vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.x,borderThickness.z), offsetL, true, 0.0, true, xVec, yVec); 
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
-	if(isFloatEqual(vUV.y, 2.0/3.0) && isFloatEqual(vUV.x, 0.0))
+	if(isFloatEqual(vUv.y, 2.0/3.0) && isFloatEqual(vUv.x, 0.0))
     {
 		gl_Position = vec4(-0.5, (0.5-offsetT), 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);		
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);		
 
         vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.x,borderThickness.z), 0.0, true, offsetT, false, xVec, yVec); 
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
 	//right bottom corner
-    if(isFloatEqual(vUV.x, 2.0/3.0) && isFloatEqual(vUV.y, 1.0/3.0))	
+    if(isFloatEqual(vUv.x, 2.0/3.0) && isFloatEqual(vUv.y, 1.0/3.0))	
     {
 		gl_Position = vec4((0.5-offsetR), -(0.5-offsetB), 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 
          vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.y,borderThickness.w), offsetR, false, offsetB, true, xVec, yVec);
          return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
     }
-	if(isFloatEqual(vUV.x, 2.0/3.0) && isFloatEqual(vUV.y, 0.0))
+	if(isFloatEqual(vUv.x, 2.0/3.0) && isFloatEqual(vUv.y, 0.0))
     {
 		gl_Position = vec4((0.5-offsetR), -0.5, 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 		
 		vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.y,borderThickness.w), offsetR, false, 0.0, true, xVec, yVec);
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
-	if(isFloatEqual(vUV.y, 1.0/3.0) && isFloatEqual(vUV.x, 1.0))
+	if(isFloatEqual(vUv.y, 1.0/3.0) && isFloatEqual(vUv.x, 1.0))
     {
 		gl_Position = vec4(0.5, -(0.5-offsetB), 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 
         vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.y,borderThickness.w), 0.0, true, offsetB, true, xVec, yVec);
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
 	//right top corner
-	if(isFloatEqual(vUV.x, 2.0/3.0) && isFloatEqual(vUV.y, 2.0/3.0))
+	if(isFloatEqual(vUv.x, 2.0/3.0) && isFloatEqual(vUv.y, 2.0/3.0))
     {
 		gl_Position = vec4((0.5-offsetR), (0.5-offsetT), 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);	
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);	
 			
          vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.y,borderThickness.z), offsetR, false, offsetT, false, xVec, yVec);
          return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
     }
-	if(isFloatEqual(vUV.x, 2.0/3.0) && isFloatEqual(vUV.y, 1.0))
+	if(isFloatEqual(vUv.x, 2.0/3.0) && isFloatEqual(vUv.y, 1.0))
     {
 		gl_Position = vec4((0.5-offsetR),  0.5, 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 
 		vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.y,borderThickness.z), offsetR, false, 0.0, true, xVec, yVec); 
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
-	if(isFloatEqual(vUV.y, 2.0/3.0) && isFloatEqual(vUV.x, 1.0))
+	if(isFloatEqual(vUv.y, 2.0/3.0) && isFloatEqual(vUv.x, 1.0))
     {
 		gl_Position = vec4(0.5, (0.5-offsetT), 0.0, 1.0);		 
-		vUV = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
+		vUv = vec2(gl_Position.x, gl_Position.y) + vec2(0.5,0.5);
 		
         vec4 translateVec = calculateTranslationVector(scale,vec2(borderThickness.y,borderThickness.z), 0.0, false, offsetT, false, xVec, yVec); 
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
 	//corner vertices
-    if((isFloatEqual(vUV.x, 1.0) && isFloatEqual(vUV.y, 0.0)) || (isFloatEqual(vUV.x, 1.0) && isFloatEqual(vUV.y, 1.0)) || (isFloatEqual(vUV.x,0.0) && isFloatEqual(vUV.y, 1.0)) || (isFloatEqual(vUV.x, 0.0) && isFloatEqual(vUV.y, 0.0)))
+    if((isFloatEqual(vUv.x, 1.0) && isFloatEqual(vUv.y, 0.0)) || (isFloatEqual(vUv.x, 1.0) && isFloatEqual(vUv.y, 1.0)) || (isFloatEqual(vUv.x,0.0) && isFloatEqual(vUv.y, 1.0)) || (isFloatEqual(vUv.x, 0.0) && isFloatEqual(vUv.y, 0.0)))
 	{ 
 		return(FUSEE_P * FUSEE_V * FUSEE_M * vec4(fuVertex, 1.0));
 	}	
@@ -174,7 +174,7 @@ vec4 calculateGlPosAccordingToUvs()
                     
 void main() 
 {
-	vUV = fuUV;
+	vUv = fuUV;
 	fragBorders = borders;
 	
 	vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);

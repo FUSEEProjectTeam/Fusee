@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.Effects
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.LightedSceneTexture));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ScreenParams));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
 
                 sb.AppendLine(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.ColorOut));
 
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Core.Effects
                     $"",
                     $"// ---- 0. Detecting where to apply FXAA",
                     $"",
-                    $"vec2 inverseScreenSize = vec2(1.0/{UniformNameDeclarations.ScreenParams}.x, 1.0/{UniformNameDeclarations.ScreenParams}.y);",
+                    $"vec2 inverseScreenSize = vec2(1.0/{UniformNameDeclarations.ViewportPx}.x, 1.0/{UniformNameDeclarations.ViewportPx}.y);",
                     $"vec3 colorCenter = texture({UniformNameDeclarations.LightedSceneTexture}, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
                     $"",
                     $"// Luma at the current fragment",
@@ -342,6 +342,81 @@ namespace Fusee.Engine.Core.Effects
         }
 
         /// <summary>
+        /// Ready to use shadow cube map geometry shader
+        /// </summary>
+        public static string ShadowCubeMapPointPrimitiveGeom
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(Header.Version440Core);
+                sb.AppendLine("layout (points) in;");
+                sb.AppendLine("layout (points, max_vertices=6) out;");
+
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrices6));
+
+                sb.AppendLine(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.FragPos));
+
+                sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
+                {
+                "for(int face = 0; face < 6; face++)",
+                "{",
+                "   gl_Layer = face; // built-in variable that specifies to which face we render.",
+                "",
+                "   FragPos = gl_in[0].gl_Position;",
+                "   gl_Position = LightSpaceMatrices[face] * FragPos;",
+                "   EmitVertex();",
+                "",
+                "  EndPrimitive();",
+                "}"
+                }));
+
+                return sb.ToString();
+            }
+        }
+
+        public static string ShadowMapVert
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine(Header.EsPrecisionHighpFloat);
+
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Model));
+                sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));
+
+                sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
+                {
+                    $"gl_Position = {UniformNameDeclarations.LightSpaceMatrix} * {UniformNameDeclarations.Model} * vec4({UniformNameDeclarations.Vertex}, 1.0);",
+                }));
+
+                return sb.ToString();
+            }
+        }
+
+        public static string ShadowMapFrag
+        {
+            get
+            {
+                var sb = new StringBuilder();
+                sb.AppendLine(Header.Version300Es);
+                sb.AppendLine("#extension GL_ARB_explicit_uniform_location : enable");
+                sb.AppendLine(Header.EsPrecisionHighpFloat);
+                sb.AppendLine("layout (location = 0) out vec4 Depth;");
+
+                sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
+                {
+                    $"float d = gl_FragCoord.z;",
+                    "Depth = vec4(d, d, d, 1.0);"
+                }));
+
+                return sb.ToString();
+            }
+        }
+
+        /// <summary>
         /// Ready to use shadow cube map vertices shader
         /// </summary>
         public static string ShadowCubeMapVert
@@ -424,7 +499,7 @@ namespace Fusee.Engine.Core.Effects
                 "   for (int y = -KERNEL_SIZE_HALF; y < KERNEL_SIZE_HALF; ++y)",
                 "   {   ",
                 " vec2 offset = vec2(float(x), float(y)) * texelSize; ",
-                " result += texture(InputTex, vUV + offset).rgb;",
+                $" result += texture(InputTex, {VaryingNameDeclarations.TextureCoordinates} + offset).rgb;",
                 "   }   ",
                 "}",
                 " ",
@@ -454,7 +529,7 @@ namespace Fusee.Engine.Core.Effects
 
 
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ScreenParams));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
                 sb.AppendLine("uniform vec3[KERNEL_LENGTH] SSAOKernel;");
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, "Position"));
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, "Normal"));
@@ -466,18 +541,18 @@ namespace Fusee.Engine.Core.Effects
 
                 sb.AppendLine(GLSL.CreateMethod(GLSL.Type.Void, "main", Array.Empty<string>(), new List<string>
                 {
-                  "vec3 Normal = texture(Normal, vUV).rgb;",
+                  $"vec3 Normal = texture(Normal, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
                   "",
                   "if (Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)",
                   "    discard;",
                   "",
-                  "vec3 FragPos = texture(Position, vUV).xyz;",
+                  $"vec3 FragPos = texture(Position, {VaryingNameDeclarations.TextureCoordinates}).xyz;",
                   "",
                   "float radius = 5.0;",
                   "float occlusion = 0.0;",
                   "float bias = 0.005;",
-                  $"vec2 noiseScale = vec2({UniformNameDeclarations.ScreenParams}.x * 0.25, {UniformNameDeclarations.ScreenParams}.y * 0.25);",
-                  "vec3 randomVec = texture(NoiseTex, vUV * noiseScale).xyz;",
+                  $"vec2 noiseScale = vec2({UniformNameDeclarations.ViewportPx}.x * 0.25, {UniformNameDeclarations.ViewportPx}.y * 0.25);",
+                  $"vec3 randomVec = texture(NoiseTex, {VaryingNameDeclarations.TextureCoordinates} * noiseScale).xyz;",
                   "vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal)); ",
                   "vec3 bitangent = cross(Normal, tangent); ",
                   "mat3 tbn = mat3(tangent, bitangent, Normal); ",

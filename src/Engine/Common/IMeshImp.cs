@@ -73,6 +73,32 @@ namespace Fusee.Engine.Common
         bool ColorsSet { get; }
 
         /// <summary>
+        /// Implementation Tasks: Gets a value indicating whether [colors set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if ColorBufferObject1 is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool ColorsSet1 { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject1 of this instance by setting it to 0.
+        /// </summary>
+        void InvalidateColors1();
+
+        /// <summary>
+        /// Implementation Tasks: Gets a value indicating whether [colors set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if ColorBufferObject2 is not 0; otherwise, <c>false</c>.
+        /// </value>
+        bool ColorsSet2 { get; }
+
+        /// <summary>
+        /// Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject2 of this instance by setting it to 0.
+        /// </summary>
+        void InvalidateColors2();
+
+        /// <summary>
         /// Implementation Tasks: Invalidates the triangles, e.g. reset the ElementBufferObject of this instance by setting it to 0.
         /// </summary>
         void InvalidateTriangles();

@@ -94,10 +94,10 @@ namespace Fusee.PointCloud.Core
                 currentMesh.BoundingBox |= currentMesh.Vertices[i];
                 currentMesh.Triangles[i] = (ushort)i;
 
-                //var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                //currentMesh.Colors[i] = PointCloudHelper.ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                currentMesh.Colors[i] = FuseePointCloudHelper.ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
                 var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
-                currentMesh.Colors[i] = FuseePointCloudHelper.ColorToUInt(intensity, intensity, intensity, 255);
+                currentMesh.Colors1[i] = FuseePointCloudHelper.ColorToUInt(intensity, intensity, intensity, 255);
 
             }
             return currentMesh;
@@ -233,10 +233,10 @@ namespace Fusee.PointCloud.Core
                 currentMesh.BoundingBox |= currentMesh.Vertices[i];
                 currentMesh.Triangles[i] = (ushort)i;
 
-                //var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                //currentMesh.Colors[i] = PointCloudHelper.ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                currentMesh.Colors[i] = FuseePointCloudHelper.ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
                 var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
-                currentMesh.Colors[i] = FuseePointCloudHelper.ColorToUInt(intensity, intensity, intensity, 255);
+                currentMesh.Colors1[i] = FuseePointCloudHelper.ColorToUInt(intensity, intensity, intensity, 255);
                 currentMesh.Normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
 
             }

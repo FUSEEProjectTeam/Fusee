@@ -84,7 +84,7 @@ namespace Fusee.Engine.Core
             {
                 _isShuttingDown = value;
                 if (_isShuttingDown)
-                    ApplicationIsShuttingDown.Invoke(this, new EventArgs());
+                    ApplicationIsShuttingDown?.Invoke(this, new EventArgs());
             }
         }
         private bool _isShuttingDown;

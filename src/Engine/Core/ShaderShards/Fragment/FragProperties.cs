@@ -93,10 +93,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTextureShadow, UniformNameDeclarations.ShadowMap));
                 //No implementation for GLSL.CreateArrayUniform yet...
-                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] ClipPlanes;\n");
-                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] {UniformNameDeclarations.LightMatClipPlanes};\n");
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] {UniformNameDeclarations.LightSpaceMatrices};\n");
             }
-
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ClippingPlanes));
             uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.RenderPassNo));
             uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.SsaoOn));
 

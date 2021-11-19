@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Fusee.Engine.Core.Effects
 {
     /// <summary>
-    /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffect"/>.
+    /// Abstract class that provides input for <see cref="ShaderEffect"/> and <see cref="SurfaceEffectBase"/>.
     /// </summary>
     public abstract class Effect : SceneComponent
     {

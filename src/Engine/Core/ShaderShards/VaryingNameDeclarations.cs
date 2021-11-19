@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The texture coordinates variable name.
         /// </summary>
-        public const string TextureCoordinates = "vUV";
+        public const string TextureCoordinates = "vUv";
 
         /// <summary>
         /// The view direction variable name.
@@ -41,6 +41,16 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The vertex colors variable name.
         /// </summary>
         public static readonly string Color = "vColor";
+
+        /// <summary>
+        /// The vertex colors variable name.
+        /// </summary>
+        public static readonly string Color1 = "vColor1";
+
+        /// <summary>
+        /// The vertex colors variable name.
+        /// </summary>
+        public static readonly string Color2 = "vColor2";
 
         /// <summary>
         /// The global color result name.
