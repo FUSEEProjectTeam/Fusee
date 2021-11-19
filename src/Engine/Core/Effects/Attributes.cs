@@ -5,7 +5,7 @@ namespace Fusee.Engine.Core.Effects
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     sealed class NoUniformAttribute : Attribute
     {
-        
+
     }
 
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]

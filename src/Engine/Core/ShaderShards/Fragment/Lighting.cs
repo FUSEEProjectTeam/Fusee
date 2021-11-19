@@ -517,8 +517,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>();
 
-            if (setup != ShadingModel.Edl && setup != ShadingModel.Unlit) 
-            { 
+            if (setup != ShadingModel.Edl && setup != ShadingModel.Unlit)
+            {
                 methodBody.Add("float lightStrength = (1.0 - ambientCo) * light.strength;");
                 methodBody.AddRange(ViewAndLightDir());
                 methodBody.Add($"vec3 N = normalize(surfOut.{SurfaceOut.Normal.Item2});");

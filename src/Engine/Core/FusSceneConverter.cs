@@ -764,9 +764,9 @@ namespace Fusee.Engine.Core
             return await GetEffectForMat(m, ShadingModel.Glossy, 0f, 0f, m.Roughness);
         }
 
-        private async Task<Effect> LookupMaterial(FusMaterialBRDF m)
+        private Task<Effect> LookupMaterial(FusMaterialBRDF m)
         {
-            if (_matMap.TryGetValue(m, out var sfx)) return sfx;
+            if (_matMap.TryGetValue(m, out var sfx)) return Task.FromResult(sfx);
 
             var textureSetup = TextureSetup.NoTextures;
             if (m.Albedo.Texture != null && m.Albedo.Texture != "")
@@ -828,10 +828,10 @@ namespace Fusee.Engine.Core
             }
 
             _matMap.Add(m, sfx);
-            return sfx;
+            return Task.FromResult(sfx);
         }
 
-        private async Task<Effect> GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrength, float roughness)
+        private Task<Effect> GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrength, float roughness)
         {
             Effect sfx;
             var texSetup = TextureSetup.NoTextures;
@@ -1007,7 +1007,7 @@ namespace Fusee.Engine.Core
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
             _matMap.Add(m, sfx);
-            return sfx;
+            return Task.FromResult(sfx);
         }
         #endregion
     }

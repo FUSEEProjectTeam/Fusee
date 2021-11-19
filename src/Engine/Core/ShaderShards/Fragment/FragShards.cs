@@ -22,7 +22,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 case ShadingModel.Edl:
                 case ShadingModel.Unlit:
-                    res.Add("OUT.emission = vec3(0);"); 
+                    res.Add("OUT.emission = vec3(0);");
                     break;
                 case ShadingModel.DiffuseSpecular:
                     res.Add("OUT.specularStrength = IN.SpecularStrength;");
@@ -61,7 +61,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
             else
             {
-                if(surfInput.ShadingModel != ShadingModel.Edl)
+                if (surfInput.ShadingModel != ShadingModel.Edl)
                     res.Add("OUT.albedo = IN.Albedo;");
                 else
                 {

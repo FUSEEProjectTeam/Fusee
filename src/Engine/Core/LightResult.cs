@@ -21,10 +21,10 @@ namespace Fusee.Engine.Core
         /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
         /// Therefore the LightComponent itself has no position information - it gets set while traversing the scene graph.
         /// </summary>
-        public float3 WorldSpacePos 
-        { 
-            get {  return _worldSpacePos; }
-            set 
+        public float3 WorldSpacePos
+        {
+            get { return _worldSpacePos; }
+            set
             {
                 if (value == _worldSpacePos) return;
                 _worldSpacePos = value;
@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The rotation matrix. Determines the direction of the light, also set while traversing the scene graph.
         /// </summary>
-        public float4x4 Rotation 
+        public float4x4 Rotation
         {
             get { return _rotation; }
             set

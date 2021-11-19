@@ -117,7 +117,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
             foreach (var field in type.GetFields())
             {
-                if(!Attribute.IsDefined(field, typeof(Effects.NoUniformAttribute)))
+                if (!Attribute.IsDefined(field, typeof(Effects.NoUniformAttribute)))
                     res.Add($"{DecodeType(field.FieldType)} {field.Name};");
             }
 

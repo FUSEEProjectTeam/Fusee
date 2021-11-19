@@ -664,8 +664,8 @@ namespace Fusee.Engine.Core
             foreach (var lightVisRes in LightViseratorResults)
             {
                 if (!lightVisRes.Item2.ReRenderShadowMap ||
-                    !lightVisRes.Item2.Light.IsCastingShadows || 
-                    !lightVisRes.Item2.Light.Active || 
+                    !lightVisRes.Item2.Light.IsCastingShadows ||
+                    !lightVisRes.Item2.Light.Active ||
                     (lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
 
                 var key = new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light);
@@ -755,7 +755,7 @@ namespace Fusee.Engine.Core
                     default:
                         break;
                 }
-                if(lightVisRes.Item2.Light.Type != LightType.Legacy && lightVisRes.Item2.Light.Type != LightType.Parallel && NumberOfCascades > 1)
+                if (lightVisRes.Item2.Light.Type != LightType.Legacy && lightVisRes.Item2.Light.Type != LightType.Parallel && NumberOfCascades > 1)
                     lightVisRes.Item2.ReRenderShadowMap = false;
             }
         }

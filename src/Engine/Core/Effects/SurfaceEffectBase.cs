@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core.Effects
             UvOut = GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates);
             TBNIn = GLSL.CreateIn(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
             TBNOut = GLSL.CreateOut(GLSL.Type.Mat3, VaryingNameDeclarations.TBN);
-            
+
             VertIn = ShaderShards.Vertex.VertProperties.InParams(surfaceInput.TextureSetup);
 
             SurfaceInput = surfaceInput;

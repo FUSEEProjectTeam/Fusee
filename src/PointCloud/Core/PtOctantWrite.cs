@@ -59,7 +59,7 @@ namespace Fusee.PointCloud.Core
 
             child.Grid = new PtGrid<TPoint>(child.Center, new double3(child.Size, child.Size, child.Size));
 
-            return child;
+            return (IOctant<double3, double, TPoint>)child;
         }
     }
 }

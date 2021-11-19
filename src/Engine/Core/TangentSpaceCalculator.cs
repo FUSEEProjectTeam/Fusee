@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
                 throw new ArgumentException("Can not calculate tangents, no uv map");
 
 
-            var tangents = new float4[m.Vertices.Length];            
+            var tangents = new float4[m.Vertices.Length];
 
             for (var i = 0; i < m.Triangles.Length; i += 3)
             {

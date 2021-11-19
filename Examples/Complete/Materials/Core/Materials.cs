@@ -146,7 +146,7 @@ namespace Fusee.Examples.Materials.Core
                 thicknessMap: thicknessTex
             );
 
-            _glossy_Fx = MakeEffect.FromGlossy(new float4(1,0,0,1), 0.4f);
+            _glossy_Fx = MakeEffect.FromGlossy(new float4(1, 0, 0, 1), 0.4f);
             _emissive_Fx = MakeEffect.FromDiffuseSpecular(float4.One, 0.5f, 255, 0.5f, float3.LinearColorFromSRgb(0x2A84FA));
 
             _scene.Children[3].Components.Insert(1, _emissive_Fx);
@@ -203,7 +203,7 @@ namespace Fusee.Examples.Materials.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 5);            
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 5);
             _sceneRenderer.Render(RC);
 
             _guiRenderer.Render(RC);
@@ -220,7 +220,7 @@ namespace Fusee.Examples.Materials.Core
 
             Present();
         }
-    
+
         private void BuildScene()
         {
             // Load the rocket model
@@ -335,6 +335,6 @@ namespace Fusee.Examples.Materials.Core
                 }
             }
         }
-    
+
     }
 }

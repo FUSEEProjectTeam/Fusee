@@ -94,11 +94,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Depth:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
-                    case (int)RenderTargetTextureTypes.Emission:                        
-                            if (shadingModel == ShadingModel.BRDF)
-                                fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, surfOut.{SurfaceOut.Thickness.Item2});");
-                            else
-                                fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, 1.0);");
+                    case (int)RenderTargetTextureTypes.Emission:
+                        if (shadingModel == ShadingModel.BRDF)
+                            fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, surfOut.{SurfaceOut.Thickness.Item2});");
+                        else
+                            fragMainBody.Add($"{texName} = vec4(surfOut.{SurfaceOut.Emission.Item2}, 1.0);");
                         break;
                     case (int)RenderTargetTextureTypes.Subsurface:
                         if (shadingModel == ShadingModel.BRDF)

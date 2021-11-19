@@ -112,7 +112,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         ///The amount of milliseconds needed to pass before rendering next frame
         public const double UpdateRate = 1000 / 30d;
         private double _frameCapCounter = UpdateRate;
-        private Stopwatch _timer = new();
+        private readonly Stopwatch _timer = new();
 
         private float _minProjSizeModifier = 0.1f;
         private readonly PointType _ptType;
@@ -380,7 +380,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
                 // choose the nodes with the biggest screen size overall to process next
-                var kvp = _visibleNodesOrderedByProjectionSize.Last();                
+                var kvp = _visibleNodesOrderedByProjectionSize.Last();
 
                 var ptOctantComp = kvp.Value.GetComponent<OctantD>();
                 _determinedAsVisible.Add(kvp.Value.GetComponent<OctantD>().Guid, kvp.Value);

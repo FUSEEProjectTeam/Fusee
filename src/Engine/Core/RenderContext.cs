@@ -104,7 +104,7 @@ namespace Fusee.Engine.Core
         /// Gets and sets the y coordinate of viewport's lower left (starting) point.
         /// </summary>
         public int ViewportYStart { get; private set; }
-        
+
         #endregion
 
         #region Shader Management fields
