@@ -71,9 +71,9 @@ namespace Fusee.Examples.Materials.Core
 
             BuildScene();
 
-            var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Color.png"), true, TextureFilterMode.LinearMipmapLinear);
-            var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks_1K_Normal.png"), true, TextureFilterMode.LinearMipmapLinear);
-            var thicknessTex = new Texture(AssetStorage.Get<ImageData>("monkey-thickness-1.png"), true, TextureFilterMode.LinearMipmapLinear);
+            var albedoTex = new Texture(AssetStorage.Get<ImageData>("Bricks059_1K_Color.jpg"), true, TextureFilterMode.LinearMipmapLinear);
+            var normalTex = new Texture(AssetStorage.Get<ImageData>("Bricks059_1K_NormalDX.jpg"), true, TextureFilterMode.LinearMipmapLinear);
+            var thicknessTex = new Texture(AssetStorage.Get<ImageData>("monkey-thickness-1.jpg"), true, TextureFilterMode.LinearMipmapLinear);
 
             _gold_brdfFx = MakeEffect.FromBRDF
             (
@@ -276,7 +276,7 @@ namespace Fusee.Examples.Materials.Core
             monkeyMesh.CalculateTangents();
             monkeyMesh.CalculateBiTangents();
 
-            var checkerboardTex = new Texture(AssetStorage.Get<ImageData>("checkerboard.png"), true, TextureFilterMode.LinearMipmapLinear);
+            var checkerboardTex = new Texture(AssetStorage.Get<ImageData>("checkerboard.jpg"), true, TextureFilterMode.LinearMipmapLinear);
 
             _scene.Children.Add(
             new SceneNode()
