@@ -2,7 +2,7 @@
 #define KERNEL_LENGTH 64
 
 precision highp float;
-in vec2 vUV;
+in vec2 vUv;
 uniform vec2 ScreenParams;
 uniform vec3[KERNEL_LENGTH] SSAOKernel;
 uniform sampler2D Position;
@@ -13,18 +13,18 @@ out vec4 Ssao;
 
 void main() 
 {
-	vec3 Normal = texture(Normal, vUV).rgb;
+	vec3 Normal = texture(Normal, vUv).rgb;
 
     if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)
         discard;
 
-    vec3 FragPos = texture(Position, vUV).xyz;
+    vec3 FragPos = texture(Position, vUv).xyz;
 
     float radius = 5.0;
     float occlusion = 0.0;
     float bias = 0.005;
     vec2 noiseScale = vec2(ScreenParams.x * 0.25, ScreenParams.y * 0.25);
-	vec3 randomVec = texture(NoiseTex, vUV * noiseScale).xyz;
+	vec3 randomVec = texture(NoiseTex, vUv * noiseScale).xyz;
 	vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal));
 	vec3 bitangent = cross(Normal, tangent);
 	mat3 tbn = mat3(tangent, bitangent, Normal);

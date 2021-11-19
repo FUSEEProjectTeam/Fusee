@@ -9,7 +9,7 @@
     <OutputPath>$(BaseOutputPath)\Examples\SurfaceEffects\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{85302355-1F4C-415A-8310-D154AFEE5F04}</ProjectGuid>
+    <ProjectGuid>{05BCD767-C30E-4D72-A006-B23CF90056CA}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -105,7 +105,7 @@
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Examples.Materials.Core.csproj">
-      <Project>{16df559f-0bb4-4fbb-a4e5-e53e65549b09}</Project>
+      <Project>{78a63ae0-11ee-430d-8d21-f7898de1c9da}</Project>
       <Name>Fusee.Examples.Materials.Core</Name>
     </ProjectReference>
   </ItemGroup>

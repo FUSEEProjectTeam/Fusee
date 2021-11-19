@@ -90,7 +90,7 @@ void main()
 		}	
 	}
 	else{
-        vec4 baseColor = texture(AlbedoTexture, vUV) * AlbedoMix* Albedo;
+        vec4 baseColor = texture(AlbedoTexture, vUv) * AlbedoMix* Albedo;
         vec3 diff = baseColor.rgb *  max(dot(N, L), 0.0);        
 		outColor = vec4(diff, baseColor.a);
     }

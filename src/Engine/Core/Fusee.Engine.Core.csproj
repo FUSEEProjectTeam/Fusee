@@ -13,42 +13,12 @@
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
-  </ItemGroup>
 	<ItemGroup>
 		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
 		<Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
 	</ItemGroup>
 
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
 			<PrivateAssets>all</PrivateAssets>
