@@ -15,7 +15,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
     /// Reads the point cloud files created by the OoCFileGeneration tool into a renderable Scene.
     /// </summary>
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
-    public class PtOctreeFileReader<TPoint> : IPtOctreeFileReader
+    public class PtOctreeFileReader<TPoint> : IPtOctreeFileReader where TPoint : new()
     {
         private readonly string _fileFolderPath;
 
@@ -66,6 +66,68 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             ReadHierarchy(octree);
             return octree;
+        }
+
+        /// <summary>
+        /// Reads the point count of an octant.
+        /// </summary>
+        /// <param name="fileFolderPath">Path to the file.</param>
+        /// <param name="ptOctantComponent">The octant.</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static int GetPtCountFromFile(string fileFolderPath, OctantD ptOctantComponent)
+        {
+            var pathToFile = $"{fileFolderPath}/Octants/{ptOctantComponent.Guid:N}.node";
+
+            if (!File.Exists(pathToFile))
+                throw new ArgumentException("File: " + ptOctantComponent.Guid + ".node does not exist!");
+
+            using BinaryReader br = new(File.Open(pathToFile, FileMode.Open, FileAccess.Read, FileShare.Read));
+            // step to stream position
+            //br.BaseStream.Position = node.StreamPosition;
+
+            // read number of points
+            return br.ReadInt32();
+        }
+
+        /// <summary>
+        /// Loads the point data from an octant file.
+        /// </summary>
+        /// <param name="fileFolderPath">Path to the file.</param>
+        /// <param name="ptAccessor"></param>
+        /// <param name="ptOctantComponent"></param>
+        /// <returns>An array of TPoint points.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        public static TPoint[] LoadPointsForNode(string fileFolderPath, PointAccessor<TPoint> ptAccessor, OctantD ptOctantComponent)
+        {
+            var pathToFile = $"{fileFolderPath}/Octants/{ptOctantComponent.Guid:N}.node";
+
+            if (!File.Exists(pathToFile))
+                throw new ArgumentException($"File: { ptOctantComponent.Guid }.node does not exist!");
+
+            using BinaryReader br = new(File.Open(pathToFile, FileMode.Open, FileAccess.Read, FileShare.Read));
+            // step to stream position
+            //br.BaseStream.Position = node.StreamPosition;
+
+            // read number of points
+            var numberOfPoints = br.ReadInt32();
+            var lengthOfPoint = br.ReadInt32();
+
+            TPoint[] points = new TPoint[numberOfPoints];
+
+            for (var i = 0; i < numberOfPoints; i++)
+            {
+                var pt = new TPoint();
+                var ptBytes = br.ReadBytes(lengthOfPoint);
+
+                ptAccessor.SetRawPoint(ref pt, ptBytes);
+
+                points[i] = pt;
+            }
+
+            ptOctantComponent.WasLoaded = true;
+
+            return points;
         }
 
         /// <summary>
