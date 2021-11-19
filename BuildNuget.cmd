@@ -20,7 +20,7 @@ git clean -xdf
 mkdir bin\Release\nuget
 
 echo Building distribution.
-dotnet publish src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj -c Release
+dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
 
 dotnet pack Fusee.sln -c Release-NuGet
 msbuild src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj -t:restore,pack -p:Configuration=Release

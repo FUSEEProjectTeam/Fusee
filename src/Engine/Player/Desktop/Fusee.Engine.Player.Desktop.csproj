@@ -1,18 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    
     <OutputType>Exe</OutputType>
     <IsPackable>false</IsPackable>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-    <PublishSingleFile>true</PublishSingleFile>
     <OutputPath>$(BaseOutputPath)\Player\Desktop\</OutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <PublishTrimmed>true</PublishTrimmed>
-  </PropertyGroup>
-    
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
