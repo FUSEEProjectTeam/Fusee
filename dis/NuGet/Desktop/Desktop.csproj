@@ -1,24 +1,27 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <PackageId>Fusee.Desktop</PackageId>
-    <TargetFramework>net6.0</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <IncludeSymbols>false</IncludeSymbols>
-  </PropertyGroup>
+	
+	<PropertyGroup>
+		<PackageId>Fusee.Desktop</PackageId>
+		<TargetFramework>net6.0</TargetFramework>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<IncludeSymbols>false</IncludeSymbols>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\dis\NuGet\Core\Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\dis\NuGet\Core\Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
+	
 </Project>
