@@ -3,7 +3,7 @@
 
 precision highp float;
 in vec2 vUv;
-uniform vec2 ScreenParams;
+uniform vec2 ViewportPx;
 uniform vec3[KERNEL_LENGTH] SSAOKernel;
 uniform sampler2D Position;
 uniform sampler2D Normal;
@@ -23,7 +23,7 @@ void main()
     float radius = 5.0;
     float occlusion = 0.0;
     float bias = 0.005;
-    vec2 noiseScale = vec2(ScreenParams.x * 0.25, ScreenParams.y * 0.25);
+    vec2 noiseScale = vec2(ViewportPx.x * 0.25, ViewportPx.y * 0.25);
 	vec3 randomVec = texture(NoiseTex, vUv * noiseScale).xyz;
 	vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal));
 	vec3 bitangent = cross(Normal, tangent);

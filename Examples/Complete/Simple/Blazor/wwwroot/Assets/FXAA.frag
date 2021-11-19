@@ -8,7 +8,7 @@
 precision highp float; 
 in vec2 vUv;
 uniform sampler2D LIGHTED_SCENE_TEX;
-uniform vec2 ScreenParams;
+uniform vec2 ViewportPx;
 out vec4 oColor;
 
 float rgb2luma(vec3 rgb)
@@ -40,7 +40,7 @@ void main()
 
     // ---- 0. Detecting where to apply FXAA
 
-    vec2 inverseScreenSize = vec2(1.0/ScreenParams.x, 1.0/ScreenParams.y);
+    vec2 inverseScreenSize = vec2(1.0/ViewportPx.x, 1.0/ViewportPx.y);
     vec3 colorCenter = texture(LIGHTED_SCENE_TEX, vUv).rgb;
 
     // Luma at the current fragment

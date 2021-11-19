@@ -9,7 +9,6 @@ using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -124,17 +123,17 @@ namespace Fusee.Engine.Core
             }
 
             return new ShaderEffect(
-                new FxPassDeclaration
+            new FxPassDeclaration
+            {
+                VS = DeferredShaders.DeferredVert,
+                PS = frag,
+                StateSet = new RenderStateSet
                 {
-                    VS = DeferredShaders.DeferredVert,
-                    PS = frag,
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    }
+                    AlphaBlendEnable = false,
+                    ZEnable = true,
+                }
 
-                },
+            },
             new IFxParamDeclaration[]
             {
                 new FxParamDeclaration<WritableTexture> { Name = "InputTex", Value = ssaoRenderTex},
@@ -144,11 +143,11 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary>
+        /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(IRenderTarget srcRenderTarget, Light lc, float4 backgroundColor, IWritableTexture shadowMap = null)
         {
@@ -189,7 +188,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// [Parallel light only] ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
-        /// </summary>
+        /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The cascaded shadow maps.</param>
@@ -308,8 +307,8 @@ namespace Fusee.Engine.Core
             return new ShaderEffect(
             new FxPassDeclaration
             {
-                VS = DeferredShaders.ShadowCubeMapVert,
-                PS = DeferredShaders.ShadowCubeMapFrag,
+                VS = AssetStorage.Get<string>("ShadowMap.vert"),
+                PS = AssetStorage.Get<string>("ShadowMap.frag"),
                 StateSet = new RenderStateSet
                 {
                     AlphaBlendEnable = false,
@@ -322,8 +321,6 @@ namespace Fusee.Engine.Core
             {
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
                 new FxParamDeclaration<float4x4> { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
-                new FxParamDeclaration<float2> { Name = UniformNameDeclarations.LightMatClipPlanes, Value = float2.Zero},
-                new FxParamDeclaration<float3> { Name = UniformNameDeclarations.LightPos, Value = float3.Zero}
             });
         }
 
@@ -385,7 +382,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Make Effect from parameters
-        
+
         /// <summary>
         /// Creates a simple unlit shader from an albedo color and texture.
         /// </summary>
@@ -586,7 +583,7 @@ namespace Fusee.Engine.Core
             frag.Append(FragProperties.ColorOut());
 
             //Shadow calculation methods
-            //--------------------------------------
+            //-------------------------------------- 
             if (isCascaded)
                 frag.Append(Lighting.ShadowCalculationCascaded());
             else if (lc.Type == LightType.Point)
