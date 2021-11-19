@@ -16,6 +16,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
         /// <param name="ptType">The <see cref="PointType"/>, used to get the mesh data from the raw points.</param>
         /// <param name="pathToFile">The path to the las file.</param>
         /// <param name="box">The <see cref="AABBf"/> of the point cloud.</param>
+        /// <param name="doExchangeYZ"></param>
         public static List<Mesh> GetMeshsFromLasFile<TPoint>(PointAccessor<TPoint> ptAccessor, PointType ptType, string pathToFile, out AABBf box, bool doExchangeYZ = false)
         {
             var reader = new LasPointReader(pathToFile);
