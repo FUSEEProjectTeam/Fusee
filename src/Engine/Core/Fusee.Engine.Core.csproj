@@ -15,8 +15,24 @@
 
 	<ItemGroup>
 		<Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-		<None Remove="Assets\ShaderRef\FXAA.frag" />
-		<None Remove="Assets\ShaderRef\SSAO.frag" />
+		<None Remove="Effects\ShaderRef\FXAA.frag" />
+		<None Remove="Effects\ShaderRef\SSAO.frag" />
+		<Content Include="Effects\ShaderRef\Deferred.vert" />
+		<Content Include="Effects\ShaderRef\FXAA.frag">
+		  <PackagePath>contentFiles\Assets\</PackagePath>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Effects\ShaderRef\ShadowCubeMap.frag" />
+		<Content Include="Effects\ShaderRef\ShadowCubeMap.geom" />
+		<Content Include="Effects\ShaderRef\ShadowCubeMap.vert" />
+		<Content Include="Effects\ShaderRef\ShadowCubeMapPointPrimitive.geom" />
+		<Content Include="Effects\ShaderRef\ShadowMap.frag" />
+		<Content Include="Effects\ShaderRef\ShadowMap.vert" />
+		<Content Include="Effects\ShaderRef\SimpleBlur.frag" />
+		<Content Include="Effects\ShaderRef\SSAO.frag">
+		  <PackagePath>contentFiles\Assets\</PackagePath>
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
 		<Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
 	</ItemGroup>
 
@@ -59,16 +75,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Update="Assets\ShaderRef\FXAA.frag">
-	    <PackagePath>contentFiles\Assets\</PackagePath>
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Content Update="Assets\ShaderRef\SSAO.frag">
-	    <PackagePath>contentFiles\Assets\</PackagePath>
-	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-	  </Content>
+	  <Folder Include="Assets\" />
 	</ItemGroup>
 </Project>
