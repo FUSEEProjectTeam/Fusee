@@ -169,6 +169,16 @@ namespace Fusee.Engine.Imp.Blazor
             VertexArrayObject = null;
         }
 
+        public void InvalidateColors1()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void InvalidateColors2()
+        {
+            throw new System.NotImplementedException();
+        }
+
         /// <summary>
         /// Gets a value indicating whether [triangles set].
         /// </summary>
@@ -186,6 +196,10 @@ namespace Fusee.Engine.Imp.Blazor
         /// Returns a vertex array object set
         /// </summary>
         public bool VertexArrayObjectSet => VertexArrayObject != null;
+
+        public bool ColorsSet1 => throw new System.NotImplementedException();
+
+        public bool ColorsSet2 => throw new System.NotImplementedException();
 
         #endregion
     }

@@ -2528,5 +2528,25 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             throw new NotImplementedException();
         }
+
+        public void SetColors1(IMeshImp mr, uint[] colors)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetColors2(IMeshImp mr, uint[] colors)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveColors1(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveColors2(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

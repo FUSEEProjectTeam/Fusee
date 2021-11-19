@@ -39,6 +39,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Blazor\Fusee.Engine.Imp.Graphics.Blazor.csproj" />
 
 
 		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />

@@ -158,6 +158,16 @@ namespace Fusee.Engine.Imp.Blazor
             Disposed = true;
         }
 
+        public void SetAlbedoTex()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetSubsurfaceTex()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Deconstruction of the render target.
         /// </summary>

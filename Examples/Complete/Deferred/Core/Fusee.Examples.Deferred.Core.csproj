@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net6.0</TargetFrameworks>
+    <TargetFrameworks>net6.0;netstandard2.1</TargetFrameworks>
     <OutputPath>$(BaseOutputPath)\Examples\Deferred\Core\</OutputPath>
   </PropertyGroup>
 
@@ -18,8 +18,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
-    <ProjectReference Include="..\..\..\..\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
-    <ProjectReference Include="..\..\..\..\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
-    <ProjectReference Include="..\..\..\..\src\PointCloud\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj" />
   </ItemGroup>
 </Project>
