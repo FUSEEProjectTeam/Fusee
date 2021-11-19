@@ -7,3 +7,4 @@ code^
  dis\VSTemplate\VSTemplate\Android\Android.csproj^
  dis\VSTemplate\VSTemplate\Core\Core.csproj^
  dis\VSTemplate\VSTemplate\Desktop\Desktop.csproj^
+ dis\VSTemplate\VSIX\source.extension.vsixmanifest^
