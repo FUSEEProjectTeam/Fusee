@@ -35,7 +35,7 @@ namespace FuseeApp
 
         private bool _keys;
 
-               private bool _isLoaded = false;
+        private bool _isLoaded = false;
 
         // Init is called on startup. 
         public override void Init()
