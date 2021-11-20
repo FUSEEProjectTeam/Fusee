@@ -134,7 +134,7 @@ namespace Fusee.Tools.CmdLine.Verbs
                                 Assembly asm = Assembly.LoadFrom(filepath);
 
                                 // Comparing our version with the version of the referenced Fusee.Serialization
-                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Serialization").Version;
+                                var serversion = asm.GetReferencedAssemblies().FirstOrDefault(x => x.Name == "Fusee.Engine.Core").Version;
                                 var ourversion = Assembly.GetEntryAssembly().GetName().Version;
 
                                 if (serversion != ourversion)
