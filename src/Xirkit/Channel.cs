@@ -30,7 +30,7 @@ namespace Fusee.Xirkit
         public event SetChanelValue TimeChanged;
 
         // The _timeline contains a List of Keyframes.
-        private readonly List<Keyframe<TValue>> _timeline = new List<Keyframe<TValue>>();
+        private readonly List<Keyframe<TValue>> _timeline = new();
 
         private readonly LerpFunc _lerpIt;
 
@@ -50,7 +50,7 @@ namespace Fusee.Xirkit
         {
             TimeChanged += timeChanged;
             _lerpIt = lerpFunc;
-            AddKeyframe(0, default(TValue));
+            AddKeyframe(0, default);
         }
 
         /// <summary>
@@ -172,7 +172,7 @@ namespace Fusee.Xirkit
             else
             {
                 // Diagnostics.Log("Timeline is empty. Using default value");
-                keyValue = default(TValue);
+                keyValue = default;
             }
             _value = keyValue;
             return keyValue;

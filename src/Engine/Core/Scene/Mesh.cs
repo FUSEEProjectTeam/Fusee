@@ -9,7 +9,6 @@ namespace Fusee.Engine.Core.Scene
     /// </summary>
     public class Mesh : SceneComponent, IDisposable
     {
-#pragma warning disable CA1819 // Properties should not return arrays
 
         #region RenderContext Asset Management
 
@@ -40,6 +39,8 @@ namespace Fusee.Engine.Core.Scene
 
         private ushort[] _triangles;
         private uint[] _colors;
+        private uint[] _colors1;
+        private uint[] _colors2;
 
         #endregion
 
@@ -101,6 +102,7 @@ namespace Fusee.Engine.Core.Scene
                 MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors));
             }
         }
+
         /// <summary>
         /// Gets a value indicating whether a color is set.
         /// </summary>
@@ -108,6 +110,56 @@ namespace Fusee.Engine.Core.Scene
         ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet => _colors?.Length > 0;
+
+        /// <summary>
+        /// Gets and sets the color of a single vertex.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
+        public uint[] Colors1
+        {
+            get => _colors1;
+            set
+            {
+                _colors1 = value;
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors1));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a color is set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
+        /// </value>
+        public bool ColorsSet1 => _colors1?.Length > 0;
+
+        /// <summary>
+        /// Gets and sets the color of a single vertex.
+        /// </summary>
+        /// <value>
+        /// The color.
+        /// </value>
+        public uint[] Colors2
+        {
+            get => _colors2;
+            set
+            {
+                _colors2 = value;
+
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Colors2));
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether a color is set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if a color is set; otherwise, <c>false</c>.
+        /// </value>
+        public bool ColorsSet2 => _colors2?.Length > 0;
 
 
         /// <summary>
@@ -281,36 +333,49 @@ namespace Fusee.Engine.Core.Scene
 
         #region IDisposable Support
 
-        private bool disposedValue; // To detect redundant calls
+        private bool disposed; // To detect redundant calls
 
         /// <summary>
-        /// Fire dispose mesh event
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
-        /// <param name="disposing"></param>
+        public void Dispose()
+        {
+            Dispose(true);
+
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!disposed)
             {
                 if (disposing)
                 {
                     MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
                 }
 
-                disposedValue = true;
+                disposed = true;
             }
         }
 
         /// <summary>
-        /// Fire dispose mesh event
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
         /// </summary>
-        public void Dispose()
+        ~Mesh()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
+            Dispose(false);
         }
 
         #endregion
 
-#pragma warning restore CA1819 // Properties should not return arrays
     }
 }

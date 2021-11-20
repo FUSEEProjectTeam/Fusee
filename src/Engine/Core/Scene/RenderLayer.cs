@@ -5,7 +5,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Controls for which layer this node is rendered
     /// </summary>
-    /// <seealso cref="Fusee.Engine.Common.SceneComponent" />
+    /// <seealso cref="SceneComponent" />
     public class RenderLayer : SceneComponent
     {
         /// <summary>

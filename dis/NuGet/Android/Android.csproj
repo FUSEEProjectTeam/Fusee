@@ -1,24 +1,27 @@
-<Project Sdk="MSBuild.Sdk.Extras/2.0.54">
-  <PropertyGroup>
-    <PackageId>Fusee.Android</PackageId>
-    <TargetFramework>MonoAndroid81</TargetFramework>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <IncludeSymbols>false</IncludeSymbols>
-  </PropertyGroup>
+<Project Sdk="MSBuild.Sdk.Extras/3.0.23">
 
-  <PropertyGroup>
-    <OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<PackageId>Fusee.Android</PackageId>
+		<TargetFramework>MonoAndroid11.0</TargetFramework>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<IncludeSymbols>false</IncludeSymbols>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\dis\NuGet\Core\Core.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-  </ItemGroup>
+	<PropertyGroup>
+		<OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\dis\NuGet\Core\Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+	</ItemGroup>
+
 </Project>

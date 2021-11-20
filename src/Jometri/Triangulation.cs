@@ -27,7 +27,7 @@ namespace Fusee.Jometri
                 var vertTypes = new Dictionary<int, VertexType>();
 
                 //If the face has no OuterHalfEdge it is unbounded and can be ignored.
-                if (face.Value.OuterHalfEdge == default(int)) { continue; }
+                if (face.Value.OuterHalfEdge == default) { continue; }
 
                 if (!IsMonotone(face.Value, vertTypes))
                     MakeMonotone(face.Value, vertTypes);
@@ -37,7 +37,7 @@ namespace Fusee.Jometri
 
             foreach (var face in monotoneFaces)
             {
-                if (face.Value.OuterHalfEdge == default(int)) { continue; }
+                if (face.Value.OuterHalfEdge == default) { continue; }
 
                 TriangulateMonotone(face.Value);
             }
@@ -189,8 +189,7 @@ namespace Fusee.Jometri
 
             foreach (var vert in verts)
             {
-                VertexType vertType;
-                TestVertexType(vert, face, out vertType);
+                TestVertexType(vert, face, out VertexType vertType);
                 vertTypes.Add(vert.Handle, vertType);
             }
 
@@ -316,7 +315,7 @@ namespace Fusee.Jometri
                         HandleRegularVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"Cannot handle {vertTypes[current.Handle]}");
                 }
                 sortedVertices.RemoveAt(0);
             }
@@ -338,10 +337,12 @@ namespace Fusee.Jometri
 
                 var target = _geometry.GetVertexByHandle(targetH);
 
-                var ei = new TriStatusEdge(_geometry, face, origin, target, vert);
-                ei.HalfEdgeHandle = he.Handle;
-                ei.HelperVertexHandle = vert.Handle;
-                ei.IsMergeVertex = false;
+                var ei = new TriStatusEdge(_geometry, face, origin, target, vert)
+                {
+                    HalfEdgeHandle = he.Handle,
+                    HelperVertexHandle = vert.Handle,
+                    IsMergeVertex = false
+                };
 
                 _triSweepLineStatus.InsertNode(ei.IntersectionPointX, ei);
                 break;
@@ -396,10 +397,12 @@ namespace Fusee.Jometri
 
             var target = _geometry.GetVertexByHandle(targetH);
 
-            var ei = new TriStatusEdge(_geometry, face, origin, target, vert);
-            ei.HalfEdgeHandle = he.Handle;
-            ei.HelperVertexHandle = vert.Handle;
-            ei.IsMergeVertex = false;
+            var ei = new TriStatusEdge(_geometry, face, origin, target, vert)
+            {
+                HalfEdgeHandle = he.Handle,
+                HelperVertexHandle = vert.Handle,
+                IsMergeVertex = false
+            };
 
             _triSweepLineStatus.InsertNode(ei.IntersectionPointX, ei);
         }
@@ -464,10 +467,12 @@ namespace Fusee.Jometri
 
                     var target = _geometry.GetVertexByHandle(targetH);
 
-                    var ei = new TriStatusEdge(_geometry, face, origin, target, vert);
-                    ei.HalfEdgeHandle = he.Handle;
-                    ei.HelperVertexHandle = vert.Handle;
-                    ei.IsMergeVertex = false;
+                    var ei = new TriStatusEdge(_geometry, face, origin, target, vert)
+                    {
+                        HalfEdgeHandle = he.Handle,
+                        HelperVertexHandle = vert.Handle,
+                        IsMergeVertex = false
+                    };
 
                     _triSweepLineStatus.InsertNode(ei.IntersectionPointX, ei);
 

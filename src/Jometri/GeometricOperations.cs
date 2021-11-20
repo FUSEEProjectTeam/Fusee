@@ -47,7 +47,7 @@ namespace Fusee.Jometri
             var changeOfBasisMat = new float3x3(row1, row2, row3);
 
             //In an orthonormal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
-            var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
+            var transposeMat = new float3x3(changeOfBasisMat.Row1, changeOfBasisMat.Row2, changeOfBasisMat.Row3);
             transposeMat = transposeMat.Transpose();
 
             var newVert = transposeMat * vertPos;
@@ -82,7 +82,7 @@ namespace Fusee.Jometri
                 normal.y += (vCur.z - vNext.z) * (vCur.x + vNext.x);
                 normal.z += (vCur.x - vNext.x) * (vCur.y + vNext.y);
             }
-            normal = normal * -1;
+            normal *= -1;
             normal = normal.Normalize();
 
             return normal;
@@ -352,13 +352,13 @@ namespace Fusee.Jometri
         /// <returns>Returns the position of the mean of all Vertices as a float3.</returns>
         public static float3 GetVerticesMeanPos(List<Vertex> vertices)
         {
-            float3 centroid = new float3();
+            float3 centroid = new();
 
             foreach (Vertex vertex in vertices)
             {
                 centroid += vertex.VertData.Pos;
             }
-            centroid = centroid / vertices.Count;
+            centroid /= vertices.Count;
             return centroid;
         }
     }

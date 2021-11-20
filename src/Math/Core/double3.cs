@@ -95,20 +95,13 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch (idx)
+                return idx switch
                 {
-                    case 0:
-                        return x;
-
-                    case 1:
-                        return y;
-
-                    case 2:
-                        return z;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double3 type");
-                }
+                    0 => x,
+                    1 => y,
+                    2 => z,
+                    _ => throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double3 type"),
+                };
             }
             set
             {
@@ -218,27 +211,27 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines a unit-length double3 that points towards the x-axis.
         /// </summary>
-        public static readonly double3 UnitX = new double3(1, 0, 0);
+        public static readonly double3 UnitX = new(1, 0, 0);
 
         /// <summary>
         /// Defines a unit-length double3 that points towards the y-axis.
         /// </summary>
-        public static readonly double3 UnitY = new double3(0, 1, 0);
+        public static readonly double3 UnitY = new(0, 1, 0);
 
         /// <summary>
         /// Defines a unit-length double3 that points towards the z-axis.
         /// </summary>
-        public static readonly double3 UnitZ = new double3(0, 0, 1);
+        public static readonly double3 UnitZ = new(0, 0, 1);
 
         /// <summary>
         /// Defines a zero-length double3.
         /// </summary>
-        public static readonly double3 Zero = new double3(0, 0, 0);
+        public static readonly double3 Zero = new(0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly double3 One = new double3(1, 1, 1);
+        public static readonly double3 One = new(1, 1, 1);
 
         // <summary>
         // Defines the size of the double3 struct in bytes.
@@ -519,7 +512,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Cross(double3 left, double3 right)
         {
-            double3 result = new double3(left.y * right.z - left.z * right.y,
+            double3 result = new(left.y * right.z - left.z * right.y,
                 left.z * right.x - left.x * right.z,
                 left.x * right.y - left.y * right.x);
 
@@ -673,37 +666,37 @@ namespace Fusee.Math.Core
         /// <value>
         /// The xy.
         /// </value>
-        public double2 xy { get => new double2(x, y); set { x = value.x; y = value.y; } }
+        public double2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
-        public double3 xyz { get => new double3(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
+        public double3 xyz { get => new(x, y, z); set { x = value.x; y = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
         /// </summary>
-        public double3 xzy { get => new double3(x, z, y); set { x = value.x; z = value.y; y = value.z; } }
+        public double3 xzy { get => new(x, z, y); set { x = value.x; z = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
         /// </summary>
-        public double3 yzx { get => new double3(y, z, x); set { y = value.x; z = value.y; x = value.z; } }
+        public double3 yzx { get => new(y, z, x); set { y = value.x; z = value.y; x = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the y, x and z components of this instance.
         /// </summary>
-        public double3 yxz { get => new double3(y, x, z); set { y = value.x; x = value.y; z = value.z; } }
+        public double3 yxz { get => new(y, x, z); set { y = value.x; x = value.y; z = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, x and y components of this instance.
         /// </summary>
-        public double3 zxy { get => new double3(z, x, y); set { z = value.x; x = value.y; y = value.z; } }
+        public double3 zxy { get => new(z, x, y); set { z = value.x; x = value.y; y = value.z; } }
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the z, y and x components of this instance.
         /// </summary>
-        public double3 zyx { get => new double3(z, y, x); set { z = value.x; y = value.y; x = value.z; } }
+        public double3 zyx { get => new(z, y, x); set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion Swizzle
 
@@ -893,7 +886,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// True if the instances are equal; false otherwise.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (!(obj is double3))
                 return false;

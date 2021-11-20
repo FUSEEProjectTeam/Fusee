@@ -360,9 +360,9 @@ namespace Fusee.Xene
     /// </summary>
     public class StandardState : VisitorState
     {
-        private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-        private readonly CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
-        private readonly CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
+        private readonly CollapsingStateStack<float4x4> _model = new();
+        private readonly CollapsingStateStack<float4x4> _view = new();
+        private readonly CollapsingStateStack<float4x4> _projection = new();
 
         /// <summary>
         /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.

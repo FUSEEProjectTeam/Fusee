@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The shader parameters of all passes. See <see cref="FxParam"/> on the parameter infos that are saved.
         /// </summary>
-        internal Dictionary<string, FxParam> ActiveUniforms = new Dictionary<string, FxParam>();
+        internal Dictionary<int, FxParam> ActiveUniforms = new();
 
 
         #region equals

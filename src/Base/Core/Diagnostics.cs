@@ -14,14 +14,26 @@ namespace Fusee.Base.Core
 
         private static Stopwatch _daWatch;
         private static bool _useFile;
+        private static bool _useColor = true;
         private static string _fileName = "Fusee.Log.txt";
         private static SeverityLevel _minLogLevelFile = SeverityLevel.None;
         private static SeverityLevel _minLogLevelConsole;
         private static SeverityLevel _minLogLevelDebug;
 
+        /// <summary>
+        /// Set the logger to utilize colored console output
+        /// Can be disabled for platform which do not support colored console output, e. g. Blazor
+        /// </summary>
+        /// <param name="use"></param>
+        public static void UseConsoleColor(bool use)
+        {
+            _useColor = use;
+        }
+
         private static Formater _format = (caller, lineNumber, callerFile, lvl, msg, ex, args) =>
                     {
-                        ColorConsoleOutput(lvl);
+                        if (Console.Out != null && _useColor)
+                            ColorConsoleOutput(lvl);
 
                         string f;
 
@@ -103,23 +115,16 @@ namespace Fusee.Base.Core
 
         private static string SeverityLevelToString(SeverityLevel lvl)
         {
-            switch (lvl)
+            return lvl switch
             {
-                case SeverityLevel.Verbose:
-                    return "Verbose";
-                case SeverityLevel.Debug:
-                    return "Debug";
-                case SeverityLevel.Info:
-                    return "Info";
-                case SeverityLevel.Warn:
-                    return "Warning";
-                case SeverityLevel.Error:
-                    return "Error";
-                case SeverityLevel.None:
-                    return "None";
-            }
-
-            return "Error while parsing severity level";
+                SeverityLevel.Verbose => "Verbose",
+                SeverityLevel.Debug => "Debug",
+                SeverityLevel.Info => "Info",
+                SeverityLevel.Warn => "Warning",
+                SeverityLevel.Error => "Error",
+                SeverityLevel.None => "None",
+                _ => "Error while parsing severity level",
+            };
         }
 
         private static void ColorConsoleOutput(SeverityLevel lvl)
@@ -214,12 +219,15 @@ namespace Fusee.Base.Core
                 File.AppendAllText(_fileName, _format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
             if (_minLogLevelConsole <= logLevel && Console.Out != null)
+            {
                 Console.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg));
+                Console.ResetColor();
+            }
 
             if (_minLogLevelDebug <= logLevel || Console.Out == null) // when there is no console present (android, wasm, etc. log anything to debug output
                 System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
-            Console.ResetColor();
+
         }
 
         /// <summary>

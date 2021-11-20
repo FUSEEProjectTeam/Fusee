@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class QuaternionTest
     {
@@ -110,12 +110,13 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void Setter_Test()
         {
-            var actual = new Quaternion();
-
-            actual.x = 1;
-            actual.y = 2;
-            actual.z = 3;
-            actual.w = 4;
+            var actual = new Quaternion
+            {
+                x = 1,
+                y = 2,
+                z = 3,
+                w = 4
+            };
             Assert.Equal(new Quaternion(1, 2, 3, 4), actual);
 
             actual.xyz = new float3(3, 2, 1);
@@ -508,7 +509,7 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void ToString_InvariantCulture()
         {
-            string s = "V: (0.1675188, 0.5709415, 0.57094145) w: 0.5656758";
+            string s = "V: (0.5709415, 0.1675188, 0.1675188) w: 0.7860666";
             Quaternion q = Quaternion.EulerToQuaternion(float3.One);
 
             Assert.Equal(s, q.ToString(CultureInfo.InvariantCulture));
@@ -517,7 +518,7 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void ToString_CultureDE()
         {
-            string s = "V: (0,1675188; 0,5709415; 0,57094145) w: 0,5656758";
+            string s = "V: (0,5709415; 0,1675188; 0,1675188) w: 0,7860666";
             Quaternion q = Quaternion.EulerToQuaternion(float3.One);
 
             Assert.Equal(s, q.ToString(new CultureInfo("de-DE")));

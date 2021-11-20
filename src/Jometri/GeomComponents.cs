@@ -33,7 +33,7 @@ namespace Fusee.Jometri
         public Vertex(int handle, float3 pos)
         {
             Handle = handle;
-            IncidentHalfEdge = default(int);
+            IncidentHalfEdge = default;
             VertData = new VertexData { Pos = pos };
         }
 

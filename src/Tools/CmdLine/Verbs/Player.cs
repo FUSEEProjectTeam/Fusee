@@ -86,11 +86,12 @@ namespace Fusee.Tools.CmdLine.Verbs
             Type tApp = null;
 
             string modelFile = null;
-            List<string> assetDirs = new List<string>();
+            List<string> assetDirs = new();
             TryAddDir(assetDirs, "Assets");
 
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string Cwd = Directory.GetCurrentDirectory();
+
             if (Cwd != ExeDir)
             {
                 TryAddDir(assetDirs, Path.Combine(ExeDir, "Assets"));
@@ -98,7 +99,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
             if (!string.IsNullOrEmpty(input))
             {
-                Console.WriteLine("File: " + input);
+                Diagnostics.Info("File: " + input);
 
                 if (File.Exists(input))
                 {
@@ -133,12 +134,12 @@ namespace Fusee.Tools.CmdLine.Verbs
                                 Assembly asm = Assembly.LoadFrom(filepath);
 
                                 // Comparing our version with the version of the referenced Fusee.Serialization
-                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Engine.Core").Version;
+                                var serversion = asm.GetReferencedAssemblies().FirstOrDefault(x => x.Name == "Fusee.Engine.Core").Version;
                                 var ourversion = Assembly.GetEntryAssembly().GetName().Version;
 
                                 if (serversion != ourversion)
                                 {
-                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. If you experience unexpected behavior, try installing the corresponding player version. See https://fusee3d.org/wiki/Using-FUSEE-in-Visual-Studio-Code.html for help.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                    Diagnostics.Info("Fusee player and the assembly are on different versions. This can result in unexpected behaviour. Player version: " + ourversion + " Assembly version: " + serversion);
                                 }
 
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
@@ -170,9 +171,11 @@ namespace Fusee.Tools.CmdLine.Verbs
             }
             else
             {
-                Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
+                Diagnostics.Info("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
                 tApp = typeof(Fusee.Engine.Player.Core.Player);
             }
+
+            #region FAP
 
             var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
             fap.RegisterTypeHandler(
@@ -212,6 +215,8 @@ namespace Fusee.Tools.CmdLine.Verbs
 
             AssetStorage.RegisterProvider(fap);
 
+            #endregion
+
             // Dynamically instantiate the app because it might live in some external (.NET core) DLL.
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
@@ -221,23 +226,22 @@ namespace Fusee.Tools.CmdLine.Verbs
             else
             {
                 // invoke the first public constructor with no parameters.
-                RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
+                RenderCanvas app = (RenderCanvas)ctor.Invoke(Array.Empty<object>());
 
-                if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player)
-                    ((Fusee.Engine.Player.Core.Player)app).ModelFile = modelFile;
+                if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player player)
+                    player.ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
+                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-                // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-                // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
                 // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
                 // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+                app.InitApp();
 
                 // Start the app
                 app.Run();
@@ -266,7 +270,7 @@ namespace Fusee.Tools.CmdLine.Verbs
 
                     Console.WriteLine(" - SUCCESS");
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     Console.WriteLine(" - FAILD");
                     status = false;

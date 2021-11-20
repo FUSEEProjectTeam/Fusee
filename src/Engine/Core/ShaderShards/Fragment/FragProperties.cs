@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (lc.IsCastingShadows)
                 {
                     if (lc.Type != LightType.Point)
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.ShadowMap));
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2DShadow, UniformNameDeclarations.ShadowMap));
                     else
                         uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));
                 }
@@ -91,12 +91,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }
             else
             {
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTexture, UniformNameDeclarations.ShadowMap));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.ArrayTextureShadow, UniformNameDeclarations.ShadowMap));
                 //No implementation for GLSL.CreateArrayUniform yet...
-                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] ClipPlanes;\n");
-                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] {UniformNameDeclarations.LightMatClipPlanes};\n");
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] {UniformNameDeclarations.LightSpaceMatrices};\n");
             }
-
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ClippingPlanes));
             uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.RenderPassNo));
             uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.SsaoOn));
 

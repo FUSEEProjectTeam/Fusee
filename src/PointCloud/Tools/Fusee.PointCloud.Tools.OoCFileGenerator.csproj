@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0</TargetFrameworks>
+		<OutputPath>$(BaseOutputPath)\PointCloud\Tools\Fusee.PointCloud.OoCFileGenerator</OutputPath>
+
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj" />
+	</ItemGroup>
+
+</Project>

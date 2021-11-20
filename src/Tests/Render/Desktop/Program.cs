@@ -6,10 +6,8 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System;
 using System.IO;
-using System.Threading.Tasks;
-using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Test.Render.Desktop
+namespace Fusee.Tests.Render.Desktop
 {
     public class Program
     {
@@ -46,7 +44,7 @@ namespace Fusee.Test.Render.Desktop
                         Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
-                            return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage));
+                            return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                         },
                         Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                     });
@@ -55,15 +53,17 @@ namespace Fusee.Test.Render.Desktop
                 var app = Example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(width, height);
-                cimp.EnableBlending = true;
+                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(width, height)
+                {
+                    EnableBlending = true
+                };
                 app.CanvasImplementor = cimp;
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(cimp));
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp));
 
                 // Initialize canvas/app and canvas implementor
-                app.InitCanvas();
+                app.InitApp();
                 app.Init();
 
                 // Render a single frame and save it

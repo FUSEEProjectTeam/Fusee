@@ -158,7 +158,10 @@ namespace Fusee.Math.Core
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding box to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
-        public static AABBd operator |(AABBd a, AABBd b) => Union(a, b);
+        public static AABBd operator |(AABBd a, AABBd b)
+        {
+            return Union(a, b);
+        }
 
         /// <summary>
         ///     Calculates the bounding box around an existing bounding box and a single point.
@@ -174,23 +177,20 @@ namespace Fusee.Math.Core
         ///         box |= p;
         ///   </code>
         /// </example>
-        public static AABBd operator |(AABBd a, double3 p) => Union(a, p);
+        public static AABBd operator |(AABBd a, double3 p)
+        {
+            return Union(a, p);
+        }
 
         /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public double3 Center
-        {
-            get { return (max + min) * 0.5f; }
-        }
+        public double3 Center => (max + min) * 0.5f;
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        public double3 Size
-        {
-            get { return (max - min); }
-        }
+        public double3 Size => (max - min);
 
         /// <summary>
         ///     Check if this AABB intersects with another
@@ -231,7 +231,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Checks if a viewing frustum lies within or intersects this AABB.      
+        /// Checks if a plane lies within or intersects this AABB.      
         /// </summary>
         /// <param name="plane">The plane to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
@@ -287,9 +287,9 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBd"/>.</param>
         /// <returns></returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            if (obj.GetType() != typeof(AABBd)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj?.GetType() != typeof(AABBd)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
 
             var other = (AABBd)obj;
             return max.Equals(other.max) && min.Equals(other.min);
@@ -300,13 +300,7 @@ namespace Fusee.Math.Core
         /// </summary>        
         public override int GetHashCode()
         {
-            unchecked
-            {
-                int hash = 17;
-                hash = hash * 23 + max.GetHashCode();
-                hash = hash * 23 + min.GetHashCode();
-                return hash;
-            }
+            return HashCode.Combine(max, min);
         }
     }
 }

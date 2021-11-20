@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	
+	<PropertyGroup>
+		<TargetFrameworks>net6.0</TargetFrameworks>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
+	</ItemGroup>
+	
+</Project>

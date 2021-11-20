@@ -24,9 +24,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
     {
         #region Internal Fields
 
+        internal int VertexArrayObject;
         internal int VertexBufferObject;
         internal int NormalBufferObject;
         internal int ColorBufferObject;
+        internal int ColorBufferObject1;
+        internal int ColorBufferObject2;
         internal int UVBufferObject;
         internal int BoneIndexBufferObject;
         internal int BoneWeightBufferObject;
@@ -38,6 +41,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion Internal Fields
 
         #region Public Fields & Members pairs
+
+        /// <summary>
+        /// Invalidates the VertexArrayObject.
+        /// </summary>
+        public void InvalidateVertexArrayObject()
+        {
+            VertexArrayObject = 0;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether [VertexArrayObject set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [VertexArrayObject set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool VertexArrayObjectSet { get { return VertexArrayObject != 0; } }
 
         /// <summary>
         /// Invalidates the vertices.
@@ -70,12 +89,29 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public bool NormalsSet { get { return NormalBufferObject != 0; } }
 
         /// <summary>
-        /// Implementation Tasks: Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.
+        /// Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.
         /// </summary>
         public void InvalidateColors()
         {
             ColorBufferObject = 0;
         }
+
+        /// <summary>
+        /// Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.
+        /// </summary>
+        public void InvalidateColors1()
+        {
+            ColorBufferObject1 = 0;
+        }
+
+        /// <summary>
+        /// Invalidates the colors, e.g. reset the ColorBufferObject of this instance by setting it to 0.
+        /// </summary>
+        public void InvalidateColors2()
+        {
+            ColorBufferObject2 = 0;
+        }
+
         /// <summary>
         /// Gets a value indicating whether [colors set].
         /// </summary>
@@ -83,6 +119,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         ///   <c>true</c> if [colors set]; otherwise, <c>false</c>.
         /// </value>
         public bool ColorsSet { get { return ColorBufferObject != 0; } }
+
+        /// <summary>
+        /// Gets a value indicating whether [colors set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [colors set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ColorsSet1 { get { return ColorBufferObject1 != 0; } }
+
+        /// <summary>
+        /// Gets a value indicating whether [colors set].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [colors set]; otherwise, <c>false</c>.
+        /// </value>
+        public bool ColorsSet2 { get { return ColorBufferObject2 != 0; } }
 
         /// <summary>
         /// Gets a value indicating whether [u vs set].

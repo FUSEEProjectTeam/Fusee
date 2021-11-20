@@ -1,18 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-    <Description>Core Math implementation for the Fusee Project</Description>
-    <LangVersion>8</LangVersion>
-    <Nullable>enable</Nullable>
-    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
+	
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="protobuf-net" Version="3.0.101" />
-  </ItemGroup>
+		<IsPackable>true</IsPackable>
+		<Description>Core Math implementation for the Fusee Project</Description>
+		
+		<Nullable>enable</Nullable>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="protobuf-net" Version="3.0.101" />
+	</ItemGroup>
+	
 </Project>

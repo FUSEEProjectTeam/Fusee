@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xunit;
 
-namespace Fusee.Test.Math.Core
+namespace Fusee.Tests.Math.Core
 {
     public class AABBfTest
     {
@@ -50,6 +50,33 @@ namespace Fusee.Test.Math.Core
             var actual = m * box;
 
             Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void IntersectRay_Simple()
+        {
+            Rayf ray = new(new float3(0, 0, 0), new float3(1, 0, 0));
+            AABBf box = new(new float3(2, -1, -1), new float3(4, 1, 1));
+
+            Assert.True(box.IntersectRay(ray));
+        }
+
+        [Fact]
+        public void IntersectRay_AlongEdge()
+        {
+            Rayf ray = new(new float3(0, 0, 0), new float3(1, 0, 0));
+            AABBf box = new(new float3(2, 0, 0), new float3(4, 1, 1));
+
+            Assert.True(box.IntersectRay(ray));
+        }
+
+        [Fact]
+        public void IntersectRay_Outside()
+        {
+            Rayf ray = new(new float3(0, -1, -1), new float3(1, 0, 0));
+            AABBf box = new(new float3(2, 0, 0), new float3(4, 1, 1));
+
+            Assert.False(box.IntersectRay(ray));
         }
 
         #region IEnumerables

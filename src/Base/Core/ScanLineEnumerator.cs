@@ -63,7 +63,7 @@ namespace Fusee.Base.Core
             // 1D offsetCoordinate that represents location in PixelData byte array (sizeof PixelData is Width*Height*BytesPerPixel)
             int srcOffset = ((_pixelFormat.BytesPerPixel * _maxWidth) * _currentPosition) + _xSrc * _pixelFormat.BytesPerPixel; // go down vertical along i by width times BytesPerPixel and then add horizontal width offset times BytesPerPixel
             Buffer.BlockCopy(_pixelData, srcOffset, lineByteBuffer, 0, bytesPerLine); // copy amount of bytesPerLine from PixelData to lineByteBuffer == grab the ScanLine
-            ScanLine scanLine = new ScanLine(lineByteBuffer, 0, _width, _pixelFormat);
+            ScanLine scanLine = new(lineByteBuffer, 0, _width, _pixelFormat);
             return scanLine;
         }
     }

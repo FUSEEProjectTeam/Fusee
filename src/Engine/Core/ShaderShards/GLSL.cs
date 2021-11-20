@@ -20,6 +20,9 @@ namespace Fusee.Engine.Core.ShaderShards
             Sampler2D,
             SamplerCube,
             ArrayTexture,
+            Sampler2DShadow,
+            SamplerCubeShadow,
+            ArrayTextureShadow,
             Void
         }
 
@@ -35,7 +38,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateIn(Type type, string varName)
         {
-            return $"in  {DecodeType(type)} {varName};\n";
+            return $"in {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateVar(Type type, string varName)
@@ -113,10 +116,16 @@ namespace Fusee.Engine.Core.ShaderShards
             };
 
             foreach (var field in type.GetFields())
-                res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            {
+                if (!Attribute.IsDefined(field, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            }
 
             foreach (var prop in type.GetProperties())
-                res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            {
+                if (!Attribute.IsDefined(prop, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            }
 
             res.Add("};");
             AddTabsToMethods(res);
@@ -159,35 +168,25 @@ namespace Fusee.Engine.Core.ShaderShards
 
         public static string DecodeType(Type type)
         {
-            switch (type)
+            return type switch
             {
-                case Type.Mat3:
-                    return "mat3";
-                case Type.Mat4:
-                    return "mat4";
-                case Type.Vec2:
-                    return "vec2";
-                case Type.Vec3:
-                    return "vec3";
-                case Type.Vec4:
-                    return "vec4";
-                case Type.Boolean:
-                    return "bool";
-                case Type.Float:
-                    return "float";
-                case Type.Int:
-                    return "int";
-                case Type.Sampler2D:
-                    return "sampler2D";
-                case Type.SamplerCube:
-                    return "samplerCube";
-                case Type.Void:
-                    return "void";
-                case Type.ArrayTexture:
-                    return "sampler2DArray";
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
+                Type.Mat3 => "mat3",
+                Type.Mat4 => "mat4",
+                Type.Vec2 => "vec2",
+                Type.Vec3 => "vec3",
+                Type.Vec4 => "vec4",
+                Type.Boolean => "bool",
+                Type.Float => "float",
+                Type.Int => "int",
+                Type.Sampler2D => "sampler2D",
+                Type.SamplerCube => "samplerCube",
+                Type.Void => "void",
+                Type.ArrayTexture => "sampler2DArray",
+                Type.Sampler2DShadow => "sampler2DShadow",
+                Type.SamplerCubeShadow => "samplerCubeShadow",
+                Type.ArrayTextureShadow => "sampler2DArrayShadow",
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null),
+            };
         }
 
         internal static void AddTabsToMethods(List<string> list)

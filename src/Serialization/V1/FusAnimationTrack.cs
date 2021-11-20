@@ -178,6 +178,6 @@ namespace Fusee.Serialization.V1
         /// The list of key frames ordered by time.
         /// </summary>
         [ProtoMember(4)]
-        public List<FusAnimationKeyBase> KeyFrames = new List<FusAnimationKeyBase>();
+        public List<FusAnimationKeyBase> KeyFrames = new();
     }
 }

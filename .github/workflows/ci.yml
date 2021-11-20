@@ -1,0 +1,191 @@
+name: CI
+
+on:
+  push:
+    branches:
+    - master
+    - develop
+  pull_request:
+    branches:
+    - master
+    - develop
+  workflow_dispatch:
+  
+jobs:
+  lint:
+    runs-on: windows-2022
+    name: Linting
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: dotnet tool restore
+      run: dotnet tool restore
+    - name: dotnet format folder
+      run: dotnet tool run dotnet-format -f . --exclude src\Engine\Imp\Graphics\Shared
+    - name: dotnet format solution
+      run: dotnet tool run dotnet-format Fusee.sln
+    - name: dotnet format fix style - warn
+      run: dotnet tool run dotnet-format Fusee.sln --no-restore --fix-style warn
+    - name: dotnet format fix style - info
+      run: dotnet tool run dotnet-format Fusee.sln --no-restore --fix-style info
+    - name: Commiting changes
+      uses: stefanzweifel/git-auto-commit-action@v4
+      with:
+        commit_message: Linting
+
+  tests:
+    name: Tests
+    needs: [lint]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: AssetStorage
+      run: dotnet test -c Release src/Tests/AssetStorage/Desktop/Fusee.Tests.AssetStorage.Desktop.csproj
+    - name: Math
+      run: dotnet test -c Release src/Tests/Math/Core/Fusee.Tests.Math.Core.csproj
+    - name: Scene Components
+      run: dotnet test -c Release src/Tests/Scene/Components/Fusee.Tests.Scene.Components.csproj
+    - name: Serialization V1
+      run: dotnet test -c Release src/Tests/Serialization/V1/Fusee.Tests.Serialization.V1.csproj
+    - name: Xene
+      run: dotnet test -c Release src/Tests/Xene/Fusee.Tests.Xene.csproj
+    - name: Xirkit
+      run: dotnet test -c Release src/Tests/Xirkit/Core/Fusee.Tests.Xirkit.Core.csproj
+    - name: Xirkit Nested Access
+      run: dotnet test -c Release src/Tests/Xirkit/NestedAccess/Fusee.Tests.Xirkit.NestedAccess.csproj
+
+  builddesktop:
+    needs: [tests]
+    name: Build Desktop
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2022', 'ubuntu-latest', 'macos-latest' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Build Release-Desktop
+      run: dotnet build -c Release-Desktop Fusee.sln
+    - name: Upload Player-Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-desktop-${{ matrix.os }}-player
+        path: bin/Release/Player/Desktop/
+    - name: Upload Tool-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-desktop-${{ matrix.os }}-tools
+        path: bin/Release/Tools/
+    - name: Upload Example-Artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-desktop-${{ matrix.os }}-examples
+        path: bin/Release/Examples/**/Desktop/
+
+  buildblazor:
+    needs: [tests]
+    name: Build Blazor
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'ubuntu-latest', 'macos-latest' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Setup dotnet macos workload
+      run: dotnet workload install macos
+    - name: Build Release-Blazor
+      run: dotnet build -c Release-Blazor Fusee.sln
+    - name: Setup wasm-tools workload
+      run: dotnet workload install wasm-tools
+    - name: Publish F.E.Player.Blazor
+      run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
+    - name: Upload Player-Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: fusee-blazor-${{ matrix.os }}-player
+        path: bin/Release/Player/Blazor/net6.0/publish/
+
+  buildandroid:
+    name: Build Android
+    needs: [tests]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    runs-on: windows-2022
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: '[17.0,]'  
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1
+    - name: Build with MSBuild
+      run: msbuild Fusee.sln -r -p:Configuration=Release-Android
+
+  codeanalysis:
+    name: CodeQL
+    needs: [builddesktop]
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'csharp', 'python' ]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Setup .NET 6.0
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v1
+        with:
+          languages: ${{ matrix.language }}
+      - name: Build Release-Desktop
+        run: dotnet build -c Release-Desktop Fusee.sln
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v1

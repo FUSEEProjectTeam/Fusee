@@ -145,8 +145,7 @@ namespace Fusee.Engine.Core
                 // Copy each character in the alphabet to the font atlas
                 foreach (char c in _alphabet)
                 {
-                    int bitmapLeft, bitmapTop;
-                    IImageData glyphImg = _font.RenderGlyph((uint)c, out bitmapLeft, out bitmapTop);
+                    IImageData glyphImg = _font.RenderGlyph(c, out int bitmapLeft, out int bitmapTop);
                     if (offX + glyphImg.Width + 1 >= width)
                     {
                         offY += rowH;
@@ -160,7 +159,7 @@ namespace Fusee.Engine.Core
                     }
 
                     // char information
-                    GlyphOnMap glyphOnMap = new GlyphOnMap
+                    GlyphOnMap glyphOnMap = new()
                     {
                         BitmapW = glyphImg.Width,
                         BitmapH = glyphImg.Height,
@@ -258,7 +257,7 @@ namespace Fusee.Engine.Core
             {
                 if (value == null)
                 {
-                    StringBuilder sb = new StringBuilder(256 - 32);
+                    StringBuilder sb = new(256 - 32);
                     for (int i = 32; i < 256; i++)
                         sb.Append((char)i);
                     _alphabet = sb.ToString();

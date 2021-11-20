@@ -6,29 +6,30 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
-using Path = Fusee.Base.Common.Path;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Materials.Desktop
 {
-    public class Materials
+    public class SurfaceEffects
     {
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            FileAssetProvider fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase))
-                        {
-                            return null;
-                        }
-
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
@@ -37,6 +38,11 @@ namespace Fusee.Examples.Materials.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -47,7 +53,7 @@ namespace Fusee.Examples.Materials.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            Core.Materials app = new Core.Materials();
+            var app = new Core.Materials();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
@@ -56,10 +62,10 @@ namespace Fusee.Examples.Materials.Desktop
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
             // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-            // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-            // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
             // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
             // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
+
+            app.InitApp();
 
             // Start the app
             app.Run();
