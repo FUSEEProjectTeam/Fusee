@@ -1,58 +1,66 @@
 <Project>
-  <PropertyGroup>
-    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
-    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
-    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
 
-	<LangVersion>9</LangVersion>
-	  
-    <AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
-      
-    <Authors>FuseeProjectTeam</Authors>
-    <Company>Furtwangen University</Company>
-    <Product>FUSEE</Product>
-    <Version>0.10.2.0</Version>
-    <AssemblyVersion>0.10.2.0</AssemblyVersion>
-    <FileVersion>0.10.2.0</FileVersion>
-    <PackageVersion>0.10.2.0</PackageVersion>
-    <Copyright>Copyright © 2013-today</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
-    <PackageIcon>images\icon.png</PackageIcon>
-    <IncludeSymbols>true</IncludeSymbols>
-    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	<PropertyGroup>
+		<FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+		<FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
+		<BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
+		<OutputPath>$(BaseOutputPath)\Libraries\$(AssemblyName)</OutputPath>
+		
+		<Authors>FuseeProjectTeam</Authors>
+		<Company>Furtwangen University</Company>
+		<Product>FUSEE</Product>
+		<Version>0.11.0.0</Version>
+		<AssemblyVersion>0.11.0.0</AssemblyVersion>
+		<FileVersion>0.11.0.0</FileVersion>
+		<PackageVersion>0.11.0.0</PackageVersion>
+		<Copyright>Copyright © 2013-today</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
+		<PackageIcon>images\icon.png</PackageIcon>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
 
-    <TieredCompilation>false</TieredCompilation>
+		<ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
 
-    <PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
+		<IsPackable>false</IsPackable>
+		<LangVersion>9</LangVersion>
+		<AppendTargetFrameworkToOutputPath>true</AppendTargetFrameworkToOutputPath>
+		<TieredCompilation>false</TieredCompilation>
 
-    <ApplicationIcon>$(FuseeEngineRoot)\art\Deliverables\FuseeLogo.ico</ApplicationIcon>
+		<PackageOutputPath>$(FuseeEngineRoot)\bin\Release\nuget</PackageOutputPath>
 
-	<!--
-    Suppress warnings
-    1701 and 1702 is standard.
-    -->
-    <NoWarn>1701;1702</NoWarn>
+		<!--
+		Suppress warnings
+		1701 and 1702 is standard.
+		-->
+		<NoWarn>1701;1702</NoWarn>
 
-	<!--
-	<WarningLevel>9999</WarningLevel>
-    <TreatWarningsAsErrors Condition="'$(Configuration)'=='Release'">true</TreatWarningsAsErrors>
-	-->
-  </PropertyGroup>
+		<!--
+		<WarningLevel>9999</WarningLevel>
+		<TreatWarningsAsErrors Condition="'$(Configuration)'=='Release'">true</TreatWarningsAsErrors>
+		-->
+	</PropertyGroup>
 
-  <!-- This enables deterministic builds when building NuGet and when running on GitHub Actions or Azure DevOps -->
-  <PropertyGroup Condition="'$(NUGET_BUILD)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">
-    <Deterministic>True</Deterministic>
-    <ContinuousIntegrationBuild>True</ContinuousIntegrationBuild>
-    <DeterministicSourcePaths>True</DeterministicSourcePaths>
-  </PropertyGroup>
-  
-  <ItemGroup>
-    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
-    <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true' AND !$(AssemblyName.Contains('Example'))" />
-  </ItemGroup>
+	<!-- This enables deterministic builds when building NuGet and when running on GitHub Actions or Azure DevOps -->
+	<PropertyGroup Condition="'$(NUGET_BUILD)' == 'true' Or '$(GITHUB_ACTIONS)' == 'true' Or '$(TF_BUILD)' == 'true'">
+		<Deterministic>True</Deterministic>
+		<ContinuousIntegrationBuild>True</ContinuousIntegrationBuild>
+		<DeterministicSourcePaths>True</DeterministicSourcePaths>
+	</PropertyGroup>
+
+	<!-- Link files and packages for all NuGet packages -->
+	<ItemGroup Condition="$(IsPackable) == 'true'">
+		<Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" />
+
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
+	</ItemGroup>
+	
 </Project>

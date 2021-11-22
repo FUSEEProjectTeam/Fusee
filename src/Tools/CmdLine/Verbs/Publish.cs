@@ -16,7 +16,7 @@ namespace Fusee.Tools.CmdLine.Verbs
         [Option('i', "input", HelpText = "Path to the DLL containing the FUSEE app to be deployed (DLL must contain a class derived by RenderCanvas).")]
         public string Input { get; set; }
 
-        [Option('p', "platform", Default = Platform.Desktop, HelpText = "Platform the deployment packages is meant to run on. Possible values are: Desktop, Web or Android.")]
+        [Option('p', "platform", Required = true, HelpText = "Platform the deployment packages is meant to run on. Possible values are: Desktop or Web.")]
         public Platform Platform { get; set; }
 
         public int Run()
@@ -134,24 +134,35 @@ namespace Fusee.Tools.CmdLine.Verbs
 
             var fuseePaths = Helper.InitFuseeDirectories();
 
-            string playerFile = null;
-            string desktopPlayerDir = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)); // need this in web build as well.
+            string desktopPlayerDir = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            string webPlayerDir = Path.Combine(desktopPlayerDir, "wwwroot");
+
             switch (Platform)
             {
                 case Platform.Desktop:
-                    playerFile = Path.GetFullPath(Path.Combine(desktopPlayerDir, "Player.exe"));
+
+                    if (!File.Exists(Path.Combine(desktopPlayerDir, "Player.exe")))
+                    {
+                        Console.Error.WriteLine($"ERROR: FUSEE Desktop Player is not present in {desktopPlayerDir}. Check your FUSEE installation.");
+                        Environment.Exit((int)ErrorCode.InternalError);
+                    }
+
+                    break;
+                case Platform.Web:
+
+                    if (!File.Exists(Path.Combine(webPlayerDir, "index.html")))
+                    {
+                        Console.Error.WriteLine($"ERROR: FUSEE Web Player is not present in {webPlayerDir}. Check your FUSEE installation.");
+                        Environment.Exit((int)ErrorCode.InternalError);
+                    }
+
                     break;
                 default:
                     Console.Error.WriteLine($"ERROR: Platform {Platform} is currently not handled by fusee.");
                     Environment.Exit((int)ErrorCode.PlatformNotHandled);
                     break;
             }
-            if (!File.Exists(playerFile))
-            {
-                Console.Error.WriteLine($"ERROR: FUSEE Player {playerFile} is not present. Check your FUSEE installation.");
-                Environment.Exit((int)ErrorCode.InternalError);
-            }
-            string playerDir = Path.Combine(Path.GetPathRoot(playerFile), Path.GetDirectoryName(playerFile));
+
 
             // Do platform dependent stuff to integrate the FUSEE app DLL into the player
             switch (Platform)
@@ -162,7 +173,8 @@ namespace Fusee.Tools.CmdLine.Verbs
                         Directory.CreateDirectory(outPath);
 
                         // Copy the player
-                        File.Copy(playerFile, Path.Combine(outPath, appName + ".exe"));
+                        File.Copy(Path.Combine(desktopPlayerDir, "Player.exe"), Path.Combine(outPath, appName + ".exe"));
+                        File.Copy(Path.Combine(desktopPlayerDir, "glfw3.dll"), Path.Combine(outPath, "glfw3.dll"));
 
                         // Copy the FUSEE App on top of the player.
                         File.Copy(dllFilePath, Path.Combine(outPath, "Fusee.App.dll"));
@@ -177,6 +189,28 @@ namespace Fusee.Tools.CmdLine.Verbs
                     }
                     Console.Error.WriteLine($"SUCCESS: FUSEE Desktop App {appName}.exe generated at {outPath}.");
                     Environment.Exit(0);
+                    break;
+                case Platform.Web:
+                    try
+                    {
+                        Directory.CreateDirectory(outPath);
+
+                        // Copy the player
+                        FileTools.DirectoryCopy(webPlayerDir, outPath, true, true);
+
+                        // Copy the FUSEE App on top of the player.
+                        File.Copy(dllFilePath, Path.Combine(outPath, "Fusee.App.dll"));
+
+                        // Copy Assets
+                        FileTools.DirectoryCopy(Path.Combine(dllDirPath, "Assets"), Path.Combine(outPath, "Assets"), true, true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine("ERROR: internal error while publishing FUSEE Web App: " + ex);
+                        Environment.Exit((int)ErrorCode.InternalError);
+                    }
+
+
                     break;
             }
             return 0;

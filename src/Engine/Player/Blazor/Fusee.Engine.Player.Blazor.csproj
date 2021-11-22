@@ -1,29 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.BlazorWebAssembly">
+	
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Player\Blazor\</OutputPath>
+		
         <ServiceWorkerAssetsManifest>service-worker-assets.js</ServiceWorkerAssetsManifest>
         <BlazorCacheBootResources>false</BlazorCacheBootResources>
-        <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
-        <Nullable>disable</Nullable>
-        <Platforms>AnyCPU</Platforms>
-		<IsPackable>false</IsPackable>
-		<OutputPath>$(BaseOutputPath)\Player\Blazor\</OutputPath>
     </PropertyGroup>
-
-
-    <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
-        <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
-        <PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="6.0.0" />
-    </ItemGroup>
+	
+	<ItemGroup>
+		<ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+	</ItemGroup>
 
     <ItemGroup>
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
-		<ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj" />
-    </ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
+		<ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
 
-    <ItemGroup>
-        <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.0" PrivateAssets="all" />
+		<PackageReference Include="Microsoft.JSInterop.WebAssembly" Version="6.0.0" />
     </ItemGroup>
 
 	<Target Name="MovingAssetsToServerRoot" BeforeTargets="PostBuildEvent">
@@ -34,4 +33,5 @@
 		<Move SourceFiles="@(AssetsDir)" DestinationFolder="$(OutputPath)$(TargetFramework)\wwwroot\Assets\%(RecursiveDir)" />
 		<RemoveDir Directories="$(OutputPath)$(TargetFramework)\Assets" />
 	</Target>
+
 </Project>

@@ -1,33 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
-		<RootNamespace>Fusee.Base.Imp.Blazor</RootNamespace>
-		<PackageId>Fusee.Base.Imp.Blazor</PackageId>
 		<TargetFramework>net6.0</TargetFramework>
-		<Nullable>disable</Nullable>
-		<Platforms>AnyCPU</Platforms>
 		<DefineConstants>$(DefineConstants);PLATFORM_BLAZOR</DefineConstants>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.Base.Imp.Blazor</OutputPath>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
-
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	</PropertyGroup>
-
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.JSInterop" Version="6.0.0" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
@@ -39,9 +16,11 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Blazor\Fusee.Engine.Imp.Graphics.Blazor.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Blazor\Fusee.Engine.Imp.Graphics.Blazor.csproj">
+			<PrivateAssets>analyzers</PrivateAssets>
+		</ProjectReference>
 
-
+		<PackageReference Include="Microsoft.JSInterop" Version="6.0.0" />
 		<PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta15" />
 		<PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta13" />
 

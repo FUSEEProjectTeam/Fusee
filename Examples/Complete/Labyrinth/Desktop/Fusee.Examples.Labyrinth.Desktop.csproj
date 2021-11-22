@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <RootNamespace>Fusee.Examples.Labyrinth.Desktop</RootNamespace>
-    <PackageId>Fusee.Examples.Labyrinth.Desktop</PackageId>
-    <TargetFramework>net6.0</TargetFramework>
-    
-    <OutputType>Exe</OutputType>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
-    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
-  </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\Simple\Desktop\</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<OutputPath>$(BaseOutputPath)\Examples\Simple\Desktop\</OutputPath>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-    <ProjectReference Include="..\Core\Fusee.Examples.Labyrinth.Core.csproj" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-  </ItemGroup>
+		<OutputType>Exe</OutputType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+		<ProjectReference Include="..\Core\Fusee.Examples.Labyrinth.Core.csproj" />
+
+		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+	</ItemGroup>
+
 </Project>
