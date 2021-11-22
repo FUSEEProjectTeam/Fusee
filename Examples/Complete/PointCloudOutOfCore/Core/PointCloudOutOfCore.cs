@@ -163,6 +163,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            Diagnostics.Warn(FramesPerSecond);
             ReadyToLoadNewFile = false;
 
             if (_closingRequested)

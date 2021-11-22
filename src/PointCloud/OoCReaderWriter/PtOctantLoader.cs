@@ -9,7 +9,6 @@ using Fusee.PointCloud.Core;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -39,7 +38,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         public bool IsUserMoving { get; set; } = false;
 
         /// <summary>
-        /// The <see cref="RenderContext"/> the app uses.
+        /// The <see cref="RenderContext"/> the app uses.2
         /// Needed to determine the field of view and the camera position.
         /// </summary>
         public RenderContext RC { get; private set; }
@@ -68,7 +67,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 _loadedMeshs.Clear();
                 _visibleNodesOrderedByProjectionSize.Clear();
-                _determinedAsVisible.Clear();
+                _visibleLoadedNodes.Clear();
                 _rootNode = value;
                 SetMinScreenProjectedSize(InitCamPos, (float)RC.ViewportWidth / RC.ViewportHeight);
             }
@@ -111,8 +110,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         ///The amount of milliseconds needed to pass before rendering next frame
         public const double UpdateRate = 1000 / 30d;
-        private double _frameCapCounter = UpdateRate;
-        private readonly Stopwatch _timer = new();
+        private float _deltaTimeSinceLastUpdate;
+        private float _deltaTimeSinceLastLoading;
 
         private float _minProjSizeModifier = 0.1f;
         private readonly PointType _ptType;
@@ -120,27 +119,24 @@ namespace Fusee.PointCloud.OoCReaderWriter
         // Minimal screen projected size of a node. Depends on spacing of the octree.
         private double _minScreenProjectedSize;
 
-        private float _deltaTimeSinceLastUpdate;
-
         // Visible AND loaded meshes.
         private Dictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;
 
         // Allowes traversal in order of screen projected size.
         private readonly SortedDictionary<double, SceneNode> _visibleNodesOrderedByProjectionSize;
 
-        //All visible AND loaded nodes
-        private Dictionary<Guid, SceneNode> _determinedAsVisible;
+        //All visible and loaded nodes
+        private Dictionary<Guid, SceneNode> _visibleLoadedNodes;
 
-        // Visible but unloaded nodes - cleared in every traversal.
-        private ConcurrentDictionary<Guid, SceneNode> _determinedAsVisibleAndUnloaded;
+        // Visible but unloaded nodes.
+        private Dictionary<Guid, SceneNode> _visibleUnloadedNodes;
 
-        // nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
+        // Nodes that shall be loaded eventually. Loaded nodes are removed from cache and their PtOCtantComp.WasLoaded bool is set to true.
         // size is limited by _maxNumberOfNodesToLoad
-        private ConcurrentDictionary<Guid, SceneNode> _globalLoadingQueue;
+        private ConcurrentDictionary<Guid, OctantD> _loadingQueue;
 
         private readonly WireframeCube wfc = new();
         private SurfaceEffect _wfcEffect;
-        private readonly int _sceneUpdateTime = 33; // in ms
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
@@ -172,24 +168,20 @@ namespace Fusee.PointCloud.OoCReaderWriter
         {
             RC = rc;
             _wfcEffect = (SurfaceEffect)RC.DefaultEffect;
-            _timer.Start();
             Task loadingTask = new(() =>
             {
                 Thread.CurrentThread.Name = "OocLoader";
                 while (!IsShuttingDown)
                 {
-                    if (_timer.ElapsedMilliseconds >= _frameCapCounter)
+                    if (_deltaTimeSinceLastLoading < UpdateRate)
+                        _deltaTimeSinceLastLoading += Time.RealDeltaTime * 1000;
+                    else
                     {
-                        if (!_globalLoadingQueue.IsEmpty)
+                        _deltaTimeSinceLastLoading = 0;
+                        if (!_loadingQueue.IsEmpty)
                         {
-                            LoadNode(_globalLoadingQueue.OrderByDescending(kvp => kvp.Value.GetComponent<OctantD>().ProjectedScreenSize).First());
+                            LoadNode(_loadingQueue.OrderByDescending(kvp => kvp.Value.ProjectedScreenSize).First());
                         }
-                        _frameCapCounter += UpdateRate;
-                    }
-                    if (_timer.ElapsedMilliseconds >= 1000)
-                    {
-                        _frameCapCounter = 0;
-                        _timer.Restart();
                     }
                 }
             });
@@ -211,9 +203,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
             _fov = (float)RC.ViewportWidth / RC.ViewportHeight;
             SetMinScreenProjectedSize(_camPosD, _fov);
 
-            if (_deltaTimeSinceLastUpdate < _sceneUpdateTime)
+            if (_deltaTimeSinceLastUpdate < UpdateRate)
                 _deltaTimeSinceLastUpdate += Time.RealDeltaTime * 1000;
-
             else
             {
                 _deltaTimeSinceLastUpdate = 0;
@@ -221,7 +212,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 TraverseByProjectedSizeOrder(); //determine visible nodes for this traversal step.
                 UnloadedNodesToLoadingQueue(); //shove nodes, that shall be loaded, into the global "to load" queue.
 
-                if (_determinedAsVisible.Count == 0)
+                if (_visibleLoadedNodes.Count == 0)
                     return;
 
                 if (ptSizeMode == PointSizeMode.AdaptiveSize)
@@ -245,7 +236,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         {
             WasSceneUpdated = false;
             DeleteWireframeOctants(scene);
-            foreach (var node in _determinedAsVisible.Values)
+            foreach (var node in _visibleLoadedNodes.Values)
             {
                 var ptOctantComp = node.GetComponent<OctantD>();
 
@@ -282,9 +273,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
         private void InitCollections(int octantCnt)
         {
-            _globalLoadingQueue = new(16, _maxNumberOfNodesToLoad);
-            _determinedAsVisibleAndUnloaded = new(16, octantCnt);
-            _determinedAsVisible = new(octantCnt);
+            _loadingQueue = new(16, _maxNumberOfNodesToLoad);
+            _visibleUnloadedNodes = new(octantCnt);
+            _visibleLoadedNodes = new(octantCnt);
             _loadedMeshs = new(octantCnt);
         }
 
@@ -294,7 +285,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
         /// <param name="pointsInNode">The lists of "raw" points.</param>
-        private static List<Mesh> GetMeshsForNode(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
+        private static List<Mesh> GetMeshsForOctant(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
         {
             int maxVertCount = ushort.MaxValue - 1;
             var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);
@@ -347,22 +338,30 @@ namespace Fusee.PointCloud.OoCReaderWriter
         {
             int cnt = 0;
 
-            foreach (var item in _determinedAsVisibleAndUnloaded)
+            foreach (var item in _visibleUnloadedNodes)
             {
                 if (cnt == _maxNumberOfNodesToLoad)
                     break;
 
-                var added = _globalLoadingQueue.TryAdd(item.Key, item.Value);
+                var octantComp = item.Value.GetComponent<OctantD>();
+                var added = _loadingQueue.TryAdd(item.Key, octantComp);
                 if (!added)
                 {
-                    _globalLoadingQueue.TryUpdate(item.Key, item.Value, _globalLoadingQueue[item.Key]);
+                    _loadingQueue.TryUpdate(item.Key, octantComp, _loadingQueue[item.Key]);
                 }
+
                 cnt++;
+            }
+
+            foreach (var item in _loadingQueue)
+            {
+                _visibleUnloadedNodes.Remove(item.Key);
             }
         }
 
         /// <summary>
         /// Traverses the scene nodes the point cloud is stored in and searches for visible nodes in screen-projected-size order.
+        /// Recursive traversal stopps if: the screen-projected size is too small, a certain "global" point threshold is reached.
         /// </summary>
         private void TraverseByProjectedSizeOrder()
         {
@@ -370,9 +369,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
             if (RC.Projection == float4x4.Identity || RC.View == float4x4.Identity) return;
 
-            _determinedAsVisible.Clear();
+            //_visibleLoadedNodes.Clear();
             _visibleNodesOrderedByProjectionSize.Clear();
-            _determinedAsVisibleAndUnloaded.Clear();
+            //_visibleUnloadedNodes.Clear();
 
             ProcessNode(_rootNode, _rootNode.GetComponent<OctantD>());
 
@@ -390,11 +389,11 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     else
                         NumberOfVisiblePoints += ptOctantComp.NumberOfPointsInNode;
 
-                    _determinedAsVisibleAndUnloaded.TryAdd(ptOctantComp.Guid, kvp.Value);
+                    _visibleUnloadedNodes.TryAdd(ptOctantComp.Guid, kvp.Value);
                 }
                 else
                 {
-                    _determinedAsVisible.Add(ptOctantComp.Guid, kvp.Value);
+                    _visibleLoadedNodes.TryAdd(ptOctantComp.Guid, kvp.Value);
                     NumberOfVisiblePoints += ptOctantComp.NumberOfPointsInNode;
                 }
 
@@ -415,12 +414,23 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
         }
 
+        private void UpdateLists(OctantD ptOctantChildComp)
+        {
+            if (_visibleLoadedNodes.ContainsKey(ptOctantChildComp.Guid))
+                _visibleLoadedNodes.Remove(ptOctantChildComp.Guid);
+            else if (_visibleUnloadedNodes.ContainsKey(ptOctantChildComp.Guid))
+                _visibleUnloadedNodes.Remove(ptOctantChildComp.Guid);
+
+            if (_loadingQueue.ContainsKey(ptOctantChildComp.Guid))
+                _loadingQueue.TryRemove(ptOctantChildComp.Guid, out _);
+        }
+
         private void ProcessNode(SceneNode node, OctantD ptOctantChildComp)
         {
             //If node does not intersect the viewing frustum, remove it from loaded meshes and return.
             if (!ptOctantChildComp.InsideOrIntersectingFrustum(RC.RenderFrustum))
             {
-                TryRemoveMeshes(node, ptOctantChildComp);
+                UpdateLists(ptOctantChildComp);
                 return;
             }
 
@@ -430,27 +440,25 @@ namespace Fusee.PointCloud.OoCReaderWriter
             //If the nodes screen projected size is too small, remove it from loaded meshes and return.
             if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
             {
-                TryRemoveMeshes(node, ptOctantChildComp);
+                UpdateLists(ptOctantChildComp);
                 return;
             }
 
             // Else if the node is visible and big enough, load if necessary and add to visible nodes.
-            // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....
-            if (!_visibleNodesOrderedByProjectionSize.ContainsKey(ptOctantChildComp.ProjectedScreenSize))
-                _visibleNodesOrderedByProjectionSize.Add(ptOctantChildComp.ProjectedScreenSize, node);
+            // If by chance two same nodes have the same screen-projected-size can't add it to the dictionary....            
+            _visibleNodesOrderedByProjectionSize.TryAdd(ptOctantChildComp.ProjectedScreenSize, node);
         }
 
         //Loading 
-        private void LoadNode(KeyValuePair<Guid, SceneNode> kvp)
+        private void LoadNode(KeyValuePair<Guid, OctantD> kvp)
         {
-            var node = kvp.Value;
+            var ptOctantComp = kvp.Value;
 
-            var ptOctantComp = node.GetComponent<OctantD>();
             if (!ptOctantComp.WasLoaded)
             {
                 var pts = PtOctreeFileReader<TPoint>.LoadPointsForNode(FileFolderPath, PtAcc, ptOctantComp);
                 ptOctantComp.NumberOfPointsInNode = pts.Length;
-                var meshes = GetMeshsForNode(PtAcc, _ptType, pts);
+                var meshes = GetMeshsForOctant(PtAcc, _ptType, pts);
 
                 var added = _loadedMeshs.TryAdd(ptOctantComp.Guid, meshes);
                 if (!added)
@@ -458,8 +466,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                     _loadedMeshs[ptOctantComp.Guid] = meshes;
                 }
             }
-            _ = _globalLoadingQueue.TryRemove(kvp.Key, out _);
-            _ = _determinedAsVisibleAndUnloaded.TryRemove(kvp.Key, out _);
+            _ = _loadingQueue.TryRemove(kvp.Key, out _);
         }
 
         /// <summary>
@@ -471,7 +478,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             var ptOctantComp = node.GetComponent<OctantD>();
             ptOctantComp.VisibleChildIndices = 0;
 
-            if (!_determinedAsVisible.ContainsKey(ptOctantComp.Guid)) //Node isn't visible
+            if (!_visibleLoadedNodes.ContainsKey(ptOctantComp.Guid)) //Node isn't visible
             {
                 TryRemoveMeshes(node, ptOctantComp);
             }
@@ -520,17 +527,17 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         private void TraverseBreadthFirstToCreate1DTex(SceneNode node, Texture tex)
         {
-            if (_determinedAsVisible.Count == 0) return;
+            if (_visibleLoadedNodes.Count == 0) return;
 
             //clear texture
             tex.Blt(0, 0, new ImageData(new byte[tex.PixelData.Length], tex.Width, tex.Height, tex.PixelFormat));
 
-            var visibleOctantsImgData = new ImageData(new byte[_determinedAsVisible.Count * tex.PixelFormat.BytesPerPixel], _determinedAsVisible.Count, 1, tex.PixelFormat);
+            var visibleOctantsImgData = new ImageData(new byte[_visibleLoadedNodes.Count * tex.PixelFormat.BytesPerPixel], _visibleLoadedNodes.Count, 1, tex.PixelFormat);
             var candidates = new Queue<SceneNode>();
 
             var rootPtOctantComp = node.GetComponent<OctantD>();
             rootPtOctantComp.PosInHierarchyTex = 0;
-            if (!_determinedAsVisible.ContainsKey(rootPtOctantComp.Guid))
+            if (!_visibleLoadedNodes.ContainsKey(rootPtOctantComp.Guid))
                 return;
 
             candidates.Enqueue(node);
@@ -545,7 +552,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                 //check if octantcomp.guid is in VisibleNode
                 //yes --> write to 1D tex
-                if (_determinedAsVisible.ContainsKey(ptOctantComp.Guid))
+                if (_visibleLoadedNodes.ContainsKey(ptOctantComp.Guid))
                 {
                     ptOctantComp.PosInHierarchyTex = nodePixelPos;
 
@@ -554,7 +561,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
                         var parentPtOctantComp = node.Parent.GetComponent<OctantD>();
 
                         //If parentPtOctantComp.VisibleChildIndices == 0 this child is the first visible one.
-                        if (_determinedAsVisible.ContainsKey(parentPtOctantComp.Guid))
+                        if (_visibleLoadedNodes.ContainsKey(parentPtOctantComp.Guid))
                         {
                             if (parentPtOctantComp.VisibleChildIndices == 0)
                             {
