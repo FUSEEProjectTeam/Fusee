@@ -135,7 +135,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _cornerbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    cornerstone.GetComponent<DefaultSurfaceEffect>(),
+                                    cornerstone.GetComponent<SurfaceEffect>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
                             Name = "Cornerstone" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -153,7 +153,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallXbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallX.GetComponent<DefaultSurfaceEffect>(),
+                                    wallX.GetComponent<SurfaceEffect>(),
                                     wallX.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -171,7 +171,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _wallZbox.y / 2, countY * (_wallZbox.z + _cornerbox.z)/2)
                                     },
-                                    wallZ.GetComponent<DefaultSurfaceEffect>(),
+                                    wallZ.GetComponent<SurfaceEffect>(),
                                     wallZ.GetComponent<Mesh>()
                                 },
                             Name = "Wall" + countY.ToString().PadLeft(2, '0') + countX.ToString().PadLeft(2, '0')
@@ -189,7 +189,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                     {
                                         Translation = new float3(countX * (_wallXbox.x + _cornerbox.x)/2, _ballradius, countY * (_wallZbox.z + _cornerbox.z)/2),
                                     },
-                                    head.GetComponent<DefaultSurfaceEffect>(),
+                                    head.GetComponent<SurfaceEffect>(),
                                     head.GetComponent<Mesh>()
                                 },
                             Name = "Head",
@@ -217,7 +217,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                             {
                                                 Translation = new float3(0,0,0)
                                             },
-                                            ball.GetComponent<DefaultSurfaceEffect>(),
+                                            ball.GetComponent<SurfaceEffect>(),
                                             ball.GetComponent<Mesh>()
                                         },
                                     Name = "Body",
@@ -241,7 +241,7 @@ namespace Fusee.Examples.Labyrinth.Core
                                         Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
                                     },
                                     //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
-                                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1), new float4(0, 0, 0, 1)),
+                                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1)),
                                     _ground
                                 },
                 Name = "Ground"
@@ -370,7 +370,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -386,7 +386,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
@@ -397,7 +397,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 VerticalTextAlignment.Center);
 
             // Create stopwatch
-            var timer = new TextNode(
+            var timer = TextNode.Create(
                 "00:00.00",
                 "Timer",
                 GuiElementPosition.GetAnchors(AnchorPos.TopTopRight),
@@ -741,7 +741,7 @@ namespace Fusee.Examples.Labyrinth.Core
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNode(
+            var fuseeLogo = TextureNode.Create(
                 "fuseeLogo",
                 //Set the albedo texture you want to use.
                 guiFuseeLogo,
@@ -757,7 +757,7 @@ namespace Fusee.Examples.Labyrinth.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 24);
 
-            var text = new TextNode(
+            var text = TextNode.Create(
                 "FUSEE Labyrinth Example",
                 "ButtonText",
                 GuiElementPosition.GetAnchors(AnchorPos.StretchHorizontal),
@@ -767,7 +767,7 @@ namespace Fusee.Examples.Labyrinth.Core
                 HorizontalTextAlignment.Center,
                 VerticalTextAlignment.Center);
 
-            var endtime = new TextNode(
+            var endtime = TextNode.Create(
                 "SOLVED\n" +
                 _timertext.Text,
                 "Timer",

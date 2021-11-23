@@ -28,6 +28,16 @@ namespace Fusee.Engine.Core
         Colors,
 
         /// <summary>
+        /// The field <see cref="Mesh.Colors1"/> changed.
+        /// </summary>
+        Colors1,
+
+        /// <summary>
+        /// The field <see cref="Mesh.Colors2"/> changed.
+        /// </summary>
+        Colors2,
+
+        /// <summary>
         /// The field <see cref="Mesh.Normals"/> changed.
         /// </summary>
         Normals,

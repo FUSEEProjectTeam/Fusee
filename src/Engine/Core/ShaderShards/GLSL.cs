@@ -38,7 +38,7 @@ namespace Fusee.Engine.Core.ShaderShards
 
         internal static string CreateIn(Type type, string varName)
         {
-            return $"in  {DecodeType(type)} {varName};\n";
+            return $"in {DecodeType(type)} {varName};\n";
         }
 
         internal static string CreateVar(Type type, string varName)
@@ -116,10 +116,16 @@ namespace Fusee.Engine.Core.ShaderShards
             };
 
             foreach (var field in type.GetFields())
-                res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            {
+                if (!Attribute.IsDefined(field, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(field.FieldType)} {field.Name};");
+            }
 
             foreach (var prop in type.GetProperties())
-                res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            {
+                if (!Attribute.IsDefined(prop, typeof(Effects.NoUniformAttribute)))
+                    res.Add($"{DecodeType(prop.PropertyType)} {prop.Name};");
+            }
 
             res.Add("};");
             AddTabsToMethods(res);

@@ -51,24 +51,23 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         /// Creates the main method for the vertex shader, used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string VertexMain(LightingSetupFlags setup, bool doRenderPoints)
+        public static string VertexMain(ShadingModel shadingModel, TextureSetup texSetup, bool doRenderPoints)
         {
             var vertMainBody = new List<string>
             {
                 $"{SurfaceOut.SurfOutVaryingName} = {SurfaceOut.ChangeSurfVert}();",
-                $"vec4 changedVert = {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
-                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = {UniformNameDeclarations.ModelView} * {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
+                $"vec3 changedVert = {SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2};",
+                $"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2} = ({UniformNameDeclarations.ModelView} * vec4({SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Pos.Item2}, 1.0)).xyz;",
             };
 
-            if (!setup.HasFlag(LightingSetupFlags.Unlit) && !setup.HasFlag(LightingSetupFlags.Edl))
+            if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
             {
                 vertMainBody.Add($"{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2} = normalize(vec3({ UniformNameDeclarations.ITModelView}* vec4({SurfaceOut.SurfOutVaryingName}.normal, 0.0)));");
             }
 
-            if (setup.HasFlag(LightingSetupFlags.AlbedoTex) || setup.HasFlag(LightingSetupFlags.NormalMap))
-                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
+            vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = {UniformNameDeclarations.TextureCoordinates};");
 
-            if (setup.HasFlag(LightingSetupFlags.NormalMap))
+            if (texSetup.HasFlag(TextureSetup.NormalMap))
             {
                 vertMainBody.Add($"vec3 T = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Tangent}.xyz, 0.0)));");
                 vertMainBody.Add($"vec3 B = normalize(vec3({ UniformNameDeclarations.ITModelView} * vec4({ UniformNameDeclarations.Bitangent}.xyz, 0.0)));");
@@ -76,8 +75,10 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add($"TBN = mat3(T,B,{SurfaceOut.SurfOutVaryingName}.{SurfaceOut.Normal.Item2});");
             }
 
-            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * changedVert;");
+            vertMainBody.Add($"gl_Position = {UniformNameDeclarations.ModelViewProjection} * vec4(changedVert, 1.0);");
             vertMainBody.Add($"{VaryingNameDeclarations.Color} = {UniformNameDeclarations.VertexColor};");
+            vertMainBody.Add($"{VaryingNameDeclarations.Color1} = {UniformNameDeclarations.VertexColor1};");
+            vertMainBody.Add($"{VaryingNameDeclarations.Color2} = {UniformNameDeclarations.VertexColor2};");
 
             if (doRenderPoints)
                 vertMainBody.Add($"gl_PointSize = float({UniformNameDeclarations.PointSize});");

@@ -41,31 +41,11 @@ namespace Fusee.Examples.Camera.Core
         private float _valHorzMain;
         private float _valVertMain;
 
-        // Init is called on startup. 
-        public override void Init()
+        private bool _loaded;
+
+        private async void Load()
         {
-            VSync = false;
-
-            _mainCam.Viewport = new float4(0, 0, 100, 100);
-            _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
-            _mainCam.Layer = -1;
-
-            _sndCam.Viewport = new float4(60, 60, 40, 40);
-            _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
-            _sndCam.Layer = 10;
-
-            _guiCam.ClearColor = false;
-            _guiCam.ClearDepth = false;
-            _guiCam.FrustumCullingOn = false;
-
-            _mainCamTransform = _guiCamTransform = new Transform()
-            {
-                Rotation = float3.Zero,
-                Translation = new float3(0, 1, -30),
-                Scale = new float3(1, 1, 1)
-            };
-
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
             SceneNode guiCam = new()
             {
                 Name = "GUICam",
@@ -87,7 +67,7 @@ namespace Fusee.Examples.Camera.Core
                 Name = "Frustum",
                 Components = new List<SceneComponent>()
                 {
-                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1), float4.Zero),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,1,0,1)),
                     _frustum
                 }
             };
@@ -99,7 +79,7 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1), float4.Zero),
+                    MakeEffect.FromDiffuseSpecular(new float4(1,0,0,1)),
                     new Cube(),
 
                 },
@@ -142,8 +122,8 @@ namespace Fusee.Examples.Camera.Core
             _anlgeHorzMain = _mainCamTransform.Rotation.y;
             _angleVertMain = _mainCamTransform.Rotation.x;
 
-            // Load the rocket model            
-            _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
+            // Load the rocket model
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("rnd.fus");
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
@@ -152,11 +132,42 @@ namespace Fusee.Examples.Camera.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            _loaded = true;
+        }
+
+        // Init is called on startup.
+        public override void Init()
+        {
+            VSync = false;
+
+            _mainCam.Viewport = new float4(0, 0, 100, 100);
+            _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
+            _mainCam.Layer = -1;
+
+            _sndCam.Viewport = new float4(60, 60, 40, 40);
+            _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _sndCam.Layer = 10;
+
+            _guiCam.ClearColor = false;
+            _guiCam.ClearDepth = false;
+            _guiCam.FrustumCullingOn = false;
+
+            _mainCamTransform = _guiCamTransform = new Transform()
+            {
+                Rotation = float3.Zero,
+                Translation = new float3(0, 1, -30),
+                Scale = new float3(1, 1, 1)
+            };
+
+            Load();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_loaded) return;
+
             if (Mouse.RightButton)
             {
                 _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
@@ -188,7 +199,7 @@ namespace Fusee.Examples.Camera.Core
             FrustumF frustum = new();
             frustum.CalculateFrustumPlanes(viewProjection);
 
-            // Sets a mesh inactive if it does not pass the culling test and active if it does. 
+            // Sets a mesh inactive if it does not pass the culling test and active if it does.
             // The reason for this is to achieve that the cubes don't get rendered in the viewport in the upper right.
             // Because SceneRenderer.RenderMesh has an early-out if a Mesh is inactive we do not perform the culling test twice.
             UserSideFrustumCulling(_rocketScene.Children, frustum);
@@ -201,7 +212,7 @@ namespace Fusee.Examples.Camera.Core
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             }
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }

@@ -1,26 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup>
-		<RootNamespace>Fusee.PointCloud.OoCReaderWriter</RootNamespace>
-		<PackageId>Fusee.PointCloud.OoCReaderWriter</PackageId>
-		<TargetFrameworks>net5.0</TargetFrameworks>
-		<Description>Fusee PointCloud OoCReaderWriter</Description>
-	</PropertyGroup>
 
 	<PropertyGroup>
-		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.PointCloud.OoCReaderWriter</OutputPath>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\\Common\Fusee.PointCloud.Common.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj" />
+
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />		
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-		<ProjectReference Include="..\Common\Fusee.PointCloud.Common.csproj" />
-		<ProjectReference Include="..\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj" />
-	</ItemGroup>
 </Project>
 

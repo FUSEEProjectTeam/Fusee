@@ -3,7 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.GUI;
+using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -35,17 +35,27 @@ namespace FuseeApp
 
         private bool _keys;
 
+        private bool _isLoaded = false;
+
         // Init is called on startup. 
         public override void Init()
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
+            // Dispatch async loading (this is only needed if you actually want to use this application in Blazor)
+            InitAsync();
+        }
+
+        private async void InitAsync()
+        {
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
+
+            _isLoaded = true;
         }
 
         // Update is called 60 times a second
@@ -56,6 +66,8 @@ namespace FuseeApp
         // RenderAFrame is called once per frame
         public override void RenderAFrame()
         {
+            if (!_isLoaded) return;
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -72,13 +84,6 @@ namespace FuseeApp
                 _keys = false;
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-            }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
             }
             else
             {

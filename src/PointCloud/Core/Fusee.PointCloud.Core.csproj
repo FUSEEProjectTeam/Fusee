@@ -1,15 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+	
 	<PropertyGroup>
-		<RootNamespace>Fusee.PointCloud.Core</RootNamespace>
-		<TargetFramework>net5.0</TargetFramework>
-		<Description>Fusee PointCloud Core</Description>
-	</PropertyGroup>
-	<PropertyGroup>
-		<OutputPath>$(BaseOutputPath)\Libraries\Fusee.PointCloud.Core</OutputPath>
+		<TargetFrameworks>net6.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
+	
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
-		<ProjectReference Include="..\Common\Fusee.PointCloud.Common.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
 	</ItemGroup>
+	
 </Project>

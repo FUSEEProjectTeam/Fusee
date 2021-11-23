@@ -63,15 +63,14 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             ShininessVal.Text = PtRenderingParams.Instance.Shininess.ToString();
             SpecStrength.Value = PtRenderingParams.Instance.SpecularStrength;
-
-            var col = PtRenderingParams.Instance.SingleColor;
-            SingleColor.SelectedColor = System.Windows.Media.Color.FromScRgb(col.a, col.r, col.g, col.b);
             SSAOStrength.IsEnabled = PtRenderingParams.Instance.CalcSSAO;
 
-            if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
-                SingleColor.IsEnabled = false;
-            else
-                SingleColor.IsEnabled = true;
+            //ColorPicker is unavailable right now
+            //var col = PtRenderingParams.Instance.SingleColor;
+            //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
+            //    SingleColor.IsEnabled = false;
+            //else
+            //    SingleColor.IsEnabled = true;
 
             InnerGrid.IsEnabled = false;
         }
@@ -316,10 +315,11 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
             PtRenderingParams.Instance.ColorMode = (ColorMode)e.AddedItems[0];
 
-            if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
-                SingleColor.IsEnabled = false;
-            else
-                SingleColor.IsEnabled = true;
+            //ColorPicker is unavailable right now
+            //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
+            //    SingleColor.IsEnabled = false;
+            //else
+            //    SingleColor.IsEnabled = true;
         }
 
         private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
@@ -488,28 +488,38 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
 
-            var fap = new FileAssetProvider("Assets");
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
+                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
-                    Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
+                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);

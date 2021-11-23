@@ -43,12 +43,12 @@ namespace Fusee.Engine.Player.Core
 
         private bool _isLoaded;
 
-        public void LoadAssets()
+        public async void LoadAssets()
         {
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
 
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, _canvasRenderMode, "FUSEE Player");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, _canvasRenderMode, "FUSEE Player");
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -117,7 +117,7 @@ namespace Fusee.Engine.Player.Core
 
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTimeUpdate);
             // Zoom & Roll
-            if (Touch.TwoPoint)
+            if (Touch != null && Touch.TwoPoint)
             {
                 if (!_twoTouchRepeated)
                 {
@@ -149,7 +149,7 @@ namespace Fusee.Engine.Player.Core
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
 
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            else if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
                 float2 touchVel;
@@ -203,7 +203,7 @@ namespace Fusee.Engine.Player.Core
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
             var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
 
-            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter; ;
+            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar) * mtxOffset;
 
             // Tick any animations and Render the scene loaded in Init()
@@ -220,7 +220,7 @@ namespace Fusee.Engine.Player.Core
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }

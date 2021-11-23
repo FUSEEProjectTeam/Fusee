@@ -44,21 +44,6 @@ namespace Fusee.Tests.Render.Desktop
         //}
 
         [Fact]
-        public void NormalMappingTest()
-        {
-            Program.Example = new Examples.NormalMap.Core.NormalMap();
-            Program.Init("NormalMappingTest.png");
-
-            var referenceIm = new Bitmap(@"References\BumpMapping.png");
-            var testIm = new Bitmap("NormalMappingTest.png");
-
-            var percent = CompareImage(referenceIm, testIm);
-
-            Assert.InRange(percent, 0.98f, 1f);
-            output.WriteLine(percent.ToString());
-        }
-
-        [Fact]
         public void GeometryEditingTest()
         {
             Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();

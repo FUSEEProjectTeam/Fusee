@@ -19,7 +19,7 @@ uniform float SpecularStrength;
 uniform float Shininess;
 uniform vec4 Color;
 uniform vec4 SpecularColor;
-uniform vec2 ScreenParams;
+uniform vec2 FUSEE_ViewportPx;
 uniform vec2 ClipPlaneDist;
 
 uniform float EDLStrength;
@@ -47,7 +47,7 @@ float LinearizeDepth(float depth)
 //https://www.cg.tuwien.ac.at/research/publications/2016/SCHUETZ-2016-POT/SCHUETZ-2016-POT-thesis.pdf
 float EDLResponse(float pixelSize, float linearDepth, vec2 thisUv)
 {
-	vec2 pxToUv = 1.0/ScreenParams;
+	vec2 pxToUv = 1.0/FUSEE_ViewportPx;
 
 	vec2 offsetsToNeighbours[8] = vec2[8]
 	(
@@ -221,7 +221,7 @@ void main(void)
 	float occlusion = 0.0;
 	float bias = 0.025;
 	
-	vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
+	vec2 uv = vec2(gl_FragCoord.x/FUSEE_ViewportPx.x, gl_FragCoord.y/FUSEE_ViewportPx.y);
 	float z = texture(DepthTex, uv).x;
 	
 	vec3 viewNormal = ViewNormalFromDepth(z, uv);
@@ -229,7 +229,7 @@ void main(void)
 	//Optimizations: http://developer.download.nvidia.com/presentations/2009/SIGGRAPH/Bavoil_MultiLayerDualResolutionSSAO.pdf
 	if(CalcSSAO == 1)
 	{
-		vec2 tiles = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);
+		vec2 tiles = vec2(FUSEE_ViewportPx.x/4.0, FUSEE_ViewportPx.y/4.0);
 		
 		vec3 rvec = normalize(texture(NoiseTex, uv * tiles ).xyz);
 		vec3 tangent = normalize(rvec - viewNormal * dot(rvec, viewNormal));

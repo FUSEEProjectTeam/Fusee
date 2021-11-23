@@ -1,28 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <PackageType>Template</PackageType>
-    <PackageId>Fusee.Template.dotnet</PackageId>
-    <Description>FUSEE Template for dotnet.</Description>
-    <PackageTags>dotnet-new;templates;fusee</PackageTags>
-    <TargetFramework>netstandard2.1</TargetFramework>
+	<PropertyGroup>
+		<PackageType>Template</PackageType>
+		<PackageId>Fusee.Template.dotnet</PackageId>
+		<Description>FUSEE Template for dotnet.</Description>
+		<PackageTags>dotnet-new;templates;fusee</PackageTags>
+		<TargetFramework>netstandard2.1</TargetFramework>
 
-    <PublishRepositoryUrl>false</PublishRepositoryUrl>
-    <IncludeSymbols>false</IncludeSymbols>
-    <EmbedUntrackedSources>false</EmbedUntrackedSources>
-    <IncludeContentInPack>true</IncludeContentInPack>
-    <IncludeBuildOutput>false</IncludeBuildOutput>
-    <ContentTargetFolders>content</ContentTargetFolders>
-    <NoDefaultExcludes>true</NoDefaultExcludes>
-  </PropertyGroup>
+		<PublishRepositoryUrl>false</PublishRepositoryUrl>
+		<IncludeSymbols>false</IncludeSymbols>
+		<EmbedUntrackedSources>false</EmbedUntrackedSources>
+		<IncludeContentInPack>true</IncludeContentInPack>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<ContentTargetFolders>content</ContentTargetFolders>
+		<NoDefaultExcludes>true</NoDefaultExcludes>
+		<IsPackable>true</IsPackable>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Content Include="template\**\*" Exclude="template\bin\**;templates\obj\**" />
-    <Compile Remove="**\*" />
-  </ItemGroup>
+	<ItemGroup>
+		<Content Include="template\**\*" Exclude="template\bin\**;templates\obj\**" />
+		<Compile Remove="**\*" />
+	</ItemGroup>
 
 </Project>
