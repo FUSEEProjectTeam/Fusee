@@ -102,11 +102,11 @@ jobs:
       with:
         name: fusee-desktop-${{ matrix.os }}-tools
         path: bin/Release/Tools/
-    - name: Upload Example-Artifacts
-      uses: actions/upload-artifact@v2
-      with:
-        name: fusee-desktop-${{ matrix.os }}-examples
-        path: bin/Release/Examples/**/Desktop/
+#    - name: Upload Example-Artifacts
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: fusee-desktop-${{ matrix.os }}-examples
+#        path: bin/Release/Examples/**/Desktop/
 
   buildblazor:
     needs: [tests]
