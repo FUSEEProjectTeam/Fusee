@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
     <OutputPath>$(BaseOutputPath)\Examples\PickingRayCast\Core\</OutputPath>
   </PropertyGroup>
 
@@ -19,4 +19,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
   </ItemGroup>
+	
 </Project>

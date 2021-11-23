@@ -29,8 +29,6 @@ namespace Fusee.Examples.PickingRayCast.Core
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
-        private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.Screen;
 
         private bool _pick;
         private float2 _pickPos;
@@ -39,6 +37,51 @@ namespace Fusee.Examples.PickingRayCast.Core
         private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private Transform _camTransform;
         private Transform _guiCamTransform;
+
+        private bool _loaded = false;
+
+        private async void Load()
+        {
+            // Create gui
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Picking Example with RayCast");
+            SceneNode guiCam = new()
+            {
+                Name = "GuiCam",
+                Components = new List<SceneComponent>()
+                {
+                    _guiCamTransform,
+                    _guiCam,
+                }
+            };
+            _gui.Children.Insert(0, guiCam);
+
+
+            // Create Scene
+            _scene = CreateScene();
+
+            SceneNode cam = new()
+            {
+                Name = "Cam",
+                Components = new List<SceneComponent>()
+                {
+                    _camTransform,
+                    _cam,
+                }
+            };
+            _scene.Children.Add(cam);
+
+
+            // Wrap a SceneRenderer around the model.
+            _sceneRenderer = new SceneRendererForward(_scene);
+            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Clockwise);
+
+            // Create the interaction handler
+            _guiRenderer = new SceneRendererForward(_gui);
+
+            _loaded = true;
+
+        }
+
 
         // Init is called on startup.
         public override void Init()
@@ -61,45 +104,14 @@ namespace Fusee.Examples.PickingRayCast.Core
             var rotation = float4x4.LookAt(_camTransform.Translation, new float3(0, 0, 0), float3.UnitY);
             _camTransform.Rotate(rotation);
 
-            SceneNode cam = new SceneNode()
-            {
-                Name = "Cam",
-                Components = new List<SceneComponent>()
-                {
-                    _camTransform,
-                    _cam,
-                }
-            };
-
-            // Create the scene
-            _scene = CreateScene();
-            _scene.Children.Add(cam);
-
-            // Create gui
-            _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Picking Example with RayCast");
-            SceneNode guiCam = new SceneNode()
-            {
-                Name = "GuiCam",
-                Components = new List<SceneComponent>()
-                {
-                    _guiCamTransform,
-                    _guiCam,
-                }
-            };
-            _gui.Children.Insert(0, guiCam);
-
-            // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_scene);
-            _sceneRayCaster = new SceneRayCaster(_scene, Cull.Clockwise);
-
-            // Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-            _guiRenderer = new SceneRendererForward(_gui);
+            Load();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (!_loaded) return;
+
             // Mouse Controls
             if (Input.Mouse.LeftButton)
             {
@@ -119,17 +131,16 @@ namespace Fusee.Examples.PickingRayCast.Core
             {
                 // Convert Screen coordinates to world coordinates
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
-                
-                var ray_eye = float4x4.Transform(RC.InvProjection, new float4(pickPosClip.x, pickPosClip.y, 0, 1));
-                ray_eye.w = 0;
 
-                var ray_cam = float4x4.Transform(RC.InvView, ray_eye).xyz;
-                ray_cam = ray_cam.Normalize();
+                float4x4 invViewProjection = float4x4.Invert(_cam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_camTransform.Matrix));
+
+                var pickPosWorld4 = float4x4.Transform(invViewProjection, new float4(pickPosClip.x, pickPosClip.y, 1, 1));
+                var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
 
                 // Create Ray
                 float3 origin = _camTransform.Translation;
-                float3 direction = float4x4.Transform(_camTransform.Matrix.RotationComponent(), ray_cam);
-                
+                float3 direction = (pickPosWorld - origin).Normalize();
+
                 Rayf ray = new Rayf(origin, direction);
 
                 // RayCast and get the result closest to the camera
@@ -137,7 +148,6 @@ namespace Fusee.Examples.PickingRayCast.Core
 
                 if (castHit != null)
                     castHit.Node.GetComponent<SurfaceEffect>().SurfaceInput.Albedo = (float4)ColorUint.LawnGreen;
-
 
                 _pick = false;
             }
@@ -149,7 +159,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
-        
+
         private SceneContainer CreateScene()
         {
             var scene = new SceneContainer
@@ -185,7 +195,7 @@ namespace Fusee.Examples.PickingRayCast.Core
                             Translation = new float3(x, y, z),
                             Scale = new float3(1f, 1f, 1f)
                         },
-                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Gray, float4.Zero, 4.0f, 1f),
+                        MakeEffect.FromDiffuseSpecular((float4)ColorUint.Gray),
                         mesh
                     }
                 };

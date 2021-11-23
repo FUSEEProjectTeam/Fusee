@@ -7,7 +7,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
-using Path = System.IO.Path;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.PickingRayCast.Desktop
 {
@@ -23,6 +23,11 @@ namespace Fusee.Examples.PickingRayCast.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
+                    },
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
@@ -34,6 +39,11 @@ namespace Fusee.Examples.PickingRayCast.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
+                    DecoderAsync = async (string id, object storage) =>
+                    {
+                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
+                    },
                     Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
