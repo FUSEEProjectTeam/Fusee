@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Fusee.Examples.PointCloudOutOfCore.Wpf"
         xmlns:sew="clr-namespace:Fusee.PointCloud.Common;assembly=Fusee.Pointcloud.Common"
         mc:Ignorable="d"        
-        Title="Fusee Point Cloud Viewer"  MaxHeight ="927" MinWidth="330" MaxWidth="310" ResizeMode="CanResize" ShowInTaskbar="True" Background="#FFCECECE"
+        Title="Fusee Point Cloud Viewer"  MaxHeight ="727" MinWidth="330" MaxWidth="310" ResizeMode="CanResize" ShowInTaskbar="True" Background="#FFCECECE"
         Height="{Binding SystemParameters.PrimaryScreenHeight}"         
         WindowStartupLocation="Manual" 
         WindowState="Maximized">
@@ -82,21 +82,17 @@
                     <Label Content="0.33" HorizontalAlignment="Left" Margin="7,10,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="9" x:Name="MinProjSizeVal" />
                 </Grid>
 
-                <Grid x:Name="LightingContainer" Height="350" VerticalAlignment="Top" Margin="7,139,22,0">
+                <Grid x:Name="LightingContainer" Height="150" VerticalAlignment="Top" Margin="7,139,22,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="3*" />
 
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="0.5*" />
-                        <RowDefinition Height="0.5*" />
-                        <RowDefinition Height="0.8*" />
-                        <RowDefinition Height="0.8*" />
-                        <RowDefinition Height="0.8*" />
-                        <RowDefinition Height="0.8*" />
-                        <RowDefinition Height="0.8*" />
+                    <Grid.RowDefinitions>                        
+                        <RowDefinition Height="0.3*" />
+                        <RowDefinition Height="0.35*" />
+                        <RowDefinition Height="0.35*" />
                     </Grid.RowDefinitions>
 
                     <Border BorderBrush="White" Background="White" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" Grid.RowSpan="7" BorderThickness="0" VerticalAlignment="Center" Height="350">
@@ -105,37 +101,24 @@
                         </Border.Effect>
                     </Border>
                     <Border BorderBrush="Gray" Background="Gray" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,0" BorderThickness="0" x:Name="border1" VerticalAlignment="Center" Height="42"/>
-                    <Line Grid.Column="0" Grid.ColumnSpan="3" StrokeThickness="1" Stroke="Black" Fill="Black" Grid.RowSpan="1" X1="0" X2="320" Margin="0,-34,0,0" VerticalAlignment="Center" Grid.Row="1" />
-
+                    
                     <Image HorizontalAlignment="Left" Height="30" Margin="15,0,0,0" VerticalAlignment="Center" Width="37" Source="Assets/lighting_w.png"/>
                     <Label Content="Lighting" HorizontalAlignment="Center" VerticalAlignment="Center" Width="146" Height="30" x:Name="LightingLabel" FontWeight="Bold" FontStyle="Normal" Foreground="White" FontSize="14" Grid.Column="1"/>
-                    <ComboBox Height="22" Margin="0,7.333,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" MaxWidth="144" Width="144" Grid.Column="1" x:Name="Lighting" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:Lighting}}}" SelectionChanged="Lighting_SelectionChanged" IsEnabled="true" Grid.Row="1"/>
-
-                    <Label Content="SSAO strength" HorizontalAlignment="Center" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="4" x:Name="SSAOStrengthLabel" />
-                    <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="4" VerticalAlignment="Center" Width="144" x:Name="SSAOStrength" Maximum ="1.0" Minimum ="0.0"  Grid.Column="1" AutoToolTipPlacement="TopLeft"
-                    AutoToolTipPrecision="2" ValueChanged="SSAOStrength_ValueChanged" Thumb.DragStarted="SSAOStrength_DragStarted" Thumb.DragCompleted="SSAOStrength_DragCompleted"/>
-                    <CheckBox Content="SSAO" Grid.Column="2" Grid.Row="4" HorizontalAlignment="Left" Margin="7,0,0,0" VerticalAlignment="Center" Click="SSAOCheckBox_Checked" x:Name="SSAOCheckbox" Height="15" Width="49"/>
-
-                    <Label Content="EDL Neighbor Px" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="3" x:Name="EDLNeighbourPxLabel" Grid.ColumnSpan="2" />
-                    <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="3" VerticalAlignment="Center" Width="144" Grid.Column="1" x:Name="EDLNeighbourPx" Maximum ="10" Minimum ="1" IsSnapToTickEnabled="True"
+                    
+                    <Label Content="EDL Neighbor Px" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="1" x:Name="EDLNeighbourPxLabel" Grid.ColumnSpan="2" />
+                    <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="1" VerticalAlignment="Center" Width="144" Grid.Column="1" x:Name="EDLNeighbourPx" Maximum ="10" Minimum ="1" IsSnapToTickEnabled="True"
                     TickFrequency="1" ValueChanged="EDLNeighbourPxSlider_ValueChanged" Thumb.DragStarted="EDLNeighbourPx_DragStarted" Thumb.DragCompleted="EDLNeighbourPx_DragCompleted"/>
-                    <Label Content="10" HorizontalAlignment="Left" Margin="7,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="3" x:Name="EDLNeighbourPxVal" />
+                    <Label Content="10" HorizontalAlignment="Left" Margin="7,0,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="1" x:Name="EDLNeighbourPxVal" />
 
                     <Label Content="EDL strength" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Row="2"  Grid.Column="1" x:Name="EDLStrengthLabel" Grid.ColumnSpan="2" />
                     <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="2" VerticalAlignment="Center" Width="144" Grid.Column="1" x:Name="EDLStrength" Maximum ="1.0" Minimum ="0.0" ValueChanged="EDLStrengthSlider_ValueChanged" Thumb.DragStarted="EDLStrength_DragStarted" Thumb.DragCompleted="EDLStrength_DragCompleted"/>
                     <Label Content="10" HorizontalAlignment="Left" Margin="7,07,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="2" x:Name="EDLStrengthVal" />
 
-                    <Label Content="Specular strength" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Row="5"  Grid.Column="1" x:Name="SpecStrengthLabel" Grid.ColumnSpan="2" />
-                    <Slider HorizontalAlignment="Center" Margin="0,10,0,0" Grid.Row="5" VerticalAlignment="Center" Width="144" Grid.Column="1" x:Name="SpecStrength" Maximum ="1.0" Minimum ="0.0" ValueChanged="SpecStrength_ValueChanged" Thumb.DragStarted="SpecStrength_DragStarted" Thumb.DragCompleted="SpecStrength_DragCompleted" AutoToolTipPlacement="TopLeft"
-                    AutoToolTipPrecision="2"/>
                     <!--<Label Content="10" HorizontalAlignment="Left" Margin="7,07,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="5" x:Name="SpecStrengthVal" />-->
-
-                    <Label Content="Shininess:" HorizontalAlignment="Left" Margin="0.2,6,0,0" VerticalAlignment="Top" Grid.Column="1" Grid.Row="6" x:Name="Shininess" />
-                    <TextBox Text="2000" Grid.Row="6" Grid.Column="1" Margin="109.2,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" Width="36" Height="22" LostFocus="ShininessVal_LostFocus"  TextChanged="ShininessVal_TextChanged" x:Name="ShininessVal"/>
 
                 </Grid>
 
-                <Grid x:Name="PtShapeContainer" Height="70" Margin="7,496,22,0" VerticalAlignment="Top">
+                <Grid x:Name="PtShapeContainer" Height="70" Margin="7,296,22,0" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="auto" />
@@ -160,7 +143,7 @@
                     <ComboBox Height="22" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1" MaxWidth="144" Width="144" Grid.Column="1" x:Name="PtShape" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:PointShape}}}" SelectionChanged="PtShape_SelectionChanged" IsEnabled="true"/>
                 </Grid>
 
-                <Grid x:Name="PtSizeContainer" Height="125" Margin="7,574,22,0" VerticalAlignment="Top">
+                <Grid x:Name="PtSizeContainer" Height="125" Margin="7,374,22,0" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="auto" />
@@ -188,7 +171,7 @@
                     <Label Content="10" HorizontalAlignment="Left" Margin="7,10,0,0" VerticalAlignment="Center" Grid.Column="2" Grid.Row="9" x:Name="PtSizeVal" />
                 </Grid>
 
-                <Grid x:Name="ColorModeContainer" Height="125" Margin="7,706,22,0" VerticalAlignment="Top">
+                <Grid x:Name="ColorModeContainer" Height="125" Margin="7,506,22,0" VerticalAlignment="Top">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="2*" />
                         <ColumnDefinition Width="auto" />

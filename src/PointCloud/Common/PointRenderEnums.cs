@@ -16,16 +16,7 @@
         /// <summary>
         /// Every point appears as a rectangle with weighted Z-Buffer values to generate a paraboloid.
         /// </summary>
-        Paraboloid = 2,
-        /// <summary>
-        /// Every point appears as a rectangle with weighted Z-Buffer values to generate a cone.
-        /// </summary>
-        Cone = 3,
-        /// <summary>
-        /// Every point appears as a rectangle with weighted Z-Buffer values to generate a hemisphere.
-        /// </summary>
-        Hemisphere = 4
-
+        Paraboloid = 2
     }
 
     /// <summary>
@@ -36,27 +27,19 @@
         /// <summary>
         /// RGB value of the point.
         /// </summary>
-        Point,
+        VertexColor0,
         /// <summary>
-        /// Every point has a single color.
+        /// RGB value of the point.
+        /// </summary>
+        VertexColor1,
+        /// <summary>
+        /// RGB value of the point.
+        /// </summary>
+        VertexColor2,
+        /// <summary>
+        /// RGB value of the point.
         /// </summary>
         Single,
-        /// <summary>
-        /// Color coded normals, if available, else every point is black.
-        /// </summary>
-        Normal,
-        /// <summary>
-        /// Weight in gray scale, if a point shape is used, that uses a weight function.
-        /// </summary>
-        Weight,
-        /// <summary>
-        /// Non linear depth.
-        /// </summary>
-        Depth,
-        /// <summary>
-        /// Intensity, if available from the source point cloud, else every point is black.
-        /// </summary>
-        Intensity
     }
 
     /// <summary>
@@ -78,16 +61,9 @@
         /// <summary>
         /// Given point size is interpreted as diameter of the point in px for the initial camera position.
         /// If the camera gets closer, the point size in px will increase.
-        /// Additionally the point size in px depends on the level and therefor the spacing of the octant a point lies in.
-        /// </summary>
-        NodeLevelDependent = 2,
-
-        /// <summary>
-        /// Given point size is interpreted as diameter of the point in px for the initial camera position.
-        /// If the camera gets closer, the point size in px will increase.
         /// Additionally the size in px is adapted relative to a shader-calculated level of detail to allow the same point size across different octree levels.
         /// </summary>
-        AdaptiveSize = 3
+        AdaptiveSize = 2
     }
 
     /// <summary>
@@ -99,21 +75,15 @@
         /// Albedo only - no lighting is calculated.
         /// </summary>
         Unlit = 0,
+
         /// <summary>
         /// Eye dome lighting
         /// </summary>
         Edl = 1,
-        /// <summary>
-        /// Diffuse lighting
-        /// </summary>
-        Diffuse = 2,
-        /// <summary>
-        /// Diffuse lighting with specular highlights.
-        /// </summary>
-        BlinnPhong = 3,
+       
         /// <summary>
         /// Only occlusion, calculated in screen space.
         /// </summary>
-        SsaoOnly = 4
+        SsaoOnly = 3
     }
 }

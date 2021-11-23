@@ -94,6 +94,22 @@ namespace Fusee.Engine.Core.Effects
         private int _pointSize;
 
         /// <summary>
+        /// Shape of the points.
+        /// </summary>
+        [FxShader(ShaderCategory.Vertex)]
+        [FxShard(ShardCategory.Uniform)]
+        public int PointSizeMode
+        {
+            get { return _pointSizeMode; }
+            set
+            {
+                _pointSizeMode = value;
+                SetFxParam(nameof(PointSizeMode), _pointSizeMode);
+            }
+        }
+        private int _pointSizeMode;
+
+        /// <summary>
         /// The shader shard containing the Point Size.
         /// </summary>
         [FxShader(ShaderCategory.Fragment)]
@@ -141,13 +157,14 @@ namespace Fusee.Engine.Core.Effects
         [FxShard(ShardCategory.Property)]
         public readonly string WorldSpacePointRadOut = GLSL.CreateOut(GLSL.Type.Float, "vWorldSpacePointRad");
 
-        private static readonly List<string> CalculatePointShapeVaryings = new()
+        private static readonly List<string> CalculateVaryings = new()
         {
             $"vViewPos = {UniformNameDeclarations.ModelView} * vec4(fuVertex.xyz, 1.0);",
             $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
             "float slope = tan(fov / 2.0);",
             $"float projFactor = ((1.0 / slope) / -vViewPos.z) * {UniformNameDeclarations.ViewportPx}.y / 2.0;",
-            $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
+            $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;",
+            
         };
 
         /// <summary>
@@ -188,13 +205,36 @@ namespace Fusee.Engine.Core.Effects
             "}"
         };
 
+        private static readonly List<string> CalculatePointSizeMode = new()
+        {
+            "switch(PointSizeMode)",
+            "{",
+            "   // Fixed pixel size",
+            "   default:",
+            "   case 0:",
+            "   {",
+            $"       gl_PointSize = float({UniformNameDeclarations.PointSize});",
+            "       break;",
+            "   }",
+            "   //Fixed world size",
+            "   case 1:",
+            "   {",
+            "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",
+            "",
+            "       //Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!",
+            $"      gl_PointSize = ((FUSEE_ViewportPx.y / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * vViewPos.z))) / 100.0;",
+            "       break;",
+            "   }",
+            "}"
+        };
+
         /// <summary>
         /// Creates a new instance of type PointCloudSurfaceEffect.
         /// </summary>
         /// <param name="rendererStates">The renderer state set for this effect.</param>
         public PointCloudSurfaceEffect(RenderStateSet rendererStates = null)
             : base(new EdlInput() { Albedo = new float4(.5f, 0f, .5f, 1f) },
-                  VertShards.SurfOutBody(ShadingModel.Edl).Concat(CalculatePointShapeVaryings).ToList(),
+                  VertShards.SurfOutBody(ShadingModel.Edl).Concat(CalculateVaryings).Concat(CalculatePointSizeMode).ToList(),
                   FragShards.SurfOutBody(ShadingModel.Edl, TextureSetup.NoTextures).Concat(CalculatePointShape).ToList(),
                   rendererStates)
         {

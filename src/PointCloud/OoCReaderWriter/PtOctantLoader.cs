@@ -191,10 +191,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        /// <param name="ptSizeMode">The <see cref="PointSizeMode"/>.</param>
-        /// <param name="depthPassEf">Shader effect used in the depth pass in eye dome lighting.</param>
-        /// <param name="colorPassEf">Shader effect that is accountable for rendering the color pass.</param>       
-        public void UpdateScene(PointSizeMode ptSizeMode, ShaderEffect depthPassEf, ShaderEffect colorPassEf)
+        public void UpdateScene()
         {
             WasSceneUpdated = false;
 
@@ -211,13 +208,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                 DetermineVisibility(); //Traverses ordered by projected size.
                 UnloadedNodesToLoadingQueue(); //shove nodes, that shall be loaded, into the global "to load" queue.
-
-                if (ptSizeMode == PointSizeMode.AdaptiveSize && _visibleLoadedNodes.Count != 0)
-                {
-                    TraverseBreadthFirstToCreate1DTex(_rootNode, VisibleOctreeHierarchyTex);
-                    depthPassEf.SetFxParam(_octreeTexName, VisibleOctreeHierarchyTex);
-                    colorPassEf.SetFxParam(_octreeTexName, VisibleOctreeHierarchyTex);
-                }
 
                 //Complete FUSEE Scene Graph Traversal
                 TraverseToUpdateScene(_rootNode);
@@ -439,6 +429,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 {
                     _loadedMeshs[ptOctantComp.Guid] = meshes;
                 }
+
+                ptOctantComp.WasLoaded = true;
             }
             _ = _loadingQueue.TryRemove(kvp.Key, out _);
         }
@@ -458,7 +450,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
             else //is visible and was loaded
             {
-                if(node.GetComponents<Mesh>().Count() == 0)
+                if (node.GetComponents<Mesh>().Count() == 0)
                     node.Components.AddRange(_loadedMeshs[ptOctantComp.Guid]);
             }
 
@@ -476,8 +468,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// <returns>Only returns false if the meshes where never loaded.</returns>
         private bool TryRemoveMeshes(SceneNode node, OctantD ptOctantComponent)
         {
-            bool contains = _loadedMeshs.ContainsKey(ptOctantComponent.Guid);
-            if (!contains)
+            if (!ptOctantComponent.WasLoaded)
                 return false;
             else
             {
@@ -494,75 +485,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 }
                 return true;
             }
-        }
-
-        /// <summary>
-        /// Traverse breadth first to create 1D texture that contains the visible octree hierarchy.
-        /// </summary>
-        private void TraverseBreadthFirstToCreate1DTex(SceneNode node, Texture tex)
-        {
-            if (_visibleLoadedNodes.Count == 0) return;
-
-            //clear texture
-            tex.Blt(0, 0, new ImageData(new byte[tex.PixelData.Length], tex.Width, tex.Height, tex.PixelFormat));
-
-            var visibleOctantsImgData = new ImageData(new byte[_visibleLoadedNodes.Count * tex.PixelFormat.BytesPerPixel], _visibleLoadedNodes.Count, 1, tex.PixelFormat);
-            var candidates = new Queue<SceneNode>();
-
-            var rootPtOctantComp = node.GetComponent<OctantD>();
-            rootPtOctantComp.PosInHierarchyTex = 0;
-            if (!_visibleLoadedNodes.ContainsKey(rootPtOctantComp.Guid))
-                return;
-
-            candidates.Enqueue(node);
-
-            //The nodes' position in the texture
-            int nodePixelPos = 0;
-
-            while (candidates.Count > 0)
-            {
-                node = candidates.Dequeue();
-                var ptOctantComp = node.GetComponent<OctantD>();
-
-                //check if octantcomp.guid is in VisibleNode
-                //yes --> write to 1D tex
-                if (_visibleLoadedNodes.ContainsKey(ptOctantComp.Guid))
-                {
-                    ptOctantComp.PosInHierarchyTex = nodePixelPos;
-
-                    if (node.Parent != null)
-                    {
-                        var parentPtOctantComp = node.Parent.GetComponent<OctantD>();
-
-                        //If parentPtOctantComp.VisibleChildIndices == 0 this child is the first visible one.
-                        if (_visibleLoadedNodes.ContainsKey(parentPtOctantComp.Guid))
-                        {
-                            if (parentPtOctantComp.VisibleChildIndices == 0)
-                            {
-                                //Get the "green byte" (+1) and calculate the offset from the parent to this node (in px)
-                                var parentBytePos = (parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel) + 1;
-                                visibleOctantsImgData.PixelData[parentBytePos] = (byte)(ptOctantComp.PosInHierarchyTex - parentPtOctantComp.PosInHierarchyTex);
-                            }
-
-                            //add the index of this node to VisibleChildIndices
-                            byte indexNumber = (byte)System.Math.Pow(2, ptOctantComp.PosInParent);
-                            parentPtOctantComp.VisibleChildIndices += indexNumber;
-                            visibleOctantsImgData.PixelData[parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel] = parentPtOctantComp.VisibleChildIndices;
-                        }
-                    }
-
-                    nodePixelPos++;
-                }
-
-                //enqueue all children
-                foreach (var child in node.Children)
-                {
-                    candidates.Enqueue(child);
-                }
-            }
-
-            //replace PixelData with new contents
-            tex.Blt(0, 0, visibleOctantsImgData);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)

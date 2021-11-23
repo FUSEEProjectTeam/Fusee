@@ -627,9 +627,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderOctant(OctantD ptOctant)
         {
-            _state.Effect.SetFxParam("OctantLevel", ptOctant.Level);
+            
         }
-
 
         /// <summary>
         /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.

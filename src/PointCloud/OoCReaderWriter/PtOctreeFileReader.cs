@@ -125,8 +125,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 points[i] = pt;
             }
 
-            ptOctantComponent.WasLoaded = true;
-
             return points;
         }
 
