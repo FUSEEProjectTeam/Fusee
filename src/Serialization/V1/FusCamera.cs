@@ -83,6 +83,6 @@ namespace Fusee.Serialization.V1
         /// A camera is active by default. Set this to false to deactivate it. 
         /// </summary>
         [ProtoMember(9)]
-        public bool Active = true;
+        public new bool Active = true;
     }
 }

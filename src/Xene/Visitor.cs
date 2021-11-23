@@ -521,6 +521,8 @@ namespace Fusee.Xene
 
         private void DoVisitComponent(TComponent component)
         {
+            if (!component.Active) return;
+
             var compType = component.GetType();
 
             if (_visitors.Components.TryGetValue(compType, out var visitComponent))

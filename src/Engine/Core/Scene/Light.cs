@@ -11,11 +11,6 @@ namespace Fusee.Engine.Core.Scene
     public class Light : SceneComponent
     {
         /// <summary>
-        /// Represents the light status.
-        /// </summary>
-        public bool Active;
-
-        /// <summary>
         /// Represents the color.
         /// </summary>
         public float4 Color;

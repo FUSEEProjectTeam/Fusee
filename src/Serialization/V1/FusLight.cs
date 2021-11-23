@@ -16,7 +16,7 @@ namespace Fusee.Serialization.V1
         /// Represents the light status.
         /// </summary>
         [ProtoMember(1)]
-        public bool Active;
+        public new bool Active;
 
         /// <summary>
         /// Represents the color.

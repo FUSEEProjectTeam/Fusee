@@ -253,16 +253,15 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 if (PtRenderingParams.Instance.Lighting != Lighting.Unlit)
                 {
                     //Render Depth-only pass
+                    PtRenderingParams.Instance.DepthPassEf.Active = true;
+                    PtRenderingParams.Instance.ColorPassEf.Active = false;
 
-                    _scene.Children[1].RemoveComponent<PointCloudSurfaceEffect>();
-                    _scene.Children[1].Components.Insert(0, PtRenderingParams.Instance.DepthPassEf);
                     _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
-
                     _sceneRenderer.Render(RC);
                     _cam.RenderTexture = null;
 
-                    _scene.Children[1].RemoveComponent<ShaderEffect>();
-                    _scene.Children[1].Components.Insert(0, PtRenderingParams.Instance.ColorPassEf);
+                    PtRenderingParams.Instance.DepthPassEf.Active = false;
+                    PtRenderingParams.Instance.ColorPassEf.Active = true;
                 }
 
                 _sceneRenderer.Render(RC);
@@ -379,7 +378,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         {
             //create Scene from octree structure
             var root = OocFileReader.GetScene();
-
+            root.Components.Insert(0, PtRenderingParams.Instance.DepthPassEf);
+            root.Components.Insert(0, PtRenderingParams.Instance.ColorPassEf);
             var ptOctantComp = root.GetComponent<OctantD>();
             InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
 

@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -627,7 +626,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderOctant(OctantD ptOctant)
         {
-            
+
         }
 
         /// <summary>

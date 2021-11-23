@@ -5,5 +5,9 @@
     /// </summary>
     public interface IComponent
     {
+        /// <summary>
+        /// If set to false, the SceneRenderer will ignore this component.
+        /// </summary>0
+        bool Active { get; set; }
     }
 }

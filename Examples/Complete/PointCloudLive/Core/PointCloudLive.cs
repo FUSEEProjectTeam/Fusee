@@ -150,15 +150,15 @@ namespace Fusee.Examples.PointCloudLive.Core
             if (_pcFx.EDLNeighbourPixels > 0 && _renderForward)
             {
                 //Render Depth-only pass
-                _node.RemoveComponent<PointCloudSurfaceEffect>();
-                _node.Components.Insert(0, _depthFx);
+                _pcFx.Active = false;
+                _depthFx.Active = true;
 
                 _mainCam.RenderTexture = _depthTex;
                 _sceneRenderer.Render(RC);
                 _mainCam.RenderTexture = null;
 
-                _node.RemoveComponent<ShaderEffect>();
-                _node.Components.Insert(0, _pcFx);
+                _pcFx.Active = true;
+                _depthFx.Active = false;
             }
 
             _sceneRenderer.Render(RC);

@@ -25,6 +25,12 @@ namespace Fusee.Serialization.V1
         /// </summary>
         [ProtoMember(1)]
         public string Name;
+
+        /// <summary>
+        /// Determines if this Component contributes to the render result.
+        /// </summary>
+        [ProtoMember(2)]
+        public bool Active { get; set; }
     }
 
 }
