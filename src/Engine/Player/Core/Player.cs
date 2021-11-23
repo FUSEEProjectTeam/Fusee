@@ -85,6 +85,8 @@ namespace Fusee.Engine.Player.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             _isLoaded = true;
+
+            LoadingCompleted?.Invoke(this, null);
         }
 
         // Init is called on startup.

@@ -50,6 +50,8 @@ namespace Fusee.Examples.Simple.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             _loaded = true;
+
+            LoadingCompleted?.Invoke(this, null);
         }
 
         // Init is called on startup.

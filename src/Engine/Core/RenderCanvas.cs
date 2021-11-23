@@ -143,6 +143,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// This event is usually triggered when loading is completed (after init() method)
+        /// </summary>
+        public EventHandler<EventArgs> LoadingCompleted;
+
+        /// <summary>
         /// Initializes the application and prepares it for the rendering loop.
         /// </summary>
         public void InitApp()

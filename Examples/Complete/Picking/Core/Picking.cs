@@ -56,6 +56,8 @@ namespace Fusee.Examples.Picking.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             _loaded = true;
+
+            LoadingCompleted?.Invoke(this, null);
         }
 
         // Init is called on startup.

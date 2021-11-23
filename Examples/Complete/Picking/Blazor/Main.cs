@@ -12,6 +12,7 @@ using SixLabors.ImageSharp.Processing;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using Microsoft.JSInterop;
 using System.Threading.Tasks;
 using Path = System.IO.Path;
 using Stream = System.IO.Stream;
@@ -196,6 +197,12 @@ namespace Fusee.Examples.Picking.Blazor
             _app.CanvasImplementor = _canvasImp;
             _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
             Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor, Runtime));
+
+            _app.LoadingCompleted += (s, e) =>
+            {
+                Console.WriteLine("Loading finished");
+                ((IJSInProcessRuntime)Runtime).InvokeVoid("LoadingFinished");
+            };
 
             _app.InitApp();
 

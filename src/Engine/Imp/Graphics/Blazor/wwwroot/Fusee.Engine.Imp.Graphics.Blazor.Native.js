@@ -37,8 +37,31 @@ window.init = (instance) => {
 
     // Loading and installation of event listener complete, hide loading overlay
     // Loading complete, hide loading overlay
-    document.getElementById("LoadingOverlay").hidden = true;
+
+    //document.getElementById("LoadingOverlay").hidden = true;
 };
+
+function LoadingFinished() {
+
+    document.getElementById("LoadingOverlay").hidden = true;
+    document.getElementById("LoadingFinishedOverlay").style.visibility = 'visible';
+
+    // wait 3 seconds
+    setTimeout(function () {
+        var fadeTarget = document.getElementById("LoadingFinishedOverlay");
+        var fadeEffect = setInterval(function () {
+            if (!fadeTarget.style.opacity) {
+                fadeTarget.style.opacity = 1;
+            }
+            if (fadeTarget.style.opacity > 0) {
+                fadeTarget.style.opacity -= 0.1;
+            } else {
+                clearInterval(fadeEffect);
+                fadeTarget.hidden = true;
+            }
+        }, 80);
+    }, 3000);
+}
 
 function getClearColor() {
     const gl2 = document.getElementById("canvas").getContext('webgl2');
