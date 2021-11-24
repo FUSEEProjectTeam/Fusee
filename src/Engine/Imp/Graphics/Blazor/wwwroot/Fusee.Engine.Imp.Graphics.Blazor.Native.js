@@ -15,7 +15,7 @@ window.init = (instance) => {
         cvs.width = w;
         cvs.height = h;
 
-        DotNet.invokeMethod('Fusee.Base.Imp.Blazor', 'OnResize', w, h);
+        DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.Blazor', 'OnResize', w, h);
 
     });
 

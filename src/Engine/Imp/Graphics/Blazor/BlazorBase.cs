@@ -111,6 +111,7 @@ namespace Fusee.Base.Imp.Blazor
             gl.Viewport(0, 0, width, height);
             canvasWidth = width;
             canvasHeight = height;
+            gl.Clear(WebGLRenderingContextBase.COLOR_BUFFER_BIT);
         }
     }
 }
