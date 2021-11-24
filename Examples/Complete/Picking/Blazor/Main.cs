@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
+using Microsoft.JSInterop;
 using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -196,6 +197,12 @@ namespace Fusee.Examples.Picking.Blazor
             _app.CanvasImplementor = _canvasImp;
             _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
             Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor, Runtime));
+
+            _app.LoadingCompleted += (s, e) =>
+            {
+                Console.WriteLine("Loading finished");
+                ((IJSInProcessRuntime)Runtime).InvokeVoid("LoadingFinished");
+            };
 
             _app.InitApp();
 

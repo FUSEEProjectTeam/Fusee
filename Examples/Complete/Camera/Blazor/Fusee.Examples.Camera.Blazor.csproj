@@ -21,7 +21,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Blazor\Fusee.Base.Imp.Blazor.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Blazor\Fusee.Engine.Imp.Graphics.Blazor.csproj" />
         <ProjectReference Include="..\Core\Fusee.Examples.Camera.Core.csproj" />
     </ItemGroup>
 
