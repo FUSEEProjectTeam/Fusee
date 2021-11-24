@@ -7,6 +7,7 @@ using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -41,9 +42,7 @@ namespace Fusee.Examples.Camera.Core
         private float _valHorzMain;
         private float _valVertMain;
 
-        private bool _loaded;
-
-        private async void Load()
+        private async Task Load()
         {
             _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Camera Example");
             SceneNode guiCam = new()
@@ -132,8 +131,12 @@ namespace Fusee.Examples.Camera.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+        }
 
-            _loaded = true;
+        public override async Task InitAsync()
+        {
+            await Load();
+            await base.InitAsync();
         }
 
         // Init is called on startup.
@@ -159,15 +162,11 @@ namespace Fusee.Examples.Camera.Core
                 Translation = new float3(0, 1, -30),
                 Scale = new float3(1, 1, 1)
             };
-
-            Load();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_loaded) return;
-
             if (Mouse.RightButton)
             {
                 _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
