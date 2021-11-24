@@ -183,7 +183,8 @@ namespace Fusee.Engine.Core
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
-            CanvasImplementor.Init += async delegate {
+            CanvasImplementor.Init += async delegate
+            {
                 Init();
                 await InitAsync();
                 IsLoaded = true;
