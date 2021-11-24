@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -148,6 +149,21 @@ namespace Fusee.Engine.Core
         public EventHandler<EventArgs> LoadingCompleted;
 
         /// <summary>
+        /// Called after <see cref="RenderCanvas.Init"/> can be used to await async tasks (e.g. loading methods)
+        /// </summary>
+        /// <returns></returns>
+        public virtual async Task InitAsync()
+        {
+            await Task.Run(() => LoadingCompleted?.Invoke(this, null));
+        }
+
+        /// <summary>
+        /// <see langword="true"/> when InitAsync() finished
+        /// Prevents <see cref="RenderCanvas.RenderAFrame"/> and <see cref="RenderCanvas.Update"/> while <see langword="false"/>
+        /// </summary>
+        public bool IsLoaded { get; set; } = false;
+
+        /// <summary>
         /// Initializes the application and prepares it for the rendering loop.
         /// </summary>
         public void InitApp()
@@ -167,7 +183,11 @@ namespace Fusee.Engine.Core
 
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
-            CanvasImplementor.Init += delegate { Init(); };
+            CanvasImplementor.Init += async delegate {
+                Init();
+                await InitAsync();
+                IsLoaded = true;
+            };
             CanvasImplementor.UnLoad += delegate
             {
                 DeInit();
@@ -175,13 +195,16 @@ namespace Fusee.Engine.Core
 
             CanvasImplementor.Update += delegate
             {
-                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
+                if (!IsLoaded) return;
 
+                Time.Instance.DeltaTimeUpdateIncrement = CanvasImplementor.DeltaTimeUpdate;
                 Update();
             };
 
             CanvasImplementor.Render += delegate
             {
+                if (!IsLoaded) return;
+
                 if (IsShuttingDown) return;
 
                 // pre-rendering

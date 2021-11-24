@@ -197,6 +197,7 @@ namespace Fusee.Examples.Simple.Blazor
             _app.CanvasImplementor = _canvasImp;
             _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
             Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor, Runtime));
+
             _app.LoadingCompleted += (s, e) =>
             {
                 Console.WriteLine("Loading finished");
