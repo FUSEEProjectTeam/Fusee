@@ -151,11 +151,10 @@ namespace Fusee.Tools.Build.Versionupdate
                               default:
                                   break;
                           }
-
                       }
                       else
                       {
-                          // Error handling
+                          throw new NotSupportedException("Something didn't work!");
                       }
                   });
 
