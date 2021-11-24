@@ -192,8 +192,6 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_isLoaded) return;
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

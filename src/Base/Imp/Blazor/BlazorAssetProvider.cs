@@ -22,12 +22,12 @@ namespace Fusee.Base.Imp.Blazor
         /// returns the local HTTP address
         /// </summary>
         /// <returns></returns>
-        public static string GetLocalAddress(IJSRuntime runtime)
+        public static async Task<string> GetLocalAddress(IJSRuntime runtime)
         {
-            using IJSInProcessObjectReference window = runtime.GetGlobalObject<IJSInProcessObjectReference>("window");
-            using IJSInProcessObjectReference location = window.GetObjectProperty<IJSInProcessObjectReference>("location");
+            //using IJSInProcessObjectReference window = runtime.GetGlobalObject<IJSInProcessObjectReference>("window");
+            //using IJSInProcessObjectReference location = window.GetObjectProperty<IJSInProcessObjectReference>("location");
 
-            string address = location.GetObjectProperty<string>("href");
+            string address = await runtime.InvokeAsync<string>("getBaseAdress");
 
             if (address.Contains("/"))
             {
@@ -86,7 +86,7 @@ namespace Fusee.Base.Imp.Blazor
         /// <exception cref="System.ArgumentNullException"></exception>
         protected override Stream GetStream(string id)
         {
-            string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
+            string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime).Result + "Assets/";
             using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             Task<HttpResponseMessage> response = httpClient.GetAsync(id);
             return response.Result.Content.ReadAsStreamAsync().Result;
@@ -102,7 +102,7 @@ namespace Fusee.Base.Imp.Blazor
         /// <exception cref="System.ArgumentNullException"></exception>
         protected override async Task<Stream> GetStreamAsync(string id)
         {
-            string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
+            string baseAddress = await BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
             HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
 
             Diagnostics.Debug($"Requesting '{id}' at '{baseAddress}' ...");
@@ -142,7 +142,7 @@ namespace Fusee.Base.Imp.Blazor
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
+            string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime).Result + "Assets/";
             using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             Task<HttpResponseMessage> response = httpClient.GetAsync(id);
             return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
@@ -160,7 +160,7 @@ namespace Fusee.Base.Imp.Blazor
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            string baseAddress = BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
+            string baseAddress = await BlazorAssetProvider.GetLocalAddress(_runtime) + "Assets/";
             using HttpClient httpClient = new() { BaseAddress = new Uri(baseAddress) };
             HttpResponseMessage response = await httpClient.GetAsync(id).ConfigureAwait(false);
             return response.StatusCode == System.Net.HttpStatusCode.OK;

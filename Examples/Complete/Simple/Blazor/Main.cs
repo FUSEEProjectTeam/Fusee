@@ -32,10 +32,6 @@ namespace Fusee.Examples.Simple.Blazor
             Diagnostics.UseConsoleColor(false);
             Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.Verbose);
 
-            // Disable text logging as this is not supported for platform: web
-            //Diagnostics.SetMinTextFileLoggingSeverityLevel(Diagnostics.SeverityLevel.None);
-
-
             base.Run();
 
             // Inject Fusee.Engine.Base InjectMe dependencies

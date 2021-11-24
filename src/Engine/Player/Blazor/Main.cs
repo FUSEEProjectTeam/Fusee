@@ -190,7 +190,7 @@ namespace Fusee.Engine.Player.Blazor
 
             try
             {
-                var baseAddress = BlazorAssetProvider.GetLocalAddress(Runtime);
+                var baseAddress = await BlazorAssetProvider.GetLocalAddress(Runtime);
                 using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
                 var response = await httpClient.GetAsync("Fusee.App.dll");
 
