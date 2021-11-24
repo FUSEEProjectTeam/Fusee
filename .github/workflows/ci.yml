@@ -102,11 +102,63 @@ jobs:
       with:
         name: fusee-desktop-${{ matrix.os }}-tools
         path: bin/Release/Tools/
-    - name: Upload Example-Artifacts
+#    - name: Upload Example-Artifacts
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: fusee-desktop-${{ matrix.os }}-examples
+#        path: bin/Release/Examples/**/Desktop/
+
+  buildnuget:
+    needs: [tests]
+    name: Build NuGet
+    env:
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+      DOTNET_NOLOGO: true
+      NUGET_BUILD: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ 'windows-2022' ]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup .NET 6.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1.1
+      with:
+        vs-version: '[17.0,]'  
+    - name: Build F.E.Player.Desktop
+      run: dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
+    - name: Pack Fusee.sln NuGet
+      run: dotnet pack Fusee.sln -c Release-NuGet
+    - name: Pack F.B.I.Android
+      run: msbuild src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj -t:restore,pack -p:Configuration=Release
+    - name: Pack F.E.I.Graphics.Android
+      run: msbuild src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj -t:restore,pack -p:Configuration=Release
+    - name: Pack Core Metapackage
+      run: dotnet pack dis\NuGet\Core\Core.csproj -c Release -o bin\Release\nuget
+    - name: Pack Desktop Metapackage
+      run: dotnet pack dis\NuGet\Desktop\Desktop.csproj -c Release -o bin\Release\nuget
+    - name: Pack Android Metapackage
+      run: msbuild dis\NuGet\Android\Android.csproj -t:restore,pack -p:Configuration=Release
+    - name: Pack Fusee.Template.dotnet
+      run: dotnet pack dis\DnTemplate\DnTemplate.csproj -c Release -o bin\Release\nuget
+    - name: Pack VSTemplate
+      run: msbuild dis\VSTemplate\VSTemplate.sln -t:restore,build -p:Configuration=Release
+    - name: Pack Blender Addon
+      run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net6.0\BlenderScripts\addons *
+    - name: Upload NuGet-Atrifacts
       uses: actions/upload-artifact@v2
       with:
-        name: fusee-desktop-${{ matrix.os }}-examples
-        path: bin/Release/Examples/**/Desktop/
+        name: fusee-nuget-${{ matrix.os }}
+        path: |
+          bin/Release/nuget/
+          dis/VSTemplate/VSTemplate/bin/Release/ProjectTemplates/CSharp/1033/Fusee.Template.VS.zip
+          dis/VSTemplate/VSIX/bin/Release/Fusee.Template.VS.vsix
 
   buildblazor:
     needs: [tests]
