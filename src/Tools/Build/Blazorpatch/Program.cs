@@ -115,10 +115,8 @@ namespace Fusee.Tools.Build.Blazorpatch
 
                 if (response.IsSuccessStatusCode)
                 {
-                    using (var fs = File.Create(Path.Combine(filePath, "decode.min.js")))
-                    {
-                        response.Content.CopyToAsync(fs);
-                    }
+                    using var fs = File.Create(Path.Combine(filePath, "decode.min.js"));
+                    response.Content.CopyToAsync(fs);
                 }
                 else
                 {
