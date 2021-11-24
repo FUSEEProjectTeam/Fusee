@@ -1,4 +1,6 @@
-﻿namespace Fusee.Tools.Build.Blazorpatch
+﻿using System;
+
+namespace Fusee.Tools.Build.Blazorpatch
 {
     public class Program
     {
