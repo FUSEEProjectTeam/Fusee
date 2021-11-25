@@ -5,6 +5,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -31,9 +32,8 @@ namespace Fusee.Examples.Simple.Core
         private SceneInteractionHandler _sih;
 
         private bool _keys;
-        private bool _loaded;
 
-        private async void Load()
+        private async Task Load()
         {
             Console.WriteLine("Loading scene ...");
 
@@ -48,8 +48,12 @@ namespace Fusee.Examples.Simple.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+        }
 
-            _loaded = true;
+        public override async Task InitAsync()
+        {
+            await Load();
+            await base.InitAsync();
         }
 
         // Init is called on startup.
@@ -57,8 +61,6 @@ namespace Fusee.Examples.Simple.Core
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            Load();
         }
 
         public override void Update()
@@ -105,9 +107,6 @@ namespace Fusee.Examples.Simple.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_loaded) return;
-
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

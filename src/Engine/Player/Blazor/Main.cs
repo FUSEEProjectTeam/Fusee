@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
+using Microsoft.JSInterop;
 using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -97,7 +98,7 @@ namespace Fusee.Engine.Player.Blazor
                     try
                     {
                         //using var ms = new MemoryStream();
-                        //((Stream)storage).CopyTo(ms);                   
+                        //((Stream)storage).CopyTo(ms);
                         using var image = await Image.LoadAsync((Stream)storage);
 
                         image.Mutate(x => x.AutoOrient());
@@ -189,7 +190,7 @@ namespace Fusee.Engine.Player.Blazor
 
             try
             {
-                var baseAddress = BlazorAssetProvider.GetLocalAddress(Runtime);
+                var baseAddress = await BlazorAssetProvider.GetLocalAddress(Runtime);
                 using var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
                 var response = await httpClient.GetAsync("Fusee.App.dll");
 
@@ -218,6 +219,12 @@ namespace Fusee.Engine.Player.Blazor
             {
                 Console.WriteLine($"Error loading DLL: {ex}");
             }
+
+            app2Inject.LoadingCompleted += (s, e) =>
+            {
+                Console.WriteLine("Loading finished");
+                ((IJSInProcessRuntime)Runtime).InvokeVoidAsync("LoadingFinished");
+            };
 
             app2Inject.InitApp();
 

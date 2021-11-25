@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Imp.Graphics.Blazor;
 using Fusee.Serialization;
+using Microsoft.JSInterop;
 using ProtoBuf;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
@@ -30,10 +31,6 @@ namespace Fusee.Examples.Simple.Blazor
             // Disable colored console ouput, not supported
             Diagnostics.UseConsoleColor(false);
             Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.Verbose);
-
-            // Disable text logging as this is not supported for platform: web
-            //Diagnostics.SetMinTextFileLoggingSeverityLevel(Diagnostics.SeverityLevel.None);
-
 
             base.Run();
 
@@ -99,7 +96,7 @@ namespace Fusee.Examples.Simple.Blazor
                     try
                     {
                         //using var ms = new MemoryStream();
-                        //((Stream)storage).CopyTo(ms);                   
+                        //((Stream)storage).CopyTo(ms);
                         using var image = await Image.LoadAsync((Stream)storage);
 
                         image.Mutate(x => x.AutoOrient());
@@ -197,6 +194,12 @@ namespace Fusee.Examples.Simple.Blazor
             _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
             Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor, Runtime));
 
+            _app.LoadingCompleted += (s, e) =>
+            {
+                Console.WriteLine("Loading finished");
+                ((IJSInProcessRuntime)Runtime).InvokeVoid("LoadingFinished");
+            };
+
             _app.InitApp();
 
             // Start the app
@@ -222,7 +225,7 @@ namespace Fusee.Examples.Simple.Blazor
         public override void Resize(int width, int height)
         {
             base.Resize(width, height);
-            _canvasImp.DoResize(width, height);
+            _canvasImp?.DoResize(width, height);
         }
     }
 }

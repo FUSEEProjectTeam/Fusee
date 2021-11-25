@@ -4,7 +4,7 @@
 precision highp float;
 #endif
 
-in vec2 vUV;
+in vec2 vUv;
 in vec3 vMVNormal;
 
 uniform sampler2D AlbedoTexture;
@@ -30,10 +30,10 @@ void main()
 
     vec3 lightColor = vec3(1.0, 1.0, 1.0);
     vec4 objCol = vec4(0.0, 0.0, 0.0, 1.0);
-    vec4 texCol = texture(AlbedoTexture, vUV * AlbedoTextureTiles);
+    vec4 texCol = texture(AlbedoTexture, vUv * AlbedoTextureTiles);
     vec3 mixCol = mix(Albedo.xyz, texCol.xyz, AlbedoMix);    
 
-    if (FUSEE_PLATFORM_ID == 1)
+    if (FUSEE_PLATFORM_ID == 1 || FUSEE_PLATFORM_ID == 3)
     {
         objCol = vec4(mixCol.rgb, texCol.r);
     }
