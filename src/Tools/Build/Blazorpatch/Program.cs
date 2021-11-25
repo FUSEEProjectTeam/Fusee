@@ -15,6 +15,8 @@ namespace Fusee.Tools.Build.Blazorpatch
 
             [Option('t', "type", Default = ReplaceType.All, HelpText = "Type of replace operation. Valid options: RemoveHashingCheck, DecodePatch, All")]
             public ReplaceType ReplaceType { get; set; }
+            [Option('f', "fuseeroot", HelpText = "Points to the Fusee root directory if not run from there.")]
+            public string FuseeRoot { get; set; }
         }
 
         public enum ReplaceType
@@ -23,6 +25,7 @@ namespace Fusee.Tools.Build.Blazorpatch
             RemoveHashingCheck,
             DecodePatch,
             CopyPlayerCore,
+            CopyIcos,
             NoJekyll
         }
 
@@ -65,6 +68,8 @@ namespace Fusee.Tools.Build.Blazorpatch
       });
     </script>";
 
+        public const string deliverablesPath = @"art/Deliverables";
+
         public static void Main(string[] args)
         {
             ErrorCode errorCode = ErrorCode.Success;
@@ -83,6 +88,9 @@ namespace Fusee.Tools.Build.Blazorpatch
                           case ReplaceType.CopyPlayerCore:
                               CopyPlayerCore(o.BlazorPath);
                               break;
+                          case ReplaceType.CopyIcos:
+                              CopyIcos(o.BlazorPath, o.FuseeRoot);
+                              break;
                           case ReplaceType.NoJekyll:
                               CreateNojekyll(o.BlazorPath);
                               break;
@@ -90,6 +98,7 @@ namespace Fusee.Tools.Build.Blazorpatch
                               RemoveHashingCheck(o.BlazorPath);
                               DecodePatch(o.BlazorPath);
                               CopyPlayerCore(o.BlazorPath);
+                              CopyIcos(o.BlazorPath, o.FuseeRoot);
                               CreateNojekyll(o.BlazorPath);
                               break;
                       }
@@ -134,6 +143,16 @@ namespace Fusee.Tools.Build.Blazorpatch
         public static void CopyPlayerCore(string filePath)
         {
             File.Copy(Path.Combine(filePath, "_framework", "Fusee.Engine.Player.Core.dll"), Path.Combine(filePath, "Fusee.Engine.Player.Core.dll"));
+        }
+        public static void CopyIcos(string filePath, string? fuseeRoot)
+        {
+            var sourcePath = deliverablesPath;
+
+            if (!string.IsNullOrWhiteSpace(fuseeRoot))
+                sourcePath = Path.Combine(fuseeRoot, sourcePath);
+
+            File.Copy(Path.Combine(sourcePath, "FuseeLogo.ico"), Path.Combine(filePath, "favicon.ico"));
+            File.Copy(Path.Combine(sourcePath, "FuseeIcon512WithText.png"), Path.Combine(filePath, "icon-512.png"));
         }
 
         public static void CreateNojekyll(string filePath)
