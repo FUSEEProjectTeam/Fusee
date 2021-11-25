@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -107,6 +107,7 @@ namespace FuseeApp
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 2, -8, 0, 1.5f, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, (float)Width / Height, 1, 100);
 
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
