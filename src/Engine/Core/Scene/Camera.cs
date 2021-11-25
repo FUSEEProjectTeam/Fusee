@@ -88,11 +88,6 @@ namespace Fusee.Engine.Core.Scene
         public IWritableTexture RenderTexture;
 
         /// <summary>
-        /// A camera is active by default. Set this to false to deactivate it. 
-        /// </summary>
-        public bool Active = true;
-
-        /// <summary>
         /// Allows to overwrite the calculation of the projection matrix. E.g. if <see cref="ProjectionMethod"/> does not contain your desired projection calculation.
         /// </summary>
         public CustomCameraUpdate CustomCameraUpdate;

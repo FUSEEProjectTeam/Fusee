@@ -53,6 +53,7 @@ namespace Fusee.Engine.Core
         public PrePassVisitor()
         {
             _state = new RendererState();
+            IgnoreInactiveComponents = true;
             LightPrepassResuls = new List<Tuple<SceneNode, LightResult>>();
             CameraPrepassResults = new List<Tuple<SceneNode, CameraResult>>();
         }
