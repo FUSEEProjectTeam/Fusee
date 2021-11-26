@@ -6,7 +6,6 @@ using System.Reflection;
 
 namespace Fusee.Tools.CmdLine.Verbs
 {
-#if WINDOWS
 #nullable enable
     [Verb("install", HelpText = "Sets up file association for .fus and .fuz files as well as a custom uri handler for 'fusee://'.")]
     internal class Install
@@ -16,6 +15,12 @@ namespace Fusee.Tools.CmdLine.Verbs
 
         public int Run()
         {
+            if (!OperatingSystem.IsWindows())
+            {
+                Console.WriteLine("This operation is only available on Windows operating systems!");
+                return (int)ErrorCode.PlatformNotHandled;
+            }
+
             ErrorCode exitCode = ErrorCode.Success;
 
             if (!Uninstall)
@@ -100,5 +105,4 @@ namespace Fusee.Tools.CmdLine.Verbs
             return 0;
         }
     }
-#endif
 }
