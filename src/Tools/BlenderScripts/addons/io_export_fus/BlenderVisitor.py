@@ -106,10 +106,14 @@ class BlenderVisitor:
             dst = os.path.join(os.path.dirname(filepath),os.path.basename(texture))
             copyfile(src,dst)
 
-    def __AddTransform(self):
+    def __AddTransform(self, isLightOrCamera = False):
         """Convert the current blender obj's transformation into a FUSEE Transform component"""
         location, rotation, scale = self.XFormGetTOSTransform()
         rot_eul = rotation.to_euler('YXZ')
+        if isLightOrCamera:
+            print(rot_eul.x)
+            rot_eul.x -= 1.5708 # 90 deg
+            print(rot_eul.x)
 
         if self.DoApplyScale:
             scale =  mathutils.Vector((1.0, 1.0, 1.0))
@@ -549,26 +553,29 @@ class BlenderVisitor:
         innerconeangle = 1
         if lightData.type == 'SPOT':
             lightType = 2 # FusScene.LightType.Value('Spot')
-            outerconeangle = lightData.spot_size
+            outerconeangle = lightData.spot_size * 180 / pi
             innerconeangle = outerconeangle * (1.0 - lightData.spot_blend)
         elif lightData.type == 'SUN':
             lightType = 1 # FusScene.LightType.Value('Parallel')
-        else:
+        elif lightData.type == 'POINT':
             lightType = 0 # FusScene.LightType.Value('Point')
+        else:
+            print('Warning: Light "' + light.name +'" found but NOT exported - Area Lights are not supported by FUSEE right now.')
 
-        print('Warning: Light "' + light.name + '"found but NOT exported"')
+        #print('Warning: Light "' + light.name + '"found but NOT exported"')
         ### Write light node ###
-#        self.__fusWriter.AddChild(light.name)
-#        self.__AddTransform(light, false)
-#        self.__fusWriter.AddLight(
-#            True, 
-#            (lightData.color.r, lightData.color.g, lightData.color.b, 1),
-#            lightData.distance,
-#            lightData.energy / 1000.0,
-#            lightType,
-#            outerconeangle,
-#            innerconeangle
-#        )
+        self.__fusWriter.AddChild(light.name)
+        self.__AddTransform(True)
+        self.__fusWriter.AddLight(
+            True, 
+            (lightData.color.r, lightData.color.g, lightData.color.b, 1),
+            lightData.distance,
+            0.5, #TODO: for FUSEE this must be a value between 0 and 1
+            lightType,
+            outerconeangle,
+            innerconeangle,
+            light.name
+        )
 
     def VisitCamera(self, camera):
         ### Collect camera data ###
@@ -582,17 +589,18 @@ class BlenderVisitor:
             camType = 1
             print('WARNING: Orthographic projection type on Camera object "' + camera.name + '" is not handled correctly (yet) by FUSEE')
         else:
-            print('WARNING: Unknown projection type "' + cameraData.type + '" on Camera object "' + camera.name + '"')
+            print('WARNING: Unknown projection type "' + cameraData.type + '" on Camera object "' + camera.name + '"')        
         
-        print('WARNING: Camera "' + camera.name + '"found but NOT exported"')
         ### Write camera node ###
-#        self.__fusWriter.AddChild(camera.name)
-#        self.__AddTransform(camera, false)
-#        self.__fusWriter.AddCamera(
-#            camType, 
-#            cameraData.angle_y, 
-#            (cameraData.clip_start, cameraData.clip_end),
-#        )
+        self.__fusWriter.AddChild(camera.name)
+        self.__AddTransform(True)
+        self.__fusWriter.AddCamera(
+           camType, 
+           cameraData.angle_y, 
+           (cameraData.clip_start, cameraData.clip_end),
+           1.0/cameraData.ortho_scale, #TODO: doesn't look 100% like in Blender
+           camera.name
+        )
 
     def VisitArmature(self, armature):
         self.__fusWriter.AddChild(armature.name)
