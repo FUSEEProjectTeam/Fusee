@@ -97,7 +97,6 @@ class FusSceneWriter:
         xform.Translation.y = translation[1]
         xform.Translation.z = translation[2]
         xform.Rotation.x = rotation[0]
-        print("From Writer" + str(xform.Rotation.x))
         xform.Rotation.y = rotation[1]
         xform.Rotation.z = rotation[2]
         xform.Scale.x = scale[0]

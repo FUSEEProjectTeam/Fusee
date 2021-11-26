@@ -111,9 +111,7 @@ class BlenderVisitor:
         location, rotation, scale = self.XFormGetTOSTransform()
         rot_eul = rotation.to_euler('YXZ')
         if isLightOrCamera:
-            print(rot_eul.x)
             rot_eul.x -= 1.5708 # 90 deg
-            print(rot_eul.x)
 
         if self.DoApplyScale:
             scale =  mathutils.Vector((1.0, 1.0, 1.0))
