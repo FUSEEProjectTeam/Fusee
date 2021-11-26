@@ -517,7 +517,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
-            if (!mesh.Active || 
+            if (!mesh.Active ||
                 (mesh.MeshType != (int)OpenGLPrimitiveType.Triangles &&
                 mesh.MeshType != (int)OpenGLPrimitiveType.TriangleFan &&
                 mesh.MeshType != (int)OpenGLPrimitiveType.TriangleStrip)) return;
