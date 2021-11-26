@@ -141,6 +141,7 @@ namespace Fusee.Engine.Core
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
+            IgnoreInactiveComponents = true;
             _state = new RendererState();
             InitAnimations(_sc);
         }

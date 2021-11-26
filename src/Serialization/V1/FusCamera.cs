@@ -80,9 +80,9 @@ namespace Fusee.Serialization.V1
         public float4 Viewport = new(0, 0, 100, 100);
 
         /// <summary>
-        /// A camera is active by default. Set this to false to deactivate it. 
+        /// Scales the orthograpic viewing frustum. Dosn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
         /// </summary>
         [ProtoMember(9)]
-        public new bool Active = true;
+        public float Scale = 1;
     }
 }

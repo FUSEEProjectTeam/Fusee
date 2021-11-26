@@ -17,7 +17,6 @@ namespace Fusee.Serialization.V1
     [ProtoInclude(105, typeof(FusAnimation))]
     [ProtoInclude(106, typeof(FusBone))]
     [ProtoInclude(107, typeof(FusCamera))]
-
     public class FusComponent : IComponent
     {
         /// <summary>

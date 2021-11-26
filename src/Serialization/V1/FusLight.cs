@@ -13,47 +13,41 @@ namespace Fusee.Serialization.V1
     public class FusLight : FusComponent
     {
         /// <summary>
-        /// Represents the light status.
-        /// </summary>
-        [ProtoMember(1)]
-        public new bool Active;
-
-        /// <summary>
         /// Represents the color.
         /// </summary>
-        [ProtoMember(2)]
+        [ProtoMember(1)]
         public float4 Color;
 
         /// <summary>
         /// Represents the attenuation of the light.
         /// </summary>
-        [ProtoMember(3)]
+        [ProtoMember(2)]
         public float MaxDistance;
 
         /// <summary>
         /// Represents the strength of the light (non-physically representation of the brightness).
         /// Should be a value between 0 and 1.
         /// </summary>
-        [ProtoMember(4)]
+        [ProtoMember(3)]
         public float Strength = 1;
 
         /// <summary>
         /// Represents the type of the light.
         /// </summary>
-        [ProtoMember(5)]
+        [ProtoMember(4)]
         public LightType Type;
 
         /// <summary>
         /// Represents the outer spot angle of the light.
         /// </summary>
-        [ProtoMember(6)]
+        [ProtoMember(5)]
         public float OuterConeAngle;
 
 
         /// <summary>
         /// Represents the spot inner angle of the light.
         /// </summary>
-        [ProtoMember(7)]
+        [ProtoMember(6)]
         public float InnerConeAngle;
 
         /// <summary>
