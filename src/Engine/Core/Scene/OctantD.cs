@@ -46,17 +46,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Number of point cloud points, this node holds.
         /// </summary>
-        public int NumberOfPointsInNode;
-
-        /// <summary>
-        /// The octant's position in the texture which contains the octree's hierarchy.
-        /// </summary>
-        public int PosInHierarchyTex;
-
-        /// <summary>
-        /// Used to decode which children of an octant are visible, given a certain viewing frustum.
-        /// </summary>
-        public byte VisibleChildIndices;
+        public int NumberOfPointsInNode;       
 
         /// <summary>
         /// Creates a new instance of type Octant.
