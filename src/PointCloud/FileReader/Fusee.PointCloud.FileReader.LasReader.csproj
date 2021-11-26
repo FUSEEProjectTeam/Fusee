@@ -17,5 +17,7 @@
 		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.dll" Link="Natives\libLASlib.dll" PackagePath="runtimes/win/native" />
 		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.so" Link="Natives\libLASlib.so" PackagePath="runtimes/linux/native" />
 	</ItemGroup>
+	
+	
 
 </Project>

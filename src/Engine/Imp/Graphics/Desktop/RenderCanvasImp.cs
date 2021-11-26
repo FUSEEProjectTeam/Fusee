@@ -5,6 +5,7 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
 
@@ -204,6 +205,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
         public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
         {
+            Console.WriteLine($"Nvidia Optimus Enabled: {OptimusEnabler.NvidiaOptimus}");
+            Console.WriteLine($"Amd PowerXpress Enabled: {OptimusEnabler.AmdOptimus}");
+
             //TODO: Select correct monitor
             Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
 
@@ -527,6 +531,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         #endregion
+    }
+
+    internal static class OptimusEnabler
+    {
+        public static int NvidiaOptimus => GetNvidiaOptimus();
+
+        public static int AmdOptimus => GetAmdOptimus();       
+
+        [DllImport("Natives/OptimusEnabler.dll")]
+        internal static extern int GetNvidiaOptimus();
+        [DllImport("Natives/OptimusEnabler.dll")]
+        internal static extern int GetAmdOptimus();
     }
 
     internal class RenderCanvasGameWindow : GameWindow
