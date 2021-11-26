@@ -27,7 +27,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
-		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\OptimusEnabler\OptimusEnabler\out\build\x64-Debug\OptimusEnabler\OptimusEnabler.dll" Link="Natives\OptimusEnabler.dll" PackagePath="runtimes/win/native">
+		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\OptimusEnabler\OptimusEnabler\out\build\x64-Release\OptimusEnabler\OptimusEnabler.dll" Link="Natives\OptimusEnabler.dll" PackagePath="runtimes/win/native">
 		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</EmbeddedResource>
 		<PackageReference Include="OpenTK" Version="4.6.7" />

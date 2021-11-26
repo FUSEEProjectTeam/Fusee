@@ -50,16 +50,16 @@ The CXX compiler identification is MSVC, found in "C:/Users/morit/source/repos/F
 Detecting C compiler ABI info compiled with the following output:
 Change Dir: C:/Users/morit/source/repos/Fusee/ext/OptimusEnabler/OptimusEnabler/out/build/x64-Debug/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_cb66b && [1/2] Building C object CMakeFiles\cmTC_cb66b.dir\CMakeCCompilerABI.c.obj
-[2/2] Linking C executable cmTC_cb66b.exe
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_3fb28 && [1/2] Building C object CMakeFiles\cmTC_3fb28.dir\CMakeCCompilerABI.c.obj
+[2/2] Linking C executable cmTC_3fb28.exe
 
 
 
 Detecting CXX compiler ABI info compiled with the following output:
 Change Dir: C:/Users/morit/source/repos/Fusee/ext/OptimusEnabler/OptimusEnabler/out/build/x64-Debug/CMakeFiles/CMakeTmp
 
-Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_2a908 && [1/2] Building CXX object CMakeFiles\cmTC_2a908.dir\CMakeCXXCompilerABI.cpp.obj
-[2/2] Linking CXX executable cmTC_2a908.exe
+Run Build Command(s):C:/Program Files/Microsoft Visual Studio/2022/Professional/Common7/IDE/CommonExtensions/Microsoft/CMake/Ninja/ninja.exe cmTC_17b35 && [1/2] Building CXX object CMakeFiles\cmTC_17b35.dir\CMakeCXXCompilerABI.cpp.obj
+[2/2] Linking CXX executable cmTC_17b35.exe
 
 
 
