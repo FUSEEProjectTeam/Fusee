@@ -10,6 +10,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -35,19 +36,15 @@ namespace FuseeApp
 
         private bool _keys;
 
-        private bool _isLoaded = false;
-
         // Init is called on startup. 
         public override void Init()
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            // Dispatch async loading (this is only needed if you actually want to use this application in Blazor)
-            InitAsync();
         }
 
-        private async void InitAsync()
+        // Async init is required for Blazor
+        public override async Task InitAsync()
         {
             // Load the rocket model
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketModel.fus");
@@ -55,7 +52,7 @@ namespace FuseeApp
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
 
-            _isLoaded = true;
+            await base.InitAsync();
         }
 
         // Update is called 60 times a second
@@ -66,8 +63,6 @@ namespace FuseeApp
         // RenderAFrame is called once per frame
         public override void RenderAFrame()
         {
-            if (!_isLoaded) return;
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -107,6 +102,7 @@ namespace FuseeApp
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 2, -8, 0, 1.5f, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, (float)Width / Height, 1, 100);
 
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Render(RC);

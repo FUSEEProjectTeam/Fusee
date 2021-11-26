@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
@@ -60,6 +60,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             //_blendEquationAlpha = (uint)gl2.GetParameter(BLEND_EQUATION_ALPHA);
             //_blendEquationRgb = (uint)gl2.GetParameter(BLEND_EQUATION_RGB);
 
+            gl2.Enable(DEPTH_TEST);
         }
 
         #region Image data related Members

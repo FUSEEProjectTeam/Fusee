@@ -1288,7 +1288,6 @@ Global
 		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{2ED181F9-CB01-4514-8045-4CD9D505D100}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
@@ -1302,7 +1301,6 @@ Global
 		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{7E31E348-3A10-4C7E-892D-C6244A1AF20B}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
@@ -1316,7 +1314,6 @@ Global
 		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{AA302AC4-C9E2-42BC-BAA5-2C9E8F29D544}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
@@ -1330,7 +1327,6 @@ Global
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{7912EC07-2B08-48E1-A5CD-5E57EB03375F}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
@@ -1353,7 +1349,6 @@ Global
 		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{F971051F-B756-4509-849D-C737BA9E4B0F}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
