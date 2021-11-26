@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
+using Fusee.Engine.Imp.Graphics.Desktop;
 using Fusee.Serialization;
 using System.IO;
 using System.Reflection;
@@ -52,6 +53,8 @@ namespace Fusee.Examples.Simple.Desktop
                 });
 
             AssetStorage.RegisterProvider(fap);
+
+            NvidiaDedicatedGpuEnabler.InitializeDedicatedGraphics();
 
             var app = new Core.Simple();
 
