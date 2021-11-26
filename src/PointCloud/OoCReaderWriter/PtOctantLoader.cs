@@ -333,10 +333,10 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                 var octantComp = item.Value.GetComponent<OctantD>();
                 var added = _loadingQueue.AddOrUpdate(item.Key, octantComp, (key, value) => octantComp);
-                
+
                 cnt++;
             }
-            
+
             foreach (var item in _loadingQueue)
             {
                 _visibleUnloadedNodes.Remove(item.Key);
@@ -352,7 +352,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             NumberOfVisiblePoints = 0;
 
             if (RC.Projection == float4x4.Identity || RC.View == float4x4.Identity) return;
-            
+
             _visibleNodesOrderedByProjectionSize.Clear();
             _visibleUnloadedNodes.Clear();
             _visibleLoadedNodes.Clear();

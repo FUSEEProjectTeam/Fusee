@@ -43,7 +43,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         public MainWindow()
         {
             InitializeComponent();
-            
+
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
             ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;

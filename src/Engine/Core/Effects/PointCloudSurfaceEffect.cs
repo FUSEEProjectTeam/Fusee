@@ -164,7 +164,7 @@ namespace Fusee.Engine.Core.Effects
             "float slope = tan(fov / 2.0);",
             $"float projFactor = ((1.0 / slope) / -vViewPos.z) * {UniformNameDeclarations.ViewportPx}.y / 2.0;",
             $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;",
-            
+
         };
 
         /// <summary>

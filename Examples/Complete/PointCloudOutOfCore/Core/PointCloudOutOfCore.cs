@@ -79,7 +79,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         }
         private bool _closingRequested;
 
-        private bool _isTexInitialized;
+        private readonly bool _isTexInitialized;
 
         private Transform _camTransform;
         private Camera _cam;

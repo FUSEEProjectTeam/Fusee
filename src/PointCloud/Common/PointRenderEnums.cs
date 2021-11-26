@@ -80,7 +80,7 @@
         /// Eye dome lighting
         /// </summary>
         Edl = 1,
-       
+
         /// <summary>
         /// Only occlusion, calculated in screen space.
         /// </summary>
