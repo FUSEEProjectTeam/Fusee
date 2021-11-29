@@ -126,22 +126,17 @@ namespace Fusee.Examples.PickingRayCast.Core
             _camTransform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
 
 
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
+
             // Check for hits
             if (_pick)
             {
-                // Convert Screen coordinates to world coordinates
+                // Convert Screen Coordinates to Clip Space
                 float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
 
-                float4x4 invViewProjection = float4x4.Invert(_cam.GetProjectionMat(Width, Height, out _) * float4x4.Invert(_camTransform.Matrix));
-
-                var pickPosWorld4 = float4x4.Transform(invViewProjection, new float4(pickPosClip.x, pickPosClip.y, 1, 1));
-                var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
-
-                // Create Ray
-                float3 origin = _camTransform.Translation;
-                float3 direction = (pickPosWorld - origin).Normalize();
-
-                Rayf ray = new Rayf(origin, direction);
+                // Construct Ray (either using Camera Parameters or Render Context)
+                Rayf ray = new(pickPosClip, RC.InvView, RC.Projection);             //Rayf ray = new(pickPosClip, _camTransform.Matrix, _cam.GetProjectionMat(Width, Height, out _));
 
                 // RayCast and get the result closest to the camera
                 var castHit = _sceneRayCaster.RayCast(ray).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
@@ -152,8 +147,7 @@ namespace Fusee.Examples.PickingRayCast.Core
                 _pick = false;
             }
 
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
+
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
