@@ -35,5 +35,25 @@ namespace Fusee.Math.Core
             Direction = float3.Normalize(direction_);
             Inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z);
         }
+
+        /// <summary>
+        /// Creates a new ray.
+        /// </summary>
+        /// <param name="pickPosClip">A mouse position in Clip Space.</param>
+        /// <param name="invView">The inverse View Matrix of the rendered scene.</param>
+        /// <param name="projection">The Projection Matrix of the rendered scene.</param>
+        public Rayf(float2 pickPosClip, float4x4 invView, float4x4 projection)
+        {
+            Origin = invView.Translation();
+
+            float4x4 invViewProjection = float4x4.Invert(projection * float4x4.Invert(invView));
+
+            var pickPosWorld4 = float4x4.Transform(invViewProjection, new float4(pickPosClip.x, pickPosClip.y, 1, 1));
+            var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
+
+            Direction = (pickPosWorld - Origin).Normalize();
+
+            Inverse = new float3(1 / Direction.x, 1 / Direction.y, 1 / Direction.z);
+        }
     }
 }
