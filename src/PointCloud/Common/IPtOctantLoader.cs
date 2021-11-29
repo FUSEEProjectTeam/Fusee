@@ -11,6 +11,8 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public interface IPtOctantLoader
     {
+        public bool ShowOctants { get; set; }
+
         /// <summary>
         /// The initial camera position.
         /// </summary>
@@ -37,13 +39,7 @@ namespace Fusee.PointCloud.Common
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
         public void UpdateScene();
-
-        /// <summary>
-        /// Iterates the VisibleNodes list and sets the octant mesh for visible nodes.
-        /// </summary>
-        /// <param name="scene">The scene that contains the point cloud and the wireframe cubes. Only needed to visualize the octants.</param>
-        public void ShowOctants(SceneContainer scene);
-
+        
         /// <summary>
         /// The root node of the octree that is used to render the point cloud.
         /// </summary>
@@ -68,16 +64,5 @@ namespace Fusee.PointCloud.Common
         /// The path to the folder that holds the file.
         /// </summary>
         public string FileFolderPath { get; set; }
-
-        /// <summary>
-        /// 1D Texture that stores info that is needed by the vertex shader when rendering with adaptive point size.
-        /// </summary>
-        public Texture VisibleOctreeHierarchyTex { get; set; }
-
-        /// <summary>
-        /// Octants can be visualized as wireframe cubes. This method deletes all wireframe cubes from the scene.
-        /// </summary>
-        /// <param name="scene">The <see cref="SceneContainer"/> the wireframe cubes will be deleted from.</param>
-        public void DeleteWireframeOctants(SceneContainer scene);
     }
 }

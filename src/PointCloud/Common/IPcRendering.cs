@@ -106,11 +106,6 @@ namespace Fusee.PointCloud.Common
         float GetOocLoaderMinProjSizeMod();
 
         /// <summary>
-        /// Method to delete the octants from the scene.
-        /// </summary>
-        void DeleteOctants();
-
-        /// <summary>
         /// Method to delete the point cloud from the scene.
         /// </summary>
         void DeletePointCloud();

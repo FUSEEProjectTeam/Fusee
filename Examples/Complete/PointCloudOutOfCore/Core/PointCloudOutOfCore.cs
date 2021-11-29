@@ -269,8 +269,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
                 OocLoader.UpdateScene();
 
-                if (DoShowOctants)
-                    OocLoader.ShowOctants(_scene);
+                DoShowOctants = OocLoader.ShowOctants;
             }
 
             //Render GUI
@@ -408,20 +407,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         {
             _camTransform.Translation = InitCameraPos;
             _angleHorz = _angleVert = 0;
-        }
-
-        public void DeleteOctants()
-        {
-            IsSceneLoaded = false;
-
-            while (!OocLoader.WasSceneUpdated || !ReadyToLoadNewFile)
-            {
-                continue;
-            }
-
-            DoShowOctants = false;
-            OocLoader.DeleteWireframeOctants(_scene);
-            IsSceneLoaded = true;
         }
     }
 }

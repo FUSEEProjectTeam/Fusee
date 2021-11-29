@@ -56,14 +56,7 @@
         /// Given point size is interpreted as diameter of the point in px for the initial camera position.
         /// If the camera gets closer, the point size in px will increase.
         /// </summary>
-        FixedWorldSize = 1,
-
-        /// <summary>
-        /// Given point size is interpreted as diameter of the point in px for the initial camera position.
-        /// If the camera gets closer, the point size in px will increase.
-        /// Additionally the size in px is adapted relative to a shader-calculated level of detail to allow the same point size across different octree levels.
-        /// </summary>
-        AdaptiveSize = 2
+        FixedWorldSize = 1
     }
 
     /// <summary>

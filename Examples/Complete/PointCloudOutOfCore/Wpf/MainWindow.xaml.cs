@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
@@ -273,7 +273,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 App.ResetCamera();
                 App.LoadPointCloudFromFile();
                 InnerGrid.IsEnabled = true;
-                ShowOctants_Button.IsEnabled = true;
+                //ShowOctants_Button.IsEnabled = true;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
                 inactiveBorder.Visibility = Visibility.Collapsed;
             }
@@ -323,7 +323,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             }
             else
             {
-                App.DeleteOctants();
+                App.DoShowOctants = false;
                 _areOctantsShown = false;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
             }

@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Core;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Primitives;
@@ -22,6 +22,8 @@ namespace Fusee.PointCloud.OoCReaderWriter
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
     public class PtOctantLoader<TPoint> : IPtOctantLoader where TPoint : new()
     {
+        public bool ShowOctants { get; set; }
+
         /// <summary>
         /// Provides access to properties of different point types.
         /// </summary>
@@ -132,12 +134,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
         //All visible nodes
         private List<Guid> _visibleNodes;
 
-        // Visible but unloaded nodes.
-        //private Dictionary<Guid, SceneNode> _visibleUnloadedNodes;
-
-        private readonly WireframeCube wfc = new();
-        private SurfaceEffect _wfcEffect;
-
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _maxNumberOfNodesToLoad = 5;
@@ -167,7 +163,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
         public void Init(RenderContext rc)
         {
             RC = rc;
-            _wfcEffect = (SurfaceEffect)RC.DefaultEffect;
             Task loadingTask = new(() =>
             {
                 Thread.CurrentThread.Name = "OocLoader";
@@ -187,6 +182,12 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 }
             });
             loadingTask.Start();
+        }
+
+        private void SetMinScreenProjectedSize(double3 camPos, float fov)
+        {
+            RootNode.GetComponent<OctantD>().ComputeScreenProjectedSize(camPos, RC.ViewportHeight, fov);
+            _minScreenProjectedSize = RootNode.GetComponent<OctantD>().ProjectedScreenSize * _minProjSizeModifier;
         }
 
         /// <summary>
@@ -217,49 +218,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
 
             WasSceneUpdated = true;
-        }
-
-        /// <summary>
-        /// Iterates the VisibleNodes list and sets the octant mesh for visible nodes.
-        /// </summary>
-        /// <param name="scene">The scene that contains the point cloud and the wireframe cubes. Only needed to visualize the octants.</param>       
-        public void ShowOctants(SceneContainer scene)
-        {
-            //WasSceneUpdated = false;
-            //DeleteWireframeOctants(scene);
-            //foreach (var node in _visibleLoadedNodes)
-            //{
-            //    var ptOctantComp = node.GetComponent<OctantD>();
-
-            //    if (_loadedMeshs.ContainsKey(ptOctantComp.Guid))
-            //    {
-            //        scene.Children.Add(new SceneNode()
-            //        {
-            //            Name = "WireframeCube",
-            //            Components = new List<SceneComponent>()
-            //            {
-            //                new Transform()
-            //                {
-            //                    Translation = (float3)ptOctantComp.Center,
-            //                    Scale = float3.One * (float)ptOctantComp.Size
-            //                },
-            //                _wfcEffect,
-            //                wfc
-            //            }
-            //        });
-            //    }
-            //}
-
-            //WasSceneUpdated = true;
-        }
-
-        /// <summary>
-        /// Octants can be visualized as wireframe cubes. This method deletes all wireframe cubes from the scene.
-        /// </summary>
-        /// <param name="scene">The <see cref="SceneContainer"/> the wireframe cubes will be deleted from.</param>
-        public void DeleteWireframeOctants(SceneContainer scene)
-        {
-            _ = scene.Children.RemoveAll(node => node.Name == "WireframeCube");
         }
 
         private void InitCollections(int octantCnt)
@@ -343,7 +301,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
 
                 var ptOctantComp = kvp.Value.GetComponent<OctantD>();
 
-                if (!ptOctantComp.WasLoaded)
+                if (!_loadedMeshs.ContainsKey(ptOctantComp.Guid))
                 {
                     if (ptOctantComp.NumberOfPointsInNode == 0)
                         NumberOfVisiblePoints += PtOctreeFileReader<TPoint>.GetPtCountFromFile(FileFolderPath, ptOctantComp);
@@ -377,6 +335,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
         }
 
+        //Use Fusee.Struictures Octree - remove from Scene
         private void DetermineVisibilityForNode(SceneNode node, OctantD ptOctantChildComp)
         {
             // gets pixel radius of the node
@@ -426,9 +385,9 @@ namespace Fusee.PointCloud.OoCReaderWriter
             {
                 TryRemoveMeshes(node, ptOctantComp);
             }
-            else //is visible and was loaded
+            else //is visible
             {
-                if (node.GetComponents<Mesh>().Count() == 0)
+                if (_loadedMeshs.ContainsKey(ptOctantComp.Guid))
                     node.Components.AddRange(_loadedMeshs[ptOctantComp.Guid]);
             }
 
@@ -455,7 +414,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
                 _ = _loadedMeshs.Remove(ptOctantComponent.Guid);
 
                 ptOctantComponent.WasLoaded = false;
-                ptOctantComponent.VisibleChildIndices = 0;
 
                 foreach (Mesh mesh in meshes)
                 {
@@ -465,10 +423,6 @@ namespace Fusee.PointCloud.OoCReaderWriter
             }
         }
 
-        private void SetMinScreenProjectedSize(double3 camPos, float fov)
-        {
-            RootNode.GetComponent<OctantD>().ComputeScreenProjectedSize(camPos, RC.ViewportHeight, fov);
-            _minScreenProjectedSize = RootNode.GetComponent<OctantD>().ProjectedScreenSize * _minProjSizeModifier;
-        }
+        
     }
 }

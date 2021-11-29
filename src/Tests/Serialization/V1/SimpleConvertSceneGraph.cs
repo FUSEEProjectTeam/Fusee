@@ -148,10 +148,8 @@ namespace Fusee.Tests.Serialization.V1
                     Assert.Equal(octantD.IsLeaf, ((FusOctantD)fusFileComp).IsLeaf);
                     Assert.Equal(octantD.Level, ((FusOctantD)fusFileComp).Level);
                     Assert.Equal(octantD.NumberOfPointsInNode, ((FusOctantD)fusFileComp).NumberOfPointsInNode);
-                    Assert.Equal(octantD.PosInHierarchyTex, ((FusOctantD)fusFileComp).PosInHierarchyTex);
                     Assert.Equal(octantD.PosInParent, ((FusOctantD)fusFileComp).PosInParent);
                     Assert.Equal(octantD.Size, ((FusOctantD)fusFileComp).Size);
-                    Assert.Equal(octantD.VisibleChildIndices, ((FusOctantD)fusFileComp).VisibleChildIndices);
                     Assert.Equal(octantD.WasLoaded, ((FusOctantD)fusFileComp).WasLoaded);
                 }
 
@@ -574,8 +572,6 @@ namespace Fusee.Tests.Serialization.V1
                            Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
                            Name = "MyOctantD",
                            NumberOfPointsInNode = 2,
-                           PosInHierarchyTex = 0,
-                           VisibleChildIndices = 1,
                            WasLoaded = true
                        },
 

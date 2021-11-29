@@ -695,8 +695,8 @@ namespace Fusee.Engine.Core
                 Guid = cc.Guid,
                 Name = cc.Name,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
-                PosInHierarchyTex = cc.PosInHierarchyTex,
-                VisibleChildIndices = cc.VisibleChildIndices,
+                //PosInHierarchyTex = cc.PosInHierarchyTex,
+                //VisibleChildIndices = cc.VisibleChildIndices,
                 WasLoaded = cc.WasLoaded
             });
         }
@@ -1395,10 +1395,10 @@ namespace Fusee.Engine.Core
                 Level = oct.Level,
                 Name = oct.Name,
                 NumberOfPointsInNode = oct.NumberOfPointsInNode,
-                PosInHierarchyTex = oct.PosInHierarchyTex,
+                //PosInHierarchyTex = oct.PosInHierarchyTex,
                 PosInParent = oct.PosInParent,
                 Size = oct.Size,
-                VisibleChildIndices = oct.VisibleChildIndices,
+                //VisibleChildIndices = oct.VisibleChildIndices,
                 WasLoaded = oct.WasLoaded
             });
         }
