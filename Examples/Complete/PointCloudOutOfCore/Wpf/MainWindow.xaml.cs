@@ -174,28 +174,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         }
         #endregion
 
-        private void Lighting_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-
-            PtRenderingParams.Instance.Lighting = (PointCloudLighting)e.AddedItems[0];
-
-            if (PtRenderingParams.Instance.Lighting != PointCloud.Common.PointCloudLighting.Edl)
-            {
-                EDLNeighbourPx.IsEnabled = false;
-                EDLNeighbourPxLabel.IsEnabled = false;
-                EDLStrength.IsEnabled = false;
-                EDLStrengthLabel.IsEnabled = false;
-            }
-            else
-            {
-                EDLNeighbourPx.IsEnabled = true;
-                EDLNeighbourPxLabel.IsEnabled = true;
-                EDLStrength.IsEnabled = true;
-                EDLStrengthLabel.IsEnabled = true;
-            }
-        }
-
         private void PtShape_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_isAppInizialized || !App.IsSceneLoaded) return;

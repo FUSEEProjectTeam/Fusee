@@ -23,18 +23,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public PointCloudSurfaceEffect ColorPassEf;
 
         public PointType PointType;
-
-        private PointCloudLighting _lighting = PointCloudLighting.Unlit;
-        public PointCloudLighting Lighting
-        {
-            get { return _lighting; }
-            set
-            {
-                _lighting = value;
-                ColorPassEf.EDLStrength = _edlStrength == 0.0f ? (int)PointCloudLighting.Unlit : (int)PointCloudLighting.Edl;
-            }
-        }
-
+        
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape
         {
