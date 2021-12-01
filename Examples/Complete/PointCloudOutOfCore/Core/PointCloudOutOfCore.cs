@@ -79,8 +79,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         }
         private bool _closingRequested;
 
-        private readonly bool _isTexInitialized;
-
         private Transform _camTransform;
         private Camera _cam;
 
@@ -250,7 +248,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
                 //----------------------------  
 
-                if (PtRenderingParams.Instance.Lighting != Lighting.Unlit)
+                if (PtRenderingParams.Instance.EdlStrength != 0f)
                 {
                     //Render Depth-only pass
                     PtRenderingParams.Instance.DepthPassEf.Active = true;
@@ -320,9 +318,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (PtRenderingParams.Instance.Lighting == Lighting.Unlit) return;
+            if (PtRenderingParams.Instance.EdlStrength == 0f) return;
             PtRenderingParams.Instance.ColorPassEf.DepthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
-
         }
 
         public override void DeInit()

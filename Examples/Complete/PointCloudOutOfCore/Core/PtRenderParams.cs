@@ -22,17 +22,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public ShaderEffect DepthPassEf;
         public PointCloudSurfaceEffect ColorPassEf;
 
-        private Lighting _lighting = Lighting.Edl;
-        public Lighting Lighting
-        {
-            get { return _lighting; }
-            set
-            {
-                _lighting = value;
-                ColorPassEf.EDLStrength = _edlStrength == 0.0f ? (int)Lighting.Unlit : (int)Lighting.Edl;
-            }
-        }
-
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape
         {
