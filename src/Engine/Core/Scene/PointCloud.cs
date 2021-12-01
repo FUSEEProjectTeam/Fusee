@@ -15,7 +15,12 @@ namespace Fusee.Engine.Core.Scene
                 FileFolderPath = fileFolderPath,
                 PtAccessor = pointAccessor
             };
+            Center = new float3(_pointCloudLoader.Octree.Root.Center);
+            Size = (float)_pointCloudLoader.Octree.Root.Size;
         }
+
+        public float3 Center { get; private set; }
+        public float Size { get; private set; }
 
         /// <summary>
         /// The number of points that are currently visible.

@@ -32,12 +32,7 @@ namespace Fusee.Engine.Core
         /// Set to true if the outlines of visible octants shall be rendered.
         /// </summary>
         bool DoShowOctants { get; set; }
-
-        /// <summary>
-        /// Set to false before changing something in your scene and to false after.
-        /// </summary>
-        bool IsSceneLoaded { get; }
-
+       
         /// <summary>
         /// Allows different logic if you use WPF (or another UI).
         /// </summary>
@@ -57,11 +52,6 @@ namespace Fusee.Engine.Core
         /// <see cref="RenderCanvas.ContextImplementor"/>
         /// </summary>
         IRenderContextImp ContextImplementor { get; set; }
-
-        /// <summary>
-        /// Wrapper to get the WasSceneUpdated bool from the app's File Loader./>
-        /// </summary>
-        bool GetOocLoaderWasSceneUpdated();
 
         /// <summary>
         /// Wrapper to get the Point Threshold from the app's File Loader./>
@@ -92,11 +82,6 @@ namespace Fusee.Engine.Core
         /// Method to reset the camera.
         /// </summary>
         void ResetCamera();
-
-        /// <summary>
-        /// Method to load the point cloud from an ooc file.
-        /// </summary>
-        void LoadPointCloudFromFile();
 
         /// <summary>
         /// <see cref="RenderCanvas.CloseGameWindow"/>

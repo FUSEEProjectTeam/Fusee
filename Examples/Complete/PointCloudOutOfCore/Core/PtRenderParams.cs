@@ -15,7 +15,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public static PtRenderingParams Instance { get; private set; } = new();
 
         public ConcurrentDictionary<int, object> ShaderParamsToUpdate = new();
-        public int MaxNoOfVisiblePoints = 1000000;
 
         public string PathToOocFile = "D://PW_ooc//HolbeinPferdOctree";
 
@@ -106,7 +105,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         internal ShaderEffect CreateDepthPassEffect()
         {
-            var depthFx = new ShaderEffect(
+            return new ShaderEffect(
             new FxPassDeclaration
             {
                 VS = AssetStorage.Get<string>("PointCloud.vert"),
@@ -128,10 +127,10 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = Size},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)Shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)PtMode},
-            });
-
-            depthFx.Active = false;
-            return depthFx;
+            })
+            {
+                Active = false
+            };
         }
 
         internal PointCloudSurfaceEffect CreateColorPassEffect()

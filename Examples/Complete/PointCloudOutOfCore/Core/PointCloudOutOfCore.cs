@@ -119,6 +119,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier,
                 PointThreshold = PtRenderingParams.Instance.PointThreshold
             };
+            IsSceneLoaded = true;
 
             var pointCloudNode = new SceneNode()
             {
@@ -137,6 +138,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 }
             };
 
+            _initCameraPos = _pointCloud.Center - new float3(0, 0, _pointCloud.Size * 2);
+            _camTransform.Translation = _pointCloud.Center - new float3(0, 0, _pointCloud.Size * 2);
+
             _scene = new SceneContainer
             {
                 Children = new List<SceneNode>()
@@ -151,9 +155,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             _twoTouchRepeated = false;
             _offset = float2.Zero;
             _offsetInit = float2.Zero;
-
-            if (!UseWPF)
-                LoadPointCloudFromFile();
 
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "FUSEE Out-Of-Core Point Cloud Rendering");
             _sih = new SceneInteractionHandler(_gui);
@@ -277,7 +278,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
             _sceneRenderer.Render(RC);
 
-
             //Render GUI
             RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
             // Constantly check for interactive objects.
@@ -374,40 +374,16 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             return _pointCloud.MinProjSizeModifier;
         }
 
-        public void LoadPointCloudFromFile()
-        {
-            ////create Scene from octree structure
-            //var root = OocFileReader.GetScene();
-            //root.Components.Insert(0, PtRenderingParams.Instance.DepthPassEf);
-            //root.Components.Insert(0, PtRenderingParams.Instance.ColorPassEf);
-            //var ptOctantComp = root.GetComponent<OctantD>();
-            //InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
-
-            //_scene.Children.Add(root);
-
-            //OocLoader.RootNode = root;
-            //OocLoader.FileFolderPath = PtRenderingParams.Instance.PathToOocFile;
-
-            //IsSceneLoaded = true;
-        }
-
         public void DeletePointCloud()
         {
-            //IsSceneLoaded = false;
-
-            //while (!OocLoader.WasSceneUpdated || !ReadyToLoadNewFile)
-            //{
-            //    continue;
-            //}
-
-            //if (OocLoader.RootNode != null)
-            //    _scene.Children.Remove(OocLoader.RootNode);
+            IsSceneLoaded = false;
         }
 
         public void ResetCamera()
         {
             _camTransform.Translation = _initCameraPos;
             _angleHorz = _angleVert = 0;
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
         }
     }
 }

@@ -53,6 +53,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
             EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
             EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
+            MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
 
             //ColorPicker is unavailable right now
             //var col = PtRenderingParams.Instance.SingleColor;
@@ -69,20 +70,20 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         #region edl strength
         private void EDLStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             _edlStrengthDragStarted = true;
         }
 
         private void EDLStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             PtRenderingParams.Instance.EdlStrength = (float)((Slider)sender).Value;
             _edlStrengthDragStarted = false;
         }
 
         private void EDLStrengthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             EDLStrengthVal.Content = e.NewValue.ToString("0.000");
 
             if (_edlStrengthDragStarted) return;
@@ -94,13 +95,13 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void EDLNeighbourPx_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             _edlNeighbourPxDragStarted = true;
         }
 
         private void EDLNeighbourPx_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");
@@ -111,7 +112,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void EDLNeighbourPxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = e.NewValue.ToString("0");
@@ -120,7 +121,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             PtRenderingParams.Instance.EdlNoOfNeighbourPx = (int)e.NewValue;
         }
 
-        #endregion       
+        #endregion
 
         #region point size
         private void PtSize_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -138,7 +139,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             if (PtSizeVal == null) return;
             PtSizeVal.Content = e.NewValue.ToString("0");
 
@@ -176,19 +177,19 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void PtShape_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             PtRenderingParams.Instance.Shape = (PointShape)e.AddedItems[0];
         }
 
         private void PtSizeMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             PtRenderingParams.Instance.PtMode = (PointSizeMode)e.AddedItems[0];
         }
 
         private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
+            if (!_isAppInizialized) return;
             PtRenderingParams.Instance.ColorMode = (PointColorMode)e.AddedItems[0];
 
             //ColorPicker is unavailable right now
@@ -201,7 +202,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
         {
             string fullPath;
-            string path;
             var ofd = new System.Windows.Forms.OpenFileDialog
             {
                 Filter = "Meta json (*.json)|*.json"
@@ -220,7 +220,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 }
 
                 fullPath = ofd.FileName;
-                path = fullPath.Replace(ofd.SafeFileName, "");
+                PtRenderingParams.Instance.PathToOocFile = fullPath.Replace(ofd.SafeFileName, "");
 
                 if (App != null)
                 {
@@ -232,9 +232,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                     GC.Collect();
                 }
 
-                _ = int.TryParse(PtThreshold.Text, out int th);
-
-                CreateApp(path, th);
+                CreateApp(PtRenderingParams.Instance.PathToOocFile);
                 RunApp();
 
                 MinProjSize.Value = App.GetOocLoaderMinProjSizeMod();
@@ -242,12 +240,10 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
                 //TODO: add null/initialization check?
                 App.DeletePointCloud();
-                SpinWait.SpinUntil(() => App.ReadyToLoadNewFile && App.GetOocLoaderWasSceneUpdated() && _isAppInizialized);
+                SpinWait.SpinUntil(() => App.ReadyToLoadNewFile && _isAppInizialized);
 
-
-                PtRenderingParams.Instance.PathToOocFile = path;
                 App.ResetCamera();
-                App.LoadPointCloudFromFile();
+                
                 InnerGrid.IsEnabled = true;
                 //ShowOctants_Button.IsEnabled = true;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
@@ -260,7 +256,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             App?.ResetCamera();
         }
 
-        private void VisPoints_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        private void VisPoints_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (!_isAppInizialized) return;
             e.Handled = !IsTextAllowed(PtThreshold.Text);
@@ -288,7 +284,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
         {
-            while (!App.ReadyToLoadNewFile || !App.GetOocLoaderWasSceneUpdated() || !App.IsSceneLoaded)
+            while (!App.ReadyToLoadNewFile)
                 continue;
 
             if (!_areOctantsShown)
@@ -333,7 +329,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             InnerGrid.IsEnabled = true;
         }
 
-        private void CreateApp(string pathToFile, int th)
+        private void CreateApp(string pathToFile)
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
@@ -382,7 +378,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
-            AppSetup.DoSetup(out App, ReadPotreeMetadata.GetPtTypeFromMetaJson(pathToFile), pathToFile);
+            AppSetup.DoSetup(out App, ptType, pathToFile);
             App.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)
