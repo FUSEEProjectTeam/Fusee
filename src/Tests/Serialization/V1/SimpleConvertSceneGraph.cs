@@ -140,34 +140,6 @@ namespace Fusee.Tests.Serialization.V1
                     Assert.Equal(mesh.BiTangents, ((FusMesh)fusFileComp).BiTangents);
                 }
 
-                if (gtComp is OctantD octantD)
-                {
-                    Assert.Equal(octantD.Name, ((FusOctantD)fusFileComp).Name);
-                    Assert.Equal(octantD.Center, ((FusOctantD)fusFileComp).Center);
-                    Assert.Equal(octantD.Guid, ((FusOctantD)fusFileComp).Guid);
-                    Assert.Equal(octantD.IsLeaf, ((FusOctantD)fusFileComp).IsLeaf);
-                    Assert.Equal(octantD.Level, ((FusOctantD)fusFileComp).Level);
-                    Assert.Equal(octantD.NumberOfPointsInNode, ((FusOctantD)fusFileComp).NumberOfPointsInNode);
-                    Assert.Equal(octantD.PosInParent, ((FusOctantD)fusFileComp).PosInParent);
-                    Assert.Equal(octantD.Size, ((FusOctantD)fusFileComp).Size);
-                    Assert.Equal(octantD.WasLoaded, ((FusOctantD)fusFileComp).WasLoaded);
-                }
-
-                if (gtComp is OctantF octantF)
-                {
-                    Assert.Equal(octantF.Name, ((FusOctantF)fusFileComp).Name);
-                    Assert.Equal(octantF.Center, ((FusOctantF)fusFileComp).Center);
-                    Assert.Equal(octantF.Guid, ((FusOctantF)fusFileComp).Guid);
-                    Assert.Equal(octantF.IsLeaf, ((FusOctantF)fusFileComp).IsLeaf);
-                    Assert.Equal(octantF.Level, ((FusOctantF)fusFileComp).Level);
-                    Assert.Equal(octantF.NumberOfPointsInNode, ((FusOctantF)fusFileComp).NumberOfPointsInNode);
-                    Assert.Equal(octantF.PosInHierarchyTex, ((FusOctantF)fusFileComp).PosInHierarchyTex);
-                    Assert.Equal(octantF.PosInParent, ((FusOctantF)fusFileComp).PosInParent);
-                    Assert.Equal(octantF.Size, ((FusOctantF)fusFileComp).Size);
-                    Assert.Equal(octantF.VisibleChildIndices, ((FusOctantF)fusFileComp).VisibleChildIndices);
-                    Assert.Equal(octantF.WasLoaded, ((FusOctantF)fusFileComp).WasLoaded);
-                }
-
                 if (gtComp is Weight weight)
                 {
                     Assert.Equal(weight.Name, ((FusWeight)fusFileComp).Name);
@@ -562,31 +534,6 @@ namespace Fusee.Tests.Serialization.V1
                            Strength = 100,
                            Type = LightType.Point
 
-                       },
-                       new OctantD(double3.One, 20)
-                       {
-                            IsLeaf = false,
-                            Level = 10,
-                            PosInParent = 5,
-
-                           Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
-                           Name = "MyOctantD",
-                           NumberOfPointsInNode = 2,
-                           WasLoaded = true
-                       },
-
-                       new OctantF(float3.One, 20)
-                       {
-                            IsLeaf = false,
-                            Level = 10,
-                            PosInParent = 5,
-
-                           Guid = new Guid(1, 2, 3, new byte[] { 4, 4, 4, 4, 4, 4, 4, 4 }),
-                           Name = "MyOctantF",
-                           NumberOfPointsInNode = 2,
-                           PosInHierarchyTex = 0,
-                           VisibleChildIndices = 1,
-                           WasLoaded = true
                        },
                        new Camera(Engine.Core.Scene.ProjectionMethod.Orthographic, 0, 500, 2000),
                        MakeEffect.FromBRDF((float4)ColorUint.Green, 0.2f, 0, 0.5f, 1.46f, 0, float3.Zero),

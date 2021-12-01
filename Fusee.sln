@@ -251,19 +251,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudOu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{A8BB0061-FE2C-4FBA-97E9-B76C1A0DDF0B}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FileReader", "FileReader", "{CAD62212-5A60-45A8-AEFB-2418EDDFCCCC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointCloudFileReader", "PointCloudFileReader", "{CAD62212-5A60-45A8-AEFB-2418EDDFCCCC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudOutOfCore.Wpf", "Examples\Complete\PointCloudOutOfCore\Wpf\Fusee.Examples.PointCloudOutOfCore.Wpf.csproj", "{FB6502CE-9E33-4F02-B885-596752FC2149}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Tools.OoCFileGenerator", "src\PointCloud\Tools\Fusee.PointCloud.Tools.OoCFileGenerator.csproj", "{17DE21AA-CC0E-4D43-8783-707575907652}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Tools.PotreeFileGenerator.V1", "src\PointCloud\Tools\Fusee.PointCloud.Tools.PotreeFileGenerator.V1.csproj", "{17DE21AA-CC0E-4D43-8783-707575907652}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.FileReader.LasReader", "src\PointCloud\FileReader\Fusee.PointCloud.FileReader.LasReader.csproj", "{4238298F-09B6-4C45-BFDC-6D5AF262871F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.PointCloudFileReader.LasReader", "src\PointCloud\FileReader\Fusee.PointCloud.PointCloudFileReader.LasReader.csproj", "{4238298F-09B6-4C45-BFDC-6D5AF262871F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Core", "src\PointCloud\Core\Fusee.PointCloud.Core.csproj", "{7DC4C82A-CBE1-4564-9B62-733545DB892B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Common", "src\PointCloud\Common\Fusee.PointCloud.Common.csproj", "{28C06484-229D-44C6-B463-C29762D586BD}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.OoCReaderWriter", "src\PointCloud\OoCReaderWriter\Fusee.PointCloud.OoCReaderWriter.csproj", "{F5846F6B-9827-45D3-901F-36037F2C7B80}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Gui", "src\Engine\GUI\Fusee.Engine.Gui.csproj", "{E327FC67-1306-429D-9180-01BCD68A21A0}"
 EndProject
@@ -288,6 +286,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.Build.Blazorpatch", "src\Tools\Build\Blazorpatch\Fusee.Tools.Build.Blazorpatch.csproj", "{8CF98098-64E7-421B-9CBF-67E02EDE6D32}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.Build.Versionupdate", "src\Tools\Build\Versionupdate\Fusee.Tools.Build.Versionupdate.csproj", "{59693479-2561-45B0-BB9E-10337CA9DF5C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.PotreeReader", "src\PointCloud\PotreeReader\Fusee.PointCloud.PotreeReader.csproj", "{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1512,19 +1512,6 @@ Global
 		{28C06484-229D-44C6-B463-C29762D586BD}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{28C06484-229D-44C6-B463-C29762D586BD}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{28C06484-229D-44C6-B463-C29762D586BD}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{F5846F6B-9827-45D3-901F-36037F2C7B80}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{E327FC67-1306-429D-9180-01BCD68A21A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E327FC67-1306-429D-9180-01BCD68A21A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E327FC67-1306-429D-9180-01BCD68A21A0}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1668,6 +1655,24 @@ Global
 		{59693479-2561-45B0-BB9E-10337CA9DF5C}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{59693479-2561-45B0-BB9E-10337CA9DF5C}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{59693479-2561-45B0-BB9E-10337CA9DF5C}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1784,7 +1789,6 @@ Global
 		{4238298F-09B6-4C45-BFDC-6D5AF262871F} = {CAD62212-5A60-45A8-AEFB-2418EDDFCCCC}
 		{7DC4C82A-CBE1-4564-9B62-733545DB892B} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 		{28C06484-229D-44C6-B463-C29762D586BD} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
-		{F5846F6B-9827-45D3-901F-36037F2C7B80} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 		{E327FC67-1306-429D-9180-01BCD68A21A0} = {15338FBD-C26A-45E2-ACF8-202DA51448CB}
 		{FD216844-88A5-4BC3-80FF-880EEC7320F8} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{717241B4-F2AA-4124-807A-68DB3C73157F} = {6295AB06-EBE4-4887-A811-20737F6F8645}
@@ -1797,6 +1801,7 @@ Global
 		{594F2025-8C23-40D2-8100-C9989CA16DC9} = {0C344D5F-BE70-4828-B95A-1D313B894BC3}
 		{8CF98098-64E7-421B-9CBF-67E02EDE6D32} = {594F2025-8C23-40D2-8100-C9989CA16DC9}
 		{59693479-2561-45B0-BB9E-10337CA9DF5C} = {594F2025-8C23-40D2-8100-C9989CA16DC9}
+		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

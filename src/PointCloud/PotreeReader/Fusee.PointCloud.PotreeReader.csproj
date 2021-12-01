@@ -1,13 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	
+
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
+		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
-	
+
 </Project>

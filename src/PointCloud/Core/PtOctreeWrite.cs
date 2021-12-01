@@ -1,7 +1,6 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Structures;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -14,7 +13,7 @@ namespace Fusee.PointCloud.Core
     /// This subclass is used for point cloud rendering. It has the additional fields <see cref="MaxNoOfPointsInBucket"/> and <see cref="PtAccessor"/>.
     /// </summary>
     /// <typeparam name="TPoint">The type of an octants payload.</typeparam>
-    public class PtOctree<TPoint> : OctreeD<TPoint>
+    public class PtOctreeWrite<TPoint> : OctreeD<TPoint> where TPoint : new()
     {
         /// <summary>
         /// The maximum number a octant can hold. If the number of points exceeds this value the octant is subdivided.
@@ -36,7 +35,7 @@ namespace Fusee.PointCloud.Core
         /// <param name="pa">The <see cref="PtAccessor"/> that provides access to the point properties.</param>
         /// <param name="points">The point cloud as unordered list of generic type.</param>
         /// <param name="maxNoOfPointsInBucket">This value sets the <see cref="MaxNoOfPointsInBucket"/>.</param>
-        public PtOctree(AABBd aabb, PointAccessor<TPoint> pa, IEnumerable<TPoint> points, int maxNoOfPointsInBucket)
+        public PtOctreeWrite(AABBd aabb, PointAccessor<TPoint> pa, IEnumerable<TPoint> points, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
 
@@ -66,7 +65,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Constructor for creating an Octree that is suitable for creating files from it. 
         /// </summary>
-        public PtOctree(OctantD<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
+        public PtOctreeWrite(OctantD<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
             PtAccessor = pa;

@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Common
     /// Every point cloud needs a point accessor. Provides access to the point parameters like position or color.
     /// </summary>
     /// <typeparam name="TPoint">The generic point type.</typeparam>
-    public abstract class PointAccessor<TPoint>
+    public abstract class PointAccessor<TPoint> where TPoint : new()
     {
         #region PointT_Member
 

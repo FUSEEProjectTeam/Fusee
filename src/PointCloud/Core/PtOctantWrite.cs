@@ -6,10 +6,10 @@ using System.Collections.Generic;
 namespace Fusee.PointCloud.Core
 {
     /// <summary>
-    /// Node/Bucket data structure that is used in a <see cref="PtOctree{TPoint}"/>. Needed to save a point cloud into a file format that can be used for out of core rendering.
+    /// Node/Bucket data structure that is used in a <see cref="PtOctreeWrite{TPoint}"/>. Needed to save a point cloud into a file format that can be used for out of core rendering.
     /// </summary>
     /// <typeparam name="TPoint">The type pf the point cloud points.</typeparam>
-    public class PtOctantWrite<TPoint> : OctantD<TPoint>
+    public class PtOctantWrite<TPoint> : OctantD<TPoint> where TPoint : new()
     {
         /// <summary>
         /// Grid data structure used to distribute points in the octree.

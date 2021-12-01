@@ -47,7 +47,7 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             _node = new SceneNode();
 
-            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, true));
+            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, true));
 
             _mainCamTransform = new Transform()
             {
@@ -73,7 +73,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             _pcFx = new PointCloudSurfaceEffect
             {
                 PointSize = 5,
-                ColorMode = (int)ColorMode.VertexColor0,
+                ColorMode = (int)PointColorMode.VertexColor0,
                 PointShape = (int)PointShape.Paraboloid,
                 DepthTex = _depthTex,
                 EDLStrength = 1f,

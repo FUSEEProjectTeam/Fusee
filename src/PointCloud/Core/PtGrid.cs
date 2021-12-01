@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Core
     /// Data structure that filters points and determines which fall into the next octree level.
     /// </summary>
     /// <typeparam name="TPoint">Point type (<seealso cref="PointAccessor{TPoint}"/>)</typeparam>
-    public class PtGrid<TPoint> : GridD<TPoint>
+    public class PtGrid<TPoint> : GridD<TPoint> where TPoint : new()
     {
         /// <summary>
         /// Allows access to point properties.

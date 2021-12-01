@@ -17,19 +17,21 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public ConcurrentDictionary<int, object> ShaderParamsToUpdate = new();
         public int MaxNoOfVisiblePoints = 1000000;
 
-        public string PathToOocFile = "D://PW_ooc//Demo_A_06-Cloud02";
+        public string PathToOocFile = "D://PW_ooc//HolbeinPferdOctree";
 
         public ShaderEffect DepthPassEf;
         public PointCloudSurfaceEffect ColorPassEf;
 
-        private Lighting _lighting = Lighting.Edl;
-        public Lighting Lighting
+        public PointType PointType;
+
+        private PointCloudLighting _lighting = PointCloudLighting.Unlit;
+        public PointCloudLighting Lighting
         {
             get { return _lighting; }
             set
             {
                 _lighting = value;
-                ColorPassEf.EDLStrength = _edlStrength == 0.0f ? (int)Lighting.Unlit : (int)Lighting.Edl;
+                ColorPassEf.EDLStrength = _edlStrength == 0.0f ? (int)PointCloudLighting.Unlit : (int)PointCloudLighting.Edl;
             }
         }
 
@@ -57,9 +59,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
         }
 
-        private ColorMode _colorMode = ColorMode.VertexColor0;
+        private PointColorMode _colorMode = PointColorMode.VertexColor0;
 
-        public ColorMode ColorMode
+        public PointColorMode ColorMode
         {
             get { return _colorMode; }
             set
@@ -103,6 +105,10 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
         }
 
+        public float ProjectedSizeModifier = 0.5f;
+
+        public int PointThreshold = 2000000;
+
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit
         static PtRenderingParams()
@@ -111,7 +117,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         internal ShaderEffect CreateDepthPassEffect()
         {
-            return new ShaderEffect(
+            var depthFx = new ShaderEffect(
             new FxPassDeclaration
             {
                 VS = AssetStorage.Get<string>("PointCloud.vert"),
@@ -134,6 +140,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)Shape},
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)PtMode},
             });
+
+            depthFx.Active = false;
+            return depthFx;
         }
 
         internal PointCloudSurfaceEffect CreateColorPassEffect()
@@ -173,7 +182,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 _disposed = true;
             }
         }
-
         ~PtRenderingParams()
         {
             Dispose(false);

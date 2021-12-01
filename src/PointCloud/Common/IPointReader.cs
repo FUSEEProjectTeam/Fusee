@@ -24,6 +24,6 @@
         /// <param name="point">The point we want to write to</param>
         /// <param name="pa">The accessor how to write to the point</param>
         /// <returns></returns>
-        bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa);
+        bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa) where TPoint : new();
     }
 }

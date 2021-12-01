@@ -1,9 +1,8 @@
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
 using System;
 using System.IO;
 
-namespace Fusee.PointCloud.OoCFileGenerator
+namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
 {
     internal static class Program
     {
@@ -47,7 +46,7 @@ namespace Fusee.PointCloud.OoCFileGenerator
 
             try
             {
-                OoCFileGenerationHelper.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
+                PotreeFileGenerationHelper.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket);
             }
             catch (Exception e)
             {

@@ -8,7 +8,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position information only.
     /// </summary>
-    public class Pos64_Accessor : PointAccessor<Pos64>
+    public class Pos64Accessor : PointAccessor<Pos64>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -37,7 +37,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, color and intensity values.
     /// </summary>
-    public class Pos64Col32IShort_Accessor : PointAccessor<Pos64Col32IShort>
+    public class Pos64Col32IShortAccessor : PointAccessor<Pos64Col32IShort>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -108,7 +108,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position and intensity values.
     /// </summary>
-    public class Pos64IShort_Accessor : PointAccessor<Pos64IShort>
+    public class Pos64IShortAccessor : PointAccessor<Pos64IShort>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -158,7 +158,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position and color values.
     /// </summary>
-    public class Pos64Col32_Accessor : PointAccessor<Pos64Col32>
+    public class Pos64Col32Accessor : PointAccessor<Pos64Col32>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -208,7 +208,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position and label values.
     /// </summary>
-    public class Pos64Label8_Accessor : PointAccessor<Pos64Label8>
+    public class Pos64Label8Accessor : PointAccessor<Pos64Label8>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -257,7 +257,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, normal vectors, color and intensity values.
     /// </summary>
-    public class Pos64Nor32Col32IShort_Accessor : PointAccessor<Pos64Nor32Col32IShort>
+    public class Pos64Nor32Col32IShortAccessor : PointAccessor<Pos64Nor32Col32IShort>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -349,7 +349,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, normal vectors and intensity values.
     /// </summary>
-    public class Pos64Nor32IShort_Accessor : PointAccessor<Pos64Nor32IShort>
+    public class Pos64Nor32IShortAccessor : PointAccessor<Pos64Nor32IShort>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
@@ -420,7 +420,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, color and intensity values.
     /// </summary>
-    public class Pos64Nor32Col32_Accessor : PointAccessor<Pos64Nor32Col32>
+    public class Pos64Nor32Col32Accessor : PointAccessor<Pos64Nor32Col32>
     {
         /// <summary>
         /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.

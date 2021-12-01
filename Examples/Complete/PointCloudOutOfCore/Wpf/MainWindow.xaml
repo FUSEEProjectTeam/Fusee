@@ -193,7 +193,7 @@
                     <Image HorizontalAlignment="Center" Height="30" VerticalAlignment="Center" Width="37" Source="Assets/color_w.png"/>
                     <Line Grid.Column="0" Grid.ColumnSpan="3" StrokeThickness="1" Stroke="Black" Fill="Black" Grid.RowSpan="1" X1="0" X2="320" Margin="0,-34,0,0" VerticalAlignment="Center" Grid.Row="1" />
                     <Label Content="Color mode" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Center" Width="148" Height="30" Grid.Row="0" x:Name="ColorModeLabel" FontWeight="Bold" Foreground="White" FontSize="14" Grid.Column="1"/>
-                    <ComboBox Height="22" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" MaxWidth="144" Grid.Column="1" Width="144" x:Name="ColorMode" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:ColorMode}}}" SelectionChanged="ColorMode_SelectionChanged" IsEnabled="true"/>
+                    <ComboBox Height="22" Margin="0,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" MaxWidth="144" Grid.Column="1" Width="144" x:Name="ColorMode" ItemsSource="{Binding Source={local:EnumBindingSource {x:Type sew:PointColorMode}}}" SelectionChanged="ColorMode_SelectionChanged" IsEnabled="true"/>
                     <!--<Label Content="Single color" HorizontalAlignment="Left" Margin="0,-30,0,0" VerticalAlignment="Center" Width="148" Height="27" Grid.Column="1" Grid.Row="2" x:Name="SingleColorLabel" Grid.RowSpan="2" Grid.ColumnSpan="2" />-->
                     <!--<xctk:ColorPicker Name="SingleColor" HorizontalAlignment="Left" Margin="0,10,0,0" VerticalAlignment="Center" Grid.Row="12" Width="100"  Grid.Column="1" SelectedColorChanged="SingleColor_SelectedColorChanged"/>-->
                 </Grid>

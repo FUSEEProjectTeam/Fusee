@@ -9,7 +9,6 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

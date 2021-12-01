@@ -4,9 +4,8 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PointCloudOutOfCore.Core;
-using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
+using Fusee.PointCloud.PotreeReader.V1;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -26,7 +25,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        public IPcRendering App;
+        public IPointCloudOutOfCore App;
 
         private bool _isAppInizialized = false;
         private bool _areOctantsShown;
@@ -179,9 +178,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         {
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
 
-            PtRenderingParams.Instance.Lighting = (Lighting)e.AddedItems[0];
+            PtRenderingParams.Instance.Lighting = (PointCloudLighting)e.AddedItems[0];
 
-            if (PtRenderingParams.Instance.Lighting != PointCloud.Common.Lighting.Edl)
+            if (PtRenderingParams.Instance.Lighting != PointCloud.Common.PointCloudLighting.Edl)
             {
                 EDLNeighbourPx.IsEnabled = false;
                 EDLNeighbourPxLabel.IsEnabled = false;
@@ -212,7 +211,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            PtRenderingParams.Instance.ColorMode = (ColorMode)e.AddedItems[0];
+            PtRenderingParams.Instance.ColorMode = (PointColorMode)e.AddedItems[0];
 
             //ColorPicker is unavailable right now
             //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
@@ -263,11 +262,10 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 MinProjSize.Value = App.GetOocLoaderMinProjSizeMod();
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
 
-                if (App.GetOocLoaderRootNode() != null) //if RootNode == null no scene was ever initialized
-                {
-                    App.DeletePointCloud();
-                    SpinWait.SpinUntil(() => App.ReadyToLoadNewFile && App.GetOocLoaderWasSceneUpdated() && _isAppInizialized);
-                }
+                //TODO: add null/initialization check?
+                App.DeletePointCloud();
+                SpinWait.SpinUntil(() => App.ReadyToLoadNewFile && App.GetOocLoaderWasSceneUpdated() && _isAppInizialized);
+
 
                 PtRenderingParams.Instance.PathToOocFile = path;
                 App.ResetCamera();
@@ -369,7 +367,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                     ReturnedType = typeof(Font),
                     DecoderAsync = async (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)) return null;
                         return await Task.FromResult(new Font { _fontImp = new FontImp((Stream)storage) });
                     },
                     Decoder = (string id, object storage) =>
@@ -377,7 +375,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                         if (!Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
-                    Checker = id => Path.GetExtension(id).Contains("ttf", System.StringComparison.OrdinalIgnoreCase)
+                    Checker = id => Path.GetExtension(id).Contains("ttf", StringComparison.OrdinalIgnoreCase)
                 });
             fap.RegisterTypeHandler(
                 new AssetHandler
@@ -385,20 +383,20 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                     ReturnedType = typeof(SceneContainer),
                     DecoderAsync = async (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
                         return await FusSceneConverter.ConvertFromAsync(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
                         return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
-                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
+                    Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);
 
-            var ptType = FuseePointCloudHelper.GetPtTypeFromMetaJson(pathToFile);
+            var ptType = ReadPotreeMetadata.GetPtTypeFromMetaJson(pathToFile);
             var ptEnumName = Enum.GetName(typeof(PointType), ptType);
 
             var genericType = Type.GetType("Fusee.PointCloud.Common." + ptEnumName + ", " + "Fusee.PointCloud.Common");
@@ -406,7 +404,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
-            AppSetup.DoSetup(out App, FuseePointCloudHelper.GetPtTypeFromMetaJson(pathToFile), th, pathToFile);
+            AppSetup.DoSetup(out App, ReadPotreeMetadata.GetPtTypeFromMetaJson(pathToFile), pathToFile);
             App.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)

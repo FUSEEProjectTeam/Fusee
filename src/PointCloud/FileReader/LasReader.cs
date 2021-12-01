@@ -90,7 +90,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
         /// </summary>
         public LasPointReader() { }
 
-        public TPoint[] ReadNPoints<TPoint>(int n, PointAccessor<TPoint> pa)
+        public TPoint[] ReadNPoints<TPoint>(int n, PointAccessor<TPoint> pa) where TPoint : new()
         {
             if (_ptrToLASClass == IntPtr.Zero)
                 throw new FileNotFoundException("No file was specified yet. Call 'OpenFile' first");
@@ -107,7 +107,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
         /// <param name="point"></param>
         /// <param name="pa"></param>
         /// <returns></returns>
-        public bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa)
+        public bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa) where TPoint : new()
         {
             if (point == null)
                 throw new ArgumentOutOfRangeException("No writable point found!");

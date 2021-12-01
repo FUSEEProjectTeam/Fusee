@@ -10,7 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fusee.PointCloud.OoCReaderWriter
+namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
 {
     /// <summary>
     /// Contains methods to write a converted Point Cloud to the hard drive.
@@ -20,7 +20,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
     /// .node: contains information about an octant and its payload.
     /// </summary>
     /// <typeparam name="TPoint">The type of the point cloud points."/></typeparam>
-    public class PtOctreeFileWriter<TPoint>
+    public class PotreeFileWriter<TPoint> where TPoint : new()
     {
         private readonly string _fileFolderPath;
         private readonly Dictionary<Guid, FileStream> _fileStreams = new();
@@ -29,7 +29,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// Creates a new instance of type PtOctantFileWriter.
         /// </summary>
         /// <param name="pathToNodeFileFolder">The path the files are written to.</param>
-        public PtOctreeFileWriter(string pathToNodeFileFolder)
+        public PotreeFileWriter(string pathToNodeFileFolder)
         {
             _fileFolderPath = pathToNodeFileFolder;
 
@@ -41,7 +41,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         /// <param name="octree">The source octree.</param>
         /// <param name="ptAccessor">point accessor to get the actual point information.</param>
-        public void WriteCompleteData(PtOctree<TPoint> octree, PointAccessor<TPoint> ptAccessor)
+        public void WriteCompleteData(PtOctreeWrite<TPoint> octree, PointAccessor<TPoint> ptAccessor)
         {
             var watch = new Stopwatch();
             watch.Restart();
@@ -78,7 +78,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// Writes the binary encoded octree hierarchy into a file.
         /// </summary>
         /// <param name="octree">The source octree.</param>
-        public void WriteHierarchy(PtOctree<TPoint> octree)
+        public void WriteHierarchy(PtOctreeWrite<TPoint> octree)
         {
             using BinaryWriter bw = new(File.Open(_fileFolderPath + "\\octree.hierarchy", FileMode.OpenOrCreate));
             octree.Traverse((OctantD<TPoint> node) =>
@@ -110,7 +110,7 @@ namespace Fusee.PointCloud.OoCReaderWriter
         /// </summary>
         /// <param name="octree">The source octree.</param>
         /// <param name="ptAccessor">Point accessor to get the actual point information.</param>
-        public void WriteMeta(PtOctree<TPoint> octree, PointAccessor<TPoint> ptAccessor)
+        public void WriteMeta(PtOctreeWrite<TPoint> octree, PointAccessor<TPoint> ptAccessor)
         {
             var rootCenter = octree.Root.Center;
             var rootSize = octree.Root.Size;

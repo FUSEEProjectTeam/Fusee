@@ -1,9 +1,7 @@
-﻿using Fusee.Engine.Common;
-using Fusee.Engine.Core;
-using Fusee.Engine.Core.Scene;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
+using Fusee.Engine.Common;
 
-namespace Fusee.PointCloud.Common
+namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Delegate that allows us to implement a setup method in the app's Main.cs
@@ -13,7 +11,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Implement this interface into wpf apps that use point cloud ooc rendering.
     /// </summary>
-    public interface IPcRendering
+    public interface IPointCloudOutOfCore
     {
         /// <summary>
         /// Set to true if closing the app was requested from wpf.
@@ -51,11 +49,6 @@ namespace Fusee.PointCloud.Common
         bool IsInitialized { get; }
 
         /// <summary>
-        /// The initial camera position. E.g. for resetting the camera.
-        /// </summary>
-        float3 InitCameraPos { get; }
-
-        /// <summary>
         /// <see cref="RenderCanvas.CanvasImplementor"/>
         /// </summary>
         IRenderCanvasImp CanvasImplementor { get; set; }
@@ -64,21 +57,6 @@ namespace Fusee.PointCloud.Common
         /// <see cref="RenderCanvas.ContextImplementor"/>
         /// </summary>
         IRenderContextImp ContextImplementor { get; set; }
-
-        /// <summary>
-        /// The octant loader is responsible for the out of core loading of point cloud chunks.
-        /// </summary>
-        IPtOctantLoader OocLoader { get; }
-
-        /// <summary>
-        /// The file reader is responsible for reading the point cloud data to an Octree (LOD data strucutre used for rendering).
-        /// </summary>
-        IPtOctreeFileReader OocFileReader { get; }
-
-        /// <summary>
-        /// Wrapper to get the Root Node from the app's File Loader./>
-        /// </summary>
-        SceneNode GetOocLoaderRootNode();
 
         /// <summary>
         /// Wrapper to get the WasSceneUpdated bool from the app's File Loader./>

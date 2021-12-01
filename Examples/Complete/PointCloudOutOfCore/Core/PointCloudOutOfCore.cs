@@ -2,7 +2,6 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
@@ -15,21 +14,16 @@ using static Fusee.Engine.Core.Time;
 namespace Fusee.Examples.PointCloudOutOfCore.Core
 {
     [FuseeApplication(Name = "FUSEE Point Cloud Viewer")]
-    public class PointCloudOutOfCore<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
+    public class PointCloudOutOfCore<TPoint> : RenderCanvas, IPointCloudOutOfCore where TPoint : new()
     {
-        public PointCloudOutOfCore(IPtOctantLoader oocLoader, IPtOctreeFileReader oocFileReader)
-        {
-            OocLoader = oocLoader;
-            OocFileReader = oocFileReader;
-        }
-        public IPtOctantLoader OocLoader { get; }
-        public IPtOctreeFileReader OocFileReader { get; }
         public bool UseWPF { get; set; }
         public bool DoShowOctants { get; set; }
         public bool IsSceneLoaded { get; private set; }
         public bool ReadyToLoadNewFile { get; private set; }
         public bool IsInitialized { get; private set; }
         public bool IsAlive { get; private set; }
+
+        public PointAccessor<TPoint> PointAccessor { get; private set; }
 
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
@@ -55,17 +49,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         private float _maxPinchSpeed;
 
-        private float3 _initCamPos;
-        public float3 InitCameraPos
-        {
-            get => _initCamPos;
-            private set
-            {
-                _initCamPos = value;
-                OocLoader.InitCamPos = new double3(_initCamPos.x, _initCamPos.y, _initCamPos.z);
-            }
-        }
-
         public bool ClosingRequested
         {
             get
@@ -79,12 +62,19 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         }
         private bool _closingRequested;
 
-        private readonly bool _isTexInitialized;
-
         private Transform _camTransform;
         private Camera _cam;
+        private float3 _initCameraPos;
 
         private SixDOFDevice _spaceMouse;
+        private PointCloud<TPoint> _pointCloud;
+
+        public PointCloudOutOfCore(PointType ptType, string pathToFile, PointAccessor<TPoint> ptAccessor)
+        {
+            PtRenderingParams.Instance.PathToOocFile = pathToFile;
+            PtRenderingParams.Instance.PointType = ptType;
+            PointAccessor = ptAccessor;
+        }
 
         public override void Init()
         {
@@ -94,25 +84,18 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             PtRenderingParams.Instance.DepthPassEf = PtRenderingParams.Instance.CreateDepthPassEffect();
             PtRenderingParams.Instance.ColorPassEf = PtRenderingParams.Instance.CreateColorPassEffect();
 
-            OocLoader.Init(RC);
-
             IsAlive = true;
 
             ApplicationIsShuttingDown += (object sender, EventArgs e) =>
             {
-                OocLoader.IsShuttingDown = true;
-            };
 
-            _scene = new SceneContainer
-            {
-                Children = new List<SceneNode>()
             };
 
             _camTransform = new Transform()
             {
                 Name = "MainCamTransform",
                 Scale = float3.One,
-                Translation = InitCameraPos,
+                Translation = _initCameraPos,
                 Rotation = float3.Zero
             };
 
@@ -131,7 +114,37 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 }
             };
 
-            _scene.Children.Insert(0, mainCam);
+            _pointCloud = new PointCloud<TPoint>(PointAccessor, PtRenderingParams.Instance.PathToOocFile, PtRenderingParams.Instance.PointType)
+            {
+                MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier,
+                PointThreshold = PtRenderingParams.Instance.PointThreshold
+            };
+
+            var pointCloudNode = new SceneNode()
+            {
+                Name = "PointCloud",
+                Components = new List<SceneComponent>()
+                {
+                    new Transform()
+                    {
+                        Scale = float3.One,
+                        Translation = float3.Zero,
+                        Rotation = float3.Zero
+                    },
+                    PtRenderingParams.Instance.DepthPassEf,
+                    PtRenderingParams.Instance.ColorPassEf,
+                    _pointCloud
+                }
+            };
+
+            _scene = new SceneContainer
+            {
+                Children = new List<SceneNode>()
+                {
+                    mainCam,
+                    pointCloudNode
+                }
+            };
 
             _angleRoll = 0;
             _angleRollInit = 0;
@@ -166,111 +179,104 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            if (IsSceneLoaded)
+            var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
+
+            // ------------ Enable to update the Scene only when the user isn't moving ------------------
+            /*if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint) || isSpaceMouseMoving)
+                OocLoader.IsUserMoving = true;
+            else
+                OocLoader.IsUserMoving = false;*/
+            //--------------------------------------------------------------------------------------------
+
+            // Mouse and keyboard movement
+            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
+                _keys = true;
+
+            // Zoom & Roll
+            if (Touch.TwoPoint)
             {
-                var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
-
-                // ------------ Enable to update the Scene only when the user isn't moving ------------------
-                /*if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint) || isSpaceMouseMoving)
-                    OocLoader.IsUserMoving = true;
-                else
-                    OocLoader.IsUserMoving = false;*/
-                //--------------------------------------------------------------------------------------------
-
-                // Mouse and keyboard movement
-                if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
-                    _keys = true;
-
-                // Zoom & Roll
-                if (Touch.TwoPoint)
+                if (!_twoTouchRepeated)
                 {
-                    if (!_twoTouchRepeated)
-                    {
-                        _twoTouchRepeated = true;
-                        _angleRollInit = Touch.TwoPointAngle - _angleRoll;
-                        _offsetInit = Touch.TwoPointMidPoint - _offset;
-                        _maxPinchSpeed = 0;
-                    }
-
-                    _angleRoll = Touch.TwoPointAngle - _angleRollInit;
-                    _offset = Touch.TwoPointMidPoint - _offsetInit;
-                    float pinchSpeed = Touch.TwoPointDistanceVel;
-                    if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed;
-                }
-                else
-                {
-                    _twoTouchRepeated = false;
+                    _twoTouchRepeated = true;
+                    _angleRollInit = Touch.TwoPointAngle - _angleRoll;
+                    _offsetInit = Touch.TwoPointMidPoint - _offset;
+                    _maxPinchSpeed = 0;
                 }
 
-                // UpDown / LeftRight rotation
-                if (Mouse.LeftButton)
-                {
-                    _keys = false;
-
-                    _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                    _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-                }
-                else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-                {
-                    _keys = false;
-                    float2 touchVel;
-                    touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                    _angleVelHorz = RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                    _angleVelVert = RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-                }
-                else
-                {
-                    if (_keys)
-                    {
-                        _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                        _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                    }
-                }
-
-                if (isSpaceMouseMoving)
-                {
-                    _angleHorz -= velRot.y;
-                    _angleVert -= velRot.x;
-
-                    float speed = DeltaTime * 12;
-
-                    _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
-                    _camTransform.Translation += new float3(0, velPos.y * speed, 0);
-                }
-                else
-                {
-                    _angleHorz += _angleVelHorz;
-                    _angleVert += _angleVelVert;
-                    _angleVelHorz = 0;
-                    _angleVelVert = 0;
-
-                    if (HasUserMoved() || _camTransform.Translation == InitCameraPos)
-                        _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
-                }
-
-                //----------------------------  
-
-                if (PtRenderingParams.Instance.Lighting != Lighting.Unlit)
-                {
-                    //Render Depth-only pass
-                    PtRenderingParams.Instance.DepthPassEf.Active = true;
-                    PtRenderingParams.Instance.ColorPassEf.Active = false;
-
-                    _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
-                    _sceneRenderer.Render(RC);
-                    _cam.RenderTexture = null;
-
-                    PtRenderingParams.Instance.DepthPassEf.Active = false;
-                    PtRenderingParams.Instance.ColorPassEf.Active = true;
-                }
-
-                _sceneRenderer.Render(RC);
-
-                //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
-                OocLoader.UpdateScene();
-
-                DoShowOctants = OocLoader.ShowOctants;
+                _angleRoll = Touch.TwoPointAngle - _angleRollInit;
+                _offset = Touch.TwoPointMidPoint - _offsetInit;
+                float pinchSpeed = Touch.TwoPointDistanceVel;
+                if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed;
             }
+            else
+            {
+                _twoTouchRepeated = false;
+            }
+
+            // UpDown / LeftRight rotation
+            if (Mouse.LeftButton)
+            {
+                _keys = false;
+
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+            }
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _keys = false;
+                float2 touchVel;
+                touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+            }
+            else
+            {
+                if (_keys)
+                {
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                }
+            }
+
+            if (isSpaceMouseMoving)
+            {
+                _angleHorz -= velRot.y;
+                _angleVert -= velRot.x;
+
+                float speed = DeltaTime * 12;
+
+                _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
+                _camTransform.Translation += new float3(0, velPos.y * speed, 0);
+            }
+            else
+            {
+                _angleHorz += _angleVelHorz;
+                _angleVert += _angleVelVert;
+                _angleVelHorz = 0;
+                _angleVelVert = 0;
+
+                if (HasUserMoved())
+                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
+            }
+
+            //----------------------------  
+
+            if (PtRenderingParams.Instance.Lighting != PointCloudLighting.Unlit)
+            {
+                //Render Depth-only pass
+                PtRenderingParams.Instance.DepthPassEf.Active = true;
+                PtRenderingParams.Instance.ColorPassEf.Active = false;
+
+                _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
+                _sceneRenderer.Render(RC);
+                _cam.RenderTexture = null;
+
+                PtRenderingParams.Instance.DepthPassEf.Active = false;
+                PtRenderingParams.Instance.ColorPassEf.Active = true;
+            }
+
+            _sceneRenderer.Render(RC);
+
 
             //Render GUI
             RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
@@ -319,7 +325,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (PtRenderingParams.Instance.Lighting == Lighting.Unlit) return;
+            if (PtRenderingParams.Instance.Lighting == PointCloudLighting.Unlit) return;
             PtRenderingParams.Instance.ColorPassEf.DepthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
 
         }
@@ -343,69 +349,65 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             return RC;
         }
 
-        public SceneNode GetOocLoaderRootNode()
-        {
-            return OocLoader.RootNode;
-        }
-
         public bool GetOocLoaderWasSceneUpdated()
         {
-            return OocLoader.WasSceneUpdated;
+            //return OocLoader.WasSceneUpdated;
+            return false;
         }
 
         public int GetOocLoaderPointThreshold()
         {
-            return OocLoader.PointThreshold;
+            return _pointCloud.PointThreshold;
         }
 
         public void SetOocLoaderPointThreshold(int value)
         {
-            OocLoader.PointThreshold = value;
+            _pointCloud.PointThreshold = value;
         }
 
         public void SetOocLoaderMinProjSizeMod(float value)
         {
-            OocLoader.MinProjSizeModifier = value;
+            _pointCloud.MinProjSizeModifier = value;
         }
 
         public float GetOocLoaderMinProjSizeMod()
         {
-            return OocLoader.MinProjSizeModifier;
+            return _pointCloud.MinProjSizeModifier;
         }
 
         public void LoadPointCloudFromFile()
         {
-            //create Scene from octree structure
-            var root = OocFileReader.GetScene();
-            root.Components.Insert(0, PtRenderingParams.Instance.DepthPassEf);
-            root.Components.Insert(0, PtRenderingParams.Instance.ColorPassEf);
-            var ptOctantComp = root.GetComponent<OctantD>();
-            InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
+            ////create Scene from octree structure
+            //var root = OocFileReader.GetScene();
+            //root.Components.Insert(0, PtRenderingParams.Instance.DepthPassEf);
+            //root.Components.Insert(0, PtRenderingParams.Instance.ColorPassEf);
+            //var ptOctantComp = root.GetComponent<OctantD>();
+            //InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
 
-            _scene.Children.Add(root);
+            //_scene.Children.Add(root);
 
-            OocLoader.RootNode = root;
-            OocLoader.FileFolderPath = PtRenderingParams.Instance.PathToOocFile;
+            //OocLoader.RootNode = root;
+            //OocLoader.FileFolderPath = PtRenderingParams.Instance.PathToOocFile;
 
-            IsSceneLoaded = true;
+            //IsSceneLoaded = true;
         }
 
         public void DeletePointCloud()
         {
-            IsSceneLoaded = false;
+            //IsSceneLoaded = false;
 
-            while (!OocLoader.WasSceneUpdated || !ReadyToLoadNewFile)
-            {
-                continue;
-            }
+            //while (!OocLoader.WasSceneUpdated || !ReadyToLoadNewFile)
+            //{
+            //    continue;
+            //}
 
-            if (OocLoader.RootNode != null)
-                _scene.Children.Remove(OocLoader.RootNode);
+            //if (OocLoader.RootNode != null)
+            //    _scene.Children.Remove(OocLoader.RootNode);
         }
 
         public void ResetCamera()
         {
-            _camTransform.Translation = InitCameraPos;
+            _camTransform.Translation = _initCameraPos;
             _angleHorz = _angleVert = 0;
         }
     }

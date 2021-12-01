@@ -5,6 +5,7 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using System;
@@ -621,16 +622,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a PtOctant is visited the level of this octant is set in the shader.
-        /// </summary>
-        /// <param name="ptOctant"></param>
-        [VisitMethod]
-        public void RenderOctant(OctantD ptOctant)
-        {
-
-        }
-
-        /// <summary>
         /// If a ShaderEffect is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
         /// </summary>
         /// <param name="effect">The <see cref="Effect"/></param>
@@ -735,6 +726,32 @@ namespace Fusee.Engine.Core
 
             mesh.BoneIndices = boneIndices;
             mesh.BoneWeights = boneWeights;
+        }
+
+
+        [VisitMethod]
+        public void RenderPointCloud(PointCloud<Pos64Col32> pointCloud)
+        {
+            RenderPointCloudT(pointCloud);
+        }
+
+        public void RenderPointCloudT<T>(PointCloud<T> pointCloud) where T : new()
+        {
+            if (!pointCloud.Active) return;
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
+                return;
+            if (_rc.InvView == float4x4.Identity) return;
+            pointCloud.Fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
+            pointCloud.CamPos = _rc.InvView.Column4.xyz;
+            pointCloud.RenderFrustum = _rc.RenderFrustum;
+            pointCloud.ViewportHeight = _rc.ViewportHeight;
+
+            foreach (var mesh in pointCloud.GetMeshes())
+            {
+                var renderStatesBefore = _rc.CurrentRenderState.Copy();
+                _rc.Render(mesh, true);
+                _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+            }
         }
 
         #endregion
