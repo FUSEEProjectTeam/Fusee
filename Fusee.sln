@@ -1458,7 +1458,6 @@ Global
 		{FB6502CE-9E33-4F02-B885-596752FC2149}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
 		{FB6502CE-9E33-4F02-B885-596752FC2149}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
 		{FB6502CE-9E33-4F02-B885-596752FC2149}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{FB6502CE-9E33-4F02-B885-596752FC2149}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{FB6502CE-9E33-4F02-B885-596752FC2149}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{17DE21AA-CC0E-4D43-8783-707575907652}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{17DE21AA-CC0E-4D43-8783-707575907652}.Debug|Any CPU.Build.0 = Debug|Any CPU
