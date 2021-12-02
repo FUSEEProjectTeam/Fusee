@@ -46,7 +46,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
 
             try
             {
-                PotreeFileGenerationHelper.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                PotreeFileGenerationHelper.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
             }
             catch (Exception e)
             {

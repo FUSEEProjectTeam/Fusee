@@ -20,56 +20,56 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
         /// <param name="pathToFolder">Path where the new files will be saved.</param>
         /// <param name="maxNoOfPointsInBucket">Number of points that a bucket/octant can hold. If additional point would fall into it they fall into the next level instead.</param>
         /// <param name="doExchangeXZ">Bool that determines if the y and z coordinates of the points should be exchanged.</param>
-        public static void CreateFilesForPtType(PointType ptType, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
+        public static void CreateFilesForPtType(PointType ptType, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket, bool doExchangeXZ)
         {
             switch (ptType)
             {
                 case PointType.Pos64:
                     {
                         var ptAcc = new Pos64Accessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64Col32IShort:
                     {
                         var ptAcc = new Pos64Col32IShortAccessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64IShort:
                     {
                         var ptAcc = new Pos64IShortAccessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64Col32:
                     {
                         var ptAcc = new Pos64Col32Accessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64Label8:
                     {
                         var ptAcc = new Pos64Label8Accessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64Nor32Col32IShort:
                     {
                         var ptAcc = new Pos64Nor32Col32IShortAccessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64Nor32IShort:
                     {
                         var ptAcc = new Pos64Nor32IShortAccessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 case PointType.Pos64Nor32Col32:
                     {
                         var ptAcc = new Pos64Nor32Col32Accessor();
-                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
+                        CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket, doExchangeXZ);
                         break;
                     }
                 default:
@@ -77,11 +77,11 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
             }
         }
 
-        private static void CreateFiles<TPoint>(PointAccessor<TPoint> ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket) where TPoint : new()
+        private static void CreateFiles<TPoint>(PointAccessor<TPoint> ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket, bool doExchangeXZ) where TPoint : new()
         {
             var watch = new Stopwatch();
             watch.Restart();
-            var points = FromLasToArray(ptAcc, pathToFile, out var aabb);
+            var points = FromLasToArray(ptAcc, pathToFile, doExchangeXZ, out var aabb);
             watch.Stop();
             Console.WriteLine("Get positions from accessor took: " + watch.ElapsedMilliseconds + "ms.");
 
@@ -96,7 +96,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
             Console.WriteLine("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
         }
 
-        public static TPoint[] FromLasToArray<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, out AABBd aabb) where TPoint : new()
+        public static TPoint[] FromLasToArray<TPoint>(PointAccessor<TPoint> ptAcc, string pathToPc, bool doExchangeXZ, out AABBd aabb) where TPoint : new()
         {
             var reader = new LasPointReader(pathToPc);
             var metaInfo = (LasMetaInfo)reader.MetaInfo;
@@ -109,6 +109,15 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
                     var pt = points[i];
                     if (!reader.ReadNextPoint(ref pt, ptAcc)) break;
                     var posD = ptAcc.GetPositionFloat3_64(ref pt);
+
+                    if (doExchangeXZ)
+                    {
+                        var z = posD.z;
+                        var y = posD.y;
+                        posD.z = y;
+                        posD.y = z;
+                    }
+
                     if (i == 0)
                         aabb.min = aabb.max = posD;
                     aabb |= posD;
@@ -124,6 +133,15 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
                     if (!reader.ReadNextPoint(ref pt, ptAcc)) break;
                     var posF = ptAcc.GetPositionFloat3_32(ref pt);
                     var posD = new double3(posF.x, posF.y, posF.z);
+
+                    if (doExchangeXZ)
+                    {
+                        var z = posD.z;
+                        var y = posD.y;
+                        posD.z = y;
+                        posD.y = z;
+                    }
+
                     if (i == 0)
                         aabb.min = aabb.max = posD;
                     aabb |= posD;
