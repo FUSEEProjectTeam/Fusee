@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
     /// Class that manages the out of core (on demand) loading of point clouds.
     /// </summary>
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
-    public class PointCloudLoader<TPoint> where TPoint : new() //TODO: imp IDisposable
+    public class PointCloudLoader<TPoint> where TPoint : new()
     {
         /// <summary>
         /// If true, the visible octants will be rendered as WireframeCubes.
@@ -279,11 +279,11 @@ namespace Fusee.Engine.Core
                 lock (_lockLoadedMeshes)
                 {
                     //TODO: Will not reach nodes whose parents are too small
-                    if (LoadedMeshes.TryGetValue(node.Guid, out var meshes))
-                    {
-                        LoadedMeshes.Remove(node.Guid);
-                        disposeQueue.Add(meshes);
-                    }
+                    //if (LoadedMeshes.TryGetValue(node.Guid, out var meshes))
+                    //{
+                    //    LoadedMeshes.Remove(node.Guid);
+                    //    disposeQueue.Add(meshes);
+                    //}
                 }
                 return;
             }
