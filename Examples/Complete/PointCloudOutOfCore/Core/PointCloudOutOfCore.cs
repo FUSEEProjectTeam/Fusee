@@ -51,14 +51,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         public bool ClosingRequested
         {
-            get
-            {
-                return _closingRequested;
-            }
-            set
-            {
-                _closingRequested = value;
-            }
+            get => _closingRequested;
+            set => _closingRequested = value;
         }
         private bool _closingRequested;
 

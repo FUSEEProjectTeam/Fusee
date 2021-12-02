@@ -2,7 +2,7 @@
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.FileReader.LasReader;
+using Fusee.PointCloud.PointCloudFileReader.Las;
 using System;
 using System.Collections.Generic;
 
