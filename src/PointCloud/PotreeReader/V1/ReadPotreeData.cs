@@ -18,6 +18,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// Reads the meta.json and .hierarchy files and returns an octree.
         /// </summary>
         /// <param name="ptAccessor">Point accessor to get the actual point information.</param>
+        /// <param name="fileFolderPath">Path to the folder the point cloud is saved</param>
         /// <returns></returns>
         public static PtOctreeRead<TPoint> GetOctree(PointAccessor<TPoint> ptAccessor, string fileFolderPath)
         {
@@ -37,7 +38,6 @@ namespace Fusee.PointCloud.PotreeReader.V1
             var maxNoOfPointsInBucket = (int)jsonNoOfPts;
             var jsonMaxLvl = (JValue)jsonObj["octree"]["maxLevel"];
             var maxLvl = (int)jsonMaxLvl;
-
 
             var root = new PtOctantRead<TPoint>(center, size);
             var octree = new PtOctreeRead<TPoint>(root, ptAccessor, maxNoOfPointsInBucket)

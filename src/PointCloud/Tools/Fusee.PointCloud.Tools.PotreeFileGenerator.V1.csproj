@@ -12,8 +12,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\FileReader\Fusee.PointCloud.PointCloudFileReader.LasReader.csproj" />
 		<ProjectReference Include="..\Core\Fusee.PointCloud.Core.csproj" />
+		<ProjectReference Include="..\PointCloudFileReader\Las\Fusee.PointCloud.PointCloudFileReader.Las.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -1,7 +1,11 @@
-﻿namespace Fusee.PointCloud.FileReader.LasReader
+﻿using Fusee.PointCloud.Common;
+
+namespace Fusee.PointCloud.PointCloudFileReader.Las
 {
-    internal struct LasInternalHeader
+    public struct LasMetaInfo : IPointCloudMetaInfo
     {
+        public string Filename;
+
         public byte PointDataFormat;
 
         public long PointCnt;

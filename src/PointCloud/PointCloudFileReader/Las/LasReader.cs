@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Fusee.PointCloud.FileReader.LasReader
+namespace Fusee.PointCloud.PointCloudFileReader.Las
 {
     /// <summary>
     /// A reader for points in LAZ or LAS format
@@ -26,7 +26,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
 
         public void OpenFile(string filename)
         {
-            EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.PointCloud.FileReader.LasReader.Natives.libLASlib.dll");
+            EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.PointCloud.PointCloudFileReader.Las.Natives.libLASlib.dll");
 
             // Open file
             OpenLASFile(filename, ref _ptrToLASClass);

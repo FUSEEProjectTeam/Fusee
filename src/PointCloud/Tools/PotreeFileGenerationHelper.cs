@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
-using Fusee.PointCloud.FileReader.LasReader;
+using Fusee.PointCloud.PointCloudFileReader.Las;
 using System;
 using System.Diagnostics;
 
@@ -87,7 +87,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
 
             watch.Restart();
 
-            var octree = new PointCloud.Core.PtOctreeWrite<TPoint>(aabb, ptAcc, points, maxNoOfPointsInBucket);
+            var octree = new PtOctreeWrite<TPoint>(aabb, ptAcc, points, maxNoOfPointsInBucket);
             Console.WriteLine("Octree creation took: " + watch.ElapsedMilliseconds + "ms.");
 
             watch.Restart();
@@ -108,7 +108,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
                 {
                     var pt = points[i];
                     if (!reader.ReadNextPoint(ref pt, ptAcc)) break;
-                    var posD = ptAcc.GetPositionFloat3_64(ref pt);                    
+                    var posD = ptAcc.GetPositionFloat3_64(ref pt);
                     if (i == 0)
                         aabb.min = aabb.max = posD;
                     aabb |= posD;
