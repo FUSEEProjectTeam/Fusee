@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Core;
+using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.ShaderShards;
@@ -124,9 +124,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
                 new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = float2.One},
 
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = Size},
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)Shape},
-                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)PtMode},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = _size},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = (int)_shape},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = (int)_ptMode},
             })
             {
                 Active = false
@@ -137,12 +137,12 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         {
             var fx = new PointCloudSurfaceEffect
             {
-                PointSize = 5,
-                ColorMode = (int)ColorMode,
-                PointShape = (int)Shape,
+                PointSize = _size,
+                ColorMode = (int)_colorMode,
+                PointShape = (int)_shape,
                 DepthTex = null,
-                EDLStrength = 1f,
-                EDLNeighbourPixels = 2
+                EDLStrength = _edlStrength,
+                EDLNeighbourPixels = _edlNoOfNeighbourPx
             };
             fx.SurfaceInput.Albedo = new float4(0.5f, 0.5f, 0.5f, 1.0f);
             return fx;

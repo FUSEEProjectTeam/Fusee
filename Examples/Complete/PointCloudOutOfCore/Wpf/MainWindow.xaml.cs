@@ -48,19 +48,14 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;
 
             PtSize.Value = PtRenderingParams.Instance.Size;
+            PtSizeVal.Content = PtSize.Value;
 
-            EDLStrengthVal.Content = EDLStrength.Value;
             EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
-            EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
+            EDLStrengthVal.Content = EDLStrength.Value.ToString("0.000");
             EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
+            EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
             MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
-
-            //ColorPicker is unavailable right now
-            //var col = PtRenderingParams.Instance.SingleColor;
-            //if (PtRenderingParams.Instance.ColorMode != PointCloud.Common.ColorMode.Single)
-            //    SingleColor.IsEnabled = false;
-            //else
-            //    SingleColor.IsEnabled = true;
+            MinProjSizeVal.Content = MinProjSize.Value;
 
             InnerGrid.IsEnabled = false;
         }
@@ -246,7 +241,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 
                 InnerGrid.IsEnabled = true;
                 //ShowOctants_Button.IsEnabled = true;
-                ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
+                //ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
                 inactiveBorder.Visibility = Visibility.Collapsed;
             }
         }
