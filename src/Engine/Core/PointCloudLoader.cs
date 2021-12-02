@@ -18,6 +18,9 @@ namespace Fusee.Engine.Core
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
     public class PointCloudLoader<TPoint> where TPoint : new() //TODO: imp IDisposable
     {
+        /// <summary>
+        /// If true, the visible octants will be rendered as WireframeCubes.
+        /// </summary>
         public bool ShowOctants { get; set; }
 
         /// <summary>
@@ -25,18 +28,34 @@ namespace Fusee.Engine.Core
         /// </summary>
         public bool WasSceneUpdated { get; private set; } = true;
 
-        //--- Set via Scene.PointCloud in the SceneRenderer when the component is visited --//
+        /// <summary>
+        /// Current Field of View - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
         public float Fov;
+
+        /// <summary>
+        /// Current camera position - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
         public float3 CamPos;
+
+        /// <summary>
+        /// Current height of the viewport - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
         public int ViewportHeight;
+
+        /// <summary>
+        /// Current camera frustum - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
         public FrustumF RenderFrustum;
-        //---------------------------------------------------------------------------------//
 
         /// <summary>
         /// Provides access to properties of different point types.
         /// </summary>
         public PointAccessor<TPoint> PtAccessor { get; set; }
 
+        /// <summary>
+        /// The octree structure of the point cloud.
+        /// </summary>
         public OctreeD<TPoint> Octree
         {
             get => _octree;
@@ -101,13 +120,12 @@ namespace Fusee.Engine.Core
         public List<Mesh> MeshesToRender;
 
         // Allowes traversal in order of screen projected size.
-        //TODO: SceneNode to Octant
         private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
 
         //All visible nodes
         private List<Guid> _visibleNodes;
 
-        //Nodes that are beeing loaded in the background
+        //Nodes that are queued for loading in the background
         private List<Guid> _loadingQueue;
 
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
@@ -165,7 +183,7 @@ namespace Fusee.Engine.Core
 
                     foreach (var guid in _visibleNodes)
                     {
-                        if(LoadedMeshes.TryGetValue(guid, out var meshes))
+                        if (LoadedMeshes.TryGetValue(guid, out var meshes))
                             MeshesToRender.AddRange(meshes);
                     }
                 }

@@ -7,6 +7,9 @@ using System.IO;
 
 namespace Fusee.PointCloud.PotreeReader.V1
 {
+    /// <summary>
+    /// Static class that privides methods to read the meta data from an Potree 1.0 file.
+    /// </summary>
     public static class ReadPotreeMetadata
     {
         /// <summary>

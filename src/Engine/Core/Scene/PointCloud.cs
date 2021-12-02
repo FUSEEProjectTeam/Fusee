@@ -5,8 +5,18 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.Scene
 {
+    /// <summary>
+    /// Will render a Potree 1.0 Point Cloud if visited by the SceneRenderer.
+    /// </summary>
+    /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
     public class PointCloud<TPoint> : SceneComponent where TPoint : new()
     {
+        /// <summary>
+        /// Creates a new instance of type <see cref="PointCloud"/>
+        /// </summary>
+        /// <param name="pointAccessor"></param>
+        /// <param name="fileFolderPath"></param>
+        /// <param name="pointType"></param>
         public PointCloud(PointAccessor<TPoint> pointAccessor, string fileFolderPath, PointType pointType)
         {
             _pointCloudLoader = new PointCloudLoader<TPoint>(fileFolderPath, pointType)
@@ -19,7 +29,14 @@ namespace Fusee.Engine.Core.Scene
             Size = (float)_pointCloudLoader.Octree.Root.Size;
         }
 
+        /// <summary>
+        /// Center of the point cloud.
+        /// </summary>
         public float3 Center { get; private set; }
+
+        /// <summary>
+        /// Size of the point clouds (quadratic) bounding box.
+        /// </summary>
         public float Size { get; private set; }
 
         /// <summary>

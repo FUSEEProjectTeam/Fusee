@@ -728,14 +728,17 @@ namespace Fusee.Engine.Core
             mesh.BoneWeights = boneWeights;
         }
 
-
+        /// <summary>
+        /// Determines visible points of a point cloud (using the components <see cref="PointCloudLoader{TPoint}"/>) and renders them.
+        /// </summary>
+        /// <param name="pointCloud">The point cloud component.</param>
         [VisitMethod]
         public void RenderPointCloud(PointCloud<Pos64Col32> pointCloud)
         {
             RenderPointCloudT(pointCloud);
         }
 
-        public void RenderPointCloudT<T>(PointCloud<T> pointCloud) where T : new()
+        private void RenderPointCloudT<T>(PointCloud<T> pointCloud) where T : new()
         {
             if (!pointCloud.Active) return;
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))

@@ -16,7 +16,7 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
-        // <summary>
+        /// <summary>
         /// Number of point cloud points, this node holds.
         /// </summary>
         public int NumberOfPointsInNode;
