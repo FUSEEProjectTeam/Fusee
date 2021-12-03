@@ -12,9 +12,8 @@ IF %ERRORLEVEL% EQU 9009 GOTO ERRORMSBUILD
 git >NUL 2>NUL
 IF %ERRORLEVEL% EQU 9009 GOTO ERRORGIT
 
-dotnet workload install macos
-
-dotnet workload install wasm-tools
+rem dotnet workload install macos
+rem dotnet workload install wasm-tools
 
 echo This will be cleaning up the repository (git clean -xdf), this will DELETE all untracked files. (Ctrl-C to abort)
 pause
@@ -26,9 +25,9 @@ mkdir bin\Release\nuget
 echo Building distribution.
 dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
 
-dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
-dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
-dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
+rem dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
+rem dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
+rem dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
 
 dotnet pack Fusee.sln -c Release-NuGet
 msbuild src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj -t:restore,pack -p:Configuration=Release
