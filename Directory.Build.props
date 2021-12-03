@@ -9,10 +9,10 @@
 		<Authors>FuseeProjectTeam</Authors>
 		<Company>Furtwangen University</Company>
 		<Product>FUSEE</Product>
-		<Version>0.11.1</Version>
-		<AssemblyVersion>0.11.1</AssemblyVersion>
-		<FileVersion>0.11.1</FileVersion>
-		<PackageVersion>0.11.1</PackageVersion>
+		<Version>0.11.2</Version>
+		<AssemblyVersion>0.11.2</AssemblyVersion>
+		<FileVersion>0.11.2</FileVersion>
+		<PackageVersion>0.11.2</PackageVersion>
 		<Copyright>Copyright 2013-2021</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
