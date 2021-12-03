@@ -131,6 +131,18 @@ jobs:
       uses: microsoft/setup-msbuild@v1.1
       with:
         vs-version: '[17.0,]'  
+    - name: Setup dotnet macos workload
+      run: dotnet workload install macos
+    - name: Build Release-Blazor
+      run: dotnet build -c Release-Blazor Fusee.sln
+    - name: Setup wasm-tools workload
+      run: dotnet workload install wasm-tools
+    - name: Publish F.E.Player.Blazor
+      run: dotnet publish -c Release -p:PublishProfile=FolderProfileRelease src/Engine/Player/Blazor/Fusee.Engine.Player.Blazor.csproj
+    - name: Build F.T.B.Blazorpatch
+      run: dotnet build -c Release src/Tools/Build/Blazorpatch/Fusee.Tools.Build.Blazorpatch.csproj
+    - name: Patch Blazor
+      run: dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
     - name: Build F.E.Player.Desktop
       run: dotnet publish -c Release -p:PublishProfile=win-x64-release src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj
     - name: Pack Fusee.sln NuGet

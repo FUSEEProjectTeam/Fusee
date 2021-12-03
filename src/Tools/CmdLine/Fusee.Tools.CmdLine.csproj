@@ -18,7 +18,7 @@
 	<ItemGroup>
 		<Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\$(TargetFramework)\win-x64\publish\Fusee.Engine.Player.Desktop.exe" Link="NuGet\Player.exe" PackagePath="tools\$(TargetFramework)\any\Player.exe" />
 		<Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\$(TargetFramework)\win-x64\publish\glfw3.dll" Link="NuGet\glfw3.dll" PackagePath="tools\$(TargetFramework)\any\glfw3.dll" />
-		<Content Include="$(FuseeEngineRoot)\dis\fusee-wasm-aot-precompiled\**\*" Link="%(RecursiveDir)%(FileName)%(Extension)" PackagePath="tools\$(TargetFramework)\any\%(RecursiveDir)%(FileName)%(Extension)" />
+		<Content Include="$(FuseeEngineRoot)\bin\Release\Player\Blazor\net6.0\publish\**\*" Link="%(RecursiveDir)%(FileName)%(Extension)" PackagePath="tools\$(TargetFramework)\any\%(RecursiveDir)%(FileName)%(Extension)" />
 	</ItemGroup>
 
 	<ItemGroup>
