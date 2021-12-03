@@ -89,7 +89,7 @@ namespace Fusee.Tools.Build.Blazorpatch
                               RemoveHashingCheck(o.BlazorPath);
                               break;
                           case ReplaceType.RemoveBaseUrl:
-
+                              RemoveBaseUrl(o.BlazorPath);
                               break;
                           case ReplaceType.DecodePatch:
                               DecodePatch(o.BlazorPath);
