@@ -4,6 +4,7 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -108,6 +109,14 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Cull CullMode { get; private set; }
 
+
+        protected SceneContainer _sc;
+
+
+        protected RenderContext _rc;
+
+        internal PrePassVisitor PrePassVisitor { get; private set; }
+
         #region State
         /// <summary>
         /// The raycaster state upon scene traversal.
@@ -144,6 +153,9 @@ namespace Fusee.Engine.Core
             : base(scene.Children)
         {
             CullMode = cullMode;
+
+            PrePassVisitor = new PrePassVisitor();
+            _sc = scene;
         }
 
         /// <summary>
@@ -165,6 +177,39 @@ namespace Fusee.Engine.Core
             Ray = ray;
             return Viserate();
         }
+
+        public IEnumerable<RayCastResult> RayPick(RenderContext rc, float2 pickPos)
+        {
+            _rc = rc;
+            float2 pickPosClip = (pickPos * new float2(2.0f / _rc.ViewportWidth, -2.0f / _rc.ViewportHeight)) + new float2(-1, 1);
+
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
+
+            if (PrePassVisitor.CameraPrepassResults.Count == 0)
+            {
+                Ray = new Rayf(pickPosClip, _rc.View, _rc.Projection);
+                return Viserate();
+            }
+
+            var cams = PrePassVisitor.CameraPrepassResults;
+            Tuple<SceneNode, CameraResult> pickCam = null;
+            foreach (var cam in cams)
+            {
+                //TODO: check if pickPos or pickPosClip is within Camera Bounds
+                if (pickCam == null || cam.Item2.Camera.Layer > pickCam.Item2.Camera.Layer) pickCam = cam;
+            }
+
+            if (pickCam == null) throw new Exception("No Camera found in the scene!");
+
+            Ray = new Rayf(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out _));
+
+            return Viserate();
+        }
+
+        // RayPick(float2 mousePos, Camera camera = null)
+        //  PrepassVisitor
+        //  => Ray
+        //  Viserate()
 
         #region Visitors
 
