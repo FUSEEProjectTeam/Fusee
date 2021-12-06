@@ -30,6 +30,7 @@
 
 		<PackageReference Include="OpenTK" Version="4.6.7" />
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
 	</ItemGroup>
 
 	<Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />

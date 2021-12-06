@@ -16,7 +16,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         public ConcurrentDictionary<int, object> ShaderParamsToUpdate = new();
 
-        public string PathToOocFile = "D://PW_ooc//HolbeinPferdOctree";
+        public string PathToOocFile = "D://PW_ooc//Demo_A_06-Cloud02";
 
         public ShaderEffect DepthPassEf;
         public PointCloudSurfaceEffect ColorPassEf;
@@ -82,7 +82,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
         }
 
-        private float _edlStrength = 0.1f;
+        private float _edlStrength = 0.3f;
         public float EdlStrength
         {
             get { return _edlStrength; }
@@ -93,9 +93,9 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
         }
 
-        public float ProjectedSizeModifier = 0.5f;
+        public float ProjectedSizeModifier = 0.01f;
 
-        public int PointThreshold = 2000000;
+        public int PointThreshold = 5000000;
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit

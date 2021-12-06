@@ -15,6 +15,7 @@ namespace Fusee.Engine.Core
 
         private void Remove(IMeshImp meshImp)
         {
+            if (meshImp == null) return;
             if (meshImp.VerticesSet)
                 _renderContextImp.RemoveVertices(meshImp);
 

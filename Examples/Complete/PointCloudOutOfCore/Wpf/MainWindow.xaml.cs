@@ -25,7 +25,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
     /// </summary>
     public partial class MainWindow : Window
     {
-        public IPointCloudOutOfCore App;
+        public IPointCloudOutOfCore app;
 
         private bool _isAppInizialized = false;
         private bool _areOctantsShown;
@@ -42,20 +42,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         public MainWindow()
         {
             InitializeComponent();
-
-            PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
-            PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
-            ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;
-
-            PtSize.Value = PtRenderingParams.Instance.Size;
-            PtSizeVal.Content = PtSize.Value;
-
-            EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
-            EDLStrengthVal.Content = EDLStrength.Value.ToString("0.000");
-            EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
-            EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
-            MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
-            MinProjSizeVal.Content = MinProjSize.Value;
 
             InnerGrid.IsEnabled = false;
         }
@@ -155,7 +141,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         {
             if (_isAppInizialized)
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
-            App?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
+            app?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
 
             _projSizeModDragStarted = false;
         }
@@ -166,7 +152,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
 
             if (_projSizeModDragStarted) return;
-            App?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
+            app?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
         }
         #endregion
 
@@ -217,12 +203,12 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 fullPath = ofd.FileName;
                 PtRenderingParams.Instance.PathToOocFile = fullPath.Replace(ofd.SafeFileName, "");
 
-                if (App != null)
+                if (app != null)
                 {
-                    App.ClosingRequested = true;
-                    SpinWait.SpinUntil(() => App.ReadyToLoadNewFile); //End of frame                    
-                    App.CloseGameWindow();
-                    SpinWait.SpinUntil(() => !App.IsAlive);
+                    app.ClosingRequested = true;
+                    SpinWait.SpinUntil(() => app.ReadyToLoadNewFile); //End of frame                    
+                    app.CloseGameWindow();
+                    SpinWait.SpinUntil(() => !app.IsAlive);
                     AssetStorage.UnRegisterAllAssetProviders();
                     GC.Collect();
                 }
@@ -230,14 +216,14 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 CreateApp(PtRenderingParams.Instance.PathToOocFile);
                 RunApp();
 
-                MinProjSize.Value = App.GetOocLoaderMinProjSizeMod();
+                MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
 
                 //TODO: add null/initialization check?
-                App.DeletePointCloud();
-                SpinWait.SpinUntil(() => App.ReadyToLoadNewFile && _isAppInizialized);
+                app.DeletePointCloud();
+                SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && _isAppInizialized);
 
-                App.ResetCamera();
+                app.ResetCamera();
                 
                 InnerGrid.IsEnabled = true;
                 //ShowOctants_Button.IsEnabled = true;
@@ -248,7 +234,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void ResetCam_Button_Click(object sender, RoutedEventArgs e)
         {
-            App?.ResetCamera();
+            app?.ResetCamera();
         }
 
         private void VisPoints_TextChanged(object sender, TextChangedEventArgs e)
@@ -261,36 +247,36 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 if (!int.TryParse(PtThreshold.Text, out var ptThreshold)) return;
                 if (ptThreshold < 0)
                 {
-                    PtThreshold.Text = App.GetOocLoaderPointThreshold().ToString();
+                    PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
                     return;
                 }
-                App.SetOocLoaderPointThreshold(ptThreshold);
+                app.SetOocLoaderPointThreshold(ptThreshold);
             }
             else
             {
-                PtThreshold.Text = App.GetOocLoaderPointThreshold().ToString();
+                PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
             }
         }
 
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
-            PtThreshold.Text = App.GetOocLoaderPointThreshold().ToString();
+            PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
         }
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
         {
-            while (!App.ReadyToLoadNewFile)
+            while (!app.ReadyToLoadNewFile)
                 continue;
 
             if (!_areOctantsShown)
             {
-                App.DoShowOctants = true;
+                app.DoShowOctants = true;
                 _areOctantsShown = true;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants_on.png", UriKind.Relative));
             }
             else
             {
-                App.DoShowOctants = false;
+                app.DoShowOctants = false;
                 _areOctantsShown = false;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
             }
@@ -311,14 +297,14 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             _fusTask = new Task(() =>
             {
                 Thread.CurrentThread.Name = "FusAppRunner";
-                App.Run();
+                app.Run();
             });
 
             _fusTask.Start();
 
-            SpinWait.SpinUntil(() => App != null && App.IsInitialized);
+            SpinWait.SpinUntil(() => app != null && app.IsInitialized);
 
-            Closed += (s, e) => App?.CloseGameWindow();
+            Closed += (s, e) => app?.CloseGameWindow();
 
             _isAppInizialized = true;
             InnerGrid.IsEnabled = true;
@@ -373,18 +359,33 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             var objectType = typeof(PointCloudOutOfCore<>);
             var objWithGenType = objectType.MakeGenericType(genericType);
 
-            AppSetup.DoSetup(out App, ptType, pathToFile);
-            App.UseWPF = true;
+            AppSetup.DoSetup(out app, ptType, pathToFile);
+
+            PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
+            PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
+            ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;
+
+            PtSize.Value = PtRenderingParams.Instance.Size;
+            PtSizeVal.Content = PtSize.Value;
+
+            EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
+            EDLStrengthVal.Content = EDLStrength.Value.ToString("0.000");
+            EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
+            EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
+            MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
+            MinProjSizeVal.Content = MinProjSize.Value;
+
+            app.UseWPF = true;
 
             //Inject Fusee.Engine InjectMe dependencies(hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-            App.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon, true);
-            App.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(App.CanvasImplementor);
-            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(App.CanvasImplementor));
-            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(App.CanvasImplementor));
-            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(App.CanvasImplementor));
+            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon, true);
+            app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
+            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
+            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
+            Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
 
-            App.InitApp();
+            app.InitApp();
         }
     }
 }
