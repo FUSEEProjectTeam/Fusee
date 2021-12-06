@@ -40,13 +40,13 @@ namespace Fusee.Math.Core
         /// Creates a new ray.
         /// </summary>
         /// <param name="pickPosClip">A mouse position in Clip Space.</param>
-        /// <param name="invView">The inverse View Matrix of the rendered scene.</param>
+        /// <param name="view">The View Matrix of the rendered scene.</param>
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
-        public Rayf(float2 pickPosClip, float4x4 invView, float4x4 projection)
+        public Rayf(float2 pickPosClip, float4x4 view, float4x4 projection)
         {
-            Origin = invView.Translation();
+            Origin = float4x4.Invert(view).Translation();
 
-            float4x4 invViewProjection = float4x4.Invert(projection * float4x4.Invert(invView));
+            float4x4 invViewProjection = float4x4.Invert(projection * view);
 
             var pickPosWorld4 = float4x4.Transform(invViewProjection, new float4(pickPosClip.x, pickPosClip.y, 1, 1));
             var pickPosWorld = (pickPosWorld4 / pickPosWorld4.w).xyz;
