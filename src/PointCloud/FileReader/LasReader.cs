@@ -23,7 +23,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
         public IPointCloudMetaInfo MetaInfo { get; private set; }
 
         private IntPtr _ptrToLASClass = new();
-       
+
         private void OpenFile(string filename)
         {
             EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.PointCloud.FileReader.LasReader.Natives.libLASlib.dll");
