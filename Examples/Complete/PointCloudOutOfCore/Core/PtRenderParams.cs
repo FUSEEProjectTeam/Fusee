@@ -5,16 +5,19 @@ using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace Fusee.Examples.PointCloudOutOfCore.Core
 {
+    public delegate void PointThresholdHandler(int val);
+    public delegate void ProjectedSizeModifierHandler(float val);
+
     public sealed class PtRenderingParams : IDisposable
     {
         public static PtRenderingParams Instance { get; private set; } = new();
 
-        public ConcurrentDictionary<int, object> ShaderParamsToUpdate = new();
+        public PointThresholdHandler PointThresholdHandler;
+        public ProjectedSizeModifierHandler ProjectedSizeModifierHandler;
 
         public string PathToOocFile = "D://PW_ooc//Demo_A_06-Cloud02";
 
@@ -93,9 +96,28 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
         }
 
-        public float ProjectedSizeModifier = 0.01f;
+        private float _projSizeMod = 0.1f;
+        public float ProjectedSizeModifier
+        {
+            get { return _projSizeMod; }
+            set
+            {
+                _projSizeMod = value;
+                ProjectedSizeModifierHandler(_projSizeMod);
+            }
+        }
 
-        public int PointThreshold = 5000000;
+        private int _ptThreshold = 5000000;
+        
+        public int PointThreshold
+        {
+            get { return _ptThreshold; }
+            set
+            {
+                _ptThreshold = value;
+                PointThresholdHandler(_ptThreshold);
+            }
+        }
 
         // Explicit static constructor to tell C# compiler
         // not to mark type as beforefieldinit

@@ -76,6 +76,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
             PtRenderingParams.Instance.DepthPassEf = PtRenderingParams.Instance.CreateDepthPassEffect();
             PtRenderingParams.Instance.ColorPassEf = PtRenderingParams.Instance.CreateColorPassEffect();
+            PtRenderingParams.Instance.PointThresholdHandler = OnThresholdChanged;
+            PtRenderingParams.Instance.ProjectedSizeModifierHandler = OnProjectedSizeModifierChanged;
 
             IsAlive = true;
 
@@ -288,6 +290,16 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             Present();
 
             ReadyToLoadNewFile = true;
+        }
+
+        private void OnThresholdChanged(int newValue)
+        {
+            _pointCloud.PointThreshold = newValue;
+        }
+
+        private void OnProjectedSizeModifierChanged(float newValue)
+        {
+            _pointCloud.MinProjSizeModifier = newValue;
         }
 
         private bool SpaceMouseMoving(out float3 velPos, out float3 velRot)
