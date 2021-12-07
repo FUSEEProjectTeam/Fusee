@@ -1,10 +1,15 @@
-using Fusee.Engine.Core;
+using Fusee.Engine.Common;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using System;
 
 namespace Fusee.Examples.PointCloudOutOfCore.Core
 {
+    /// <summary>
+    /// Delegate that allows us to implement a setup method in the app's Main.cs
+    /// </summary>
+    public delegate void AppSetupDelegate();
+
     public static class AppSetup
     {
         /// <summary>

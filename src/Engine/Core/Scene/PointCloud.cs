@@ -88,7 +88,8 @@ namespace Fusee.Engine.Core.Scene
         internal FrustumF RenderFrustum;
         internal int ViewportHeight;
 
-        private PointCloudLoader<TPoint> _pointCloudLoader;
+        internal PointCloudLoader<TPoint> _pointCloudLoader;
+
         internal List<Mesh> GetMeshes()
         {
             _pointCloudLoader.RenderFrustum = RenderFrustum;

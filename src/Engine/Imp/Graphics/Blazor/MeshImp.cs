@@ -29,8 +29,6 @@ namespace Fusee.Engine.Imp.Blazor
         internal WebGLBuffer TangentBufferObject;
         internal WebGLBuffer BitangentBufferObject;
         internal int NElements;
-
-
         #endregion
 
         #region Public Fields & Members pairs

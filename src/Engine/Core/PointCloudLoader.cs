@@ -1,11 +1,12 @@
+using Fusee.Base.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.PotreeReader.V1;
 using Fusee.Structures;
+using Microsoft.Extensions.Caching.Memory;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -17,8 +18,23 @@ namespace Fusee.Engine.Core
     /// Class that manages the out of core (on demand) loading of point clouds.
     /// </summary>
     /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
-    public class PointCloudLoader<TPoint> where TPoint : new()
+    public class PointCloudLoader<TPoint> : IDisposable where TPoint : new()
     {
+        /// <summary>
+        /// Caches already created meshes.
+        /// </summary>
+        public MemoryCache<IEnumerable<Mesh>> MeshCache { get; private set; }
+
+        /// <summary>
+        /// Cahces loaded points.
+        /// </summary>
+        public MemoryCache<TPoint[]> PointCache { get; private set; }
+
+        /// <summary>
+        /// Flat list of meshes that will be rendered.
+        /// </summary>
+        public List<Mesh> MeshesToRender;
+
         /// <summary>
         /// If true, the visible octants will be rendered as WireframeCubes.
         /// </summary>
@@ -62,7 +78,6 @@ namespace Fusee.Engine.Core
             get => _octree;
             set
             {
-                //LoadedMeshes.Clear();
                 _loadingQueue.Clear();
                 MeshesToRender.Clear();
                 _visibleNodesOrderedByProjectionSize.Clear();
@@ -100,8 +115,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int PointThreshold { get; set; } = 2000000;
 
-        ///The amount of milliseconds needed to pass before rendering next frame
+        /// <summary>
+        /// The amount of milliseconds needed to pass before rendering next frame
+        /// </summary>
         public double UpdateRate { get; set; } = 1000 / 30d;
+
         private float _deltaTimeSinceLastUpdate;
 
         private float _minProjSizeModifier = 0.1f;
@@ -109,18 +127,6 @@ namespace Fusee.Engine.Core
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
         private double _minScreenProjectedSize;
-
-        /// <summary>
-        /// Visible AND loaded meshes.
-        /// /// </summary>
-        //public Dictionary<Guid, IEnumerable<Mesh>> LoadedMeshes { get; private set; }
-
-        public PointCloudOutOfCoreCache<TPoint> MeshCache { get; private set; }
-
-        /// <summary>
-        /// Flat list of meshes that will be rendered.
-        /// </summary>
-        public List<Mesh> MeshesToRender;
 
         // Allowes traversal in order of screen projected size.
         private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
@@ -131,14 +137,22 @@ namespace Fusee.Engine.Core
         //Nodes that are queued for loading in the background
         private List<Guid> _loadingQueue;
 
+        private bool _disposed;
+
+        private List<IEnumerable<Mesh>> _disposeQueue;
+
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _maxNumberOfNodesToLoad = 5;
 
+        private readonly int _maxNumberOfDisposals = 3;
+
         private double3 _camPosD;
         private float _fov;
-        private static readonly object _lockMeshCache = new();
+
         private static readonly object _lockLoadingQueue = new();
+        private static readonly object _lockDisposeQueue = new();
+        public static readonly object LockMeshesToRender = new();
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudLoader{TPoint}"/>.
@@ -170,22 +184,33 @@ namespace Fusee.Engine.Core
             {
                 _deltaTimeSinceLastUpdate = 0;
                 //Traverses ordered by projected size.
-                DetermineVisibility(); // 0-n threads --> LoadedMeshes
-                
-                MeshesToRender.Clear();
-                //TODO: will cause a lag...
-                foreach (var mesh in MeshCache.DisposeQueue)
-                {
-                    mesh.Dispose();
-                }
-                MeshCache.DisposeQueue.Clear();
+                DetermineVisibility();
 
-                foreach (var guid in _visibleNodes)
+                if (_disposeQueue.Count > 0)
                 {
-                    if (MeshCache.TryGetValue(guid, out var meshes))
-                        MeshesToRender.AddRange(meshes);
+                    lock (_lockDisposeQueue)
+                    {
+                        var nodesInQueue = _disposeQueue.Count;
+                        var count = nodesInQueue < _maxNumberOfDisposals ? nodesInQueue : _maxNumberOfDisposals;
+                        for (int i = 0; i < count; i++)
+                        {
+                            var meshes = _disposeQueue.Last();
+                            _disposeQueue.RemoveAt(_disposeQueue.Count - 1);
+                            foreach (var mesh in meshes)
+                                mesh.Dispose();
+                        }
+                    }
                 }
-                
+
+                lock (LockMeshesToRender)
+                {
+                    MeshesToRender.Clear();
+                    foreach (var guid in _visibleNodes)
+                    {
+                        if (MeshCache.TryGetValue(guid, out var meshes))
+                            MeshesToRender.AddRange(meshes);
+                    }
+                }
             }
 
             WasSceneUpdated = true;
@@ -195,8 +220,13 @@ namespace Fusee.Engine.Core
         {
             _visibleNodes = new(octantCnt);
             MeshCache = new();
+            MeshCache.AddItem += OnCreateMesh;
+            MeshCache.HandleEvictedItem = OnItemEvictedFromCache;
+            PointCache = new();
+            PointCache.AddItem += OnLoadPoints;
             _loadingQueue = new(octantCnt);
             MeshesToRender = new(octantCnt);
+            _disposeQueue = new List<IEnumerable<Mesh>>(octantCnt);
         }
 
         /// <summary>
@@ -220,17 +250,19 @@ namespace Fusee.Engine.Core
 
                 if (!_loadingQueue.Contains(octant.Guid) && _loadingQueue.Count <= _maxNumberOfNodesToLoad)
                 {
-                    lock (_loadingQueue)
+                    lock (_lockLoadingQueue)
                     {
                         _loadingQueue.Add(octant.Guid);
                     }
 
                     Task.Run(async () =>
                     {
-                        //task "load node"
-                        await MeshCache.AddOrUpdate(octant.Guid, octant, LoadNodeAsync);
+                        await PointCache.AddOrUpdate(octant.Guid, new LoadPointsEventArgs<TPoint>(octant, FileFolderPath, PtAccessor));
+                        PointCache.TryGetValue(octant.Guid, out var points);
 
-                        lock (_loadingQueue)
+                        await MeshCache.AddOrUpdate(octant.Guid, new CreateMeshEventArgs<TPoint>(octant, points));
+
+                        lock (_lockLoadingQueue)
                         {
                             _loadingQueue.Remove(octant.Guid);
                         }
@@ -247,7 +279,7 @@ namespace Fusee.Engine.Core
                 else
                     return;
             }
-            
+
         }
 
         private void DetermineVisibilityForChildren(PtOctantRead<TPoint> node)
@@ -280,12 +312,28 @@ namespace Fusee.Engine.Core
             _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
         }
 
-        //Loading 
-        private async Task<IEnumerable<Mesh>> LoadNodeAsync(PtOctantRead<TPoint> octant)
+        private void OnItemEvictedFromCache(object guid, object meshes, EvictionReason reason, object state)
         {
-            var pts = await ReadPotreeData<TPoint>.LoadPointsForNodeAsync(FileFolderPath, PtAccessor, octant);
-            octant.NumberOfPointsInNode = pts.Length;
-            var meshes = await GetMeshsForOctantAsync(PtAccessor, _ptType, pts);
+            _disposeQueue.Add((IEnumerable<Mesh>)meshes);
+        }
+
+        private async Task<IEnumerable<Mesh>> OnCreateMesh(object sender, EventArgs e)
+        {
+            var meshArgs = (CreateMeshEventArgs<TPoint>)e;
+            return await LoadMeshAsync(meshArgs.Octant, meshArgs.Points);
+        }
+
+        private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
+        {
+            var meshArgs = (LoadPointsEventArgs<TPoint>)e;
+            return await ReadPotreeData<TPoint>.LoadPointsForNodeAsync(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
+        }
+
+        //Loading 
+        private async Task<IEnumerable<Mesh>> LoadMeshAsync(PtOctantRead<TPoint> octant, TPoint[] points)
+        {
+            octant.NumberOfPointsInNode = points.Length;
+            var meshes = await GetMeshsForOctantAsync(PtAccessor, _ptType, points);
             return meshes;
         }
 
@@ -321,7 +369,7 @@ namespace Fusee.Engine.Core
                 if (noOfMeshes == 1)
                     numberOfPointsInMesh = ptCnt;
                 else if (noOfMeshes == meshCnt + 1)
-                    numberOfPointsInMesh = (int)(ptCnt - maxVertCount * meshCnt);
+                    numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
                 else
                     numberOfPointsInMesh = maxVertCount;
 
@@ -357,6 +405,50 @@ namespace Fusee.Engine.Core
             var root = (PtOctantRead<TPoint>)_octree.Root;
             root.ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
             _minScreenProjectedSize = root.ProjectedScreenSize * _minProjSizeModifier;
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">If disposing equals true, the method has been called directly
+        /// or indirectly by a user's code. Managed and unmanaged resources
+        /// can be disposed.
+        /// If disposing equals false, the method has been called by the
+        /// runtime from inside the finalizer and you should not reference
+        /// other objects. Only unmanaged resources can be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    foreach (var meshes in _disposeQueue)
+                    {
+                        foreach (var mesh in meshes)
+                        {
+                            mesh.Dispose();
+                        }
+                    }
+                }
+                _disposed = true;
+            }
+        }
+
+        /// <summary>
+        /// Finalizers (historically referred to as destructors) are used to perform any necessary final clean-up when a class instance is being collected by the garbage collector.
+        /// </summary>
+        ~PointCloudLoader()
+        {
+            Dispose(disposing: false);
         }
     }
 }

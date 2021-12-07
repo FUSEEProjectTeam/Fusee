@@ -1792,6 +1792,11 @@ namespace Fusee.Engine.Core
             return new float2(n, f);
         }
 
+        public IMeshImp CreateMeshImp()
+        {
+            return _rci.CreateMeshImp();
+        }
+
         #endregion
 
         /// <summary>

@@ -1,45 +1,45 @@
-﻿using Fusee.Engine.Core.Scene;
-using Fusee.PointCloud.Core;
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Base.Core
 {
-    public class PointCloudOutOfCoreCache<TPoint>
+    public class MemoryCache<TItem>
     {
         public int SlidingExpiration = 5;
         public int ExpirationScanFrequency = 6;
 
-        public ConcurrentBag<Mesh> DisposeQueue;
+        public delegate Task<TItem> AddItemHandler(object sender, EventArgs e);
+        public event AddItemHandler AddItem;
+
+        public PostEvictionDelegate HandleEvictedItem;
 
         private readonly MemoryCache _cache;
-        private readonly ConcurrentDictionary<object, SemaphoreSlim> _locks = new();
+        private readonly ConcurrentDictionary<object, SemaphoreSlim> _meshLocks = new();
 
-        public PointCloudOutOfCoreCache()
+        public MemoryCache()
         {
-            DisposeQueue = new ConcurrentBag<Mesh>();
-            _cache = new(new MemoryCacheOptions() 
-            { 
-                ExpirationScanFrequency = TimeSpan.FromSeconds(ExpirationScanFrequency) 
+            _cache = new(new MemoryCacheOptions()
+            {
+                ExpirationScanFrequency = TimeSpan.FromSeconds(ExpirationScanFrequency)
             });
         }
 
-        public bool TryGetValue(Guid key, out IEnumerable<Mesh> item)
+        public bool TryGetValue(Guid key, out TItem item)
         {
             if (_cache.TryGetValue(key, out item))
                 return true;
             return false;
         }
 
-        public async Task AddOrUpdate(Guid key, PtOctantRead<TPoint> node, Func<PtOctantRead<TPoint>, Task<IEnumerable<Mesh>>> createItem)
+        public async Task AddOrUpdate(Guid key, EventArgs args)
         {
-            if (!_cache.TryGetValue(key, out IEnumerable<Mesh> cacheEntry))// Look for cache key.
+            if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
             {
-                SemaphoreSlim chacheLock = _locks.GetOrAdd(key, k => new SemaphoreSlim(1, 1));
+                SemaphoreSlim chacheLock = _meshLocks.GetOrAdd(key, k => new SemaphoreSlim(1, 1));
 
                 await chacheLock.WaitAsync();
                 try
@@ -52,16 +52,13 @@ namespace Fusee.Engine.Core
                             .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
                         cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
                         {
-                            _locks.Remove(subkey, out _);
-                            foreach (var mesh in (IEnumerable<Mesh>)subValue)
-                            {
-                                DisposeQueue.Add(mesh);
-                                //mesh.Dispose();
-                            }
+                            _meshLocks.Remove(subkey, out _);                            
+                            HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
+                            
                         });
 
                         // Key not in cache, so get data.
-                        cacheEntry = await createItem(node);
+                        cacheEntry = await AddItem?.Invoke(this, args);//createItem(node, points);
                         _cache.Set(key, cacheEntry, cacheEntryOptions);
                     }
                 }

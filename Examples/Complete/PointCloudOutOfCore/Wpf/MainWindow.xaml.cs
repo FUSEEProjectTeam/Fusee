@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PointCloudOutOfCore.Core;
@@ -26,8 +27,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
     public partial class MainWindow : Window
     {
         public IPointCloudOutOfCore app;
-
-        private bool _isAppInizialized = false;
         private bool _areOctantsShown;
 
         //private bool _ptSizeDragStarted;
@@ -51,21 +50,21 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         #region edl strength
         private void EDLStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             _edlStrengthDragStarted = true;
         }
 
         private void EDLStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             PtRenderingParams.Instance.EdlStrength = (float)((Slider)sender).Value;
             _edlStrengthDragStarted = false;
         }
 
         private void EDLStrengthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isAppInizialized) return;
-            EDLStrengthVal.Content = e.NewValue.ToString("0.000");
+            if (app == null || !app.IsInitialized) return;
+            EDLStrengthVal.Content = e.NewValue.ToString("0.00");
 
             if (_edlStrengthDragStarted) return;
             PtRenderingParams.Instance.EdlStrength = (float)e.NewValue;
@@ -76,13 +75,13 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void EDLNeighbourPx_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             _edlNeighbourPxDragStarted = true;
         }
 
         private void EDLNeighbourPx_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");
@@ -93,7 +92,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void EDLNeighbourPxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = e.NewValue.ToString("0");
@@ -120,7 +119,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             if (PtSizeVal == null) return;
             PtSizeVal.Content = e.NewValue.ToString("0");
 
@@ -139,38 +138,37 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void MinProjSize_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
-            if (_isAppInizialized)
-                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
-            app?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
-
+            if (app == null || !app.IsInitialized) return;
+            MinProjSizeVal.Content = MinProjSize.Value.ToString("0.0000");
+            PtRenderingParams.Instance.ProjectedSizeModifier = (float)MinProjSize.Value;
             _projSizeModDragStarted = false;
         }
 
         private void MinProjSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (_isAppInizialized)
-                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
+            if (app == null || !app.IsInitialized) return;
+            MinProjSizeVal.Content = MinProjSize.Value.ToString("0.0000");
 
             if (_projSizeModDragStarted) return;
-            app?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
+            PtRenderingParams.Instance.ProjectedSizeModifier = (float)MinProjSize.Value;
         }
         #endregion
 
         private void PtShape_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             PtRenderingParams.Instance.Shape = (PointShape)e.AddedItems[0];
         }
 
         private void PtSizeMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             PtRenderingParams.Instance.PtMode = (PointSizeMode)e.AddedItems[0];
         }
 
         private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             PtRenderingParams.Instance.ColorMode = (PointColorMode)e.AddedItems[0];
 
             //ColorPicker is unavailable right now
@@ -206,7 +204,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 if (app != null)
                 {
                     app.ClosingRequested = true;
-                    SpinWait.SpinUntil(() => app.ReadyToLoadNewFile); //End of frame                    
+                    SpinWait.SpinUntil(() => app.ReadyToLoadNewFile); //End of frame
                     app.CloseGameWindow();
                     SpinWait.SpinUntil(() => !app.IsAlive);
                     AssetStorage.UnRegisterAllAssetProviders();
@@ -216,15 +214,13 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 CreateApp(PtRenderingParams.Instance.PathToOocFile);
                 RunApp();
 
-                MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
-                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
+                MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
+                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.0000");
 
-                //TODO: add null/initialization check?
-                app.DeletePointCloud();
-                SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && _isAppInizialized);
+                SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && app.IsInitialized);
 
                 app.ResetCamera();
-                
+
                 InnerGrid.IsEnabled = true;
                 //ShowOctants_Button.IsEnabled = true;
                 //ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
@@ -239,7 +235,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         private void VisPoints_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (!_isAppInizialized) return;
+            if (app == null || !app.IsInitialized) return;
             e.Handled = !IsTextAllowed(PtThreshold.Text);
 
             if (!e.Handled)
@@ -247,20 +243,20 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                 if (!int.TryParse(PtThreshold.Text, out var ptThreshold)) return;
                 if (ptThreshold < 0)
                 {
-                    PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
+                    PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
                     return;
                 }
-                app.SetOocLoaderPointThreshold(ptThreshold);
+                PtRenderingParams.Instance.PointThreshold = ptThreshold;
             }
             else
             {
-                PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
+                PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
             }
         }
 
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
-            PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
+            PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
         }
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
@@ -292,7 +288,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         private void RunApp()
         {
             InnerGrid.IsEnabled = false;
-            _isAppInizialized = false;
 
             _fusTask = new Task(() =>
             {
@@ -306,7 +301,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             Closed += (s, e) => app?.CloseGameWindow();
 
-            _isAppInizialized = true;
             InnerGrid.IsEnabled = true;
         }
 
@@ -366,14 +360,15 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;
 
             PtSize.Value = PtRenderingParams.Instance.Size;
-            PtSizeVal.Content = PtSize.Value;
+            PtSizeVal.Content = PtRenderingParams.Instance.Size;
+            PtThreshold.Text = PtRenderingParams.Instance.PointThreshold.ToString();
 
             EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
-            EDLStrengthVal.Content = EDLStrength.Value.ToString("0.000");
+            EDLStrengthVal.Content = PtRenderingParams.Instance.EdlStrength.ToString("0.00");
             EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
-            EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
+            EDLNeighbourPxVal.Content = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
             MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
-            MinProjSizeVal.Content = MinProjSize.Value;
+            MinProjSizeVal.Content = PtRenderingParams.Instance.ProjectedSizeModifier;
 
             app.UseWPF = true;
 

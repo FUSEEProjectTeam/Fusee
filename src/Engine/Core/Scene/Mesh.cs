@@ -274,8 +274,6 @@ namespace Fusee.Engine.Core.Scene
 
                 MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
             }
-
-
         }
 
         /// <summary>

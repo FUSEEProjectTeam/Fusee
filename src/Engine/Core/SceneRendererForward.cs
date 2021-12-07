@@ -738,6 +738,8 @@ namespace Fusee.Engine.Core
             RenderPointCloudT(pointCloud);
         }
 
+        private static readonly object _lockMeshesToRender = new();
+
         private void RenderPointCloudT<T>(PointCloud<T> pointCloud) where T : new()
         {
             if (!pointCloud.Active) return;
@@ -748,7 +750,7 @@ namespace Fusee.Engine.Core
             pointCloud.CamPos = _rc.InvView.Column4.xyz;
             pointCloud.RenderFrustum = _rc.RenderFrustum;
             pointCloud.ViewportHeight = _rc.ViewportHeight;
-
+            
             foreach (var mesh in pointCloud.GetMeshes())
             {
                 var renderStatesBefore = _rc.CurrentRenderState.Copy();

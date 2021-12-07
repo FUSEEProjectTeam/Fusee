@@ -18,7 +18,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
     {
         public bool UseWPF { get; set; }
         public bool DoShowOctants { get; set; }
-        public bool IsSceneLoaded { get; private set; }
         public bool ReadyToLoadNewFile { get; private set; }
         public bool IsInitialized { get; private set; }
         public bool IsAlive { get; private set; }
@@ -113,7 +112,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier,
                 PointThreshold = PtRenderingParams.Instance.PointThreshold
             };
-            IsSceneLoaded = true;
 
             var pointCloudNode = new SceneNode()
             {
@@ -335,42 +333,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 || Mouse.LeftButton
                 || Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0
                 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint);
-        }
-
-        public RenderContext GetRc()
-        {
-            return RC;
-        }
-
-        public bool GetOocLoaderWasSceneUpdated()
-        {
-            //return OocLoader.WasSceneUpdated;
-            return false;
-        }
-
-        public int GetOocLoaderPointThreshold()
-        {
-            return _pointCloud.PointThreshold;
-        }
-
-        public void SetOocLoaderPointThreshold(int value)
-        {
-            _pointCloud.PointThreshold = value;
-        }
-
-        public void SetOocLoaderMinProjSizeMod(float value)
-        {
-            _pointCloud.MinProjSizeModifier = value;
-        }
-
-        public float GetOocLoaderMinProjSizeMod()
-        {
-            return _pointCloud.MinProjSizeModifier;
-        }
-
-        public void DeletePointCloud()
-        {
-            IsSceneLoaded = false;
         }
 
         public void ResetCamera()
