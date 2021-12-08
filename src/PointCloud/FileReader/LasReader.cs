@@ -24,7 +24,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
 
         private IntPtr _ptrToLASClass = new();
 
-        public void OpenFile(string filename)
+        private void OpenFile(string filename)
         {
             EmbeddedResourcesDllHandler.LoadEmbeddedDll("libLASlib.dll", "Fusee.PointCloud.FileReader.LasReader.Natives.libLASlib.dll");
 
@@ -90,6 +90,14 @@ namespace Fusee.PointCloud.FileReader.LasReader
         /// </summary>
         public LasPointReader() { }
 
+        /// <summary>
+        /// Reads the given ammount of points from stream
+        /// </summary>
+        /// <typeparam name="TPoint"></typeparam>
+        /// <param name="n"></param>
+        /// <param name="pa"></param>
+        /// <returns></returns>
+        /// <exception cref="FileNotFoundException"></exception>
         public TPoint[] ReadNPoints<TPoint>(int n, PointAccessor<TPoint> pa)
         {
             if (_ptrToLASClass == IntPtr.Zero)
@@ -101,7 +109,7 @@ namespace Fusee.PointCloud.FileReader.LasReader
         }
 
         /// <summary>
-        ///     Reads the next point and writes it to the given point
+        /// Reads the next point and writes it to the given point
         /// </summary>
         /// <typeparam name="TPoint"></typeparam>
         /// <param name="point"></param>
@@ -143,11 +151,12 @@ namespace Fusee.PointCloud.FileReader.LasReader
             return true;
         }
 
-        LasPointFormat ParsePointDataByteFormatToFormatStruct(LasMetaInfo info)
+        private static LasPointFormat ParsePointDataByteFormatToFormatStruct(LasMetaInfo info)
         {
             return info.PointDataFormat switch
             {
-                0 => new LasPointFormat
+                // 1 is the same as 0 with the addition of a GPS time field
+                0 or 1 => new LasPointFormat
                 {
                     HasClassification = true,
                     HasColor = false,
