@@ -23,15 +23,9 @@ namespace Fusee.Serialization.V1
         public float3 Rotation;
 
         /// <summary>
-        /// Dummy
-        /// </summary>
-        [ProtoMember(3)]
-        public float Dummy;
-
-        /// <summary>
         /// The scale (size) of the node.
         /// </summary>
-        [ProtoMember(4)]
+        [ProtoMember(3)]
         public float3 Scale = float3.One;
         #endregion
     }

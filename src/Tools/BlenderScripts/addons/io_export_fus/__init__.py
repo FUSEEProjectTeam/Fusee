@@ -144,7 +144,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
         visitor.DoRecalcOutside = self.doRecalcOutside
  
         visitor.TraverseList(roots)
-        # visitor.PrintFus()
+        #visitor.PrintFus()
         visitor.WriteFus(self.filepath)
     
         return {'FINISHED'}

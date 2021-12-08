@@ -3,7 +3,7 @@ from FusSceneWriter import FusSceneWriter
 
 import subprocess,os,sys, time
 from shutil import copyfile
-
+import traceback
 import bpy
 from bpy.props import (
         StringProperty,
@@ -17,6 +17,18 @@ import bmesh
 import mathutils
 from math import *
 
+try:
+    # Standard Python import
+    from proto import FusSerialization_pb2 as FusSer
+except Exception:
+        try:
+            # The hard (blender) way
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            dir_path = os.path.join(dir_path, 'proto')
+            sys.path.append(dir_path)        
+            import FusSerialization_pb2 as FusSer
+        except Exception as ex:
+            print('Error importing "FusSerialization_pb2.py" from "' + dir_path + '"' + '\n' + ex)
 
 
 def GetPaths(filepath):
@@ -119,33 +131,69 @@ class BlenderVisitor:
             (location.x, location.z, location.y),
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
             (scale.x, scale.z, scale.y),
-            location.z
         )
 
     def __AddAnimationIfPresent(self, ob):
-        
-        
-
         try:
             selected_strips = [strip for strip in ob.animation_data.nla_tracks]
             
             self.__fusWriter.BeginAnimation()
+
+
+
             for strip in selected_strips:
-                action = strip.strips[0].action
-                self.__fusWriter.BeginAnimationTrack()       
+                for strips in strip.strips: 
+                    action = strips.action
+                    loc = [None] * 0
+                    rot = [None] * 0
+                    scl = [None] * 0      
+                    for idx, a in enumerate(action.fcurves):
+                        if(a.data_path == "location"):
+                            loc.append(a)
+                        elif(a.data_path == "rotation_euler"):
+                            rot.append(a)
+                        elif(a.data_path == "scale"):
+                            scl.append(a)
+                    if(len(loc)<3):
+                        print(len(loc))
+                    
+
+
+            for strip in selected_strips:
+                
+                if(action.fcurves[0].data_path == "location"):
+                    property = "Translation"
+                elif(action.fcurves[0].data_path == "rotation_euler"):
+                    property = "Rotation"
+                elif(action.fcurves[0].data_path == "scale"):
+                    property = "Scale"
+                else:
+                    print("No right Property found")
+                    property = "Null"                                       
+                self.__fusWriter.BeginAnimationTrack(property, FusSer.Float3, FusSer.Lerp)       
                 print()
                 print(strip.name)
                 print("Keyframes")
                 print("---------")
-                for fcu in action.fcurves: 
-                    print()
-                    print(fcu.data_path, fcu.array_index)
-                    for kp in fcu.keyframe_points:
-                        self.__fusWriter.AddKeyframe(kp.co[0], kp.co[1]) 
-                        print("  Frame %s: %s" % (kp.co[:]), kp.interpolation)
+                
+                ###TODO change range(3) into length of fcurveaxis
+                for idx in range(3): 
+                    try:
+                        print(idx)
+                        action.fcurves.new(action.fcurves[idx].data_path, index=idx, action_group=str(action.fcurves[idx].group.name))
+                    except Exception as e:
+                        pass
+                for fcu in action.fcurves:
+                    for idx in range(len(action.fcurves)):
+                        for kpi in range(len(fcu.keyframe_points)):
+                            action.fcurves[idx].keyframe_points.insert(frame=fcu.keyframe_points[kpi].co[0], value=action.fcurves[idx].evaluate(fcu.keyframe_points[kpi].co[0]), options={"NEEDED"})
+                for kp  in range(len(action.fcurves[0].keyframe_points)):
+                    self.__fusWriter.AddKeyframe(action.fcurves[0].keyframe_points[kp].co[0], (action.fcurves[0].keyframe_points[kp].co[1], action.fcurves[1].keyframe_points[kp].co[1], action.fcurves[2].keyframe_points[kp].co[1]))
+                
                 self.__fusWriter.EndAnimationTrack()
             
-        except AttributeError:
+        except Exception:
+            print(traceback.format_exc())
             selected_strips = []
         self.__fusWriter.EndAnimation()
     def __GetProcessedBMesh(self, obj):

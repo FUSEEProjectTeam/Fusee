@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Assets\anim.fus" />
     <None Remove="Assets\RocketFus.fus" />
   </ItemGroup>
 

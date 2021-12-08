@@ -39,6 +39,8 @@ class FusSceneWriter:
         self.__curMesh = None
         self.__curAnimation = None
         self.__curAnimationTrack = None
+        self.__typeId = None
+        self.__inx = 0
 
     def CurrentNode(self):
         """Returns the current node (or None if AddChild was not yet called on the current child list)."""
@@ -91,7 +93,7 @@ class FusSceneWriter:
 
 #### TRANSFORM COMPONENT ####
 
-    def AddTransform(self, translation, rotation, scale, dummy, name = None):
+    def AddTransform(self, translation, rotation, scale, name = None):
         """Adds a transform component to the current child node."""
         comp, inx = self.AddComponent(name)
         xform = comp.FusTransform
@@ -104,7 +106,7 @@ class FusSceneWriter:
         xform.Scale.x = scale[0]
         xform.Scale.y = scale[1]
         xform.Scale.z = scale[2] 
-        xform.Dummy = translation[2]
+        self.__inx = inx
 
 
 #### ANIMATION COMPONENT ####
@@ -113,17 +115,42 @@ class FusSceneWriter:
             self.__curComponent, inx = self.AddComponent(name)
             self.__curAnimation = self.__curComponent.FusAnimation
 
-    def BeginAnimationTrack(self):
+    def BeginAnimationTrack(self, property, typeId, lerpType):
         if self.__curAnimation != None:
             if self.__curAnimationTrack == None:
                 self.__curAnimationTrack = self.__curAnimation.AnimationTracks.add()
+                self.__curAnimationTrack.SceneComponent = self.__inx
+                self.__curAnimationTrack.Property = property
+                self.__curAnimationTrack.TypeId = typeId
+                self.__typeId = typeId
+                self.__curAnimationTrack.LerpType = lerpType
 
-
-    def AddKeyframe(self, keyTime, keyValue):
+    def AddKeyframe(self, keyTime, keyValue): 
         if self.__curAnimationTrack != None:
             keyFrame = self.__curAnimationTrack.KeyFrames.add()
             keyFrame.Time = keyTime
-            keyFrame.FusAnimationKeyFloat.Value = keyValue
+            if(self.__typeId == FusSer.Double):
+                keyFrame.FusAnimationKeyDouble.Value = keyValue
+            elif(self.__typeId == FusSer.Int):
+                keyFrame.FusAnimationKeyInt.Value = keyValue
+            elif(self.__typeId == FusSer.Float):
+                keyFrame.FusAnimationKeyFloat.Value = keyValue
+            elif(self.__typeId == FusSer.Float2):
+                keyFrame.FusAnimationKeyFloat2.Value.x = keyValue[0]
+                keyFrame.FusAnimationKeyFloat2.Value.y = keyValue[1]
+            elif(self.__typeId == FusSer.Float3):
+                keyFrame.FusAnimationKeyFloat3.Value.x = keyValue[0]
+                keyFrame.FusAnimationKeyFloat3.Value.y = keyValue[1]
+                keyFrame.FusAnimationKeyFloat3.Value.z = keyValue[2]
+            elif(self.__typeId == FusSer.Float4):
+                keyFrame.FusAnimationKeyFloat4.Value.x = keyValue[0]
+                keyFrame.FusAnimationKeyFloat4.Value.y = keyValue[1]
+                keyFrame.FusAnimationKeyFloat4.Value.z = keyValue[2]
+                keyFrame.FusAnimationKeyFloat4.Value.w = keyValue[3]
+            elif(self.__typeId == FusSer.Bool):
+                keyFrame.FusAnimationKeyBool.Value = keyValue
+            else:
+                print('No fitting TypeId found')
 
     def EndAnimationTrack(self):
         self.__curAnimationTrack = None

@@ -133,6 +133,8 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<string, Texture> _texMap;
         private readonly Stack<SceneNode> _boneContainers;
 
+        private readonly Dictionary<FusComponent, SceneComponent> _componentMap;
+
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
         /// </summary>
@@ -150,11 +152,13 @@ namespace Fusee.Engine.Core
             _meshMap = new Dictionary<FusMesh, Mesh>();
             _texMap = new Dictionary<string, Texture>();
             _boneContainers = new Stack<SceneNode>();
+            _componentMap = new Dictionary<FusComponent, SceneComponent>();
         }
 
         internal SceneContainer Convert(FusScene sc)
         {
             _fusScene = sc;
+            //TODO: Convert all raw Components in _fusScene.Components upfront and store them in _componentMap
             Traverse(sc.Children);
             return _convertedScene;
         }
@@ -203,8 +207,47 @@ namespace Fusee.Engine.Core
         {
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
+            Animation anim = new Animation();
 
+            for (int i = 0; i < a.AnimationTracks.Count; i++)
+            {
+                anim.AnimationTracks.Add(new AnimationTrack());
+                //TODO: Allow other Componenttypes other than Transform to be animated 
+                anim.AnimationTracks[i].SceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationTracks[i].SceneComponent]);
+                anim.AnimationTracks[i].Property = a.AnimationTracks[i].Property;
+                anim.AnimationTracks[i].TypeId = (Scene.TypeId)a.AnimationTracks[i].TypeId;
+                anim.AnimationTracks[i].LerpType = (Scene.LerpType)a.AnimationTracks[i].LerpType;
+                for(int j = 0; j < a.AnimationTracks[i].KeyFrames.Count; j++)
+                {
+                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Double)
+                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyDouble { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyDouble)a.AnimationTracks[i].KeyFrames[j]).Value });
+
+                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Int)
+                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyInt { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyInt)a.AnimationTracks[i].KeyFrames[j]).Value });
+
+                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float)
+                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat)a.AnimationTracks[i].KeyFrames[j]).Value });
+
+                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float2)
+                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat2 { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat2)a.AnimationTracks[i].KeyFrames[j]).Value });
+
+                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float3)
+                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat3 { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat3)a.AnimationTracks[i].KeyFrames[j]).Value });
+
+                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float4)
+                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat4 { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat4)a.AnimationTracks[i].KeyFrames[j]).Value });
+
+                }
+
+            }
+            _currentNode.AddComponent(anim);
             // TODO: Test animation and refactor animation method from scene renderer to this converter 
+        }
+
+
+        public void ConvKeyFrames()
+        {
+
         }
 
 
@@ -298,15 +341,29 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponent>();
 
-            _currentNode.Components.Add(new Transform
+            _currentNode.Components.Add(LookupTransform(t));
+        }
+
+
+
+        private Transform LookupTransform(FusTransform t)
+        {
+            SceneComponent sc;
+            if (_componentMap.TryGetValue(t, out sc))
+                return (Transform)sc;
+
+            Transform nt = new Transform
             {
                 Translation = t.Translation,
                 Name = t.Name,
                 Rotation = t.Rotation,
                 Scale = t.Scale,
-                Dummy = t.Dummy
-            });
+            };
+            _componentMap[t] = nt;
+            return nt; 
+            
         }
+
 
         /// <summary>
         /// Converts the material.
