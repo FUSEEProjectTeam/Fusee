@@ -93,17 +93,17 @@ jobs:
     - name: Build Release-Desktop
       run: dotnet build -c Release-Desktop Fusee.sln
     - name: Upload Player-Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: fusee-desktop-${{ matrix.os }}-player
         path: bin/Release/Player/Desktop/
     - name: Upload Tool-Artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: fusee-desktop-${{ matrix.os }}-tools
         path: bin/Release/Tools/
 #    - name: Upload Example-Artifacts
-#      uses: actions/upload-artifact@v2
+#      uses: actions/upload-artifact@v2.2.4
 #      with:
 #        name: fusee-desktop-${{ matrix.os }}-examples
 #        path: bin/Release/Examples/**/Desktop/
@@ -164,7 +164,7 @@ jobs:
     - name: Pack Blender Addon
       run: tar -c -a -f bin\Release\nuget\io_export_fus.zip -C bin\Release\Tools\CmdLine\net6.0\BlenderScripts\addons *
     - name: Upload NuGet-Atrifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: fusee-nuget-${{ matrix.os }}
         path: |
@@ -203,7 +203,7 @@ jobs:
     - name: Patch Blazor
       run: dotnet bin/Release/Tools/Build/Blazorpatch/net6.0/Fusee.Tools.Build.Blazorpatch.dll -p bin/Release/Player/Blazor/net6.0/publish/wwwroot -t All
     - name: Upload Player-Artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v2.2.4
       with:
         name: fusee-blazor-${{ matrix.os }}-player
         path: bin/Release/Player/Blazor/net6.0/publish/
