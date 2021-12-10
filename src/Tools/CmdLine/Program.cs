@@ -14,10 +14,6 @@ namespace Fusee.Tools.CmdLine
                 {
                     pack.Run();
                 })
-                .WithParsed<Web>(pack =>
-                {
-                    pack.Run();
-                })
                 .WithParsed<Player>(player =>
                 {
                     player.Run();

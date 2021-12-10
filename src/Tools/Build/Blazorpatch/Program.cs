@@ -11,12 +11,13 @@ namespace Fusee.Tools.Build.Blazorpatch
         public class Options
         {
             [Option('p', "path", Required = true, HelpText = "Path to Blazor folder")]
-            public string BlazorPath { get; set; }
+            public string? BlazorPath { get; set; }
 
-            [Option('t', "type", Default = ReplaceType.All, HelpText = "Type of replace operation. Valid options: RemoveHashingCheck, DecodePatch, All")]
+            [Option('t', "type", Default = ReplaceType.All, HelpText = "Type of replace operation. Valid options: All, RemoveHashingCheck, DecodePatch, RemoveBaseUrl, CopyPlayerCore, CopyIcos")]
             public ReplaceType ReplaceType { get; set; }
+
             [Option('f', "fuseeroot", HelpText = "Points to the Fusee root directory if not run from there.")]
-            public string FuseeRoot { get; set; }
+            public string? FuseeRoot { get; set; }
         }
 
         public enum ReplaceType
@@ -24,15 +25,18 @@ namespace Fusee.Tools.Build.Blazorpatch
             All,
             RemoveHashingCheck,
             DecodePatch,
+            RemoveBaseUrl,
             CopyPlayerCore,
-            CopyIcos,
-            NoJekyll
+            CopyIcos
         }
 
         public enum ErrorCode : int
         {
             Success,
             ErrorFilePath = -1,
+            ErrorMatches = -2,
+            ErrorFileCopy = -3,
+            ErrorFileDownload = -4,
 
             InternalError = -42
         }
@@ -41,7 +45,11 @@ namespace Fusee.Tools.Build.Blazorpatch
         public const string hashPattern = @"(\(asset.url.*?integrity: asset.hash.*?\))";
         public const string hashReplace = @"(asset.url)";
 
-        public const string decodeFile = @"index.html";
+        public const string baseUrlPattern = @"\s*?<base.*?\/>";
+        public const string baseUrlReplace = @"";
+
+        public const string indexFile = @"index.html";
+
         public const string decodeUrl = @"https://raw.githubusercontent.com/google/brotli/master/js/decode.min.js";
         public const string decodePattern = @"(<script.*?blazor\.webassembly\.js""><\/script>)";
         public const string decodeReplace = @"<script src=""_framework/blazor.webassembly.js"" autostart=""false""></script>
@@ -77,87 +85,169 @@ namespace Fusee.Tools.Build.Blazorpatch
             Parser.Default.ParseArguments<Options>(args)
                   .WithParsed<Options>(o =>
                   {
-                      switch (o.ReplaceType)
+                      if (o != null && o.BlazorPath != null)
                       {
-                          case ReplaceType.RemoveHashingCheck:
-                              RemoveHashingCheck(o.BlazorPath);
-                              break;
-                          case ReplaceType.DecodePatch:
-                              DecodePatch(o.BlazorPath);
-                              break;
-                          case ReplaceType.CopyPlayerCore:
-                              CopyPlayerCore(o.BlazorPath);
-                              break;
-                          case ReplaceType.CopyIcos:
-                              CopyIcos(o.BlazorPath, o.FuseeRoot);
-                              break;
-                          case ReplaceType.NoJekyll:
-                              CreateNojekyll(o.BlazorPath);
-                              break;
-                          case ReplaceType.All:
-                              RemoveHashingCheck(o.BlazorPath);
-                              DecodePatch(o.BlazorPath);
-                              CopyPlayerCore(o.BlazorPath);
-                              CopyIcos(o.BlazorPath, o.FuseeRoot);
-                              CreateNojekyll(o.BlazorPath);
-                              break;
+                          switch (o.ReplaceType)
+                          {
+                              case ReplaceType.RemoveHashingCheck:
+                                  errorCode = RemoveHashingCheck(o.BlazorPath, errorCode);
+                                  break;
+                              case ReplaceType.RemoveBaseUrl:
+                                  errorCode = RemoveBaseUrl(o.BlazorPath, errorCode);
+                                  break;
+                              case ReplaceType.DecodePatch:
+                                  errorCode = DecodePatch(o.BlazorPath, errorCode);
+                                  break;
+                              case ReplaceType.CopyPlayerCore:
+                                  errorCode = CopyPlayerCore(o.BlazorPath, errorCode);
+                                  break;
+                              case ReplaceType.CopyIcos:
+                                  errorCode = CopyIcos(o.BlazorPath, o.FuseeRoot, errorCode);
+                                  break;
+                              case ReplaceType.All:
+                                  if (errorCode == ErrorCode.Success)
+                                      errorCode = RemoveHashingCheck(o.BlazorPath, errorCode);
+
+                                  if (errorCode == ErrorCode.Success)
+                                      errorCode = RemoveBaseUrl(o.BlazorPath, errorCode);
+
+                                  if (errorCode == ErrorCode.Success)
+                                      errorCode = DecodePatch(o.BlazorPath, errorCode);
+
+                                  if (errorCode == ErrorCode.Success)
+                                      errorCode = CopyPlayerCore(o.BlazorPath, errorCode);
+
+                                  if (errorCode == ErrorCode.Success)
+                                      errorCode = CopyIcos(o.BlazorPath, o.FuseeRoot, errorCode);
+
+                                  break;
+                          }
+                      }
+                      else
+                      {
+                          errorCode = ErrorCode.InternalError;
                       }
                   });
 
             Environment.Exit((int)errorCode);
         }
 
-        public static void RemoveHashingCheck(string filePath)
+        public static ErrorCode RemoveHashingCheck(string filePath, ErrorCode errorCode)
         {
             var fileContent = File.ReadAllText(Path.Combine(filePath, hashFile));
 
-            var newFileContent = Regex.Replace(fileContent, hashPattern, hashReplace);
+            var matches = Regex.Matches(fileContent, hashPattern);
 
-            File.WriteAllText(Path.Combine(filePath, hashFile), newFileContent);
+            if (matches.Count == 1)
+            {
+                var newFileContent = Regex.Replace(fileContent, hashPattern, hashReplace);
+                File.WriteAllText(Path.Combine(filePath, hashFile), newFileContent);
+                Console.WriteLine("Removed hashing check.");
+            }
+            else
+            {
+                Console.WriteLine($"Error: unexpected number of matches for RemoveHashingCheck. Expected: 1, Found: {matches.Count}");
+                return ErrorCode.ErrorMatches;
+            }
+            return errorCode;
         }
 
-        public static void DecodePatch(string filePath)
+        public static ErrorCode RemoveBaseUrl(string filePath, ErrorCode errorCode)
+        {
+            var fileContent = File.ReadAllText(Path.Combine(filePath, indexFile));
+
+            var matches = Regex.Matches(fileContent, baseUrlPattern);
+
+            if (matches.Count == 1)
+            {
+                var newFileContent = Regex.Replace(fileContent, baseUrlPattern, baseUrlReplace);
+                File.WriteAllText(Path.Combine(filePath, indexFile), newFileContent);
+                Console.WriteLine("Removed <base> tag.");
+            }
+            else
+            {
+                Console.WriteLine($"Error: unexpected number of matches for RemoveBaseUrl. Expected: 1, Found: {matches.Count}");
+                return ErrorCode.ErrorMatches;
+            }
+            return errorCode;
+        }
+
+        public static ErrorCode DecodePatch(string filePath, ErrorCode errorCode)
         {
             using (var client = new HttpClient())
             {
-                var response = client.GetAsync(decodeUrl).Result;
+                try
+                {
+                    var response = client.GetAsync(decodeUrl).Result;
 
-                if (response.IsSuccessStatusCode)
-                {
-                    using var fs = File.Create(Path.Combine(filePath, "decode.min.js"));
-                    response.Content.CopyToAsync(fs);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        using var fs = File.Create(Path.Combine(filePath, "decode.min.js"));
+                        response.Content.CopyToAsync(fs);
+                    }
+                    else
+                    {
+                        throw new FileNotFoundException(decodeUrl);
+                    }
                 }
-                else
+                catch (Exception ex)
                 {
-                    throw new FileNotFoundException(decodeUrl);
+                    Console.WriteLine("Error: Could not download decode.min.js: " + ex);
+                    return ErrorCode.ErrorFileDownload;
                 }
             }
 
-            var fileContent = File.ReadAllText(Path.Combine(filePath, decodeFile));
+            var fileContent = File.ReadAllText(Path.Combine(filePath, indexFile));
 
-            var newFileContent = Regex.Replace(fileContent, decodePattern, decodeReplace);
+            var matches = Regex.Matches(fileContent, decodePattern);
 
-            File.WriteAllText(Path.Combine(filePath, decodeFile), newFileContent);
+            if (matches.Count == 1)
+            {
+                var newFileContent = Regex.Replace(fileContent, decodePattern, decodeReplace);
+                File.WriteAllText(Path.Combine(filePath, indexFile), newFileContent);
+                Console.WriteLine("Added and linked decode.min.js.");
+            }
+            else
+            {
+                Console.WriteLine($"Error: unexpected number of matches for DecodePatch. Expected: 1, Found: {matches.Count}");
+                return ErrorCode.ErrorMatches;
+            }
+            return errorCode;
         }
 
-        public static void CopyPlayerCore(string filePath)
+        public static ErrorCode CopyPlayerCore(string filePath, ErrorCode errorCode)
         {
-            File.Copy(Path.Combine(filePath, "_framework", "Fusee.Engine.Player.Core.dll"), Path.Combine(filePath, "Fusee.Engine.Player.Core.dll"));
+            try
+            {
+                File.Copy(Path.Combine(filePath, "_framework", "Fusee.Engine.Player.Core.dll"), Path.Combine(filePath, "Fusee.Engine.Player.Core.dll"), true);
+                Console.WriteLine("Copied Fusee.Engine.Player.Core.dll.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: Could not copy Fusee.Engine.Player.Core.dll: " + ex);
+                return ErrorCode.ErrorFileCopy;
+            }
+            return errorCode;
         }
-        public static void CopyIcos(string filePath, string? fuseeRoot)
+        public static ErrorCode CopyIcos(string filePath, string? fuseeRoot, ErrorCode errorCode)
         {
             var sourcePath = deliverablesPath;
 
             if (!string.IsNullOrWhiteSpace(fuseeRoot))
                 sourcePath = Path.Combine(fuseeRoot, sourcePath);
 
-            File.Copy(Path.Combine(sourcePath, "FuseeLogo.ico"), Path.Combine(filePath, "favicon.ico"));
-            File.Copy(Path.Combine(sourcePath, "FuseeIcon512WithText.png"), Path.Combine(filePath, "icon-512.png"));
-        }
-
-        public static void CreateNojekyll(string filePath)
-        {
-            File.Create(Path.Combine(filePath, ".nojekyll"));
+            try
+            {
+                File.Copy(Path.Combine(sourcePath, "FuseeLogo.ico"), Path.Combine(filePath, "favicon.ico"), true);
+                File.Copy(Path.Combine(sourcePath, "FuseeIcon512WithText.png"), Path.Combine(filePath, "icon-512.png"), true);
+                Console.WriteLine("Copied ico files.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error could not copy ico files: " + ex);
+                return ErrorCode.ErrorFileCopy;
+            }
+            return errorCode;
         }
     }
 }
