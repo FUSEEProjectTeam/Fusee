@@ -27,7 +27,6 @@ namespace Fusee.Engine.Core
         public void PrePassTraverse(SceneContainer sc)
         {
             _currentLight = 0;
-            //LightPrepassResuls.Clear();
             CameraPrepassResults.Clear();
             Traverse(sc.Children);
         }
