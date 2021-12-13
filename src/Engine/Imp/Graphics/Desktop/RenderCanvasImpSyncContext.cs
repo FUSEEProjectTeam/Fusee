@@ -5,11 +5,9 @@ using System.Threading;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
-    internal class DesktopRenderCanvasImpContext : SynchronizationContext
+    internal class RenderCanvasImpSyncContext : SynchronizationContext
     {
-        private readonly ConcurrentQueue<Tuple<SendOrPostCallback, object?>> _allCallbacks =
-    new();
-
+        private readonly ConcurrentQueue<Tuple<SendOrPostCallback, object?>> _allCallbacks = new();
 
         public override void Post(SendOrPostCallback d, object? state)
         {

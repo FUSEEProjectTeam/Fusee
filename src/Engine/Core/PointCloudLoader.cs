@@ -1,11 +1,9 @@
 using Fusee.Base.Core;
-using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.PotreeReader.V1;
 using Fusee.Structures;
-using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -21,19 +19,9 @@ namespace Fusee.Engine.Core
     public class PointCloudLoader<TPoint> : IDisposable where TPoint : new()
     {
         /// <summary>
-        /// Caches already created meshes.
-        /// </summary>
-        public MemoryCache<IEnumerable<Mesh>> MeshCache { get; private set; }
-
-        /// <summary>
-        /// Cahces loaded points.
+        /// Caches loaded points.
         /// </summary>
         public MemoryCache<TPoint[]> PointCache { get; private set; }
-
-        /// <summary>
-        /// Flat list of meshes that will be rendered.
-        /// </summary>
-        public List<Mesh> MeshesToRender;
 
         /// <summary>
         /// If true, the visible octants will be rendered as WireframeCubes.
@@ -79,7 +67,6 @@ namespace Fusee.Engine.Core
             set
             {
                 _loadingQueue.Clear();
-                MeshesToRender.Clear();
                 _visibleNodesOrderedByProjectionSize.Clear();
                 _octree = value;
             }
@@ -123,48 +110,39 @@ namespace Fusee.Engine.Core
         private float _deltaTimeSinceLastUpdate;
 
         private float _minProjSizeModifier = 0.1f;
-        private readonly PointType _ptType;
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
         private double _minScreenProjectedSize;
 
-        // Allowes traversal in order of screen projected size.
+        // Allows traversal in order of screen projected size.
         private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
 
         //All visible nodes
-        private List<Guid> _visibleNodes;
+        public List<Guid> VisibleNodes { get; private set; }
 
         //Nodes that are queued for loading in the background
         private List<Guid> _loadingQueue;
 
         private bool _disposed;
 
-        private List<IEnumerable<Mesh>> _disposeQueue;
-
         //Number of nodes that will be loaded, starting with the one with the biggest screen projected size to ensure no octant is loaded that will be invisible in a few frames.
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _maxNumberOfNodesToLoad = 5;
-
-        private readonly int _maxNumberOfDisposals = 3;
 
         private double3 _camPosD;
         private float _fov;
 
         private static readonly object _lockLoadingQueue = new();
-        private static readonly object _lockDisposeQueue = new();
-        public static readonly object LockMeshesToRender = new();
 
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloudLoader{TPoint}"/>.
         /// </summary>
         /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
-        /// <param name="ptType">The <see cref="PointType"/> of the point cloud that is loaded.</param>
-        public PointCloudLoader(string fileFolderPath, PointType ptType)
+        public PointCloudLoader(string fileFolderPath, int numberOfOctants)
         {
-            _ptType = ptType;
             _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PtOctantRead<TPoint>>(); // visible nodes ordered by screen-projected-size;            
             FileFolderPath = fileFolderPath;
-            InitCollections(Directory.GetFiles($"{FileFolderPath}\\Octants").Length);
+            InitCollections(numberOfOctants);
         }
 
         /// <summary>
@@ -185,32 +163,6 @@ namespace Fusee.Engine.Core
                 _deltaTimeSinceLastUpdate = 0;
                 //Traverses ordered by projected size.
                 DetermineVisibility();
-
-                if (_disposeQueue.Count > 0)
-                {
-                    lock (_lockDisposeQueue)
-                    {
-                        var nodesInQueue = _disposeQueue.Count;
-                        var count = nodesInQueue < _maxNumberOfDisposals ? nodesInQueue : _maxNumberOfDisposals;
-                        for (int i = 0; i < count; i++)
-                        {
-                            var meshes = _disposeQueue.Last();
-                            _disposeQueue.RemoveAt(_disposeQueue.Count - 1);
-                            foreach (var mesh in meshes)
-                                mesh.Dispose();
-                        }
-                    }
-                }
-
-                lock (LockMeshesToRender)
-                {
-                    MeshesToRender.Clear();
-                    foreach (var guid in _visibleNodes)
-                    {
-                        if (MeshCache.TryGetValue(guid, out var meshes))
-                            MeshesToRender.AddRange(meshes);
-                    }
-                }
             }
 
             WasSceneUpdated = true;
@@ -218,26 +170,21 @@ namespace Fusee.Engine.Core
 
         private void InitCollections(int octantCnt)
         {
-            _visibleNodes = new(octantCnt);
-            MeshCache = new();
-            MeshCache.AddItem += OnCreateMesh;
-            MeshCache.HandleEvictedItem = OnItemEvictedFromCache;
+            VisibleNodes = new(octantCnt);
             PointCache = new();
             PointCache.AddItem += OnLoadPoints;
             _loadingQueue = new(octantCnt);
-            MeshesToRender = new(octantCnt);
-            _disposeQueue = new List<IEnumerable<Mesh>>(octantCnt);
         }
 
         /// <summary>
         /// Traverses the scene nodes the point cloud is stored in and searches for visible nodes in screen-projected-size order.
-        /// Recursive traversal stopps if: the screen-projected size is too small, a certain "global" point threshold is reached.
+        /// Recursive traversal stops if: the screen-projected size is too small, a certain "global" point threshold is reached.
         /// </summary>
         private void DetermineVisibility()
         {
             NumberOfVisiblePoints = 0;
             _visibleNodesOrderedByProjectionSize.Clear();
-            _visibleNodes.Clear();
+            VisibleNodes.Clear();
 
             DetermineVisibilityForNode((PtOctantRead<TPoint>)_octree.Root);
 
@@ -257,10 +204,7 @@ namespace Fusee.Engine.Core
 
                     Task.Run(async () =>
                     {
-                        await PointCache.AddOrUpdate(octant.Guid, new LoadPointsEventArgs<TPoint>(octant, FileFolderPath, PtAccessor));
-                        PointCache.TryGetValue(octant.Guid, out var points);
-
-                        await MeshCache.AddOrUpdate(octant.Guid, new CreateMeshEventArgs<TPoint>(octant, points));
+                        await PointCache.AddOrUpdate(octant.Guid, new LoadPointEventArgs<TPoint>(octant, FileFolderPath, PtAccessor));
 
                         lock (_lockLoadingQueue)
                         {
@@ -272,14 +216,13 @@ namespace Fusee.Engine.Core
                             NumberOfVisiblePoints += octant.NumberOfPointsInNode;
                     });
 
-                    _visibleNodes.Add(octant.Guid);
+                    VisibleNodes.Add(octant.Guid);
                     _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
                     DetermineVisibilityForChildren(kvp.Value);
                 }
                 else
                     return;
             }
-
         }
 
         private void DetermineVisibilityForChildren(PtOctantRead<TPoint> node)
@@ -312,92 +255,10 @@ namespace Fusee.Engine.Core
             _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
         }
 
-        private void OnItemEvictedFromCache(object guid, object meshes, EvictionReason reason, object state)
-        {
-            _disposeQueue.Add((IEnumerable<Mesh>)meshes);
-        }
-
-        private async Task<IEnumerable<Mesh>> OnCreateMesh(object sender, EventArgs e)
-        {
-            var meshArgs = (CreateMeshEventArgs<TPoint>)e;
-            return await LoadMeshAsync(meshArgs.Octant, meshArgs.Points);
-        }
-
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
-            var meshArgs = (LoadPointsEventArgs<TPoint>)e;
+            var meshArgs = (LoadPointEventArgs<TPoint>)e;            
             return await ReadPotreeData<TPoint>.LoadPointsForNodeAsync(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
-        }
-
-        //Loading 
-        private async Task<IEnumerable<Mesh>> LoadMeshAsync(PtOctantRead<TPoint> octant, TPoint[] points)
-        {
-            octant.NumberOfPointsInNode = points.Length;
-            var meshes = await GetMeshsForOctantAsync(PtAccessor, _ptType, points);
-            return meshes;
-        }
-
-        /// <summary>
-        /// Returns meshes for point clouds that only have position information in double precision.
-        /// </summary>
-        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
-        /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
-        /// <param name="pointsInNode">The lists of "raw" points.</param>
-        private async Task<List<Mesh>> GetMeshsForOctantAsync(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
-        {
-            return await Task.Run(() => { return GetMeshsForOctant(ptAccessor, ptType, pointsInNode); });
-        }
-
-        /// <summary>
-        /// Returns meshes for point clouds that only have position information in double precision.
-        /// </summary>
-        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
-        /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
-        /// <param name="pointsInNode">The lists of "raw" points.</param>
-        private List<Mesh> GetMeshsForOctant(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode)
-        {
-            int maxVertCount = ushort.MaxValue - 1;
-            var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);
-            List<Mesh> meshes = new(noOfMeshes);
-            var ptCnt = pointsInNode.Length;
-
-            int meshCnt = 0;
-
-            for (int i = 0; i < ptCnt; i += maxVertCount)
-            {
-                int numberOfPointsInMesh;
-                if (noOfMeshes == 1)
-                    numberOfPointsInMesh = ptCnt;
-                else if (noOfMeshes == meshCnt + 1)
-                    numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
-                else
-                    numberOfPointsInMesh = maxVertCount;
-
-                TPoint[] points;
-                if (ptCnt > maxVertCount)
-                {
-                    points = new TPoint[numberOfPointsInMesh];
-                    Array.Copy(pointsInNode, i, points, 0, numberOfPointsInMesh);
-                }
-                else
-                    points = pointsInNode;
-                Mesh mesh = ptType switch
-                {
-                    PointType.Pos64 => MeshFromPointCloudPoints.GetMeshPos64(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Col32IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64IShort => MeshFromPointCloudPoints.GetMeshPos64IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Col32 => MeshFromPointCloudPoints.GetMeshPos64Col32(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Label8 => MeshFromPointCloudPoints.GetMeshPos64Label8(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Nor32Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Nor32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32IShort(ptAccessor, points, false, float3.Zero),
-                    PointType.Pos64Nor32Col32 => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32(ptAccessor, points, false, float3.Zero),
-                    _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
-                };
-                meshes.Add(mesh);
-                meshCnt++;
-            }
-
-            return meshes;
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
@@ -431,13 +292,7 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-                    foreach (var meshes in _disposeQueue)
-                    {
-                        foreach (var mesh in meshes)
-                        {
-                            mesh.Dispose();
-                        }
-                    }
+
                 }
                 _disposed = true;
             }

@@ -50,9 +50,10 @@ namespace Fusee.Base.Core
                             .SetPriority(CacheItemPriority.High)
                             // Keep in cache for this time, reset time if accessed.
                             .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
+
                         cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
                         {
-                            _meshLocks.Remove(subkey, out _);                            
+                            _meshLocks.Remove(subkey, out _);
                             HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
                             
                         });

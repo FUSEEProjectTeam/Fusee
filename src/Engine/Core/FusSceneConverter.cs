@@ -549,7 +549,7 @@ namespace Fusee.Engine.Core
             // convert mesh
             mesh = new Mesh
             {
-                MeshType = m.MeshType,
+                MeshType = (PrimitiveType)m.MeshType,
                 Active = true,
                 BiTangents = m.BiTangents,
                 BoneIndices = m.BoneIndices,
@@ -1264,7 +1264,7 @@ namespace Fusee.Engine.Core
             // convert mesh
             var mesh = new FusMesh
             {
-                MeshType = m.MeshType,
+                MeshType = (int)m.MeshType,
                 BiTangents = m.BiTangents,
                 BoneIndices = m.BoneIndices,
                 BoundingBox = m.BoundingBox,

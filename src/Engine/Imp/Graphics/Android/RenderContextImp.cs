@@ -1697,12 +1697,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 switch (((MeshImp)mr).MeshType)
                 {
-                    case OpenGLPrimitiveType.Triangles:
+                    case Common.PrimitiveType.Triangles:
                     default:
                         GL.DrawElements(BeginMode.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.Points:
+                    case Common.PrimitiveType.Points:
                         // enable gl_PointSize to set the point size
                         GL.Enable(EnableCap.DepthTest);
                         //GL.Enable(EnableCap.DepthTest);
@@ -1711,27 +1711,27 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         GL.DrawElements(BeginMode.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.Lines:
+                    case Common.PrimitiveType.Lines:
                         GL.DrawElements(BeginMode.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LineLoop:
+                    case Common.PrimitiveType.LineLoop:
                         GL.DrawElements(BeginMode.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.LineStrip:
+                    case Common.PrimitiveType.LineStrip:
                         GL.DrawElements(BeginMode.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.Patches:
+                    case Common.PrimitiveType.Patches:
                         throw new NotSupportedException("Patches is no valid primitive type within OpenGL ES 3.0");
-                    case OpenGLPrimitiveType.QuadStrip:
+                    case Common.PrimitiveType.QuadStrip:
                         throw new NotSupportedException("Quad strip is no valid primitive type within OpenGL ES 3.0");
-                    case OpenGLPrimitiveType.TriangleFan:
+                    case Common.PrimitiveType.TriangleFan:
                         GL.DrawElements(BeginMode.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
 
-                    case OpenGLPrimitiveType.TriangleStrip:
+                    case Common.PrimitiveType.TriangleStrip:
                         GL.DrawElements(BeginMode.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }

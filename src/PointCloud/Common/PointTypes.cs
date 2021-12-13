@@ -122,7 +122,7 @@ namespace Fusee.PointCloud.Common
     }
 
     /// <summary>
-    /// Point type: Position, color of the structification.
+    /// Point type: Position and label color.
     /// </summary>
     public struct Pos64Label8
     {

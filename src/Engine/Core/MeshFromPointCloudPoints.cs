@@ -1,7 +1,6 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.Engine.Core.Scene;
 
 namespace Fusee.Engine.Core
 {
@@ -17,7 +16,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -27,15 +27,9 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -45,13 +39,13 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-
-                currentMesh.Triangles[i] = (ushort)i;
-
+                vertices[i] = posF;
+                boundingBox |= posF;
+                triangles[i] = (ushort)i;
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
 
@@ -62,7 +56,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64Col32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64Col32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -72,15 +67,11 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var colors1 = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -90,17 +81,19 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-                currentMesh.Triangles[i] = (ushort)i;
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+                triangles[i] = (ushort)i;
 
                 var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                currentMesh.Colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
                 var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
-                currentMesh.Colors1[i] = ColorToUInt(intensity, intensity, intensity, 255);
+                colors1[i] = ColorToUInt(intensity, intensity, intensity, 255);
 
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors, colors1);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -110,7 +103,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -120,15 +114,10 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -138,13 +127,15 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-                currentMesh.Triangles[i] = (ushort)i;
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+                triangles[i] = (ushort)i;
                 var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
-                currentMesh.Colors[i] = ColorToUInt(intensity, intensity, intensity, 255);
+                colors[i] = ColorToUInt(intensity, intensity, intensity, 255);
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -154,7 +145,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64Label8<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64Label8<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -164,15 +156,10 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -182,16 +169,18 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-                currentMesh.Triangles[i] = (ushort)i;
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+                triangles[i] = (ushort)i;
 
                 var lbl = ptAccessor.GetLabelUInt_8(ref points[i]);
                 var colorScale = new float3[4] { new float3(0, 0, 1), new float3(0, 1, 0), new float3(1, 1, 0), new float3(1, 0, 0) };
-                currentMesh.Colors[i] = ColorToUint(LabelToColor(colorScale, 32, lbl));
+                colors[i] = ColorToUint(LabelToColor(colorScale, 32, lbl));
 
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -201,7 +190,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64Nor32Col32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64Nor32Col32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -211,15 +201,12 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var normals = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var colors1 = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -229,18 +216,20 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-                currentMesh.Triangles[i] = (ushort)i;
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+                triangles[i] = (ushort)i;
 
                 var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                currentMesh.Colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
                 var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
-                currentMesh.Colors1[i] = ColorToUInt(intensity, intensity, intensity, 255);
-                currentMesh.Normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
+                colors1[i] = ColorToUInt(intensity, intensity, intensity, 255);
+                normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
 
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, normals, colors, colors1);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -250,7 +239,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64Nor32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64Nor32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -260,15 +250,11 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var normals = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -278,16 +264,18 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-                currentMesh.Triangles[i] = (ushort)i;
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+                triangles[i] = (ushort)i;
 
                 var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
-                currentMesh.Colors[i] = ColorToUInt(intensity, intensity, intensity, 255);
-                currentMesh.Normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
+                colors[i] = ColorToUInt(intensity, intensity, intensity, 255);
+                normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
 
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, normals, colors);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -297,7 +285,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64Nor32Col32<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64Nor32Col32<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -307,15 +296,11 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var normals = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -325,16 +310,18 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
-                currentMesh.Triangles[i] = (ushort)i;
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+                triangles[i] = (ushort)i;
 
                 var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                currentMesh.Colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
-                currentMesh.Normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
+                colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
 
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, normals, colors);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -344,7 +331,8 @@ namespace Fusee.Engine.Core
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
-        public static Mesh GetMeshPos64Col32<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector) where TPoint : new()
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMeshPos64Col32<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -354,15 +342,10 @@ namespace Fusee.Engine.Core
                 ExchangeYZ(ref firstPos);
 
             var firstPosF = (float3)firstPos - translationVector;
-
-            Mesh currentMesh = new()
-            {
-                Vertices = new float3[numberOfPointsInMesh],
-                Triangles = new ushort[numberOfPointsInMesh],
-                Colors = new uint[numberOfPointsInMesh],
-                MeshType = (int)OpenGLPrimitiveType.Points,
-                BoundingBox = new AABBf(firstPosF, firstPosF)
-            };
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
 
             for (int i = 0; i < points.Length; i++)
             {
@@ -372,14 +355,16 @@ namespace Fusee.Engine.Core
 
                 var posF = (float3)pos - translationVector;
 
-                currentMesh.Vertices[i] = posF;
-                currentMesh.BoundingBox |= currentMesh.Vertices[i];
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
 
-                currentMesh.Triangles[i] = (ushort)i;
+                triangles[i] = (ushort)i;
                 var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                currentMesh.Colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
             }
-            return currentMesh;
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
         }
 
         /// <summary>
@@ -465,7 +450,7 @@ namespace Fusee.Engine.Core
         /// Returns a color for a given label/class (represented by an int).
         /// </summary>
         /// <param name="colors">The given colors.</param>
-        /// <param name="numberOfLabels">The number of lables.</param>
+        /// <param name="numberOfLabels">The number of labels.</param>
         /// <param name="label">THe label.</param>
         /// <returns></returns>
         private static float3 LabelToColor(float3[] colors, int numberOfLabels, int label)

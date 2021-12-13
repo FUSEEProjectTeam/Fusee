@@ -174,6 +174,44 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            if (PtRenderingParams.Instance.EdlStrength != 0f)
+            {
+                //Render Depth-only pass
+                PtRenderingParams.Instance.DepthPassEf.Active = true;
+                PtRenderingParams.Instance.ColorPassEf.Active = false;
+
+                _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
+                _sceneRenderer.Render(RC);
+                _cam.RenderTexture = null;
+
+                PtRenderingParams.Instance.DepthPassEf.Active = false;
+                PtRenderingParams.Instance.ColorPassEf.Active = true;
+            }
+
+            _sceneRenderer.Render(RC);
+
+            //Render GUI
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            // Constantly check for interactive objects.
+            if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
+            {
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+
+                if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                {
+                    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                }
+            }
+            _guiRenderer.Render(RC);
+
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+            Present();
+
+            ReadyToLoadNewFile = true;
+        }
+
+        public override void Update()
+        {
             var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
 
             // ------------ Enable to update the Scene only when the user isn't moving ------------------
@@ -213,23 +251,23 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             {
                 _keys = false;
 
-                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTimeUpdate * 0.0005f;
             }
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
                 float2 touchVel;
                 touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTimeUpdate * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTimeUpdate * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis;
                 }
             }
 
@@ -238,7 +276,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 _angleHorz -= velRot.y;
                 _angleVert -= velRot.x;
 
-                float speed = DeltaTime * 12;
+                float speed = 12;
 
                 _camTransform.FpsView(_angleHorz, _angleVert, velPos.z, velPos.x, speed);
                 _camTransform.Translation += new float3(0, velPos.y * speed, 0);
@@ -251,45 +289,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 _angleVelVert = 0;
 
                 if (HasUserMoved())
-                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
+                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 20);
             }
-
-            //----------------------------  
-
-            if (PtRenderingParams.Instance.EdlStrength != 0f)
-            {
-                //Render Depth-only pass
-                PtRenderingParams.Instance.DepthPassEf.Active = true;
-                PtRenderingParams.Instance.ColorPassEf.Active = false;
-
-                _cam.RenderTexture = PtRenderingParams.Instance.ColorPassEf.DepthTex;
-                _sceneRenderer.Render(RC);
-                _cam.RenderTexture = null;
-
-                PtRenderingParams.Instance.DepthPassEf.Active = false;
-                PtRenderingParams.Instance.ColorPassEf.Active = true;
-            }
-
-            _sceneRenderer.Render(RC);
-
-            //Render GUI
-            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            // Constantly check for interactive objects.
-            if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
-            {
-                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-
-                if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-                {
-                    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-                }
-            }
-            _guiRenderer.Render(RC);
-
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
-            Present();
-
-            ReadyToLoadNewFile = true;
         }
 
         private void OnThresholdChanged(int newValue)
@@ -351,7 +352,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         {
             _camTransform.Translation = _initCameraPos;
             _angleHorz = _angleVert = 0;
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 20);
         }
     }
 }

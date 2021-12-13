@@ -20,6 +20,20 @@ namespace Fusee.Engine.Common
     [ProtoContract]
     public interface IMeshImp
     {
+        int VertexArrayObject { get; set; }
+        int VertexBufferObject { get; set; }
+        int NormalBufferObject { get; set; }
+        int ColorBufferObject { get; set; }
+        int ColorBufferObject1 { get; set; }
+        int ColorBufferObject2 { get; set; }
+        int UVBufferObject { get; set; }
+        int BoneIndexBufferObject { get; set; }
+        int BoneWeightBufferObject { get; set; }
+        int ElementBufferObject { get; set; }
+        int TangentBufferObject { get; set; }
+        int BitangentBufferObject { get; set; }
+        int NElements { get; set; }
+
         /// <summary>
         /// Implementation Task: Invalidates the VertexArrayObject of the mesh.
         /// </summary>
@@ -153,14 +167,19 @@ namespace Fusee.Engine.Common
         /// Implementation Tasks: Gets a value indicating whether [Tangents Set].
         /// </summary>
         bool TangentsSet { get; }
+
+        void InvalidateTangents();
+
         /// <summary>
         /// Implementation Tasks: Gets a value indicating whether [BiTangents Set].
         /// </summary>
         bool BiTangentsSet { get; }
 
+        void InvalidateBiTangents();
+
         /// <summary>
         ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
         /// </summary>
-        OpenGLPrimitiveType MeshType { get; set; }
+        PrimitiveType MeshType { get; set; }
     }
 }

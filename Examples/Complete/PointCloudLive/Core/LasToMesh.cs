@@ -1,5 +1,4 @@
 ﻿using Fusee.Engine.Core;
-using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.PointCloudFileReader.Las;
@@ -18,7 +17,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         /// <param name="pathToFile">The path to the las file.</param>
         /// <param name="box">The <see cref="AABBf"/> of the point cloud.</param>
         /// <param name="doExchangeYZ"></param>
-        public static List<Mesh> GetMeshsFromLasFile<TPoint>(PointAccessor<TPoint> ptAccessor, PointType ptType, string pathToFile, out AABBf box, bool doExchangeYZ = false) where TPoint : new()
+        public static List<GpuMesh> GetMeshsFromLasFile<TPoint>(PointAccessor<TPoint> ptAccessor, PointType ptType, string pathToFile, out AABBf box, CreateGpuMesh createGpuMesh, bool doExchangeYZ = false) where TPoint : new()
         {
             var reader = new LasPointReader(pathToFile);
             var pointCnt = ((LasMetaInfo)reader.MetaInfo).PointCnt;
@@ -26,7 +25,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             var noOfMeshes = (int)System.Math.Ceiling((float)pointCnt / maxVertCount);
             TPoint[] points = new TPoint[maxVertCount];
             var meshCnt = 0;
-            var meshes = new List<Mesh>();
+            var meshes = new List<GpuMesh>();
             box = new();
 
             for (int i = 0; i < pointCnt; i += maxVertCount)
@@ -39,16 +38,16 @@ namespace Fusee.Examples.PointCloudLive.Core
                 else
                     numberOfPointsInMesh = maxVertCount;
                 points = reader.ReadNPoints(numberOfPointsInMesh, ptAccessor);
-                Mesh mesh = ptType switch
+                GpuMesh mesh = ptType switch
                 {
-                    PointType.Pos64 => MeshFromPointCloudPoints.GetMeshPos64(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Col32IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64IShort => MeshFromPointCloudPoints.GetMeshPos64IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64Col32 => MeshFromPointCloudPoints.GetMeshPos64Col32(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64Label8 => MeshFromPointCloudPoints.GetMeshPos64Label8(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64Nor32Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64Nor32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32IShort(ptAccessor, points, doExchangeYZ, float3.Zero),
-                    PointType.Pos64Nor32Col32 => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32(ptAccessor, points, doExchangeYZ, float3.Zero),
+                    PointType.Pos64 => MeshFromPointCloudPoints.GetMeshPos64(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Col32IShort(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64IShort => MeshFromPointCloudPoints.GetMeshPos64IShort(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64Col32 => MeshFromPointCloudPoints.GetMeshPos64Col32(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64Label8 => MeshFromPointCloudPoints.GetMeshPos64Label8(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64Nor32Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64Nor32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32IShort(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
+                    PointType.Pos64Nor32Col32 => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh),
                     _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
                 };
                 if (i == 0)

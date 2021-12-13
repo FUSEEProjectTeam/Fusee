@@ -211,7 +211,7 @@ namespace Fusee.Engine.Core
                                         LerpType.Slerp => Lerp.Float3QuaternionSlerp,
                                         _ => throw new InvalidOperationException(
              "Unknown lerp type: animTrackContainer.LerpType: " +
-             (int)animTrackContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+             (int)animTrackContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameOf(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
                                                // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                                     };
                                     var channel = new Channel<float3>(lerpFunc);
@@ -670,6 +670,33 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// If a Mesh is visited the shader parameters for all lights in the scene are updated and the geometry is passed to be pushed through the rendering pipeline.        
+        /// </summary>
+        /// <param name="mesh">The Mesh.</param>
+        [VisitMethod]
+        public void RenderMesh(GpuMesh mesh)
+        {
+            if (!mesh.Active) return;
+            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
+                return;
+
+            if (DoFrumstumCulling)
+            {
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
+                        return;
+                }
+            }
+
+            var renderStatesBefore = _rc.CurrentRenderState.Copy();
+            _rc.Render(mesh, true);
+            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+        }
+
+        /// <summary>
         /// Adds bone indices and bone weights from a <see cref="Weight"/> to a mesh.
         /// </summary>
         /// <param name="mesh"></param>
@@ -738,25 +765,37 @@ namespace Fusee.Engine.Core
             RenderPointCloudT(pointCloud);
         }
 
-        private static readonly object _lockMeshesToRender = new();
-
         private void RenderPointCloudT<T>(PointCloud<T> pointCloud) where T : new()
         {
             if (!pointCloud.Active) return;
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
             if (_rc.InvView == float4x4.Identity) return;
+
             pointCloud.Fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
             pointCloud.CamPos = _rc.InvView.Column4.xyz;
             pointCloud.RenderFrustum = _rc.RenderFrustum;
             pointCloud.ViewportHeight = _rc.ViewportHeight;
-            
-            foreach (var mesh in pointCloud.GetMeshes())
+
+            pointCloud.Update();
+
+            foreach (var guid in pointCloud.PointCloudLoader.VisibleNodes)
             {
-                var renderStatesBefore = _rc.CurrentRenderState.Copy();
-                _rc.Render(mesh, true);
-                _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+                if (!pointCloud.PointCloudLoader.PointCache.TryGetValue(guid, out var points)) return;
+
+                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<T>(points, _rc));
+
+                if (pointCloud.MeshCache.TryGetValue(guid, out var meshes))
+                {
+                    foreach (var mesh in meshes)
+                    {
+                        var renderStatesBefore = _rc.CurrentRenderState.Copy();
+                        _rc.Render(mesh, true);
+                        _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
+                    }
+                }
             }
+            
         }
 
         #endregion
