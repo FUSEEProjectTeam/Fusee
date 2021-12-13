@@ -89,7 +89,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
 
     doApplyScale: BoolProperty(
         name="Apply Scale",
-        description="Apply object scale tranformations on meshes and reset scale settings to 1.0",
+        description="Apply object scale transformations on meshes and reset scale settings to 1.0",
         default=True,
     )
 

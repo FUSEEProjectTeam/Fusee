@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Defines if the node was loaded into memory.
         /// </summary>
-        public bool WasLoaded;
+        public bool WasLoaded = false;
 
         /// <summary>
         /// Number of point cloud points, this node holds.

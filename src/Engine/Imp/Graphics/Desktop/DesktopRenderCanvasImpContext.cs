@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
-using System.Text;
 using System.Threading;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop

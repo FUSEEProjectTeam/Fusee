@@ -73,7 +73,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             _pcFx = new PointCloudSurfaceEffect
             {
                 PointSize = 5,
-                ColorMode = (int)ColorMode.Point,
+                ColorMode = (int)ColorMode.VertexColor0,
                 PointShape = (int)PointShape.Paraboloid,
                 DepthTex = _depthTex,
                 EDLStrength = 1f,
@@ -86,8 +86,8 @@ namespace Fusee.Examples.PointCloudLive.Core
             {
                 Children = new List<SceneNode>()
                 {
-                    _node,
-                    camNode
+                    camNode,
+                    _node
                 }
             };
 
@@ -150,15 +150,15 @@ namespace Fusee.Examples.PointCloudLive.Core
             if (_pcFx.EDLNeighbourPixels > 0 && _renderForward)
             {
                 //Render Depth-only pass
-                _node.RemoveComponent<PointCloudSurfaceEffect>();
-                _node.Components.Insert(0, _depthFx);
+                _pcFx.Active = false;
+                _depthFx.Active = true;
 
                 _mainCam.RenderTexture = _depthTex;
                 _sceneRenderer.Render(RC);
                 _mainCam.RenderTexture = null;
 
-                _node.RemoveComponent<ShaderEffect>();
-                _node.Components.Insert(0, _pcFx);
+                _pcFx.Active = true;
+                _depthFx.Active = false;
             }
 
             _sceneRenderer.Render(RC);
@@ -195,8 +195,8 @@ namespace Fusee.Examples.PointCloudLive.Core
                 new FxParamDeclaration<float2> {Name = UniformNameDeclarations.ViewportPx, Value = screenParams},
 
                 new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSize, Value = ptSize},
-                new FxParamDeclaration<int> {Name = "PointShape", Value = ptShape},
-                new FxParamDeclaration<int> {Name = "PointSizeMode", Value = ptMode},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointShape, Value = ptShape},
+                new FxParamDeclaration<int> {Name = UniformNameDeclarations.PointSizeMode, Value = ptMode},
             });
         }
     }

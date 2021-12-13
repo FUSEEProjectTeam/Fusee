@@ -88,11 +88,6 @@ namespace Fusee.Engine.Core.Scene
         public IWritableTexture RenderTexture;
 
         /// <summary>
-        /// A camera is active by default. Set this to false to deactivate it. 
-        /// </summary>
-        public bool Active = true;
-
-        /// <summary>
         /// Allows to overwrite the calculation of the projection matrix. E.g. if <see cref="ProjectionMethod"/> does not contain your desired projection calculation.
         /// </summary>
         public CustomCameraUpdate CustomCameraUpdate;
@@ -101,6 +96,11 @@ namespace Fusee.Engine.Core.Scene
         /// Sets the RenderLayer for this camera.
         /// </summary>
         public RenderLayers RenderLayer;
+
+        /// <summary>
+        /// Scales the orthograpic viewing frustum. Dosn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
+        /// </summary>
+        public float Scale = 1;
 
         /// <summary>
         /// Creates a new instance of type CameraComponent.
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core.Scene
 
             return ProjectionMethod switch
             {
-                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y),
+                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(width * Scale, height * Scale, ClippingPlanes.x, ClippingPlanes.y),
                 _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)width / height), ClippingPlanes.x, ClippingPlanes.y),
             };
         }

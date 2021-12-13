@@ -124,6 +124,7 @@ namespace Fusee.Engine.Core
         {
             Diagnostics.Warn($"Alpha blend is disabled for deferred rendering for now - {RenderState.AlphaBlendEnable} is locked (see SceneRendererDeferred.RenderAllPasses()).");
 
+            IgnoreInactiveComponents = true;
             TexRes = texRes;
             ShadowMapRes = shadowMapRes;
 

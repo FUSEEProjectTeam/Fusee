@@ -79,6 +79,11 @@ namespace Fusee.Xene
     /// </summary>
     public class Visitor<TNode, TComponent> where TNode : class, INode where TComponent : class, IComponent
     {
+        /// <summary>
+        /// Set this to true if the visitor should skip inactive Components.
+        /// </summary>
+        public bool IgnoreInactiveComponents = false;
+
         #region Declarative stuff
         internal class VisitorSet
         {
@@ -521,6 +526,8 @@ namespace Fusee.Xene
 
         private void DoVisitComponent(TComponent component)
         {
+            if (IgnoreInactiveComponents && !component.Active) return;
+
             var compType = component.GetType();
 
             if (_visitors.Components.TryGetValue(compType, out var visitComponent))
