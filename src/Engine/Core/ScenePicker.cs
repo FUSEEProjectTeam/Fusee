@@ -253,6 +253,7 @@ namespace Fusee.Engine.Core
         public ScenePicker(SceneContainer scene)
             : base(scene.Children)
         {
+            IgnoreInactiveComponents = true;
             View = float4x4.Identity;
             Projection = float4x4.Identity;
         }
@@ -516,7 +517,11 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
-            if (!mesh.Active) return;
+            if (!mesh.Active ||
+                (mesh.MeshType != (int)OpenGLPrimitiveType.Triangles &&
+                mesh.MeshType != (int)OpenGLPrimitiveType.TriangleFan &&
+                mesh.MeshType != (int)OpenGLPrimitiveType.TriangleStrip)) return;
+
             var mvp = Projection * View * State.Model;
             for (var i = 0; i < mesh.Triangles.Length; i += 3)
             {

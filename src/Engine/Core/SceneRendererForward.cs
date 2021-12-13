@@ -3,7 +3,6 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -142,6 +141,7 @@ namespace Fusee.Engine.Core
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
+            IgnoreInactiveComponents = true;
             _state = new RendererState();
             InitAnimations(_sc);
         }
