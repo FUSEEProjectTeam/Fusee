@@ -36,10 +36,7 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        /// <param name="sizeMode">The <see cref="PointSizeMode"/>.</param>
-        /// <param name="depthFx">Shader effect used in the depth pass in eye dome lighting.</param>
-        /// <param name="colorFx">Shader effect that is accountable for rendering the color pass.</param>
-        public void UpdateScene(PointSizeMode sizeMode, ShaderEffect depthFx, ShaderEffect colorFx);
+        public void UpdateScene();
 
         /// <summary>
         /// Iterates the VisibleNodes list and sets the octant mesh for visible nodes.
