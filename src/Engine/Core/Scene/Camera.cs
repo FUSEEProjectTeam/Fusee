@@ -98,6 +98,11 @@ namespace Fusee.Engine.Core.Scene
         public RenderLayers RenderLayer;
 
         /// <summary>
+        /// Scales the orthograpic viewing frustum. Dosn't have an effect if <see cref="ProjectionMethod.Perspective"/> is used.
+        /// </summary>
+        public float Scale = 1;
+
+        /// <summary>
         /// Creates a new instance of type CameraComponent.
         /// </summary>
         /// <param name="projectionMethod">The projection method. See <see cref="ProjectionMethod"/>.</param>
@@ -138,7 +143,7 @@ namespace Fusee.Engine.Core.Scene
 
             return ProjectionMethod switch
             {
-                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y),
+                ProjectionMethod.Orthographic => float4x4.CreateOrthographic(width * Scale, height * Scale, ClippingPlanes.x, ClippingPlanes.y),
                 _ => float4x4.CreatePerspectiveFieldOfView(Fov, System.Math.Abs((float)width / height), ClippingPlanes.x, ClippingPlanes.y),
             };
         }

@@ -285,7 +285,6 @@ namespace Fusee.Engine.Core
             // TODO: Test animation and refactor animation method from scene renderer to this converter
         }
 
-
         ///<summary>
         /// Converts the XForm component.
         ///</summary>
@@ -299,7 +298,8 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(new XForm
             {
-                Name = xf.Name
+                Name = xf.Name,
+                Active = xf.Active
             });
         }
 
@@ -319,6 +319,7 @@ namespace Fusee.Engine.Core
                 Height = xft.Height,
                 Width = xft.Width,
                 Name = xft.Name,
+                Active = xft.Active,
                 HorizontalAlignment =
                 xft.HorizontalAlignment == FusHorizontalTextAlignment.Center
                 ? HorizontalTextAlignment.Center
@@ -349,6 +350,7 @@ namespace Fusee.Engine.Core
                 : Scene.CanvasRenderMode.World)
             {
                 Name = ct.Name,
+                Active = ct.Active,
                 Scale = ct.Scale,
                 ScreenSpaceSize = ct.ScreenSpaceSize,
                 Size = ct.Size
@@ -369,11 +371,11 @@ namespace Fusee.Engine.Core
             _currentNode.AddComponent(new RectTransform
             {
                 Name = rt.Name,
+                Active = rt.Active,
                 Anchors = rt.Anchors,
                 Offsets = rt.Offsets
             });
         }
-
 
         ///<summary>
         ///Converts the transform component.
@@ -390,6 +392,7 @@ namespace Fusee.Engine.Core
             {
                 Translation = t.Translation,
                 Name = t.Name,
+                Active = t.Active,
                 Rotation = t.Rotation,
                 Scale = t.Scale
             });
@@ -518,6 +521,7 @@ namespace Fusee.Engine.Core
                 cc.ClippingPlanes.x, cc.ClippingPlanes.y, cc.Fov)
             {
                 Active = cc.Active,
+                Scale = cc.Scale,
                 BackgroundColor = cc.BackgroundColor,
                 ClearColor = cc.ClearColor,
                 ClearDepth = cc.ClearDepth,
@@ -615,7 +619,8 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(new Bone
             {
-                Name = bone.Name
+                Name = bone.Name,
+                Active = bone.Active
             });
 
             // Collect all bones, later, when a WeightComponent is found, we can set all Joints
@@ -652,7 +657,8 @@ namespace Fusee.Engine.Core
                 }).ToList(),
                 BindingMatrices = w.BindingMatrices,
                 Joints = new List<SceneNode>(),
-                Name = w.Name
+                Name = w.Name,
+                Active = w.Active
             };
 
             // check if we have bones
@@ -694,6 +700,7 @@ namespace Fusee.Engine.Core
 
                 Guid = cc.Guid,
                 Name = cc.Name,
+                Active = cc.Active,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
                 PosInHierarchyTex = cc.PosInHierarchyTex,
                 VisibleChildIndices = cc.VisibleChildIndices,
@@ -722,6 +729,7 @@ namespace Fusee.Engine.Core
 
                 Guid = cc.Guid,
                 Name = cc.Name,
+                Active = cc.Active,
                 NumberOfPointsInNode = cc.NumberOfPointsInNode,
                 PosInHierarchyTex = cc.PosInHierarchyTex,
                 VisibleChildIndices = cc.VisibleChildIndices,
@@ -1006,6 +1014,8 @@ namespace Fusee.Engine.Core
             else
                 throw new System.ArgumentException("Material couldn't be resolved.");
 
+            sfx.Name = m.Name;
+            sfx.Active = m.Active;
             _matMap.Add(m, sfx);
             return Task.FromResult(sfx);
         }
@@ -1087,7 +1097,8 @@ namespace Fusee.Engine.Core
         {
             _currentNode.AddComponent(new FusXForm
             {
-                Name = xf.Name
+                Name = xf.Name,
+                Active = xf.Active
             });
         }
 
@@ -1102,6 +1113,7 @@ namespace Fusee.Engine.Core
                 Height = xft.Height,
                 Width = xft.Width,
                 Name = xft.Name,
+                Active = xft.Active,
 
                 HorizontalAlignment =
                 xft.HorizontalAlignment == HorizontalTextAlignment.Center
@@ -1129,6 +1141,7 @@ namespace Fusee.Engine.Core
                 : Serialization.V1.CanvasRenderMode.World)
             {
                 Name = ct.Name,
+                Active = ct.Active,
                 Scale = ct.Scale,
                 ScreenSpaceSize = ct.ScreenSpaceSize,
                 Size = ct.Size
@@ -1144,6 +1157,7 @@ namespace Fusee.Engine.Core
             _currentNode.AddComponent(new FusRectTransform
             {
                 Name = rt.Name,
+                Active = rt.Active,
                 Anchors = rt.Anchors,
                 Offsets = rt.Offsets
             });
@@ -1159,6 +1173,7 @@ namespace Fusee.Engine.Core
             {
                 Translation = t.Translation,
                 Name = t.Name,
+                Active = t.Active,
                 Rotation = t.Rotation,
                 Scale = t.Scale
             });
@@ -1281,33 +1296,12 @@ namespace Fusee.Engine.Core
                         Strength = surfaceInput.SpecularStrength
                     };
                 }
-
+                mat.Active = effect.Active;
+                mat.Name = effect.Name;
                 _currentNode.AddComponent(mat);
             }
             else
                 throw new InvalidOperationException("Invalid ShadingModel!");
-        }
-
-        /// <summary>
-        /// Converts the shader.
-        /// </summary>
-        /// <param name="cc">The camera to convert.</param>
-        [VisitMethod]
-        public void ConvCamComp(Camera cc)
-        {
-            _currentNode.AddComponent(new FusCamera
-            {
-                Active = cc.Active,
-                BackgroundColor = cc.BackgroundColor,
-                ClearColor = cc.ClearColor,
-                ClearDepth = cc.ClearDepth,
-                Layer = cc.Layer,
-                Name = cc.Name,
-                ClippingPlanes = cc.ClippingPlanes,
-                Fov = cc.Fov,
-                Viewport = cc.Viewport,
-                ProjectionMethod = cc.ProjectionMethod == Fusee.Engine.Core.Scene.ProjectionMethod.Orthographic ? Serialization.V1.ProjectionMethod.Orthographic : Serialization.V1.ProjectionMethod.Perspective
-            });
         }
 
         /// <summary>
@@ -1320,6 +1314,7 @@ namespace Fusee.Engine.Core
             // convert mesh
             var mesh = new FusMesh
             {
+                Active = m.Active,
                 MeshType = m.MeshType,
                 BiTangents = m.BiTangents,
                 BoneIndices = m.BoneIndices,
@@ -1369,6 +1364,7 @@ namespace Fusee.Engine.Core
             _currentNode.AddComponent(new FusCamera
             {
                 Active = cam.Active,
+                Scale = cam.Scale,
                 BackgroundColor = cam.BackgroundColor,
                 ClearColor = cam.ClearColor,
                 ClearDepth = cam.ClearDepth,
@@ -1394,6 +1390,7 @@ namespace Fusee.Engine.Core
                 IsLeaf = oct.IsLeaf,
                 Level = oct.Level,
                 Name = oct.Name,
+                Active = oct.Active,
                 NumberOfPointsInNode = oct.NumberOfPointsInNode,
                 PosInHierarchyTex = oct.PosInHierarchyTex,
                 PosInParent = oct.PosInParent,
@@ -1417,6 +1414,7 @@ namespace Fusee.Engine.Core
                 IsLeaf = oct.IsLeaf,
                 Level = oct.Level,
                 Name = oct.Name,
+                Active = oct.Active,
                 NumberOfPointsInNode = oct.NumberOfPointsInNode,
                 PosInHierarchyTex = oct.PosInHierarchyTex,
                 PosInParent = oct.PosInParent,
@@ -1435,7 +1433,8 @@ namespace Fusee.Engine.Core
         {
             var currentBone = new FusBone
             {
-                Name = bone.Name
+                Name = bone.Name,
+                Active = bone.Active
             };
             _currentNode.AddComponent(currentBone);
 
@@ -1468,7 +1467,8 @@ namespace Fusee.Engine.Core
                 }).ToList(),
                 BindingMatrices = w.BindingMatrices,
                 Joints = new List<FusComponent>(),
-                Name = w.Name
+                Name = w.Name,
+                Active = w.Active
             };
 
             // check if we have bones
