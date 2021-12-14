@@ -1723,59 +1723,58 @@ namespace Fusee.Engine.Core
 
             var compiledEffect = _allCompiledEffects[_currentEffect];
 
-           
-                CompiledEffect cFx;
-                if (renderForward)
+            CompiledEffect cFx;
+            if (renderForward)
+            {
+                if (compiledEffect.ForwardFx == null)
                 {
-                    if (compiledEffect.ForwardFx == null)
-                    {
-                        CreateShaderProgram(_currentEffect, renderForward);
-                        compiledEffect = _allCompiledEffects[_currentEffect];
-                    }
-
-                    cFx = compiledEffect.ForwardFx;
-                }
-                else
-                {
-                    if (compiledEffect.DeferredFx == null)
-                    {
-                        CreateShaderProgram(_currentEffect, renderForward);
-                        compiledEffect = _allCompiledEffects[_currentEffect];
-                    }
-                    cFx = compiledEffect.DeferredFx;
+                    CreateShaderProgram(_currentEffect, renderForward);
+                    compiledEffect = _allCompiledEffects[_currentEffect];
                 }
 
-                SetShaderProgram(cFx.GpuHandle);
-                SetRenderStateSet(_currentEffect.RendererStates);
-
-                foreach (var key in GlobalFXParams.Keys)
+                cFx = compiledEffect.ForwardFx;
+            }
+            else
+            {
+                if (compiledEffect.DeferredFx == null)
                 {
-                    var globalFxParam = GlobalFXParams[key];
-
-                    if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
-                    {
-                        if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
-                            _currentEffect.SetFxParam(key, globalFxParam.Value);
-                    }
+                    CreateShaderProgram(_currentEffect, renderForward);
+                    compiledEffect = _allCompiledEffects[_currentEffect];
                 }
+                cFx = compiledEffect.DeferredFx;
+            }
 
-                foreach (var fxParam in cFx.ActiveUniforms.Values)
+            SetShaderProgram(cFx.GpuHandle);
+            SetRenderStateSet(_currentEffect.RendererStates);
+
+            foreach (var key in GlobalFXParams.Keys)
+            {
+                var globalFxParam = GlobalFXParams[key];
+
+                if (cFx.ActiveUniforms.TryGetValue(key, out var activeParam))
                 {
-                    SetShaderParamT(fxParam);
-                    fxParam.HasValueChanged = false;
+                    if (globalFxParam.HasValueChanged || globalFxParam.Value != activeParam.Value)
+                        _currentEffect.SetFxParam(key, globalFxParam.Value);
                 }
+            }
 
-                // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
-                var meshImp = _meshManager.GetMeshImpFromMesh(m);
-                _rci.Render(meshImp);
+            foreach (var fxParam in cFx.ActiveUniforms.Values)
+            {
+                SetShaderParamT(fxParam);
+                fxParam.HasValueChanged = false;
+            }
 
-                // After rendering always cleanup pending meshes
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
+            // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
+            var meshImp = _meshManager.GetMeshImpFromMesh(m);
+            _rci.Render(meshImp);
 
-                // After rendering all passes cleanup shader effect
-                _effectManager.Cleanup();
-            
+            // After rendering always cleanup pending meshes
+            _meshManager.Cleanup();
+            _textureManager.Cleanup();
+
+            // After rendering all passes cleanup shader effect
+            _effectManager.Cleanup();
+
         }
 
         private float2 CalculateClippingPlanesFromProjection()
