@@ -26,6 +26,6 @@ namespace Fusee.Engine.Common
         /// The binding index point the SSBO will be bound to.
         /// Caution: the binding point should not be hard coded in the shader code!
         /// </summary>
-        int BindingIndex { get; set; }
+        uint BindingIndex { get; set; }
     }
 }

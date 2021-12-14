@@ -125,7 +125,7 @@ namespace Fusee.Examples.ComputeFractal.Core
             MoveFractal();
             RWTexture.AsImage = true;
             RC.SetEffect(_computeShader);
-            RC.DispatchCompute(-1, RWTexture.Width / 16, RWTexture.Width / 16, 1);
+            RC.DispatchCompute(-1, (uint)(RWTexture.Width / 16), (uint)(RWTexture.Width / 16), 1);
             RC.MemoryBarrier();
 
             RWTexture.AsImage = false;

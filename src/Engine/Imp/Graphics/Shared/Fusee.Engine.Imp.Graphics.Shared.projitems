@@ -9,12 +9,8 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BufferHandle.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Font.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)MeshImp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RenderTarget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShaderParam.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ShaderHandleImp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)TextureHandle.cs" />
   </ItemGroup>
 </Project>

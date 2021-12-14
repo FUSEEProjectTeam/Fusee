@@ -647,21 +647,13 @@ namespace Fusee.Engine.Common
         /// <param name="threadGroupsX">The number of work groups to be launched in the X dimension.</param>
         /// <param name="threadGroupsY">The number of work groups to be launched in the Y dimension.</param>
         /// <param name="threadGroupsZ">he number of work groups to be launched in the Z dimension.</param>
-        void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ);
+        void DispatchCompute(int kernelIndex, uint threadGroupsX, uint threadGroupsY, uint threadGroupsZ);
 
         /// <summary>
         /// Defines a barrier ordering memory transactions. At the moment it will insert all supported barriers.
         /// TODO: Define GLbitfield enum
         /// </summary>
         void MemoryBarrier();
-
-        /// <summary>
-        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
-        /// </summary>
-        /// <param name="start">The start point of the DebugLine.</param>
-        /// <param name="end">The endpoint of the DebugLine.</param>
-        /// <param name="color">The color of the DebugLine.</param>
-        void DebugLine(float3 start, float3 end, float4 color);
 
         /// <summary>
         /// Gets the content of the buffer.

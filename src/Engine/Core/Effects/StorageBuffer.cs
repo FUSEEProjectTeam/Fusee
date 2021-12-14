@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core.Effects
         /// The binding index point the SSBO will be bound to.
         /// Caution: the binding point should not be hard coded in the shader code!
         /// </summary>
-        public int BindingIndex { get; set; }
+        public uint BindingIndex { get; set; }
 
         /// <summary>
         /// Return the number of buffer elements.
@@ -56,7 +56,7 @@ namespace Fusee.Engine.Core.Effects
         /// <param name="count">The (fixed) count of buffer elements.</param>
         /// <param name="tSize">The size (byte) of one buffer element.</param>
         /// <param name="blockBindingIndex">Int that needs to be unique throughout the shader.</param>
-        public StorageBuffer(RenderCanvas rc, int count, int tSize, int blockBindingIndex)
+        public StorageBuffer(RenderCanvas rc, int count, int tSize, uint blockBindingIndex)
         {
             _count = count;
             _tSize = tSize;

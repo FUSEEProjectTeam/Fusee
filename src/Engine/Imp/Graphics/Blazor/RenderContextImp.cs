@@ -2516,7 +2516,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="threadGroupsY"></param>
         /// <param name="threadGroupsZ"></param>
         /// <exception cref="NotImplementedException"></exception>
-        public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
+        public void DispatchCompute(int kernelIndex, uint threadGroupsX, uint threadGroupsY, uint threadGroupsZ)
         {
             throw new NotImplementedException();
         }

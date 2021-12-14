@@ -1,5 +1,6 @@
 using Fusee.Engine.Common;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
@@ -421,7 +422,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
             var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
-            GL.PixelStore(PixelStoreParameter.PackRowLength, mem.Stride / 4);
+            GL.PixelStorei(PixelStoreParameter.PackRowLength, mem.Stride / 4);
             GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem.Scan0);
             bmp.UnlockBits(mem);
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
@@ -563,7 +564,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool Blending
         {
-            get => GL.IsEnabled(EnableCap.Blend);
+            get => Convert.ToBoolean(GL.IsEnabled(EnableCap.Blend));
             set
             {
                 if (value)
@@ -614,7 +615,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new InvalidOperationException("You need at least OpenGL 2.0 to run this example. GLSL not supported.");
             }
 
-            GL.ClearColor(Color.MidnightBlue);
+            GL.ClearColor(new Color4<Rgba>(Color.MidnightBlue.R, Color.MidnightBlue.G, Color.MidnightBlue.B, Color.MidnightBlue.A));
 
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);

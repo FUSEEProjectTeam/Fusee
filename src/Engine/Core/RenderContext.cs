@@ -1657,7 +1657,7 @@ namespace Fusee.Engine.Core
         /// <param name="threadGroupsX">The number of work groups to be launched in the X dimension.</param>
         /// <param name="threadGroupsY">The number of work groups to be launched in the Y dimension.</param>
         /// <param name="threadGroupsZ">he number of work groups to be launched in the Z dimension.</param>
-        public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
+        public void DispatchCompute(int kernelIndex, uint threadGroupsX, uint threadGroupsY, uint threadGroupsZ)
         {
             if (_currentEffect == null) throw new NullReferenceException("No Compute Shader bound.");
             if (_currentEffect.GetType() != typeof(ComputeShader)) throw new NullReferenceException("Bound Effect isn't a Compute Shader.");
@@ -1723,8 +1723,7 @@ namespace Fusee.Engine.Core
 
             var compiledEffect = _allCompiledEffects[_currentEffect];
 
-            try
-            {
+           
                 CompiledEffect cFx;
                 if (renderForward)
                 {
@@ -1776,11 +1775,7 @@ namespace Fusee.Engine.Core
 
                 // After rendering all passes cleanup shader effect
                 _effectManager.Cleanup();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass ", ex);
-            }
+            
         }
 
         private float2 CalculateClippingPlanesFromProjection()

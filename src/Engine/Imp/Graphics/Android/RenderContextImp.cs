@@ -613,16 +613,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.AttachShader(program, vertexObject);
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
-            GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
-            GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
-            GL.BindAttribLocation(program, AttributeLocations.Color1AttribLocation, UniformNameDeclarations.VertexColor1);
-            GL.BindAttribLocation(program, AttributeLocations.Color2AttribLocation, UniformNameDeclarations.VertexColor2);
-            GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
-            GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
-            GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
-            GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
-            GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
-            GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
+            GL.BindAttribLocation(program, (int)AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
+            GL.BindAttribLocation(program, (int)AttributeLocations.ColorAttribLocation, UniformNameDeclarations.VertexColor);
+            GL.BindAttribLocation(program, (int)AttributeLocations.Color1AttribLocation, UniformNameDeclarations.VertexColor1);
+            GL.BindAttribLocation(program, (int)AttributeLocations.Color2AttribLocation, UniformNameDeclarations.VertexColor2);
+            GL.BindAttribLocation(program, (int)AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
+            GL.BindAttribLocation(program, (int)AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
+            GL.BindAttribLocation(program, (int)AttributeLocations.TangentAttribLocation, UniformNameDeclarations.Tangent);
+            GL.BindAttribLocation(program, (int)AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
+            GL.BindAttribLocation(program, (int)AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
+            GL.BindAttribLocation(program, (int)AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.Bitangent);
 
             GL.LinkProgram(program);
             return new ShaderHandleImp { Handle = program };
@@ -1618,7 +1618,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="threadGroupsX">The number of work groups to be launched in the X dimension.</param>
         /// <param name="threadGroupsY">The number of work groups to be launched in the Y dimension.</param>
         /// <param name="threadGroupsZ">he number of work groups to be launched in the Z dimension.</param>
-        public void DispatchCompute(int kernelIndex, int threadGroupsX, int threadGroupsY, int threadGroupsZ)
+        public void DispatchCompute(int kernelIndex, uint threadGroupsX, uint threadGroupsY, uint threadGroupsZ)
         {
             GL.DispatchCompute(threadGroupsX, threadGroupsY, threadGroupsZ);
         }
