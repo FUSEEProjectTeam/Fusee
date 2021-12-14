@@ -616,7 +616,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         methodBody.Add($"vec2 uv = vec2(gl_FragCoord.x / {UniformNameDeclarations.ViewportPx}.x, gl_FragCoord.y / {UniformNameDeclarations.ViewportPx}.y);");
                         methodBody.Add($"float linearDepth = LinearizeDepth(texture(DepthTex, uv).x, {UniformNameDeclarations.ClippingPlanes});");
                         methodBody.Add("if (linearDepth > 0.1)");
-                        methodBody.Add($"    surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, {UniformNameDeclarations.ViewportPx}, DepthTex, {UniformNameDeclarations.ClippingPlanes});");
+                        methodBody.Add($"    surfOut.albedo.rgb *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv, ivec2({UniformNameDeclarations.ViewportPx}), DepthTex, {UniformNameDeclarations.ClippingPlanes});");
                         methodBody.Add("return surfOut.albedo.rgb;");
                         break;
                     }
