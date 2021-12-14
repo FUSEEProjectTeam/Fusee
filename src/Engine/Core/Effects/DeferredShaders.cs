@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core.Effects
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
 
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.LightedSceneTexture));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.IVec2, UniformNameDeclarations.ViewportPx));
 
                 sb.AppendLine(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.ColorOut));
 
@@ -527,9 +527,8 @@ namespace Fusee.Engine.Core.Effects
                 sb.AppendLine("#define KERNEL_LENGTH 64");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
-
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.IVec2, UniformNameDeclarations.ViewportPx));
                 sb.AppendLine("uniform vec3[KERNEL_LENGTH] SSAOKernel;");
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, "Position"));
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, "Normal"));

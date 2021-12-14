@@ -163,8 +163,7 @@ namespace Fusee.Engine.Core.Effects
             $"float fov = 2.0 * atan(1.0 / {UniformNameDeclarations.Projection}[1][1]);",
             "float slope = tan(fov / 2.0);",
             $"float projFactor = ((1.0 / slope) / -vViewPos.z) * {UniformNameDeclarations.ViewportPx}.y / 2.0;",
-            $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;",
-
+            $"vWorldSpacePointRad = float ({UniformNameDeclarations.PointSize}) / projFactor;"
         };
 
         /// <summary>
@@ -222,7 +221,7 @@ namespace Fusee.Engine.Core.Effects
             "       //In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away",
             "",
             "       //Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!",
-            $"      gl_PointSize = ((FUSEE_ViewportPx.y / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * vViewPos.z))) / 100.0;",
+            $"      gl_PointSize = (({UniformNameDeclarations.ViewportPx}.y / 2.0) * (float({UniformNameDeclarations.PointSize}) / ( slope * vViewPos.z))) / 100.0;",
             "       break;",
             "   }",
             "}"
