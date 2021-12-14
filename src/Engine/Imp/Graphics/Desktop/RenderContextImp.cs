@@ -774,6 +774,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     UniformType.Bool => typeof(bool),
                     UniformType.Float => typeof(float),
                     UniformType.Double => typeof(double),
+                    UniformType.IntVec2 => typeof(float2),
                     UniformType.FloatVec2 => typeof(float2),
                     UniformType.FloatVec3 => typeof(float3),
                     UniformType.FloatVec4 => typeof(float4),
