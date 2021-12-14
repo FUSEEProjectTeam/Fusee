@@ -768,20 +768,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 paramInfo.Name = name;
                 paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
 
-                paramInfo.Type = uType switch
+                //TODO: remove cast to uint when UniformType.Image2d = 36941 is available
+                paramInfo.Type = (uint)uType switch
                 {
-                    UniformType.Int => typeof(int),
-                    UniformType.Bool => typeof(bool),
-                    UniformType.Float => typeof(float),
-                    UniformType.Double => typeof(double),
-                    UniformType.IntVec2 => typeof(float2),
-                    UniformType.FloatVec2 => typeof(float2),
-                    UniformType.FloatVec3 => typeof(float3),
-                    UniformType.FloatVec4 => typeof(float4),
-                    UniformType.FloatMat4 => typeof(float4x4),
-                    UniformType.Sampler2d or UniformType.UnsignedIntSampler2d or UniformType.IntSampler2d or UniformType.Sampler2dShadow /*or UniformType.Image2d*/ => typeof(ITextureBase),
-                    UniformType.SamplerCube or UniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
-                    UniformType.Sampler2dArray or UniformType.Sampler2dArrayShadow => typeof(IWritableArrayTexture),
+                    (uint)UniformType.Int => typeof(int),
+                    (uint)UniformType.Bool => typeof(bool),
+                    (uint)UniformType.Float => typeof(float),
+                    (uint)UniformType.Double => typeof(double),
+                    (uint)UniformType.IntVec2 => typeof(float2),
+                    (uint)UniformType.FloatVec2 => typeof(float2),
+                    (uint)UniformType.FloatVec3 => typeof(float3),
+                    (uint)UniformType.FloatVec4 => typeof(float4),
+                    (uint)UniformType.FloatMat4 => typeof(float4x4),
+                    (uint)UniformType.Sampler2d or (uint)UniformType.UnsignedIntSampler2d or (uint)UniformType.IntSampler2d or (uint)UniformType.Sampler2dShadow /*or UniformType.Image2d*/or 36941 => typeof(ITextureBase),
+                    (uint)UniformType.SamplerCube or (uint)UniformType.SamplerCubeShadow => typeof(IWritableCubeMap),
+                    (uint)UniformType.Sampler2dArray or (uint)UniformType.Sampler2dArrayShadow => typeof(IWritableArrayTexture),
                     _ => throw new ArgumentOutOfRangeException($"UniformType {uType} unknown."),
                 };
                 paramList.Add(paramInfo);
