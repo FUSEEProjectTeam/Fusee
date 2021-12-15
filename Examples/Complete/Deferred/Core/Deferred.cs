@@ -150,8 +150,6 @@ namespace Fusee.Examples.Deferred.Core
             // Wrap a SceneRenderer around the scene.
             _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
             _sceneRendererForward = new SceneRendererForward(_sponzaScene);
-
-            // Wrap a SceneRenderer around the GUI.
         }
 
         private bool _renderDeferred = true;

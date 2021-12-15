@@ -6,6 +6,7 @@ using Fusee.Engine.Imp.Shared;
 using Fusee.Math.Core;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -66,7 +67,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
-            // TODO - implement this in render states!!!
             GL.CullFace(CullFaceMode.Back);
 
             //Needed for rendering more than one viewport.
@@ -98,15 +98,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int numExtensions = 0;
             GL.GetInteger(GetPName.NumExtensions, ref numExtensions);
 
-            // OpenTK 4.x
-            //var extensions = new string[numExtensions];
-            //for (int i = 0; i < numExtensions; i++)
-            //{
-            //    extensions[i] = GL.GetString(StringName.Extensions, i);
-            //}
-
-            var extensions = GL.GetString(StringName.Extensions);
-
+            var extensions = new string[numExtensions];
+            for (uint i = 0; i < numExtensions; i++)
+            {
+                extensions[i] = GL.GetStringi(StringName.Extensions, i);
+            }
             Diagnostics.Verbose(string.Join(';', extensions));
 #endif
         }
@@ -708,7 +704,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public float GetParamValue(IShaderHandle program, IShaderParam param)
         {
             float f = 0;
-            GL.GetUniformf(((ShaderHandleImp)program).Handle, (int)((ShaderParam)param).handle, ref f);
+            GL.GetUniformf(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle, ref f);
             return f;
         }
 
@@ -734,7 +730,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 paramInfo.Name = name;
 
                 uint h = GL.GetProgramResourceIndex(sProg.Handle, ProgramInterface.ShaderStorageBlock, name);
-                paramInfo.Handle = (h == -1) ? null : new ShaderParam { handle = (int)h };
+                paramInfo.Handle = (h == default(uint)) ? null : new ShaderParam { handle = (int)h };
                 paramList.Add(paramInfo);
             }
 
@@ -759,14 +755,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 var paramInfo = new ShaderParamInfo();
                 UniformType uType = UniformType.Bool;
-                
+
                 int length = 0;
                 int size = 0;
                 //TODO: (int)ProgramInterfacePName.MaxNameLength may not be the correct value here
                 GL.GetActiveUniform(sProg.Handle, (uint)i, (int)ProgramInterfacePName.MaxNameLength, ref length, ref size, ref uType, out var name);
-               
+
                 paramInfo.Name = name;
                 paramInfo.Handle = GetShaderUniformParam(sProg, paramInfo.Name);
+                paramInfo.Size = size;
 
                 //TODO: remove cast to uint when UniformType.Image2d = 36941 is available
                 paramInfo.Type = (uint)uType switch
@@ -834,12 +831,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float2[] val)
+        public void SetShaderParam(IShaderParam param, float2[] val)
         {
-            foreach (var vec in val)
+            Vector2[] vecArray = new Vector2[val.Length];
+            for (int i = 0; i < val.Length; i++)
             {
-                GL.Uniform2f((int)((ShaderParam)param).handle, vec.x, vec.y);
+                var vec = val[i];
+                vecArray[i] = new Vector2(vec.x, vec.y);
             }
+            GL.Uniform2f(((ShaderParam)param).handle, val.Length, vecArray);
         }
 
         /// <summary>
@@ -857,12 +857,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float3[] val)
+        public void SetShaderParam(IShaderParam param, float3[] val)
         {
-            foreach (var vec in val)
+            Vector3[] vecArray = new Vector3[val.Length];
+            for (int i = 0; i < val.Length; i++)
             {
-                GL.Uniform3f((int)((ShaderParam)param).handle, vec.x, vec.y, vec.z);
+                var vec = val[i];
+                vecArray[i] = new Vector3(vec.x, vec.y, vec.z);
             }
+            GL.Uniform3f(((ShaderParam)param).handle, val.Length, vecArray);
         }
 
         /// <summary>
@@ -890,12 +893,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float4[] val)
+        public void SetShaderParam(IShaderParam param, float4[] val)
         {
-            foreach (var vec in val)
+            Vector4[] vecArray = new Vector4[val.Length];
+            for (int i = 0; i < val.Length; i++)
             {
-                GL.Uniform4f(((ShaderParam)param).handle, vec.x, vec.y, vec.z, vec.w);
+                var vec = val[i];
+                vecArray[i] = new Vector4(vec.x, vec.y, vec.z, vec.w);
             }
+            GL.Uniform4f(((ShaderParam)param).handle, val.Length, vecArray);
         }
 
         /// <summary>
@@ -903,27 +909,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public unsafe void SetShaderParam(IShaderParam param, float4x4[] val)
+        public void SetShaderParam(IShaderParam param, float4x4[] val)
         {
             var tmpArray = new float[val.Length * 4 * 4];
             for (var i = 0; i < val.Length; i++)
             {
-               val[i].ToArray().CopyTo(tmpArray, i * 16);
+                val[i].ToArray().CopyTo(tmpArray, i * 16);
             }
             GL.UniformMatrix4f(((ShaderParam)param).handle, val.Length, true, tmpArray);
-
-            //var tmpArray = new float4[val.Length * 4];
-
-            //for (var i = 0; i < val.Length; i++)
-            //{
-            //    tmpArray[i * 4] = val[i].Column1;
-            //    tmpArray[i * 4 + 1] = val[i].Column2;
-            //    tmpArray[i * 4 + 2] = val[i].Column3;
-            //    tmpArray[i * 4 + 3] = val[i].Column4;
-            //}
-
-            //fixed (float4* pMtx = &tmpArray[0])
-            //    GL.UniformMatrix4f((int)((ShaderParam)param).handle, val.Length, false, (float*)pMtx);
         }
 
         /// <summary>
@@ -1117,7 +1110,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
-        public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        public void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
         {
             SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);
             GL.Uniform1i(((ShaderParam)param).handle, texUnitArray.Length, new Span<int>(texUnitArray));
@@ -1145,16 +1138,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                float r = 0;
-                float g = 0;
-                float b = 0;
-                float a = 0;
-
-                GL.GetFloat(GetPName.ColorClearValue, 0, ref r);
-                GL.GetFloat(GetPName.ColorClearValue, 1, ref g);
-                GL.GetFloat(GetPName.ColorClearValue, 2, ref b);
-                GL.GetFloat(GetPName.ColorClearValue, 3, ref a);
-                return new float4(r, g, b, a);
+                float[] col = new float[4];
+                unsafe
+                {
+                    fixed (float* pFlt = &col[0])
+                        GL.GetFloatv(GetPName.ColorClearValue, pFlt);
+                }
+                return new float4(col[0], col[1], col[2], col[3]);
             }
             set => GL.ClearColor(value.x, value.y, value.z, value.w);
         }
