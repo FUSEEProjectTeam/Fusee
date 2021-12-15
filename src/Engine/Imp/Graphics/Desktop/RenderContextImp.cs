@@ -823,7 +823,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float2 val)
         {
-            GL.Uniform2f((int)((ShaderParam)param).handle, val.x, val.y);
+            GL.Uniform2f(((ShaderParam)param).handle, val.x, val.y);
         }
 
         /// <summary>
@@ -831,15 +831,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float2[] val)
+        public unsafe void SetShaderParam(IShaderParam param, float2[] val)
         {
-            Vector2[] vecArray = new Vector2[val.Length];
-            for (int i = 0; i < val.Length; i++)
-            {
-                var vec = val[i];
-                vecArray[i] = new Vector2(vec.x, vec.y);
-            }
-            GL.Uniform2f(((ShaderParam)param).handle, val.Length, vecArray);
+            using var float2Mem = val.AsMemory().Pin();
+            var vec2Span = new Span<Vector2>(float2Mem.Pointer, val.Length);
+
+            GL.Uniform2f(((ShaderParam)param).handle, val.Length, vec2Span);
         }
 
         /// <summary>
@@ -857,15 +854,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float3[] val)
+        public unsafe void SetShaderParam(IShaderParam param, float3[] val)
         {
-            Vector3[] vecArray = new Vector3[val.Length];
-            for (int i = 0; i < val.Length; i++)
-            {
-                var vec = val[i];
-                vecArray[i] = new Vector3(vec.x, vec.y, vec.z);
-            }
-            GL.Uniform3f(((ShaderParam)param).handle, val.Length, vecArray);
+            using var float3Mem = val.AsMemory().Pin();
+            var vec3Span = new Span<Vector3>(float3Mem.Pointer, val.Length);
+            GL.Uniform3f(((ShaderParam)param).handle, val.Length, vec3Span);
         }
 
         /// <summary>
@@ -893,15 +886,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">The parameter.</param>
         /// <param name="val">The value.</param>
-        public void SetShaderParam(IShaderParam param, float4[] val)
+        public unsafe void SetShaderParam(IShaderParam param, float4[] val)
         {
-            Vector4[] vecArray = new Vector4[val.Length];
-            for (int i = 0; i < val.Length; i++)
-            {
-                var vec = val[i];
-                vecArray[i] = new Vector4(vec.x, vec.y, vec.z, vec.w);
-            }
-            GL.Uniform4f(((ShaderParam)param).handle, val.Length, vecArray);
+            using var float4Mem = val.AsMemory().Pin();
+            var vec4Span = new Span<Vector4>(float4Mem.Pointer, val.Length);
+            GL.Uniform4f(((ShaderParam)param).handle, val.Length, vec4Span);
         }
 
         /// <summary>
