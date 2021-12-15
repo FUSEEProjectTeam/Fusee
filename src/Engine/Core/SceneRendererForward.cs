@@ -280,7 +280,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc);
 
             AccumulateLight();
 
@@ -421,8 +421,7 @@ namespace Fusee.Engine.Core
                 _parentRect = newRect;
                 _state.UiRect = newRect;
             }
-
-            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
+            else if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 var frustumCorners = new float4[4];
 
@@ -465,7 +464,7 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
+                _state.CanvasXForm *= _rc.InvModel * _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 _state.Model *= _state.CanvasXForm;
 
                 _parentRect = newRect;
