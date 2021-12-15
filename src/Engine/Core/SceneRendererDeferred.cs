@@ -27,12 +27,13 @@ namespace Fusee.Engine.Core
         public float4 BackgroundColor { get; private set; }
 
         /// <summary>
-        /// Sets the Shadow Map resolution.
+        /// The texture resolution in pixel, that is used to create the shadow maps for light sources that cast shadows.
+        /// Note that shadow casting is only available with deferred rendering.
         /// </summary>
         public TexRes ShadowMapRes { get; private set; } = TexRes.Middle;
 
         /// <summary>
-        /// Sets the G-Buffer texture resolution.
+        /// The texture resolution in pixel, that is used for the G-Buffer textures.
         /// </summary>
         public TexRes TexRes { get; private set; } = TexRes.Middle;
 
@@ -43,12 +44,15 @@ namespace Fusee.Engine.Core
         public int CascadeFarPlane = 500;
 
         /// <summary>
-        /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
+        /// Controls whether the render output is anti aliased using FXAA. 
+        /// This is done in an additional pass that is turned off if this is set to false.
         /// </summary>
         public bool FxaaOn { get; set; } = true;
 
         /// <summary>
         /// Determines if the scene gets rendered with Screen Space Ambient Occlusion.
+        /// This is done in an additional pass that is turned of if this is set to false. 
+        /// In this case the ambient component of the lighting is a static value.
         /// If possible set this in the "Init" method to avoid the creation of an SSAO texture if you don't need one.
         /// </summary>
         public bool SsaoOn

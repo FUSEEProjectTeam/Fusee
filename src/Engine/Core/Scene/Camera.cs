@@ -22,7 +22,8 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Delegate that allows a user to give a custom projection calculation to a <see cref="Camera"/>.
     /// </summary>
-    /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="IRenderContextImp.Viewport(int, int, int, int)"/></param>
+    /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. 
+    /// This is used in lower levels to set <see cref="IRenderContextImp.Viewport(int, int, int, int)"/></param>
     /// <param name="projection">The given method needs to calculate the projection matrix.</param>    
     public delegate void CustomCameraUpdate(out float4 viewport, out float4x4 projection);
 
@@ -33,12 +34,13 @@ namespace Fusee.Engine.Core.Scene
     public class Camera : SceneComponent
     {
         /// <summary>
-        /// If set to false, the color bit won't be cleared before this camera is rendered.
+        ///  	Is true per default. If set to false, the color bit won't be cleared before this camera is rendered. 
+        ///  	Set this to false if the background color should be transparent.
         /// </summary>
         public bool ClearColor = true;
 
         /// <summary>
-        /// If set to false, the depth bit won't be cleared before this camera is rendered.
+        /// Is true per default. If set to false, the depth bit won't be cleared before this camera is rendered.
         /// </summary>
         public bool ClearDepth = true;
 
@@ -49,7 +51,8 @@ namespace Fusee.Engine.Core.Scene
         public bool FrustumCullingOn = true;
 
         /// <summary>
-        /// If there is more than one CameraComponent in one scene, the rendered output of the camera with a higher layer will be drawn above the output of a camera with a lower layer.        
+        /// If there is more than one CameraComponent in one scene, 
+        /// the rendered output of the camera with a higher layer will be drawn above the output of a camera with a lower layer.        
         /// </summary>
         public int Layer;
 
@@ -59,7 +62,8 @@ namespace Fusee.Engine.Core.Scene
         public float4 BackgroundColor;
 
         /// <summary>
-        /// You can choose from a set of projection methods. This will automatically calculate the correct projection matrix.
+        /// You can choose from a set of projection methods. At the moment we can choose between perspective and orthographic. 
+        /// This will automatically calculate the correct projection matrix.
         /// </summary>
         public ProjectionMethod ProjectionMethod;
 
@@ -69,11 +73,12 @@ namespace Fusee.Engine.Core.Scene
         public float Fov;
 
         /// <summary>
-        /// Distance to the near and far clipping planes.
+        /// Distance to the near (x value) and far (y value) clipping planes.
         /// </summary>
         public float2 ClippingPlanes;
 
         /// <summary>
+        /// The output is rendered to the section of the application window defined by the Viewport values:
         /// The viewport in percent [0, 100].
         /// x: start
         /// y: end
@@ -84,11 +89,18 @@ namespace Fusee.Engine.Core.Scene
 
         /// <summary>
         /// The texture given here will be used as render target.
+        /// If this is not null the output gets rendered into the texture, otherwise to the screen.
         /// </summary>
-        public IWritableTexture RenderTexture;
+        public IWritableTexture RenderTexture;       
 
         /// <summary>
-        /// Allows to overwrite the calculation of the projection matrix. E.g. if <see cref="ProjectionMethod"/> does not contain your desired projection calculation.
+        /// Allows to overwrite the calculation of the projection matrix. 
+        /// E.g. if <see cref="ProjectionMethod"/> does not contain your desired projection calculation.
+        /// Is null by default. This delegate enables us to add a custom projection method. 
+        /// If we choose to use this delegate we need to provide a method that calculates a projection matrix 
+        /// and outputs a Viewport in percent in the range [0, 100]. Note that this is optional 
+        /// but if this delegate is not null its out values (Projection matrix and Viewport) 
+        /// will overwrite the ones calculated from the other camera parameters.
         /// </summary>
         public CustomCameraUpdate CustomCameraUpdate;
 
