@@ -1,8 +1,9 @@
 # Blender Add-on (.fus Exporter)
-_by Jonas Conrad and Patrick Foerster_
+_by FUSEE Project Team, Jonas Conrad and Patrick Foerster_
+
 ## Installation Guide
 ### Prerequisites
-* The io_export_fus.pyproj file uses the ZIP task which is part of the MSBuild Communiy Tasks project
+* The io_export_fus.pyproj file uses the ZIP task which is part of the MSBuild Community Tasks project
   * Download and install the latest version from https://github.com/loresoft/msbuildtasks
 * Blender
 * Fusee (with the set FuseeRoot environment variable)
@@ -12,7 +13,7 @@ _by Jonas Conrad and Patrick Foerster_
 1. Python
 	* Download the newest Python 3 installer
 	* Start the installation
-	* Be sure to check the box that sais "Add Python 3.x to PATH"
+	* Be sure to check the box that says "Add Python 3.x to PATH"
 	* Open the CMD-Window
 	* Type `python` to verify all PATH variables have been set correctly
 	* If there are no errors everything is in order otherwise, go to Step 4
@@ -107,20 +108,7 @@ how to attach to Blender in Visual Studio's Attach Debugger dialog.
 * Emissive materials
 * UVs + textures
 
-### Others
-* Lamps (not supported by Fusee yet, therefore the option is currently disabled)
-
-
 # Backlog
 
--[x] Apply modifiers to objects such as Subdivision Surface
--[x] Check Hierarchies and transformations
--[x] Export smoothed normals
--[x] Include Protobbuf-Python compiler into build to automatically generate 'Scene_pb2.py'
--[x] Update to Python 3.6 64 bit (for Fusion) and latest Blender 64 bit (2.78b)
--[x] Check Textures with different Settings
--[x] Allow for higher shiniess values. Probably requires to better understand Cycles' BRDF nodes first
--[x] Include bump map information
 -[?] Include Key frame information
 -[?] Include skeleton and weight information
--[ ] Include Lights

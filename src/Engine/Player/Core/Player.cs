@@ -4,6 +4,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -41,9 +42,7 @@ namespace Fusee.Engine.Player.Core
 
         private float _maxPinchSpeed;
 
-        private bool _isLoaded;
-
-        public async void LoadAssets()
+        public async Task LoadAssets()
         {
             // Load the standard model
             _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
@@ -83,8 +82,12 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+        }
 
-            _isLoaded = true;
+        public override async Task InitAsync()
+        {
+            await LoadAssets();
+            await base.InitAsync();
         }
 
         // Init is called on startup.
@@ -101,14 +104,10 @@ namespace Fusee.Engine.Player.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            LoadAssets();
         }
 
         public override void Update()
         {
-            if (!_isLoaded) return;
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -193,10 +192,10 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_isLoaded) return;
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Create the camera matrix and set it as the current View transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
@@ -229,12 +228,6 @@ namespace Fusee.Engine.Player.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-
         }
     }
 }

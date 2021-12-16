@@ -1,4 +1,3 @@
-using Fusee.Engine.Common;
 using Fusee.Engine.Core.Scene;
 using Fusee.Math.Core;
 using Fusee.Xene;
@@ -7,32 +6,6 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
-
-    internal class PrepassVisitorState : VisitorState
-    {
-        private readonly CollapsingStateStack<float4x4> _model = new();
-
-        /// <summary>
-        /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
-        /// </summary>
-        /// <value>
-        /// The Model matrix.
-        /// </value>
-        public float4x4 Model
-        {
-            set => _model.Tos = value;
-            get => _model.Tos;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrepassVisitorState"/> class.
-        /// </summary>
-        public PrepassVisitorState()
-        {
-            RegisterState(_model);
-        }
-    }
-
     internal class PrePassVisitor : Visitor<SceneNode, SceneComponent>
     {
         public List<Tuple<SceneNode, LightResult>> LightPrepassResuls;
@@ -42,26 +15,19 @@ namespace Fusee.Engine.Core
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
         private readonly RendererState _state;
-
-        private CanvasTransform _ctc;
-        private MinMaxRect _parentRect;
-        private RenderContext _rc;
-        private bool _isCtcInitialized = false;
-
         private int _currentLight;
 
         public PrePassVisitor()
         {
             _state = new RendererState();
+            IgnoreInactiveComponents = true;
             LightPrepassResuls = new List<Tuple<SceneNode, LightResult>>();
             CameraPrepassResults = new List<Tuple<SceneNode, CameraResult>>();
         }
 
-        public void PrePassTraverse(SceneContainer sc, RenderContext rc)
+        public void PrePassTraverse(SceneContainer sc)
         {
-            _rc = rc;
             _currentLight = 0;
-            //LightPrepassResuls.Clear();
             CameraPrepassResults.Clear();
             Traverse(sc.Children);
         }
@@ -74,8 +40,6 @@ namespace Fusee.Engine.Core
             _state.Clear();
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
-            _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-
         }
 
         /// <summary>
@@ -92,219 +56,6 @@ namespace Fusee.Engine.Core
         protected override void PopState()
         {
             _state.Pop();
-            _rc.Model = _state.Model;
-        }
-
-        /// <summary>
-        /// Sets the state of the model matrices and UiRects.
-        /// </summary>
-        /// <param name="ctc">The CanvasTransformComponent.</param>
-        [VisitMethod]
-        public void RenderCanvasTransform(CanvasTransform ctc)
-        {
-            _ctc = ctc;
-
-            if (ctc.CanvasRenderMode == CanvasRenderMode.World)
-            {
-                var newRect = new MinMaxRect
-                {
-                    Min = ctc.Size.Min,
-                    Max = ctc.Size.Max
-                };
-
-                _state.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-                _state.Model *= _state.CanvasXForm;
-
-                _parentRect = newRect;
-                _state.UiRect = newRect;
-            }
-
-            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
-            {
-                var invProj = float4x4.Invert(_rc.Projection);
-
-                var frustumCorners = new float4[4];
-
-                frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
-                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
-                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
-                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
-
-                for (var i = 0; i < frustumCorners.Length; i++)
-                {
-                    var corner = frustumCorners[i];
-                    corner /= corner.w; //world space frustum corners               
-                    frustumCorners[i] = corner;
-                }
-
-                var width = (frustumCorners[0] - frustumCorners[1]).Length;
-                var height = (frustumCorners[0] - frustumCorners[2]).Length;
-
-                var zNear = frustumCorners[0].z;
-                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
-
-                ctc.ScreenSpaceSize = new MinMaxRect
-                {
-                    Min = new float2(canvasPos.x - width / 2, canvasPos.y - height / 2),
-                    Max = new float2(canvasPos.x + width / 2, canvasPos.y + height / 2)
-                };
-
-                var newRect = new MinMaxRect
-                {
-                    Min = ctc.ScreenSpaceSize.Min,
-                    Max = ctc.ScreenSpaceSize.Max
-                };
-
-                if (!_isCtcInitialized)
-                {
-                    ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x,
-                        ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
-
-                    _ctc = ctc;
-                    _isCtcInitialized = true;
-
-                }
-                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
-                _state.Model *= _state.CanvasXForm;
-
-                _parentRect = newRect;
-                _state.UiRect = newRect;
-            }
-        }
-
-        /// <summary>
-        /// If a RectTransformComponent is visited the model matrix and MinMaxRect get updated in the <see cref="RendererState"/>.
-        /// </summary>
-        /// <param name="rtc">The XFormComponent.</param>
-        [VisitMethod]
-        public void RenderRectTransform(RectTransform rtc)
-        {
-            MinMaxRect newRect;
-            if (_ctc.CanvasRenderMode == CanvasRenderMode.Screen)
-            {
-                newRect = new MinMaxRect
-                {
-                    Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + (rtc.Offsets.Min / _ctc.Scale.x),
-                    Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + (rtc.Offsets.Max / _ctc.Scale.y)
-                };
-            }
-            else
-            {
-                // The Heart of the UiRect calculation: Set anchor points relative to parent
-                // rectangle and add absolute offsets
-                newRect = new MinMaxRect
-                {
-                    Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
-                    Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
-                };
-            }
-
-            var translationDelta = newRect.Center - _state.UiRect.Center;
-            var translationX = translationDelta.x / _state.UiRect.Size.x;
-            var translationY = translationDelta.y / _state.UiRect.Size.y;
-
-            _parentRect = _state.UiRect;
-            _state.UiRect = newRect;
-
-            _state.Model *= float4x4.CreateTranslation(translationX, translationY, 0);
-        }
-
-        /// <summary>
-        /// If a XFormComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="xfc">The XFormComponent.</param>
-        [VisitMethod]
-        public void RenderXForm(XForm xfc)
-        {
-            float4x4 scale;
-
-            if (_state.UiRect.Size != _parentRect.Size)
-            {
-                var scaleX = _state.UiRect.Size.x / _parentRect.Size.x;
-                var scaleY = _state.UiRect.Size.y / _parentRect.Size.y;
-                scale = float4x4.CreateScale(scaleX, scaleY, 1);
-            }
-            else if (_state.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
-            {
-                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
-            }
-            else
-            {
-                scale = float4x4.CreateScale(1, 1, 1);
-            }
-
-            _state.Model *= scale;
-            _rc.Model = _state.Model;
-        }
-
-        /// <summary>
-        /// If a XFormTextComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="xfc">The XFormTextComponent.</param>
-        [VisitMethod]
-        public void RenderXFormText(XFormText xfc)
-        {
-            var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
-            var scaleFactor = zNear / 100;
-            var invScaleFactor = 1 / scaleFactor;
-
-            float translationY;
-            float translationX;
-
-            float scaleX;
-            float scaleY;
-
-            if (_ctc.CanvasRenderMode == CanvasRenderMode.Screen)
-            {
-                //Undo parent scale
-                scaleX = 1 / _state.UiRect.Size.x;
-                scaleY = 1 / _state.UiRect.Size.y;
-
-                //Calculate translation according to alignment
-                translationX = xfc.HorizontalAlignment switch
-                {
-                    HorizontalTextAlignment.Left => -_state.UiRect.Size.x / 2,
-                    HorizontalTextAlignment.Center => -xfc.Width / 2,
-                    HorizontalTextAlignment.Right => _state.UiRect.Size.x / 2 - xfc.Width,
-                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
-                };
-                translationY = xfc.VerticalAlignment switch
-                {
-                    VerticalTextAlignment.Top => _state.UiRect.Size.y / 2,
-                    VerticalTextAlignment.Center => xfc.Height / 2,
-                    VerticalTextAlignment.Bottom => xfc.Height - (_state.UiRect.Size.y / 2),
-                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
-                };
-            }
-            else
-            {
-                //Undo parent scale, scale by distance
-                scaleX = 1 / _state.UiRect.Size.x * scaleFactor;
-                scaleY = 1 / _state.UiRect.Size.y * scaleFactor;
-
-                //Calculate translation according to alignment by scaling the rectangle size
-                translationX = xfc.HorizontalAlignment switch
-                {
-                    HorizontalTextAlignment.Left => -_state.UiRect.Size.x * invScaleFactor / 2,
-                    HorizontalTextAlignment.Center => -xfc.Width / 2,
-                    HorizontalTextAlignment.Right => _state.UiRect.Size.x * invScaleFactor / 2 - xfc.Width,
-                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
-                };
-                translationY = xfc.VerticalAlignment switch
-                {
-                    VerticalTextAlignment.Top => _state.UiRect.Size.y * invScaleFactor / 2,
-                    VerticalTextAlignment.Center => xfc.Height / 2,
-                    VerticalTextAlignment.Bottom => xfc.Height - (_state.UiRect.Size.y * invScaleFactor / 2),
-                    _ => throw new ArgumentException("Invalid Horizontal Alignment"),
-                };
-            }
-
-            var translation = float4x4.CreateTranslation(translationX, translationY, 0);
-            var scale = float4x4.CreateScale(scaleX, scaleY, 1);
-
-            _state.Model *= scale;
-            _state.Model *= translation;
-            _rc.Model = _state.Model;
         }
 
         /// <summary>
@@ -316,7 +67,6 @@ namespace Fusee.Engine.Core
         public void RenderTransform(Transform transform)
         {
             _state.Model *= transform.Matrix;
-            _rc.Model = _state.Model;
         }
 
         [VisitMethod]
@@ -368,11 +118,8 @@ namespace Fusee.Engine.Core
                 view.M33 /= scale.z;
             }
 
-            view = view.Invert();
-
-            var cameraResult = new CameraResult(camComp, view);
+            var cameraResult = new CameraResult(camComp, view.Invert());
             CameraPrepassResults.Add(new Tuple<SceneNode, CameraResult>(CurrentNode, cameraResult));
         }
     }
-
 }

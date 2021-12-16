@@ -35,8 +35,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         private bool _projSizeModDragStarted;
         private bool _edlStrengthDragStarted;
         private bool _edlNeighbourPxDragStarted;
-        private bool _ssaoStrengthDragStarted;
-        private bool _specularStrengthPxDragStarted;
 
         private Task _fusTask;
 
@@ -46,24 +44,16 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         {
             InitializeComponent();
 
-            Lighting.SelectedValue = PtRenderingParams.Instance.Lighting;
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
             ColorMode.SelectedValue = PtRenderingParams.Instance.ColorMode;
 
             PtSize.Value = PtRenderingParams.Instance.Size;
 
-            SSAOCheckbox.IsChecked = PtRenderingParams.Instance.CalcSSAO;
-            SSAOStrength.Value = PtRenderingParams.Instance.SSAOStrength;
-
             EDLStrengthVal.Content = EDLStrength.Value;
             EDLStrength.Value = PtRenderingParams.Instance.EdlStrength;
             EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
             EDLNeighbourPx.Value = PtRenderingParams.Instance.EdlNoOfNeighbourPx;
-
-            ShininessVal.Text = PtRenderingParams.Instance.Shininess.ToString();
-            SpecStrength.Value = PtRenderingParams.Instance.SpecularStrength;
-            SSAOStrength.IsEnabled = PtRenderingParams.Instance.CalcSSAO;
 
             //ColorPicker is unavailable right now
             //var col = PtRenderingParams.Instance.SingleColor;
@@ -76,34 +66,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         }
 
         #region UI Handler
-
-        private void SSAOCheckBox_Checked(object sender, RoutedEventArgs e)
-        {
-            PtRenderingParams.Instance.CalcSSAO = !PtRenderingParams.Instance.CalcSSAO;
-            SSAOStrength.IsEnabled = PtRenderingParams.Instance.CalcSSAO;
-        }
-
-        #region ssao strength
-        private void SSAOStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            _ssaoStrengthDragStarted = true;
-        }
-
-        private void SSAOStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            PtRenderingParams.Instance.SSAOStrength = (float)((Slider)sender).Value;
-            _ssaoStrengthDragStarted = false;
-        }
-
-        private void SSAOStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            if (_ssaoStrengthDragStarted) return;
-            PtRenderingParams.Instance.SSAOStrength = (float)e.NewValue;
-        }
-        #endregion
 
         #region edl strength
         private void EDLStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -187,28 +149,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
         #endregion
 
-        #region specular strength
-        private void SpecStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            _specularStrengthPxDragStarted = true;
-        }
-
-        private void SpecStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            PtRenderingParams.Instance.SpecularStrength = (float)((Slider)sender).Value;
-            _specularStrengthPxDragStarted = false;
-        }
-
-        private void SpecStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            if (_specularStrengthPxDragStarted) return;
-            PtRenderingParams.Instance.SpecularStrength = (float)e.NewValue;
-        }
-        #endregion
-
         #region min. proj. size modifier
 
         private void MinProjSize_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -235,82 +175,19 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
         }
         #endregion
 
-        private void SingleColor_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-            var col = e.NewValue.Value;
-
-            PtRenderingParams.Instance.SingleColor = new float4(col.ScR, col.ScG, col.ScB, col.ScA);
-        }
-
-        private void Lighting_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
-        {
-            if (!_isAppInizialized || !App.IsSceneLoaded) return;
-
-            PtRenderingParams.Instance.Lighting = (Lighting)e.AddedItems[0];
-
-            if (PtRenderingParams.Instance.Lighting == PointCloud.Common.Lighting.SsaoOnly || PtRenderingParams.Instance.Lighting == PointCloud.Common.Lighting.Unlit)
-            {
-                SSAOCheckbox.IsEnabled = false;
-                SSAOStrengthLabel.IsEnabled = false;
-                SSAOStrength.IsEnabled = false;
-            }
-            else
-            {
-                SSAOCheckbox.IsEnabled = true;
-                SSAOStrengthLabel.IsEnabled = true;
-                SSAOStrength.IsEnabled = PtRenderingParams.Instance.CalcSSAO;
-            }
-
-            if (PtRenderingParams.Instance.Lighting == PointCloud.Common.Lighting.SsaoOnly)
-                SSAOCheckbox.IsChecked = PtRenderingParams.Instance.CalcSSAO = true;
-            if (PtRenderingParams.Instance.Lighting == PointCloud.Common.Lighting.Unlit)
-                SSAOCheckbox.IsChecked = PtRenderingParams.Instance.CalcSSAO = false;
-
-            if (PtRenderingParams.Instance.Lighting != PointCloud.Common.Lighting.BlinnPhong)
-            {
-                SpecStrength.IsEnabled = false;
-                SpecStrengthLabel.IsEnabled = false;
-                Shininess.IsEnabled = false;
-                ShininessVal.IsEnabled = false;
-            }
-            else
-            {
-                SpecStrength.IsEnabled = true;
-                SpecStrengthLabel.IsEnabled = true;
-                Shininess.IsEnabled = true;
-                ShininessVal.IsEnabled = true;
-            }
-
-            if (PtRenderingParams.Instance.Lighting != PointCloud.Common.Lighting.Edl)
-            {
-                EDLNeighbourPx.IsEnabled = false;
-                EDLNeighbourPxLabel.IsEnabled = false;
-                EDLStrength.IsEnabled = false;
-                EDLStrengthLabel.IsEnabled = false;
-            }
-            else
-            {
-                EDLNeighbourPx.IsEnabled = true;
-                EDLNeighbourPxLabel.IsEnabled = true;
-                EDLStrength.IsEnabled = true;
-                EDLStrengthLabel.IsEnabled = true;
-            }
-        }
-
-        private void PtShape_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void PtShape_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
             PtRenderingParams.Instance.Shape = (PointShape)e.AddedItems[0];
         }
 
-        private void PtSizeMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void PtSizeMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
             PtRenderingParams.Instance.PtMode = (PointSizeMode)e.AddedItems[0];
         }
 
-        private void ColorMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        private void ColorMode_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!_isAppInizialized || !App.IsSceneLoaded) return;
             PtRenderingParams.Instance.ColorMode = (ColorMode)e.AddedItems[0];
@@ -406,31 +283,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             }
         }
 
-        private void ShininessVal_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            if (!_isAppInizialized) return;
-            e.Handled = !IsTextAllowed(ShininessVal.Text);
-
-            if (!e.Handled)
-            {
-                if (!int.TryParse(ShininessVal.Text, out var shininess)) return;
-                if (shininess < 0)
-                {
-                    ShininessVal.Text = PtRenderingParams.Instance.Shininess.ToString();
-                    return;
-                }
-
-                PtRenderingParams.Instance.Shininess = shininess;
-            }
-            else
-                ShininessVal.Text = PtRenderingParams.Instance.Shininess.ToString();
-        }
-
-        private void ShininessVal_LostFocus(object sender, RoutedEventArgs e)
-        {
-            ShininessVal.Text = PtRenderingParams.Instance.Shininess.ToString();
-        }
-
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
             PtThreshold.Text = App.GetOocLoaderPointThreshold().ToString();
@@ -488,7 +340,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            var fap = new FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {

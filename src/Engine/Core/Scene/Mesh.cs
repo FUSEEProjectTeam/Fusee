@@ -321,15 +321,9 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Used by various visitors such as rendering and picking. If set to true the mesh contributes to the traversal result. 
-        /// </summary>
-        public bool Active = true;
-
-        /// <summary>
         /// The type of mesh which is represented by this instance (e. g. triangle mesh, point, line, etc...)
         /// </summary>
         public int MeshType;
-
 
         #region IDisposable Support
 

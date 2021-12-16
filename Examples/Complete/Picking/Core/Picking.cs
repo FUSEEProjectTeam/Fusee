@@ -8,6 +8,7 @@ using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Core
 {
@@ -39,9 +40,7 @@ namespace Fusee.Examples.Picking.Core
         private bool _pick;
         private float2 _pickPos;
 
-        private bool _loaded;
-
-        private async void Load()
+        private async Task Load()
         {
             // Create the robot model
             _scene = CreateScene();
@@ -54,8 +53,12 @@ namespace Fusee.Examples.Picking.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
+        }
 
-            _loaded = true;
+        public override async Task InitAsync()
+        {
+            await Load();
+            await base.InitAsync();
         }
 
         // Init is called on startup.
@@ -63,15 +66,11 @@ namespace Fusee.Examples.Picking.Core
         {
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            Load();
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (!_loaded) return;
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

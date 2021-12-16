@@ -253,6 +253,7 @@ namespace Fusee.Engine.Core
         public ScenePicker(SceneContainer scene)
             : base(scene.Children)
         {
+            IgnoreInactiveComponents = true;
             View = float4x4.Identity;
             Projection = float4x4.Identity;
         }
@@ -308,8 +309,7 @@ namespace Fusee.Engine.Core
                 _parentRect = newRect;
                 State.UiRect = newRect;
             }
-
-            if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
+            else if (ctc.CanvasRenderMode == CanvasRenderMode.Screen)
             {
                 var invProj = float4x4.Invert(_rc.Projection);
 
@@ -354,7 +354,7 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                State.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
+                State.CanvasXForm *= _rc.InvModel * _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 State.Model *= State.CanvasXForm;
 
                 _parentRect = newRect;
@@ -516,7 +516,11 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
-            if (!mesh.Active) return;
+            if (!mesh.Active ||
+                (mesh.MeshType != (int)OpenGLPrimitiveType.Triangles &&
+                mesh.MeshType != (int)OpenGLPrimitiveType.TriangleFan &&
+                mesh.MeshType != (int)OpenGLPrimitiveType.TriangleStrip)) return;
+
             var mvp = Projection * View * State.Model;
             for (var i = 0; i < mesh.Triangles.Length; i += 3)
             {
