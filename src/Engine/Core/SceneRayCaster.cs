@@ -196,11 +196,11 @@ namespace Fusee.Engine.Core
             }
 
             Tuple<SceneNode, CameraResult> pickCam = null;
-            Rectangle pickCamRect = new Rectangle();
+            Rectangle pickCamRect = new();
 
             foreach (var cam in cams)
             {
-                Rectangle camRect = new Rectangle();
+                Rectangle camRect = new();
                 camRect.Left = (int)((cam.Item2.Camera.Viewport.x * rc.ViewportWidth) / 100);
                 camRect.Top = (int)((cam.Item2.Camera.Viewport.y * rc.ViewportHeight) / 100);
                 camRect.Right = (int)((cam.Item2.Camera.Viewport.z * rc.ViewportWidth) / 100) + camRect.Left;

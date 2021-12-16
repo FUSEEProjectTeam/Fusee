@@ -33,9 +33,9 @@ namespace Fusee.Examples.PickingRayCast.Core
         private bool _pick;
         private float2 _pickPos;
 
-        private Camera _cam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-        private Camera _cam2 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-        private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
+        private readonly Camera _cam = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Camera _cam2 = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private readonly Camera _guiCam = new(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private Transform _camTransform;
         private Transform _cam2Transform;
         private Transform _guiCamTransform;
@@ -102,7 +102,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             _cam.Viewport = new float4(0, 0, 50, 100);
             _cam.BackgroundColor = new float4(1f, 1f, 1f, 1);
             _cam.Layer = -1;
-            
+
             _cam2.Viewport = new float4(50, 0, 50, 100);
             _cam2.BackgroundColor = new float4(.5f, 0f, 1f, 1);
             _cam2.Layer = -1;
