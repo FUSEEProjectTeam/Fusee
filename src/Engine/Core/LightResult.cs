@@ -103,20 +103,5 @@ namespace Fusee.Engine.Core
         {
             return Id.GetHashCode();
         }
-
-        public event EventHandler<EventArgs> PropertyChanged;
-
-        /// <summary>
-        /// This method needs to be called by the setter of each property.
-        /// </summary>
-        /// <param name="type">The type of the property.</param>
-        /// <param name="name">The name of the property.</param>
-        /// <param name="value">The value of the property.</param>
-        public void NotifyValueChanged(Type type, string name, object value)
-        {
-            PropertyChanged?.Invoke(this, new EventArgs());
-        }
-
     }
-
 }
