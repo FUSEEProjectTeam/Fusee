@@ -112,9 +112,6 @@ namespace Fusee.Engine.Core
 
         protected SceneContainer _sc;
 
-
-        protected RenderContext _rc;
-
         internal PrePassVisitor PrePassVisitor { get; private set; }
 
         #region State
@@ -180,36 +177,45 @@ namespace Fusee.Engine.Core
 
         public IEnumerable<RayCastResult> RayPick(RenderContext rc, float2 pickPos)
         {
-            _rc = rc;
-            float2 pickPosClip = (pickPos * new float2(2.0f / _rc.ViewportWidth, -2.0f / _rc.ViewportHeight)) + new float2(-1, 1);
+            PrePassVisitor.PrePassTraverse(_sc, rc);
+            var cams = PrePassVisitor.CameraPrepassResults;
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);
+            float2 pickPosClip = float2.Zero;
 
-            if (PrePassVisitor.CameraPrepassResults.Count == 0)
+            if (cams.Count == 0)
             {
-                Ray = new Rayf(pickPosClip, _rc.View, _rc.Projection);
+                pickPosClip = (pickPos * new float2(2.0f / rc.ViewportWidth, -2.0f / rc.ViewportHeight)) + new float2(-1, 1);
+                Ray = new Rayf(pickPosClip, rc.View, rc.Projection);
                 return Viserate();
             }
 
-            var cams = PrePassVisitor.CameraPrepassResults;
             Tuple<SceneNode, CameraResult> pickCam = null;
+            Rectangle pickCamRect = new Rectangle();
+
             foreach (var cam in cams)
             {
-                //TODO: check if pickPos or pickPosClip is within Camera Bounds
-                if (pickCam == null || cam.Item2.Camera.Layer > pickCam.Item2.Camera.Layer) pickCam = cam;
+                Rectangle camRect = new Rectangle();
+                camRect.Left = (int)((cam.Item2.Camera.Viewport.x * rc.ViewportWidth) / 100);
+                camRect.Top = (int)((cam.Item2.Camera.Viewport.y * rc.ViewportHeight) / 100);
+                camRect.Right = (int)((cam.Item2.Camera.Viewport.z * rc.ViewportWidth) / 100) + camRect.Left;
+                camRect.Bottom = (int)((cam.Item2.Camera.Viewport.w * rc.ViewportHeight) / 100) + camRect.Top;
+
+
+                if (!float2.PointInRectangle(new float2(camRect.Left, camRect.Top), new float2(camRect.Right, camRect.Bottom), pickPos)) continue;
+
+                if (pickCam == null || cam.Item2.Camera.Layer > pickCam.Item2.Camera.Layer)
+                {
+                    pickCam = cam;
+                    pickCamRect = camRect;
+                }
             }
 
-            if (pickCam == null) throw new Exception("No Camera found in the scene!");
-
-            Ray = new Rayf(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out _));
+            // Calculate pickPosClip
+            pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
+            Ray = new Rayf(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
 
             return Viserate();
         }
-
-        // RayPick(float2 mousePos, Camera camera = null)
-        //  PrepassVisitor
-        //  => Ray
-        //  Viserate()
 
         #region Visitors
 
