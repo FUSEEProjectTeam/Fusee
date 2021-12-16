@@ -4,7 +4,7 @@ using System;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Used in a <see cref="PointCloudLoader{TPoint}"/> for caching meshes using the <see cref="MemoryCache{TItem}.AddItem"/> event.
+    /// Used in a <see cref="PointCloudLoader{TPoint}"/> for caching meshes using the <see cref="MemoryCache{TItem}.AddItemAsync"/> event.
     /// </summary>
     /// <typeparam name="TPoint"></typeparam>
     public class GpuMeshFromPointsEventArgs<TPoint> : EventArgs where TPoint : new()

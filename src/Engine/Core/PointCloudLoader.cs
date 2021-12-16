@@ -172,7 +172,7 @@ namespace Fusee.Engine.Core
         {
             VisibleNodes = new(octantCnt);
             PointCache = new();
-            PointCache.AddItem += OnLoadPoints;
+            PointCache.AddItemAsync += OnLoadPoints;
             _loadingQueue = new(octantCnt);
         }
 
@@ -204,7 +204,7 @@ namespace Fusee.Engine.Core
 
                     Task.Run(async () =>
                     {
-                        await PointCache.AddOrUpdate(octant.Guid, new LoadPointEventArgs<TPoint>(octant, FileFolderPath, PtAccessor));
+                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant, FileFolderPath, PtAccessor));
 
                         lock (_lockLoadingQueue)
                         {

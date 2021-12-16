@@ -6,7 +6,7 @@ using System;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Used in a <see cref="PointCloudLoader{TPoint}"/> for caching loaded points using the <see cref="MemoryCache{TItem}.AddItem"/> event.
+    /// Used in a <see cref="PointCloudLoader{TPoint}"/> for caching loaded points using the <see cref="MemoryCache{TItem}.AddItemAsync"/> event.
     /// </summary>
     /// <typeparam name="TPoint"></typeparam>
     public class LoadPointEventArgs<TPoint> : EventArgs where TPoint : new()

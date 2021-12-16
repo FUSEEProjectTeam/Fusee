@@ -157,14 +157,8 @@ namespace Fusee.Engine.Core.Scene
             }
         }
 
-        private async Task<IEnumerable<GpuMesh>> OnCreateMeshAsync(object sender, EventArgs e)
-        {
-            var meshArgs = (GpuMeshFromPointsEventArgs<TPoint>)e;
-            return await Task.Run(() => { return GetMeshsForOctant(PointAccessor, Type, meshArgs.Points, meshArgs.RenderContext); });
-        }
-
         //TODO: Temporary "hack" because multi-threaded gpu buffer creation is not supported right now
-        private async Task<IEnumerable<GpuMesh>> OnCreateMesh(object sender, EventArgs e)
+        private IEnumerable<GpuMesh> OnCreateMesh(object sender, EventArgs e)
         {
             var meshArgs = (GpuMeshFromPointsEventArgs<TPoint>)e;
             return GetMeshsForOctant(PointAccessor, Type, meshArgs.Points, meshArgs.RenderContext);

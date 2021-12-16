@@ -20,6 +20,7 @@ namespace Fusee.PointCloud.Common
         /// <returns></returns>
         public List<string> GetPointType()
         {
+            // Point Type (enum)
             return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
         }
 

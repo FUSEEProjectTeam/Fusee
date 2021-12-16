@@ -12,13 +12,16 @@ namespace Fusee.Base.Core
         public int SlidingExpiration = 5;
         public int ExpirationScanFrequency = 6;
 
-        public delegate Task<TItem> AddItemHandler(object sender, EventArgs e);
+        public delegate Task<TItem> AddItemHandlerAsync(object sender, EventArgs e);
+        public event AddItemHandlerAsync AddItemAsync;
+
+        public delegate TItem AddItemHandler(object sender, EventArgs e);
         public event AddItemHandler AddItem;
 
         public PostEvictionDelegate HandleEvictedItem;
 
         private readonly MemoryCache _cache;
-        private readonly ConcurrentDictionary<object, SemaphoreSlim> _meshLocks = new();
+        private readonly ConcurrentDictionary<object, SemaphoreSlim> _locks = new();
 
         public MemoryCache()
         {
@@ -35,11 +38,38 @@ namespace Fusee.Base.Core
             return false;
         }
 
-        public async Task AddOrUpdate(Guid key, EventArgs args)
+        public void AddOrUpdate(Guid key, EventArgs args)
         {
             if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
             {
-                SemaphoreSlim chacheLock = _meshLocks.GetOrAdd(key, k => new SemaphoreSlim(1, 1));
+
+                if (!_cache.TryGetValue(key, out cacheEntry))
+                {
+                    var cacheEntryOptions = new MemoryCacheEntryOptions()
+                        .SetPriority(CacheItemPriority.High)
+                        // Keep in cache for this time, reset time if accessed.
+                        .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
+
+                    cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
+                    {
+                        _locks.Remove(subkey, out _);
+                        HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
+
+                    });
+
+                    // Key not in cache, so get data.
+                    cacheEntry = AddItem.Invoke(this, args);
+                    _cache.Set(key, cacheEntry, cacheEntryOptions);
+                }
+
+            }
+        }
+
+        public async Task AddOrUpdateAsync(Guid key, EventArgs args)
+        {
+            if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
+            {
+                SemaphoreSlim chacheLock = _locks.GetOrAdd(key, k => new SemaphoreSlim(1, 1));
 
                 await chacheLock.WaitAsync();
                 try
@@ -53,13 +83,13 @@ namespace Fusee.Base.Core
 
                         cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
                         {
-                            _meshLocks.Remove(subkey, out _);
+                            _locks.Remove(subkey, out _);
                             HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
-                            
+
                         });
 
                         // Key not in cache, so get data.
-                        cacheEntry = await AddItem?.Invoke(this, args);//createItem(node, points);
+                        cacheEntry = await AddItemAsync?.Invoke(this, args);//createItem(node, points);
                         _cache.Set(key, cacheEntry, cacheEntryOptions);
                     }
                 }
