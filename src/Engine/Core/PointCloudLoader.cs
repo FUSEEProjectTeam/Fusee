@@ -6,7 +6,6 @@ using Fusee.PointCloud.PotreeReader.V1;
 using Fusee.Structures;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -138,6 +137,7 @@ namespace Fusee.Engine.Core
         /// Creates a new instance of type <see cref="PointCloudLoader{TPoint}"/>.
         /// </summary>
         /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
+        /// <param name="numberOfOctants"></param>
         public PointCloudLoader(string fileFolderPath, int numberOfOctants)
         {
             _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PtOctantRead<TPoint>>(); // visible nodes ordered by screen-projected-size;            
@@ -257,7 +257,7 @@ namespace Fusee.Engine.Core
 
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
-            var meshArgs = (LoadPointEventArgs<TPoint>)e;            
+            var meshArgs = (LoadPointEventArgs<TPoint>)e;
             return await ReadPotreeData<TPoint>.LoadPointsForNodeAsync(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
         }
 

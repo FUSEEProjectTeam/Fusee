@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public PointAccessor<TPoint> PointAccessor;
 
-        private List<IEnumerable<GpuMesh>> _disposeQueue;
+        private readonly List<IEnumerable<GpuMesh>> _disposeQueue;
         private bool _disposed;
 
         /// <summary>
@@ -124,18 +124,23 @@ namespace Fusee.Engine.Core.Scene
 
         private int _maxNumberOfDisposals = 3;
 
+        private static object _lockDisposeQueue = new object();
+
         internal void Update()
         {
-            if (_disposeQueue.Count > 0)
+            lock (_lockDisposeQueue)
             {
-                var nodesInQueue = _disposeQueue.Count;
-                var count = nodesInQueue < _maxNumberOfDisposals ? nodesInQueue : _maxNumberOfDisposals;
-                for (int i = 0; i < count; i++)
+                if (_disposeQueue.Count > 0)
                 {
-                    var meshes = _disposeQueue.Last();
-                    _disposeQueue.RemoveAt(_disposeQueue.Count - 1);
-                    foreach (var mesh in meshes)
-                        mesh.Dispose();
+                    var nodesInQueue = _disposeQueue.Count;
+                    var count = nodesInQueue < _maxNumberOfDisposals ? nodesInQueue : _maxNumberOfDisposals;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var meshes = _disposeQueue.Last();
+                        _disposeQueue.RemoveAt(_disposeQueue.Count - 1);
+                        foreach (var mesh in meshes)
+                            mesh.Dispose();
+                    }
                 }
             }
 
@@ -146,7 +151,10 @@ namespace Fusee.Engine.Core.Scene
 
         private void OnItemEvictedFromCache(object guid, object meshes, EvictionReason reason, object state)
         {
-            _disposeQueue.Add((IEnumerable<GpuMesh>)meshes);
+            lock (_lockDisposeQueue)
+            {
+                _disposeQueue.Add((IEnumerable<GpuMesh>)meshes);
+            }
         }
 
         private async Task<IEnumerable<GpuMesh>> OnCreateMeshAsync(object sender, EventArgs e)
@@ -239,6 +247,7 @@ namespace Fusee.Engine.Core.Scene
             {
                 if (disposing)
                 {
+                    _lockDisposeQueue = null;
                     foreach (var meshes in _disposeQueue)
                     {
                         foreach (var mesh in meshes)

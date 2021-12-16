@@ -364,7 +364,7 @@ namespace Fusee.Engine.Core
 
         #endregion Public Fields & Members pairs
 
-        private bool disposed;
+        private bool _disposed;
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
@@ -387,14 +387,14 @@ namespace Fusee.Engine.Core
         /// other objects. Only unmanaged resources can be disposed.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposed)
+            if (!_disposed)
             {
                 if (disposing)
                 {
                     DisposeData?.Invoke(this, new MeshChangedEventArgs(this, MeshChangedEnum.Disposed));
                 }
 
-                disposed = true;
+                _disposed = true;
             }
         }
 

@@ -287,9 +287,8 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 _angleVert += _angleVelVert;
                 _angleVelHorz = 0;
                 _angleVelVert = 0;
-
-                if (HasUserMoved())
-                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 20);
+                
+                _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 20);
             }
         }
 
@@ -338,14 +337,6 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         {
             base.DeInit();
             IsAlive = false;
-        }
-
-        private bool HasUserMoved()
-        {
-            return RC.View == float4x4.Identity
-                || Mouse.LeftButton
-                || Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0
-                || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint);
         }
 
         public void ResetCamera()
