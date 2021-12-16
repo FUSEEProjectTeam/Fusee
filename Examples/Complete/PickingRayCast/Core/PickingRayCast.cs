@@ -34,8 +34,10 @@ namespace Fusee.Examples.PickingRayCast.Core
         private float2 _pickPos;
 
         private Camera _cam = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
+        private Camera _cam2 = new Camera(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
         private readonly Camera _guiCam = new Camera(ProjectionMethod.Orthographic, 1, 1000, M.PiOver4);
         private Transform _camTransform;
+        private Transform _cam2Transform;
         private Transform _guiCamTransform;
 
         private bool _loaded = false;
@@ -70,6 +72,17 @@ namespace Fusee.Examples.PickingRayCast.Core
             };
             _scene.Children.Add(cam);
 
+            SceneNode cam2 = new()
+            {
+                Name = "Cam2",
+                Components = new List<SceneComponent>()
+                {
+                    _cam2Transform,
+                    _cam2,
+                }
+            };
+            _scene.Children.Add(cam2);
+
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
@@ -86,9 +99,13 @@ namespace Fusee.Examples.PickingRayCast.Core
         // Init is called on startup.
         public override void Init()
         {
-            _cam.Viewport = new float4(0, 0, 100, 100);
+            _cam.Viewport = new float4(0, 0, 50, 100);
             _cam.BackgroundColor = new float4(1f, 1f, 1f, 1);
             _cam.Layer = -1;
+            
+            _cam2.Viewport = new float4(50, 0, 50, 100);
+            _cam2.BackgroundColor = new float4(.5f, 0f, 1f, 1);
+            _cam2.Layer = -1;
 
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
@@ -97,12 +114,16 @@ namespace Fusee.Examples.PickingRayCast.Core
             _camTransform = _guiCamTransform = new Transform()
             {
                 Rotation = float3.Zero,
-                Translation = new float3(0, 20, 20),
+                Translation = new float3(0, 0, -40),
                 Scale = new float3(1, 1, 1)
             };
 
-            var rotation = float4x4.LookAt(_camTransform.Translation, new float3(0, 0, 0), float3.UnitY);
-            _camTransform.Rotate(rotation);
+            _cam2Transform = new Transform()
+            {
+                Rotation = new float3(0, M.DegreesToRadians(180), 0),
+                Translation = new float3(0, 0, 40),
+                Scale = new float3(1, 1, 1)
+            };
 
             Load();
         }
@@ -124,6 +145,7 @@ namespace Fusee.Examples.PickingRayCast.Core
             }
 
             _camTransform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
+            _cam2Transform.RotateAround(float3.Zero, new float3(0, _angleVelHorz, 0));
 
 
             // Check for hits
