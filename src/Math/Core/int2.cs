@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math.Core
 {
     /// <summary>
-    /// Represents a 2D vector using two single-precision inting-point numbers.
+    /// Represents a 2D vector using two single-precision integers.
     /// </summary>
     /// <remarks>
     /// The int2 structure is suitable for interoperation with unmanaged code requiring two consecutive ints.
@@ -210,11 +210,6 @@ namespace Fusee.Math.Core
         /// Defines an instance with all components set to 1.
         /// </summary>
         public static readonly int2 One = new(1, 1);
-
-        // <summary>
-        // Defines the size of the int2 struct in bytes.
-        // </summary>
-        // public static readonly int SizeInBytes = Marshal.SizeOf(new int2());
 
         #endregion Fields
 
@@ -735,10 +730,10 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode()
 
         /// <summary>
-        /// Returns the hashcode for this instance.
+        /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A System.Int32 containing the unique hashcode for this instance.
+        /// A System.Int32 containing the unique hash code for this instance.
         /// </returns>
         public override int GetHashCode()
         {
@@ -758,10 +753,10 @@ namespace Fusee.Math.Core
         /// </returns>
         public override bool Equals(object? obj)
         {
-            if (!(obj is int2))
+            if (obj is not int2)
                 return false;
 
-            return this.Equals((int2)obj);
+            return Equals((int2)obj);
         }
 
         #endregion public override bool Equals(object obj)
@@ -825,7 +820,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, int2> ParseConverter { get; set; } = (x => int2.Parse(x));
+        public static Converter<string, int2> ParseConverter { get; set; } = (x => Parse(x));
 
         /// <summary>
         /// Parses a string into a int2.

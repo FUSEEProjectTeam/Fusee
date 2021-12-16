@@ -689,7 +689,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_NoCulture()
         {
-            int2 f = int2.One *2;
+            int2 f = int2.One * 2;
 
             Assert.Equal(f, int2.Parse(f.ToString()));
         }

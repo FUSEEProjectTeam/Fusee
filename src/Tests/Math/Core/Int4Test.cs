@@ -782,13 +782,13 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(f, int4.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
         }
 
-        //[Fact]
-        //public void Parse_Exception()
-        //{
-        //    string s = "Fusee";
+        [Fact]
+        public void Parse_Exception()
+        {
+            string s = "Fusee";
 
-        //    Assert.Throws<FormatException>(() => int4.Parse(s));
-        //}
+            Assert.Throws<FormatException>(() => int4.Parse(s));
+        }
 
         #endregion ToString/Parse
     }

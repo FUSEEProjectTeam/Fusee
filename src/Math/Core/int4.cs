@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
-    /// <summary>Represents a 4D vector using four single-precision inting-point numbers.</summary>
+    /// <summary>Represents a 4D vector using four integers.</summary>
     /// <remarks>
     /// The int4 structure is suitable for interoperation with unmanaged code requiring four consecutive ints.
     /// </remarks>
@@ -68,12 +68,6 @@ namespace Fusee.Math.Core
         /// Defines an instance with all components set to 1.
         /// </summary>
         public static readonly int4 One = new(1, 1, 1, 1);
-
-        // <summary>
-        // Defines the size of the int4 struct in bytes.
-        // </summary>
-        // public static readonly int SizeInBytes = Marshal.SizeOf(new int4());
-
         #endregion Fields
 
         #region Constructors
@@ -770,7 +764,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies two instances (componentwise).
+        /// Multiplies two instances (component-wise).
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -904,9 +898,9 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode()
 
         /// <summary>
-        /// Returns the hashcode for this instance.
+        /// Returns the hash code for this instance.
         /// </summary>
-        /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
+        /// <returns>A System.Int32 containing the unique hash code for this instance.</returns>
         public override int GetHashCode()
         {
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ w.GetHashCode();
@@ -923,7 +917,7 @@ namespace Fusee.Math.Core
         /// <returns>True if the instances are equal; false otherwise.</returns>
         public override bool Equals(object? obj)
         {
-            if (!(obj is int4))
+            if (obj is not int4)
                 return false;
 
             return this.Equals((int4)obj);

@@ -283,11 +283,6 @@ namespace Fusee.Math.Core
         /// </summary>
         public static readonly int3 One = new(1, 1, 1);
 
-        // <summary>
-        // Defines the size of the int3 struct in bytes.
-        // </summary>
-        // public static readonly int SizeInBytes = Marshal.SizeOf(new int3());
-
         #endregion Fields
 
         #region Add
@@ -1058,7 +1053,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Explicit cast operator to cast a double3 into a int3 value.
         /// </summary>
-        /// <param name="d3">The double3 value to cast.</param>
+        /// <param name="f3">The double3 value to cast.</param>
         /// <returns>A int3 value.</returns>
         public static explicit operator int3(float3 f3)
         {
@@ -1109,10 +1104,10 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode()
 
         /// <summary>
-        /// Returns the hashcode for this instance.
+        /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>
-        /// A System.Int32 containing the unique hashcode for this instance.
+        /// A System.Int32 containing the unique hash code for this instance.
         /// </returns>
         public override int GetHashCode()
         {
@@ -1132,7 +1127,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public override bool Equals(object? obj)
         {
-            if (!(obj is int3))
+            if (obj is not int3)
                 return false;
 
             return Equals((int3)obj);
