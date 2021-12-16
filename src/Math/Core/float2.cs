@@ -615,7 +615,7 @@ namespace Fusee.Math.Core
         #region Rectangle
 
         /// <summary>
-        /// Checks if the given point lies within the given rectangle.
+        /// Checks if the given point lies within the given rectangle using screen coordinates (meaning top is smaller than bottom).
         /// </summary>
         /// <param name="topLeft">The top left point of the rectangle.</param>
         /// <param name="bottomRight">The bottom right point of the triangle.</param>
@@ -623,7 +623,7 @@ namespace Fusee.Math.Core
         /// <returns>True if the point lies withing the rectangle. False if the point lies outside the rectangle.</returns>
         public static bool PointInRectangle(float2 topLeft, float2 bottomRight, float2 point)
         {
-            return (PointInTriangle(topLeft, new float2(topLeft.x, bottomRight.y), bottomRight, point, out float _, out float _) || PointInTriangle(topLeft, bottomRight, new float2(bottomRight.x, topLeft.y), point, out float _, out float _));
+            return (topLeft.x <= point.x && point.x <= bottomRight.x) && (topLeft.y <= point.y && point.y <= bottomRight.y);
         }
 
         #endregion Rectangle

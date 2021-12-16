@@ -167,7 +167,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Returns a collection of objects that are hit by the ray and that can be iterated over.
         /// </summary>
-        /// <param name="ray"></param>
+        /// <param name="ray">The ray to test.</param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
         public IEnumerable<RayCastResult> RayCast(Rayf ray)
         {
@@ -175,6 +175,12 @@ namespace Fusee.Engine.Core
             return Viserate();
         }
 
+        /// <summary>
+        /// Returns a collection of objects that are hit by the ray and that can be iterated over.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="pickPos"></param>
+        /// <returns></returns>
         public IEnumerable<RayCastResult> RayPick(RenderContext rc, float2 pickPos)
         {
             PrePassVisitor.PrePassTraverse(_sc, rc);
