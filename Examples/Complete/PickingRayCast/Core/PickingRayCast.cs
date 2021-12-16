@@ -151,15 +151,6 @@ namespace Fusee.Examples.PickingRayCast.Core
             // Check for hits
             if (_pick)
             {
-                // Convert Screen Coordinates to Clip Space
-                float2 pickPosClip = (_pickPos * new float2(2.0f / Width, -2.0f / Height)) + new float2(-1, 1);
-
-                // Construct Ray (either using Camera Parameters or Render Context)
-                //Rayf ray = new(pickPosClip, RC.View, RC.Projection);             //Rayf ray = new(pickPosClip, _camTransform.Matrix, _cam.GetProjectionMat(Width, Height, out _));
-
-                // RayCast and get the result closest to the camera
-                //var castHit = _sceneRayCaster.RayCast(ray).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
-
                 var castHit = _sceneRayCaster.RayPick(RC, _pickPos).ToList().OrderBy(rr => rr.DistanceFromOrigin).FirstOrDefault();
 
                 if (castHit != null)

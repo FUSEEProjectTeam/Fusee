@@ -183,7 +183,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public IEnumerable<RayCastResult> RayPick(RenderContext rc, float2 pickPos)
         {
-            PrePassVisitor.PrePassTraverse(_sc, rc);
+            PrePassVisitor.PrePassTraverse(_sc);
             var cams = PrePassVisitor.CameraPrepassResults;
 
             float2 pickPosClip = float2.Zero;
