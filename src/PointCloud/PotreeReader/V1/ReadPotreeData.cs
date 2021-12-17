@@ -20,7 +20,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// <param name="ptAccessor">Point accessor to get the actual point information.</param>
         /// <param name="fileFolderPath">Path to the folder the point cloud is saved</param>
         /// <returns></returns>
-        public static PtOctreeRead<TPoint> GetOctree(PointAccessor<TPoint> ptAccessor, string fileFolderPath)
+        public static PtOctreeRead<TPoint> GetOctree(IPointAccessor ptAccessor, string fileFolderPath)
         {
             var pathToMetaJson = fileFolderPath + "\\meta.json";
             JObject jsonObj;
@@ -57,7 +57,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// <param name="octant"></param>
         /// <returns>An array of TPoint points.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public static TPoint[] LoadPointsForNode(string fileFolderPath, PointAccessor<TPoint> ptAccessor, PtOctantRead<TPoint> octant)
+        public static TPoint[] LoadPointsForNode(string fileFolderPath, IPointAccessor ptAccessor, PtOctantRead<TPoint> octant)
         {
             var pathToFile = $"{fileFolderPath}/Octants/{octant.Guid:N}.node";
 
@@ -80,7 +80,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
                 var pt = new TPoint();
                 var ptBytes = br.ReadBytes(lengthOfPoint);
 
-                ptAccessor.SetRawPoint(ref pt, ptBytes);
+                ((PointAccessor<TPoint>)ptAccessor).SetRawPoint(ref pt, ptBytes);
 
                 points[i] = pt;
             }
@@ -96,7 +96,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// <param name="octant"></param>
         /// <returns>An array of TPoint points.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public static async Task<TPoint[]> LoadPointsForNodeAsync(string fileFolderPath, PointAccessor<TPoint> ptAccessor, PtOctantRead<TPoint> octant)
+        public static async Task<TPoint[]> LoadPointsForNodeAsync(string fileFolderPath, IPointAccessor ptAccessor, PtOctantRead<TPoint> octant)
         {
             return await Task.Run(() => { return LoadPointsForNode(fileFolderPath, ptAccessor, octant); });
         }

@@ -24,6 +24,7 @@ namespace Fusee.PointCloud.Core
         {
             point.Position = val;
         }
+
         /// <summary>
         /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>

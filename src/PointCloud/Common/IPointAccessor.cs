@@ -350,20 +350,20 @@ namespace Fusee.PointCloud.Common
         /// <returns></returns>
         PointType PointType { get; }
 
-        PointPositionType PositionType { get; set; }
+        PointPositionType PositionType { get; }
 
-        PointIntensityType IntensityType { get; set; }
+        PointIntensityType IntensityType { get;}
 
-        PointNormalType NormalType { get; set; }
+        PointNormalType NormalType { get; }
 
-        PointColorType ColorType { get; set; }
+        PointColorType ColorType { get;}
 
-        PointLabelType LabelType { get; set; }
+        PointLabelType LabelType { get;}
 
-        PointCurvatureType CurvatureType { get; set; }
+        PointCurvatureType CurvatureType { get;}
 
-        PointHitCountType HitCountType { get; set; }
+        PointHitCountType HitCountType { get;}
 
-        PointGpsTimeType GpsTimeType { get; set; }
+        PointGpsTimeType GpsTimeType { get;}
     }
 }

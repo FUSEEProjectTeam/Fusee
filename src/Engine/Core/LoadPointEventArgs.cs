@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The <see cref="PointAccessor{TPoint}"/>.
         /// </summary>
-        public PointAccessor<TPoint> PtAccessor;
+        public IPointAccessor PtAccessor;
 
         /// <summary>
         /// The octant we want to read the points for.
@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core
         /// <param name="octant">The octant we want to read the points for.</param>
         /// <param name="pathToFile">The path to the potree file.</param>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/>.</param>
-        public LoadPointEventArgs(PtOctantRead<TPoint> octant, string pathToFile, PointAccessor<TPoint> ptAccessor)
+        public LoadPointEventArgs(PtOctantRead<TPoint> octant, string pathToFile, IPointAccessor ptAccessor)
         {
             Octant = octant;
             PathToFile = pathToFile;

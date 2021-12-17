@@ -7,14 +7,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core.Scene
 {
     /// <summary>
     /// Will render a Potree 1.0 Point Cloud if visited by the SceneRenderer.
     /// </summary>
-    /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
     public class PointCloud<TPoint> : SceneComponent, IDisposable where TPoint : new()
     {
         /// <summary>
@@ -30,7 +28,7 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// The <see cref="PointAccessor"/> used to get the point data for this PointCloud.
         /// </summary>
-        public PointAccessor<TPoint> PointAccessor;
+        public IPointAccessor PointAccessor;
 
         private readonly List<IEnumerable<GpuMesh>> _disposeQueue;
         private bool _disposed;
@@ -41,7 +39,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="pointAccessor"></param>
         /// <param name="fileFolderPath"></param>
         /// <param name="pointType"></param>
-        public PointCloud(PointAccessor<TPoint> pointAccessor, string fileFolderPath, PointType pointType)
+        public PointCloud(IPointAccessor pointAccessor, string fileFolderPath, PointType pointType)
         {
             var noOfOctants = Directory.GetFiles($"{fileFolderPath}\\Octants").Length;
             PointCloudLoader = new PointCloudLoader<TPoint>(fileFolderPath, noOfOctants)
@@ -51,6 +49,8 @@ namespace Fusee.Engine.Core.Scene
                 PtAccessor = pointAccessor,
 
             };
+           
+            
             Center = new float3(PointCloudLoader.Octree.Root.Center);
             Size = (float)PointCloudLoader.Octree.Root.Size;
 
@@ -161,7 +161,7 @@ namespace Fusee.Engine.Core.Scene
         private IEnumerable<GpuMesh> OnCreateMesh(object sender, EventArgs e)
         {
             var meshArgs = (GpuMeshFromPointsEventArgs<TPoint>)e;
-            return GetMeshsForOctant(PointAccessor, Type, meshArgs.Points, meshArgs.RenderContext);
+            return GetMeshsForOctant((PointAccessor<TPoint>)PointAccessor, Type, meshArgs.Points, meshArgs.RenderContext);
         }
 
         /// <summary>

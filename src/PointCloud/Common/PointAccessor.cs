@@ -9,11 +9,8 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Every point cloud needs a point accessor. Provides access to the point parameters like position or color.
     /// </summary>
-    /// <typeparam name="TPoint">The generic point type.</typeparam>
-    public abstract class PointAccessor<TPoint> : IPointAccessor where TPoint : new()
+    public abstract class PointAccessor<TPoint> : IPointAccessor
     {
-        #region PointT_Member
-
         /// <summary>
         /// Returns the type of the point as list of the HasXY methods.
         /// </summary>
@@ -140,6 +137,48 @@ namespace Fusee.PointCloud.Common
         public PointCurvatureType CurvatureType { get; set; } = PointCurvatureType.None;
         public PointHitCountType HitCountType { get; set; } = PointHitCountType.None;
         public PointGpsTimeType GpsTimeType { get; set; } = PointGpsTimeType.None;
+
+        /// <summary>
+        /// Returns the generic raw point.
+        /// </summary>
+        /// <param name="point">The point cloud point.</param>
+        public byte[] GetRawPoint(ref TPoint point)
+        {
+            if (point == null)
+                throw new NullReferenceException("Given point is null!");
+
+            var position = GetRawPosition(ref point);
+            var intensity = GetRawIntensity(ref point);
+            var normals = GetRawNormals(ref point);
+            var rgb = GetRawColor(ref point);
+            var label = GetRawLabel(ref point);
+            var curvature = GetRawCurvature(ref point);
+            var hitCount = GetRawHitCount(ref point);
+            var GPSTime = GetRawGPSTime(ref point);
+
+            return position.Concat(intensity).Concat(normals).Concat(rgb).Concat(label).Concat(curvature).Concat(hitCount).Concat(GPSTime).ToArray();
+        }
+
+        /// <summary>
+        /// Sets the values of a point cloud point.
+        /// </summary>
+        /// <param name="pointIn">The generic point.</param>
+        /// <param name="byteIn">The values as byte array.</param>
+        public void SetRawPoint(ref TPoint pointIn, byte[] byteIn)
+        {
+            if (pointIn == null || byteIn == null || byteIn.Length < 8)
+                throw new NullReferenceException("Invalid data given");
+
+            // Call all methods to recreate the point
+            SetRawPosition(ref pointIn, byteIn);
+            SetRawIntensity(ref pointIn, byteIn);
+            SetRawNormals(ref pointIn, byteIn);
+            SetRawColor(ref pointIn, byteIn);
+            SetRawLabel(ref pointIn, byteIn);
+            SetRawCurvature(ref pointIn, byteIn);
+            SetRawHitCount(ref pointIn, byteIn);
+            SetRawGPSTime(ref pointIn, byteIn);
+        }
 
         #region PointT_Methods
 
@@ -1168,7 +1207,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref sbyte GetGPSTimeInt_8(ref TPoint point)
+        public virtual ref sbyte GetGPSTimeInt_8<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_8");
         }
@@ -1176,7 +1215,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref short GetGPSTimeInt_16(ref TPoint point)
+        public virtual ref short GetGPSTimeInt_16<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_16");
         }
@@ -1184,7 +1223,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref int GetGPSTimeInt_32(ref TPoint point)
+        public virtual ref int GetGPSTimeInt_32<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_32");
         }
@@ -1192,7 +1231,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref long GetGPSTimeInt_64(ref TPoint point)
+        public virtual ref long GetGPSTimeInt_64<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_64");
         }
@@ -1200,7 +1239,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref byte GetGPSTimeUInt_8(ref TPoint point)
+        public virtual ref byte GetGPSTimeUInt_8<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_8");
         }
@@ -1208,7 +1247,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref ushort GetGPSTimeUInt_16(ref TPoint point)
+        public virtual ref ushort GetGPSTimeUInt_16<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_16");
         }
@@ -1216,7 +1255,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref uint GetGPSTimeUInt_32(ref TPoint point)
+        public virtual ref uint GetGPSTimeUInt_32<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_32");
         }
@@ -1224,7 +1263,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref ulong GetGPSTimeUInt_64(ref TPoint point)
+        public virtual ref ulong GetGPSTimeUInt_64<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_64");
         }
@@ -1232,7 +1271,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref float GetGPSTimeFloat32(ref TPoint point)
+        public virtual ref float GetGPSTimeFloat32<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat32");
         }
@@ -1240,7 +1279,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref double GetGPSTimeFloat64(ref TPoint point)
+        public virtual ref double GetGPSTimeFloat64<TPoint>(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat64");
         }
@@ -1252,7 +1291,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_8(ref TPoint point, sbyte val)
+        public virtual void SetGPSTimeInt_8<TPoint>(ref TPoint point, sbyte val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_8");
         }
@@ -1261,7 +1300,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_16(ref TPoint point, short val)
+        public virtual void SetGPSTimeInt_16<TPoint>(ref TPoint point, short val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_16");
         }
@@ -1270,7 +1309,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_32(ref TPoint point, int val)
+        public virtual void SetGPSTimeInt_32<TPoint>(ref TPoint point, int val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_32");
         }
@@ -1279,7 +1318,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_64(ref TPoint point, long val)
+        public virtual void SetGPSTimeInt_64<TPoint>(ref TPoint point, long val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_64");
         }
@@ -1288,7 +1327,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_8(ref TPoint point, byte val)
+        public virtual void SetGPSTimeUInt_8<TPoint>(ref TPoint point, byte val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_8");
         }
@@ -1297,7 +1336,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_16(ref TPoint point, ushort val)
+        public virtual void SetGPSTimeUInt_16<TPoint>(ref TPoint point, ushort val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_16");
         }
@@ -1306,7 +1345,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_32(ref TPoint point, uint val)
+        public virtual void SetGPSTimeUInt_32<TPoint>(ref TPoint point, uint val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_32");
         }
@@ -1315,7 +1354,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_64(ref TPoint point, ulong val)
+        public virtual void SetGPSTimeUInt_64<TPoint>(ref TPoint point, ulong val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_64");
         }
@@ -1324,7 +1363,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeFloat32(ref TPoint point, float val)
+        public virtual void SetGPSTimeFloat32<TPoint>(ref TPoint point, float val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeFloat32");
         }
@@ -1333,7 +1372,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeFloat64(ref TPoint point, double val)
+        public virtual void SetGPSTimeFloat64<TPoint>(ref TPoint point, double val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeFloat64");
         }
@@ -1343,431 +1382,262 @@ namespace Fusee.PointCloud.Common
 
         #endregion
 
-        private delegate byte[] EncodeRawPoint(ref TPoint point);
-
-        private delegate void DecodeRawPoint(ref TPoint pointIn, byte[] byteIn);
-
         #region RawDataEncode
-
-        private delegate byte[] EncodeRawPosition(ref TPoint point);
-
-        private delegate byte[] EncodeRawIntensity(ref TPoint point);
-
-        private delegate byte[] EncodeRawNormals(ref TPoint point);
-
-        private delegate byte[] EncodeRawRGB(ref TPoint point);
-
-        private delegate byte[] EncodeRawLabel(ref TPoint point);
-
-        private delegate byte[] EncodeRawCurvature(ref TPoint point);
-
-        private delegate byte[] EncodeRawHitCount(ref TPoint point);
-
-        private delegate byte[] EncodeRawGPSTime(ref TPoint point);
-
-        private EncodeRawPoint _getRawPointMethod = null;
-
-        private EncodeRawPosition _encodeRawPositionMethod;
-        private EncodeRawIntensity _encodeRawIntensityMethod;
-        private EncodeRawNormals _encodeRawNormalsMethod;
-        private EncodeRawRGB _encodeRawRGBMethod;
-        private EncodeRawLabel _encodeRawLabelMethod;
-        private EncodeRawCurvature _encodeRawCurvatureMethod;
-        private EncodeRawHitCount _encodeRawHitCountMethod;
-        private EncodeRawGPSTime _encodeRawGPSTimeMethod;
-
-        private EncodeRawPoint GetRawPointMethod
+        private byte[] GetRawPosition(ref TPoint point)
         {
-            get
+            if (PositionType == PointPositionType.Float3_32)
             {
-                if (_getRawPointMethod != null)
-                    return _getRawPointMethod;
 
-                // First call, construct everything and save the resulting methods
-                _encodeRawPositionMethod = GetRawPositionMethod;
-                _encodeRawIntensityMethod = GetRawIntensityMethod;
-                _encodeRawNormalsMethod = GetRawNormalsMethod;
-                _encodeRawRGBMethod = GetRawRGBMethod;
-                _encodeRawLabelMethod = GetRawLabelMethod;
-                _encodeRawCurvatureMethod = GetRawCurvatureMethod;
-                _encodeRawHitCountMethod = GetRawHitCountMethod;
-                _encodeRawGPSTimeMethod = GetRawGPSTimeMethod;
+                var x = BitConverter.GetBytes(GetPositionFloat3_32(ref point).x);
+                var y = BitConverter.GetBytes(GetPositionFloat3_32(ref point).y);
+                var z = BitConverter.GetBytes(GetPositionFloat3_32(ref point).z);
 
-                _getRawPointMethod = (ref TPoint point) =>
-                {
-                    var position = _encodeRawPositionMethod(ref point);
-                    var intensity = _encodeRawIntensityMethod(ref point);
-                    var normals = _encodeRawNormalsMethod(ref point);
-                    var rgb = _encodeRawRGBMethod(ref point);
-                    var label = _encodeRawLabelMethod(ref point);
-                    var curvature = _encodeRawCurvatureMethod(ref point);
-                    var hitCount = _encodeRawHitCountMethod(ref point);
-                    var GPSTime = _encodeRawGPSTimeMethod(ref point);
+                return x.Concat(y).Concat(z).ToArray();
 
-                    // XYZINormalRGBLCurvatureHitCountGPSTime
-                    return position.Concat(intensity).Concat(normals).Concat(rgb).Concat(label).Concat(curvature).Concat(hitCount).Concat(GPSTime).ToArray();
-                };
-
-                return _getRawPointMethod;
             }
-        }
-
-        private EncodeRawPosition GetRawPositionMethod
-        {
-            get
+            else if (PositionType == PointPositionType.Float3_64)
             {
-                if (PositionType == PointPositionType.Float3_32)
-                {
-                    return (ref TPoint point) =>
-                    {
-                        var x = BitConverter.GetBytes(GetPositionFloat3_32(ref point).x);
-                        var y = BitConverter.GetBytes(GetPositionFloat3_32(ref point).y);
-                        var z = BitConverter.GetBytes(GetPositionFloat3_32(ref point).z);
 
-                        return x.Concat(y).Concat(z).ToArray();
-                    };
-                }
-                else if (PositionType == PointPositionType.Float3_64)
-                {
-                    return (ref TPoint point) =>
-                    {
-                        var x = BitConverter.GetBytes(GetPositionFloat3_64(ref point).x);
-                        var y = BitConverter.GetBytes(GetPositionFloat3_64(ref point).y);
-                        var z = BitConverter.GetBytes(GetPositionFloat3_64(ref point).z);
+                var x = BitConverter.GetBytes(GetPositionFloat3_64(ref point).x);
+                var y = BitConverter.GetBytes(GetPositionFloat3_64(ref point).y);
+                var z = BitConverter.GetBytes(GetPositionFloat3_64(ref point).z);
 
-                        return x.Concat(y).Concat(z).ToArray();
-                    };
-                }
-                return (ref TPoint point) =>
-                {
-                    byte[] vs = Array.Empty<byte>();
-                    return vs;
-                };
+                return x.Concat(y).Concat(z).ToArray();
+
             }
-        }
 
-        private EncodeRawIntensity GetRawIntensityMethod
-        {
-            get
-            {
-                switch (IntensityType)
-                {
-                    case PointIntensityType.Int_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_8(ref point)); };
-                    case PointIntensityType.Int_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_16(ref point)); };
-                    case PointIntensityType.Int_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_32(ref point)); };
-                    case PointIntensityType.Int_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_64(ref point)); };
-                    case PointIntensityType.UInt_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_8(ref point)); };
-                    case PointIntensityType.UInt_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_16(ref point)); };
-                    case PointIntensityType.UInt_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_32(ref point)); };
-                    case PointIntensityType.UInt_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_64(ref point)); };
-                    case PointIntensityType.Float32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat32(ref point)); };
-                    case PointIntensityType.Float64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat64(ref point)); };
-                }
-
-                return (ref TPoint point) => Array.Empty<byte>();
-            }
-        }
-
-        private EncodeRawNormals GetRawNormalsMethod
-        {
-            get
-            {
-                if (NormalType == PointNormalType.Float3_32)
-                {
-                    return (ref TPoint point) =>
-                    {
-                        var x = BitConverter.GetBytes(GetNormalFloat3_32(ref point).x);
-                        var y = BitConverter.GetBytes(GetNormalFloat3_32(ref point).y);
-                        var z = BitConverter.GetBytes(GetNormalFloat3_32(ref point).z);
-
-                        return x.Concat(y).Concat(z).ToArray();
-                    };
-                }
-                else if (NormalType == PointNormalType.Float3_64)
-                {
-                    return (ref TPoint point) =>
-                    {
-                        var x = BitConverter.GetBytes(GetNormalFloat3_64(ref point).x);
-                        var y = BitConverter.GetBytes(GetNormalFloat3_64(ref point).y);
-                        var z = BitConverter.GetBytes(GetNormalFloat3_64(ref point).z);
-
-                        return x.Concat(y).Concat(z).ToArray();
-                    };
-                }
-                return (ref TPoint point) => Array.Empty<byte>();
-            }
-        }
-
-        private EncodeRawRGB GetRawRGBMethod
-        {
-            get
-            {
-                switch (ColorType)
-                {
-                    case PointColorType.Int_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_8(ref point)); };
-                    case PointColorType.Int_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_16(ref point)); };
-                    case PointColorType.Int_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_32(ref point)); };
-                    case PointColorType.Int_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_64(ref point)); };
-                    case PointColorType.UInt_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_8(ref point)); };
-                    case PointColorType.UInt_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_16(ref point)); };
-                    case PointColorType.UInt_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_32(ref point)); };
-                    case PointColorType.UInt_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_64(ref point)); };
-                    case PointColorType.Float32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat32(ref point)); };
-                    case PointColorType.Float64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat64(ref point)); };
-                }
-
-
-                if (ColorType == PointColorType.Float3_32)
-                {
-                    return (ref TPoint point) =>
-                    {
-                        var x = BitConverter.GetBytes(GetColorFloat3_32(ref point).x);
-                        var y = BitConverter.GetBytes(GetColorFloat3_32(ref point).y);
-                        var z = BitConverter.GetBytes(GetColorFloat3_32(ref point).z);
-
-                        return x.Concat(y).Concat(z).ToArray();
-                    };
-                }
-                if (ColorType == PointColorType.Float3_64)
-                {
-                    return (ref TPoint point) =>
-                    {
-                        var x = BitConverter.GetBytes(GetColorFloat3_64(ref point).x);
-                        var y = BitConverter.GetBytes(GetColorFloat3_64(ref point).y);
-                        var z = BitConverter.GetBytes(GetColorFloat3_64(ref point).z);
-
-                        return x.Concat(y).Concat(z).ToArray();
-                    };
-                }
-                return (ref TPoint point) => Array.Empty<byte>();
-            }
+            byte[] vs = Array.Empty<byte>();
+            return vs;
 
         }
 
-        private EncodeRawLabel GetRawLabelMethod
+        private byte[] GetRawIntensity(ref TPoint point)
         {
-            get
+            switch (IntensityType)
             {
-                switch (LabelType)
-                {
-                    case PointLabelType.Int_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_8(ref point)); };
-                    case PointLabelType.Int_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_16(ref point)); };
-                    case PointLabelType.Int_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_32(ref point)); };
-                    case PointLabelType.Int_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_64(ref point)); };
-                    case PointLabelType.UInt_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_8(ref point)); };
-                    case PointLabelType.UInt_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_16(ref point)); };
-                    case PointLabelType.UInt_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_32(ref point)); };
-                    case PointLabelType.UInt_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_64(ref point)); };
-                    case PointLabelType.Float32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat32(ref point)); };
-                    case PointLabelType.Float64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat64(ref point)); };
-                }
-
-                return (ref TPoint point) => Array.Empty<byte>();
+                case PointIntensityType.Int_8:
+                    return BitConverter.GetBytes(GetIntensityInt_8(ref point));
+                case PointIntensityType.Int_16:
+                    return BitConverter.GetBytes(GetIntensityInt_16(ref point));
+                case PointIntensityType.Int_32:
+                    return BitConverter.GetBytes(GetIntensityInt_32(ref point));
+                case PointIntensityType.Int_64:
+                    return BitConverter.GetBytes(GetIntensityInt_64(ref point));
+                case PointIntensityType.UInt_8:
+                    return BitConverter.GetBytes(GetIntensityUInt_8(ref point));
+                case PointIntensityType.UInt_16:
+                    return BitConverter.GetBytes(GetIntensityUInt_16(ref point));
+                case PointIntensityType.UInt_32:
+                    return BitConverter.GetBytes(GetIntensityUInt_32(ref point));
+                case PointIntensityType.UInt_64:
+                    return BitConverter.GetBytes(GetIntensityUInt_64(ref point));
+                case PointIntensityType.Float32:
+                    return BitConverter.GetBytes(GetIntensityFloat32(ref point));
+                case PointIntensityType.Float64:
+                    return BitConverter.GetBytes(GetIntensityFloat64(ref point));
             }
+
+            return Array.Empty<byte>();
+        }
+
+        private byte[] GetRawNormals(ref TPoint point)
+        {
+
+            if (NormalType == PointNormalType.Float3_32)
+            {
+                var x = BitConverter.GetBytes(GetNormalFloat3_32(ref point).x);
+                var y = BitConverter.GetBytes(GetNormalFloat3_32(ref point).y);
+                var z = BitConverter.GetBytes(GetNormalFloat3_32(ref point).z);
+
+                return x.Concat(y).Concat(z).ToArray();
+
+            }
+            else if (NormalType == PointNormalType.Float3_64)
+            {
+                var x = BitConverter.GetBytes(GetNormalFloat3_64(ref point).x);
+                var y = BitConverter.GetBytes(GetNormalFloat3_64(ref point).y);
+                var z = BitConverter.GetBytes(GetNormalFloat3_64(ref point).z);
+
+                return x.Concat(y).Concat(z).ToArray();
+
+            }
+            return Array.Empty<byte>();
 
         }
 
-        private EncodeRawCurvature GetRawCurvatureMethod
+        private byte[] GetRawColor(ref TPoint point)
         {
-            get
+            switch (ColorType)
             {
-                switch (CurvatureType)
-                {
-                    case PointCurvatureType.Int_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_8(ref point)); };
-                    case PointCurvatureType.Int_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_16(ref point)); };
-                    case PointCurvatureType.Int_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_32(ref point)); };
-                    case PointCurvatureType.Int_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_64(ref point)); };
-                    case PointCurvatureType.UInt_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_8(ref point)); };
-                    case PointCurvatureType.UInt_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_16(ref point)); };
-                    case PointCurvatureType.UInt_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_32(ref point)); };
-                    case PointCurvatureType.UInt_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_64(ref point)); };
-                    case PointCurvatureType.Float32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat32(ref point)); };
-                    case PointCurvatureType.Float64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat64(ref point)); };
-                }
-
-                return (ref TPoint point) => Array.Empty<byte>();
+                case PointColorType.Int_8:
+                    return BitConverter.GetBytes(GetColorInt_8(ref point));
+                case PointColorType.Int_16:
+                    return BitConverter.GetBytes(GetColorInt_16(ref point));
+                case PointColorType.Int_32:
+                    return BitConverter.GetBytes(GetColorInt_32(ref point));
+                case PointColorType.Int_64:
+                    return BitConverter.GetBytes(GetColorInt_64(ref point));
+                case PointColorType.UInt_8:
+                    return BitConverter.GetBytes(GetColorUInt_8(ref point));
+                case PointColorType.UInt_16:
+                    return BitConverter.GetBytes(GetColorUInt_16(ref point));
+                case PointColorType.UInt_32:
+                    return BitConverter.GetBytes(GetColorUInt_32(ref point));
+                case PointColorType.UInt_64:
+                    return BitConverter.GetBytes(GetColorUInt_64(ref point));
+                case PointColorType.Float32:
+                    return BitConverter.GetBytes(GetColorFloat32(ref point));
+                case PointColorType.Float64:
+                    return BitConverter.GetBytes(GetColorFloat64(ref point));
             }
 
+            if (ColorType == PointColorType.Float3_32)
+            {
+
+                var x = BitConverter.GetBytes(GetColorFloat3_32(ref point).x);
+                var y = BitConverter.GetBytes(GetColorFloat3_32(ref point).y);
+                var z = BitConverter.GetBytes(GetColorFloat3_32(ref point).z);
+
+                return x.Concat(y).Concat(z).ToArray();
+
+            }
+            if (ColorType == PointColorType.Float3_64)
+            {
+
+                var x = BitConverter.GetBytes(GetColorFloat3_64(ref point).x);
+                var y = BitConverter.GetBytes(GetColorFloat3_64(ref point).y);
+                var z = BitConverter.GetBytes(GetColorFloat3_64(ref point).z);
+
+                return x.Concat(y).Concat(z).ToArray();
+
+            }
+            return Array.Empty<byte>();
         }
 
-        private EncodeRawHitCount GetRawHitCountMethod
+        private byte[] GetRawLabel(ref TPoint point)
         {
-            get
+            switch (LabelType)
             {
-                switch (HitCountType)
-                {
-                    case PointHitCountType.Int_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_8(ref point)); };
-                    case PointHitCountType.Int_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_16(ref point)); };
-                    case PointHitCountType.Int_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_32(ref point)); };
-                    case PointHitCountType.Int_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_64(ref point)); };
-                    case PointHitCountType.UInt_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_8(ref point)); };
-                    case PointHitCountType.UInt_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_16(ref point)); };
-                    case PointHitCountType.UInt_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_32(ref point)); };
-                    case PointHitCountType.UInt_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_64(ref point)); };
-                    case PointHitCountType.Float32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat32(ref point)); };
-                    case PointHitCountType.Float64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat64(ref point)); };
-                }
-
-                return (ref TPoint point) => Array.Empty<byte>();
+                case PointLabelType.Int_8:
+                    return BitConverter.GetBytes(GetLabelInt_8(ref point));
+                case PointLabelType.Int_16:
+                    return BitConverter.GetBytes(GetLabelInt_16(ref point));
+                case PointLabelType.Int_32:
+                    return BitConverter.GetBytes(GetLabelInt_32(ref point));
+                case PointLabelType.Int_64:
+                    return BitConverter.GetBytes(GetLabelInt_64(ref point));
+                case PointLabelType.UInt_8:
+                    return BitConverter.GetBytes(GetLabelUInt_8(ref point));
+                case PointLabelType.UInt_16:
+                    return BitConverter.GetBytes(GetLabelUInt_16(ref point));
+                case PointLabelType.UInt_32:
+                    return BitConverter.GetBytes(GetLabelUInt_32(ref point));
+                case PointLabelType.UInt_64:
+                    return BitConverter.GetBytes(GetLabelUInt_64(ref point));
+                case PointLabelType.Float32:
+                    return BitConverter.GetBytes(GetLabelFloat32(ref point));
+                case PointLabelType.Float64:
+                    return BitConverter.GetBytes(GetLabelFloat64(ref point));
             }
 
+            return Array.Empty<byte>();
         }
 
-        private EncodeRawGPSTime GetRawGPSTimeMethod
+        private byte[] GetRawCurvature(ref TPoint point)
         {
-            get
+            switch (CurvatureType)
             {
-                switch (GpsTimeType)
-                {
-                    case PointGpsTimeType.Int_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_8(ref point)); };
-                    case PointGpsTimeType.Int_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_16(ref point)); };
-                    case PointGpsTimeType.Int_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_32(ref point)); };
-                    case PointGpsTimeType.Int_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_64(ref point)); };
-                    case PointGpsTimeType.UInt_8:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_8(ref point)); };
-                    case PointGpsTimeType.UInt_16:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_16(ref point)); };
-                    case PointGpsTimeType.UInt_32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_32(ref point)); };
-                    case PointGpsTimeType.UInt_64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_64(ref point)); };
-                    case PointGpsTimeType.Float32:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat32(ref point)); };
-                    case PointGpsTimeType.Float64:
-                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat64(ref point)); };
-                }
-
-                return (ref TPoint point) => Array.Empty<byte>();
+                case PointCurvatureType.Int_8:
+                    return BitConverter.GetBytes(GetCurvatureInt_8(ref point));
+                case PointCurvatureType.Int_16:
+                    return BitConverter.GetBytes(GetCurvatureInt_16(ref point));
+                case PointCurvatureType.Int_32:
+                    return BitConverter.GetBytes(GetCurvatureInt_32(ref point));
+                case PointCurvatureType.Int_64:
+                    return BitConverter.GetBytes(GetCurvatureInt_64(ref point));
+                case PointCurvatureType.UInt_8:
+                    return BitConverter.GetBytes(GetCurvatureUInt_8(ref point));
+                case PointCurvatureType.UInt_16:
+                    return BitConverter.GetBytes(GetCurvatureUInt_16(ref point));
+                case PointCurvatureType.UInt_32:
+                    return BitConverter.GetBytes(GetCurvatureUInt_32(ref point));
+                case PointCurvatureType.UInt_64:
+                    return BitConverter.GetBytes(GetCurvatureUInt_64(ref point));
+                case PointCurvatureType.Float32:
+                    return BitConverter.GetBytes(GetCurvatureFloat32(ref point));
+                case PointCurvatureType.Float64:
+                    return BitConverter.GetBytes(GetCurvatureFloat64(ref point));
             }
 
+            return Array.Empty<byte>();
         }
 
+        private byte[] GetRawHitCount(ref TPoint point)
+        {
+            switch (HitCountType)
+            {
+                case PointHitCountType.Int_8:
+                    return BitConverter.GetBytes(GetHitCountInt_8(ref point));
+                case PointHitCountType.Int_16:
+                    return BitConverter.GetBytes(GetHitCountInt_16(ref point));
+                case PointHitCountType.Int_32:
+                    return BitConverter.GetBytes(GetHitCountInt_32(ref point));
+                case PointHitCountType.Int_64:
+                    return BitConverter.GetBytes(GetHitCountInt_64(ref point));
+                case PointHitCountType.UInt_8:
+                    return BitConverter.GetBytes(GetHitCountUInt_8(ref point));
+                case PointHitCountType.UInt_16:
+                    return BitConverter.GetBytes(GetHitCountUInt_16(ref point));
+                case PointHitCountType.UInt_32:
+                    return BitConverter.GetBytes(GetHitCountUInt_32(ref point));
+                case PointHitCountType.UInt_64:
+                    return BitConverter.GetBytes(GetHitCountUInt_64(ref point));
+                case PointHitCountType.Float32:
+                    return BitConverter.GetBytes(GetHitCountFloat32(ref point));
+                case PointHitCountType.Float64:
+                    return BitConverter.GetBytes(GetHitCountFloat64(ref point));
+            }
+
+            return Array.Empty<byte>();
+        }
+
+        private byte[] GetRawGPSTime(ref TPoint point)
+        {
+            switch (GpsTimeType)
+            {
+                case PointGpsTimeType.Int_8:
+                    return BitConverter.GetBytes(GetGPSTimeInt_8(ref point));
+                case PointGpsTimeType.Int_16:
+                    return BitConverter.GetBytes(GetGPSTimeInt_16(ref point));
+                case PointGpsTimeType.Int_32:
+                    return BitConverter.GetBytes(GetGPSTimeInt_32(ref point));
+                case PointGpsTimeType.Int_64:
+                    return BitConverter.GetBytes(GetGPSTimeInt_64(ref point));
+                case PointGpsTimeType.UInt_8:
+                    return BitConverter.GetBytes(GetGPSTimeUInt_8(ref point));
+                case PointGpsTimeType.UInt_16:
+                    return BitConverter.GetBytes(GetGPSTimeUInt_16(ref point));
+                case PointGpsTimeType.UInt_32:
+                    return BitConverter.GetBytes(GetGPSTimeUInt_32(ref point));
+                case PointGpsTimeType.UInt_64:
+                    return BitConverter.GetBytes(GetGPSTimeUInt_64(ref point));
+                case PointGpsTimeType.Float32:
+                    return BitConverter.GetBytes(GetGPSTimeFloat32(ref point));
+                case PointGpsTimeType.Float64:
+                    return BitConverter.GetBytes(GetGPSTimeFloat64(ref point));
+            }
+
+            return Array.Empty<byte>();
+        }
         #endregion
 
         #region RawDataDecode
 
-        private delegate void DecodeRawPosition(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawIntensity(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawNormals(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawRGB(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawLabel(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawCurvature(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawHitCount(ref TPoint pointIn, byte[] byteIn);
-
-        private delegate void DecodeRawGPSTime(ref TPoint pointIn, byte[] byteIn);
-
-        private DecodeRawPoint _setRawPointMethod = null;
-
-        private DecodeRawPosition _decodeRawPositionMethod;
-        private DecodeRawIntensity _decodeRawIntensityMethod;
-        private DecodeRawNormals _decodeRawNormalsMethod;
-        private DecodeRawRGB _decodeRawRGBMethod;
-        private DecodeRawLabel _decodeRawLabelMethod;
-        private DecodeRawCurvature _decodeRawCurvatureMethod;
-        private DecodeRawHitCount _decodeRawHitCountMethod;
-        private DecodeRawGPSTime _decodeRawGPSTimeMethod;
-
-        private DecodeRawPoint SetRawPointMethod
-        {
-            get
-            {
-                if (_setRawPointMethod != null)
-                    return _setRawPointMethod;
-
-                // First call, construct everything and save the resulting method
-                _decodeRawPositionMethod = SetRawPositionMethod;
-                _decodeRawIntensityMethod = SetRawIntensityMethod;
-                _decodeRawNormalsMethod = SetRawNormalsMethod;
-                _decodeRawRGBMethod = SetRawRGBMethod;
-                _decodeRawLabelMethod = SetRawLabelMethod;
-                _decodeRawCurvatureMethod = SetRawCurvatureMethod;
-                _decodeRawHitCountMethod = SetRawHitCountMethod;
-                _decodeRawGPSTimeMethod = SetRawGPSTimeMethod;
-
-                _setRawPointMethod = (ref TPoint pointInt, byte[] byteIn) =>
-                {
-                    // Call all methods to recreate the point
-                    _decodeRawPositionMethod(ref pointInt, byteIn);
-                    _decodeRawIntensityMethod(ref pointInt, byteIn);
-                    _decodeRawNormalsMethod(ref pointInt, byteIn);
-                    _decodeRawRGBMethod(ref pointInt, byteIn);
-                    _decodeRawLabelMethod(ref pointInt, byteIn);
-                    _decodeRawCurvatureMethod(ref pointInt, byteIn);
-                    _decodeRawHitCountMethod(ref pointInt, byteIn);
-                    _decodeRawGPSTimeMethod(ref pointInt, byteIn);
-                };
-
-                return _setRawPointMethod;
-            }
-        }
-
         /// <summary>
-        ///     Needed for correct array offsets during read
+        /// Needed for correct array offsets during read
         /// </summary>
-        internal struct ByteArrayOffsets
+        private struct ByteArrayOffsets
         {
-            // XYZINormalRGBLCurvatureHitCountGPSTime
-
             internal int PositionOffset;
             internal int IntensityOffset;
             internal int NormalsOffset;
@@ -1778,14 +1648,14 @@ namespace Fusee.PointCloud.Common
             internal int GPSTimeOffset;
         }
 
-        private bool OffsetsCalculated = false;
+        private bool _offsetsCalculated = false;
         private ByteArrayOffsets _offsets;
 
-        internal ByteArrayOffsets Offsets
+        private ByteArrayOffsets Offsets
         {
             get
             {
-                if (OffsetsCalculated)
+                if (_offsetsCalculated)
                     return _offsets;
 
                 _offsets = new ByteArrayOffsets();
@@ -2028,338 +1898,320 @@ namespace Fusee.PointCloud.Common
                         break;
                 }
 
-                OffsetsCalculated = true;
+                _offsetsCalculated = true;
 
                 return _offsets;
             }
         }
 
-        private DecodeRawPosition SetRawPositionMethod
+        private void SetRawPosition(ref TPoint pointIn, byte[] byteIn)
         {
-            get
+            if (PositionType == PointPositionType.Float3_32)
             {
-                if (PositionType == PointPositionType.Float3_32)
-                {
-                    return (ref TPoint pointIn, byte[] byteIn) =>
-                    {
-                        var offset = Marshal.SizeOf<float>();
-                        var x = BitConverter.ToSingle(byteIn, 0);
-                        var y = BitConverter.ToSingle(byteIn, offset);
-                        var z = BitConverter.ToSingle(byteIn, offset * 2);
+                var offset = Marshal.SizeOf<float>();
+                var x = BitConverter.ToSingle(byteIn, 0);
+                var y = BitConverter.ToSingle(byteIn, offset);
+                var z = BitConverter.ToSingle(byteIn, offset * 2);
 
-                        SetPositionFloat3_32(ref pointIn, new float3(x, y, z));
-                    };
-                }
-                else if (PositionType == PointPositionType.Float3_64)
-                {
-                    return (ref TPoint pointIn, byte[] byteIn) =>
-                    {
-                        var offset = Marshal.SizeOf<double>();
-                        var x = BitConverter.ToDouble(byteIn, 0);
-                        var y = BitConverter.ToDouble(byteIn, offset);
-                        var z = BitConverter.ToDouble(byteIn, offset * 2);
+                SetPositionFloat3_32(ref pointIn, new float3(x, y, z));
+            }
+            else if (PositionType == PointPositionType.Float3_64)
+            {
+                var offset = Marshal.SizeOf<double>();
+                var x = BitConverter.ToDouble(byteIn, 0);
+                var y = BitConverter.ToDouble(byteIn, offset);
+                var z = BitConverter.ToDouble(byteIn, offset * 2);
 
-                        SetPositionFloat3_64(ref pointIn, new double3(x, y, z));
-                    };
-                }
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                SetPositionFloat3_64(ref pointIn, new double3(x, y, z));
             }
         }
 
-        private DecodeRawIntensity SetRawIntensityMethod
+        private void SetRawIntensity(ref TPoint pointIn, byte[] byteIn)
         {
-            get
+            switch (IntensityType)
             {
-                switch (IntensityType)
-                {
-                    case PointIntensityType.Int_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);
-                    case PointIntensityType.Int_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_16(ref pointIn, byteIn[Offsets.PositionOffset]);
-                    case PointIntensityType.Int_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_32(ref pointIn, BitConverter.ToInt32(byteIn, Offsets.PositionOffset));
-                    case PointIntensityType.Int_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_64(ref pointIn, BitConverter.ToInt64(byteIn, Offsets.PositionOffset));
-                    case PointIntensityType.UInt_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_8(ref pointIn, byteIn[Offsets.PositionOffset]);
-                    case PointIntensityType.UInt_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, Offsets.PositionOffset));
-                    case PointIntensityType.UInt_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, Offsets.PositionOffset));
-                    case PointIntensityType.UInt_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, Offsets.PositionOffset));
-                    case PointIntensityType.Float32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat32(ref pointIn, BitConverter.ToSingle(byteIn, Offsets.PositionOffset));
-                    case PointIntensityType.Float64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat64(ref pointIn, BitConverter.ToDouble(byteIn, Offsets.PositionOffset));
-                }
-
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                case PointIntensityType.Int_8:
+                    SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);
+                    break;
+                case PointIntensityType.Int_16:
+                    SetIntensityInt_16(ref pointIn, byteIn[Offsets.PositionOffset]);
+                    break;
+                case PointIntensityType.Int_32:
+                    SetIntensityInt_32(ref pointIn, BitConverter.ToInt32(byteIn, Offsets.PositionOffset));
+                    break;
+                case PointIntensityType.Int_64:
+                    SetIntensityInt_64(ref pointIn, BitConverter.ToInt64(byteIn, Offsets.PositionOffset));
+                    break;
+                case PointIntensityType.UInt_8:
+                    SetIntensityUInt_8(ref pointIn, byteIn[Offsets.PositionOffset]);
+                    break;
+                case PointIntensityType.UInt_16:
+                    SetIntensityUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, Offsets.PositionOffset));
+                    break;
+                case PointIntensityType.UInt_32:
+                    SetIntensityUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, Offsets.PositionOffset));
+                    break;
+                case PointIntensityType.UInt_64:
+                    SetIntensityUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, Offsets.PositionOffset));
+                    break;
+                case PointIntensityType.Float32:
+                    SetIntensityFloat32(ref pointIn, BitConverter.ToSingle(byteIn, Offsets.PositionOffset));
+                    break;
+                case PointIntensityType.Float64:
+                    SetIntensityFloat64(ref pointIn, BitConverter.ToDouble(byteIn, Offsets.PositionOffset));
+                    break;
             }
         }
 
-        private DecodeRawNormals SetRawNormalsMethod
+        private void SetRawNormals(ref TPoint pointIn, byte[] byteIn)
         {
-            get
-            {
-                var offset = Offsets.PositionOffset + Offsets.IntensityOffset;
+            var offset = Offsets.PositionOffset + Offsets.IntensityOffset;
 
-                if (NormalType == PointNormalType.Float3_32)
-                {
-                    return (ref TPoint pointIn, byte[] byteIn) =>
+            if (NormalType == PointNormalType.Float3_32)
+            {
+
+                var dataOffset = Marshal.SizeOf<float>();
+                var x = BitConverter.ToSingle(byteIn, offset);
+                var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
+                var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
+
+                SetNormalFloat3_32(ref pointIn, new float3(x, y, z));
+
+            }
+            if (NormalType == PointNormalType.Float3_64)
+            {
+
+                var dataOffset = Marshal.SizeOf<double>();
+
+                var x = BitConverter.ToDouble(byteIn, offset);
+                var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
+                var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
+
+                SetNormalFloat3_64(ref pointIn, new double3(x, y, z));
+
+            }
+        }
+
+        private void SetRawColor(ref TPoint pointIn, byte[] byteIn)
+        {
+            var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset;
+
+            switch (ColorType)
+            {
+                case PointColorType.Int_8:
+                    SetColorInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    break;
+                case PointColorType.Int_16:
+                    SetColorInt_16(ref pointIn, byteIn[offset]);
+                    break;
+                case PointColorType.Int_32:
+                    SetColorInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    break;
+                case PointColorType.Int_64:
+                    SetColorInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    break;
+                case PointColorType.UInt_8:
+                    SetColorUInt_8(ref pointIn, byteIn[offset + 1]);
+                    break;
+                case PointColorType.UInt_16:
+                    SetColorUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    break;
+                case PointColorType.UInt_32:
+                    SetColorUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    break;
+                case PointColorType.UInt_64:
+                    SetColorUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    break;
+                case PointColorType.Float32:
+                    SetColorFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    break;
+                case PointColorType.Float64:
+                    SetColorFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                    break;
+                case PointColorType.Float3_32:
                     {
+
                         var dataOffset = Marshal.SizeOf<float>();
+
                         var x = BitConverter.ToSingle(byteIn, offset);
                         var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
                         var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
 
-                        SetNormalFloat3_32(ref pointIn, new float3(x, y, z));
-                    };
-                }
-                if (NormalType == PointNormalType.Float3_64)
-                {
-                    return (ref TPoint pointIn, byte[] byteIn) =>
+                        SetColorFloat3_32(ref pointIn, new float3(x, y, z));
+
+                    }
+                    break;
+
+                case PointColorType.Float3_64:
                     {
+
                         var dataOffset = Marshal.SizeOf<double>();
 
                         var x = BitConverter.ToDouble(byteIn, offset);
                         var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
                         var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
 
-                        SetNormalFloat3_64(ref pointIn, new double3(x, y, z));
-                    };
-                }
+                        SetColorFloat3_64(ref pointIn, new double3(x, y, z));
 
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                    }
+                    break;
             }
         }
 
-        private DecodeRawRGB SetRawRGBMethod
+        private void SetRawLabel(ref TPoint pointIn, byte[] byteIn)
         {
-            get
+            var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset;
+
+            switch (LabelType)
             {
-                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset;
-
-                switch (ColorType)
-                {
-                    case PointColorType.Int_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                    case PointColorType.Int_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_16(ref pointIn, byteIn[offset]);
-                    case PointColorType.Int_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                    case PointColorType.Int_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-                    case PointColorType.UInt_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_8(ref pointIn, byteIn[offset + 1]);
-                    case PointColorType.UInt_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                    case PointColorType.UInt_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                    case PointColorType.UInt_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-                    case PointColorType.Float32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                    case PointColorType.Float64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
-                    case PointColorType.Float3_32:
-                        {
-                            return (ref TPoint pointIn, byte[] byteIn) =>
-                            {
-                                var dataOffset = Marshal.SizeOf<float>();
-
-                                var x = BitConverter.ToSingle(byteIn, offset);
-                                var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
-                                var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
-
-                                SetColorFloat3_32(ref pointIn, new float3(x, y, z));
-                            };
-                        }
-
-                    case PointColorType.Float3_64:
-                        {
-                            return (ref TPoint pointIn, byte[] byteIn) =>
-                            {
-                                var dataOffset = Marshal.SizeOf<double>();
-
-                                var x = BitConverter.ToDouble(byteIn, offset);
-                                var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
-                                var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
-
-                                SetColorFloat3_64(ref pointIn, new double3(x, y, z));
-                            };
-                        }
-                }
-
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                case PointLabelType.Int_8:
+                    SetLabelInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    break;
+                case PointLabelType.Int_16:
+                    SetLabelInt_16(ref pointIn, byteIn[offset]);
+                    break;
+                case PointLabelType.Int_32:
+                    SetLabelInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    break;
+                case PointLabelType.Int_64:
+                    SetLabelInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    break;
+                case PointLabelType.UInt_8:
+                    SetLabelUInt_8(ref pointIn, byteIn[offset]);
+                    break;
+                case PointLabelType.UInt_16:
+                    SetLabelUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    break;
+                case PointLabelType.UInt_32:
+                    SetLabelUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    break;
+                case PointLabelType.UInt_64:
+                    SetLabelUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    break;
+                case PointLabelType.Float32:
+                    SetLabelFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    break;
+                case PointLabelType.Float64:
+                    SetLabelFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                    break;
             }
-
         }
 
-        private DecodeRawLabel SetRawLabelMethod
+        private void SetRawCurvature(ref TPoint pointIn, byte[] byteIn)
         {
-            get
+            var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
+
+            switch (CurvatureType)
             {
-                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset;
-
-                switch (LabelType)
-                {
-                    case PointLabelType.Int_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                    case PointLabelType.Int_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_16(ref pointIn, byteIn[offset]);
-                    case PointLabelType.Int_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                    case PointLabelType.Int_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-                    case PointLabelType.UInt_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_8(ref pointIn, byteIn[offset]);
-                    case PointLabelType.UInt_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                    case PointLabelType.UInt_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                    case PointLabelType.UInt_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-                    case PointLabelType.Float32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                    case PointLabelType.Float64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
-                }
-
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                case PointCurvatureType.Int_8:
+                    SetCurvatureInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    break;
+                case PointCurvatureType.Int_16:
+                    SetCurvatureInt_16(ref pointIn, byteIn[offset]);
+                    break;
+                case PointCurvatureType.Int_32:
+                    SetCurvatureInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    break;
+                case PointCurvatureType.Int_64:
+                    SetCurvatureInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    break;
+                case PointCurvatureType.UInt_8:
+                    SetCurvatureUInt_8(ref pointIn, byteIn[offset + 1]);
+                    break;
+                case PointCurvatureType.UInt_16:
+                    SetCurvatureUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    break;
+                case PointCurvatureType.UInt_32:
+                    SetCurvatureUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    break;
+                case PointCurvatureType.UInt_64:
+                    SetCurvatureUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    break;
+                case PointCurvatureType.Float32:
+                    SetCurvatureFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    break;
+                case PointCurvatureType.Float64:
+                    SetCurvatureFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                    break;
             }
-
         }
 
-        private DecodeRawCurvature SetRawCurvatureMethod
+        private void SetRawHitCount(ref TPoint pointIn, byte[] byteIn)
         {
-            get
+            var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
+
+            switch (HitCountType)
             {
-                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
-
-                switch (CurvatureType)
-                {
-                    case PointCurvatureType.Int_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                    case PointCurvatureType.Int_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_16(ref pointIn, byteIn[offset]);
-                    case PointCurvatureType.Int_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                    case PointCurvatureType.Int_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-                    case PointCurvatureType.UInt_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_8(ref pointIn, byteIn[offset + 1]);
-                    case PointCurvatureType.UInt_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                    case PointCurvatureType.UInt_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                    case PointCurvatureType.UInt_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-                    case PointCurvatureType.Float32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                    case PointCurvatureType.Float64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
-                }
-
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                case PointHitCountType.Int_8:
+                    SetHitCountInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    break;
+                case PointHitCountType.Int_16:
+                    SetHitCountInt_16(ref pointIn, byteIn[offset]);
+                    break;
+                case PointHitCountType.Int_32:
+                    SetHitCountInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    break;
+                case PointHitCountType.Int_64:
+                    SetHitCountInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    break;
+                case PointHitCountType.UInt_8:
+                    SetHitCountUInt_8(ref pointIn, byteIn[offset + 1]);
+                    break;
+                case PointHitCountType.UInt_16:
+                    SetHitCountUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    break;
+                case PointHitCountType.UInt_32:
+                    SetHitCountUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    break;
+                case PointHitCountType.UInt_64:
+                    SetHitCountUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    break;
+                case PointHitCountType.Float32:
+                    SetHitCountFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    break;
+                case PointHitCountType.Float64:
+                    SetHitCountFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                    break;
             }
-
         }
 
-        private DecodeRawHitCount SetRawHitCountMethod
+        private void SetRawGPSTime(ref TPoint pointIn, byte[] byteIn)
         {
-            get
+            var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset + Offsets.HitCountOffset;
+
+            switch (GpsTimeType)
             {
-                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
-
-                switch (HitCountType)
-                {
-                    case PointHitCountType.Int_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                    case PointHitCountType.Int_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_16(ref pointIn, byteIn[offset]);
-                    case PointHitCountType.Int_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                    case PointHitCountType.Int_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-                    case PointHitCountType.UInt_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_8(ref pointIn, byteIn[offset + 1]);
-                    case PointHitCountType.UInt_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                    case PointHitCountType.UInt_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                    case PointHitCountType.UInt_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-                    case PointHitCountType.Float32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                    case PointHitCountType.Float64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
-                }
-
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+                case PointGpsTimeType.Int_8:
+                    SetGPSTimeInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    break;
+                case PointGpsTimeType.Int_16:
+                    SetGPSTimeInt_16(ref pointIn, byteIn[offset]);
+                    break;
+                case PointGpsTimeType.Int_32:
+                    SetGPSTimeInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    break;
+                case PointGpsTimeType.Int_64:
+                    SetGPSTimeInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    break;
+                case PointGpsTimeType.UInt_8:
+                    SetGPSTimeUInt_8(ref pointIn, byteIn[offset + 1]);
+                    break;
+                case PointGpsTimeType.UInt_16:
+                    SetGPSTimeUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    break;
+                case PointGpsTimeType.UInt_32:
+                    SetGPSTimeUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    break;
+                case PointGpsTimeType.UInt_64:
+                    SetGPSTimeUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    break;
+                case PointGpsTimeType.Float32:
+                    SetGPSTimeFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    break;
+                case PointGpsTimeType.Float64:
+                    SetGPSTimeFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                    break;
             }
-
-        }
-
-        private DecodeRawGPSTime SetRawGPSTimeMethod
-        {
-            get
-            {
-                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset + Offsets.HitCountOffset;
-
-                switch (GpsTimeType)
-                {
-                    case PointGpsTimeType.Int_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                    case PointGpsTimeType.Int_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_16(ref pointIn, byteIn[offset]);
-                    case PointGpsTimeType.Int_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                    case PointGpsTimeType.Int_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-                    case PointGpsTimeType.UInt_8:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_8(ref pointIn, byteIn[offset + 1]);
-                    case PointGpsTimeType.UInt_16:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                    case PointGpsTimeType.UInt_32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                    case PointGpsTimeType.UInt_64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-                    case PointGpsTimeType.Float32:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                    case PointGpsTimeType.Float64:
-                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
-                }
-
-                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
-            }
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Returns the generic raw point.
-        /// </summary>
-        /// <param name="point">The point cloud point.</param>
-        public byte[] GetRawPoint(ref TPoint point)
-        {
-            if (point == null)
-                throw new NullReferenceException("Given point is null!");
-
-            return GetRawPointMethod(ref point);
-        }
-
-        /// <summary>
-        /// Sets the values of a point cloud point.
-        /// </summary>
-        /// <param name="pointIn">The generic point.</param>
-        /// <param name="byteIn">The values as byte array.</param>
-        public void SetRawPoint(ref TPoint pointIn, byte[] byteIn)
-        {
-            if (pointIn == null || byteIn == null || byteIn.Length < 8)
-                throw new NullReferenceException("Invalid data given");
-
-            SetRawPointMethod(ref pointIn, byteIn);
         }
 
         #endregion

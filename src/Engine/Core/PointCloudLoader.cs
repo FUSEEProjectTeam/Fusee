@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Provides access to properties of different point types.
         /// </summary>
-        public PointAccessor<TPoint> PtAccessor { get; set; }
+        public IPointAccessor PtAccessor { get; set; }
 
         /// <summary>
         /// The octree structure of the point cloud.
