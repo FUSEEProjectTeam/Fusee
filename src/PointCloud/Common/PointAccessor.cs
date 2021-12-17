@@ -10,7 +10,7 @@ namespace Fusee.PointCloud.Common
     /// Every point cloud needs a point accessor. Provides access to the point parameters like position or color.
     /// </summary>
     /// <typeparam name="TPoint">The generic point type.</typeparam>
-    public abstract class PointAccessor<TPoint> where TPoint : new()
+    public abstract class PointAccessor<TPoint> : IPointAccessor where TPoint : new()
     {
         #region PointT_Member
 
@@ -18,309 +18,134 @@ namespace Fusee.PointCloud.Common
         /// Returns the type of the point as list of the HasXY methods.
         /// </summary>
         /// <returns></returns>
-        public List<string> GetPointType()
+        public List<string> GetSetPropertyNames()
         {
             // Point Type (enum)
             return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
         }
 
-        #region Has Position
+        public PointType PointType
+        {
+            get
+            {
+                if (_pointType == PointType.Undefined)
+                    GetPointType();
 
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="float3"/>.
-        /// </summary>
-        public virtual bool HasPositionFloat3_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public virtual bool HasPositionFloat3_64 => false;
-        #endregion
+                return _pointType;
+            }
 
-        #region Has Intensity
+        }
+        private PointType _pointType = PointType.Undefined;
 
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="sbyte"/>.
-        /// </summary>
-        public virtual bool HasIntensityInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="short"/>.
-        /// </summary>
-        public virtual bool HasIntensityInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="int"/>.
-        /// </summary>
-        public virtual bool HasIntensityInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="long"/>.
-        /// </summary>
-        public virtual bool HasIntensityInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="byte"/>.
-        /// </summary>
-        public virtual bool HasIntensityUInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ushort"/>.
-        /// </summary>
-        public virtual bool HasIntensityUInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="uint"/>.
-        /// </summary>
-        public virtual bool HasIntensityUInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ulong"/>.
-        /// </summary>
-        public virtual bool HasIntensityUInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="float"/>.
-        /// </summary>
-        public virtual bool HasIntensityFloat32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="double"/>.
-        /// </summary>
-        public virtual bool HasIntensityFloat64 => false;
-        #endregion
+        private void GetPointType()
+        {
+            // Pos64
+            if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.None &&
+                NormalType == PointNormalType.None &&
+                ColorType == PointColorType.None &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64;
 
-        #region Has Normal
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="float3"/>.
-        /// </summary>
-        public virtual bool HasNormalFloat3_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="double3"/>.
-        /// </summary>
-        public virtual bool HasNormalFloat3_64 => false;
-        #endregion
+            // Pos64Col32IShort
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.UInt_16 &&
+                NormalType == PointNormalType.None &&
+                ColorType == PointColorType.Float32 &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64Col32IShort;
 
-        #region Has Color
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="sbyte"/>.
-        /// </summary>
-        public virtual bool HasColorInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="short"/>.
-        /// </summary>
-        public virtual bool HasColorInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="int"/>.
-        /// </summary>
-        public virtual bool HasColorInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="long"/>.
-        /// </summary>
-        public virtual bool HasColorInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="byte"/>.
-        /// </summary>
-        public virtual bool HasColorUInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="ushort"/>.
-        /// </summary>
-        public virtual bool HasColorUInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="uint"/>.
-        /// </summary>
-        public virtual bool HasColorUInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="ulong"/>.
-        /// </summary>
-        public virtual bool HasColorUInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float"/>.
-        /// </summary>
-        public virtual bool HasColorFloat32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="double"/>.
-        /// </summary>
-        public virtual bool HasColorFloat64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float3"/>.
-        /// </summary>
-        public virtual bool HasColorFloat3_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="double3"/>.
-        /// </summary>
-        public virtual bool HasColorFloat3_64 => false;
-        #endregion
+            // Pos64IShort
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.UInt_16 &&
+                NormalType == PointNormalType.None &&
+                ColorType == PointColorType.None &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64IShort;
 
-        #region Has Label
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="sbyte"/>.
-        /// </summary>
-        public virtual bool HasLabelInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="short"/>.
-        /// </summary>
-        public virtual bool HasLabelInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="int"/>.
-        /// </summary>
-        public virtual bool HasLabelInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="long"/>.
-        /// </summary>
-        public virtual bool HasLabelInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="byte"/>.
-        /// </summary>
-        public virtual bool HasLabelUInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="ushort"/>.
-        /// </summary>
-        public virtual bool HasLabelUInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="uint"/>.
-        /// </summary>
-        public virtual bool HasLabelUInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="ulong"/>.
-        /// </summary>
-        public virtual bool HasLabelUInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="float"/>.
-        /// </summary>
-        public virtual bool HasLabelFloat32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="double"/>.
-        /// </summary>
-        public virtual bool HasLabelFloat64 => false;
-        #endregion
+            // Pos64Col32
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.None &&
+                NormalType == PointNormalType.None &&
+                ColorType == PointColorType.Float32 &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64Col32;
 
-        #region Has Curvature
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="sbyte"/>.
-        /// </summary>
-        public virtual bool HasCurvatureInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="short"/>.
-        /// </summary>
-        public virtual bool HasCurvatureInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="int"/>.
-        /// </summary>
-        public virtual bool HasCurvatureInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="long"/>.
-        /// </summary>
-        public virtual bool HasCurvatureInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="byte"/>.
-        /// </summary>
-        public virtual bool HasCurvatureUInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="ushort"/>.
-        /// </summary>
-        public virtual bool HasCurvatureUInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="uint"/>.
-        /// </summary>
-        public virtual bool HasCurvatureUInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="ulong"/>.
-        /// </summary>
-        public virtual bool HasCurvatureUInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="float"/>.
-        /// </summary>
-        public virtual bool HasCurvatureFloat32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a curvature value of type <see cref="double"/>.
-        /// </summary>
-        public virtual bool HasCurvatureFloat64 => false;
-        #endregion
 
-        #region Has Hit Count
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="sbyte"/>.
-        /// </summary>
-        public virtual bool HasHitCountInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="short"/>.
-        /// </summary>
-        public virtual bool HasHitCountInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="int"/>.
-        /// </summary>
-        public virtual bool HasHitCountInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="long"/>.
-        /// </summary>
-        public virtual bool HasHitCountInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="byte"/>.
-        /// </summary>
-        public virtual bool HasHitCountUInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="ushort"/>.
-        /// </summary>
-        public virtual bool HasHitCountUInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="uint"/>.
-        /// </summary>
-        public virtual bool HasHitCountUInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="ulong"/>.
-        /// </summary>
-        public virtual bool HasHitCountUInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="float"/>.
-        /// </summary>
-        public virtual bool HasHitCountFloat32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a hit count value of type <see cref="double"/>.
-        /// </summary>
-        public virtual bool HasHitCountFloat64 => false;
-        #endregion
+            // Pos64Label8
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.None &&
+                NormalType == PointNormalType.None &&
+                ColorType == PointColorType.None &&
+                LabelType == PointLabelType.UInt_8 &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64Label8;
 
-        #region Has GPS Time
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="sbyte"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="short"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="int"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="long"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="byte"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeUInt_8 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="ushort"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeUInt_16 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="uint"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeUInt_32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="ulong"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeUInt_64 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="float"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeFloat32 => false;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a gps time value of type <see cref="double"/>.
-        /// </summary>
-        public virtual bool HasGPSTimeFloat64 => false;
-        #endregion
+            // Pos64Nor32Col32IShort
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.UInt_16 &&
+                NormalType == PointNormalType.Float3_32 &&
+                ColorType == PointColorType.Float32 &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64Nor32Col32IShort;
 
-        #endregion
+            // Pos64Nor32IShort
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.UInt_16 &&
+                NormalType == PointNormalType.Float3_32 &&
+                ColorType == PointColorType.None &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64Nor32IShort;
+
+            // Pos64Nor32Col32
+            else if (PositionType == PointPositionType.Float3_64 &&
+                IntensityType == PointIntensityType.None &&
+                NormalType == PointNormalType.Float3_32 &&
+                ColorType == PointColorType.Float32 &&
+                LabelType == PointLabelType.None &&
+                CurvatureType == PointCurvatureType.None &&
+                HitCountType == PointHitCountType.None &&
+                GpsTimeType == PointGpsTimeType.None)
+                _pointType = PointType.Pos64Nor32Col32;
+
+            else
+                throw new Exception("Undefined Point Type!");
+        }
+
+        public PointPositionType PositionType { get; set; } = PointPositionType.Undefined;
+        public PointIntensityType IntensityType { get; set; } = PointIntensityType.None;
+        public PointNormalType NormalType { get; set; } = PointNormalType.None;
+        public PointColorType ColorType { get; set; } = PointColorType.None;
+        public PointLabelType LabelType { get; set; } = PointLabelType.None;
+        public PointCurvatureType CurvatureType { get; set; } = PointCurvatureType.None;
+        public PointHitCountType HitCountType { get; set; } = PointHitCountType.None;
+        public PointGpsTimeType GpsTimeType { get; set; } = PointGpsTimeType.None;
 
         #region PointT_Methods
 
         #region Get/Set Position
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_32"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetPositionFloat3_32(ref TPoint point)
@@ -328,7 +153,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat32");
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_32"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -337,7 +162,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat32");
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetPositionFloat3_64(ref TPoint point)
@@ -345,7 +170,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat64");
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -360,7 +185,7 @@ namespace Fusee.PointCloud.Common
         #region Getter
 
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_8"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetIntensityInt_8(ref TPoint point)
@@ -368,7 +193,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_8");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetIntensityInt_16(ref TPoint point)
@@ -376,7 +201,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_16");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_32"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetIntensityInt_32(ref TPoint point)
@@ -384,7 +209,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_32");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityInt_64"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetIntensityInt_64(ref TPoint point)
@@ -392,7 +217,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_64");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_8"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetIntensityUInt_8(ref TPoint point)
@@ -400,7 +225,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_8");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetIntensityUInt_16(ref TPoint point)
@@ -408,7 +233,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_16");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_32"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetIntensityUInt_32(ref TPoint point)
@@ -416,7 +241,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_32");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_64"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetIntensityUInt_64(ref TPoint point)
@@ -424,7 +249,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_64");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityFloat32"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetIntensityFloat32(ref TPoint point)
@@ -432,7 +257,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityFloat32");
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityFloat64"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetIntensityFloat64(ref TPoint point)
@@ -443,7 +268,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_8"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -452,7 +277,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_8");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -461,7 +286,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_16");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_32"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -470,7 +295,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_32");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityInt_64"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -479,7 +304,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityInt_64");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_8"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -488,7 +313,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_8");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -497,7 +322,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_16");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_32"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -506,7 +331,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_32");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_64"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -515,7 +340,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityUInt_64");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityFloat32"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -524,7 +349,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetIntensityFloat32");
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityFloat64"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -541,7 +366,7 @@ namespace Fusee.PointCloud.Common
         #region Getter
 
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetNormalFloat3_32(ref TPoint point)
@@ -550,7 +375,7 @@ namespace Fusee.PointCloud.Common
         }
 
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_64"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetNormalFloat3_64(ref TPoint point)
@@ -561,7 +386,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>
@@ -570,7 +395,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetNormalFloat3_32");
         }
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="HasNormalFloat3_64"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>
@@ -586,7 +411,7 @@ namespace Fusee.PointCloud.Common
 
         #region Getter
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorInt_8"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetColorInt_8(ref TPoint point)
@@ -594,7 +419,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_8");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorInt_16"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetColorInt_16(ref TPoint point)
@@ -602,7 +427,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_16");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorInt_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetColorInt_32(ref TPoint point)
@@ -610,7 +435,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorInt_64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetColorInt_64(ref TPoint point)
@@ -618,7 +443,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_64");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorUInt_8"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetColorUInt_8(ref TPoint point)
@@ -626,7 +451,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_8");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorUInt_16"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetColorUInt_16(ref TPoint point)
@@ -634,7 +459,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_16");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorUInt_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetColorUInt_32(ref TPoint point)
@@ -642,7 +467,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorUInt_64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetColorUInt_64(ref TPoint point)
@@ -650,7 +475,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_64");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetColorFloat32(ref TPoint point)
@@ -658,7 +483,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetColorFloat64(ref TPoint point)
@@ -666,7 +491,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat64");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetColorFloat3_32(ref TPoint point)
@@ -674,7 +499,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat3_32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetColorFloat3_64(ref TPoint point)
@@ -685,7 +510,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorInt_8"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -694,7 +519,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_8");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorInt_16"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -703,7 +528,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_16");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorInt_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -712,7 +537,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorInt_64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -721,7 +546,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_64");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorUInt_8"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -730,7 +555,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_8");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorUInt_16"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -739,7 +564,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_16");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorUInt_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -748,7 +573,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorUInt_64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -757,7 +582,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_64");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -766,7 +591,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorFloat32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -775,7 +600,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorFloat64");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -784,7 +609,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorFloat3_32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -800,7 +625,7 @@ namespace Fusee.PointCloud.Common
 
         #region Getter
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelInt_8"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetLabelInt_8(ref TPoint point)
@@ -808,7 +633,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_8");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelInt_16"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetLabelInt_16(ref TPoint point)
@@ -816,7 +641,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_16");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelInt_32"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetLabelInt_32(ref TPoint point)
@@ -824,7 +649,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_32");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelInt_64"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetLabelInt_64(ref TPoint point)
@@ -832,7 +657,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_64");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelUInt_8"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetLabelUInt_8(ref TPoint point)
@@ -840,7 +665,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_8");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelUInt_16"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetLabelUInt_16(ref TPoint point)
@@ -848,7 +673,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_16");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelUInt_32"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetLabelUInt_32(ref TPoint point)
@@ -856,7 +681,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_32");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelInt_64"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetLabelUInt_64(ref TPoint point)
@@ -864,7 +689,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_64");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelFloat32"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetLabelFloat32(ref TPoint point)
@@ -872,7 +697,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelFloat32");
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelFloat64"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetLabelFloat64(ref TPoint point)
@@ -883,7 +708,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelInt_8"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -892,7 +717,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelInt_8");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelInt_8"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -901,7 +726,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelInt_16");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelInt_32"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -910,7 +735,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelInt_32");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelInt_64"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -919,7 +744,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelInt_64");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelUInt_8"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -928,7 +753,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelUInt_8");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelUInt_16"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -937,7 +762,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelUInt_16");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelUInt_32"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -946,7 +771,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelUInt_32");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelUInt_64"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -955,7 +780,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelUInt_64");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelFloat32"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -964,7 +789,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetLabelFloat32");
         }
         /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelFloat64"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -980,7 +805,7 @@ namespace Fusee.PointCloud.Common
 
         #region Getter
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureInt_8"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetCurvatureInt_8(ref TPoint point)
@@ -988,7 +813,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_8");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureInt_16"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetCurvatureInt_16(ref TPoint point)
@@ -996,7 +821,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_16");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureInt_32"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetCurvatureInt_32(ref TPoint point)
@@ -1004,7 +829,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_32");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureInt_64"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetCurvatureInt_64(ref TPoint point)
@@ -1012,7 +837,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_64");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureUInt_8"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetCurvatureUInt_8(ref TPoint point)
@@ -1020,7 +845,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_8");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureUInt_16"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetCurvatureUInt_16(ref TPoint point)
@@ -1028,7 +853,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_16");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureUInt_32"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetCurvatureUInt_32(ref TPoint point)
@@ -1036,7 +861,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_32");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureUInt_64"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetCurvatureUInt_64(ref TPoint point)
@@ -1044,7 +869,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_64");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureFloat32"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetCurvatureFloat32(ref TPoint point)
@@ -1052,7 +877,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureFloat32");
         }
         /// <summary>
-        /// Returns the curvature of a point cloud point if <see cref="HasCurvatureFloat64"/> is true.
+        /// Returns the curvature of a point cloud point if <see cref="PointCurvatureType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetCurvatureFloat64(ref TPoint point)
@@ -1063,7 +888,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureInt_8"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1072,7 +897,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureInt_8");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureInt_16"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1081,7 +906,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureInt_16");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureInt_32"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1090,7 +915,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureInt_32");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureInt_64"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1099,7 +924,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureInt_64");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureUInt_8"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1108,7 +933,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureUInt_8");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureUInt_16"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1117,7 +942,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureUInt_16");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureUInt_32"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1126,7 +951,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureUInt_32");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureUInt_64"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1135,7 +960,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureUInt_64");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureFloat32"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1144,7 +969,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetCurvatureFloat32");
         }
         /// <summary>
-        /// Sets the curvature of a point cloud point if <see cref="HasCurvatureFloat64"/> is true.
+        /// Sets the curvature of a point cloud point if <see cref="PointCurvatureType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new curvature.</param>
@@ -1160,7 +985,7 @@ namespace Fusee.PointCloud.Common
 
         #region Getter
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountInt_8"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetHitCountInt_8(ref TPoint point)
@@ -1168,7 +993,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_8");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountInt_16"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetHitCountInt_16(ref TPoint point)
@@ -1176,7 +1001,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_16");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountInt_32"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetHitCountInt_32(ref TPoint point)
@@ -1184,7 +1009,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_32");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountInt_64"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetHitCountInt_64(ref TPoint point)
@@ -1192,7 +1017,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_64");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountUInt_8"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetHitCountUInt_8(ref TPoint point)
@@ -1200,7 +1025,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_8");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountUInt_16"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetHitCountUInt_16(ref TPoint point)
@@ -1208,7 +1033,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_16");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountInt_32"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetHitCountUInt_32(ref TPoint point)
@@ -1216,7 +1041,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_32");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountInt_64"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetHitCountUInt_64(ref TPoint point)
@@ -1224,7 +1049,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_64");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountFloat32"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetHitCountFloat32(ref TPoint point)
@@ -1232,7 +1057,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountFloat32");
         }
         /// <summary>
-        /// Returns the hit count of a point cloud point if <see cref="HasHitCountFloat64"/> is true.
+        /// Returns the hit count of a point cloud point if <see cref="PointHitCountType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetHitCountFloat64(ref TPoint point)
@@ -1243,7 +1068,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountInt_8"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1252,7 +1077,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountInt_8");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountInt_16"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1261,7 +1086,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountInt_16");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountInt_32"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1270,7 +1095,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountInt_32");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountInt_64"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1279,7 +1104,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountInt_64");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountUInt_8"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1288,7 +1113,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountUInt_8");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountUInt_16"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1297,7 +1122,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountUInt_16");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountUInt_32"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1306,7 +1131,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountUInt_32");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountUInt_64"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1315,7 +1140,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountUInt_64");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountFloat32"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1324,7 +1149,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetHitCountFloat32");
         }
         /// <summary>
-        /// Sets the hit count of a point cloud point if <see cref="HasHitCountFloat64"/> is true.
+        /// Sets the hit count of a point cloud point if <see cref="PointHitCountType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new hit count.</param>
@@ -1340,7 +1165,7 @@ namespace Fusee.PointCloud.Common
 
         #region Getter
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeInt_8"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetGPSTimeInt_8(ref TPoint point)
@@ -1348,7 +1173,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_8");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeInt_16"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetGPSTimeInt_16(ref TPoint point)
@@ -1356,7 +1181,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_16");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeInt_32"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetGPSTimeInt_32(ref TPoint point)
@@ -1364,7 +1189,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_32");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeInt_64"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetGPSTimeInt_64(ref TPoint point)
@@ -1372,7 +1197,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_64");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_8"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetGPSTimeUInt_8(ref TPoint point)
@@ -1380,7 +1205,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_8");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_16"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetGPSTimeUInt_16(ref TPoint point)
@@ -1388,7 +1213,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_16");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_32"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetGPSTimeUInt_32(ref TPoint point)
@@ -1396,7 +1221,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_32");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_64"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetGPSTimeUInt_64(ref TPoint point)
@@ -1404,7 +1229,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_64");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeFloat32"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetGPSTimeFloat32(ref TPoint point)
@@ -1412,7 +1237,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat32");
         }
         /// <summary>
-        /// Returns the GPS time of a point cloud point if <see cref="HasGPSTimeFloat64"/> is true.
+        /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetGPSTimeFloat64(ref TPoint point)
@@ -1423,7 +1248,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeInt_8"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1432,7 +1257,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_8");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeInt_16"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1441,7 +1266,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_16");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeInt_32"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1450,7 +1275,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_32");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeInt_64"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1459,7 +1284,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_64");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_8"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1468,7 +1293,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_8");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_16"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1477,7 +1302,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_16");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_32"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1486,7 +1311,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_32");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeUInt_64"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1495,7 +1320,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_64");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeFloat32"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1504,7 +1329,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeFloat32");
         }
         /// <summary>
-        /// Sets the GPS time of a point cloud point if <see cref="HasGPSTimeFloat64"/> is true.
+        /// Sets the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
@@ -1517,8 +1342,6 @@ namespace Fusee.PointCloud.Common
         #endregion
 
         #endregion
-
-        #region RawData
 
         private delegate byte[] EncodeRawPoint(ref TPoint point);
 
@@ -1593,7 +1416,7 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                if (HasPositionFloat3_32)
+                if (PositionType == PointPositionType.Float3_32)
                 {
                     return (ref TPoint point) =>
                     {
@@ -1604,7 +1427,7 @@ namespace Fusee.PointCloud.Common
                         return x.Concat(y).Concat(z).ToArray();
                     };
                 }
-                if (HasPositionFloat3_64)
+                else if (PositionType == PointPositionType.Float3_64)
                 {
                     return (ref TPoint point) =>
                     {
@@ -1627,30 +1450,29 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                // Int
-                if (HasIntensityInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_8(ref point)); };
-                if (HasIntensityInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_16(ref point)); };
-                if (HasIntensityInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_32(ref point)); };
-                if (HasIntensityInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_64(ref point)); };
-
-                // Uint
-                if (HasIntensityUInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_8(ref point)); };
-                if (HasIntensityUInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_16(ref point)); };
-                if (HasIntensityUInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_32(ref point)); };
-                if (HasIntensityUInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_64(ref point)); };
-
-                if (HasIntensityFloat32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat32(ref point)); };
-                if (HasIntensityFloat64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat64(ref point)); };
+                switch (IntensityType)
+                {
+                    case PointIntensityType.Int_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_8(ref point)); };
+                    case PointIntensityType.Int_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_16(ref point)); };
+                    case PointIntensityType.Int_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_32(ref point)); };
+                    case PointIntensityType.Int_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_64(ref point)); };
+                    case PointIntensityType.UInt_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_8(ref point)); };
+                    case PointIntensityType.UInt_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_16(ref point)); };
+                    case PointIntensityType.UInt_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_32(ref point)); };
+                    case PointIntensityType.UInt_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_64(ref point)); };
+                    case PointIntensityType.Float32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat32(ref point)); };
+                    case PointIntensityType.Float64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat64(ref point)); };
+                }
 
                 return (ref TPoint point) => Array.Empty<byte>();
             }
@@ -1660,7 +1482,7 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                if (HasNormalFloat3_32)
+                if (NormalType == PointNormalType.Float3_32)
                 {
                     return (ref TPoint point) =>
                     {
@@ -1671,7 +1493,7 @@ namespace Fusee.PointCloud.Common
                         return x.Concat(y).Concat(z).ToArray();
                     };
                 }
-                if (HasNormalFloat3_64)
+                else if (NormalType == PointNormalType.Float3_64)
                 {
                     return (ref TPoint point) =>
                     {
@@ -1690,33 +1512,32 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                // Int
-                if (HasColorInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_8(ref point)); };
-                if (HasColorInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_16(ref point)); };
-                if (HasColorInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_32(ref point)); };
-                if (HasColorInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_64(ref point)); };
+                switch (ColorType)
+                {
+                    case PointColorType.Int_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_8(ref point)); };
+                    case PointColorType.Int_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_16(ref point)); };
+                    case PointColorType.Int_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_32(ref point)); };
+                    case PointColorType.Int_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_64(ref point)); };
+                    case PointColorType.UInt_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_8(ref point)); };
+                    case PointColorType.UInt_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_16(ref point)); };
+                    case PointColorType.UInt_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_32(ref point)); };
+                    case PointColorType.UInt_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_64(ref point)); };
+                    case PointColorType.Float32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat32(ref point)); };
+                    case PointColorType.Float64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat64(ref point)); };
+                }
 
-                // Uint
-                if (HasColorUInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_8(ref point)); };
-                if (HasColorUInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_16(ref point)); };
-                if (HasColorUInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_32(ref point)); };
-                if (HasColorUInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_64(ref point)); };
 
-                if (HasColorFloat32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat32(ref point)); };
-                if (HasColorFloat64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat64(ref point)); };
-
-
-                if (HasColorFloat3_32)
+                if (ColorType == PointColorType.Float3_32)
                 {
                     return (ref TPoint point) =>
                     {
@@ -1727,7 +1548,7 @@ namespace Fusee.PointCloud.Common
                         return x.Concat(y).Concat(z).ToArray();
                     };
                 }
-                if (HasColorFloat3_64)
+                if (ColorType == PointColorType.Float3_64)
                 {
                     return (ref TPoint point) =>
                     {
@@ -1747,30 +1568,29 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                // Int
-                if (HasLabelInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_8(ref point)); };
-                if (HasLabelInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_16(ref point)); };
-                if (HasLabelInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_32(ref point)); };
-                if (HasLabelInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_64(ref point)); };
-
-                // Uint
-                if (HasLabelUInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_8(ref point)); };
-                if (HasLabelUInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_16(ref point)); };
-                if (HasLabelUInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_32(ref point)); };
-                if (HasLabelUInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_64(ref point)); };
-
-                if (HasLabelFloat32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat32(ref point)); };
-                if (HasLabelFloat64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat64(ref point)); };
+                switch (LabelType)
+                {
+                    case PointLabelType.Int_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_8(ref point)); };
+                    case PointLabelType.Int_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_16(ref point)); };
+                    case PointLabelType.Int_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_32(ref point)); };
+                    case PointLabelType.Int_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_64(ref point)); };
+                    case PointLabelType.UInt_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_8(ref point)); };
+                    case PointLabelType.UInt_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_16(ref point)); };
+                    case PointLabelType.UInt_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_32(ref point)); };
+                    case PointLabelType.UInt_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_64(ref point)); };
+                    case PointLabelType.Float32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat32(ref point)); };
+                    case PointLabelType.Float64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat64(ref point)); };
+                }
 
                 return (ref TPoint point) => Array.Empty<byte>();
             }
@@ -1781,30 +1601,29 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                // Int
-                if (HasCurvatureInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_8(ref point)); };
-                if (HasCurvatureInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_16(ref point)); };
-                if (HasCurvatureInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_32(ref point)); };
-                if (HasCurvatureInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_64(ref point)); };
-
-                // Uint
-                if (HasCurvatureUInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_8(ref point)); };
-                if (HasCurvatureUInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_16(ref point)); };
-                if (HasCurvatureUInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_32(ref point)); };
-                if (HasCurvatureUInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_64(ref point)); };
-
-                if (HasCurvatureFloat32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat32(ref point)); };
-                if (HasCurvatureFloat64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat64(ref point)); };
+                switch (CurvatureType)
+                {
+                    case PointCurvatureType.Int_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_8(ref point)); };
+                    case PointCurvatureType.Int_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_16(ref point)); };
+                    case PointCurvatureType.Int_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_32(ref point)); };
+                    case PointCurvatureType.Int_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_64(ref point)); };
+                    case PointCurvatureType.UInt_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_8(ref point)); };
+                    case PointCurvatureType.UInt_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_16(ref point)); };
+                    case PointCurvatureType.UInt_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_32(ref point)); };
+                    case PointCurvatureType.UInt_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_64(ref point)); };
+                    case PointCurvatureType.Float32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat32(ref point)); };
+                    case PointCurvatureType.Float64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat64(ref point)); };
+                }
 
                 return (ref TPoint point) => Array.Empty<byte>();
             }
@@ -1815,30 +1634,29 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                // Int
-                if (HasHitCountInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_8(ref point)); };
-                if (HasHitCountInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_16(ref point)); };
-                if (HasHitCountInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_32(ref point)); };
-                if (HasHitCountInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_64(ref point)); };
-
-                // Uint
-                if (HasHitCountUInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_8(ref point)); };
-                if (HasHitCountUInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_16(ref point)); };
-                if (HasHitCountUInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_32(ref point)); };
-                if (HasHitCountUInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_64(ref point)); };
-
-                if (HasHitCountFloat32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat32(ref point)); };
-                if (HasHitCountFloat64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat64(ref point)); };
+                switch (HitCountType)
+                {
+                    case PointHitCountType.Int_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_8(ref point)); };
+                    case PointHitCountType.Int_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_16(ref point)); };
+                    case PointHitCountType.Int_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_32(ref point)); };
+                    case PointHitCountType.Int_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_64(ref point)); };
+                    case PointHitCountType.UInt_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_8(ref point)); };
+                    case PointHitCountType.UInt_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_16(ref point)); };
+                    case PointHitCountType.UInt_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_32(ref point)); };
+                    case PointHitCountType.UInt_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_64(ref point)); };
+                    case PointHitCountType.Float32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat32(ref point)); };
+                    case PointHitCountType.Float64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat64(ref point)); };
+                }
 
                 return (ref TPoint point) => Array.Empty<byte>();
             }
@@ -1849,30 +1667,29 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                // Int
-                if (HasGPSTimeInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_8(ref point)); };
-                if (HasGPSTimeInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_16(ref point)); };
-                if (HasGPSTimeInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_32(ref point)); };
-                if (HasGPSTimeInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_64(ref point)); };
-
-                // Uint
-                if (HasGPSTimeUInt_8)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_8(ref point)); };
-                if (HasGPSTimeUInt_16)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_16(ref point)); };
-                if (HasGPSTimeUInt_32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_32(ref point)); };
-                if (HasGPSTimeUInt_64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_64(ref point)); };
-
-                if (HasGPSTimeFloat32)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat32(ref point)); };
-                if (HasGPSTimeFloat64)
-                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat64(ref point)); };
+                switch (GpsTimeType)
+                {
+                    case PointGpsTimeType.Int_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_8(ref point)); };
+                    case PointGpsTimeType.Int_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_16(ref point)); };
+                    case PointGpsTimeType.Int_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_32(ref point)); };
+                    case PointGpsTimeType.Int_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_64(ref point)); };
+                    case PointGpsTimeType.UInt_8:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_8(ref point)); };
+                    case PointGpsTimeType.UInt_16:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_16(ref point)); };
+                    case PointGpsTimeType.UInt_32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_32(ref point)); };
+                    case PointGpsTimeType.UInt_64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_64(ref point)); };
+                    case PointGpsTimeType.Float32:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat32(ref point)); };
+                    case PointGpsTimeType.Float64:
+                        return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat64(ref point)); };
+                }
 
                 return (ref TPoint point) => Array.Empty<byte>();
             }
@@ -1971,178 +1788,245 @@ namespace Fusee.PointCloud.Common
                 if (OffsetsCalculated)
                     return _offsets;
 
-                // XYZINormalRGBLCurvatureHitCountGPSTime
-
                 _offsets = new ByteArrayOffsets();
 
                 // position
-                if (HasPositionFloat3_32)
-                    _offsets.PositionOffset = 3 * Marshal.SizeOf<float>();
-                if (HasPositionFloat3_64)
-                    _offsets.PositionOffset = 3 * Marshal.SizeOf<double>();
+                switch (PositionType)
+                {
+                    case PointPositionType.Float3_32:
+                        _offsets.PositionOffset = 3 * Marshal.SizeOf<float>();
+                        break;
+                    case PointPositionType.Float3_64:
+                        _offsets.PositionOffset = 3 * Marshal.SizeOf<double>();
+                        break;
+                }
 
                 // Intensity
-                if (HasIntensityInt_8)
-                    _offsets.IntensityOffset = Marshal.SizeOf<sbyte>();
-                if (HasIntensityInt_16)
-                    _offsets.IntensityOffset = Marshal.SizeOf<short>();
-                if (HasIntensityInt_32)
-                    _offsets.IntensityOffset = Marshal.SizeOf<int>();
-                if (HasIntensityInt_64)
-                    _offsets.IntensityOffset = Marshal.SizeOf<long>();
-
-                if (HasIntensityUInt_8)
-                    _offsets.IntensityOffset = Marshal.SizeOf<byte>();
-                if (HasIntensityUInt_16)
-                    _offsets.IntensityOffset = Marshal.SizeOf<ushort>();
-                if (HasIntensityUInt_32)
-                    _offsets.IntensityOffset = Marshal.SizeOf<uint>();
-                if (HasIntensityUInt_64)
-                    _offsets.IntensityOffset = Marshal.SizeOf<ulong>();
-
-                if (HasIntensityFloat32)
-                    _offsets.IntensityOffset = Marshal.SizeOf<float>();
-
-                if (HasIntensityFloat64)
-                    _offsets.IntensityOffset = Marshal.SizeOf<double>();
+                switch (IntensityType)
+                {
+                    case PointIntensityType.Int_8:
+                        _offsets.IntensityOffset = Marshal.SizeOf<sbyte>();
+                        break;
+                    case PointIntensityType.Int_16:
+                        _offsets.IntensityOffset = Marshal.SizeOf<short>();
+                        break;
+                    case PointIntensityType.Int_32:
+                        _offsets.IntensityOffset = Marshal.SizeOf<int>();
+                        break;
+                    case PointIntensityType.Int_64:
+                        _offsets.IntensityOffset = Marshal.SizeOf<long>();
+                        break;
+                    case PointIntensityType.UInt_8:
+                        _offsets.IntensityOffset = Marshal.SizeOf<byte>();
+                        break;
+                    case PointIntensityType.UInt_16:
+                        _offsets.IntensityOffset = Marshal.SizeOf<ushort>();
+                        break;
+                    case PointIntensityType.UInt_32:
+                        _offsets.IntensityOffset = Marshal.SizeOf<uint>();
+                        break;
+                    case PointIntensityType.UInt_64:
+                        _offsets.IntensityOffset = Marshal.SizeOf<ulong>();
+                        break;
+                    case PointIntensityType.Float32:
+                        _offsets.IntensityOffset = Marshal.SizeOf<float>();
+                        break;
+                    case PointIntensityType.Float64:
+                        _offsets.IntensityOffset = Marshal.SizeOf<double>();
+                        break;
+                }
 
                 // Normal
-                if (HasNormalFloat3_32)
-                    _offsets.NormalsOffset = 3 * Marshal.SizeOf<float>();
-                if (HasNormalFloat3_64)
-                    _offsets.NormalsOffset = 3 * Marshal.SizeOf<double>();
+                switch (NormalType)
+                {
+                    case PointNormalType.Float3_32:
+                        _offsets.NormalsOffset = 3 * Marshal.SizeOf<float>();
+                        break;
+                    case PointNormalType.Float3_64:
+                        _offsets.NormalsOffset = 3 * Marshal.SizeOf<double>();
+                        break;
+                }
 
                 // Color
-                if (HasColorInt_8)
-                    _offsets.RGBOffset = Marshal.SizeOf<sbyte>();
-                if (HasColorInt_16)
-                    _offsets.RGBOffset = Marshal.SizeOf<short>();
-                if (HasColorInt_32)
-                    _offsets.RGBOffset = Marshal.SizeOf<int>();
-                if (HasColorInt_64)
-                    _offsets.RGBOffset = Marshal.SizeOf<long>();
+                switch (ColorType)
+                {
+                    case PointColorType.Int_8:
+                        _offsets.RGBOffset = Marshal.SizeOf<sbyte>();
+                        break;
+                    case PointColorType.Int_16:
+                        _offsets.RGBOffset = Marshal.SizeOf<short>();
+                        break;
+                    case PointColorType.Int_32:
+                        _offsets.RGBOffset = Marshal.SizeOf<int>();
+                        break;
+                    case PointColorType.Int_64:
+                        _offsets.RGBOffset = Marshal.SizeOf<long>();
+                        break;
+                    case PointColorType.UInt_8:
+                        _offsets.RGBOffset = Marshal.SizeOf<byte>();
+                        break;
+                    case PointColorType.UInt_16:
+                        _offsets.RGBOffset = Marshal.SizeOf<ushort>();
+                        break;
+                    case PointColorType.UInt_32:
+                        _offsets.RGBOffset = Marshal.SizeOf<uint>();
+                        break;
+                    case PointColorType.UInt_64:
+                        _offsets.RGBOffset = Marshal.SizeOf<ulong>();
+                        break;
+                    case PointColorType.Float32:
+                        _offsets.RGBOffset = Marshal.SizeOf<float>();
+                        break;
+                    case PointColorType.Float64:
+                        _offsets.RGBOffset = Marshal.SizeOf<double>();
+                        break;
+                    case PointColorType.Float3_32:
+                        _offsets.RGBOffset = 3 * Marshal.SizeOf<float>();
+                        break;
+                    case PointColorType.Float3_64:
+                        _offsets.RGBOffset = 3 * Marshal.SizeOf<double>();
+                        break;
+                }
 
-                if (HasColorUInt_8)
-                    _offsets.RGBOffset = Marshal.SizeOf<byte>();
-                if (HasColorUInt_16)
-                    _offsets.RGBOffset = Marshal.SizeOf<ushort>();
-                if (HasColorUInt_32)
-                    _offsets.RGBOffset = Marshal.SizeOf<uint>();
-                if (HasColorUInt_64)
-                    _offsets.RGBOffset = Marshal.SizeOf<ulong>();
-
-                if (HasColorFloat32)
-                    _offsets.RGBOffset = Marshal.SizeOf<float>();
-
-                if (HasColorFloat64)
-                    _offsets.RGBOffset = Marshal.SizeOf<double>();
-
-                if (HasColorFloat3_32)
-                    _offsets.RGBOffset = 3 * Marshal.SizeOf<float>();
-
-                if (HasColorFloat3_64)
-                    _offsets.RGBOffset = 3 * Marshal.SizeOf<double>();
-
-                // Label                
-                if (HasLabelInt_8)
-                    _offsets.LabelOffset = Marshal.SizeOf<sbyte>();
-                if (HasLabelInt_16)
-                    _offsets.LabelOffset = Marshal.SizeOf<short>();
-                if (HasLabelInt_32)
-                    _offsets.LabelOffset = Marshal.SizeOf<int>();
-                if (HasLabelInt_64)
-                    _offsets.LabelOffset = Marshal.SizeOf<long>();
-
-                if (HasLabelUInt_8)
-                    _offsets.LabelOffset = Marshal.SizeOf<byte>();
-                if (HasLabelUInt_16)
-                    _offsets.LabelOffset = Marshal.SizeOf<ushort>();
-                if (HasLabelUInt_32)
-                    _offsets.LabelOffset = Marshal.SizeOf<uint>();
-                if (HasLabelUInt_64)
-                    _offsets.LabelOffset = Marshal.SizeOf<ulong>();
-
-                if (HasLabelFloat32)
-                    _offsets.LabelOffset = Marshal.SizeOf<float>();
-
-                if (HasLabelFloat64)
-                    _offsets.LabelOffset = Marshal.SizeOf<double>();
+                // Label
+                switch (LabelType)
+                {
+                    case PointLabelType.Int_8:
+                        _offsets.LabelOffset = Marshal.SizeOf<sbyte>();
+                        break;
+                    case PointLabelType.Int_16:
+                        _offsets.LabelOffset = Marshal.SizeOf<short>();
+                        break;
+                    case PointLabelType.Int_32:
+                        _offsets.LabelOffset = Marshal.SizeOf<int>();
+                        break;
+                    case PointLabelType.Int_64:
+                        _offsets.LabelOffset = Marshal.SizeOf<long>();
+                        break;
+                    case PointLabelType.UInt_8:
+                        _offsets.LabelOffset = Marshal.SizeOf<byte>();
+                        break;
+                    case PointLabelType.UInt_16:
+                        _offsets.LabelOffset = Marshal.SizeOf<ushort>();
+                        break;
+                    case PointLabelType.UInt_32:
+                        _offsets.LabelOffset = Marshal.SizeOf<uint>();
+                        break;
+                    case PointLabelType.UInt_64:
+                        _offsets.LabelOffset = Marshal.SizeOf<ulong>();
+                        break;
+                    case PointLabelType.Float32:
+                        _offsets.LabelOffset = Marshal.SizeOf<float>();
+                        break;
+                    case PointLabelType.Float64:
+                        _offsets.LabelOffset = Marshal.SizeOf<double>();
+                        break;
+                }
 
                 // Curvature
-                if (HasCurvatureInt_8)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<sbyte>();
-                if (HasCurvatureInt_16)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<short>();
-                if (HasCurvatureInt_32)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<int>();
-                if (HasCurvatureInt_64)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<long>();
+                switch (CurvatureType)
+                {
+                    case PointCurvatureType.Int_8:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<sbyte>();
+                        break;
+                    case PointCurvatureType.Int_16:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<short>();
+                        break;
+                    case PointCurvatureType.Int_32:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<int>();
+                        break;
+                    case PointCurvatureType.Int_64:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<long>();
+                        break;
+                    case PointCurvatureType.UInt_8:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<byte>();
+                        break;
+                    case PointCurvatureType.UInt_16:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<ushort>();
+                        break;
+                    case PointCurvatureType.UInt_32:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<uint>();
+                        break;
+                    case PointCurvatureType.UInt_64:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<ulong>();
+                        break;
+                    case PointCurvatureType.Float32:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<float>();
+                        break;
+                    case PointCurvatureType.Float64:
+                        _offsets.CurvatureOffset = Marshal.SizeOf<double>();
+                        break;
+                }
 
-                if (HasCurvatureUInt_8)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<byte>();
-                if (HasCurvatureUInt_16)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<ushort>();
-                if (HasCurvatureUInt_32)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<uint>();
-                if (HasCurvatureUInt_64)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<ulong>();
-
-                if (HasCurvatureFloat32)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<float>();
-
-                if (HasCurvatureFloat64)
-                    _offsets.CurvatureOffset = Marshal.SizeOf<double>();
-
-
-                // Hitcount
-                if (HasHitCountInt_8)
-                    _offsets.HitCountOffset = Marshal.SizeOf<sbyte>();
-                if (HasHitCountInt_16)
-                    _offsets.HitCountOffset = Marshal.SizeOf<short>();
-                if (HasHitCountInt_32)
-                    _offsets.HitCountOffset = Marshal.SizeOf<int>();
-                if (HasHitCountInt_64)
-                    _offsets.HitCountOffset = Marshal.SizeOf<long>();
-
-                if (HasHitCountUInt_8)
-                    _offsets.HitCountOffset = Marshal.SizeOf<byte>();
-                if (HasHitCountUInt_16)
-                    _offsets.HitCountOffset = Marshal.SizeOf<ushort>();
-                if (HasHitCountUInt_32)
-                    _offsets.HitCountOffset = Marshal.SizeOf<uint>();
-                if (HasHitCountUInt_64)
-                    _offsets.HitCountOffset = Marshal.SizeOf<ulong>();
-
-                if (HasHitCountFloat32)
-                    _offsets.HitCountOffset = Marshal.SizeOf<float>();
-
-                if (HasHitCountFloat64)
-                    _offsets.HitCountOffset = Marshal.SizeOf<double>();
+                // Hit count
+                switch (HitCountType)
+                {
+                    case PointHitCountType.Int_8:
+                        _offsets.HitCountOffset = Marshal.SizeOf<sbyte>();
+                        break;
+                    case PointHitCountType.Int_16:
+                        _offsets.HitCountOffset = Marshal.SizeOf<short>();
+                        break;
+                    case PointHitCountType.Int_32:
+                        _offsets.HitCountOffset = Marshal.SizeOf<int>();
+                        break;
+                    case PointHitCountType.Int_64:
+                        _offsets.HitCountOffset = Marshal.SizeOf<long>();
+                        break;
+                    case PointHitCountType.UInt_8:
+                        _offsets.HitCountOffset = Marshal.SizeOf<byte>();
+                        break;
+                    case PointHitCountType.UInt_16:
+                        _offsets.HitCountOffset = Marshal.SizeOf<ushort>();
+                        break;
+                    case PointHitCountType.UInt_32:
+                        _offsets.HitCountOffset = Marshal.SizeOf<uint>();
+                        break;
+                    case PointHitCountType.UInt_64:
+                        _offsets.HitCountOffset = Marshal.SizeOf<ulong>();
+                        break;
+                    case PointHitCountType.Float32:
+                        _offsets.HitCountOffset = Marshal.SizeOf<float>();
+                        break;
+                    case PointHitCountType.Float64:
+                        _offsets.HitCountOffset = Marshal.SizeOf<double>();
+                        break;
+                }
 
                 // GPSTime
-                if (HasGPSTimeInt_8)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<sbyte>();
-                if (HasGPSTimeInt_16)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<short>();
-                if (HasGPSTimeInt_32)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<int>();
-                if (HasGPSTimeInt_64)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<long>();
-
-                if (HasGPSTimeUInt_8)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<byte>();
-                if (HasGPSTimeUInt_16)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<ushort>();
-                if (HasGPSTimeUInt_32)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<uint>();
-                if (HasGPSTimeUInt_64)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<ulong>();
-
-                if (HasGPSTimeFloat32)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<float>();
-
-                if (HasGPSTimeFloat64)
-                    _offsets.GPSTimeOffset = Marshal.SizeOf<double>();
+                switch (GpsTimeType)
+                {
+                    case PointGpsTimeType.Int_8:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<sbyte>();
+                        break;
+                    case PointGpsTimeType.Int_16:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<short>();
+                        break;
+                    case PointGpsTimeType.Int_32:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<int>();
+                        break;
+                    case PointGpsTimeType.Int_64:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<long>();
+                        break;
+                    case PointGpsTimeType.UInt_8:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<byte>();
+                        break;
+                    case PointGpsTimeType.UInt_16:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<ushort>();
+                        break;
+                    case PointGpsTimeType.UInt_32:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<uint>();
+                        break;
+                    case PointGpsTimeType.UInt_64:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<ulong>();
+                        break;
+                    case PointGpsTimeType.Float32:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<float>();
+                        break;
+                    case PointGpsTimeType.Float64:
+                        _offsets.GPSTimeOffset = Marshal.SizeOf<double>();
+                        break;
+                }
 
                 OffsetsCalculated = true;
 
@@ -2154,7 +2038,7 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                if (HasPositionFloat3_32)
+                if (PositionType == PointPositionType.Float3_32)
                 {
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
@@ -2166,7 +2050,7 @@ namespace Fusee.PointCloud.Common
                         SetPositionFloat3_32(ref pointIn, new float3(x, y, z));
                     };
                 }
-                if (HasPositionFloat3_64)
+                else if (PositionType == PointPositionType.Float3_64)
                 {
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
@@ -2186,28 +2070,29 @@ namespace Fusee.PointCloud.Common
         {
             get
             {
-                if (HasIntensityInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);
-                if (HasIntensityInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_16(ref pointIn, byteIn[Offsets.PositionOffset]);
-                if (HasIntensityInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_32(ref pointIn, BitConverter.ToInt32(byteIn, Offsets.PositionOffset));
-                if (HasIntensityInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_64(ref pointIn, BitConverter.ToInt64(byteIn, Offsets.PositionOffset));
-
-                if (HasIntensityUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_8(ref pointIn, byteIn[Offsets.PositionOffset]);
-                if (HasIntensityUInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, Offsets.PositionOffset));
-                if (HasIntensityUInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, Offsets.PositionOffset));
-                if (HasIntensityUInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, Offsets.PositionOffset));
-
-                if (HasIntensityFloat32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat32(ref pointIn, BitConverter.ToSingle(byteIn, Offsets.PositionOffset));
-                if (HasIntensityFloat64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat64(ref pointIn, BitConverter.ToDouble(byteIn, Offsets.PositionOffset));
+                switch (IntensityType)
+                {
+                    case PointIntensityType.Int_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);
+                    case PointIntensityType.Int_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_16(ref pointIn, byteIn[Offsets.PositionOffset]);
+                    case PointIntensityType.Int_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_32(ref pointIn, BitConverter.ToInt32(byteIn, Offsets.PositionOffset));
+                    case PointIntensityType.Int_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_64(ref pointIn, BitConverter.ToInt64(byteIn, Offsets.PositionOffset));
+                    case PointIntensityType.UInt_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_8(ref pointIn, byteIn[Offsets.PositionOffset]);
+                    case PointIntensityType.UInt_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, Offsets.PositionOffset));
+                    case PointIntensityType.UInt_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, Offsets.PositionOffset));
+                    case PointIntensityType.UInt_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, Offsets.PositionOffset));
+                    case PointIntensityType.Float32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat32(ref pointIn, BitConverter.ToSingle(byteIn, Offsets.PositionOffset));
+                    case PointIntensityType.Float64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat64(ref pointIn, BitConverter.ToDouble(byteIn, Offsets.PositionOffset));
+                }
 
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
             }
@@ -2219,7 +2104,7 @@ namespace Fusee.PointCloud.Common
             {
                 var offset = Offsets.PositionOffset + Offsets.IntensityOffset;
 
-                if (HasNormalFloat3_32)
+                if (NormalType == PointNormalType.Float3_32)
                 {
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
@@ -2231,7 +2116,7 @@ namespace Fusee.PointCloud.Common
                         SetNormalFloat3_32(ref pointIn, new float3(x, y, z));
                     };
                 }
-                if (HasNormalFloat3_64)
+                if (NormalType == PointNormalType.Float3_64)
                 {
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
@@ -2255,54 +2140,55 @@ namespace Fusee.PointCloud.Common
             {
                 var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset;
 
-                if (HasColorInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                if (HasColorInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_16(ref pointIn, byteIn[offset]);
-                if (HasColorInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                if (HasColorInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-
-                if (HasColorUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_8(ref pointIn, byteIn[offset + 1]);
-                if (HasColorUInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                if (HasColorUInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                if (HasColorUInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-
-                if (HasColorFloat32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                if (HasColorFloat64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
-
-                if (HasColorFloat3_32)
+                switch (ColorType)
                 {
-                    return (ref TPoint pointIn, byte[] byteIn) =>
-                    {
-                        var dataOffset = Marshal.SizeOf<float>();
+                    case PointColorType.Int_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    case PointColorType.Int_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_16(ref pointIn, byteIn[offset]);
+                    case PointColorType.Int_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    case PointColorType.Int_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    case PointColorType.UInt_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_8(ref pointIn, byteIn[offset + 1]);
+                    case PointColorType.UInt_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    case PointColorType.UInt_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    case PointColorType.UInt_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    case PointColorType.Float32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    case PointColorType.Float64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                    case PointColorType.Float3_32:
+                        {
+                            return (ref TPoint pointIn, byte[] byteIn) =>
+                            {
+                                var dataOffset = Marshal.SizeOf<float>();
 
-                        var x = BitConverter.ToSingle(byteIn, offset);
-                        var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
-                        var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
+                                var x = BitConverter.ToSingle(byteIn, offset);
+                                var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
+                                var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
 
-                        SetColorFloat3_32(ref pointIn, new float3(x, y, z));
-                    };
-                }
-                if (HasColorFloat3_64)
-                {
-                    return (ref TPoint pointIn, byte[] byteIn) =>
-                    {
-                        var dataOffset = Marshal.SizeOf<double>();
+                                SetColorFloat3_32(ref pointIn, new float3(x, y, z));
+                            };
+                        }
 
-                        var x = BitConverter.ToDouble(byteIn, offset);
-                        var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
-                        var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
+                    case PointColorType.Float3_64:
+                        {
+                            return (ref TPoint pointIn, byte[] byteIn) =>
+                            {
+                                var dataOffset = Marshal.SizeOf<double>();
 
-                        SetColorFloat3_64(ref pointIn, new double3(x, y, z));
-                    };
+                                var x = BitConverter.ToDouble(byteIn, offset);
+                                var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
+                                var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
+
+                                SetColorFloat3_64(ref pointIn, new double3(x, y, z));
+                            };
+                        }
                 }
 
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
@@ -2316,28 +2202,29 @@ namespace Fusee.PointCloud.Common
             {
                 var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset;
 
-                if (HasLabelInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                if (HasLabelInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_16(ref pointIn, byteIn[offset]);
-                if (HasLabelInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                if (HasLabelInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-
-                if (HasLabelUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_8(ref pointIn, byteIn[offset]);
-                if (HasLabelUInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                if (HasLabelUInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                if (HasLabelUInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-
-                if (HasLabelFloat32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                if (HasLabelFloat64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                switch (LabelType)
+                {
+                    case PointLabelType.Int_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    case PointLabelType.Int_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_16(ref pointIn, byteIn[offset]);
+                    case PointLabelType.Int_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    case PointLabelType.Int_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    case PointLabelType.UInt_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_8(ref pointIn, byteIn[offset]);
+                    case PointLabelType.UInt_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    case PointLabelType.UInt_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    case PointLabelType.UInt_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    case PointLabelType.Float32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    case PointLabelType.Float64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                }
 
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
             }
@@ -2350,28 +2237,29 @@ namespace Fusee.PointCloud.Common
             {
                 var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
 
-                if (HasCurvatureInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                if (HasCurvatureInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_16(ref pointIn, byteIn[offset]);
-                if (HasCurvatureInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                if (HasCurvatureInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-
-                if (HasCurvatureUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_8(ref pointIn, byteIn[offset + 1]);
-                if (HasCurvatureUInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                if (HasCurvatureUInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                if (HasCurvatureUInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-
-                if (HasCurvatureFloat32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                if (HasCurvatureFloat64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                switch (CurvatureType)
+                {
+                    case PointCurvatureType.Int_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    case PointCurvatureType.Int_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_16(ref pointIn, byteIn[offset]);
+                    case PointCurvatureType.Int_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    case PointCurvatureType.Int_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    case PointCurvatureType.UInt_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_8(ref pointIn, byteIn[offset + 1]);
+                    case PointCurvatureType.UInt_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    case PointCurvatureType.UInt_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    case PointCurvatureType.UInt_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    case PointCurvatureType.Float32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    case PointCurvatureType.Float64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                }
 
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
             }
@@ -2384,28 +2272,29 @@ namespace Fusee.PointCloud.Common
             {
                 var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
 
-                if (HasHitCountInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                if (HasHitCountInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_16(ref pointIn, byteIn[offset]);
-                if (HasHitCountInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                if (HasHitCountInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-
-                if (HasHitCountUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_8(ref pointIn, byteIn[offset + 1]);
-                if (HasHitCountUInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                if (HasHitCountUInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                if (HasHitCountUInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-
-                if (HasHitCountFloat32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                if (HasHitCountFloat64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                switch (HitCountType)
+                {
+                    case PointHitCountType.Int_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    case PointHitCountType.Int_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_16(ref pointIn, byteIn[offset]);
+                    case PointHitCountType.Int_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    case PointHitCountType.Int_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    case PointHitCountType.UInt_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_8(ref pointIn, byteIn[offset + 1]);
+                    case PointHitCountType.UInt_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    case PointHitCountType.UInt_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    case PointHitCountType.UInt_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    case PointHitCountType.Float32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    case PointHitCountType.Float64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                }
 
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
             }
@@ -2418,28 +2307,29 @@ namespace Fusee.PointCloud.Common
             {
                 var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset + Offsets.HitCountOffset;
 
-                if (HasGPSTimeInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_8(ref pointIn, (sbyte)byteIn[offset]);
-                if (HasGPSTimeInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_16(ref pointIn, byteIn[offset]);
-                if (HasGPSTimeInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
-                if (HasGPSTimeInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
-
-                if (HasGPSTimeUInt_8)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_8(ref pointIn, byteIn[offset + 1]);
-                if (HasGPSTimeUInt_16)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
-                if (HasGPSTimeUInt_32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
-                if (HasGPSTimeUInt_64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
-
-                if (HasGPSTimeFloat32)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
-                if (HasGPSTimeFloat64)
-                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                switch (GpsTimeType)
+                {
+                    case PointGpsTimeType.Int_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                    case PointGpsTimeType.Int_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_16(ref pointIn, byteIn[offset]);
+                    case PointGpsTimeType.Int_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                    case PointGpsTimeType.Int_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+                    case PointGpsTimeType.UInt_8:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_8(ref pointIn, byteIn[offset + 1]);
+                    case PointGpsTimeType.UInt_16:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                    case PointGpsTimeType.UInt_32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                    case PointGpsTimeType.UInt_64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+                    case PointGpsTimeType.Float32:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                    case PointGpsTimeType.Float64:
+                        return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+                }
 
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
             }

@@ -135,16 +135,6 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
                 )
             );
 
-            //Add JProperty for "pointAccessorBools" that contains all bools from the point accessor that are set to true.
-            var ptAccessorObj = new JObject();
-
-            foreach (var propertyName in ptAccessor.GetPointType())
-            {
-                ptAccessorObj.Add(propertyName, true);
-            }
-            var ptAccessorBools = new JProperty("ptAccessorBools", ptAccessorObj);
-            jsonObj.Add(ptAccessorBools);
-
             //Add JPorperty for "pointType"
             var pointType = typeof(TPoint);
             var ptType = new JProperty("pointType", pointType.Name);

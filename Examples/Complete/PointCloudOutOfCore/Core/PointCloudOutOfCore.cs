@@ -212,6 +212,12 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
 
         public override void Update()
         {
+            if (_closingRequested)
+            {
+                ReadyToLoadNewFile = true;
+                return;
+            }
+
             var isSpaceMouseMoving = SpaceMouseMoving(out float3 velPos, out float3 velRot);
 
             // ------------ Enable to update the Scene only when the user isn't moving ------------------

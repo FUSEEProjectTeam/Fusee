@@ -102,7 +102,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
             var metaInfo = (LasMetaInfo)reader.MetaInfo;
             var points = new TPoint[((int)metaInfo.PointCnt)];
             aabb = new AABBd();
-            if (ptAcc.HasPositionFloat3_64)
+            if (ptAcc.PositionType == PointPositionType.Float3_64)
             {
                 for (var i = 0; i < points.Length; i++)
                 {
@@ -125,7 +125,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
                     points[i] = pt;
                 }
             }
-            else if (ptAcc.HasPositionFloat3_32)
+            else if (ptAcc.PositionType == PointPositionType.Float3_32)
             {
                 for (var i = 0; i < points.Length; i++)
                 {

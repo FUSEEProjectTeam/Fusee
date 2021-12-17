@@ -16,6 +16,9 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public enum PointType
     {
+
+        Undefined,
+
         /// <summary>
         /// Position only (double)
         /// </summary>

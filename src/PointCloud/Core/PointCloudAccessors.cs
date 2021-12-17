@@ -6,17 +6,17 @@ namespace Fusee.PointCloud.Core
     //Collection of PointAccessor classes. There has to be one for each PointType.
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position information only.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position information only.
     /// </summary>
     public class Pos64Accessor : PointAccessor<Pos64>
     {
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
+        public Pos64Accessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+        }
 
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -25,7 +25,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64 point)
@@ -35,25 +35,19 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, color and intensity values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position, color and intensity values.
     /// </summary>
     public class Pos64Col32IShortAccessor : PointAccessor<Pos64Col32IShort>
     {
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasColorFloat3_32 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ushort"/>.
-        /// </summary>
-        public override bool HasIntensityUInt_16 => true;
+        public Pos64Col32IShortAccessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            ColorType = PointColorType.Float3_32;
+            IntensityType = PointIntensityType.UInt_8;
+        }
 
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -62,7 +56,7 @@ namespace Fusee.PointCloud.Core
             point.Color = val;
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetColorFloat3_32(ref Pos64Col32IShort point)
@@ -70,7 +64,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Color;
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -79,7 +73,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64Col32IShort point)
@@ -87,7 +81,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Position;
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref ushort GetIntensityUInt_16(ref Pos64Col32IShort point)
@@ -95,7 +89,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Intensity;
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -106,21 +100,18 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position and intensity values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position and intensity values.
     /// </summary>
     public class Pos64IShortAccessor : PointAccessor<Pos64IShort>
     {
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ushort"/>.
-        /// </summary>
-        public override bool HasIntensityUInt_16 => true;
+        public Pos64IShortAccessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            IntensityType = PointIntensityType.UInt_16;
+        }
 
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -129,7 +120,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64IShort point)
@@ -137,7 +128,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Position;
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref ushort GetIntensityUInt_16(ref Pos64IShort point)
@@ -145,7 +136,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Intensity;
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -156,21 +147,18 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position and color values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position and color values.
     /// </summary>
     public class Pos64Col32Accessor : PointAccessor<Pos64Col32>
     {
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasColorFloat3_32 => true;
+        public Pos64Col32Accessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            ColorType = PointColorType.Float3_32;
+        }
 
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -178,8 +166,9 @@ namespace Fusee.PointCloud.Core
         {
             point.Color = val;
         }
+
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetColorFloat3_32(ref Pos64Col32 point)
@@ -187,7 +176,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Color;
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -196,7 +185,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64Col32 point)
@@ -206,20 +195,18 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position and label values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position and label values.
     /// </summary>
     public class Pos64Label8Accessor : PointAccessor<Pos64Label8>
     {
+        public Pos64Label8Accessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            LabelType = PointLabelType.UInt_8;
+        }
+
         /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a label with a value of type <see cref="byte"/>.
-        /// </summary>
-        public override bool HasLabelUInt_8 => true;
-        /// <summary>
-        /// Sets the label of a point cloud point if <see cref="HasLabelUInt_8"/> is true.
+        /// Sets the label of a point cloud point if <see cref="PointLabelType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new label.</param>
@@ -228,7 +215,7 @@ namespace Fusee.PointCloud.Core
             point.Label = val;
         }
         /// <summary>
-        /// Returns the label of a point cloud point if <see cref="HasLabelUInt_8"/> is true.
+        /// Returns the label of a point cloud point if <see cref="PointLabelType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref byte GetLabelUInt_8(ref Pos64Label8 point)
@@ -236,7 +223,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Label;
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -245,7 +232,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64Label8 point)
@@ -255,29 +242,20 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, normal vectors, color and intensity values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position, normal vectors, color and intensity values.
     /// </summary>
     public class Pos64Nor32Col32IShortAccessor : PointAccessor<Pos64Nor32Col32IShort>
     {
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasColorFloat3_32 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ushort"/>.
-        /// </summary>
-        public override bool HasIntensityUInt_16 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasNormalFloat3_32 => true;
+        public Pos64Nor32Col32IShortAccessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            ColorType = PointColorType.Float3_32;
+            IntensityType = PointIntensityType.UInt_16;
+            NormalType = PointNormalType.Float3_32;
+        }
 
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -286,7 +264,7 @@ namespace Fusee.PointCloud.Core
             point.Color = val;
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetColorFloat3_32(ref Pos64Nor32Col32IShort point)
@@ -294,7 +272,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Color;
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -303,7 +281,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64Nor32Col32IShort point)
@@ -311,7 +289,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Position;
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref ushort GetIntensityUInt_16(ref Pos64Nor32Col32IShort point)
@@ -319,7 +297,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Intensity;
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -328,7 +306,7 @@ namespace Fusee.PointCloud.Core
             point.Intensity = val;
         }
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetNormalFloat3_32(ref Pos64Nor32Col32IShort point)
@@ -336,7 +314,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Normal;
         }
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>
@@ -347,25 +325,19 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, normal vectors and intensity values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position, normal vectors and intensity values.
     /// </summary>
     public class Pos64Nor32IShortAccessor : PointAccessor<Pos64Nor32IShort>
     {
+        public Pos64Nor32IShortAccessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            IntensityType = PointIntensityType.UInt_16;
+            NormalType = PointNormalType.Float3_64;
+        }
+        
         /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a intensity value of type <see cref="ushort"/>.
-        /// </summary>
-        public override bool HasIntensityUInt_16 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasNormalFloat3_32 => true;
-
-        /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -374,7 +346,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64Nor32IShort point)
@@ -382,7 +354,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Position;
         }
         /// <summary>
-        /// Returns the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Returns the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref ushort GetIntensityUInt_16(ref Pos64Nor32IShort point)
@@ -390,7 +362,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Intensity;
         }
         /// <summary>
-        /// Sets the intensity of a point cloud point if <see cref="HasIntensityUInt_16"/> is true.
+        /// Sets the intensity of a point cloud point if <see cref="PointIntensityType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new intensity value.</param>
@@ -399,7 +371,7 @@ namespace Fusee.PointCloud.Core
             point.Intensity = val;
         }
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetNormalFloat3_32(ref Pos64Nor32IShort point)
@@ -407,7 +379,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Normal;
         }
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>
@@ -418,26 +390,19 @@ namespace Fusee.PointCloud.Core
     }
 
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, color and intensity values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position, color and intensity values.
     /// </summary>
     public class Pos64Nor32Col32Accessor : PointAccessor<Pos64Nor32Col32>
     {
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a position value of type <see cref="double3"/>.
-        /// </summary>
-        public override bool HasPositionFloat3_64 => true;
-        /// <summary>
-        /// Returns a bool that tells if a point cloud point has a color value of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasColorFloat3_32 => true;
+        public Pos64Nor32Col32Accessor()
+        {
+            PositionType = PointPositionType.Float3_64;
+            ColorType = PointColorType.Float3_32;
+            NormalType = PointNormalType.Float3_32;
+        }
 
         /// <summary>
-        /// Returns a bool that tells if a point cloud point has a normal of type <see cref="float3"/>.
-        /// </summary>
-        public override bool HasNormalFloat3_32 => true;
-
-        /// <summary>
-        /// Sets the color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -446,7 +411,7 @@ namespace Fusee.PointCloud.Core
             point.Color = val;
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="HasColorFloat3_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetColorFloat3_32(ref Pos64Nor32Col32 point)
@@ -455,7 +420,7 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -464,7 +429,7 @@ namespace Fusee.PointCloud.Core
             point.Position = val;
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="HasPositionFloat3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref double3 GetPositionFloat3_64(ref Pos64Nor32Col32 point)
@@ -472,7 +437,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Position;
         }
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public override ref float3 GetNormalFloat3_32(ref Pos64Nor32Col32 point)
@@ -480,7 +445,7 @@ namespace Fusee.PointCloud.Core
             return ref point.Normal;
         }
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="HasNormalFloat3_32"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>

@@ -130,13 +130,13 @@ namespace Fusee.PointCloud.PointCloudFileReader.Las
             var currentFormat = (LasPointFormat)Format;
             var currentHeader = (LasMetaInfo)MetaInfo;
 
-            if (pa.HasPositionFloat3_64)
+            if (pa.PositionType == PointPositionType.Float3_64)
                 pa.SetPositionFloat3_64(ref point, new double3(currentPoint.X * currentHeader.ScaleFactorX, currentPoint.Y * currentHeader.ScaleFactorY, currentPoint.Z * currentHeader.ScaleFactorZ));
 
-            if (currentFormat.HasIntensity && pa.HasIntensityUInt_16)
+            if (currentFormat.HasIntensity && pa.IntensityType == PointIntensityType.UInt_16)
                 pa.SetIntensityUInt_16(ref point, currentPoint.Intensity);
 
-            if (currentFormat.HasClassification && pa.HasLabelUInt_8)
+            if (currentFormat.HasClassification && pa.LabelType == PointLabelType.UInt_8)
             {
                 //TODO: HACK!! label was somehow written to UserData and not to classification
                 if (currentPoint.Classification != 0)
@@ -145,7 +145,7 @@ namespace Fusee.PointCloud.PointCloudFileReader.Las
                     pa.SetLabelUInt_8(ref point, currentPoint.UserData);
             }
 
-            if (currentFormat.HasColor && pa.HasColorFloat3_32)
+            if (currentFormat.HasColor && pa.ColorType == PointColorType.Float3_32)
                 pa.SetColorFloat3_32(ref point, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
 
             return true;
