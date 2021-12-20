@@ -132,70 +132,149 @@ class BlenderVisitor:
             (-rot_eul.x, -rot_eul.z, -rot_eul.y),
             (scale.x, scale.z, scale.y),
         )
-
+    # Adds a NLA-Animation if one exists
     def __AddAnimationIfPresent(self, ob):
         try:
             selected_strips = [strip for strip in ob.animation_data.nla_tracks]
-            
+            # Variables that store inserted F-Curves and Keyframes to delete them later. 
+            newFC = []
+            newKP = []
+
             self.__fusWriter.BeginAnimation()
-
-
 
             for strip in selected_strips:
                 for strips in strip.strips: 
                     action = strips.action
-                    loc = [None] * 0
-                    rot = [None] * 0
-                    scl = [None] * 0      
-                    for idx, a in enumerate(action.fcurves):
-                        if(a.data_path == "location"):
-                            loc.append(a)
-                        elif(a.data_path == "rotation_euler"):
-                            rot.append(a)
-                        elif(a.data_path == "scale"):
-                            scl.append(a)
-                    if(len(loc)<3):
-                        print(len(loc))
+                    # Create placeholder to see which/if axis is missing
+                    loc = [None] * 3
+                    rotE = [None] * 3
+                    scl = [None] * 3      
+                    for af in action.fcurves:
+                        if(af.data_path == "location"):
+                            loc[af.array_index] = af
+                        elif(af.data_path == "rotation_euler"):
+                            rotE[af.array_index] = af
+                        elif(af.data_path == "scale"):
+                            scl[af.array_index] = af
+                    # If the data_path is still empty because no one used i.e. Scale the list will be deleted        
+                    if(loc.count(None) == len(loc)):
+                        loc.clear()
+                    if(rotE.count(None) == len(rotE)):
+                        rotE.clear()
+                    if(scl.count(None) == len(scl)):
+                        scl.clear()
+
+                    # Creates new F-Curves that don't exist yet     
+                    for idx in range(3):
+                        if(len(loc) > 0):
+                            if(loc[idx] == None):
+                                locf = action.fcurves
+                                loc[idx] = (locf.new("location", index=idx, action_group=str(locf[0].group.name)))
+                                newFC.append(loc[idx])
+                            
+                        if(len(rotE) > 0):
+                            if(rotE[idx] == None):
+                                rotEf = action.fcurves
+                                rotE[idx] = (rotEf.new("rotation_euler", index=idx, action_group=str(rotEf[0].group.name)))
+                                newFC.append(rotE[idx])
+                            
+                        if(len(scl) > 0):
+                            if(scl[idx] == None):
+                                sclf = action.fcurves
+                                scl[idx] = (sclf.new("scale", index=idx, action_group=str(sclf[0].group.name)))
+                                newFC.append(scl[idx])
                     
+                    #Starts the AnimationTrack/AddKeyframe creation
+                    if(len(loc) > 0):
+                        newKP = self.createKP(loc, newKP, ob)
+                        self.__fusWriter.BeginAnimationTrack("Translation", FusSer.Float3, FusSer.Lerp)    
+                        self.AddKeyframes(loc)
+                        self.__fusWriter.EndAnimationTrack()
+                    if(len(rotE) > 0):
+                        newKP = self.createKP(rotE, newKP, ob)
+                        self.__fusWriter.BeginAnimationTrack("Rotation", FusSer.Float3, FusSer.Lerp)    
+                        self.AddKeyframes(rotE)
+                        self.__fusWriter.EndAnimationTrack()                    
+                    if(len(scl) > 0):
+                        newKP = self.createKP(scl, newKP, ob)
+                        self.__fusWriter.BeginAnimationTrack("Scale", FusSer.Float3, FusSer.Lerp)    
+                        self.AddKeyframes(scl)
+                        self.__fusWriter.EndAnimationTrack()
 
-
-            for strip in selected_strips:
-                
-                if(action.fcurves[0].data_path == "location"):
-                    property = "Translation"
-                elif(action.fcurves[0].data_path == "rotation_euler"):
-                    property = "Rotation"
-                elif(action.fcurves[0].data_path == "scale"):
-                    property = "Scale"
-                else:
-                    print("No right Property found")
-                    property = "Null"                                       
-                self.__fusWriter.BeginAnimationTrack(property, FusSer.Float3, FusSer.Lerp)       
-                print()
-                print(strip.name)
-                print("Keyframes")
-                print("---------")
-                
-                ###TODO change range(3) into length of fcurveaxis
-                for idx in range(3): 
-                    try:
-                        print(idx)
-                        action.fcurves.new(action.fcurves[idx].data_path, index=idx, action_group=str(action.fcurves[idx].group.name))
-                    except Exception as e:
-                        pass
-                for fcu in action.fcurves:
-                    for idx in range(len(action.fcurves)):
-                        for kpi in range(len(fcu.keyframe_points)):
-                            action.fcurves[idx].keyframe_points.insert(frame=fcu.keyframe_points[kpi].co[0], value=action.fcurves[idx].evaluate(fcu.keyframe_points[kpi].co[0]), options={"NEEDED"})
-                for kp  in range(len(action.fcurves[0].keyframe_points)):
-                    self.__fusWriter.AddKeyframe(action.fcurves[0].keyframe_points[kp].co[0], (action.fcurves[0].keyframe_points[kp].co[1], action.fcurves[1].keyframe_points[kp].co[1], action.fcurves[2].keyframe_points[kp].co[1]))
-                
-                self.__fusWriter.EndAnimationTrack()
-            
+                    self.DeleteCreatedKPFC(action, newKP, newFC)
+                    self.__fusWriter.EndAnimation()
         except Exception:
             print(traceback.format_exc())
             selected_strips = []
         self.__fusWriter.EndAnimation()
+
+    def AddKeyframes(self, _fcurve):
+        # For the number of Keyframes go through the FCurves and create a tuple from them
+        for i in range(len(_fcurve[0].keyframe_points)):
+            keyframe = []
+            for fc in _fcurve:
+                keyframe.append(fc.keyframe_points[i].co[1])
+            self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0], keyframe)
+
+    def DeleteCreatedKPFC(self, _action, _newKP, _newFC):
+        # Variable for deletion
+        kpidx = 0
+        preKP = None
+        preFC = None
+        # Sort the FCurves by data_path and array_index
+        _newKP = sorted(_newKP, key=lambda k: (k[0].data_path, k[0].array_index))
+
+        for idx in range(len(_newKP)):
+            if(_newKP[idx][0].array_index != preKP or _newKP[idx][0].data_path != preFC):
+                kpidx = 0
+            else:
+                kpidx += 1  
+            # Find keyframes on the FCurve and remove them
+            _newKP[idx][0].keyframe_points.remove(_newKP[idx][0].keyframe_points[(_newKP[idx][1]) - kpidx])
+            preKP = _newKP[idx][0].array_index
+            preFC = _newKP[idx][0].data_path   
+            
+        for deleteFC in _newFC:
+            # Remove created FCurves
+            _action.fcurves.remove(deleteFC)
+
+    def createKP(self, fcs, newKP, ob):
+        # Find the earliest Keyframe frame
+        firstFC = None
+        for fc in fcs:
+            if(len(fc.keyframe_points)!= 0):
+                if(firstFC == None):
+                    firstFC = fc.keyframe_points[0].co[0]
+                elif(firstFC > fc.keyframe_points[0].co[0]):
+                    firstFC = fc.keyframe_points[0].co[0]
+        
+        for fc in fcs:
+            for cfc in fcs:
+                # Create the first Keyframe if it doesn't exist or the Keyframe frame is later than the firstFC 
+                if(len(cfc.keyframe_points)!= 0):
+                    if(cfc.keyframe_points[0].co[0] != firstFC):
+                        cfc.keyframe_points.insert(frame=firstFC, value=cfc.evaluate(firstFC))
+                        newKP.append([cfc, 0])
+                        
+                else:
+                    
+                    cfc.keyframe_points.insert(frame=firstFC, value=getattr(ob, cfc.data_path)[cfc.array_index])
+                    newKP.append([cfc, 0])
+
+                # Create the remaining Keyframes    
+                if(cfc != fc):       
+                    for kpi in range(len(fc.keyframe_points)):
+                        if(len(cfc.keyframe_points) > kpi):
+                            if(cfc.keyframe_points[kpi].co[0] != fc.keyframe_points[kpi].co[0]):
+                                cfc.keyframe_points.insert(frame=fc.keyframe_points[kpi].co[0], value=cfc.evaluate(fc.keyframe_points[kpi].co[0]))
+                                newKP.append([cfc, kpi])
+                                print(str(cfc.array_index) + " " + str(cfc.keyframe_points[kpi].co[0]) + " " + str(fc.array_index) +  " " + str(fc.keyframe_points[kpi].co[0]))
+                        else:
+                            cfc.keyframe_points.insert(frame=fc.keyframe_points[kpi].co[0], value=cfc.evaluate(fc.keyframe_points[kpi].co[0]))
+                            newKP.append([cfc, kpi])
+                    
+        return newKP  
+    
     def __GetProcessedBMesh(self, obj):
         """Create a modifier-applied, normal-flipped, scale-normalized, triangulated BMesh from the Blender mesh object passed. Call result.free() and del result after using the returned bmesh."""
 
