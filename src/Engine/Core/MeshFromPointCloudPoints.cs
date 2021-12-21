@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -17,7 +18,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64(Pos64Accessor ptAccessor, Pos64[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -57,7 +58,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Col32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64Col32IShort(Pos64Col32IShortAccessor ptAccessor, Pos64Col32IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -104,7 +105,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64IShort(Pos64IShortAccessor ptAccessor, Pos64IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -146,7 +147,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Label8<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64Label8(Pos64Label8Accessor ptAccessor, Pos64Label8[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -191,7 +192,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32Col32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64Nor32Col32IShort(Pos64Nor32Col32IShortAccessor ptAccessor, Pos64Nor32Col32IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -240,7 +241,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32IShort<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64Nor32IShort(Pos64Nor32IShortAccessor ptAccessor, Pos64Nor32IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -286,7 +287,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32Col32<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64Nor32Col32(Pos64Nor32Col32Accessor ptAccessor, Pos64Nor32Col32[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
@@ -332,7 +333,7 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Col32<TPoint>(PointAccessor<TPoint> ptAccessor, TPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh) where TPoint : new()
+        public static GpuMesh GetMeshPos64Col32(Pos64Col32Accessor ptAccessor, Pos64Col32[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;

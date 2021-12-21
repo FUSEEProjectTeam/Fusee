@@ -1207,7 +1207,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref sbyte GetGPSTimeInt_8<TPoint>(ref TPoint point)
+        public virtual ref sbyte GetGPSTimeInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_8");
         }
@@ -1215,7 +1215,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref short GetGPSTimeInt_16<TPoint>(ref TPoint point)
+        public virtual ref short GetGPSTimeInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_16");
         }
@@ -1223,7 +1223,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref int GetGPSTimeInt_32<TPoint>(ref TPoint point)
+        public virtual ref int GetGPSTimeInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_32");
         }
@@ -1231,7 +1231,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Int_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref long GetGPSTimeInt_64<TPoint>(ref TPoint point)
+        public virtual ref long GetGPSTimeInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_64");
         }
@@ -1239,7 +1239,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_8"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref byte GetGPSTimeUInt_8<TPoint>(ref TPoint point)
+        public virtual ref byte GetGPSTimeUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_8");
         }
@@ -1247,7 +1247,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_16"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref ushort GetGPSTimeUInt_16<TPoint>(ref TPoint point)
+        public virtual ref ushort GetGPSTimeUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_16");
         }
@@ -1255,7 +1255,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref uint GetGPSTimeUInt_32<TPoint>(ref TPoint point)
+        public virtual ref uint GetGPSTimeUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_32");
         }
@@ -1263,7 +1263,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.UInt_64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref ulong GetGPSTimeUInt_64<TPoint>(ref TPoint point)
+        public virtual ref ulong GetGPSTimeUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_64");
         }
@@ -1271,7 +1271,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float32"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref float GetGPSTimeFloat32<TPoint>(ref TPoint point)
+        public virtual ref float GetGPSTimeFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat32");
         }
@@ -1279,7 +1279,7 @@ namespace Fusee.PointCloud.Common
         /// Returns the GPS time of a point cloud point if <see cref="PointGpsTimeType.Float64"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public virtual ref double GetGPSTimeFloat64<TPoint>(ref TPoint point)
+        public virtual ref double GetGPSTimeFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat64");
         }
@@ -1291,7 +1291,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_8<TPoint>(ref TPoint point, sbyte val)
+        public virtual void SetGPSTimeInt_8(ref TPoint point, sbyte val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_8");
         }
@@ -1300,7 +1300,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_16<TPoint>(ref TPoint point, short val)
+        public virtual void SetGPSTimeInt_16(ref TPoint point, short val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_16");
         }
@@ -1309,7 +1309,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_32<TPoint>(ref TPoint point, int val)
+        public virtual void SetGPSTimeInt_32(ref TPoint point, int val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_32");
         }
@@ -1318,7 +1318,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeInt_64<TPoint>(ref TPoint point, long val)
+        public virtual void SetGPSTimeInt_64(ref TPoint point, long val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeInt_64");
         }
@@ -1327,7 +1327,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_8<TPoint>(ref TPoint point, byte val)
+        public virtual void SetGPSTimeUInt_8(ref TPoint point, byte val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_8");
         }
@@ -1336,7 +1336,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_16<TPoint>(ref TPoint point, ushort val)
+        public virtual void SetGPSTimeUInt_16(ref TPoint point, ushort val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_16");
         }
@@ -1345,7 +1345,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_32<TPoint>(ref TPoint point, uint val)
+        public virtual void SetGPSTimeUInt_32(ref TPoint point, uint val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_32");
         }
@@ -1354,7 +1354,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeUInt_64<TPoint>(ref TPoint point, ulong val)
+        public virtual void SetGPSTimeUInt_64(ref TPoint point, ulong val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeUInt_64");
         }
@@ -1363,7 +1363,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeFloat32<TPoint>(ref TPoint point, float val)
+        public virtual void SetGPSTimeFloat32(ref TPoint point, float val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeFloat32");
         }
@@ -1372,7 +1372,7 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new GPS time.</param>
-        public virtual void SetGPSTimeFloat64<TPoint>(ref TPoint point, double val)
+        public virtual void SetGPSTimeFloat64(ref TPoint point, double val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetGPSTimeFloat64");
         }

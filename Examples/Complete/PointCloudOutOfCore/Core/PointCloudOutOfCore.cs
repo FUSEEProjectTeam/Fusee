@@ -60,7 +60,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         private float3 _initCameraPos;
 
         private SixDOFDevice _spaceMouse;
-        private PointCloud<TPoint> _pointCloud;
+        private Engine.Core.Scene.PointCloud _pointCloud;
 
         public PointCloudOutOfCore(PointType ptType, string pathToFile, PointAccessor<TPoint> ptAccessor)
         {
@@ -109,7 +109,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 }
             };
 
-            _pointCloud = new PointCloud<TPoint>(PointAccessor, PtRenderingParams.Instance.PathToOocFile, PtRenderingParams.Instance.PointType)
+            _pointCloud = new Engine.Core.Scene.PointCloud(PointAccessor, PtRenderingParams.Instance.PathToOocFile, PtRenderingParams.Instance.PointType)
             {
                 MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier,
                 PointThreshold = PtRenderingParams.Instance.PointThreshold

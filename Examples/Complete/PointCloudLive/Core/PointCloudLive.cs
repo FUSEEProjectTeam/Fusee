@@ -45,7 +45,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
             
             _node = new SceneNode();
-            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, RC.CreateGpuMesh, true));
+            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, RC.CreateGpuMesh, true));
 
             _mainCamTransform = new Transform()
             {

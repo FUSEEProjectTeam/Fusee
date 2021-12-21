@@ -1,5 +1,6 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Structures;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Core
@@ -18,7 +19,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Number of point cloud points, this node holds.
         /// </summary>
-        public int NumberOfPointsInNode;
+        public int NumberOfPointsInNode { get; set; }
 
         /// <summary>
         /// Creates a new instance of type <see cref="PtOctantRead{TPoint}"/>.
@@ -26,16 +27,16 @@ namespace Fusee.PointCloud.Core
         /// <param name="center">The center of this octant.</param>
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="children">The octants child octants.</param>
-        public PtOctantRead(double3 center, double size, IOctant<double3, double, TPoint>[] children = null)
+        public PtOctantRead(double3 center, double size, PtOctantRead<TPoint>[] children = null)
         {
             Center = center;
             Size = size;
 
             if (children == null)
-                Children = new IOctant<double3, double, TPoint>[8];
+                Children = new PtOctantRead<TPoint>[8];
             else
                 Children = children;
-            
+
             Payload = new List<TPoint>(NumberOfPointsInNode);
         }
 

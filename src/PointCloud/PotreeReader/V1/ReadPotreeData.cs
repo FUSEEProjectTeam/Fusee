@@ -12,7 +12,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
     /// <summary>
     /// Reads the point cloud files created by the OoCFileGeneration tool into a renderable Scene.
     /// </summary>
-    public static class ReadPotreeData<TPoint> where TPoint : new()
+    public static class ReadPotreeData 
     {
         /// <summary>
         /// Reads the meta.json and .hierarchy files and returns an octree.
@@ -20,7 +20,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// <param name="ptAccessor">Point accessor to get the actual point information.</param>
         /// <param name="fileFolderPath">Path to the folder the point cloud is saved</param>
         /// <returns></returns>
-        public static PtOctreeRead<TPoint> GetOctree(IPointAccessor ptAccessor, string fileFolderPath)
+        public static PtOctreeRead<TPoint> GetOctree<TPoint>(IPointAccessor ptAccessor, string fileFolderPath) where TPoint : new()
         {
             var pathToMetaJson = fileFolderPath + "\\meta.json";
             JObject jsonObj;
@@ -44,7 +44,6 @@ namespace Fusee.PointCloud.PotreeReader.V1
             {
                 MaxLevel = maxLvl
             };
-
             ReadHierarchy(octree, fileFolderPath);
             return octree;
         }
@@ -57,7 +56,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// <param name="octant"></param>
         /// <returns>An array of TPoint points.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public static TPoint[] LoadPointsForNode(string fileFolderPath, IPointAccessor ptAccessor, PtOctantRead<TPoint> octant)
+        public static TPoint[] LoadPointsForNode<TPoint>(string fileFolderPath, IPointAccessor ptAccessor, PtOctantRead<TPoint> octant) where TPoint : new()
         {
             var pathToFile = $"{fileFolderPath}/Octants/{octant.Guid:N}.node";
 
@@ -96,15 +95,15 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// <param name="octant"></param>
         /// <returns>An array of TPoint points.</returns>
         /// <exception cref="ArgumentException"></exception>
-        public static async Task<TPoint[]> LoadPointsForNodeAsync(string fileFolderPath, IPointAccessor ptAccessor, PtOctantRead<TPoint> octant)
+        public static async Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string fileFolderPath, IPointAccessor ptAccessor, PtOctantRead<TPoint> octant) where TPoint : new()
         {
-            return await Task.Run(() => { return LoadPointsForNode(fileFolderPath, ptAccessor, octant); });
+            return await Task.Run(() => { return LoadPointsForNode<TPoint>(fileFolderPath, ptAccessor, octant); });
         }
 
         /// <summary>
         /// Creates the octree hierarchy structure by reading in the .hierarchy file.
         /// </summary>
-        private static void ReadHierarchy(PtOctreeRead<TPoint> octree, string fileFolderPath)
+        private static void ReadHierarchy<TPoint>(PtOctreeRead<TPoint> octree, string fileFolderPath) where TPoint : new()
         {
             var pathToHierarchy = fileFolderPath + "\\octree.hierarchy";
 
@@ -123,7 +122,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
         /// </summary>
         /// <param name="node">The current node to process.</param>
         /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's children exist.</param>
-        private static void CreateNode(PtOctantRead<TPoint> node, BinaryReader binaryReader)
+        private static void CreateNode<TPoint>(PtOctantRead<TPoint> node, BinaryReader binaryReader)
         {
             try
             {

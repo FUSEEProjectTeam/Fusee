@@ -6,10 +6,9 @@ using System;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Used in a <see cref="PointCloudLoader{TPoint}"/> for caching loaded points using the <see cref="MemoryCache{TItem}.AddItemAsync"/> event.
+    /// Used in a <see cref="PointCloudLoader"/> for caching loaded points using the <see cref="MemoryCache{TItem}.AddItemAsync"/> event.
     /// </summary>
-    /// <typeparam name="TPoint"></typeparam>
-    public class LoadPointEventArgs<TPoint> : EventArgs where TPoint : new()
+    public class LoadPointEventArgs<TPoint> : EventArgs
     {
         /// <summary>
         /// The path to the potree file
@@ -27,7 +26,7 @@ namespace Fusee.Engine.Core
         public PtOctantRead<TPoint> Octant;
 
         /// <summary>
-        /// Creates a new instance of type <see cref="LoadPointEventArgs{TPoint}"/>.
+        /// Creates a new instance of type <see cref="LoadPointEventArgs"/>.
         /// </summary>
         /// <param name="octant">The octant we want to read the points for.</param>
         /// <param name="pathToFile">The path to the potree file.</param>

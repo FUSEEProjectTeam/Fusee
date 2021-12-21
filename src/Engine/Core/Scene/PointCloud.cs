@@ -1,6 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Core;
 using Fusee.PointCloud.PotreeReader.V1;
 using Microsoft.Extensions.Caching.Memory;
 using System;
@@ -13,7 +14,7 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Will render a Potree 1.0 Point Cloud if visited by the SceneRenderer.
     /// </summary>
-    public class PointCloud<TPoint> : SceneComponent, IDisposable where TPoint : new()
+    public class PointCloud : SceneComponent, IDisposable
     {
         /// <summary>
         /// Caches already created meshes.
@@ -42,17 +43,101 @@ namespace Fusee.Engine.Core.Scene
         public PointCloud(IPointAccessor pointAccessor, string fileFolderPath, PointType pointType)
         {
             var noOfOctants = Directory.GetFiles($"{fileFolderPath}\\Octants").Length;
-            PointCloudLoader = new PointCloudLoader<TPoint>(fileFolderPath, noOfOctants)
-            {
-                Octree = ReadPotreeData<TPoint>.GetOctree(pointAccessor, fileFolderPath),
-                FileFolderPath = fileFolderPath,
-                PtAccessor = pointAccessor,
 
-            };
-           
-            
-            Center = new float3(PointCloudLoader.Octree.Root.Center);
-            Size = (float)PointCloudLoader.Octree.Root.Size;
+            switch (pointType)
+            {
+                default:
+                case PointType.Undefined:
+                    break;
+                case PointType.Pos64:
+                    PointCloudLoader = new PointCloudLoader<Pos64>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64Col32IShort:
+                    PointCloudLoader = new PointCloudLoader<Pos64Col32IShort>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64Col32IShort>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64Col32IShort>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64Col32IShort>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64IShort:
+                    PointCloudLoader = new PointCloudLoader<Pos64IShort>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64IShort>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64IShort>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64IShort>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64Col32:
+                    PointCloudLoader = new PointCloudLoader<Pos64Col32>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64Col32>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64Col32>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64Col32>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64Label8:
+                    PointCloudLoader = new PointCloudLoader<Pos64Label8>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64Label8>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64Label8>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64Label8>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64Nor32Col32IShort:
+                    PointCloudLoader = new PointCloudLoader<Pos64Nor32Col32IShort>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64Nor32Col32IShort>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64Nor32Col32IShort>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64Nor32Col32IShort>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64Nor32IShort:
+                    PointCloudLoader = new PointCloudLoader<Pos64Nor32IShort>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64Nor32IShort>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64Nor32IShort>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64Nor32IShort>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Pos64Nor32Col32:
+                    PointCloudLoader = new PointCloudLoader<Pos64Nor32Col32>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotreeData.GetOctree<Pos64Nor32Col32>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+
+                    };
+                    Center = new float3(((PointCloudLoader<Pos64Nor32Col32>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Pos64Nor32Col32>)PointCloudLoader).Octree.Root.Size;
+                    break;
+            }
 
             MeshCache = new();
             MeshCache.AddItem += OnCreateMesh;
@@ -120,7 +205,7 @@ namespace Fusee.Engine.Core.Scene
         internal float3 CamPos;
         internal FrustumF RenderFrustum;
         internal int ViewportHeight;
-        internal PointCloudLoader<TPoint> PointCloudLoader;
+        internal IPointCloudLoader PointCloudLoader;
 
         private int _maxNumberOfDisposals = 3;
 
@@ -157,26 +242,13 @@ namespace Fusee.Engine.Core.Scene
             }
         }
 
-        //TODO: Temporary "hack" because multi-threaded gpu buffer creation is not supported right now
         private IEnumerable<GpuMesh> OnCreateMesh(object sender, EventArgs e)
         {
-            var meshArgs = (GpuMeshFromPointsEventArgs<TPoint>)e;
-            return GetMeshsForOctant((PointAccessor<TPoint>)PointAccessor, Type, meshArgs.Points, meshArgs.RenderContext);
-        }
-
-        /// <summary>
-        /// Returns meshes for point clouds that only have position information in double precision.
-        /// </summary>
-        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
-        /// <param name="ptType">The <see cref="PointType"/> for the cloud that is to be loaded.</param>
-        /// <param name="pointsInNode">The lists of "raw" points.</param>
-        /// <param name="rc">The <see cref="RenderContext"/>, used to create the mesh on the GPU.</param>
-        private List<GpuMesh> GetMeshsForOctant(PointAccessor<TPoint> ptAccessor, PointType ptType, TPoint[] pointsInNode, RenderContext rc)
-        {
+            var args = (GpuMeshFromPointsEventArgs)e;
+            var ptCnt = args.NumberOfPoints;
             int maxVertCount = ushort.MaxValue - 1;
-            var noOfMeshes = (int)System.Math.Ceiling((float)pointsInNode.Length / maxVertCount);
+            var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
             List<GpuMesh> meshes = new(noOfMeshes);
-            var ptCnt = pointsInNode.Length;
 
             int meshCnt = 0;
 
@@ -190,26 +262,145 @@ namespace Fusee.Engine.Core.Scene
                 else
                     numberOfPointsInMesh = maxVertCount;
 
-                TPoint[] points;
-                if (ptCnt > maxVertCount)
+                GpuMesh mesh;
+                switch (Type)
                 {
-                    points = new TPoint[numberOfPointsInMesh];
-                    Array.Copy(pointsInNode, i, points, 0, numberOfPointsInMesh);
+                    default:
+                    case PointType.Undefined:
+                        {
+                            throw new InvalidOperationException("Invalid Point Type!");
+                        }
+
+                    case PointType.Pos64:
+                        {
+                            Pos64[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64((Pos64Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64Col32IShort:
+                        {
+                            Pos64Col32IShort[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64Col32IShort>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64Col32IShort[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Col32IShort((Pos64Col32IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64IShort:
+                        {
+                            Pos64IShort[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64IShort>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64IShort[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64IShort((Pos64IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64Col32:
+                        {
+                            Pos64Col32[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64Col32>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64Col32[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Col32((Pos64Col32Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64Label8:
+                        {
+                            Pos64Label8[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64Label8>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64Label8[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Label8((Pos64Label8Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64Nor32Col32IShort:
+                        {
+                            Pos64Nor32Col32IShort[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64Nor32Col32IShort>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64Nor32Col32IShort[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort((Pos64Nor32Col32IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64Nor32IShort:
+                        {
+                            Pos64Nor32IShort[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64Nor32IShort>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64Nor32IShort[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32IShort((Pos64Nor32IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
+                    case PointType.Pos64Nor32Col32:
+                        {
+                            Pos64Nor32Col32[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Pos64Nor32Col32>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Pos64Nor32Col32[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32((Pos64Nor32Col32Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
                 }
-                else
-                    points = pointsInNode;
-                GpuMesh mesh = ptType switch
-                {
-                    PointType.Pos64 => MeshFromPointCloudPoints.GetMeshPos64(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Col32IShort(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64IShort => MeshFromPointCloudPoints.GetMeshPos64IShort(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64Col32 => MeshFromPointCloudPoints.GetMeshPos64Col32(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64Label8 => MeshFromPointCloudPoints.GetMeshPos64Label8(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64Nor32Col32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64Nor32IShort => MeshFromPointCloudPoints.GetMeshPos64Nor32IShort(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    PointType.Pos64Nor32Col32 => MeshFromPointCloudPoints.GetMeshPos64Nor32Col32(ptAccessor, points, false, float3.Zero, rc.CreateGpuMesh),
-                    _ => throw new ArgumentOutOfRangeException($"Invalid PointType {ptType}"),
-                };
+
                 meshes.Add(mesh);
                 meshCnt++;
             }

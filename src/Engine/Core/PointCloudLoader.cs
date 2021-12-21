@@ -3,7 +3,6 @@ using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.PotreeReader.V1;
-using Fusee.Structures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,11 +10,80 @@ using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
+    public interface IPointCloudLoader : IDisposable
+    {
+        /// <summary>
+        /// The number of points that are currently visible.
+        /// </summary>
+        int NumberOfVisiblePoints { get;}
+
+        /// <summary>
+        /// Changes the minimum size of octants. If an octant is smaller it won't be rendered.
+        /// </summary>
+        float MinProjSizeModifier { get; set; }
+
+        /// <summary>
+        /// The path to the folder that holds the file.
+        /// </summary>
+        public string FileFolderPath { get; set; }
+
+        /// <summary>
+        /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
+        /// </summary>
+        public int PointThreshold { get; set; }
+
+        /// <summary>
+        /// The amount of milliseconds needed to pass before rendering next frame
+        /// </summary>
+        public double UpdateRate { get; set; }
+
+        /// <summary>
+        /// If true, the visible octants will be rendered as WireframeCubes.
+        /// </summary>
+        bool ShowOctants { get; set; }
+
+        /// <summary>
+        /// Is set to true internally when all visible nodes are loaded.
+        /// </summary>
+        bool WasSceneUpdated { get; }
+
+        /// <summary>
+        /// Current Field of View - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
+        float Fov { get; set; }
+
+        /// <summary>
+        /// Current camera position - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
+        float3 CamPos { get; set; }
+
+        /// <summary>
+        /// Current height of the viewport - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
+        int ViewportHeight { get; set; }
+
+        /// <summary>
+        /// Current camera frustum - set by the SceneRenderer if a PointCloud Component is visited.
+        /// </summary>
+        FrustumF RenderFrustum { get; set; }
+
+        /// <summary>
+        /// Provides access to properties of different point types.
+        /// </summary>
+        IPointAccessor PtAccessor { get; set; }
+
+        /// <summary>
+        /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
+        /// </summary>
+        void Update(float fov, float3 camPos);
+
+        List<Guid> VisibleNodes { get; }
+    }
+
     /// <summary>
     /// Class that manages the out of core (on demand) loading of point clouds.
     /// </summary>
-    /// <typeparam name="TPoint">The type of the point cloud points.</typeparam>
-    public class PointCloudLoader<TPoint> : IDisposable where TPoint : new()
+    public class PointCloudLoader<TPoint> : IPointCloudLoader where TPoint : new()
     {
         /// <summary>
         /// Caches loaded points.
@@ -35,22 +103,22 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Current Field of View - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public float Fov;
+        public float Fov { get; set; }
 
         /// <summary>
         /// Current camera position - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public float3 CamPos;
+        public float3 CamPos { get; set; }
 
         /// <summary>
         /// Current height of the viewport - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public int ViewportHeight;
+        public int ViewportHeight { get; set; }
 
         /// <summary>
         /// Current camera frustum - set by the SceneRenderer if a PointCloud Component is visited.
         /// </summary>
-        public FrustumF RenderFrustum;
+        public FrustumF RenderFrustum { get; set; }
 
         /// <summary>
         /// Provides access to properties of different point types.
@@ -60,7 +128,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The octree structure of the point cloud.
         /// </summary>
-        public OctreeD<TPoint> Octree
+        public PtOctreeRead<TPoint> Octree
         {
             get => _octree;
             set
@@ -70,7 +138,7 @@ namespace Fusee.Engine.Core
                 _octree = value;
             }
         }
-        private OctreeD<TPoint> _octree;
+        private PtOctreeRead<TPoint> _octree;
 
         /// <summary>
         /// The number of points that are currently visible.
@@ -87,7 +155,7 @@ namespace Fusee.Engine.Core
             {
                 _minProjSizeModifier = value;
                 if (_octree.Root != null)
-                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
+                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)(Octree.Root)).ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -258,7 +326,7 @@ namespace Fusee.Engine.Core
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotreeData<TPoint>.LoadPointsForNodeAsync(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
+            return await ReadPotreeData.LoadPointsForNodeAsync<TPoint>(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)

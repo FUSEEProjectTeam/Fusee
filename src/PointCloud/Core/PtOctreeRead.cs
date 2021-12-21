@@ -25,12 +25,11 @@ namespace Fusee.PointCloud.Core
         public IPointAccessor PtAccessor { get; private set; }
 
         private static readonly BitArray _getChildIdxBitArray = new(3);
-        private static readonly int[] _getChildIdxResultArray = new int[1];
 
         /// <summary>
         /// Constructor for creating an Octree that is suitable for creating files from it. 
         /// </summary>
-        public PtOctreeRead(OctantD<TPoint> root, IPointAccessor pa, int maxNoOfPointsInBucket)
+        public PtOctreeRead(PtOctantRead<TPoint> root, IPointAccessor pa, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
             PtAccessor = pa;
@@ -67,7 +66,7 @@ namespace Fusee.PointCloud.Core
         /// <returns></returns>
         protected override int GetChildPosition(OctantD<TPoint> octant, TPoint pt)
         {
-            var point = ((PointAccessor<TPoint>)PtAccessor).GetPositionFloat3_64(ref pt);            
+            var point = ((PointAccessor<TPoint>)PtAccessor).GetPositionFloat3_64(ref pt);
 
             var halfSize = octant.Size / 2d;
             var translationVec = new double3(octant.Center.x - halfSize, octant.Center.y - halfSize, octant.Center.z - halfSize); //translate to zero
