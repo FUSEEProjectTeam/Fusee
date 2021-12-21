@@ -74,7 +74,7 @@ namespace Fusee.Engine.Core
         public bool IsEmpty => (Width <= 0 || Height <= 0);
 
         /// <summary>
-        /// Specifies if mipmaps are created for this texture.
+        /// Specifies if mipmaps are created on the gpu or not for this texture.
         /// </summary>
         public bool DoGenerateMipMaps
         {
@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
         private TextureWrapMode _wrapMode;
 
         /// <summary>
-        /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
+        /// Specifies the texture's filter mode, see <see cref="TextureFilterMode"/>.
         /// </summary>
         public TextureFilterMode FilterMode
         {

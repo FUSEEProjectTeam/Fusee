@@ -44,24 +44,23 @@ class FusSceneWriter:
 
 #### INFRASTRUCTURE ####        
 
-    def AddComponent(self, name=None):
+    def AddComponent(self, name="", active = True):
         """Add a (base-type) component to the current child node. Call one of the specialized Add... methods to add components of a specific type."""
         node = self.CurrentNode() 
         if node != None:
             inx = len(self.__scene.ComponentList)
-            comp = self.__scene.ComponentList.add()
-            if name != None:
-                comp.Name = name
+            comp = self.__scene.ComponentList.add()            
+            comp.Active = active
+            comp.Name = name
             node.Components.append(inx)
             return comp, inx
         else:
             raise RuntimeError('Cannot add a component to non-existing current child. Call AddChild() to add a current child.')
 
-    def AddChild(self, name=None):
+    def AddChild(self, name=""):
         """Adds a child node to the current child list."""
         node = self.__childListStack[-1].add()
-        if name != None:
-            node.Name = name
+        node.Name = name
         self.__nodeStack[-1] = node
 
     def Push(self):
@@ -89,9 +88,10 @@ class FusSceneWriter:
 
 #### TRANSFORM COMPONENT ####
 
-    def AddTransform(self, translation, rotation, scale, name = None):
+    def AddTransform(self, translation, rotation, scale, name = ""):
         """Adds a transform component to the current child node."""
-        comp, inx = self.AddComponent(name)
+        comp, inx = self.AddComponent(name)        
+        comp.Name = name
         xform = comp.FusTransform
         xform.Translation.x = translation[0]
         xform.Translation.y = translation[1]
@@ -117,7 +117,7 @@ class FusSceneWriter:
         else:
             return False
 
-    def AddMaterial(self, material, name=None):
+    def AddMaterial(self, material, name=""):
         """Adds a Material component to the current child node. If any of 'RoughnessValue', 'FresnelReflectance' or 'DiffuseFraction' keys is present, a MaterialPBR component will be added.
 
         :param material: A dictionary containing optional 'Albedo', 'Specular', 'Emissive', 'NormalMap' sub entries and the optional PBR settings: 'RoughnessValue', 'FresnelReflectance' and 'DiffuseFraction' 
@@ -151,7 +151,7 @@ class FusSceneWriter:
             self.AddBRDFMaterialSettings(material.get('Roughness', 0.3), material.get('Metallic', 0.0), material.get('Specular', 0.5), material.get('IOR', 1.46), material.get('Subsurface', 0.0), material.get('SubsurfaceColor', None))
         self.EndMaterial()
 
-    def BeginMaterial(self, name=None):
+    def BeginMaterial(self, name=""):
         if self.__curComponent == None:
             self.__curComponent, inx = self.AddComponent(name)
             self.__curMaterial = self.__curComponent.FusMaterialBase
@@ -220,9 +220,9 @@ class FusSceneWriter:
     def AddRoughnessOnlyMaterialSettings(self, roughness, isGlossy):
         self.__checkMaterialOpen()
         if isGlossy:
-            self.__curMaterial.FusMaterialGlossyBRDF.Roughness = roughness;
+            self.__curMaterial.FusMaterialGlossyBRDF.Roughness = roughness
         else:
-            self.__curMaterial.FusMaterialDiffuseBRDF.Roughness = roughness;
+            self.__curMaterial.FusMaterialDiffuseBRDF.Roughness = roughness
 
     def EndMaterial(self):
         self.__checkMaterialOpen()
@@ -316,7 +316,7 @@ class FusSceneWriter:
         else:
             return -1
 
-    def BeginMesh(self, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=None):
+    def BeginMesh(self, vertex, normal=None, uv=None, tangent=None, bitangent=None, name=""):
         if self.__curComponent == None:
             self.__curComponent, inx = self.AddComponent(name)
             self.__curMesh = self.__curComponent.FusMesh
@@ -356,7 +356,7 @@ class FusSceneWriter:
 # float4 Viewport = new float4(0, 0, 100, 100);
 # bool Active = true;
     
-    def AddCamera(self, projectionmethod, fov, clippingplanes, viewport=(0, 0, 100, 100), clearcolor=True, cleardepth=True, layer=0, backgroundcolor=(1, 1, 1, 1), active=True, name=None):
+    def AddCamera(self, projectionmethod, fov, clippingplanes, scale = 1, name = "", viewport=(0, 0, 100, 100), clearcolor=True, cleardepth=True, layer=0, backgroundcolor=(1, 1, 1, 1), active=True):
         """Adds a Camera component to the current child node.
 
         Args:
@@ -370,7 +370,8 @@ class FusSceneWriter:
             backgroundcolor (float4): The background color for this camera's viewport.
             active (bool): A camera is active by default. Set this to false to deactivate it. 
         """
-        cam = self.AddComponent(name).FusCamera
+        comp, inx = self.AddComponent(name, active)        
+        cam = comp.FusCamera
         cam.ProjectionMethod = projectionmethod
         cam.Fov = fov
         cam.ClippingPlanes.x = clippingplanes[0]
@@ -386,7 +387,7 @@ class FusSceneWriter:
         cam.BackgroundColor.y = backgroundcolor[1]
         cam.BackgroundColor.z = backgroundcolor[2]
         cam.BackgroundColor.w = backgroundcolor[3]
-        cam.Active = active
+        cam.Scale = scale
 
 #### LIGHT COMPONENT ####
 
@@ -398,7 +399,7 @@ class FusSceneWriter:
 # public float OuterConeAngle;
 # public float InnerConeAngle;
 
-    def AddLight(self, active, color, maxdistance, strength, type, outerconeangle, innerconeangle, name=None):
+    def AddLight(self, active, color, maxdistance, strength, type, outerconeangle, innerconeangle, name=""):
         """Adds a Light component to the current child node.
  
         :param active: bool - Represents the light status.
@@ -409,8 +410,8 @@ class FusSceneWriter:
         :param outerconeangle: float - Represents the outer spot angle of the light.
         :param innerconeangle: float - Represents the spot inner angle of the light.
         """
-        light = self.AddComponent(name).FusLight
-        light.Active = active
+        comp, inx = self.AddComponent(name, active)
+        light = comp.FusLight       
         light.Color.x = color[0]
         light.Color.y = color[1]
         light.Color.z = color[2]

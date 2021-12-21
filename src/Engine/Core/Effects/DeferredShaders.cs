@@ -527,9 +527,8 @@ namespace Fusee.Engine.Core.Effects
                 sb.AppendLine("#define KERNEL_LENGTH 64");
                 sb.AppendLine(Header.EsPrecisionHighpFloat);
 
-
                 sb.AppendLine(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
-                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Vec2, UniformNameDeclarations.ViewportPx));
+                sb.AppendLine(GLSL.CreateUniform(GLSL.Type.IVec2, UniformNameDeclarations.ViewportPx));
                 sb.AppendLine("uniform vec3[KERNEL_LENGTH] SSAOKernel;");
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, "Position"));
                 sb.AppendLine(GLSL.CreateUniform(GLSL.Type.Sampler2D, "Normal"));
@@ -551,7 +550,7 @@ namespace Fusee.Engine.Core.Effects
                   "float radius = 5.0;",
                   "float occlusion = 0.0;",
                   "float bias = 0.005;",
-                  $"vec2 noiseScale = vec2({UniformNameDeclarations.ViewportPx}.x * 0.25, {UniformNameDeclarations.ViewportPx}.y * 0.25);",
+                  $"vec2 noiseScale = vec2(float({UniformNameDeclarations.ViewportPx}.x) * 0.25, float({UniformNameDeclarations.ViewportPx}.y) * 0.25);",
                   $"vec3 randomVec = texture(NoiseTex, {VaryingNameDeclarations.TextureCoordinates} * noiseScale).xyz;",
                   "vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal)); ",
                   "vec3 bitangent = cross(Normal, tangent); ",

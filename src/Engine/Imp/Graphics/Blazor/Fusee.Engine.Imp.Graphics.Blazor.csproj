@@ -25,6 +25,9 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 		<PackageReference Include="Microsoft.JSInterop" Version="6.0.0" />
+
+		<PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="6.0.1" />
+		<PackageReference Include="Microsoft.JSInterop" Version="6.0.1" />
 	</ItemGroup>
 	
 </Project>

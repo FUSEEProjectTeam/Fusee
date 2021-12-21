@@ -29,7 +29,7 @@ namespace Fusee.Serialization.V1
         /// Determines if this Component contributes to the render result.
         /// </summary>
         [ProtoMember(2)]
-        public bool Active { get; set; }
+        public bool Active { get; set; } = true;
     }
 
 }
