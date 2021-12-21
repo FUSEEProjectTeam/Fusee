@@ -19,7 +19,7 @@ namespace Fusee.Examples.UI.Core
     public class UI : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -239,7 +239,8 @@ namespace Fusee.Examples.UI.Core
                         {
                             new Transform()
                             {
-                                Translation = new float3(0,0,0)
+                                Translation = new float3(0, 0, 0),
+                                Rotation = new float3(0, M.PiOver4, 0)
                             }
                         },
                         Children = new ChildList()
@@ -414,7 +415,7 @@ namespace Fusee.Examples.UI.Core
             _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 1, 0, 1, 0);
             var view = mtxCam * mtxRot;
             var projection = _canvasRenderMode == CanvasRenderMode.Screen ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
 
