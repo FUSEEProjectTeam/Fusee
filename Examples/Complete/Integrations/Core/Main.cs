@@ -116,10 +116,10 @@ namespace Fusee.Examples.Integrations.Core
             RC.View = view;
             RC.Projection = perspective;
             _sceneRenderer.Render(RC);
-
-            //Constantly check for interactive objects.
-
+            
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
+
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
