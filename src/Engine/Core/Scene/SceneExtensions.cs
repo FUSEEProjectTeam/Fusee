@@ -155,6 +155,14 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public static float4x4 GetLocalTransformation(this Transform tansThis)
         {
+            return tansThis == null ? float4x4.Identity :  tansThis.ScaleMatrix * tansThis.RotationMatrix * tansThis.TranslationMatrix;
+        }
+
+        /// <summary>
+        /// Get the local transformation matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalTranslation(this Transform tansThis)
+        {
             return tansThis == null ? float4x4.Identity : tansThis.TranslationMatrix;
         }
 
@@ -464,7 +472,7 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Roates around a given center and angle
+        /// Rotates around a given center and angle
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="center"></param>

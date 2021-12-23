@@ -43,8 +43,7 @@ namespace Fusee.Examples.PointCloudLive.Core
         public override void Init()
         {
             VSync = false;
-            RC.ClearColor = new float4(1, 1, 1, 1);
-
+            
             _node = new SceneNode();
 
             _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(new Pos64Col32_Accessor(), PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, true));
@@ -106,8 +105,6 @@ namespace Fusee.Examples.PointCloudLive.Core
         public override void RenderAFrame()
         {
             Diagnostics.Warn(FramesPerSecond);
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            RC.Viewport(0, 0, Width, Height);
 
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
