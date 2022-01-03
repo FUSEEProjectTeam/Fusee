@@ -1,7 +1,9 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
+using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Jometri;
 using Fusee.Math.Core;
@@ -25,6 +27,12 @@ namespace Fusee.Examples.ThreeDFont.Core
         private Mesh _textMeshGnu;
 
         private ThreeDFontHelper _threeDFontHelper;
+        private SceneNode _camNode;
+        private readonly Camera _mainCam = new(ProjectionMethod.Perspective, 0.1f, 1000, M.PiOver4)
+        {
+            BackgroundColor = new float4(27 / 255f, 153 / 255f, 242 / 255f, 1)
+        };
+        private Transform _camPivot;
 
         // Init is called on startup.
         public override void Init()
@@ -56,126 +64,159 @@ namespace Fusee.Examples.ThreeDFont.Core
             geomGnu.Triangulate();
             _textMeshGnu = new JometriMesh(geomGnu);
 
-            ////////////////// Fill SceneNode ////////////////////////////////
+            //---------------------- Fill SceneNode -------------------------//
+
             var parentNode = new SceneNode
             {
-                Components = new List<SceneComponent>(),
+                Components = new List<SceneComponent>()
+                {
+                    new Transform
+                    {
+                        Rotation = new float3(0,-M.PiOver6,0),
+                        Translation = new float3(-60,1,0),
+                        Scale = new float3(0.01f, 0.01f, 0.01f),
+                    }
+                },
                 Children = new ChildList()
             };
 
-            var parentTrans = new Transform
+            var checkerboardTex = new Texture(AssetStorage.Get<ImageData>("checkerboard.jpg"), true, TextureFilterMode.LinearMipmapLinear);
+            var floorNode = new SceneNode()
             {
-                Rotation = float3.Zero,
-                Scale = new float3(0.01f, 0.01f, 0.01f),
-                Translation = new float3(0, 0, 10)
+                Name = $"Plane",
+                Components = new List<SceneComponent>
+                {
+                    new Transform()
+                    {
+                        Rotation = new float3(M.DegreesToRadians(90), 0, 0),
+                        Translation = new float3(100, -20, 0),
+                        Scale = new float3(500, 500,0.1f)
+                    },
+                    MakeEffect.FromDiffuse(float4.One, 0, float3.Zero, checkerboardTex, 1f, new float2(2,2)),
+                    new Plane()
+                }
             };
-
-            parentNode.Components.Add(parentTrans);
 
             //Vladimir
-            var sceneNodeCVlad = new SceneNode { Components = new List<SceneComponent>() };
-
-            var meshCVlad = new Mesh
+            var sceneNodeCVlad = new SceneNode
             {
-                Vertices = _textMeshVlad.Vertices,
-                Triangles = _textMeshVlad.Triangles,
-                Normals = _textMeshVlad.Normals,
+                Components = new List<SceneComponent>()
+                {
+                    new Transform
+                    {
+                        Rotation = float3.Zero,
+                        Scale = float3.One,
+                        Translation = new float3(0, 2000, 0)
+                    },
+                    MakeEffect.FromDiffuseSpecular(new float4(26/255f,232/255f,148/255f,1)),
+                    new Mesh
+                    {
+                        Vertices = _textMeshVlad.Vertices,
+                        Triangles = _textMeshVlad.Triangles,
+                        Normals = _textMeshVlad.Normals,
+                    }
+                }
             };
-
-            var tranCVlad = new Transform
-            {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(0, 2000, 0)
-            };
-
-            sceneNodeCVlad.Components.Add(tranCVlad);
-            sceneNodeCVlad.Components.Add(meshCVlad);
 
             //Lato
-            var sceneNodeCLato = new SceneNode { Components = new List<SceneComponent>() };
-
-            var meshCLato = new Mesh
+            var sceneNodeCLato = new SceneNode
             {
-                Vertices = _textMeshLato.Vertices,
-                Triangles = _textMeshLato.Triangles,
-                Normals = _textMeshLato.Normals,
+                Components = new List<SceneComponent>()
+                {
+                    new Transform
+                    {
+                        Rotation = float3.Zero,
+                        Scale = float3.One,
+                        Translation = new float3(0, 0, 0)
+                    },
+                    MakeEffect.FromDiffuseSpecular(new float4(27/255f,242/255f,216/255f,1)),
+                    new Mesh
+                    {
+                        Vertices = _textMeshLato.Vertices,
+                        Triangles = _textMeshLato.Triangles,
+                        Normals = _textMeshLato.Normals,
+                    }
+                }
             };
-            var tranCLato = new Transform
-            {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(0, 0, 0)
-            };
-
-            sceneNodeCLato.Components.Add(tranCLato);
-            sceneNodeCLato.Components.Add(meshCLato);
 
             //GNU
-            var sceneNodeCGnu = new SceneNode { Components = new List<SceneComponent>() };
-
-            var meshCGnu = new Mesh
+            var sceneNodeCGnu = new SceneNode
             {
-                Vertices = _textMeshGnu.Vertices,
-                Triangles = _textMeshGnu.Triangles,
-                Normals = _textMeshGnu.Normals,
+                Components = new List<SceneComponent>()
+                {
+                    new Transform
+                    {
+                        Rotation = float3.Zero,
+                        Scale = float3.One,
+                        Translation = new float3(0, -2000, 0)
+                    },
+                    MakeEffect.FromDiffuseSpecular(new float4(34/255f,190/255f,219/255f,1)),
+                    new Mesh
+                    {
+                        Vertices = _textMeshGnu.Vertices,
+                        Triangles = _textMeshGnu.Triangles,
+                        Normals = _textMeshGnu.Normals,
+                    }
+                }
             };
-            var tranCGnu = new Transform
-            {
-                Rotation = float3.Zero,
-                Scale = float3.One,
-                Translation = new float3(0, -2000, 0)
-            };
-
-            sceneNodeCGnu.Components.Add(tranCGnu);
-            sceneNodeCGnu.Components.Add(meshCGnu);
 
             parentNode.Children.Add(sceneNodeCVlad);
             parentNode.Children.Add(sceneNodeCLato);
             parentNode.Children.Add(sceneNodeCGnu);
 
-            var sc = new SceneContainer { Children = new List<SceneNode> { parentNode } };
+            _camPivot = new Transform()
+            {
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(0, 0, 80)
+            };
+            _camNode = new SceneNode
+            {
+                Name = "CamPivot",
+                Components = new List<SceneComponent>()
+                {
+                    _camPivot
+                },
+                Children = new ChildList()
+                {
+                    new SceneNode()
+                    {
+                        Name = "MainCam",
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Rotation = float3.Zero,
+                                Scale = float3.One,
+                                Translation = new float3(0, 0, -160)
+                            },
+                            _mainCam
+                        }
+                    }
+                }
+            };
+            var sc = new SceneContainer { Children = new List<SceneNode> { _camNode, floorNode, parentNode } };
 
             _renderer = new SceneRendererForward(sc);
-
-            // Set the clear color for the backbuffer
-            RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            float2 speed = float2.Zero;
+            if (Mouse.LeftButton)
+                speed = Mouse.Velocity;
+            else if(Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+                speed = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+            
+            _alpha += speed.x * 0.0001f;
+            _beta += speed.y * 0.0001f;
 
-            RC.Viewport(0, 0, Width, Height);
-
-            var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
-            if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _alpha -= speed.x * 0.0001f;
-                _beta -= speed.y * 0.0001f;
-            }
-
-            // Create the camera matrix and set it as the current View transformation.
-            var mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
-            var mtxCam = float4x4.LookAt(0, 0, -80, 0, 0, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot * ModelXForm(new float3(-55, -8, 0), float3.Zero);
+            _camPivot.RotationMatrix = float4x4.CreateRotationY(_alpha) * float4x4.CreateRotationX(_beta);
 
             _renderer.Render(RC);
 
             Present();
-        }
-
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-        }
-
-        private static float4x4 ModelXForm(float3 pos, float3 pivot)
-        {
-            return float4x4.CreateTranslation(pos + pivot)
-                   * float4x4.CreateTranslation(-pivot);
         }
     }
 }

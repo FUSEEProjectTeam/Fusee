@@ -98,20 +98,22 @@ namespace Fusee.Examples.GeometryEditing.Core
                 }
             };
 
-            var camNode = new SceneNode
-            {
-                Name = "MainCam",
-                Components = new List<SceneComponent>(),
-                Children = new ChildList()
-            };
             _camTransform = new Transform()
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
                 Translation = new float3(_xPos, _yPos, -_zoom)
             };
-            camNode.AddComponent(_camTransform);
-            camNode.AddComponent(_mainCam);
+            var camNode = new SceneNode
+            {
+                Name = "MainCam",
+                Components = new List<SceneComponent>()
+                {
+                    _camTransform,
+                    _mainCam
+                }
+            };
+            
             _parentNode.Children.Add(camNode);
 
             _scene = new SceneContainer { Children = new List<SceneNode> { _parentNode } };
