@@ -268,21 +268,21 @@ namespace Fusee.Examples.UI.Core
                             _camPivot
                         },
                         Children = new ChildList()
+                        {
+                            new SceneNode()
+                            {
+                                Name = "MainCam",
+                                Components = new List<SceneComponent>()
                                 {
-                                    new SceneNode()
+                                    new Transform()
                                     {
-                                        Name = "MainCam",
-                                        Components = new List<SceneComponent>()
-                                        {
-                                            new Transform()
-                                            {
-                                                Translation = new float3(0, 0, -15),
-                                                Rotation = float3.Zero
-                                            },
-                                            _uiCam
-                                        }
+                                        Translation = new float3(0, 0, -15),
+                                        Rotation = float3.Zero
                                     },
+                                    _uiCam
                                 }
+                            },
+                        }
                     },
                     //Add canvas.
                     new SceneNode()

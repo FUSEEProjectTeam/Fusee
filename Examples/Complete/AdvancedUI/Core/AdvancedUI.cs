@@ -210,9 +210,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             _mainCamPivot.RotationMatrix = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-
-
-
             #endregion Controls
 
             _sceneRenderer.Render(RC);
