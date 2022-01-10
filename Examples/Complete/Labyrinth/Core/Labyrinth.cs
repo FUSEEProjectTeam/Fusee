@@ -18,7 +18,7 @@ using Font = Fusee.Base.Core.Font;
 
 namespace Fusee.Examples.Labyrinth.Core
 {
-    [FuseeApplication(Name = "FUSEE Labyrinth Example", Description = "A very sqiggly example.")]
+    [FuseeApplication(Name = "FUSEE Labyrinth Example", Description = "A very squiggly example.")]
     public class Labyrinth : RenderCanvas
     {
         // My var
@@ -234,16 +234,16 @@ namespace Fusee.Examples.Labyrinth.Core
             maze.Children.Add(new SceneNode
             {
                 Components = new List<SceneComponent>
-                                {
-                                    new Transform
-                                    {
-                                        Scale = new float3(_length, 1, _height),
-                                        Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
-                                    },
-                                    //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
-                                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1)),
-                                    _ground
-                                },
+                {
+                    new Transform
+                    {
+                        Scale = new float3(_length, 1, _height),
+                        Translation = new float3(_length/2 - _cornerbox.x/2, -0.5f, _height/2 - _cornerbox.z/2)
+                    },
+                    //ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.8f, 0.8f, 0.8f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f),
+                    MakeEffect.FromDiffuseSpecular(new float4(0.5f, 0.5f, 0.5f, 1)),
+                    _ground
+                },
                 Name = "Ground"
             }
             );
@@ -263,10 +263,7 @@ namespace Fusee.Examples.Labyrinth.Core
             _timeMap = new FontMap(_fontLato, 24);
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
-            // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
-
-            // Set the clear color for the backbuffer to black (0% intensity in color channels R, G, B  100% intensity in color channelsA).
             RC.ClearColor = new float4(0, 0, 0, 1);
 
             // Find the ball and create AABB
@@ -335,12 +332,11 @@ namespace Fusee.Examples.Labyrinth.Core
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            // Render the scene loaded in Init()
             RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
-            // Constantly check for interactive objects.
 
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);

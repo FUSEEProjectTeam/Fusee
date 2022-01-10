@@ -213,7 +213,7 @@ namespace Fusee.Engine.Player.Core
 
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            RC.View = float4x4.Identity;
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
 
             // Constantly check for interactive objects.
