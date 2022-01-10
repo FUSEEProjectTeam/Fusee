@@ -228,7 +228,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     uiInput.CircleCanvasPos = canvasPosCircle;
 
                     var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2));
-                    
+
                     circle.GetComponent<RectTransform>().Offsets = GuiElementPosition.CalcOffsets(AnchorPos.Middle, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
@@ -319,7 +319,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
 
             _sceneRenderer.Render(RC);
-            
+
             RC.Projection = _canvasRenderMode == CanvasRenderMode.Screen ? orthographic : perspective;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))

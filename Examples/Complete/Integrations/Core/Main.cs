@@ -116,7 +116,7 @@ namespace Fusee.Examples.Integrations.Core
             RC.View = view;
             RC.Projection = perspective;
             _sceneRenderer.Render(RC);
-            
+
             RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
 
