@@ -111,5 +111,15 @@ namespace Fusee.PointCloud.Core
         {
             throw new NotImplementedException();
         }
+
+        public override void CreateCellForItem(Func<TPoint, Fusee.Math.Core.double3> GetPositionOfPayloadItem, TPoint payloadItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateCellForItem(Func<TPoint, Fusee.Math.Core.double3> GetPositionOfPayloadItem, TPoint payloadItem)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
