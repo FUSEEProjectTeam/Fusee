@@ -53,8 +53,7 @@ namespace Fusee.Engine.Core.Scene
         public SceneNode()
         {
             Components = new List<SceneComponent>();
-            Children = new ChildList();
-            Children.OnAdd += (sender, e) => e.Snc.Parent = this;
+            Children = new ChildList();            
         }
 
         /// <summary>
@@ -66,6 +65,7 @@ namespace Fusee.Engine.Core.Scene
             set
             {
                 _children = value;
+                _children.OnAdd += (sender, e) => e.Snc.Parent = this;
                 foreach (var child in _children)
                 {
                     child.Parent = this;
