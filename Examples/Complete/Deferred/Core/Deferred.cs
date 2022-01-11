@@ -2,10 +2,12 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
 using System.Collections.Generic;
+using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -51,8 +53,12 @@ namespace Fusee.Examples.Deferred.Core
             _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
-            // Load the rocket model
+            // Load the sponza model
             _sponzaScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+
+            // filter and extract transparent objects
+            var allNodes = _sponzaScene.Children.FindNodesWhereComponent(x => x is SurfaceEffectBase b).ToList();
+            //allNodes.ForEach(x => x.GetComponents<SurfaceEffect>().FirstOrDefault().)
 
             //Add lights to the scene
             _sun = new Light() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.0f };

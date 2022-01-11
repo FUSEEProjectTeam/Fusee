@@ -99,7 +99,6 @@ function customTexImage2D(params, source) {
 function customTexImage2DFloat(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
     const extension = gl2.getExtension('EXT_color_buffer_half_float');
-    console.log(extension);
 
     // extract setting params from array
     const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
@@ -124,7 +123,6 @@ function customTexImage2DFloat(params, source) {
 function customTexImage2DInt(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
     const extension = gl2.getExtension('EXT_color_buffer_half_float');
-    console.log(extension);
 
     // extract setting params from array
     const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
@@ -144,6 +142,25 @@ function customTexImage2DInt(params, source) {
     const length = Blazor.platform.getArrayLength(source);
     const data = new Uint32Array(Module.HEAPU8.buffer, dataPtr, length);
     gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
+}
+
+function customUniform3fv(target, data) {
+
+    const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+
+   /* const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 8);*/
+   /* const length = Blazor.platform.getArrayLength(data);*/
+   /* const floats = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);*/
+
+    //const convertedFloats = new Float32Array(length / 3);
+    //for (let i = 0; i < floats.length; i += 3) {
+    //    convertedFloats[i] = new Float32Array([floats[i + 0], floats[i + 1], floats[i + 2]]);
+    //}
+
+    console.log(data);
+
+    gl2.uniform3fv(target, data, 0, floats.length / 3);
+   
 }
 
 function customBufferData(target, data, usage) {

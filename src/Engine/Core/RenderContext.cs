@@ -1095,7 +1095,7 @@ namespace Fusee.Engine.Core
                 catch (Exception ex)
                 {
                     Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
-                    throw new Exception("Error while compiling shader ", ex);
+                    throw new Exception($"Error while compiling shader\n{vert}\n{geom}\n{frag}", ex);
                 }
             }
             else
@@ -1341,6 +1341,7 @@ namespace Fusee.Engine.Core
                 {
                     if (param.Info.Size > 1)
                     {
+                        Console.WriteLine($"Setting value of type float3[] for {param.Info.Name}");
                         // parameter is an array
                         var paramArray = (float3[])param.Value;
                         _rci.SetShaderParam(param.Info.Handle, paramArray);

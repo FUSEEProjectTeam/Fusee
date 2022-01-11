@@ -215,10 +215,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ColorFormat.RGB => new int[tex.Width * tex.Height * 3],
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 ColorFormat.Intensity => new int[tex.Width * tex.Height],
-                ColorFormat.Depth24 or ColorFormat.Depth16 => new int[tex.Width * tex.Height],
-                ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
-                ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
-                ColorFormat.fRGBA16 => new float[tex.Width * tex.Height * 4],
+                /*ColorFormat.Depth24 or */
+                ColorFormat.Depth16 => new int[tex.Width * tex.Height],
+                //ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
+                //ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
+                //ColorFormat.fRGBA16 => new float[tex.Width * tex.Height * 4],
                 _ => throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}"),
             };
         }
@@ -580,9 +581,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     FLOAT_VEC3 => typeof(float3),
                     FLOAT_VEC4 => typeof(float4),
                     FLOAT_MAT4 => typeof(float4x4),
+                    INT_VEC2 => typeof(float2),
+                    INT_VEC3 => typeof(float3),
+                    INT_VEC4 => typeof(float4),
                     SAMPLER_2D or UNSIGNED_INT_SAMPLER_2D or INT_SAMPLER_2D or SAMPLER_2D_SHADOW => typeof(ITextureBase),
                     SAMPLER_CUBE_SHADOW or SAMPLER_CUBE => typeof(IWritableCubeMap),
-                    _ => throw new ArgumentOutOfRangeException(),
+                    _ => throw new ArgumentOutOfRangeException($"Argument {paramInfo.Type} of {paramInfo.Name} not recognized, size {paramInfo.Size}"),
                 };
                 paramList.Add(paramInfo);
             }
@@ -627,8 +631,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public void SetShaderParam(IShaderParam param, float3[] val)
         {
             // TODO(MR): Make unmanaged call
-            ////fixed(float3* pFlt = &val[0])
-            gl2.Uniform3fv(((ShaderParam)param).handle, val, 0, (uint)val.Length);
+            float[] res = new float[val.Length * 3];
+            for (var i = 0; i < val.Length; i += 3)
+            {
+                res[i + 0] = val[i].x;
+                res[i + 1] = val[i].y;
+                res[i + 2] = val[i].z;
+            }
+            gl2.Uniform3fv(((ShaderParam)param).handle, res, 0, (uint)res.Length);
         }
 
         /// <summary>
@@ -1955,7 +1965,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
-                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Pixelformat: {tex.PixelFormat}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}; Colorformat: {tex.PixelFormat.ColorFormat}");
 
             gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
         }

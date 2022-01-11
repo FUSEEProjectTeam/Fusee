@@ -963,7 +963,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "shadow -= texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, projCoords.z), thisBias).r;",
+                        // texture should already return a simple float, see: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/texture.xhtml, no .r needed
+                        "shadow -= texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, projCoords.z), thisBias);",
                     "}",
                 "}",
                 "shadow /= pcfKernelSize;",

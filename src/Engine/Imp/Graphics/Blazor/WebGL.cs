@@ -2278,6 +2278,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("uniform2fv", location, data, srcOffset, srcLength);
         }
 
+        public void CustomUniform3fv(WebGLUniformLocation location, Array data)
+        {
+            BlazorExtensions.Runtime.InvokeVoidAsync("customUniform3fv", location, data);
+        }
+
         public void Uniform3fv(WebGLUniformLocation location, object data, uint srcOffset, uint srcLength)
         {
             Invoke("uniform3fv", location, data, srcOffset, srcLength);
