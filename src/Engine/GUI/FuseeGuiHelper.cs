@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 namespace Fusee.Engine.Gui
 {
     /// <summary>
-    /// Static helper class which conains methods to create predefined GUIs.s
+    /// Static helper class which contains methods to create predefined GUIs.s
     /// </summary>
     public static class FuseeGuiHelper
     {
         /// <summary>
-        /// Creates a <see cref="SceneContainer"/> which conatins the default Fusee-UI (Logo and app title)
+        /// Creates a <see cref="SceneContainer"/> which contains the default Fusee-UI (Logo and app title)
         /// </summary>
         /// <param name="rc">The <see cref="RenderCanvas"/>.</param>
         /// <param name="canvasRenderMode">The <see cref="CanvasRenderMode"/> which is used to render the GUI.</param>
@@ -32,7 +32,7 @@ namespace Fusee.Engine.Gui
         }
 
         /// <summary>
-        /// Creates a <see cref="SceneContainer"/> which conatins the default Fusee-UI (Logo and app title)
+        /// Creates a <see cref="SceneContainer"/> which contains the default Fusee-UI (Logo and app title)
         /// </summary>
         /// <param name="rc">The <see cref="RenderCanvas"/>.</param>
         /// <param name="canvasRenderMode">The <see cref="CanvasRenderMode"/> which is used to render the GUI.</param>
@@ -96,8 +96,22 @@ namespace Fusee.Engine.Gui
             {
                 Children = new List<SceneNode>
                 {
-                    //Add canvas.
-                    canvas
+                    new SceneNode()
+                    {
+                        Components = new List<SceneComponent>()
+                        {
+                            new Transform()
+                            {
+                                Translation = new float3(0, 0, 0),
+                                Rotation = float3.Zero,
+                                Scale = float3.One
+                            }
+                        },
+                        Children = new ChildList()
+                        {
+                            canvas
+                        }
+                    }
                 }
             };
 
