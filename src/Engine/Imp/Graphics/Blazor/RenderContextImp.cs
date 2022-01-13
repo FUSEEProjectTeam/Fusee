@@ -192,6 +192,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     format = RGBA;
                     pxType = FLOAT;
                     break;
+                case ColorFormat.fRGBA32:
+                    internalFormat = RGBA32F;
+                    format = RGBA;
+                    pxType = FLOAT;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}");
             }
@@ -215,12 +220,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ColorFormat.RGB => new int[tex.Width * tex.Height * 3],
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 ColorFormat.Intensity => new int[tex.Width * tex.Height],
-                /*ColorFormat.Depth24 or */
-                ColorFormat.Depth16 => new int[tex.Width * tex.Height],
-                //ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
-                //ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
-                //ColorFormat.fRGBA16 => new float[tex.Width * tex.Height * 4],
-                _ => throw new ArgumentOutOfRangeException($"CreateTexture: Image pixel format not supported {tex.PixelFormat.ColorFormat}"),
+                ColorFormat.Depth24 or ColorFormat.Depth16 => new int[tex.Width * tex.Height],
+                ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
+                ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
+                ColorFormat.fRGBA16 or ColorFormat.fRGBA32 => new float[tex.Width * tex.Height * 4],
+                _ => throw new ArgumentOutOfRangeException($"GetEmptyArray: Image pixel format not supported {tex.PixelFormat.ColorFormat}"),
             };
         }
 
@@ -269,8 +273,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.BindTexture(TEXTURE_2D, id);
 
             Tuple<int, int> glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            _ = glMinMagFilter.Item1;
-            _ = glMinMagFilter.Item2;
+            var minFilter = glMinMagFilter.Item1;
+            var maxFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
@@ -2069,7 +2073,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             WebGLRenderbuffer gDepthRenderbuffer = gl2.CreateRenderbuffer();
             gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbuffer);
-            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT32F, width, height);
+            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT24, width, height);
             gl2.FramebufferRenderbuffer(FRAMEBUFFER, DEPTH_ATTACHMENT, RENDERBUFFER, gDepthRenderbuffer);
             return gDepthRenderbuffer;
         }
@@ -2110,8 +2114,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 }
 
                 gl2.DrawBuffers(attachments.ToArray());
-
-                Console.WriteLine($"GL error {gl2.GetError()}");
             }
             else //If a frame-buffer only has a depth texture we don't need draw buffers
             {
@@ -2426,11 +2428,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             RenderTarget gBufferRenderTarget = new(res);
             gBufferRenderTarget.SetPositionTex();
-            gBufferRenderTarget.SetAlbedoSpecularTex();
+            gBufferRenderTarget.SetAlbedoTex();
             gBufferRenderTarget.SetNormalTex();
-            gBufferRenderTarget.SetDepthTex(Common.TextureCompareMode.CompareRefToTexture, Compare.LessEqual);
+            gBufferRenderTarget.SetDepthTex();
             gBufferRenderTarget.SetSpecularTex();
             gBufferRenderTarget.SetEmissiveTex();
+            gBufferRenderTarget.SetSubsurfaceTex();
 
             return gBufferRenderTarget;
         }

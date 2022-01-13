@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateDepthTex(int width, int height, ImagePixelFormat pxFormat, TextureCompareMode compareMode = TextureCompareMode.None, Compare compareFunc = Compare.Less)
         {
-            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, compareMode, compareFunc);
+            return new WritableTexture(RenderTargetTextureTypes.Depth, pxFormat, width, height, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToEdge, compareMode, compareFunc);
         }
 
         /// <summary>

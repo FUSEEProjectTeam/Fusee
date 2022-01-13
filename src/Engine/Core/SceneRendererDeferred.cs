@@ -779,7 +779,7 @@ namespace Fusee.Engine.Core
             if (_ssaoTexEffect == null)
             {
                 _ssaoTexEffect = MakeEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes), 4);
-                _rc.CreateShaderProgram(_ssaoTexEffect);
+                _rc.CreateShaderProgram(_ssaoTexEffect);        
             }
             _rc.SetEffect(_ssaoTexEffect);
             _rc.SetRenderTarget(_ssaoRenderTexture);
@@ -949,9 +949,11 @@ namespace Fusee.Engine.Core
         {
             _gBufferRenderTarget = _rc.CreateGBufferTarget(TexRes);
 
+            // TODO: Do not move to RenderTarget
+            // TODO: Make PostProcBuffer, move to PostProcBuffer
             _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.RGB/*fRGB16*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.RGB/*fRGB16*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
-            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB/*fRGB32*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
+            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);
 
             _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
         }

@@ -734,9 +734,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             //return InvokeForArray<string>("getSupportedExtensions");
         }
 
-        public object GetExtension(string name)
+        /// <summary>
+        /// No return type here, Blazor is unable to convert the extension object to string
+        /// </summary>
+        /// <param name="name"></param>
+        public void GetExtension(string name)
         {
-            return InvokeForBasicType<string>("getExtension", name);
+            Invoke("getExtension", name);
         }
 
         public void ActiveTexture(uint texture)
@@ -823,7 +827,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         public void Clear(uint mask)
         {
-            //((IJSInProcessRuntime)Runtime).InvokeVoid("clear", gl, mask);
             Invoke("clear", mask);
         }
 

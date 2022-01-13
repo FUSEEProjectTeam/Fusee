@@ -4,6 +4,13 @@ window.init = (instance) => {
     window.requestAnimationFrame(gameLoop);
 
     const cvs = document.getElementById("canvas");
+
+    const gl = cvs.getContext('webgl2');
+
+    if (!gl || gl.getExtension('EXT_color_buffer_float') === null) {
+        console.log('Not a WebGL2 context or EXT_color_buffer_float not supported, this test will fail');
+    };
+
     window.addEventListener("keydown", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.Blazor', 'OnKeyDown', evt.keyCode); });
     window.addEventListener("keyup", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.Blazor', 'OnKeyUp', evt.keyCode); });
 
@@ -181,6 +188,45 @@ function customBufferData(target, data, usage) {
     } else {
         console.error("Error: Buffer type not found:", target);
     }
+}
+
+function logAndValidate(functionName, args) {
+    logGLCall(functionName, args);
+    validateNoneOfTheArgsAreUndefined(functionName, args);
+}
+
+function validateNoneOfTheArgsAreUndefined(functionName, args) {
+    for (var ii = 0; ii < args.length; ++ii) {
+        if (args[ii] === undefined) {
+            console.error("undefined passed to gl." + functionName + "(" +
+                WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
+        }
+    }
+}
+
+function throwOnGLError(err, funcName, args) {
+    throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
+};
+
+
+function logGLCall(functionName, args) {
+    console.log("gl." + functionName + "(" +
+        WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
+}
+
+
+function generateDebugCtx(contextAttributes) {
+    const canvas = document.getElementsByTagName("canvas")[0];
+    const gl = canvas.getContext('webgl2', contextAttributes);   
+    var buf = gl.getExtension('EXT_color_buffer_float');
+    console.log("Extension enabled:", buf);
+    return gl; //WebGLDebugUtils.makeDebugContext(gl, throwOnGLError, logAndValidate);
+}
+
+function enableExtensions(ctx, name) {
+    //var ext = ctx.getExtension('EXT_color_buffer_float');
+    //console.log("Extension enabled:", ext);
+    return ctx;
 }
 
 function gameLoop(timeStamp) {

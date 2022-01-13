@@ -87,16 +87,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             this.runtime = runtime;
 
-            //if (!CheckWindowPropertyExists(windowPropertyName))
-            //{
-            //    throw new PlatformNotSupportedException(
-            //        $"The context '{contextType}' is not supported in this browser");
-            //}
+            //gl = ((IJSInProcessObjectReference)canvas).Invoke<IJSObjectReference>("getContext", contextType, contextAttributes);
+            gl = ((IJSInProcessRuntime)BlazorExtensions.Runtime).Invoke<IJSObjectReference>("generateDebugCtx", contextAttributes);
+            // pass gl ctx to javascript, enable extension, return ctx
+            gl = ((IJSInProcessRuntime)BlazorExtensions.Runtime).Invoke<IJSObjectReference>("enableExtensions", gl, "EXT_color_buffer_float");
 
-            gl = ((IJSInProcessObjectReference)canvas).Invoke<IJSObjectReference>("getContext", contextType, contextAttributes);
         }
-
-        //public bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
 
         public static bool IsVerbosityEnabled { get; set; } = false;
 
