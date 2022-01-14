@@ -112,7 +112,7 @@ namespace Fusee.Engine.Imp.Blazor
         /// </summary>
         public void SetSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
+            RenderTextures[(int)RenderTargetTextureTypes.Specular] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA32));
         }
 
         /// <summary>

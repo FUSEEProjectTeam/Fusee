@@ -640,9 +640,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                $"vec3 normalInInt = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
-                $"vec3 normal = normalInInt.xyz * 2.0 - 1.0;" // back from [0,255] to [-1,1]
-
+                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Normal]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;",
         };
 
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
@@ -658,7 +656,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.Add("}");
 
             methodBody.Add($"vec4 posTexVal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Position]}, {VaryingNameDeclarations.TextureCoordinates});");
-            methodBody.Add($"vec3 posTexValFloat = posTexVal.xyz;"); // back from [0,255] to [-1,1]
+            methodBody.Add($"vec3 posTexValFloat = posTexVal.xyz;");
             methodBody.Add($"vec4 fragPos = vec4(posTexValFloat.xyz, 1.0);");
             methodBody.Add($"vec4 albedo = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Albedo]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
             methodBody.Add($"vec4 emissionAndThickness = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.Emission]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
@@ -1013,7 +1011,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z)).r;",
+                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z));", // no .r needed, already single float
                         "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
                     "}",
                 "}",

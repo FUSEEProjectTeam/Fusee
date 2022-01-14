@@ -374,7 +374,7 @@ namespace Fusee.Engine.Core
                             if (NumberOfCascades == 1)
                                 shadowMap = new WritableTexture(RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             else if (NumberOfCascades > 1)
-                                shadowMap = new WritableArrayTexture(NumberOfCascades, RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
+                                shadowMap = new WritableArrayTexture(NumberOfCascades, RenderTargetTextureTypes.Depth, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.Nearest, TextureWrapMode.ClampToBorder, TextureCompareMode.CompareRefToTexture, Compare.Less);
                             else
                                 throw new ArgumentException($"Number of shadow cascades is {NumberOfCascades} but must be greater or equal 1.");
 
@@ -422,7 +422,7 @@ namespace Fusee.Engine.Core
 
             _rc.EnableDepthClamp();
 
-            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U;
+            _canUseGeometryShaders = false;// _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U;
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
@@ -561,7 +561,8 @@ namespace Fusee.Engine.Core
                 if (lightVisRes.Item2.Light.IsCastingShadows)
                 {
                     isCastingShadows = true;
-                    var shadowParams = _shadowparams[new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+
+                    if (!_shadowparams.TryGetValue(new Tuple<SceneNode, Light>(lightVisRes.Item1, lightVisRes.Item2.Light), out var shadowParams)) continue;
 
                     //Create and/or choose correct shader effect
                     switch (lightVisRes.Item2.Light.Type)
@@ -779,7 +780,7 @@ namespace Fusee.Engine.Core
             if (_ssaoTexEffect == null)
             {
                 _ssaoTexEffect = MakeEffect.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes), 4);
-                _rc.CreateShaderProgram(_ssaoTexEffect);        
+                _rc.CreateShaderProgram(_ssaoTexEffect);
             }
             _rc.SetEffect(_ssaoTexEffect);
             _rc.SetRenderTarget(_ssaoRenderTexture);

@@ -65,7 +65,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
         #region Image data related Members
 
-        private uint GetTexComapreMode(TextureCompareMode compareMode)
+        private uint GetTexCompareMode(TextureCompareMode compareMode)
         {
             return compareMode switch
             {
@@ -220,7 +220,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ColorFormat.RGB => new int[tex.Width * tex.Height * 3],
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 ColorFormat.Intensity => new int[tex.Width * tex.Height],
-                ColorFormat.Depth24 or ColorFormat.Depth16 => new int[tex.Width * tex.Height],
+                ColorFormat.Depth24 => new uint[tex.Width * tex.Height],
+                ColorFormat.Depth16 => new int[tex.Width * tex.Height],
                 ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
                 ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
                 ColorFormat.fRGBA16 or ColorFormat.fRGBA32 => new float[tex.Width * tex.Height * 4],
@@ -245,9 +246,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
 
+            var data = GetEmptyArray(img);
+
             for (int i = 0; i < 6; i++)
             {
-                gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+                gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, data);
             }
 
             gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MAG_FILTER, magFilter);
@@ -305,8 +308,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.BindTexture(TEXTURE_2D, id);
 
             Tuple<int, int> glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            _ = glMinMagFilter.Item1;
-            _ = glMinMagFilter.Item2;
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
 
             int glWrapMode = GetWrapMode(img.WrapMode);
             TexturePixelInfo pxInfo = GetTexturePixelInfo(img);
@@ -318,10 +321,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             if (img.DoGenerateMipMaps)
                 gl2.GenerateMipmap(TEXTURE_2D);
 
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_MODE, (int)GetTexCompareMode(img.CompareMode));
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)NEAREST);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)NEAREST);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, magFilter);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
@@ -590,6 +593,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     INT_VEC4 => typeof(float4),
                     SAMPLER_2D or UNSIGNED_INT_SAMPLER_2D or INT_SAMPLER_2D or SAMPLER_2D_SHADOW => typeof(ITextureBase),
                     SAMPLER_CUBE_SHADOW or SAMPLER_CUBE => typeof(IWritableCubeMap),
+                    SAMPLER_2D_ARRAY or SAMPLER_2D_ARRAY_SHADOW => typeof(IWritableArrayTexture),
                     _ => throw new ArgumentOutOfRangeException($"Argument {paramInfo.Type} of {paramInfo.Name} not recognized, size {paramInfo.Size}"),
                 };
                 paramList.Add(paramInfo);
@@ -634,7 +638,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float3[] val)
         {
-            // TODO(MR): Make unmanaged call
             float[] res = new float[val.Length * 3];
             for (var i = 0; i < val.Length; i += 3)
             {
@@ -674,8 +677,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4[] val)
         {
+            float[] res = new float[val.Length * 4];
+
+            for (var i = 0; i < val.Length; i += 4)
+            {
+                res[i + 0] = val[i].x;
+                res[i + 1] = val[i].y;
+                res[i + 2] = val[i].z;
+                res[i + 3] = val[i].w;
+            }
+
             ////fixed(float4* pFlt = &val[0])
-            gl2.Uniform4fv(((ShaderParam)param).handle, val, 0, (uint)val.Length);
+            gl2.Uniform4fv(((ShaderParam)param).handle, res, 0, (uint)res.Length);
         }
 
         /// <summary>
@@ -695,8 +708,18 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 tmpArray[i * 4 + 3] = val[i].Column4;
             }
 
+            float[] res = new float[tmpArray.Length * 4];
+
+            for (var i = 0; i < val.Length; i += 4)
+            {
+                res[i + 0] = tmpArray[i].x;
+                res[i + 1] = tmpArray[i].y;
+                res[i + 2] = tmpArray[i].z;
+                res[i + 3] = tmpArray[i].w;
+            }
+
             ////fixed(float4* pMtx = &tmpArray[0])
-            gl2.UniformMatrix4fv(((ShaderParam)param).handle, true, val, 0, (uint)val.Length);
+            gl2.UniformMatrix4fv(((ShaderParam)param).handle, true, res, 0, (uint)res.Length);
         }
 
         /// <summary>
@@ -725,8 +748,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 case TextureType.TextureCubeMap:
                     gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
                     break;
-                default:
+                case TextureType.ArrayTexture:
+                    gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexHandle);
                     break;
+                case TextureType.Image2D:
+                default:
+                    throw new ArgumentException($"Unknown texture target: {texTarget}.");
             }
         }
 
@@ -1511,13 +1538,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
                 gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
                 gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
-            }
-            if (((MeshImp)mr).ElementBufferObject != null)
-            {
-                gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
-                gl2.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
-                //gl2.DrawArrays(gl2.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
-            }
+            }           
             if (((MeshImp)mr).ElementBufferObject != null)
             {
                 gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
@@ -1701,32 +1722,25 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// </exception>
         public void SetRenderState(RenderState renderState, uint value)
         {
-            gl2.Enable(SCISSOR_TEST);
-
             switch (renderState)
             {
                 case RenderState.FillMode:
                     {
-                        if (value != (uint)FillMode.Solid)
-                            throw new NotSupportedException("Line or Point fill mode (glPolygonMode) not supported in WebGL!");
+                        throw new ArgumentException("Function not available, convert your geometry to line primitives and render them using GL_LINES!");                        
                     }
-                    break;
                 case RenderState.CullMode:
                     {
                         switch ((Cull)value)
                         {
                             case Cull.None:
-                                gl2.FrontFace(NONE);
-                                gl2.Disable(CULL_FACE);
                                 if (_isCullEnabled)
                                 {
                                     _isCullEnabled = false;
                                     gl2.Disable(CULL_FACE);
                                 }
-                                gl2.FrontFace(NONE);
+                                gl2.FrontFace(CCW);
                                 break;
                             case Cull.Clockwise:
-                                gl2.FrontFace(CW);
                                 if (!_isCullEnabled)
                                 {
                                     _isCullEnabled = true;
@@ -1735,8 +1749,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                                 gl2.FrontFace(CW);
                                 break;
                             case Cull.Counterclockwise:
-                                gl2.Enable(CULL_FACE);
-                                gl2.FrontFace(CCW);
                                 if (!_isCullEnabled)
                                 {
                                     _isCullEnabled = true;
@@ -1745,7 +1757,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                                 gl2.FrontFace(CCW);
                                 break;
                             default:
-                                throw new ArgumentOutOfRangeException("value");
+                                throw new ArgumentOutOfRangeException(nameof(value));
                         }
                     }
                     break;
@@ -1754,7 +1766,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     break;
                 case RenderState.ZFunc:
                     {
-                        uint df = GetDepthCompareFunc((Compare)value);
+                        var df = GetDepthCompareFunc((Compare)value);
                         gl2.DepthFunc(df);
                     }
                     break;
@@ -1774,14 +1786,17 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                         gl2.Enable(BLEND);
                     break;
                 case RenderState.BlendOperation:
-                    _blendEquationRgb = BlendOperationToOgl((BlendOperation)value);
-                    // TODO (mr): find error
-                    //gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    {
+                        _blendEquationRgb = BlendOperationToOgl((BlendOperation)value);
+                        gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    }
                     break;
+
                 case RenderState.BlendOperationAlpha:
-                    _blendEquationAlpha = BlendOperationToOgl((BlendOperation)value);
-                    // TODO (mr): find error
-                    //gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    {
+                        _blendEquationAlpha = BlendOperationToOgl((BlendOperation)value);
+                        gl2.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    }
                     break;
                 case RenderState.SourceBlend:
                     {
@@ -1808,11 +1823,15 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     }
                     break;
                 case RenderState.BlendFactor:
-                    float4 blendcolor = ColorUint.Tofloat4((ColorUint)value);
-                    gl2.BlendColor(blendcolor.r, blendcolor.g, blendcolor.b, blendcolor.a);
+                    var argb = (int)value;
+                    var a = argb >> 32;
+                    var r = argb >> 16 & 0xFF;
+                    var g = argb >> 8 & 0xFF;
+                    var b = argb & 0xFF;
+                    gl2.BlendColor(r, g, b, a);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("renderState");
+                    throw new ArgumentOutOfRangeException(nameof(renderState));
             }
         }
 
@@ -2094,12 +2113,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
                 {
+                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
+
+
                     ITextureHandle texHandle = texHandles[i];
-                    if (texHandle == null)
-                    {
-                        attachments.Add(NONE);
-                        continue;
-                    }
+                    if (texHandle == null) continue;
+                   
 
                     if (i == depthTexPos)
                     {
@@ -2110,13 +2129,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     {
                         gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
                     }
-                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
                 }
 
                 gl2.DrawBuffers(attachments.ToArray());
             }
             else //If a frame-buffer only has a depth texture we don't need draw buffers
             {
+                Console.WriteLine("Depth only!");
                 ITextureHandle texHandle = texHandles[depthTexPos];
 
                 if (texHandle != null)
@@ -2266,7 +2285,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             ImageData image = Fusee.Base.Core.ImageData.CreateImage(w, h, ColorUint.Black);
             _ = image.PixelData; // Uint8Array.From(image.PixelData);
-            // TODO(MR): Check!
+                                 // TODO(MR): Check!
             gl2.ReadPixels(x, y, w, h, RGB /* yuk, yuk ??? */, UNSIGNED_BYTE, 0);
             return image;
         }
@@ -2316,7 +2335,13 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="val"></param>
         public void SetShaderParam(IShaderParam param, float2[] val)
         {
-            throw new NotImplementedException();
+            float[] res = new float[val.Length * 2];
+            for (var i = 0; i < val.Length; i += 2)
+            {
+                res[i + 0] = val[i].x;
+                res[i + 1] = val[i].y;
+            }
+            gl2.Uniform2fv(((ShaderParam)param).handle, res, 0, (uint)res.Length);
         }
 
         /// <summary>
@@ -2355,7 +2380,31 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <exception cref="NotImplementedException"></exception>
         public ITextureHandle CreateTexture(IWritableArrayTexture img)
         {
-            throw new NotImplementedException();
+            var id = gl2.CreateTexture();
+            gl2.BindTexture(TEXTURE_2D_ARRAY, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
+            var data = new uint[img.Width * img.Height * img.Layers];
+
+            gl2.TexImage3D(TEXTURE_2D_ARRAY, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, img.Layers, 0, pxInfo.Format, pxInfo.PxType, data);
+
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_COMPARE_MODE, (int)GetTexCompareMode(img.CompareMode));
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_MAG_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_MIN_FILTER, magFilter);
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_WRAP_S, glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D_ARRAY, TEXTURE_WRAP_T, glWrapMode);
+
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
+
         }
 
         /// <summary>
@@ -2382,7 +2431,38 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <exception cref="NotImplementedException"></exception>
         public void SetRenderTarget(IWritableArrayTexture tex, int layer, ITextureHandle texHandle)
         {
-            throw new NotImplementedException();
+            if (((TextureHandle)texHandle).FrameBufferHandle == null)
+            {
+                var fBuffer = gl2.CreateFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
+
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextureTypes.Depth)
+                {
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, COLOR_ATTACHMENT0, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
+                }
+                else
+                {
+                    gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+                    gl2.DrawBuffers(new uint[] { NONE });
+                    gl2.ReadBuffer(NONE);
+                }
+            }
+            else
+            {
+                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
+                gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texHandle).TexHandle);
+                gl2.FramebufferTextureLayer(FRAMEBUFFER, DEPTH_ATTACHMENT, ((TextureHandle)texHandle).TexHandle, 0, layer);
+            }
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget IWritableArrayTexture: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+
+            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
         }
 
         /// <summary>
@@ -2447,6 +2527,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <exception cref="NotImplementedException"></exception>
         public IList<ShaderParamInfo> GetShaderStorageBufferList(IShaderHandle shaderProgram)
         {
+            // compute shader!
             throw new NotImplementedException();
         }
 

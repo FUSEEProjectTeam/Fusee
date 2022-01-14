@@ -2143,6 +2143,10 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage2DInt", parameter, source);
             }
+            else
+            {
+                Console.WriteLine("Unknown TEX2D type!");
+            }
         }
 
 
@@ -2156,16 +2160,26 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, pboOffset);
         }
 
-        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, object source)
+        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Array source)        
+        {
+            int[] parameter = new int[] { (int)target, level, internalformat, width, height, depth, border, (int)format, (int)type };
+            if (type == UNSIGNED_INT)
+            {
+                ((IJSUnmarshalledRuntime)runtime).InvokeUnmarshalled<int[], Array, object>("customTexImage3DUInt", parameter, source);
+            }
+            else
+            {
+                Console.WriteLine("~~~~ Warning: Unsupported texImage3D called :/");
+                Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, source);
+            }
+        }
+
+        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Memory<byte> source)
         {
             Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, source);
         }
 
-        public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Memory<byte> srcData)
-        {
-            Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, srcData.ToArray());
-        }
-
+      
         public void GLTexImage3D(uint target, int level, int internalformat, int width, int height, int depth, int border, uint format, uint type, Memory<byte> srcData, uint srcOffset)
         {
             Invoke("texImage3D", target, level, internalformat, width, height, depth, border, format, type, srcData.ToArray(), srcOffset);

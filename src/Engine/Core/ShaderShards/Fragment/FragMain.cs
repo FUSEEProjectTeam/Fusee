@@ -88,8 +88,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         {
                             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
                             {
-                                fragMainBody.Add($"vec3 normalToInt = normalize(surfOut.{SurfaceOut.Normal.Item2}.xyz) * 0.5 + 0.5;"); // [-1,1] to [0,255]
-                                fragMainBody.Add($"{texName} = vec4(normalToInt, 1.0);");
+                                fragMainBody.Add($"vec3 normal = normalize(surfOut.{SurfaceOut.Normal.Item2}.xyz);");
+                                fragMainBody.Add($"{texName} = vec4(normal, 1.0);");
                             }
                             else
                                 fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 1.0, 1.0);");

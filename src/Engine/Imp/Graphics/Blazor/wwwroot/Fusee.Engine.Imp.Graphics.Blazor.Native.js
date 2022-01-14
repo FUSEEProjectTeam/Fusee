@@ -80,6 +80,30 @@ function getClearColor() {
     return [r, g, b, a];
 }
 
+function customTexImage3DUInt(params, source) {
+    const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+
+    // extract setting params from array
+    const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
+    const paramLength = Blazor.platform.getArrayLength(params);
+    var parameter = new Int32Array(Module.HEAPU8.buffer, paramPtr, paramLength);
+
+    const target = parameter[0];
+    const level = parameter[1];
+    const internalformat = parameter[2];
+    const width = parameter[3];
+    const height = parameter[4];
+    const depth = parameter[5];
+    const border = parameter[6];
+    const format = parameter[7];
+    const type = parameter[8];
+
+    const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 4);
+    const length = Blazor.platform.getArrayLength(source);
+    const data = new Uint32Array(Module.HEAPU8.buffer, dataPtr, length);
+    gl2.texImage3D(target, level, internalformat, width, height, depth, border, format, type, data);
+}
+
 function customTexImage2D(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
 
@@ -155,9 +179,9 @@ function customUniform3fv(target, data) {
 
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
 
-   /* const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 8);*/
-   /* const length = Blazor.platform.getArrayLength(data);*/
-   /* const floats = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);*/
+    /* const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 8);*/
+    /* const length = Blazor.platform.getArrayLength(data);*/
+    /* const floats = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);*/
 
     //const convertedFloats = new Float32Array(length / 3);
     //for (let i = 0; i < floats.length; i += 3) {
@@ -167,7 +191,7 @@ function customUniform3fv(target, data) {
     console.log(data);
 
     gl2.uniform3fv(target, data, 0, floats.length / 3);
-   
+
 }
 
 function customBufferData(target, data, usage) {
@@ -217,7 +241,7 @@ function logGLCall(functionName, args) {
 
 function generateDebugCtx(contextAttributes) {
     const canvas = document.getElementsByTagName("canvas")[0];
-    const gl = canvas.getContext('webgl2', contextAttributes);   
+    const gl = canvas.getContext('webgl2', contextAttributes);
     var buf = gl.getExtension('EXT_color_buffer_float');
     console.log("Extension enabled:", buf);
     return gl; //WebGLDebugUtils.makeDebugContext(gl, throwOnGLError, logAndValidate);
