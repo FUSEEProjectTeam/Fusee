@@ -552,23 +552,23 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Orthoes the normalize.
+        /// Normalizes the given vectors and makes sure they are orthogonal to each other.
         /// </summary>
-        /// <param name="normal">The normal.</param>
-        /// <param name="tangent">The tangent.</param>
-        /// <returns>An float3 Array of size 2 with orthonormalized normal and tangent. </returns>
-        public static float3[] OrthoNormalize(float3 normal, float3 tangent)
+        /// <param name="vecOne">The first vector.</param>
+        /// <param name="vecTwo">The second vector.</param>
+        /// <returns>An float3 Array of size 2 with orthonormalized vectors. </returns>
+        public static float3[] OrthoNormalize(float3 vecOne, float3 vecTwo)
         {
             var ret = new float3[2];
 
-            normal = Normalize(normal);
-            var proj = normal * Dot(tangent, normal);
+            vecOne = Normalize(vecOne);
+            var proj = vecOne * Dot(vecTwo, vecOne);
 
-            tangent -= proj;
-            tangent = Normalize(tangent);
+            vecTwo -= proj;
+            vecTwo = Normalize(vecTwo);
 
-            ret[0] = normal;
-            ret[1] = tangent;
+            ret[0] = vecOne;
+            ret[1] = vecTwo;
 
             return ret;
         }
