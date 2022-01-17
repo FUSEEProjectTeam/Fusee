@@ -161,7 +161,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4x4 ToRotMat()
         {
-            return ToRotMat(this);
+            return ToRotationMatrixFast(this);
         }
 
         #endregion ToAxisAngle
@@ -395,30 +395,6 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Constructs a rotation matrix from a given quaternion
-        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
-        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
-        /// </summary>
-        /// <param name="quat">Input quaternion</param>
-        /// <returns></returns>
-        public static double4x4 ToRotMat(QuaternionD quat)
-        {
-            var m1 = new double4x4(
-            quat.w, quat.z, -quat.y, quat.x,
-            -quat.z, quat.w, quat.x, quat.y,
-            quat.y, -quat.x, quat.w, quat.z,
-            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
-
-            var m2 = new double4x4(
-            quat.w, quat.z, -quat.y, -quat.x,
-            -quat.z, quat.w, quat.x, -quat.y,
-            quat.y, -quat.x, quat.w, -quat.z,
-            quat.x, quat.y, quat.z, quat.w).Transpose();
-
-            return m1 * m2;
-        }
-
-        /// <summary>
         /// Output an axis-angle representation of the given Quaternion.
         /// </summary>
         /// <param name="q">The given Quaternion.</param>
@@ -553,6 +529,60 @@ namespace Fusee.Math.Core
             var w = c1 * c2 * c3 - s1 * s2 * s3;
 
             return new QuaternionD(x, y, z, w);
+        }
+
+        /// <summary>
+        ///     Constructs a rotation matrix from a given quaternion
+        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
+        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
+        /// </summary>
+        /// <param name="quat">Input quaternion</param>
+        /// <returns></returns>
+        public static double4x4 ToRotationMatrixFast(QuaternionD quat)
+        {
+            var m1 = new double4x4(
+            quat.w, quat.z, -quat.y, quat.x,
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
+
+            var m2 = new double4x4(
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
+            quat.x, quat.y, quat.z, quat.w).Transpose();
+
+            return m1 * m2;
+        }
+
+        /// <summary>
+        /// Convert Quaternion to rotation matrix
+        /// </summary>
+        /// <param name="q">Quaternion to convert.</param>
+        /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
+        public static double4x4 ToRotationMatrix(QuaternionD q)
+        {
+            q = q.Normalize();
+
+            return new double4x4
+            {
+                M11 = 1 - 2 * (q.y * q.y + q.z * q.z),
+                M12 = 2 * (q.x * q.y - q.z * q.w),
+                M13 = 2 * (q.x * q.z + q.y * q.w),
+                M14 = 0,
+                M21 = 2 * (q.x * q.y + q.z * q.w),
+                M22 = 1 - 2 * (q.x * q.x + q.z * q.z),
+                M23 = 2 * (q.y * q.z - q.x * q.w),
+                M24 = 0,
+                M31 = 2 * (q.x * q.z - q.y * q.w),
+                M32 = 2 * (q.y * q.z + q.x * q.w),
+                M33 = 1 - 2 * (q.x * q.x + q.y * q.y),
+                M34 = 0,
+                M41 = 0,
+                M42 = 0,
+                M43 = 0,
+                M44 = 1
+            };
         }
 
         #endregion Conversion

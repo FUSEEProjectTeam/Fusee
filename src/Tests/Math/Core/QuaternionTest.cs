@@ -302,7 +302,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetAxisAngle))]
         public void ToRotMat_Static(Quaternion quat, float4 expected)
         {
-            var actual = Quaternion.ToRotMat(quat);
+            var actual = Quaternion.ToRotationMatrixFast(quat);
 
             var expectedAxis = new float3(expected.xyz);
             var expectedAngle = expected.w;
@@ -333,7 +333,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetEuler))]
         public void EulerToQuaternion_MainRotations(float3 euler, Quaternion expected)
         {
-            var actual = Quaternion.EulerToQuaternion(euler, true);
+            var actual = Quaternion.FromEuler(euler, true);
 
             Assert.Equal(expected.x, actual.x, 4);
             Assert.Equal(expected.y, actual.y, 4);
@@ -345,7 +345,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetEuler))]
         public void QuaternionToEuler_MainRotations(float3 expected, Quaternion quat)
         {
-            var actual = Quaternion.QuaternionToEuler(quat, true);
+            var actual = Quaternion.ToEuler(quat, true);
 
             Assert.Equal(expected.x, actual.x, 4);
             Assert.Equal(expected.y, actual.y, 4);
@@ -367,8 +367,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetMatrix))]
         public void QuaternionToMatrix_MainRotations(Quaternion quat, float4x4 expected)
         {
-            var actual = Quaternion.QuaternionToMatrix(quat);
-
+            var actual = Quaternion.ToRotationMatrix(quat);
             Assert.Equal(expected, actual);
         }
 
@@ -510,7 +509,7 @@ namespace Fusee.Tests.Math.Core
         public void ToString_InvariantCulture()
         {
             string s = "V: (0.5709415, 0.1675188, 0.1675188) w: 0.7860666";
-            Quaternion q = Quaternion.EulerToQuaternion(float3.One);
+            Quaternion q = Quaternion.FromEuler(float3.One);
 
             Assert.Equal(s, q.ToString(CultureInfo.InvariantCulture));
         }
@@ -519,7 +518,7 @@ namespace Fusee.Tests.Math.Core
         public void ToString_CultureDE()
         {
             string s = "V: (0,5709415; 0,1675188; 0,1675188) w: 0,7860666";
-            Quaternion q = Quaternion.EulerToQuaternion(float3.One);
+            Quaternion q = Quaternion.FromEuler(float3.One);
 
             Assert.Equal(s, q.ToString(new CultureInfo("de-DE")));
         }

@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public static float4x4 GetLocalTransformation(this Transform tansThis)
         {
-            return tansThis == null ? float4x4.Identity :  tansThis.ScaleMatrix * tansThis.RotationMatrix * tansThis.TranslationMatrix;
+            return tansThis == null ? float4x4.Identity : tansThis.ScaleMatrix * tansThis.RotationMatrix * tansThis.TranslationMatrix;
         }
 
         /// <summary>
@@ -470,7 +470,10 @@ namespace Fusee.Engine.Core.Scene
         }
 
         /// <summary>
-        /// Rotates around a center with the given angles
+        /// Rotates around a center with the given angles.
+        /// CAREFUL: this method will only produce correct results if
+        /// a) the SceneNode of this transform is in the first level of the scene graph, directly beneath the SceneContainer
+        /// b) this Transform's global rotation and translation equals its local ones (non of the SceneNodes that are in the levels above are translated or rotated).
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="center"></param>

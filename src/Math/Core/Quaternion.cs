@@ -100,7 +100,7 @@ namespace Fusee.Math.Core
         #region this
 
         /// <summary>
-        ///     Sets/Gets value from given idx
+        ///     Sets/Gets value from given index.
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
@@ -161,7 +161,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float4x4 ToRotMat()
         {
-            return ToRotMat(this);
+            return ToRotationMatrixFast(this);
         }
 
         #endregion ToAxisAngle
@@ -228,7 +228,7 @@ namespace Fusee.Math.Core
         #region Fields
 
         /// <summary>
-        ///     Defines the identity quaternion.
+        /// Defines the identity quaternion.
         /// </summary>
         public static readonly Quaternion Identity = new(0, 0, 0, 1);
 
@@ -394,30 +394,6 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Constructs a rotation matrix from a given quaternion
-        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
-        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
-        /// </summary>
-        /// <param name="quat">Input quaternion</param>
-        /// <returns></returns>
-        public static float4x4 ToRotMat(Quaternion quat)
-        {
-            var m1 = new float4x4(
-            quat.w, quat.z, -quat.y, quat.x,
-            -quat.z, quat.w, quat.x, quat.y,
-            quat.y, -quat.x, quat.w, quat.z,
-            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
-
-            var m2 = new float4x4(
-            quat.w, quat.z, -quat.y, -quat.x,
-            -quat.z, quat.w, quat.x, -quat.y,
-            quat.y, -quat.x, quat.w, -quat.z,
-            quat.x, quat.y, quat.z, quat.w).Transpose();
-
-            return m1 * m2;
-        }
-
-        /// <summary>
         /// Angle axis representation of the given quaternion.
         /// </summary>
         /// <param name="quat">The quaternion to transform.</param>
@@ -534,9 +510,9 @@ namespace Fusee.Math.Core
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
         ///
-        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclidean space website</a>.
         /// </remarks>
-        public static Quaternion EulerToQuaternion(float3 e, bool inDegrees = false)
+        public static Quaternion FromEuler(float3 e, bool inDegrees = false)
         {
             if (inDegrees)
             {
@@ -580,7 +556,7 @@ namespace Fusee.Math.Core
         ///
         /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclidean space website</a>.
         /// </remarks>
-        public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
+        public static float3 ToEuler(Quaternion q, bool inDegrees = false)
         {
             // Ref: 3D Math Primer for Graphics and Game Development SE, Page 290 - Listing 8.6, ISBN 978-1-56881-723-1
 
@@ -672,7 +648,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Takes a lookAt and upDirection vector and returns a quaternion rotation.
+        /// Takes a lookAt and upDirection vector and returns a quaternion rotation.
         /// </summary>
         /// <param name="lookAt">The look at.</param>
         /// <param name="upDirection">Up direction.</param>
@@ -695,11 +671,35 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Convert Quaternion to rotation matrix
+        /// Constructs a rotation matrix from a given quaternion
+        /// This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
+        /// From: https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/jay.htm
+        /// </summary>
+        /// <param name="quat">Input quaternion</param>
+        /// <returns></returns>
+        public static float4x4 ToRotationMatrixFast(Quaternion quat)
+        {
+            var m1 = new float4x4(
+            quat.w, quat.z, -quat.y, quat.x,
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
+
+            var m2 = new float4x4(
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
+            quat.x, quat.y, quat.z, quat.w).Transpose();
+
+            return m1 * m2;
+        }
+
+        /// <summary>
+        /// Convert Quaternion to rotation matrix
         /// </summary>
         /// <param name="q">Quaternion to convert.</param>
         /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
-        public static float4x4 QuaternionToMatrix(Quaternion q)
+        public static float4x4 ToRotationMatrix(Quaternion q)
         {
             q = q.Normalize();
 
@@ -725,14 +725,14 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     a with the algebraic sign of b.
+        /// A with the algebraic sign of b.
         /// </summary>
         /// <remarks>
-        ///     Takes a as an absolute value and multiplies it with: +1 for any positiv number for b, -1 for any negative
-        ///     number for b or 0 for 0 for b.
+        /// Takes a as an absolute value and multiplies it with: +1 for any positive number for b, -1 for any negative
+        /// number for b or 0 for 0 for b.
         /// </remarks>
-        /// <param name="a">Absolut value</param>
-        /// <param name="b">A positiv/negativ number or zero.</param>
+        /// <param name="a">Absolute value</param>
+        /// <param name="b">A positive /negative number or zero.</param>
         /// <returns>Returns a with the algebraic sign of b.</returns>
         public static float CopySign(float a, float b)
         {

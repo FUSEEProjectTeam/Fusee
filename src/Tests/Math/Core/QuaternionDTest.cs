@@ -315,9 +315,23 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetAxisAngle))]
+        public void ToRotMat_Static(QuaternionD quat, double4 expected)
+        {
+            var actual = QuaternionD.ToRotationMatrixFast(quat);
+
+            var expectedAxis = new double3(expected.xyz);
+            var expectedAngle = expected.w;
+
+            var expectedRotMat = double4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
+
+            Assert.Equal(expectedRotMat, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetAxisAngle))]
         public void ToRotMat_Static_7DecimalsEqual(QuaternionD quat, double4 expected)
         {
-            var actual = QuaternionD.ToRotMat(quat);
+            var actual = QuaternionD.ToRotationMatrixFast(quat);
 
             var expectedAxis = new double3(expected.xyz);
             var expectedAngle = expected.w;
