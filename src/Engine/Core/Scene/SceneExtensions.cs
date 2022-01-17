@@ -454,10 +454,9 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="xyz">Rotation amount as float3.</param>
-        /// <param name="space">Rotation in reference to model or world space.</param>
-        public static void Rotate(this Transform tc, float3 xyz, Space space = Space.Model)
+        public static void Rotate(this Transform tc, float3 xyz)
         {
-            Rotate(tc, float4x4.CreateRotationZXY(xyz), space);
+            Rotate(tc, float4x4.CreateRotationZXY(xyz));
         }
 
         /// <summary>
@@ -465,14 +464,13 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="quaternion">Rotation amount in Quaternion.</param>
-        /// <param name="space">Rotation in reference to model or world space.</param>
-        public static void Rotate(this Transform tc, Quaternion quaternion, Space space = Space.Model)
+        public static void Rotate(this Transform tc, Quaternion quaternion)
         {
-            Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+            tc.RotationQuaternion *= quaternion;
         }
 
         /// <summary>
-        /// Rotates around a given center and angle
+        /// Rotates around a center with the given angles
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="center"></param>
@@ -486,9 +484,7 @@ namespace Fusee.Engine.Core.Scene
             tc.Translation = center + dir; // define new position
 
             // rotate object to keep looking at the center:
-            var currentRotationMtx = tc.RotationMatrix;
-            var euler = float4x4.RotMatToEuler(currentRotationMtx);
-            tc.RotationMatrix = addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z);
+            tc.RotationMatrix *= addRotationMtx;
         }
 
         /// <summary>
@@ -496,20 +492,21 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         /// <param name="tc"></param>
         /// <param name="rotationMtx">Rotation amount as represented in float4x4.</param>
-        /// <param name="space">Rotation in reference to model or world space.</param>
-        public static void Rotate(this Transform tc, float4x4 rotationMtx, Space space = Space.Model)
+        public static void Rotate(this Transform tc, float4x4 rotationMtx)
         {
             var addRotationMtx = rotationMtx.RotationComponent();
+            tc.RotationMatrix *= addRotationMtx;
+        }
 
-            if (space == Space.Model)
-            {
-                tc.RotationMatrix *= addRotationMtx;
-            }
-            else
-            {
-                var euler = float4x4.RotMatToEuler(tc.RotationMatrix);
-                tc.RotationMatrix = addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(tc.RotationMatrix) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(tc.RotationMatrix) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(tc.RotationMatrix) * float3.UnitZ, euler.z);
-            }
+        /// <summary>
+        /// Rotates this node around the (static) global axis.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="rotation">Rotation amount as represented in Quaternion.</param>
+        /// <param name="parentGlobalRot">Global (accumulated) rotation of the parent node.</param>
+        public static void RotateGlobal(this Transform tc, Quaternion rotation, Quaternion parentGlobalRot)
+        {
+            tc.RotationQuaternion *= parentGlobalRot * rotation * Quaternion.Invert(parentGlobalRot);
         }
 
         /// <summary>
@@ -547,9 +544,9 @@ namespace Fusee.Engine.Core.Scene
             /// </summary>
             World,
             /// <summary>
-            /// Model space
+            /// Local / Model space
             /// </summary>
-            Model
+            Local
         }
     }
 }

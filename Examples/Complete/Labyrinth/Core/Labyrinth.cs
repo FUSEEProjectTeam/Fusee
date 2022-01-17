@@ -63,7 +63,7 @@ namespace Fusee.Examples.Labyrinth.Core
         private Transform _overviewCamTransform;
         private Camera _overviewCam;
 
-        private bool _isGameWon = false;
+        private bool _isGameWon = true;
 
         // Transform and SceneContainer
         private Transform _headTransform;
@@ -846,7 +846,7 @@ namespace Fusee.Examples.Labyrinth.Core
 
                 _overviewCam.Active = true;
                 _mainCam.Active = false;
-                _overViewCamNode.Rotate(new float3(0, 0.2f * M.Pi / 180, 0), SceneExtensions.Space.World);
+                _overviewCamTransform.RotateGlobal(Quaternion.EulerToQuaternion(new float3(0, 0.2f * M.Pi / 180, 0)), Quaternion.Identity);
             }
         }
 
