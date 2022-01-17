@@ -100,7 +100,7 @@ namespace Fusee.Math.Core
         #region this
 
         /// <summary>
-        ///     Sets/Gets value from given index.
+        /// Sets/Gets value from given index.
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>
@@ -148,7 +148,7 @@ namespace Fusee.Math.Core
         #region ToAxisAngle
 
         /// <summary>
-        ///     Convert this instance to an axis-angle representation.
+        /// Convert this instance to an axis-angle representation.
         /// </summary>
         /// <returns>A float4 that is the axis-angle representation of this quaternion.</returns>
         public float4 ToAxisAngle()
@@ -169,7 +169,7 @@ namespace Fusee.Math.Core
         #region public float Length
 
         /// <summary>
-        ///     Gets the length (magnitude) of the quaternion.
+        /// Gets the length (magnitude) of the quaternion.
         /// </summary>
         /// <seealso cref="LengthSquared" />
         public float Length => (float)System.Math.Sqrt(w * w + xyz.LengthSquared);
@@ -179,7 +179,7 @@ namespace Fusee.Math.Core
         #region public float LengthSquared
 
         /// <summary>
-        ///     Gets the square of the quaternion length (magnitude).
+        /// Gets the square of the quaternion length (magnitude).
         /// </summary>
         public float LengthSquared => w * w + xyz.LengthSquared;
 
@@ -188,7 +188,7 @@ namespace Fusee.Math.Core
         #region public Normalize()
 
         /// <summary>
-        ///     Scales the Quaternion to unit length.
+        /// Scales the Quaternion to unit length.
         /// </summary>
         public Quaternion Normalize()
         {
@@ -200,7 +200,7 @@ namespace Fusee.Math.Core
         #region public Conjugate()
 
         /// <summary>
-        ///     Convert this quaternion to its conjugate.
+        /// Convert this quaternion to its conjugate.
         /// </summary>
         public Quaternion Conjugate()
         {
@@ -212,7 +212,7 @@ namespace Fusee.Math.Core
         #region public Invert()
 
         /// <summary>
-        ///     Convert this quaternion to its inverse.
+        /// Convert this quaternion to its inverse.
         /// </summary>
         public Quaternion Invert()
         {
@@ -271,7 +271,7 @@ namespace Fusee.Math.Core
         #region Mult
 
         /// <summary>
-        ///     Multiplies two instances.
+        /// Multiplies two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -288,7 +288,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Multiplies an instance by a scalar.
+        /// Multiplies an instance by a scalar.
         /// </summary>
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
@@ -317,7 +317,7 @@ namespace Fusee.Math.Core
         #region Invert
 
         /// <summary>
-        ///     Get the inverse of the given quaternion
+        /// Get the inverse of the given quaternion
         /// </summary>
         /// <param name="q">The quaternion to invert</param>
         /// <returns>The inverse of the given quaternion</returns>
@@ -345,7 +345,7 @@ namespace Fusee.Math.Core
         #region Normalize
 
         /// <summary>
-        ///     Scale the given quaternion to unit length
+        /// Scale the given quaternion to unit length
         /// </summary>
         /// <param name="q">The quaternion to normalize</param>
         /// <returns>The normalized quaternion</returns>
@@ -370,7 +370,7 @@ namespace Fusee.Math.Core
         #region AxisAngle
 
         /// <summary>
-        ///     Build a quaternion from the given axis and angle
+        /// Build a quaternion from the given axis and angle
         /// </summary>
         /// <param name="axis">The axis to rotate about</param>
         /// <param name="angle">The rotation angle in radians</param>
@@ -429,7 +429,7 @@ namespace Fusee.Math.Core
         #region Slerp
 
         /// <summary>
-        ///     Do Spherical linear interpolation between two quaternions
+        /// Do Spherical linear interpolation between two quaternions
         /// </summary>
         /// <param name="q1">The first quaternion</param>
         /// <param name="q2">The second quaternion</param>
@@ -501,7 +501,52 @@ namespace Fusee.Math.Core
         #region Conversion
 
         /// <summary>
-        ///     Convert Euler angle to Quaternion rotation.
+        /// Convert Euler angle to Quaternion rotation.
+        /// </summary>
+        /// <param name="x">Angle around the x-axis.</param>
+        /// <param name="y">Angle around the y-axis.</param>
+        /// <param name="z">Angle around the z-axis.</param>
+        /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
+        /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
+        /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
+        /// the range of [-PI, PI].
+        ///
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclidean space website</a>.
+        /// </remarks>
+        public static Quaternion FromEuler(float x, float y, float z, bool inDegrees = false)
+        {
+            if (inDegrees)
+            {
+                // Converts all degrees angles to radians.
+                x = M.DegreesToRadians(x);
+                y = M.DegreesToRadians(y);
+                z = M.DegreesToRadians(z);
+            }
+
+            var q = new Quaternion();
+
+            float3 s, c;
+
+            s.x = MathF.Sin(x * 0.5f);
+            c.x = MathF.Cos(x * 0.5f);
+
+            s.y = MathF.Sin(y * 0.5f);
+            c.y = MathF.Cos(y * 0.5f);
+
+            s.z = MathF.Sin(z * 0.5f);
+            c.z = MathF.Cos(z * 0.5f);
+
+            q.x = s.x * c.y * c.z + s.y * s.z * c.x;
+            q.y = s.y * c.x * c.z - s.x * s.z * c.y;
+            q.z = s.z * c.x * c.y - s.x * s.y * c.z;
+            q.w = c.x * c.y * c.z + s.y * s.z * s.x;
+
+            return q;
+        }
+
+        /// <summary>
+        /// Convert Euler angle to Quaternion rotation.
         /// </summary>
         /// <param name="e">Euler angle to convert.</param>
         /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
@@ -514,39 +559,11 @@ namespace Fusee.Math.Core
         /// </remarks>
         public static Quaternion FromEuler(float3 e, bool inDegrees = false)
         {
-            if (inDegrees)
-            {
-                // Converts all degrees angles to radians.
-                var rX = M.DegreesToRadians(e.x);
-                var rY = M.DegreesToRadians(e.y);
-                var rZ = M.DegreesToRadians(e.z);
-
-                e = new float3(rX, rY, rZ);
-            }
-
-            var q = new Quaternion();
-
-            float3 s, c;
-
-            s.x = MathF.Sin(e.x * 0.5f);
-            c.x = MathF.Cos(e.x * 0.5f);
-
-            s.y = MathF.Sin(e.y * 0.5f);
-            c.y = MathF.Cos(e.y * 0.5f);
-
-            s.z = MathF.Sin(e.z * 0.5f);
-            c.z = MathF.Cos(e.z * 0.5f);
-
-            q.x = s.x * c.y * c.z + s.y * s.z * c.x;
-            q.y = s.y * c.x * c.z - s.x * s.z * c.y;
-            q.z = s.z * c.x * c.y - s.x * s.y * c.z;
-            q.w = c.x * c.y * c.z + s.y * s.z * s.x;
-
-            return q;
+            return FromEuler(e.x, e.y, e.z, inDegrees);
         }
 
         /// <summary>
-        ///     Convert Quaternion rotation to Euler Angles.
+        /// Convert Quaternion rotation to Euler Angles.
         /// </summary>
         /// <param name="q">Quaternion rotation to convert.</param>
         /// <param name="inDegrees">Whether the angles shall be in degrees or radians.</param>
@@ -790,7 +807,7 @@ namespace Fusee.Math.Core
         #region Operators
 
         /// <summary>
-        ///     Adds two instances.
+        /// Adds two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -801,7 +818,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Subtracts two instances.
+        /// Subtracts two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -812,7 +829,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Multiplies two instances.
+        /// Multiplies two instances.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -823,7 +840,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Multiplies an instance by a scalar.
+        /// Multiplies an instance by a scalar.
         /// </summary>
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
@@ -834,7 +851,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Multiplies an instance by a scalar.
+        /// Multiplies an instance by a scalar.
         /// </summary>
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
@@ -845,7 +862,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Compares two instances for equality.
+        /// Compares two instances for equality.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -856,7 +873,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Compares two instances for inequality.
+        /// Compares two instances for inequality.
         /// </summary>
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
@@ -873,7 +890,7 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        ///     Returns a System.String that represents the current Quaternion.
+        /// Returns a System.String that represents the current Quaternion.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
@@ -906,7 +923,7 @@ namespace Fusee.Math.Core
         #region public override bool Equals (object o)
 
         /// <summary>
-        ///     Compares this object instance to another object for equality.
+        /// Compares this object instance to another object for equality.
         /// </summary>
         /// <param name="other">The other object to be used in the comparison.</param>
         /// <returns>True if both objects are Quaternions of equal value. Otherwise it returns false.</returns>
@@ -921,7 +938,7 @@ namespace Fusee.Math.Core
         #region public override int GetHashCode ()
 
         /// <summary>
-        ///     Provides the hash code for this object.
+        /// Provides the hash code for this object.
         /// </summary>
         /// <returns>A hash code formed from the bitwise XOR of this objects members.</returns>
         public override int GetHashCode()
@@ -938,7 +955,7 @@ namespace Fusee.Math.Core
         #region IEquatable<Quaternion> Members
 
         /// <summary>
-        ///     Compares this Quaternion instance to another Quaternion for equality.
+        /// Compares this Quaternion instance to another Quaternion for equality.
         /// </summary>
         /// <param name="other">The other Quaternion to be used in the comparison.</param>
         /// <returns>True if both instances are equal; false otherwise.</returns>

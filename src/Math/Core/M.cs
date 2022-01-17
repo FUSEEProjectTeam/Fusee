@@ -879,6 +879,18 @@ namespace Fusee.Math.Core
             return val < edge ? 0.0f : 1.0f;
         }
 
+        /// <summary>
+        /// Generates a step function by comparing "val" to "edge".
+        /// 0.0 is returned if "val" is smaller than "edge" and 1.0 is returned otherwise.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        /// <returns></returns>
+        public static double Step(double edge, double val)
+        {
+            return val < edge ? 0.0 : 1.0;
+        }
+
         #endregion Public Members
 
         #region Internal Members

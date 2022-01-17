@@ -660,6 +660,14 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(expected, M.Step(edge, val));
         }
 
+        [Theory]
+        [InlineData(2.222, 1.111, 0.0)]
+        [InlineData(1.111, 2.222, 1.0)]
+        public void StepDouble(double edge, double val, double expected)
+        {
+            Assert.Equal(expected, M.Step(edge, val));
+        }
+
         #endregion
 
         #region Interpolate/Lerp
