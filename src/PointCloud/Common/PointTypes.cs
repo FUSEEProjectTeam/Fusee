@@ -16,7 +16,6 @@ namespace Fusee.PointCloud.Common
     /// </summary>
     public enum PointType
     {
-
         Undefined,
 
         /// <summary>
@@ -51,7 +50,7 @@ namespace Fusee.PointCloud.Common
         /// Position (double), Normal (float), Color (float)
         /// </summary>
         Pos64Nor32Col32
-    }    
+    }
 
     /// <summary>
     /// Point type: Position float3.

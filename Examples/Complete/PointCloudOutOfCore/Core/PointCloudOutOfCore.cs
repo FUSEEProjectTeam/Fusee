@@ -14,15 +14,13 @@ using static Fusee.Engine.Core.Time;
 namespace Fusee.Examples.PointCloudOutOfCore.Core
 {
     [FuseeApplication(Name = "FUSEE Point Cloud Viewer")]
-    public class PointCloudOutOfCore<TPoint> : RenderCanvas, IPointCloudOutOfCore where TPoint : new()
+    public class PointCloudOutOfCore : RenderCanvas, IPointCloudOutOfCore
     {
         public bool UseWPF { get; set; }
         public bool DoShowOctants { get; set; }
         public bool ReadyToLoadNewFile { get; private set; }
         public bool IsInitialized { get; private set; }
         public bool IsAlive { get; private set; }
-
-        public PointAccessor<TPoint> PointAccessor { get; private set; }
 
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
@@ -62,11 +60,10 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         private SixDOFDevice _spaceMouse;
         private Engine.Core.Scene.PointCloud _pointCloud;
 
-        public PointCloudOutOfCore(PointType ptType, string pathToFile, PointAccessor<TPoint> ptAccessor)
+        public PointCloudOutOfCore(PointType ptType, string pathToFile)
         {
             PtRenderingParams.Instance.PathToOocFile = pathToFile;
             PtRenderingParams.Instance.PointType = ptType;
-            PointAccessor = ptAccessor;
         }
 
         public override void Init()
@@ -109,7 +106,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 }
             };
 
-            _pointCloud = new Engine.Core.Scene.PointCloud(PointAccessor, PtRenderingParams.Instance.PathToOocFile, PtRenderingParams.Instance.PointType)
+            _pointCloud = new Engine.Core.Scene.PointCloud(PtRenderingParams.Instance.PathToOocFile, PtRenderingParams.Instance.PointType)
             {
                 MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier,
                 PointThreshold = PtRenderingParams.Instance.PointThreshold
@@ -293,7 +290,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
                 _angleVert += _angleVelVert;
                 _angleVelHorz = 0;
                 _angleVelVert = 0;
-                
+
                 _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTimeUpdate * 20);
             }
         }

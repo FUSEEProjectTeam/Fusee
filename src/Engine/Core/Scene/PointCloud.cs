@@ -26,10 +26,7 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         public PointType Type { get; private set; }
 
-        /// <summary>
-        /// The <see cref="PointAccessor"/> used to get the point data for this PointCloud.
-        /// </summary>
-        public IPointAccessor PointAccessor;
+        private IPointAccessor _pointAccessor;
 
         private readonly List<IEnumerable<GpuMesh>> _disposeQueue;
         private bool _disposed;
@@ -37,19 +34,19 @@ namespace Fusee.Engine.Core.Scene
         /// <summary>
         /// Creates a new instance of type <see cref="PointCloud"/>
         /// </summary>
-        /// <param name="pointAccessor"></param>
         /// <param name="fileFolderPath"></param>
         /// <param name="pointType"></param>
-        public PointCloud(IPointAccessor pointAccessor, string fileFolderPath, PointType pointType)
+        public PointCloud(string fileFolderPath, PointType pointType)
         {
             var noOfOctants = Directory.GetFiles($"{fileFolderPath}\\Octants").Length;
-
+            IPointAccessor pointAccessor;
             switch (pointType)
             {
                 default:
                 case PointType.Undefined:
-                    break;
+                    throw new ArgumentException("Invalid PointType!");
                 case PointType.Pos64:
+                    pointAccessor = new Pos64Accessor();
                     PointCloudLoader = new PointCloudLoader<Pos64>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64>(pointAccessor, fileFolderPath),
@@ -61,6 +58,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64Col32IShort:
+                    pointAccessor = new Pos64Col32IShortAccessor();
                     PointCloudLoader = new PointCloudLoader<Pos64Col32IShort>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64Col32IShort>(pointAccessor, fileFolderPath),
@@ -72,6 +70,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64Col32IShort>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64IShort:
+                    pointAccessor = new Pos64IShortAccessor();
                     PointCloudLoader = new PointCloudLoader<Pos64IShort>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64IShort>(pointAccessor, fileFolderPath),
@@ -83,6 +82,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64IShort>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64Col32:
+                    pointAccessor = new Pos64Col32Accessor();
                     PointCloudLoader = new PointCloudLoader<Pos64Col32>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64Col32>(pointAccessor, fileFolderPath),
@@ -94,6 +94,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64Col32>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64Label8:
+                    pointAccessor = new Pos64Label8Accessor();
                     PointCloudLoader = new PointCloudLoader<Pos64Label8>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64Label8>(pointAccessor, fileFolderPath),
@@ -105,6 +106,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64Label8>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64Nor32Col32IShort:
+                    pointAccessor = new Pos64Nor32Col32IShortAccessor();
                     PointCloudLoader = new PointCloudLoader<Pos64Nor32Col32IShort>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64Nor32Col32IShort>(pointAccessor, fileFolderPath),
@@ -116,6 +118,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64Nor32Col32IShort>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64Nor32IShort:
+                    pointAccessor = new Pos64Nor32IShortAccessor();
                     PointCloudLoader = new PointCloudLoader<Pos64Nor32IShort>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64Nor32IShort>(pointAccessor, fileFolderPath),
@@ -127,6 +130,7 @@ namespace Fusee.Engine.Core.Scene
                     Size = (float)((PointCloudLoader<Pos64Nor32IShort>)PointCloudLoader).Octree.Root.Size;
                     break;
                 case PointType.Pos64Nor32Col32:
+                    pointAccessor = new Pos64Nor32Col32Accessor();
                     PointCloudLoader = new PointCloudLoader<Pos64Nor32Col32>(fileFolderPath, noOfOctants)
                     {
                         Octree = ReadPotreeData.GetOctree<Pos64Nor32Col32>(pointAccessor, fileFolderPath),
@@ -143,7 +147,7 @@ namespace Fusee.Engine.Core.Scene
             MeshCache.AddItem += OnCreateMesh;
             MeshCache.HandleEvictedItem = OnItemEvictedFromCache;
             Type = pointType;
-            PointAccessor = pointAccessor;
+            _pointAccessor = pointAccessor;
             _disposeQueue = new List<IEnumerable<GpuMesh>>(noOfOctants);
         }
 
@@ -284,7 +288,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64((Pos64Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64((Pos64Accessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64Col32IShort:
@@ -300,7 +304,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64Col32IShort((Pos64Col32IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Col32IShort((Pos64Col32IShortAccessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64IShort:
@@ -316,7 +320,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64IShort((Pos64IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64IShort((Pos64IShortAccessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64Col32:
@@ -332,7 +336,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64Col32((Pos64Col32Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Col32((Pos64Col32Accessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64Label8:
@@ -348,7 +352,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64Label8((Pos64Label8Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Label8((Pos64Label8Accessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64Nor32Col32IShort:
@@ -364,7 +368,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort((Pos64Nor32Col32IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32IShort((Pos64Nor32Col32IShortAccessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64Nor32IShort:
@@ -380,7 +384,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32IShort((Pos64Nor32IShortAccessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32IShort((Pos64Nor32IShortAccessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                     case PointType.Pos64Nor32Col32:
@@ -396,7 +400,7 @@ namespace Fusee.Engine.Core.Scene
                             {
                                 points = typedArgs.Points;
                             }
-                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32((Pos64Nor32Col32Accessor)PointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32((Pos64Nor32Col32Accessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
                 }

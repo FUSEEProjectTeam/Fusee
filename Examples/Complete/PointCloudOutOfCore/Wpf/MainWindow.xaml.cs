@@ -346,14 +346,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             AssetStorage.RegisterProvider(fap);
 
             var ptType = ReadPotreeMetadata.GetPtTypeFromMetaJson(pathToFile);
-            var ptEnumName = Enum.GetName(typeof(PointType), ptType);
-
-            var genericType = Type.GetType("Fusee.PointCloud.Common." + ptEnumName + ", " + "Fusee.PointCloud.Common");
-
-            var objectType = typeof(PointCloudOutOfCore<>);
-            var objWithGenType = objectType.MakeGenericType(genericType);
-
-            AppSetup.DoSetup(out app, ptType, pathToFile);
+            app = new Core.PointCloudOutOfCore(ptType, PtRenderingParams.Instance.PathToOocFile);
 
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;

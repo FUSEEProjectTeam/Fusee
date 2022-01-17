@@ -51,23 +51,16 @@ namespace Fusee.Examples.PointCloudOutOfCore.Desktop
                     },
                     Decoder = (string id, object storage) =>
                     {
-                        if (!Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)) return null;
+                        if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
                         return FusSceneConverter.ConvertFrom(ProtoBuf.Serializer.Deserialize<FusFile>((Stream)storage), id);
                     },
-                    Checker = id => Path.GetExtension(id).Contains("fus", System.StringComparison.OrdinalIgnoreCase)
+                    Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });
 
             AssetStorage.RegisterProvider(fap);
 
             var ptType = ReadPotreeMetadata.GetPtTypeFromMetaJson(PtRenderingParams.Instance.PathToOocFile);
-            var ptEnumName = Enum.GetName(typeof(PointType), ptType);
-
-            var genericType = Type.GetType("Fusee.PointCloud.Common." + ptEnumName + ", " + "Fusee.PointCloud.Common");
-
-            var objectType = typeof(PointCloudOutOfCore<>);
-            var objWithGenType = objectType.MakeGenericType(genericType);
-
-            AppSetup.DoSetup(out IPointCloudOutOfCore app, ptType, PtRenderingParams.Instance.PathToOocFile);
+            var app = new Core.PointCloudOutOfCore(ptType, PtRenderingParams.Instance.PathToOocFile);
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

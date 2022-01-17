@@ -15,7 +15,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The number of points that are currently visible.
         /// </summary>
-        int NumberOfVisiblePoints { get;}
+        int NumberOfVisiblePoints { get; }
 
         /// <summary>
         /// Changes the minimum size of octants. If an octant is smaller it won't be rendered.
@@ -326,7 +326,7 @@ namespace Fusee.Engine.Core
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotreeData.LoadPointsForNodeAsync<TPoint>(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
+            return await ReadPotreeData.LoadPointsForNodeAsync(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
