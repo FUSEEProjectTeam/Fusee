@@ -87,11 +87,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             this.runtime = runtime;
 
-            //gl = ((IJSInProcessObjectReference)canvas).Invoke<IJSObjectReference>("getContext", contextType, contextAttributes);
-            gl = ((IJSInProcessRuntime)BlazorExtensions.Runtime).Invoke<IJSObjectReference>("generateDebugCtx", contextAttributes);
-            // pass gl ctx to javascript, enable extension, return ctx
-            gl = ((IJSInProcessRuntime)BlazorExtensions.Runtime).Invoke<IJSObjectReference>("enableExtensions", gl, "EXT_color_buffer_float");
-
+            gl = ((IJSInProcessRuntime)BlazorExtensions.Runtime).Invoke<IJSObjectReference>("generateCtx", contextAttributes);
         }
 
         public static bool IsVerbosityEnabled { get; set; } = false;

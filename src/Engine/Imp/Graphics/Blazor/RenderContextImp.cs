@@ -50,16 +50,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             gl2 = ((RenderCanvasImp)renderCanvasImp)._gl;
 
-            // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
-            // the meaning of what's Front and Back of a face simply flips.
-            // TODO - implement this in render states!!!
-            //_blendSrcAlpha = (uint)gl2.GetParameter(BLEND_SRC_ALPHA);
-            //_blendDstAlpha = (uint)gl2.GetParameter(BLEND_DST_ALPHA);
-            //_blendDstRgb = (uint)gl2.GetParameter(BLEND_DST_RGB);
-            //_blendSrcRgb = (uint)gl2.GetParameter(BLEND_SRC_RGB);
-            //_blendEquationAlpha = (uint)gl2.GetParameter(BLEND_EQUATION_ALPHA);
-            //_blendEquationRgb = (uint)gl2.GetParameter(BLEND_EQUATION_RGB);
-
             gl2.Enable(DEPTH_TEST);
         }
 
@@ -86,11 +76,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     minFilter = (int)NEAREST;
                     magFilter = (int)NEAREST;
                     break;
-                // case TextureFilterMode.Linear:
-                default:
-                    minFilter = (int)LINEAR;
-                    magFilter = (int)LINEAR;
-                    break;
                 case TextureFilterMode.NearestMipmapNearest:
                     minFilter = (int)NEAREST_MIPMAP_NEAREST;
                     magFilter = (int)LINEAR;
@@ -105,6 +90,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     break;
                 case TextureFilterMode.LinearMipmapLinear:
                     minFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)LINEAR;
+                    break;
+                case TextureFilterMode.Linear:
+                default:
+                    minFilter = (int)LINEAR;
                     magFilter = (int)LINEAR;
                     break;
             }
@@ -139,7 +129,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
+        private static TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
         {
             uint internalFormat;
             uint format;
@@ -178,19 +168,21 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     pxType = UNSIGNED_INT;
                     break;
                 case ColorFormat.fRGB32:
-                    internalFormat = RGB32F;
-                    format = RGB;
-                    pxType = FLOAT;
+                    throw new NotSupportedException("WebGL 2.0: fRGB32 not supported");
+                    //internalFormat = RGB32F;
+                    //format = RGB;
+                    //pxType = FLOAT;
                     break;
                 case ColorFormat.fRGB16:
-                    internalFormat = RGB16F;
-                    format = RGB;
-                    pxType = HALF_FLOAT;
+                    throw new NotSupportedException("WebGL 2.0: fRGB16 not supported");
+                    //internalFormat = RGB16F;
+                    //format = RGB;
+                    //pxType = HALF_FLOAT;
                     break;
                 case ColorFormat.fRGBA16:
                     internalFormat = RGBA16F;
                     format = RGBA;
-                    pxType = FLOAT;
+                    pxType = HALF_FLOAT;
                     break;
                 case ColorFormat.fRGBA32:
                     internalFormat = RGBA32F;
@@ -210,10 +202,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             };
         }
 
-        private Array GetEmptyArray(ITextureBase tex)
+        private static Array GetEmptyArray(ITextureBase tex)
         {
-            Diagnostics.Warn("GetEmptyArray", null, new object[] { tex });
-
             return tex.PixelFormat.ColorFormat switch
             {
                 ColorFormat.RGBA => new int[tex.Width * tex.Height * 4],
@@ -223,7 +213,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ColorFormat.Depth24 => new uint[tex.Width * tex.Height],
                 ColorFormat.Depth16 => new int[tex.Width * tex.Height],
                 ColorFormat.uiRgb8 => new int[tex.Width * tex.Height * 4],
-                ColorFormat.fRGB32 or ColorFormat.fRGB16 => new float[tex.Width * tex.Height * 3],
+                ColorFormat.fRGB32 or ColorFormat.fRGB16 => throw new NotSupportedException("WebGL 2.0: fRGB32 or fRGB16 not supported"),
                 ColorFormat.fRGBA16 or ColorFormat.fRGBA32 => new float[tex.Width * tex.Height * 4],
                 _ => throw new ArgumentOutOfRangeException($"GetEmptyArray: Image pixel format not supported {tex.PixelFormat.ColorFormat}"),
             };
@@ -259,6 +249,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_T, glWrapMode);
             gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_R, glWrapMode);
 
+            uint err = gl2.GetError();
+            if (err != 0)
+                throw new ArgumentException($"Create Texture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
+
+
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             return texID;
@@ -287,11 +282,16 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             if (img.DoGenerateMipMaps && img.PixelFormat.ColorFormat != ColorFormat.Intensity)
                 gl2.GenerateMipmap(TEXTURE_2D);
 
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)NEAREST);
-            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)NEAREST);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, maxFilter);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, glWrapMode);
+
+            uint err = gl2.GetError();
+            if (err != 0)
+                throw new ArgumentException($"Create Texture ITexture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}");
+
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
             return texID;
@@ -333,7 +333,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             uint err = gl2.GetError();
             if (err != 0)
-                Console.WriteLine($"Create Texture gl2 error {err}");
+                throw new ArgumentException($"Create Texture IWritableTexture gl2 error {err}, Format {img.PixelFormat.ColorFormat}, BPP {img.PixelFormat.BytesPerPixel}, {pxInfo.InternalFormat}, {img.Height}, {img.Width}");
 
             return texID;
         }
@@ -621,6 +621,25 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2.Uniform2f(((ShaderParam)param).handle, val.x, val.y);
         }
 
+
+        /// <summary>
+        /// Sets a <see cref="float2[]" /> shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public void SetShaderParam(IShaderParam param, float2[] val)
+        {
+            var res = new List<float>(val.Length * 2);
+
+            for (var i = 0; i < val.Length; i++)
+            {
+                res.AddRange(val[i].ToArray());
+            }
+
+            gl2.Uniform2fv(((ShaderParam)param).handle, res.ToArray(), 0, (uint)res.Count);
+        }
+
+
         /// <summary>
         /// Sets a <see cref="float3" /> shader parameter.
         /// </summary>
@@ -638,14 +657,12 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float3[] val)
         {
-            float[] res = new float[val.Length * 3];
-            for (var i = 0; i < val.Length; i += 3)
+            var res = new List<float>(val.Length * 3);
+            for (var i = 0; i < val.Length; i++)
             {
-                res[i + 0] = val[i].x;
-                res[i + 1] = val[i].y;
-                res[i + 2] = val[i].z;
+                res.AddRange(val[i].ToArray());
             }
-            gl2.Uniform3fv(((ShaderParam)param).handle, res, 0, (uint)res.Length);
+            gl2.Uniform3fv(((ShaderParam)param).handle, res.ToArray(), 0, (uint)res.Count);
         }
 
         /// <summary>
@@ -677,18 +694,14 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         /// <param name="val">The value.</param>
         public void SetShaderParam(IShaderParam param, float4[] val)
         {
-            float[] res = new float[val.Length * 4];
+            var res = new List<float>(val.Length * 4);
 
-            for (var i = 0; i < val.Length; i += 4)
+            for (var i = 0; i < val.Length; i++)
             {
-                res[i + 0] = val[i].x;
-                res[i + 1] = val[i].y;
-                res[i + 2] = val[i].z;
-                res[i + 3] = val[i].w;
+                res.AddRange(val[i].ToArray());
             }
 
-            ////fixed(float4* pFlt = &val[0])
-            gl2.Uniform4fv(((ShaderParam)param).handle, res, 0, (uint)res.Length);
+            gl2.Uniform4fv(((ShaderParam)param).handle, res.ToArray(), 0, (uint)res.Count);
         }
 
         /// <summary>
@@ -702,24 +715,20 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             for (int i = 0; i < val.Length; i++)
             {
-                tmpArray[i * 4] = val[i].Column1;
+                tmpArray[i * 4 + 0] = val[i].Column1;
                 tmpArray[i * 4 + 1] = val[i].Column2;
                 tmpArray[i * 4 + 2] = val[i].Column3;
                 tmpArray[i * 4 + 3] = val[i].Column4;
             }
 
-            float[] res = new float[tmpArray.Length * 4];
+            var res = new List<float>(tmpArray.Length * 4);
 
-            for (var i = 0; i < val.Length; i += 4)
+            for (var i = 0; i < tmpArray.Length; i++)
             {
-                res[i + 0] = tmpArray[i].x;
-                res[i + 1] = tmpArray[i].y;
-                res[i + 2] = tmpArray[i].z;
-                res[i + 3] = tmpArray[i].w;
+                res.AddRange(tmpArray[i].ToArray());
             }
 
-            ////fixed(float4* pMtx = &tmpArray[0])
-            gl2.UniformMatrix4fv(((ShaderParam)param).handle, true, res, 0, (uint)res.Length);
+            gl2.UniformMatrix4fv(((ShaderParam)param).handle, false, res.ToArray(), 0, (uint)res.Count);
         }
 
         /// <summary>
@@ -749,6 +758,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
                     break;
                 case TextureType.ArrayTexture:
+                    //Console.WriteLine("Binding array tex");
                     gl2.BindTexture(TEXTURE_2D_ARRAY, ((TextureHandle)texId).TexHandle);
                     break;
                 case TextureType.Image2D:
@@ -1088,12 +1098,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
             float[] tangentsFlat = new float[tangents.Length * 4];
 
-            //{
-            ////fixed(float4* pBytes = &tangents[0])
-            //{
-            //Marshal.Copy((IntPtr)(pBytes), tangentsFlat, 0, tangentsFlat.Length);
-            //}
-            //}
             int i = 0;
             foreach (float4 v in tangents)
             {
@@ -1538,7 +1542,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 gl2.EnableVertexAttribArray((uint)AttributeLocations.BoneWeightAttribLocation);
                 gl2.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).BoneWeightBufferObject);
                 gl2.VertexAttribPointer((uint)AttributeLocations.BoneWeightAttribLocation, 4, FLOAT, false, 0, 0);
-            }           
+            }
             if (((MeshImp)mr).ElementBufferObject != null)
             {
                 gl2.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
@@ -1726,7 +1730,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             {
                 case RenderState.FillMode:
                     {
-                        throw new ArgumentException("Function not available, convert your geometry to line primitives and render them using GL_LINES!");                        
+                        throw new ArgumentException("Function not available, convert your geometry to line primitives and render them using GL_LINES!");
                     }
                 case RenderState.CullMode:
                     {
@@ -2118,7 +2122,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
 
                     ITextureHandle texHandle = texHandles[i];
                     if (texHandle == null) continue;
-                   
+
 
                     if (i == depthTexPos)
                     {
@@ -2326,22 +2330,6 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
         {
             throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// TODO: IMPLEMENT
-        /// </summary>
-        /// <param name="param"></param>
-        /// <param name="val"></param>
-        public void SetShaderParam(IShaderParam param, float2[] val)
-        {
-            float[] res = new float[val.Length * 2];
-            for (var i = 0; i < val.Length; i += 2)
-            {
-                res[i + 0] = val[i].x;
-                res[i + 1] = val[i].y;
-            }
-            gl2.Uniform2fv(((ShaderParam)param).handle, res, 0, (uint)res.Length);
         }
 
         /// <summary>

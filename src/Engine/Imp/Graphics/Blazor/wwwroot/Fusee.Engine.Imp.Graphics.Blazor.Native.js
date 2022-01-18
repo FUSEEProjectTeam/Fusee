@@ -40,12 +40,6 @@ window.init = (instance) => {
     // cancel event with mouse behaviour breaks application
     //cvs.addEventListener("touchcancel", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.Blazor', 'OnTouchCancel', evt.changedTouches[0].identifier); });
     cvs.addEventListener("touchend", (evt) => { evt.preventDefault(); DotNet.invokeMethod('Fusee.Engine.Imp.Graphics.Blazor', 'OnTouchEnd', evt.changedTouches[0].identifier); });
-
-
-    // Loading and installation of event listener complete, hide loading overlay
-    // Loading complete, hide loading overlay
-
-    //document.getElementById("LoadingOverlay").hidden = true;
 };
 
 function LoadingFinished() {
@@ -100,7 +94,7 @@ function customTexImage3DUInt(params, source) {
 
     const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 4);
     const length = Blazor.platform.getArrayLength(source);
-    const data = new Uint32Array(Module.HEAPU8.buffer, dataPtr, length);
+    const data = new Uint32Array(Module.HEAPU32.buffer, dataPtr, length);
     gl2.texImage3D(target, level, internalformat, width, height, depth, border, format, type, data);
 }
 
@@ -127,6 +121,30 @@ function customTexImage2D(params, source) {
     gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
 }
 
+function customTexImage2DHalfFlot(params, source) {
+    const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+
+    // extract setting params from array
+    const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
+    const paramLength = Blazor.platform.getArrayLength(params);
+    var parameter = new Int32Array(Module.HEAPU8.buffer, paramPtr, paramLength);
+
+    const target = parameter[0];
+    const level = parameter[1];
+    const internalformat = parameter[2];
+    const width = parameter[3];
+    const height = parameter[4];
+    const border = parameter[5];
+    const format = parameter[6];
+    const type = parameter[7];
+
+    const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 2);
+    const length = Blazor.platform.getArrayLength(source);
+    const data = new Uint16Array(Module.HEAPU16.buffer, dataPtr, length);
+    gl2.texImage2D(target, level, internalformat, width, height, border, format, gl2.HALF_FLOAT, data);
+}
+
+
 function customTexImage2DFloat(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
     const extension = gl2.getExtension('EXT_color_buffer_half_float');
@@ -147,11 +165,11 @@ function customTexImage2DFloat(params, source) {
 
     const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 4);
     const length = Blazor.platform.getArrayLength(source);
-    const data = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);
+    const data = new Float32Array(Module.HEAPF32.buffer, dataPtr, length);
     gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
 }
 
-function customTexImage2DInt(params, source) {
+function customTexImage2DUInt(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
     const extension = gl2.getExtension('EXT_color_buffer_half_float');
 
@@ -171,27 +189,33 @@ function customTexImage2DInt(params, source) {
 
     const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 4);
     const length = Blazor.platform.getArrayLength(source);
-    const data = new Uint32Array(Module.HEAPU8.buffer, dataPtr, length);
+    const data = new Uint32Array(Module.HEAPU32.buffer, dataPtr, length);
     gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
 }
 
-function customUniform3fv(target, data) {
 
+function customTexImage2DDepth16(params, source) {
     const gl2 = document.getElementsByTagName("canvas")[0].getContext('webgl2');
+    const extension = gl2.getExtension('EXT_color_buffer_half_float');
 
-    /* const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 8);*/
-    /* const length = Blazor.platform.getArrayLength(data);*/
-    /* const floats = new Float32Array(Module.HEAPU8.buffer, dataPtr, length);*/
+    // extract setting params from array
+    const paramPtr = Blazor.platform.getArrayEntryPtr(params, 0, 4);
+    const paramLength = Blazor.platform.getArrayLength(params);
+    var parameter = new Int32Array(Module.HEAPU8.buffer, paramPtr, paramLength);
 
-    //const convertedFloats = new Float32Array(length / 3);
-    //for (let i = 0; i < floats.length; i += 3) {
-    //    convertedFloats[i] = new Float32Array([floats[i + 0], floats[i + 1], floats[i + 2]]);
-    //}
+    const target = parameter[0];
+    const level = parameter[1];
+    const internalformat = parameter[2];
+    const width = parameter[3];
+    const height = parameter[4];
+    const border = parameter[5];
+    const format = parameter[6];
+    const type = parameter[7];
 
-    console.log(data);
-
-    gl2.uniform3fv(target, data, 0, floats.length / 3);
-
+    const dataPtr = Blazor.platform.getArrayEntryPtr(source, 0, 2);
+    const length = Blazor.platform.getArrayLength(source);
+    const data = new Uint16Array(Module.HEAPU16.buffer, dataPtr, length);
+    gl2.texImage2D(target, level, internalformat, width, height, border, format, type, data);
 }
 
 function customBufferData(target, data, usage) {
@@ -207,51 +231,21 @@ function customBufferData(target, data, usage) {
     else if (target == gl2.ELEMENT_ARRAY_BUFFER) {
         const dataPtr = Blazor.platform.getArrayEntryPtr(data, 0, 2);
         const length = Blazor.platform.getArrayLength(data);
-        const ints = new Uint16Array(Module.HEAPU8.buffer, dataPtr, length);
+        const ints = new Uint16Array(Module.HEAPU16.buffer, dataPtr, length);
         gl2.bufferData(target, ints, usage);
     } else {
         console.error("Error: Buffer type not found:", target);
     }
 }
 
-function logAndValidate(functionName, args) {
-    logGLCall(functionName, args);
-    validateNoneOfTheArgsAreUndefined(functionName, args);
-}
-
-function validateNoneOfTheArgsAreUndefined(functionName, args) {
-    for (var ii = 0; ii < args.length; ++ii) {
-        if (args[ii] === undefined) {
-            console.error("undefined passed to gl." + functionName + "(" +
-                WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
-        }
-    }
-}
-
-function throwOnGLError(err, funcName, args) {
-    throw WebGLDebugUtils.glEnumToString(err) + " was caused by call to: " + funcName;
-};
-
-
-function logGLCall(functionName, args) {
-    console.log("gl." + functionName + "(" +
-        WebGLDebugUtils.glFunctionArgsToString(functionName, args) + ")");
-}
-
-
-function generateDebugCtx(contextAttributes) {
+function generateCtx(contextAttributes) {
     const canvas = document.getElementsByTagName("canvas")[0];
     const gl = canvas.getContext('webgl2', contextAttributes);
     var buf = gl.getExtension('EXT_color_buffer_float');
     console.log("Extension enabled:", buf);
-    return gl; //WebGLDebugUtils.makeDebugContext(gl, throwOnGLError, logAndValidate);
+    return gl;
 }
 
-function enableExtensions(ctx, name) {
-    //var ext = ctx.getExtension('EXT_color_buffer_float');
-    //console.log("Extension enabled:", ext);
-    return ctx;
-}
 
 function gameLoop(timeStamp) {
     window.requestAnimationFrame(gameLoop);
