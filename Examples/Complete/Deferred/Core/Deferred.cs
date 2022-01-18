@@ -39,7 +39,6 @@ namespace Fusee.Examples.Deferred.Core
 
         private Transform _camTransform;
         private readonly Camera _campComp = new(ProjectionMethod.Perspective, 1, 1000, M.PiOver4);
-        // Init is called on startup.
 
         private async Task Load()
         {
@@ -162,6 +161,7 @@ namespace Fusee.Examples.Deferred.Core
             }
         }
 
+        // InitAsync is called on startup.
         public override async Task InitAsync()
         {
             await Load();
@@ -205,9 +205,7 @@ namespace Fusee.Examples.Deferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
-
-
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);          
         }
 
         // RenderAFrame is called once a frame
