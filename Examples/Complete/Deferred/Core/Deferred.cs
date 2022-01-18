@@ -155,7 +155,7 @@ namespace Fusee.Examples.Deferred.Core
             _sceneRendererDeferred = new SceneRendererDeferred(_sponzaScene);
             _sceneRendererForward = new SceneRendererForward(_sponzaScene);
 
-            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 System.Console.WriteLine("Not running on windows, disabling SSAO. Not supported for WebGL 2.0 / OpenGL 2.0 ES");
                 _sceneRendererDeferred.SsaoOn = false;
@@ -207,7 +207,7 @@ namespace Fusee.Examples.Deferred.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 200);
 
-          
+
         }
 
         // RenderAFrame is called once a frame

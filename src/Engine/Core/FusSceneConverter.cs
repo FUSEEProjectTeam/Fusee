@@ -839,7 +839,7 @@ namespace Fusee.Engine.Core
             return await Task.FromResult(sfx);
         }
 
-        private async  Task<Effect> GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrength, float roughness)
+        private async Task<Effect> GetEffectForMat(FusMaterialBase m, ShadingModel lightingSetup, float shininess, float specularStrength, float roughness)
         {
             Effect sfx;
             var texSetup = TextureSetup.NoTextures;

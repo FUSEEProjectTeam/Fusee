@@ -883,7 +883,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 tmpArray[i * 4 + 2] = val[i].Column3;
                 tmpArray[i * 4 + 3] = val[i].Column4;
             }
-            
+
             fixed (float4* pMtx = &tmpArray[0])
                 GL.UniformMatrix4(((ShaderParam)param).handle, val.Length, false, (float*)pMtx);
         }

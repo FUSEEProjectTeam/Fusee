@@ -46,9 +46,11 @@ namespace Fusee.Examples.Simple.Core
             _rocketScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
-            _sceneRenderer.SsaoOn = false;
-            _sceneRenderer.FxaaOn = false;
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene)
+            {
+                SsaoOn = false,
+                FxaaOn = false
+            };
             //_guiRenderer = new SceneRendererForward(_gui);
         }
 

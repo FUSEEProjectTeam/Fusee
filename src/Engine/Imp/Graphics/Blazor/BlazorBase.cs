@@ -69,7 +69,7 @@ namespace Fusee.Base.Imp.Blazor
             };
 
             gl = new WebGL2RenderingContext(canvas, runtime, ctxAttr);
-            
+
             //System.Console.WriteLine($"Extension: {ext}");
         }
 

@@ -1340,7 +1340,7 @@ namespace Fusee.Engine.Core
                 else if (param.Info.Type == typeof(float3))
                 {
                     if (param.Info.Size > 1)
-                    {                      
+                    {
                         // parameter is an array
                         var paramArray = (float3[])param.Value;
                         _rci.SetShaderParam(param.Info.Handle, paramArray);
