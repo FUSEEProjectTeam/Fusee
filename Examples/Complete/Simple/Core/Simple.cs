@@ -116,7 +116,7 @@ namespace Fusee.Examples.Simple.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 2, -10, 0, 2, 0, 0, 1, 0);
 
             var view = mtxCam * mtxRot;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
@@ -128,7 +128,7 @@ namespace Fusee.Examples.Simple.Core
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
             //if (!Mouse.Desc.Contains("Android"))
             //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);

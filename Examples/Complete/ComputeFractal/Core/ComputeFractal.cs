@@ -6,7 +6,6 @@ using Fusee.Engine.Core.Primitives;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 namespace Fusee.Examples.ComputeFractal.Core
 {
@@ -34,15 +33,18 @@ namespace Fusee.Examples.ComputeFractal.Core
         private GuiText _depthFactorText;
         private readonly float _zNear = 0.1f;
         private readonly float _zFar = 100f;
+
         // Init is called on startup.
         public override void Init()
         {
             _gui = FuseeGuiHelper.CreateDefaultGui(this, CanvasRenderMode.Screen, "Fractal Magnification Factor: " + _depthFactor);
             _guiRenderer = new SceneRendererForward(_gui);
             _depthFactorText = _gui.Children[0].Children[1].Children[0].GetComponent<GuiText>();
+
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
             RWTexture = WritableTexture.CreateForComputeShader(1024, 1024);
+
             _k = 1f / RWTexture.Width;
             _rect = new StorageBuffer<double>(this, 4, sizeof(double), 0);
             _rectData[0] = -1.0f;
@@ -50,6 +52,7 @@ namespace Fusee.Examples.ComputeFractal.Core
             _rectData[2] = 1.0f;
             _rectData[3] = 1.0f;
             _colors = new StorageBuffer<float4>(this, 256, sizeof(float) * 4, 1);
+
             var i = 0;
             while (i < 256)
             {
@@ -64,14 +67,14 @@ namespace Fusee.Examples.ComputeFractal.Core
             }
             _computeShader = new ComputeShader(
             shaderCode: AssetStorage.Get<string>("MandelbrotFractal.comp"),
-           effectParameters: new IFxParamDeclaration[]
-           {
-new FxParamDeclaration<WritableTexture> { Name = "destTex", Value = RWTexture},
-new FxParamDeclaration<StorageBuffer<float4>>{ Name = "colorStorageBuffer", Value = _colors},
-new FxParamDeclaration<StorageBuffer<double>>{ Name = "rectStorageBuffer", Value = _rect},
-new FxParamDeclaration<double>{ Name = "k", Value = _k},
-           }
-           );
+            effectParameters: new IFxParamDeclaration[]
+            {
+                new FxParamDeclaration<WritableTexture> { Name = "destTex", Value = RWTexture},
+                new FxParamDeclaration<StorageBuffer<float4>>{ Name = "colorStorageBuffer", Value = _colors},
+                new FxParamDeclaration<StorageBuffer<double>>{ Name = "rectStorageBuffer", Value = _rect},
+                new FxParamDeclaration<double>{ Name = "k", Value = _k},
+            });
+
             _renderEffect = new ShaderEffect(
             new FxPassDeclaration
             {
@@ -83,10 +86,11 @@ new FxParamDeclaration<double>{ Name = "k", Value = _k},
                     ZEnable = true,
                 }
             },
-           new IFxParamDeclaration[]
-           {
-new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
-           });
+            new IFxParamDeclaration[]
+            {
+                new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
+            });
+
             RC.SetEffect(_computeShader);
             _rect.SetData(_rectData);
             _colors.SetData(_colorData);
@@ -97,16 +101,21 @@ new FxParamDeclaration<WritableTexture> { Name = "srcTex", Value = RWTexture}
         public override void RenderAFrame()
         {
             MoveFractal();
+
             RWTexture.AsImage = true;
             RC.SetEffect(_computeShader);
             RC.DispatchCompute(-1, RWTexture.Width / 16, RWTexture.Width / 16, 1);
             RC.MemoryBarrier();
             RWTexture.AsImage = false;
+
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
             RC.SetEffect(_renderEffect);
             RC.Render(_plane);
+
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = float4x4.CreateOrthographic(Width, Height, _zNear, _zFar);
             _guiRenderer.Render(RC);
+
             if (!Mouse.Desc.Contains("Android"))
             {
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);

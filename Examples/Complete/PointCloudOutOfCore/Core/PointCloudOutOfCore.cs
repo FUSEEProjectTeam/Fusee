@@ -272,6 +272,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
             }
 
             //Render GUI
+            RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
             // Constantly check for interactive objects.
             if (Mouse != null) //Mouse is null when the pointer is outside the GameWindow?
