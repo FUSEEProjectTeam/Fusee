@@ -3,8 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<DefineConstants>$(DefineConstants);PLATFORM_BLAZOR</DefineConstants>
-		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-		
+		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>		
 		<RunAOTCompilation>true</RunAOTCompilation>
 	</PropertyGroup>
 

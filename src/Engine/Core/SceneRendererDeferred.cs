@@ -64,6 +64,7 @@ namespace Fusee.Engine.Core
                 _needToSetSSAOTex = true;
             }
         }
+
         private bool _ssaoOn = true;
 
         /// <summary>
