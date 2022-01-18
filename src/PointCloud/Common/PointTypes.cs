@@ -49,7 +49,11 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Position (double), Normal (float), Color (float)
         /// </summary>
-        Pos64Nor32Col32
+        Pos64Nor32Col32,
+        /// <summary>
+        /// Position (double), Color (float), Classification (byte)
+        /// </summary>
+        Position_double__Color_float__Label_byte
     }
 
     /// <summary>
@@ -199,5 +203,24 @@ namespace Fusee.PointCloud.Common
         /// The point's rgb color.
         /// </summary>
         public float3 Color;
+    }
+
+    /// <summary>
+    /// Point type: Position, color, classification
+    /// </summary>
+    public struct Position_double__Color_float__Label_byte : IPointCloudPoint
+    {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
+        public double3 Position;
+        /// <summary>
+        /// The point's rgb color.
+        /// </summary>
+        public float3 Color;
+        /// <summary>
+        /// The point's classification.
+        /// </summary>
+        public byte Label;
     }
 }

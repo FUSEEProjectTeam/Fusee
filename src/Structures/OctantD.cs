@@ -19,7 +19,7 @@ namespace Fusee.Structures
         /// <summary>
         /// The globally unique identifier for this octant.
         /// </summary>
-        public Guid Guid { get; set; }
+        public string Guid { get; set; }
 
         /// <summary>
         /// Center of this Bucket in world space coordinates.
@@ -49,12 +49,12 @@ namespace Fusee.Structures
         /// <summary>
         /// Integer that defines this octants position in its parent.
         /// </summary>
-        public int PosInParent { get; set; }
+        public int PosInParent { get; }
 
         /// <summary>
         /// The level of the octree this octant belongs to.
         /// </summary>
-        public int Level { get; set; }
+        public int Level { get; }
 
         /// <summary>
         /// Creates a new instance of type PtOctant.
@@ -62,10 +62,18 @@ namespace Fusee.Structures
         /// <param name="center">The center point of this octant, <see cref="IBucket{T, K}.Center"/>.</param>
         /// <param name="size">The size of this octant, <see cref="IBucket{T, K}.Size"/>. </param>
         /// <param name="children">The children of this octant - can be null.</param>
-        public OctantD(double3 center, double size, IOctant<double3, double, P>[] children = null)
+        public OctantD(double3 center, double size, string guid, IOctant<double3, double, P>[] children = null)
         {
             Center = center;
             Size = size;
+
+            Guid = guid;
+
+            Level = Guid.Length;
+
+            var posInParent = 0;
+            int.TryParse(Guid[Level - 1].ToString(), out posInParent);
+            PosInParent = posInParent;
 
             if (children == null)
                 Children = new IOctant<double3, double, P>[8];
@@ -90,10 +98,9 @@ namespace Fusee.Structures
             var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
-            var child = new OctantD<P>(childCenter, childRes)
+            var child = new OctantD<P>(childCenter, childRes, Guid + posInParent)
             {
-                Resolution = Resolution / 2d,
-                Level = Level + 1
+                Resolution = Resolution / 2d
             };
             return child;
         }

@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Core;
+using Fusee.Base.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using System;
@@ -25,14 +25,17 @@ namespace Fusee.Engine.Core
         /// </summary>
         public PtOctantRead<TPoint> Octant;
 
+        public string Guid;
+
         /// <summary>
         /// Creates a new instance of type <see cref="LoadPointEventArgs"/>.
         /// </summary>
         /// <param name="octant">The octant we want to read the points for.</param>
         /// <param name="pathToFile">The path to the potree file.</param>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/>.</param>
-        public LoadPointEventArgs(PtOctantRead<TPoint> octant, string pathToFile, IPointAccessor ptAccessor)
+        public LoadPointEventArgs(string guid, PtOctantRead<TPoint> octant, string pathToFile, IPointAccessor ptAccessor)
         {
+            Guid = guid;
             Octant = octant;
             PathToFile = pathToFile;
             PtAccessor = ptAccessor;

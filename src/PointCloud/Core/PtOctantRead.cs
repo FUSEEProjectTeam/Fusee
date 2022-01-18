@@ -66,7 +66,7 @@ namespace Fusee.PointCloud.Core
             var child = new PtOctantRead<TPoint>(childCenter, childRes)
             {
                 Resolution = Resolution / 2d,
-                Level = Level + 1
+                //Level = Level + 1
             };
 
             return child;

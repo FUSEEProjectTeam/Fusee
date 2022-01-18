@@ -54,7 +54,7 @@ namespace Fusee.PointCloud.Core
             var root = new PtOctantWrite<TPoint>(aabb.Center, aabbMaxLength, maxNoOfPointsInBucket)
             {
                 Resolution = res,
-                Level = 0
+                //Level = 0
             };
             root.Grid = new PtGrid<TPoint>(PtAccessor, root, points);
             Root = root;

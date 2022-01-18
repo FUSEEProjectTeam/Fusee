@@ -1,4 +1,4 @@
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.ShaderShards;
@@ -7,7 +7,7 @@ using Fusee.PointCloud.Common;
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.Examples.PointCloudOutOfCore.Core
+namespace Fusee.Examples.PointCloudPotree2.Core
 {
     public delegate void PointThresholdHandler(int val);
     public delegate void ProjectedSizeModifierHandler(float val);
@@ -19,13 +19,13 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         public PointThresholdHandler PointThresholdHandler;
         public ProjectedSizeModifierHandler ProjectedSizeModifierHandler;
 
-        public string PathToOocFile = @"W:\Pointclouds\Test\Baugrube8m";
+        public string PathToOocFile = @"W:\Pointclouds\Proj\2\Potree\T3";
 
         public ShaderEffect DepthPassEf;
         public PointCloudSurfaceEffect ColorPassEf;
 
         public PointType PointType;
-        
+
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape
         {
@@ -108,7 +108,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Core
         }
 
         private int _ptThreshold = 5000000;
-        
+
         public int PointThreshold
         {
             get { return _ptThreshold; }

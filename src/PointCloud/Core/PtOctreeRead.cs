@@ -1,6 +1,7 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.Structures;
+using System;
 using System.Collections;
 
 namespace Fusee.PointCloud.Core
@@ -15,11 +16,6 @@ namespace Fusee.PointCloud.Core
     public class PtOctreeRead<TPoint> : OctreeD<TPoint> where TPoint : new()
     {
         /// <summary>
-        /// The maximum number a octant can hold. If the number of points exceeds this value the octant is subdivided.
-        /// </summary>
-        public int MaxNoOfPointsInBucket { get; private set; }
-
-        /// <summary>
         /// Provides access to properties of different point types.
         /// </summary>
         public IPointAccessor PtAccessor { get; private set; }
@@ -29,9 +25,8 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// Constructor for creating an Octree that is suitable for creating files from it. 
         /// </summary>
-        public PtOctreeRead(PtOctantRead<TPoint> root, IPointAccessor pa, int maxNoOfPointsInBucket)
+        public PtOctreeRead(PtOctantRead<TPoint> root, IPointAccessor pa)
         {
-            MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
             PtAccessor = pa;
             Root = root;
         }
@@ -43,7 +38,7 @@ namespace Fusee.PointCloud.Core
         /// <returns></returns>
         protected override bool SubdivTerminationCondition(OctantD<TPoint> child)
         {
-            return child.Payload.Count <= MaxNoOfPointsInBucket;
+            throw new NotImplementedException();
         }
 
         /// <summary>

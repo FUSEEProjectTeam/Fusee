@@ -3,6 +3,7 @@ using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.PotreeReader.V1;
+using Fusee.PointCloud.PotreeReader.V2;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
@@ -38,7 +39,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="pointType"></param>
         public PointCloud(string fileFolderPath, PointType pointType)
         {
-            var noOfOctants = Directory.GetFiles($"{fileFolderPath}\\Octants").Length;
+            var noOfOctants = (8 ^ 8) / 4;// Directory.GetFiles($"{fileFolderPath}\\Octants").Length;
             IPointAccessor pointAccessor;
             switch (pointType)
             {
@@ -140,6 +141,17 @@ namespace Fusee.Engine.Core.Scene
                     };
                     Center = new float3(((PointCloudLoader<Pos64Nor32Col32>)PointCloudLoader).Octree.Root.Center);
                     Size = (float)((PointCloudLoader<Pos64Nor32Col32>)PointCloudLoader).Octree.Root.Size;
+                    break;
+                case PointType.Position_double__Color_float__Label_byte:
+                    pointAccessor = new Position_double__Color_float__Label_byte___Accessor();
+                    PointCloudLoader = new PointCloudLoader<Position_double__Color_float__Label_byte>(fileFolderPath, noOfOctants)
+                    {
+                        Octree = ReadPotree2Data.GetOctree<Position_double__Color_float__Label_byte>(pointAccessor, fileFolderPath),
+                        FileFolderPath = fileFolderPath,
+                        PtAccessor = pointAccessor,
+                    };
+                    Center = new float3(((PointCloudLoader<Position_double__Color_float__Label_byte>)PointCloudLoader).Octree.Root.Center);
+                    Size = (float)((PointCloudLoader<Position_double__Color_float__Label_byte>)PointCloudLoader).Octree.Root.Size;
                     break;
             }
 

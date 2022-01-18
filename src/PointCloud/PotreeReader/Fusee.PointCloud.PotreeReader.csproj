@@ -10,6 +10,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
+		<ProjectReference Include="..\..\Base\Core\Fusee.Base.Core.csproj" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 	</ItemGroup>
 

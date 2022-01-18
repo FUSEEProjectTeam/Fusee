@@ -40,7 +40,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
             var maxLvl = (int)jsonMaxLvl;
 
             var root = new PtOctantRead<TPoint>(center, size);
-            var octree = new PtOctreeRead<TPoint>(root, ptAccessor, maxNoOfPointsInBucket)
+            var octree = new PtOctreeRead<TPoint>(root, ptAccessor)
             {
                 MaxLevel = maxLvl
             };
@@ -129,8 +129,8 @@ namespace Fusee.PointCloud.PotreeReader.V1
                 // loadable properties
                 byte[] guidBytes = new byte[16];
                 binaryReader.Read(guidBytes, 0, 16);
-                node.Guid = new Guid(guidBytes);
-                node.Level = binaryReader.ReadInt32();
+                //node.Guid = new Guid(guidBytes);
+                //node.Level = binaryReader.ReadInt32();
                 node.IsLeaf = binaryReader.ReadBoolean();
 
                 // create children

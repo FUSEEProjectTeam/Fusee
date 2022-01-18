@@ -2,7 +2,7 @@ using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
-using Fusee.PointCloud.PotreeReader.V1;
+using Fusee.PointCloud.PotreeReader.V2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         void Update(float fov, float3 camPos);
 
-        List<Guid> VisibleNodes { get; }
+        List<string> VisibleNodes { get; }
     }
 
     /// <summary>
@@ -185,10 +185,10 @@ namespace Fusee.Engine.Core
         private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
 
         //All visible nodes
-        public List<Guid> VisibleNodes { get; private set; }
+        public List<string> VisibleNodes { get; private set; }
 
         //Nodes that are queued for loading in the background
-        private List<Guid> _loadingQueue;
+        private List<string> _loadingQueue;
 
         private bool _disposed;
 
@@ -272,14 +272,14 @@ namespace Fusee.Engine.Core
 
                     Task.Run(async () =>
                     {
-                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant, FileFolderPath, PtAccessor));
+                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant.Guid, octant, FileFolderPath, PtAccessor));
 
                         lock (_lockLoadingQueue)
                         {
                             _loadingQueue.Remove(octant.Guid);
                         }
                         if (octant.NumberOfPointsInNode == 0)
-                            NumberOfVisiblePoints += ReadPotreeMetadata.GetPtCountFromFile(FileFolderPath, octant);
+                            NumberOfVisiblePoints += 0; //TODO: Fix with real values
                         else
                             NumberOfVisiblePoints += octant.NumberOfPointsInNode;
                     });
@@ -326,7 +326,7 @@ namespace Fusee.Engine.Core
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotreeData.LoadPointsForNodeAsync(meshArgs.PathToFile, meshArgs.PtAccessor, meshArgs.Octant);
+            return await ReadPotree2Data.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor, meshArgs.Octant);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)

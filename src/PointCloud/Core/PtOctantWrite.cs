@@ -27,7 +27,8 @@ namespace Fusee.PointCloud.Core
         /// <param name="children">The octants child octants.</param>
         public PtOctantWrite(double3 center, double size, int capacity, IOctant<double3, double, TPoint>[] children = null)
         {
-            Guid = Guid.NewGuid();
+            //TODO: Fix Guid generation
+            //Guid = Guid.NewGuid();
 
             Center = center;
             Size = size;
@@ -54,7 +55,7 @@ namespace Fusee.PointCloud.Core
             var child = new PtOctantWrite<TPoint>(childCenter, childRes, _capacity)
             {
                 Resolution = Resolution / 2d,
-                Level = Level + 1
+                //Level = Level + 1
             };
 
             child.Grid = new PtGrid<TPoint>(child.Center, new double3(child.Size, child.Size, child.Size));

@@ -291,6 +291,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Las", "Las", "{E364F712-240
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.PointCloudFileReader.Las", "src\PointCloud\PointCloudFileReader\Las\Fusee.PointCloud.PointCloudFileReader.Las.csproj", "{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointCloudPotree2", "PointCloudPotree2", "{B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.Desktop", "Examples\Complete\PointCloudPotree2\Desktop\Fusee.Examples.PointCloudPotree2.Desktop.csproj", "{72974011-C264-4D3D-979A-A4E750C5787A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.Core", "Examples\Complete\PointCloudPotree2\Core\Fusee.Examples.PointCloudPotree2.Core.csproj", "{76FE409A-DCA8-4714-8E95-4FE189751EE7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Potree2ReaderWriter", "src\PointCloud\Potree2ReaderWriter\Fusee.PointCloud.Potree2ReaderWriter.csproj", "{B8597401-4120-420A-9732-EB18B08D91AA}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -1679,6 +1687,60 @@ Global
 		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{72974011-C264-4D3D-979A-A4E750C5787A}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{B8597401-4120-420A-9732-EB18B08D91AA}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1809,6 +1871,10 @@ Global
 		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 		{E364F712-2400-4D9F-8F40-8B5870086262} = {CAD62212-5A60-45A8-AEFB-2418EDDFCCCC}
 		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3} = {E364F712-2400-4D9F-8F40-8B5870086262}
+		{B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{72974011-C264-4D3D-979A-A4E750C5787A} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
+		{76FE409A-DCA8-4714-8E95-4FE189751EE7} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
+		{B8597401-4120-420A-9732-EB18B08D91AA} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

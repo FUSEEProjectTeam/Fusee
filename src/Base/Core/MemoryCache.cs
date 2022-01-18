@@ -31,14 +31,14 @@ namespace Fusee.Base.Core
             });
         }
 
-        public bool TryGetValue(Guid key, out TItem item)
+        public bool TryGetValue(string key, out TItem item)
         {
             if (_cache.TryGetValue(key, out item))
                 return true;
             return false;
         }
 
-        public void AddOrUpdate(Guid key, EventArgs args)
+        public void AddOrUpdate(string key, EventArgs args)
         {
             if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
             {
@@ -65,7 +65,7 @@ namespace Fusee.Base.Core
             }
         }
 
-        public async Task AddOrUpdateAsync(Guid key, EventArgs args)
+        public async Task AddOrUpdateAsync(string key, EventArgs args)
         {
             if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
             {
