@@ -101,5 +101,15 @@ namespace Fusee.PointCloud.Core
         {
             return PtAccessor.GetPositionFloat3_64(ref pt);
         }
+
+        public override void CreateCellForItem(Func<TPoint, Fusee.Math.Core.double3> GetPositionOfPayloadItem, TPoint payloadItem)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void CreateCellForItem(Func<TPoint, Fusee.Math.Core.double3> GetPositionOfPayloadItem, TPoint payloadItem)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
