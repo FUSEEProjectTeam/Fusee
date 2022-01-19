@@ -240,13 +240,17 @@ namespace Fusee.PointCloud.PotreeReader.V2
                     {
                         binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
 
-                        float3 color = new float3(binaryReader.ReadUInt16() / ushort.MaxValue, binaryReader.ReadUInt16() / ushort.MaxValue, binaryReader.ReadUInt16() / ushort.MaxValue);
-                        
-                        ((PointAccessor<TPoint>)pointAccessor).SetColorFloat3_32(ref points[i], color);
+                        UInt16 r = binaryReader.ReadUInt16();
+                        UInt16 g = binaryReader.ReadUInt16();
+                        UInt16 b = binaryReader.ReadUInt16();
 
-                        //points[i].Color.r = binaryReader.ReadUInt16() / ushort.MaxValue;
-                        //points[i].Color.g = binaryReader.ReadUInt16() / ushort.MaxValue;
-                        //points[i].Color.b = binaryReader.ReadUInt16() / ushort.MaxValue;
+                        float3 color = float3.Zero;
+
+                        color.r = ((byte)(r > 255 ? r / 256 : r)) / 255f;
+                        color.g = ((byte)(g > 255 ? g / 256 : g)) / 255f;
+                        color.b = ((byte)(b > 255 ? b / 256 : b)) / 255f;
+
+                        ((PointAccessor<TPoint>)pointAccessor).SetColorFloat3_32(ref points[i], color);
                     }
                 }
                 else if (metaitem.Name.Equals("classification"))
