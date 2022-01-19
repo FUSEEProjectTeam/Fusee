@@ -26,10 +26,25 @@ namespace Fusee.PointCloud.PotreeReader.V2
         public static PtOctreeRead<TPoint> GetOctree<TPoint>(IPointAccessor ptAccessor, string fileFolderPath) where TPoint : new()
         {
             var metadataFilePath = Path.Combine(fileFolderPath, Constants.MetadataFileName);
+            var octreeFilePath = Path.Combine(fileFolderPath, Constants.OctreeFileName);
+
+            binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
 
             Instance = new PotreeData();
             Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilePath));
             Instance.Hierarchy = LoadHierarchy(fileFolderPath);
+
+            int pointSize = 0;
+
+            if (Instance.Metadata != null)
+            {
+                foreach (var metaAttributeItem in Instance.Metadata.Attributes)
+                {
+                    pointSize += metaAttributeItem.Size;
+                }
+
+                Instance.Metadata.PointSize = pointSize;
+            }
 
             //TODO: ???
             var center = new double3(0, 0, 0);
