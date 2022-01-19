@@ -68,6 +68,10 @@ namespace Fusee.PointCloud.PotreeReader.V2.Data
         public string Encoding { get; set; }
         public List<PotreeSettingsAttribute> Attributes { get; set; }
 
+        [JsonIgnore]
         public int PointSize { get; set; }
+
+        [JsonIgnore]
+        public string FolderPath { get; set; }
     }
 }

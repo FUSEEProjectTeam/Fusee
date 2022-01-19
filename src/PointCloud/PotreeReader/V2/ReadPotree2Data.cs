@@ -15,7 +15,6 @@ namespace Fusee.PointCloud.PotreeReader.V2
     public class ReadPotree2Data
     {
         public static PotreeData Instance;
-        private static BinaryReader binaryReader;
 
         /// <summary>
         /// Reads the meta.json and .hierarchy files and returns an octree.
@@ -28,11 +27,10 @@ namespace Fusee.PointCloud.PotreeReader.V2
             var metadataFilePath = Path.Combine(fileFolderPath, Constants.MetadataFileName);
             var octreeFilePath = Path.Combine(fileFolderPath, Constants.OctreeFileName);
 
-            binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
-
             Instance = new PotreeData();
             Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilePath));
             Instance.Hierarchy = LoadHierarchy(fileFolderPath);
+            Instance.Metadata.FolderPath = fileFolderPath;
 
             int pointSize = 0;
 
@@ -47,17 +45,40 @@ namespace Fusee.PointCloud.PotreeReader.V2
             }
 
             //TODO: ???
-            var center = new double3(0, 0, 0);
-            var size = 15;
+            var center = Instance.Hierarchy.TreeRoot.Aabb.Center;
+            var size = Instance.Hierarchy.TreeRoot.Aabb.Size.y;
             var maxLvl = Instance.Metadata.Hierarchy.Depth;
 
             var root = new PtOctantRead<TPoint>(center, size, "r");
+
+            MapChildNodesRecursive(root, Instance.Hierarchy.TreeRoot);
+
             var octree = new PtOctreeRead<TPoint>(root, ptAccessor)
             {
                 MaxLevel = maxLvl
             };
 
             return octree;
+        }
+
+        private static void MapChildNodesRecursive<TPoint>(PtOctantRead<TPoint> octreeNode, PotreeNode potreeNode)
+        {
+            for (int i = 0; i < potreeNode.children.Length; i++)
+            {
+                if (potreeNode.children[i] != null)
+                {
+                    var octant = new PtOctantRead<TPoint>(potreeNode.children[i].Aabb.Center, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
+                    
+                    if (potreeNode.children[i].NodeType == NodeType.LEAF)
+                    {
+                        octant.IsLeaf = true;
+                    }
+
+                    MapChildNodesRecursive(octant, potreeNode.children[i]);
+
+                    octreeNode.Children[i] = octant;
+                }
+            }
         }
 
         private static PotreeHierarchy LoadHierarchy(string fileFolderPath)
@@ -199,8 +220,10 @@ namespace Fusee.PointCloud.PotreeReader.V2
 
         public static TPoint[] LoadNodeData<TPoint>(string id, IPointAccessor pointAccessor, PtOctantRead<TPoint> octant) where TPoint : new()
         { 
-
             var node = FindNode(id);
+
+            var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
+            var binaryReader = new BinaryReader(File.OpenRead(octreeFilePath));
 
             //var points = new Position_double__Color_float__Label_byte[node.NumPoints];
             var points = new TPoint[node.NumPoints];
@@ -220,18 +243,13 @@ namespace Fusee.PointCloud.PotreeReader.V2
                     {
                         binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
 
-                        double3 position = new double3((binaryReader.ReadInt32() * Instance.Metadata.Scale.x) + Instance.Metadata.Offset.x,
-                                                  (binaryReader.ReadInt32() * Instance.Metadata.Scale.y) + Instance.Metadata.Offset.y,
-                                                  (binaryReader.ReadInt32() * Instance.Metadata.Scale.z) + Instance.Metadata.Offset.z);
+                        double x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x) + Instance.Metadata.Offset.x;
+                        double y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y) + Instance.Metadata.Offset.y;
+                        double z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z) + Instance.Metadata.Offset.z;
+
+                        double3 position = new double3(x, y, z);
 
                         ((PointAccessor<TPoint>)pointAccessor).SetPositionFloat3_64(ref points[i], position);
-
-                        //points[i].Position.x = (binaryReader.ReadInt32() * (float)Instance.Metadata.Scale.x) + (float)Instance.Metadata.Offset.x;
-                        //points[i].Position.y = (binaryReader.ReadInt32() * (float)Instance.Metadata.Scale.y) + (float)Instance.Metadata.Offset.y;
-                        //points[i].Position.z = (binaryReader.ReadInt32() * (float)Instance.Metadata.Scale.z) + (float)Instance.Metadata.Offset.z;
-
-                        // In js they subtract the min offset for every point,I guess that is just moving the pointcloud to the coordinate origin.
-                        // We should do this in usercode
                     }
                 }
                 else if (metaitem.Name.Contains("rgb"))
@@ -246,9 +264,9 @@ namespace Fusee.PointCloud.PotreeReader.V2
 
                         float3 color = float3.Zero;
 
-                        color.r = ((byte)(r > 255 ? r / 256 : r))/* / 255f*/;
-                        color.g = ((byte)(g > 255 ? g / 256 : g))/* / 255f*/;
-                        color.b = ((byte)(b > 255 ? b / 256 : b))/* / 255f*/;
+                        color.r = ((byte)(r > 255 ? r / 256 : r));
+                        color.g = ((byte)(g > 255 ? g / 256 : g));
+                        color.b = ((byte)(b > 255 ? b / 256 : b));
 
                         ((PointAccessor<TPoint>)pointAccessor).SetColorFloat3_32(ref points[i], color);
                     }
@@ -273,6 +291,9 @@ namespace Fusee.PointCloud.PotreeReader.V2
             octant.NumberOfPointsInNode = (int)node.NumPoints;
 
             node.IsLoaded = true;
+
+            binaryReader.Close();
+            binaryReader.Dispose();
 
             return (TPoint[]) points;
         }
