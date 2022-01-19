@@ -631,7 +631,7 @@ namespace Fusee.Math.Core
             for (var i = 0; i < maxsteps; i++)
             {
                 // Q = float4x4.CreateRotation(q); // v*Q == q*v*conj(q)
-                Q = q.ToRotMat(); // v*Q == q*v*conj(q)
+                Q = q.ToRotationMatrixFast(); // v*Q == q*v*conj(q)
                 D = Q.Transpose() * A * Q;  // A = Q^T*D*Q
                 var offDiagonal = new double3(D.M23, D.M13, D.M12); // elements not on the diagonal
                 var om = new double3(System.Math.Abs(offDiagonal.x), System.Math.Abs(offDiagonal.y), System.Math.Abs(offDiagonal.z)); // mag of each offdiag elem
@@ -877,6 +877,18 @@ namespace Fusee.Math.Core
         public static float Step(float edge, float val)
         {
             return val < edge ? 0.0f : 1.0f;
+        }
+
+        /// <summary>
+        /// Generates a step function by comparing "val" to "edge".
+        /// 0.0 is returned if "val" is smaller than "edge" and 1.0 is returned otherwise.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        /// <returns></returns>
+        public static double StepD(double edge, double val)
+        {
+            return val < edge ? 0.0 : 1.0;
         }
 
         #endregion Public Members
