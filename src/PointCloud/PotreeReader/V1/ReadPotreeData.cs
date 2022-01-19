@@ -39,7 +39,7 @@ namespace Fusee.PointCloud.PotreeReader.V1
             var jsonMaxLvl = (JValue)jsonObj["octree"]["maxLevel"];
             var maxLvl = (int)jsonMaxLvl;
 
-            var root = new PtOctantRead<TPoint>(center, size);
+            var root = new PtOctantRead<TPoint>(center, size, "r");
             var octree = new PtOctreeRead<TPoint>(root, ptAccessor)
             {
                 MaxLevel = maxLvl

@@ -51,7 +51,7 @@ namespace Fusee.PointCloud.PotreeReader.V2
             var size = 15;
             var maxLvl = Instance.Metadata.Hierarchy.Depth;
 
-            var root = new PtOctantRead<TPoint>(center, size);
+            var root = new PtOctantRead<TPoint>(center, size, "r");
             var octree = new PtOctreeRead<TPoint>(root, ptAccessor)
             {
                 MaxLevel = maxLvl

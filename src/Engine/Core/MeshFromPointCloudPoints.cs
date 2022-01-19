@@ -185,6 +185,52 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Returns meshes for point clouds of type <see cref="Pos64Label8"/>.
+        /// </summary>
+        /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
+        /// <param name="points">The lists of "raw" points.</param>
+        /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
+        /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
+        /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
+        public static GpuMesh GetMesh___Position_double__Color_float__Label_byte(Position_double__Color_float__Label_byte___Accessor ptAccessor, Position_double__Color_float__Label_byte[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        {
+            int numberOfPointsInMesh;
+            numberOfPointsInMesh = points.Length;
+
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            if (doExchangeYZ)
+                ExchangeYZ(ref firstPos);
+
+            var firstPosF = (float3)firstPos - translationVector;
+            var vertices = new float3[numberOfPointsInMesh];
+            var triangles = new ushort[numberOfPointsInMesh];
+            var colors = new uint[numberOfPointsInMesh];
+            var boundingBox = new AABBf(firstPosF, firstPosF);
+
+            for (int i = 0; i < points.Length; i++)
+            {
+                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                if (doExchangeYZ)
+                    ExchangeYZ(ref pos);
+
+                var posF = (float3)pos - translationVector;
+
+                vertices[i] = posF;
+                boundingBox |= vertices[i];
+
+                triangles[i] = (ushort)i;
+                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+
+                //TODO: add labels correctly
+                var label = ptAccessor.GetLabelUInt_8(ref points[i]);
+            }
+            var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
+            mesh.BoundingBox = boundingBox;
+            return mesh;
+        }
+
+        /// <summary>
         /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32IShort"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>

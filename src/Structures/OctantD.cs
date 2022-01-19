@@ -61,6 +61,7 @@ namespace Fusee.Structures
         /// </summary>
         /// <param name="center">The center point of this octant, <see cref="IBucket{T, K}.Center"/>.</param>
         /// <param name="size">The size of this octant, <see cref="IBucket{T, K}.Size"/>. </param>
+        /// <param name="guid"></param>
         /// <param name="children">The children of this octant - can be null.</param>
         public OctantD(double3 center, double size, string guid, IOctant<double3, double, P>[] children = null)
         {
@@ -71,7 +72,7 @@ namespace Fusee.Structures
 
             Level = Guid.Length;
 
-            var posInParent = 0;
+            int posInParent;
             int.TryParse(Guid[Level - 1].ToString(), out posInParent);
             PosInParent = posInParent;
 

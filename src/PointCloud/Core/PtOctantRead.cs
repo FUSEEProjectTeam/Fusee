@@ -1,7 +1,5 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Structures;
-using System;
-using System.Collections.Generic;
 
 namespace Fusee.PointCloud.Core
 {
@@ -27,17 +25,17 @@ namespace Fusee.PointCloud.Core
         /// <param name="center">The center of this octant.</param>
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="children">The octants child octants.</param>
-        public PtOctantRead(double3 center, double size, PtOctantRead<TPoint>[] children = null)
+        public PtOctantRead(double3 center, double size, string guid, PtOctantRead<TPoint>[] children = null) : base(center, size, guid, children)
         {
-            Center = center;
-            Size = size;
+            //Center = center;
+            //Size = size;
 
-            if (children == null)
-                Children = new PtOctantRead<TPoint>[8];
-            else
-                Children = children;
+            //if (children == null)
+            //    Children = new PtOctantRead<TPoint>[8];
+            //else
+            //    Children = children;
 
-            Payload = new List<TPoint>(NumberOfPointsInNode);
+            //Payload = new List<TPoint>(NumberOfPointsInNode);
         }
 
         /// <summary>
@@ -63,10 +61,9 @@ namespace Fusee.PointCloud.Core
             var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
-            var child = new PtOctantRead<TPoint>(childCenter, childRes)
+            var child = new PtOctantRead<TPoint>(childCenter, childRes, Guid + posInParent)
             {
-                Resolution = Resolution / 2d,
-                //Level = Level + 1
+                Resolution = Resolution / 2d
             };
 
             return child;

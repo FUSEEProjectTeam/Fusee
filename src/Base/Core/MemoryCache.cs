@@ -93,6 +93,10 @@ namespace Fusee.Base.Core
                         _cache.Set(key, cacheEntry, cacheEntryOptions);
                     }
                 }
+                catch (Exception ex)
+                {
+
+                }
                 finally
                 {
                     chacheLock.Release();

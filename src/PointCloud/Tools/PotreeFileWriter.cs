@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
@@ -23,7 +24,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
     public class PotreeFileWriter<TPoint> where TPoint : new()
     {
         private readonly string _fileFolderPath;
-        private readonly Dictionary<Guid, FileStream> _fileStreams = new();
+        private readonly Dictionary<string, FileStream> _fileStreams = new();
 
         /// <summary>
         /// Creates a new instance of type PtOctantFileWriter.
@@ -84,7 +85,8 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
             octree.Traverse((OctantD<TPoint> node) =>
             {
                 // write loadable properties (in which file the node's content - i.e. points - are stored)
-                bw.Write(((PtOctantWrite<TPoint>)node).Guid.ToByteArray()); // 16 bytes
+                var guidBytes = Encoding.ASCII.GetBytes(((PtOctantWrite<TPoint>)node).Guid);
+                bw.Write(guidBytes); // 16 bytes
                 bw.Write(node.Level);
                 bw.Write(node.IsLeaf);
                 //bw.Write(node.StreamPosition);
@@ -208,7 +210,7 @@ namespace Fusee.PointCloud.Tools.OoCFileGenerator.V1
 
         private string GetFilename(PtOctantWrite<TPoint> node)
         {
-            var fileName = node.Guid.ToString("N");
+            var fileName = node.Guid;
 
             fileName += ".node";
             return fileName;

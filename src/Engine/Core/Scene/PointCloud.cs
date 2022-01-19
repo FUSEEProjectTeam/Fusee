@@ -415,6 +415,22 @@ namespace Fusee.Engine.Core.Scene
                             mesh = MeshFromPointCloudPoints.GetMeshPos64Nor32Col32((Pos64Nor32Col32Accessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
                             break;
                         }
+                    case PointType.Position_double__Color_float__Label_byte:
+                        {
+                            Position_double__Color_float__Label_byte[] points;
+                            var typedArgs = (GpuMeshFromPointsEventArgs<Position_double__Color_float__Label_byte>)e;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new Position_double__Color_float__Label_byte[numberOfPointsInMesh];
+                                Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = typedArgs.Points;
+                            }
+                            mesh = MeshFromPointCloudPoints.GetMesh___Position_double__Color_float__Label_byte((Position_double__Color_float__Label_byte___Accessor)_pointAccessor, points, false, float3.Zero, typedArgs.RenderContext.CreateGpuMesh);
+                            break;
+                        }
                 }
 
                 meshes.Add(mesh);
