@@ -226,7 +226,7 @@ namespace Fusee.Math.Core
         /// Gets the length (magnitude) of the vector.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public double Length => (double)System.Math.Sqrt(LengthSquared);
+        public double Length => System.Math.Sqrt(LengthSquared);
 
         #endregion public double Length
 
