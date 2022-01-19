@@ -246,9 +246,9 @@ namespace Fusee.PointCloud.PotreeReader.V2
 
                         float3 color = float3.Zero;
 
-                        color.r = ((byte)(r > 255 ? r / 256 : r)) / 255f;
-                        color.g = ((byte)(g > 255 ? g / 256 : g)) / 255f;
-                        color.b = ((byte)(b > 255 ? b / 256 : b)) / 255f;
+                        color.r = ((byte)(r > 255 ? r / 256 : r))/* / 255f*/;
+                        color.g = ((byte)(g > 255 ? g / 256 : g))/* / 255f*/;
+                        color.b = ((byte)(b > 255 ? b / 256 : b))/* / 255f*/;
 
                         ((PointAccessor<TPoint>)pointAccessor).SetColorFloat3_32(ref points[i], color);
                     }

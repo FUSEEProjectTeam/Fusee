@@ -220,7 +220,7 @@ namespace Fusee.Engine.Core
 
                 triangles[i] = (ushort)i;
                 var col = ptAccessor.GetColorFloat3_32(ref points[i]);
-                colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
+                colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
 
                 //TODO: add labels correctly
                 var label = ptAccessor.GetLabelUInt_8(ref points[i]);
