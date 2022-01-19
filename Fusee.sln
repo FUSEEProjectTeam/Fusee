@@ -1682,7 +1682,6 @@ Global
 		{84C77C62-0721-4C6F-9789-88D5F9C98974}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
 		{84C77C62-0721-4C6F-9789-88D5F9C98974}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{84C77C62-0721-4C6F-9789-88D5F9C98974}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{84C77C62-0721-4C6F-9789-88D5F9C98974}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
