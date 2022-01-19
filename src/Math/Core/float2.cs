@@ -900,8 +900,8 @@ namespace Fusee.Math.Core
         public bool Equals(float2 other)
         {
             return
-                x == other.x &&
-                y == other.y;
+                System.Math.Abs(x - other.x) < M.EpsilonFloat &&
+                System.Math.Abs(y - other.y) < M.EpsilonFloat;
         }
 
         #endregion IEquatable<float2> Members
