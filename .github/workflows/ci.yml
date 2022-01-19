@@ -10,7 +10,7 @@ on:
     - master
     - develop
   workflow_dispatch:
-  
+
 jobs:
   lint:
     runs-on: windows-2022
@@ -130,7 +130,7 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: '[17.0,]'  
+        vs-version: '[17.0,]'
 #    - name: Setup dotnet macos workload
 #      run: dotnet workload install macos
 #    - name: Build Release-Blazor
@@ -221,7 +221,7 @@ jobs:
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1.1
       with:
-        vs-version: '[17.0,]'  
+        vs-version: '[17.0,]'
     - name: Setup .NET 6.0
       uses: actions/setup-dotnet@v1
       with:
@@ -237,7 +237,7 @@ jobs:
     env:
       DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
       DOTNET_NOLOGO: true
-    runs-on: windows-2022
+    runs-on: windows-2019
     strategy:
       fail-fast: false
       matrix:
