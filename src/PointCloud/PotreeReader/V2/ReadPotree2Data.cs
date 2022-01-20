@@ -67,7 +67,7 @@ namespace Fusee.PointCloud.PotreeReader.V2
             {
                 if (potreeNode.children[i] != null)
                 {
-                    var octant = new PtOctantRead<TPoint>(potreeNode.children[i].Aabb.Center, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
+                    var octant = new PtOctantRead<TPoint>(potreeNode.children[i].Aabb.Center - Instance.Metadata.Offset, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
                     
                     if (potreeNode.children[i].NodeType == NodeType.LEAF)
                     {
