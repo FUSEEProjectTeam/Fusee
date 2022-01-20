@@ -44,7 +44,6 @@ namespace Fusee.PointCloud.PotreeReader.V2
                 Instance.Metadata.PointSize = pointSize;
             }
 
-            //TODO: ???
             var center = double3.Zero; // Instance.Hierarchy.TreeRoot.Aabb.Center;
             var size = Instance.Hierarchy.TreeRoot.Aabb.Size.y;
             var maxLvl = Instance.Metadata.Hierarchy.Depth;
