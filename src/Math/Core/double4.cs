@@ -560,7 +560,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="edge">Specifies the location of the edge of the step function.</param>
         /// <param name="val">Specifies the value to be used to generate the step function.</param>
-        public static double4 StepD(double4 edge, double4 val)
+        public static double4 Step(double4 edge, double4 val)
         {
             return new double4(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z), M.Step(edge.w, val.w));
         }

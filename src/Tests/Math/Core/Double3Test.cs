@@ -55,7 +55,7 @@ namespace Fusee.Tests.Math.Core
         #region Constructors
 
         [Fact]
-        public void Constructor_FromFloat2()
+        public void Constructor_FromDouble2()
         {
             var f2 = new double2(1, 2);
 
@@ -75,7 +75,7 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void Constructor_FromFloat4()
+        public void Constructor_FromDouble4()
         {
             var f4 = new double4(1, 2, 3, 4);
 
