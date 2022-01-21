@@ -39,7 +39,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public double3 Center => (Max + Min) * 0.5f;
+        public double3 Center => (Max + Min) * 0.5;
 
         /// <summary>
         ///     Returns the rotation as euler angles

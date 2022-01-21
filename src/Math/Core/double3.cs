@@ -634,13 +634,13 @@ namespace Fusee.Math.Core
         #endregion Cross
 
         /// <summary>
-        /// Performs <see cref="M.StepD(double, double)"/> for each component of the input vectors.
+        /// Performs <see cref="M.Step(double, double)"/> for each component of the input vectors.
         /// </summary>
         /// <param name="edge">Specifies the location of the edge of the step function.</param>
         /// <param name="val">Specifies the value to be used to generate the step function.</param>
         public static double3 Step(double3 edge, double3 val)
         {
-            return new double3(M.StepD(edge.x, val.x), M.StepD(edge.y, val.y), M.StepD(edge.z, val.z));
+            return new double3(M.Step(edge.x, val.x), M.Step(edge.y, val.y), M.Step(edge.z, val.z));
         }
 
         /// <summary>
@@ -775,7 +775,7 @@ namespace Fusee.Math.Core
                 if (dotP > 1)
                     dotP = 1;
 
-                return (double)System.Math.Acos(dotP);
+                return System.Math.Acos(dotP);
             }
 
             return 0;

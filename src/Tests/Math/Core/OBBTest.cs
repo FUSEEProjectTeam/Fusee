@@ -1,5 +1,6 @@
 ﻿using Fusee.Math.Core;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace Fusee.Tests.Math.Core
@@ -11,7 +12,7 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(OBBfData))]
-        public void ConstructorSingle_MinMax(float3[] vertices, float3 min, float3 max)
+        public void ConstructorFloat_MinMax(float3[] vertices, float3 min, float3 max)
         {
             var actual = new OBBf(vertices);
 
@@ -37,7 +38,6 @@ namespace Fusee.Tests.Math.Core
 
         public static IEnumerable<object[]> OBBfData()
         {
-
             yield return new object[]
             {
                 new float3[]
@@ -59,27 +59,27 @@ namespace Fusee.Tests.Math.Core
                     new float3(1.25f, 1.25f, 1.25f),
                     new float3(1.5f, 1.5f, 1.5f),
                     new float3(1.75f, 1.75f, 1.75f),
-                    new float3(2, 2, 2),
+                    new float3(2f, 2f, 2f),
                 },
                 new float3(0, 0, 0),
-                new float3(2, 2, 2)
+                new float3(2f, 2f, 2f)
             };
 
             yield return new object[]
             {
                 new float3[]
                 {
-                    new float3(-5, -5, -5),
+                    new float3(-5f, -5f, -5f),
                     new float3(-0.25f, -0.25f, -0.25f),
                     new float3(-0.5f, -0.5f, -0.5f),
                     new float3(0.75f, 0.75f, 0.75f),
                     new float3(1.25f, 1.25f, 1.25f),
                     new float3(1.5f, 1.5f, 1.5f),
                     new float3(1.75f, 1.75f, 1.75f),
-                    new float3(15, 15, 15),
+                    new float3(15f, 15f, 15f),
                 },
-                new float3(-5, -5, -5),
-                new float3(15, 15, 15)
+                new float3(-5f, -5f, -5f),
+                new float3(15f, 15f, 15f)
             };
 
             yield return new object[]
@@ -112,7 +112,6 @@ namespace Fusee.Tests.Math.Core
 
         public static IEnumerable<object[]> OBBdData()
         {
-
             yield return new object[]
             {
                 new double3[]
@@ -128,12 +127,12 @@ namespace Fusee.Tests.Math.Core
                 new double3[]
                 {
                     new double3(0, 0, 0),
-                    new double3(0.25f, 0.25f, 0.25f),
-                    new double3(0.5f, 0.5f, 0.5f),
-                    new double3(0.75f, 0.75f, 0.75f),
-                    new double3(1.25f, 1.25f, 1.25f),
-                    new double3(1.5f, 1.5f, 1.5f),
-                    new double3(1.75f, 1.75f, 1.75f),
+                    new double3(0.25, 0.25, 0.25),
+                    new double3(0.5, 0.5, 0.5),
+                    new double3(0.75, 0.75, 0.75),
+                    new double3(1.25, 1.25, 1.25),
+                    new double3(1.5, 1.5, 1.5),
+                    new double3(1.75, 1.75, 1.75),
                     new double3(2, 2, 2),
                 },
                 new double3(0, 0, 0),
@@ -145,12 +144,12 @@ namespace Fusee.Tests.Math.Core
                 new double3[]
                 {
                     new double3(-5, -5, -5),
-                    new double3(-0.25f, -0.25f, -0.25f),
-                    new double3(-0.5f, -0.5f, -0.5f),
-                    new double3(0.75f, 0.75f, 0.75f),
-                    new double3(1.25f, 1.25f, 1.25f),
-                    new double3(1.5f, 1.5f, 1.5f),
-                    new double3(1.75f, 1.75f, 1.75f),
+                    new double3(-0.25, -0.25, -0.25),
+                    new double3(-0.5, -0.5, -0.5),
+                    new double3(0.75, 0.75, 0.75),
+                    new double3(1.25, 1.25, 1.25),
+                    new double3(1.5, 1.5, 1.5),
+                    new double3(1.75, 1.75, 1.75),
                     new double3(15, 15, 15),
                 },
                 new double3(-5, -5, -5),
@@ -172,12 +171,12 @@ namespace Fusee.Tests.Math.Core
                 new double3[]
                 {
                     new double3(double.NegativeInfinity, double.NegativeInfinity, double.NegativeInfinity),
-                    new double3(0.25f, 0.25f, 0.25f),
-                    new double3(0.5f, 0.5f, 0.5f),
-                    new double3(0.75f, 0.75f, 0.75f),
-                    new double3(1.25f, 1.25f, 1.25f),
-                    new double3(1.5f, 1.5f, 1.5f),
-                    new double3(1.75f, 1.75f, 1.75f),
+                    new double3(0.25, 0.25, 0.25),
+                    new double3(0.5, 0.5, 0.5),
+                    new double3(0.75, 0.75, 0.75),
+                    new double3(1.25, 1.25, 1.25),
+                    new double3(1.5, 1.5, 1.5),
+                    new double3(1.75, 1.75, 1.75),
                     new double3(double.PositiveInfinity, double.PositiveInfinity, double.PositiveInfinity),
                 },
                 new double3(double.NegativeInfinity, double.NegativeInfinity, double.NegativeInfinity),

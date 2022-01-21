@@ -426,7 +426,7 @@ namespace Fusee.Math.Core
         /// <returns>The angle expressed in radians</returns>
         public static double DegreesToRadiansD(double degrees)
         {
-            const double degToRad = System.Math.PI / 180.0f;
+            const double degToRad = System.Math.PI / 180.0;
             return degrees * degToRad;
         }
 
@@ -437,7 +437,7 @@ namespace Fusee.Math.Core
         /// <returns>The angle expressed in degrees</returns>
         public static double RadiansToDegreesD(double radians)
         {
-            const double radToDeg = 180.0f / System.Math.PI;
+            const double radToDeg = 180.0 / System.Math.PI;
             return radians * radToDeg;
         }
 
@@ -591,12 +591,8 @@ namespace Fusee.Math.Core
         /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
         public static EigenF Diagonalizer(float4x4 A)
         {
-            var row0 = new double4(A.Row1.x, A.Row1.y, A.Row1.z, A.Row1.w);
-            var row1 = new double4(A.Row2.x, A.Row2.y, A.Row2.z, A.Row2.w);
-            var row2 = new double4(A.Row3.x, A.Row3.y, A.Row3.z, A.Row3.w);
-            var row3 = new double4(A.Row4.x, A.Row4.y, A.Row4.z, A.Row4.w);
-
-            var res = Diagonalizer(new double4x4(row0, row1, row2, row3));
+            var doubleMat = (double4x4)A;
+            var res = Diagonalizer(doubleMat);
 
             return new EigenF
             {
@@ -628,10 +624,11 @@ namespace Fusee.Math.Core
             var q = new QuaternionD(0, 0, 0, 1);
             var D = double4x4.Identity;
             var Q = double4x4.Identity;
+
             for (var i = 0; i < maxsteps; i++)
             {
                 // Q = float4x4.CreateRotation(q); // v*Q == q*v*conj(q)
-                Q = q.ToRotationMatrixFast(); // v*Q == q*v*conj(q)
+                Q = q.ToRotationMatrix(); // v*Q == q*v*conj(q)
                 D = Q.Transpose() * A * Q;  // A = Q^T*D*Q
                 var offDiagonal = new double3(D.M23, D.M13, D.M12); // elements not on the diagonal
                 var om = new double3(System.Math.Abs(offDiagonal.x), System.Math.Abs(offDiagonal.y), System.Math.Abs(offDiagonal.z)); // mag of each offdiag elem
@@ -639,25 +636,25 @@ namespace Fusee.Math.Core
                 var k1 = (k + 1) % 3;
                 var k2 = (k + 2) % 3;
 
-                if (offDiagonal[k].Equals(0.0f)) break;  // diagonal already
+                if (offDiagonal[k].Equals(0.0)) break;  // diagonal already
 
-                var theta = (D[k2, k2] - D[k1, k1]) / (2.0f * offDiagonal[k]);
-                var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
+                var theta = (D[k2, k2] - D[k1, k1]) / (2.0 * offDiagonal[k]);
+                var sgn = (theta > 0.0) ? 1.0 : -1.0;
                 theta *= sgn; // make it positive
-                var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
-                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c
+                var t = sgn / (theta + ((theta < 1.0e+11) ? System.Math.Sqrt(theta * theta + 1.0) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
+                var c = 1.0 / System.Math.Sqrt(t * t + 1.0); //  c= 1/(t^2+1) , t=s/c
 
-                if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
+                if (c.Equals(1.0)) break;  // no room for improvement - reached machine precision.
 
                 var jr = new QuaternionD(0, 0, 0, 0) // jacobi rotation for this iteration.
                 {
-                    [k] = (sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
+                    [k] = (sgn * System.Math.Sqrt((1.0 - c) / 2.0))
                 };
 
                 // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)
-                jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
-                jr.w = System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
-                if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
+                jr[k] *= -1.0; // note we want a final result semantic that takes D to A, not A to D
+                jr.w = System.Math.Sqrt(1.0 - (jr[k] * jr[k]));
+                if (jr.w.Equals(1.0)) break; // reached limits of floating point precision
                 q *= jr;
                 q.Normalize();
             }
@@ -886,7 +883,7 @@ namespace Fusee.Math.Core
         /// <param name="edge">Specifies the location of the edge of the step function.</param>
         /// <param name="val">Specifies the value to be used to generate the step function.</param>
         /// <returns></returns>
-        public static double StepD(double edge, double val)
+        public static double Step(double edge, double val)
         {
             return val < edge ? 0.0 : 1.0;
         }

@@ -164,6 +164,14 @@ namespace Fusee.Math.Core
             return ToRotationMatrixFast(this);
         }
 
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>
+        public double4x4 ToRotationMatrix()
+        {
+            return ToRotationMatrix(this);
+        }
+
         #endregion ToAxisAngle
 
         #region public double Length
@@ -172,7 +180,7 @@ namespace Fusee.Math.Core
         ///     Gets the length (magnitude) of the quaternion.
         /// </summary>
         /// <seealso cref="LengthSquared" />
-        public double Length => (double)System.Math.Sqrt(w * w + xyz.LengthSquared);
+        public double Length => System.Math.Sqrt(w * w + xyz.LengthSquared);
 
         #endregion public double Length
 
@@ -327,7 +335,7 @@ namespace Fusee.Math.Core
 
             double lengthSq = q.LengthSquared;
 
-            if (lengthSq > M.EpsilonFloat)
+            if (lengthSq > M.EpsilonDouble)
             {
                 var i = 1.0 / lengthSq;
                 result = new QuaternionD(q.xyz * -i, q.w * i);
@@ -355,7 +363,7 @@ namespace Fusee.Math.Core
 
             double scale;
 
-            if (!(q.Length > M.EpsilonFloat))
+            if (!(q.Length > M.EpsilonDouble))
                 scale = 0;
             else
                 scale = 1.0 / q.Length;
@@ -377,7 +385,7 @@ namespace Fusee.Math.Core
         /// <returns>A normalized quaternion rotation.</returns>
         public static QuaternionD FromAxisAngle(double3 axis, double angle)
         {
-            if (axis.LengthSquared < M.EpsilonFloat)
+            if (axis.LengthSquared < M.EpsilonDouble)
                 return Identity;
 
             if (axis.LengthSquared > 1)
@@ -387,8 +395,8 @@ namespace Fusee.Math.Core
 
             angle *= 0.5;
             axis = axis.Normalize();
-            result.xyz = axis * (double)System.Math.Sin(angle);
-            result.w = (double)System.Math.Cos(angle);
+            result.xyz = axis * System.Math.Sin(angle);
+            result.w = System.Math.Cos(angle);
 
             return Normalize(result);
         }
@@ -405,12 +413,12 @@ namespace Fusee.Math.Core
             if (q.w > 1.0)
                 q = q.Normalize();
 
-            var result = new double4 { w = 2.0 * (double)System.Math.Acos(q.w) };
+            var result = new double4 { w = 2.0 * System.Math.Acos(q.w) };
 
             // angle
-            var den = (double)System.Math.Sqrt(1.0 - q.w * q.w);
+            var den = System.Math.Sqrt(1.0 - q.w * q.w);
 
-            if (den > M.EpsilonFloat)
+            if (den > M.EpsilonDouble)
             {
                 result.xyz = q.xyz / den;
             }
@@ -438,16 +446,16 @@ namespace Fusee.Math.Core
         public static QuaternionD Slerp(QuaternionD q1, QuaternionD q2, double blend)
         {
             // if either input is zero, return the other.
-            if (q1.LengthSquared < M.EpsilonFloat)
+            if (q1.LengthSquared < M.EpsilonDouble)
             {
-                if (q2.LengthSquared < M.EpsilonFloat)
+                if (q2.LengthSquared < M.EpsilonDouble)
                 {
                     return Identity;
                 }
                 return q2;
             }
 
-            if (q2.LengthSquared < M.EpsilonFloat)
+            if (q2.LengthSquared < M.EpsilonDouble)
             {
                 return q1;
             }
@@ -477,12 +485,12 @@ namespace Fusee.Math.Core
             if (cosHalfAngle < 0.99995)
             {
                 // do proper slerp for big angles
-                var halfAngle = (double)System.Math.Acos(cosHalfAngle);
-                var sinHalfAngle = (double)System.Math.Sin(halfAngle);
+                var halfAngle = System.Math.Acos(cosHalfAngle);
+                var sinHalfAngle = System.Math.Sin(halfAngle);
                 var oneOverSinHalfAngle = 1.0 / sinHalfAngle;
 
-                blendA = (double)System.Math.Sin(halfAngle * (1.0 - blend)) * oneOverSinHalfAngle;
-                blendB = (double)System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
+                blendA = System.Math.Sin(halfAngle * (1.0 - blend)) * oneOverSinHalfAngle;
+                blendB = System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
             else
             {
@@ -493,7 +501,7 @@ namespace Fusee.Math.Core
 
             var result = new QuaternionD(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
 
-            return result.LengthSquared > M.EpsilonFloat ? Normalize(result) : Identity;
+            return result.LengthSquared > M.EpsilonDouble ? Normalize(result) : Identity;
         }
 
         #endregion Slerp
@@ -565,7 +573,7 @@ namespace Fusee.Math.Core
 
             var sp = -2 * (q.y * q.z - q.w * q.x);
 
-            if (System.Math.Abs(sp) > 0.99999)
+            if (System.Math.Abs(sp) > (1.0 - M.EpsilonDouble))
             {
                 euler.x = M.PiOver2 * sp;
 
@@ -661,7 +669,7 @@ namespace Fusee.Math.Core
 
             double3 right = double3.Cross(upDirection, lookAt);
 
-            double w = (double)System.Math.Sqrt(1.0 + right.x + upDirection.y + lookAt.z) * 0.5;
+            double w = System.Math.Sqrt(1.0 + right.x + upDirection.y + lookAt.z) * 0.5;
             double w4Recip = 1.0 / (4.0 * w);
             double x = (upDirection.z - lookAt.y) * w4Recip;
             double y = (lookAt.x - right.z) * w4Recip;
@@ -756,7 +764,7 @@ namespace Fusee.Math.Core
             double3 a = double3.Cross(from, to);
 
             q.xyz = a;
-            q.w = (double)(System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + double3.Dot(from, to));
+            q.w = (System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + double3.Dot(from, to));
 
             q = q.Normalize();
 
@@ -944,7 +952,7 @@ namespace Fusee.Math.Core
         /// <returns>True if both instances are equal; false otherwise.</returns>
         public bool Equals(QuaternionD other)
         {
-            return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonFloat);
+            return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonDouble);
         }
 
         #endregion IEquatable<QuaternionD> Members

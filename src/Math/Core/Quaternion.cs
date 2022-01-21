@@ -159,9 +159,17 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Converts the quaternion into a rotation matrix.
         /// </summary>
-        public float4x4 ToRotMat()
+        public float4x4 ToRotationMatrixFast()
         {
             return ToRotationMatrixFast(this);
+        }
+
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>
+        public float4x4 ToRotationMatrix()
+        {
+            return ToRotationMatrix(this);
         }
 
         #endregion ToAxisAngle

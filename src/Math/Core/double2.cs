@@ -470,13 +470,13 @@ namespace Fusee.Math.Core
         #endregion Dot
 
         /// <summary>
-        /// Performs <see cref="M.StepD(double, double)"/> for each component of the input vectors.
+        /// Performs <see cref="M.Step(double, double)"/> for each component of the input vectors.
         /// </summary>
         /// <param name="edge">Specifies the location of the edge of the step function.</param>
         /// <param name="val">Specifies the value to be used to generate the step function.</param>
         public static double2 Step(double2 edge, double2 val)
         {
-            return new double2(M.StepD(edge.x, val.x), M.StepD(edge.y, val.y));
+            return new double2(M.Step(edge.x, val.x), M.Step(edge.y, val.y));
         }
 
         /// <summary>

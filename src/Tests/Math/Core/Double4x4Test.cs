@@ -657,16 +657,6 @@ namespace Fusee.Tests.Math.Core
             Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
 
-        [Fact]
-        public void InvertAffine_Static()
-        {
-            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
-
-            var actual = mat.InvertAffine();
-
-            Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
-        }
-
         #endregion
 
         #region Transpose
