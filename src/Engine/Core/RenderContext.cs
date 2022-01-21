@@ -1095,7 +1095,7 @@ namespace Fusee.Engine.Core
                 catch (Exception ex)
                 {
                     Diagnostics.Error("Error while compiling shader ", ex, new string[] { vert, geom, frag });
-                    throw new Exception("Error while compiling shader ", ex);
+                    throw new Exception($"Error while compiling shader\n{vert}\n{geom}\n{frag}", ex);
                 }
             }
             else
@@ -1400,6 +1400,13 @@ namespace Fusee.Engine.Core
                 }
                 else if (param.Info.Type == typeof(float4))
                 {
+                    if (param.Info.Size > 1)
+                    {
+                        // parameter is an array
+                        var paramArray = (float4[])param.Value;
+                        _rci.SetShaderParam(param.Info.Handle, paramArray);
+                        return;
+                    }
                     _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
                 }
                 else if (param.Info.Type == typeof(float4x4))

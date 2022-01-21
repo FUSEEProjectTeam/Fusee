@@ -44,8 +44,7 @@ namespace Fusee.PointCloud.PotreeReader.V2
                 Instance.Metadata.PointSize = pointSize;
             }
 
-            //TODO: ???
-            var center = Instance.Hierarchy.TreeRoot.Aabb.Center;
+            var center = double3.Zero; // Instance.Hierarchy.TreeRoot.Aabb.Center;
             var size = Instance.Hierarchy.TreeRoot.Aabb.Size.y;
             var maxLvl = Instance.Metadata.Hierarchy.Depth;
 
@@ -67,7 +66,7 @@ namespace Fusee.PointCloud.PotreeReader.V2
             {
                 if (potreeNode.children[i] != null)
                 {
-                    var octant = new PtOctantRead<TPoint>(potreeNode.children[i].Aabb.Center, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
+                    var octant = new PtOctantRead<TPoint>(potreeNode.children[i].Aabb.Center - Instance.Metadata.Offset, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
                     
                     if (potreeNode.children[i].NodeType == NodeType.LEAF)
                     {
@@ -243,9 +242,9 @@ namespace Fusee.PointCloud.PotreeReader.V2
                     {
                         binaryReader.BaseStream.Position = node.ByteOffset + attributeOffset + i * Instance.Metadata.PointSize;
 
-                        double x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x) + Instance.Metadata.Offset.x;
-                        double y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y) + Instance.Metadata.Offset.y;
-                        double z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z) + Instance.Metadata.Offset.z;
+                        double x = (binaryReader.ReadInt32() * Instance.Metadata.Scale.x); // + Instance.Metadata.Offset.x;
+                        double y = (binaryReader.ReadInt32() * Instance.Metadata.Scale.y); // + Instance.Metadata.Offset.y;
+                        double z = (binaryReader.ReadInt32() * Instance.Metadata.Scale.z); // + Instance.Metadata.Offset.z;
 
                         double3 position = new double3(x, y, z);
 
@@ -295,7 +294,7 @@ namespace Fusee.PointCloud.PotreeReader.V2
             binaryReader.Close();
             binaryReader.Dispose();
 
-            return (TPoint[]) points;
+            return points;
         }
     }
 }
