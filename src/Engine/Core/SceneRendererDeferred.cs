@@ -649,7 +649,11 @@ namespace Fusee.Engine.Core
                 }
 
                 //Set background color only in last light pass to NOT blend the color (additive).
-                if (i == LightViseratorResults.Count - 1)
+                var isNextLightLast = i + 1 == LightViseratorResults.Count - 1;
+                if (i == LightViseratorResults.Count - 1 ||
+                   (isNextLightLast && !LightViseratorResults[i + 1].Item2.Light.Active) ||
+                   (isNextLightLast && !LightViseratorResults[i + 1].Item2.Light.IsCastingShadows) ||
+                   (isNextLightLast && lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders))
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, BackgroundColor);
                 else
                     _lightingPassEffect.SetFxParam(UniformNameDeclarations.BackgroundColorHash, _texClearColor);
@@ -951,8 +955,6 @@ namespace Fusee.Engine.Core
         {
             _gBufferRenderTarget = _rc.CreateGBufferTarget(TexRes);
 
-            // TODO: Do not move to RenderTarget
-            // TODO: Make PostProcBuffer, move to PostProcBuffer
             _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.RGB/*fRGB16*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.Ssao, new ImagePixelFormat(ColorFormat.RGB/*fRGB16*/), (int)TexRes, (int)TexRes, false, TextureFilterMode.Nearest);
             _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.Albedo, new ImagePixelFormat(ColorFormat.RGB), (int)TexRes, (int)TexRes, false, TextureFilterMode.Linear);

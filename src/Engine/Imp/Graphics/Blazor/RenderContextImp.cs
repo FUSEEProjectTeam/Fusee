@@ -2231,8 +2231,8 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
         {
             return capability switch
             {
-                HardwareCapability.CanRenderDeferred => 0U,
-                HardwareCapability.CanUseGeometryShaders => 0U,//WASM uses OpenGL es, where no geometry shaders can be used.
+                HardwareCapability.CanRenderDeferred => 1U,
+                HardwareCapability.CanUseGeometryShaders => 0U,
                 _ => throw new ArgumentOutOfRangeException(nameof(capability), capability, null),
             };
         }
