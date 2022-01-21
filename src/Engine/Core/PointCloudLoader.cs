@@ -75,7 +75,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        void Update(float fov, float3 camPos);
+        void Update();
 
         List<string> VisibleNodes { get; }
     }
@@ -216,10 +216,10 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        public void Update(float fov, float3 camPos)
+        public void Update()
         {
-            _camPosD = new double3(camPos.x, camPos.y, camPos.z);
-            _fov = fov;
+            _camPosD = new double3(CamPos.x, CamPos.y, CamPos.z);
+            _fov = Fov;
 
             WasSceneUpdated = false;
             SetMinScreenProjectedSize(_camPosD, _fov);

@@ -47,6 +47,8 @@ namespace Fusee.PointCloud.Core
         public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
         {
             var distance = (Center - camPos).Length;
+            if (Center == camPos)
+                distance = 0.0001f;
             var slope = (float)System.Math.Tan(fov / 2d);
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
