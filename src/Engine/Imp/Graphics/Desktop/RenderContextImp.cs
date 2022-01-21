@@ -228,7 +228,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.DepthComponent16;
                     format = PixelFormat.DepthComponent;
                     pxType = PixelType.Float;
-
                     break;
                 case ColorFormat.uiRgb8:
                     internalFormat = PixelInternalFormat.Rgba8ui;
