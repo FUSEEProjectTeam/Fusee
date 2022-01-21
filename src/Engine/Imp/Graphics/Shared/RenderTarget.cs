@@ -112,7 +112,7 @@ namespace Fusee.Engine.Imp.Shared
         /// </summary>
         public void SetSSAOTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.Ssao] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution, new ImagePixelFormat(ColorFormat.fRGBA16));
         }
 
         /// <summary>
