@@ -3,7 +3,6 @@
 	<PropertyGroup>
 		<TargetFrameworks>netstandard2.1;net6.0</TargetFrameworks>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
 		<IsPackable>true</IsPackable>
 		<Description>Fusee Engine Core</Description>
 	</PropertyGroup>
