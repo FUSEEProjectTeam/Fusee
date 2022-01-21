@@ -423,7 +423,7 @@ namespace Fusee.Engine.Core
 
             _rc.EnableDepthClamp();
 
-            _canUseGeometryShaders = false;// _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U;
+            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CanUseGeometryShaders) == 1U;
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
