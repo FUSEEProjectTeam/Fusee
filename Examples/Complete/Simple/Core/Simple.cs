@@ -21,15 +21,15 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
         private readonly float _fovy = M.PiOver4;
 
-        //private SceneRendererForward _guiRenderer;
-        //private SceneContainer _gui;
-        //private SceneInteractionHandler _sih;
+        private SceneRendererForward _guiRenderer;
+        private SceneContainer _gui;
+        private SceneInteractionHandler _sih;
 
         private bool _keys;
 
@@ -37,21 +37,17 @@ namespace Fusee.Examples.Simple.Core
         {
             Console.WriteLine("Loading scene ...");
 
-            //_gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
+            _gui = await FuseeGuiHelper.CreateDefaultGuiAsync(this, CanvasRenderMode.Screen, "FUSEE Simple Example");
 
             // Create the interaction handler
-            //_sih = new SceneInteractionHandler(_gui);
+            _sih = new SceneInteractionHandler(_gui);
 
             // Load the rocket model
-            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("sponza.fus");
+            _rocketScene = await AssetStorage.GetAsync<SceneContainer>("RocketFus.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene)
-            {
-                SsaoOn = false,
-                FxaaOn = false
-            };
-            //_guiRenderer = new SceneRendererForward(_gui);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         public override async Task InitAsync()
@@ -132,14 +128,14 @@ namespace Fusee.Examples.Simple.Core
             //Constantly check for interactive objects.
             RC.View = float4x4.LookAt(0, 0, 1, 0, 0, 0, 0, 1, 0);
             RC.Projection = orthographic;
-            //if (!Mouse.Desc.Contains("Android"))
-            //    _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            //if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            //{
-            //    _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            //}
-            //
-            //_guiRenderer.Render(RC);
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            if (Touch != null && Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
