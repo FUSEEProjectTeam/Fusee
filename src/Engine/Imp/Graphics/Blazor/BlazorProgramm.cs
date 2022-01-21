@@ -12,7 +12,6 @@ namespace Fusee.Base.Imp.Blazor
     /// </summary>
     public class BlazorProgramm
     {
-        private readonly float4 CanvasColor = new(0.5f, 0.5f, 0.5f, 1.0f);
         private Action<double> loop;
         private double previousMilliseconds;
         private IJSObjectReference window;
@@ -52,7 +51,7 @@ namespace Fusee.Base.Imp.Blazor
             int windowHeight = window.GetObjectProperty<int>(runtime, "innerHeight");
 
             IJSInProcessObjectReference canvas = HtmlHelper.AddCanvas(runtime, divCanvasName, canvasName, windowWidth, windowHeight);
-            mainExecutable.Init(canvas, runtime, CanvasColor);
+            mainExecutable.Init(canvas, runtime);
             mainExecutable.Run();
 
             RequestAnimationFrame();
