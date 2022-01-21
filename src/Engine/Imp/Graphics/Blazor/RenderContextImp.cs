@@ -51,6 +51,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
             gl2 = ((RenderCanvasImp)renderCanvasImp)._gl;
 
             gl2.Enable(DEPTH_TEST);
+            gl2.Enable(SCISSOR_TEST);
         }
 
         #region Image data related Members
@@ -1686,7 +1687,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 //    break;
                 //case Blend.InverseSourceColor2:
                 //    break;
-                _ => throw new ArgumentOutOfRangeException("blend"),
+                _ => throw new ArgumentOutOfRangeException($"Blend mode {blend} not supported!"),
             };
         }
 
@@ -1706,7 +1707,7 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                 ONE_MINUS_DST_COLOR => Blend.InverseDestinationColor,
                 CONSTANT_COLOR or CONSTANT_ALPHA => Blend.BlendFactor,
                 ONE_MINUS_CONSTANT_COLOR or ONE_MINUS_CONSTANT_ALPHA => Blend.InverseBlendFactor,
-                _ => throw new ArgumentOutOfRangeException("blend"),
+                _ => throw new ArgumentOutOfRangeException($"Blend mode {bf} not supported!"),
             };
         }
 
@@ -1827,11 +1828,11 @@ namespace Fusee.Engine.Imp.Graphics.Blazor
                     }
                     break;
                 case RenderState.BlendFactor:
-                    var argb = (int)value;
-                    var a = argb >> 32;
-                    var r = argb >> 16 & 0xFF;
-                    var g = argb >> 8 & 0xFF;
-                    var b = argb & 0xFF;
+                    var rgba = (int)value;
+                    var r = rgba >> 32;
+                    var g = rgba >> 16 & 0xFF;
+                    var b = rgba >> 8 & 0xFF;
+                    var a = rgba & 0xFF;
                     gl2.BlendColor(r, g, b, a);
                     break;
                 default:
