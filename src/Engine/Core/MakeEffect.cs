@@ -568,8 +568,6 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             frag.Append(Header.Version300Es);
             frag.Append(Header.DefinePi);
-            //frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            //frag.Append("#extension GL_ARB_gpu_shader5 : enable\n");
             frag.Append(Header.EsPrecisionHighpFloat);
 
             frag.Append(FragProperties.DeferredTextureUniforms());

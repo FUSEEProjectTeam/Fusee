@@ -964,7 +964,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        // texture should already return a simple float, see: https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/texture.xhtml, no .r needed
                         "shadow -= texture(shadowMap, vec3(projCoords.xy + vec2(x, y) * texelSize, projCoords.z), thisBias);",
                     "}",
                 "}",
@@ -1011,7 +1010,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                     "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
                     "{",
-                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z));", // no .r needed, already single float
+                        "float pcfDepth = texture(shadowMap, vec4(vec3(projCoords.xy + vec2(x, y) * texelSize, layer), projCoords.z));",
                         "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
                     "}",
                 "}",
