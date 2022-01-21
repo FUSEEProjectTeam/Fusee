@@ -44,10 +44,10 @@ namespace Fusee.PointCloud.Core
         /// Creates a new <see cref="GridCellD{O}"/> for the given item.
         /// </summary>
         /// <param name="GetPositionOfPayloadItem">Method to retrieve the points coordinate.</param>
-        /// <param name="point">The generic point cloud point.</param>
-        public override void CreateCellForItem(Func<TPoint, double3> GetPositionOfPayloadItem, TPoint point)
+        /// <param name="payloadItem">The generic point cloud point.</param>
+        public override void CreateCellForItem(Func<TPoint, double3> GetPositionOfPayloadItem, TPoint payloadItem)
         {
-            var tPointPos = GetPositionOfPayloadItem(point);
+            var tPointPos = GetPositionOfPayloadItem(payloadItem);
             var cell = TryGetCellForPos(Size, Center, tPointPos, out var cellIdx);
 
             //Check if NN is too close - a point remains in the parent octant if the distance to the occupant of a neighbor cell is smaller than the neighbor cells' size.         
@@ -65,7 +65,7 @@ namespace Fusee.PointCloud.Core
 
                 if ((tPointPos - GetPositionOfPayloadItem(neighbourCell.Payload)).Length < neighbourCell.Size.x) //neighbourCell.Size equals spacing/ resolution of the octant
                 {
-                    ParentOctant.Payload.Add(point);
+                    ParentOctant.Payload.Add(payloadItem);
                     return;
                 }
             }
@@ -74,7 +74,7 @@ namespace Fusee.PointCloud.Core
             if (cell == null)
             {
                 CreateCell(cellIdx);
-                GridCellsDict[cellIdx].Payload = point;
+                GridCellsDict[cellIdx].Payload = payloadItem;
             }
             else
             {
@@ -85,10 +85,10 @@ namespace Fusee.PointCloud.Core
                 if (pointDistToCenter < occupantDistToCenter)
                 {
                     ParentOctant.Payload.Add(cell.Payload);
-                    cell.Payload = point;
+                    cell.Payload = payloadItem;
                 }
                 else
-                    ParentOctant.Payload.Add(point);
+                    ParentOctant.Payload.Add(payloadItem);
             }
         }
 

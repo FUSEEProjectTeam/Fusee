@@ -76,7 +76,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Position:
                         {
                             fragMainBody.Add($"float encodedShadingModel = float(({shadingModelInt} & 0xF) | 0) / float(0xFF);");
-                            fragMainBody.Add($"{texName} = vec4(surfOut.position, encodedShadingModel);");
+                            fragMainBody.Add($"vec3 positionToInt = surfOut.position.xyz;");
+                            fragMainBody.Add($"{texName} = vec4(positionToInt, encodedShadingModel);");
                             break;
                         }
                     case (int)RenderTargetTextureTypes.Albedo:
@@ -86,7 +87,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     case (int)RenderTargetTextureTypes.Normal:
                         {
                             if (shadingModel != (ShadingModel.Unlit) && shadingModel != (ShadingModel.Edl))
-                                fragMainBody.Add($"{texName} = vec4(normalize(surfOut.{SurfaceOut.Normal.Item2}.xyz), 1.0);");
+                            {
+                                fragMainBody.Add($"vec3 normal = normalize(surfOut.{SurfaceOut.Normal.Item2}.xyz);");
+                                fragMainBody.Add($"{texName} = vec4(normal, 1.0);");
+                            }
                             else
                                 fragMainBody.Add($"{texName} = vec4(1.0, 1.0, 1.0, 1.0);");
                         }
