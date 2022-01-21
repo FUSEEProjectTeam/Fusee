@@ -1,60 +1,11 @@
+﻿using System.Linq;
+
 namespace Fusee.Math.Core
 {
     /// <summary>
-    /// Eigen data structure with values and vectors in single precision.
-    /// </summary>
-    public struct EigenF
-    {
-        /// <summary>
-        /// Eigen values.
-        /// </summary>
-        public float[] Values;
-
-        /// <summary>
-        /// Eigen vectors.
-        /// </summary>
-        public float3[] Vectors;
-
-        /// <summary>
-        /// Generates the rotation matrix from eigen vectors
-        /// </summary>
-        public float4x4 RotationMatrix => new(new float4(Vectors[0]), new float4(Vectors[1]), new float4(Vectors[2]), new float4(0, 0, 0, 1));
-
-        /// <summary>
-        /// Checks if two EigenF values are the same
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
-        public override bool Equals(object? obj) => obj is EigenF e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
-
-        /// <summary>
-        /// Returns hash code
-        /// </summary>
-        /// <returns></returns>
-        public override int GetHashCode() => Values.GetHashCode() + Vectors.GetHashCode();
-
-        /// <summary>
-        /// Checks if two EigenF values are the same
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public static bool operator ==(EigenF left, EigenF right) => left.Equals(right);
-
-        /// <summary>
-        /// Checks if two EigenF values aren't the same
-        /// </summary>
-        /// <param name="left"></param>
-        /// <param name="right"></param>
-        /// <returns></returns>
-        public static bool operator !=(EigenF left, EigenF right) => !(left == right);
-
-    }
-
-    /// <summary>
     /// Eigen data structure with values and vectors in double precision.
     /// </summary>
-    public struct EigenD
+    public struct Eigen
     {
         /// <summary>
         /// Eigen values.
@@ -71,13 +22,12 @@ namespace Fusee.Math.Core
         /// </summary>
         public double4x4 RotationMatrix => new(new double4(Vectors[0]), new double4(Vectors[1]), new double4(Vectors[2]), new double4(0, 0, 0, 1));
 
-
         /// <summary>
         /// Checks if two EigenD values are the same
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object? obj) => obj is EigenD e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
+        public override bool Equals(object? obj) => obj is Eigen e && e.Values.Equals(Values) && e.Vectors.Equals(Vectors);
 
         /// <summary>
         /// Returns hash code
@@ -91,7 +41,7 @@ namespace Fusee.Math.Core
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static bool operator ==(EigenD left, EigenD right) => left.Equals(right);
+        public static bool operator ==(Eigen left, Eigen right) => left.Equals(right);
 
         /// <summary>
         /// Checks if two EigenD values aren't the same
@@ -99,6 +49,31 @@ namespace Fusee.Math.Core
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static bool operator !=(EigenD left, EigenD right) => !(left == right);
+        public static bool operator !=(Eigen left, Eigen right) => !(left == right);
+
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="vals"></param>
+        public Eigen(double3[] vals)
+        {
+            var centeroid = M.CalculateCentroid(vals);
+            var covarianceMatrix = M.CreateCovarianceMatrix(centeroid, vals);
+
+            this = M.Diagonalizer(covarianceMatrix);
+        }
+
+        /// <summary>
+        /// Creates a new instance.
+        /// </summary>
+        /// <param name="vals"></param>
+        public Eigen(float3[] vals)
+        {
+            var valsD = vals.Select(val => (double3)val).ToArray();
+            var centeroid = M.CalculateCentroid(valsD);
+            var covarianceMatrix = M.CreateCovarianceMatrix(centeroid, valsD);
+
+            this = M.Diagonalizer(covarianceMatrix);
+        }
     }
 }

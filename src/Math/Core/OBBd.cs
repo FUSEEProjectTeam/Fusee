@@ -64,8 +64,7 @@ namespace Fusee.Math.Core
             }
 
             Translation = M.CalculateCentroid(vertices);
-            var covarianceMatrix = M.CreateCovarianceMatrix(Translation, vertices);
-            var eigen = M.EigenFromCovarianceMat(covarianceMatrix);
+            var eigen = new Eigen(vertices);
 
             Rotation = eigen.RotationMatrix;
 

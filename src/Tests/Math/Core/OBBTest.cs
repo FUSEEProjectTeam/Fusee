@@ -1,6 +1,5 @@
 ﻿using Fusee.Math.Core;
 using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 
 namespace Fusee.Tests.Math.Core

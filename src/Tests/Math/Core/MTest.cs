@@ -401,8 +401,7 @@ namespace Fusee.Tests.Math.Core
 
             var centroid = M.CalculateCentroid(val);
             var covarianceMatrix = M.CreateCovarianceMatrix(centroid, val);
-
-            var actual = M.EigenFromCovarianceMat(covarianceMatrix);
+            var actual = M.EigenFromCovarianceMat((double4x4)covarianceMatrix);
 
             var expectedVals = new float[] { 910.07f, 44.8197f, 629.11f };
 
@@ -421,7 +420,6 @@ namespace Fusee.Tests.Math.Core
                 Assert.Equal(expectedVectors[i].y, actual.Vectors[i].y, precision);
                 Assert.Equal(expectedVectors[i].z, actual.Vectors[i].z, precision);
             }
-
         }
 
         /// <summary>       

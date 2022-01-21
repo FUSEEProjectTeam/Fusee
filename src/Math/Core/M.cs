@@ -554,70 +554,31 @@ namespace Fusee.Math.Core
         #region Eigen
 
         /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision.
-        /// </summary>
-        /// <param name="covarianceMatrix"></param>
-        /// <returns></returns>
-        public static EigenF EigenFromCovarianceMat(float4x4 covarianceMatrix)
-        {
-            return Diagonalizer(covarianceMatrix);
-        }
-
-        /// <summary>
         ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision.
         /// </summary>
         /// <param name="covarianceMatrix"></param>
         /// <returns></returns>
-        public static EigenD EigenFromCovarianceMat(double4x4 covarianceMatrix)
+        public static Eigen EigenFromCovarianceMat(double4x4 covarianceMatrix)
         {
             return Diagonalizer(covarianceMatrix);
         }
 
         /// <summary>
-        ///     Diagonalizes a given covariance matrix with single precision.
-        ///     Currently only for 3x3 matrices, therefore three values but for the sake of convenience you can (and have to) feed a 4x4 matrix into this method.
-        ///     <para>
-        ///         Credits to: https://github.com/melax/sandbox
-        ///         http://melax.github.io/diag.html
-        ///         A must be a symmetric matrix.
-        ///         returns quaternion q such that its corresponding matrix Q
-        ///         can be used to Diagonalize A
-        ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
-        ///     </para>
-        /// </summary>
-        /// <param name="A">The covariance matrix.</param>
-        /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
-        public static EigenF Diagonalizer(float4x4 A)
-        {
-            var doubleMat = (double4x4)A;
-            var res = Diagonalizer(doubleMat);
-
-            return new EigenF
-            {
-                Values = res.Values.Select(val => (float)val).ToArray(),
-                Vectors = res.Vectors.Select(vec => new float3((float)vec.x, (float)vec.y, (float)vec.z)).ToArray()
-            };
-        }
-
-        /// <summary>
-        ///     Diagonalizes a given covariance matrix with double precision.
-        ///
-        ///     <para>
-        ///         Credits to: https://github.com/melax/sandbox
-        ///         http://melax.github.io/diag.html
-        ///         A must be a symmetric matrix.
-        ///         returns quaternion q such that its corresponding matrix Q
-        ///         can be used to Diagonalize A
-        ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
-        ///     </para>
+        /// Diagonalizes a given covariance matrix with double precision.
+        /// <para>
+        /// Credits to: https://github.com/melax/sandbox
+        /// http://melax.github.io/diag.html
+        /// A must be a symmetric matrix.
+        /// returns quaternion q such that its corresponding matrix Q
+        /// can be used to Diagonalize A
+        /// Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
+        /// The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
+        /// As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
+        /// </para>
         /// </summary>
         /// <param name="A">The covariance matrix</param>
         /// <returns></returns>
-        public static EigenD Diagonalizer(double4x4 A)
+        public static Eigen Diagonalizer(double4x4 A)
         {
             const int maxsteps = 512; // certainly wont need that many.
 
@@ -641,7 +602,7 @@ namespace Fusee.Math.Core
                 var theta = (D[k2, k2] - D[k1, k1]) / (2.0 * offDiagonal[k]);
                 var sgn = (theta > 0.0) ? 1.0 : -1.0;
                 theta *= sgn; // make it positive
-                var t = sgn / (theta + ((theta < 1.0e+11) ? System.Math.Sqrt(theta * theta + 1.0) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
+                var t = sgn / (theta + ((theta < 1.0e+16) ? System.Math.Sqrt(theta * theta + 1.0) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
                 var c = 1.0 / System.Math.Sqrt(t * t + 1.0); //  c= 1/(t^2+1) , t=s/c
 
                 if (c.Equals(1.0)) break;  // no room for improvement - reached machine precision.
@@ -659,9 +620,7 @@ namespace Fusee.Math.Core
                 q.Normalize();
             }
 
-            var vectorMat = Q;
-
-            return new EigenD
+            return new Eigen
             {
                 Values = new[]
                 {
@@ -669,7 +628,7 @@ namespace Fusee.Math.Core
                     D.M22,
                     D.M33
                 },
-                Vectors = new double3[] { vectorMat.Row1.xyz, vectorMat.Row2.xyz, vectorMat.Row3.xyz }
+                Vectors = new double3[] { Q.Row1.xyz, Q.Row2.xyz, Q.Row3.xyz }
             };
         }
 

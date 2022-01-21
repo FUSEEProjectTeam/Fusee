@@ -62,12 +62,11 @@ namespace Fusee.Math.Core
                 Size = float3.Zero;
                 return;
             }
-
+            
             Translation = M.CalculateCentroid(vertices);
-            var covarianceMatrix = M.CreateCovarianceMatrix(Translation, vertices);
-            var eigen = M.EigenFromCovarianceMat(covarianceMatrix);
+            var eigen = new Eigen(vertices);
 
-            Rotation = eigen.RotationMatrix;
+            Rotation = (float4x4)eigen.RotationMatrix;
 
             var changeBasis = Rotation.Invert();
 
