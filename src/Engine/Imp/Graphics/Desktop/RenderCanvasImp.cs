@@ -193,16 +193,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp() : this(null)
+        public RenderCanvasImp()
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        /// <param name="appIcon">The icon for the render window.</param>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        public RenderCanvasImp(Icon appIcon, bool isMultithreaded = false)
+        public RenderCanvasImp(bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
             Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);

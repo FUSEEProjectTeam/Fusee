@@ -55,8 +55,7 @@ namespace Fusee.Examples.Deferred.Desktop
             var app = new Core.Deferred();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
+            app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp();
             app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
