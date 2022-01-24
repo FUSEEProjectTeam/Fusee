@@ -107,7 +107,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private int _ptThreshold = 64000000;
+        private int _ptThreshold = 1000000;
 
         public int PointThreshold
         {

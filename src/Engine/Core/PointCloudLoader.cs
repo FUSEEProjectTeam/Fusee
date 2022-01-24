@@ -277,18 +277,16 @@ namespace Fusee.Engine.Core
 
                     Task.Run(async () =>
                     {
-                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant.Guid, octant, FileFolderPath, PtAccessor));
+                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant.Guid, FileFolderPath, PtAccessor));
 
                         lock (_lockLoadingQueue)
                         {
                             _loadingQueue.Remove(octant.Guid);
                         }
-                        if (octant.NumberOfPointsInNode == 0)
-                            NumberOfVisiblePoints += 0;
-                        else
-                            NumberOfVisiblePoints += octant.NumberOfPointsInNode;
+                        
                     });
 
+                    NumberOfVisiblePoints += octant.NumberOfPointsInNode;
                     VisibleNodes.Add(octant.Guid);
                     _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
                     DetermineVisibilityForChildren(kvp.Value);
@@ -318,7 +316,7 @@ namespace Fusee.Engine.Core
 
             //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
-            if (!node.InsideOrIntersectingFrustum(RenderFrustum) || node.ProjectedScreenSize < _minScreenProjectedSize)
+            if (!node.InsideOrIntersectingFrustum(RenderFrustum) || node.ProjectedScreenSize < _minScreenProjectedSize - M.EpsilonDouble)
             {
                 return;
             }
@@ -331,7 +329,7 @@ namespace Fusee.Engine.Core
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotree2Data.LoadPointsForNodeAsync(meshArgs.Guid, meshArgs.PtAccessor, meshArgs.Octant);
+            return await ReadPotree2Data.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)

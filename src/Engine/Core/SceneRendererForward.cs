@@ -5,7 +5,6 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using System;
@@ -766,14 +765,14 @@ namespace Fusee.Engine.Core
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
             //if (_rc.InvView == float4x4.Identity) return;
-            
+
             switch (pointCloud.PointCloudImp.FileType)
             {
                 case PointCloudFileType.Las:
                     throw new NotImplementedException();
                 case PointCloudFileType.Potree2:
                     var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-                    ((Potree2BaseCloud)(pointCloud.PointCloudImp)).Update(_rc.CreateGpuMesh, fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
+                    ((Potree2BaseCloud)pointCloud.PointCloudImp).Update(_rc.CreateGpuMesh, fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
                     break;
             }
 
