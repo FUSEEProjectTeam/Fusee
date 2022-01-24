@@ -77,7 +77,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public PlaneF Normalize()
         {
-            var mag = (float)System.Math.Sqrt(A * A + B * B + C * C);
+            var mag = MathF.Sqrt(A * A + B * B + C * C);
             var a = A / mag;
             var b = B / mag;
             var c = C / mag;
@@ -106,12 +106,12 @@ namespace Fusee.Math.Core
         /// <param name="other">The other plane to calculate the angle with.</param>
         public float AngleBetween(PlaneF other)
         {
-            var numerator = System.Math.Abs((A * other.A) + (B * other.B) + (C * other.C));
+            var numerator = MathF.Abs((A * other.A) + (B * other.B) + (C * other.C));
             var denominator = Normal.Length * other.Normal.Length;
 
             var cosAlpha = numerator / denominator;
 
-            return (float)System.Math.Acos(cosAlpha);
+            return MathF.Acos(cosAlpha);
         }
 
         #region Plane-Box Intersection
@@ -126,7 +126,7 @@ namespace Fusee.Math.Core
             var r = BoxExtendInNormalDirection(aabb);
             var s = SignedDistanceFromPoint(aabb.Center);
 
-            return System.Math.Abs(s) <= r;
+            return MathF.Abs(s) <= r;
         }
 
         /// <summary>
@@ -140,7 +140,7 @@ namespace Fusee.Math.Core
             var r = BoxExtendInNormalDirection(size);
             var s = SignedDistanceFromPoint(center);
 
-            return System.Math.Abs(s) <= r;
+            return MathF.Abs(s) <= r;
         }
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace Fusee.Math.Core
             var r = BoxExtendInNormalDirection(obb);
             var s = SignedDistanceFromPoint(obb.Center);
 
-            return System.Math.Abs(s) <= r;
+            return MathF.Abs(s) <= r;
         }
 
         /// <summary>
@@ -260,7 +260,7 @@ namespace Fusee.Math.Core
         private double BoxExtendInNormalDirection(float3 size)
         {
             var boxExtend = size * 0.5f;
-            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
+            return boxExtend.x * MathF.Abs(Normal.x) + boxExtend.y * MathF.Abs(Normal.y) + boxExtend.z * MathF.Abs(Normal.z);
         }
 
         /// <summary>
@@ -270,7 +270,7 @@ namespace Fusee.Math.Core
         private double BoxExtendInNormalDirection(float size)
         {
             var boxExtend = size * 0.5f;
-            return boxExtend * System.Math.Abs(Normal.x) + boxExtend * System.Math.Abs(Normal.y) + boxExtend * System.Math.Abs(Normal.z);
+            return boxExtend * MathF.Abs(Normal.x) + boxExtend * MathF.Abs(Normal.y) + boxExtend * MathF.Abs(Normal.z);
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace Fusee.Math.Core
         private float BoxExtendInNormalDirection(AABBf aabb)
         {
             var boxExtend = aabb.Size * 0.5f;
-            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
+            return boxExtend.x * MathF.Abs(Normal.x) + boxExtend.y * MathF.Abs(Normal.y) + boxExtend.z * MathF.Abs(Normal.z);
         }
 
         /// <summary>
@@ -297,9 +297,9 @@ namespace Fusee.Math.Core
 
             var boxExtend = obb.Size * 0.5f;
 
-            return boxExtend.x * System.Math.Abs(float3.Dot(Normal, xAxis)) +
-                    boxExtend.y * System.Math.Abs(float3.Dot(Normal, yAxis)) +
-                    boxExtend.z * System.Math.Abs(float3.Dot(Normal, zAxis));
+            return boxExtend.x * MathF.Abs(float3.Dot(Normal, xAxis)) +
+                    boxExtend.y * MathF.Abs(float3.Dot(Normal, yAxis)) +
+                    boxExtend.z * MathF.Abs(float3.Dot(Normal, zAxis));
         }
 
         #endregion
@@ -354,10 +354,10 @@ namespace Fusee.Math.Core
 
             var other = (PlaneF)obj;
             return
-                System.Math.Abs(A - other.A) < M.EpsilonFloat &&
-                System.Math.Abs(B - other.B) < M.EpsilonFloat &&
-                System.Math.Abs(C - other.C) < M.EpsilonFloat &&
-                System.Math.Abs(D - other.D) < M.EpsilonFloat;
+                MathF.Abs(A - other.A) < M.EpsilonFloat &&
+                MathF.Abs(B - other.B) < M.EpsilonFloat &&
+                MathF.Abs(C - other.C) < M.EpsilonFloat &&
+                MathF.Abs(D - other.D) < M.EpsilonFloat;
         }
 
         /// <summary>
