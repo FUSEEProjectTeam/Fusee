@@ -193,7 +193,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp()
+        public RenderCanvasImp() : this(false)
         {
         }
 
