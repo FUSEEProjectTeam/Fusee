@@ -108,8 +108,8 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
             _pointCloud = new Engine.Core.Scene.PointCloud(PtRenderingParams.Instance.PathToOocFile, PointCloudFileType.Potree2, PtRenderingParams.Instance.PointType);
 
-            ((OutOfCoreCloud)_pointCloud.PointCloudImp).MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
-            ((OutOfCoreCloud)_pointCloud.PointCloudImp).PointThreshold = PtRenderingParams.Instance.PointThreshold;
+            ((Potree2BaseCloud)_pointCloud.PointCloudImp).MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
+            ((Potree2BaseCloud)_pointCloud.PointCloudImp).PointThreshold = PtRenderingParams.Instance.PointThreshold;
 
             var pointCloudNode = new SceneNode()
             {
@@ -296,12 +296,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         private void OnThresholdChanged(int newValue)
         {
-            ((Potree2Cloud<Position_double__Color_float__Label_byte>)(_pointCloud.PointCloudImp)).PointThreshold = newValue;
+            ((Potree2BaseCloud)_pointCloud.PointCloudImp).PointThreshold = newValue;
         }
 
         private void OnProjectedSizeModifierChanged(float newValue)
         {
-            ((Potree2Cloud<Position_double__Color_float__Label_byte>)(_pointCloud.PointCloudImp)).MinProjSizeModifier = newValue;
+            ((Potree2BaseCloud)_pointCloud.PointCloudImp).MinProjSizeModifier = newValue;
         }
 
         private bool SpaceMouseMoving(out float3 velPos, out float3 velRot)

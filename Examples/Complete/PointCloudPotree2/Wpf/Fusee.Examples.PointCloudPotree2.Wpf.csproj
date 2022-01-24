@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<TargetFramework>net6.0-windows</TargetFramework>
-		<OutputPath>$(BaseOutputPath)\Examples\PointCloudOutOfCore\Wpf</OutputPath>
+		<OutputPath>$(BaseOutputPath)\Examples\PointCloudPotree2\Wpf</OutputPath>
 
 		<OutputType>WinExe</OutputType>
 		<UseWPF>true</UseWPF>
@@ -30,7 +30,7 @@
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
-		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudOutOfCore.Core.csproj" />
+		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudPotree2.Core.csproj" />
 
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
