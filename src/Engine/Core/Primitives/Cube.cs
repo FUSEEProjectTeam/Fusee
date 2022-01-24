@@ -169,6 +169,8 @@ namespace Fusee.Engine.Core.Primitives
                 new float2(0, 1),
                 new float2(0, 0)
             };
+            BoundingBox = new AABBf(Vertices);
+        
         }
         #endregion
     }

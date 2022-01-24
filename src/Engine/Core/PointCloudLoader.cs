@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core
             {
                 _minProjSizeModifier = value;
                 if (_octree.Root != null)
-                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)(Octree.Root)).ProjectedScreenSize * _minProjSizeModifier;
+                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -326,7 +326,7 @@ namespace Fusee.Engine.Core
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotree2Data.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor, meshArgs.Octant);
+            return await ReadPotree2Data.LoadPointsForNodeAsync(meshArgs.Guid, meshArgs.PtAccessor, meshArgs.Octant);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
