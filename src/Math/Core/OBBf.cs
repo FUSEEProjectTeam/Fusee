@@ -62,7 +62,7 @@ namespace Fusee.Math.Core
                 Size = float3.Zero;
                 return;
             }
-            
+
             Translation = M.CalculateCentroid(vertices);
             var eigen = new Eigen(vertices);
 

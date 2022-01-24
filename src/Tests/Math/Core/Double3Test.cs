@@ -910,7 +910,7 @@ namespace Fusee.Tests.Math.Core
             var z = new double3(0, 0, 1);
 
             var xRot = new QuaternionD(System.Math.Sqrt(0.5), 0, 0, System.Math.Sqrt(0.5));
-            var yRot = new QuaternionD(0,System.Math.Sqrt(0.5), 0, System.Math.Sqrt(0.5));
+            var yRot = new QuaternionD(0, System.Math.Sqrt(0.5), 0, System.Math.Sqrt(0.5));
             var zRot = new QuaternionD(0, 0, System.Math.Sqrt(0.5), System.Math.Sqrt(0.5));
 
             yield return new object[] { xRot, y, z };

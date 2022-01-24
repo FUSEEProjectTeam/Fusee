@@ -1215,72 +1215,72 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double4x4 Add(in double4x4 left, in double4x4 right)
         {
-//#if NET5_0_OR_GREATER
-//            double4x4 result;
+            //#if NET5_0_OR_GREATER
+            //            double4x4 result;
 
-//            if (Sse.IsSupported)
-//            {
-//                AddSse(in left, in right, out result);
-//            }
-//            else
-//            {
-//                Add(in left, in right, out result);
-//            }
+            //            if (Sse.IsSupported)
+            //            {
+            //                AddSse(in left, in right, out result);
+            //            }
+            //            else
+            //            {
+            //                Add(in left, in right, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Add(in left, in right, out double4x4 result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        private static unsafe void AddSse(in double4x4 left, in double4x4 right, out double4x4 result)
-//        {
-//            Vector128<double> leftrow0;
-//            Vector128<double> leftrow1;
-//            Vector128<double> leftrow2;
-//            Vector128<double> leftrow3;
+        //#if NET5_0_OR_GREATER
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        private static unsafe void AddSse(in double4x4 left, in double4x4 right, out double4x4 result)
+        //        {
+        //            Vector128<double> leftrow0;
+        //            Vector128<double> leftrow1;
+        //            Vector128<double> leftrow2;
+        //            Vector128<double> leftrow3;
 
-//            fixed (double* m = &left.Row1.x)
-//            {
-//                leftrow0 = Sse.LoadVector128(m + 0);
-//                leftrow1 = Sse.LoadVector128(m + 4);
-//                leftrow2 = Sse.LoadVector128(m + 8);
-//                leftrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &left.Row1.x)
+        //            {
+        //                leftrow0 = Sse.LoadVector128(m + 0);
+        //                leftrow1 = Sse.LoadVector128(m + 4);
+        //                leftrow2 = Sse.LoadVector128(m + 8);
+        //                leftrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            Vector128<double> rightrow0;
-//            Vector128<double> rightrow1;
-//            Vector128<double> rightrow2;
-//            Vector128<double> rightrow3;
+        //            Vector128<double> rightrow0;
+        //            Vector128<double> rightrow1;
+        //            Vector128<double> rightrow2;
+        //            Vector128<double> rightrow3;
 
-//            fixed (double* m = &right.Row1.x)
-//            {
-//                rightrow0 = Sse.LoadVector128(m + 0);
-//                rightrow1 = Sse.LoadVector128(m + 4);
-//                rightrow2 = Sse.LoadVector128(m + 8);
-//                rightrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &right.Row1.x)
+        //            {
+        //                rightrow0 = Sse.LoadVector128(m + 0);
+        //                rightrow1 = Sse.LoadVector128(m + 4);
+        //                rightrow2 = Sse.LoadVector128(m + 8);
+        //                rightrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            var resultrow0 = Sse.Add(leftrow0, rightrow0);
-//            var resultrow1 = Sse.Add(leftrow1, rightrow1);
-//            var resultrow2 = Sse.Add(leftrow2, rightrow2);
-//            var resultrow3 = Sse.Add(leftrow3, rightrow3);
+        //            var resultrow0 = Sse.Add(leftrow0, rightrow0);
+        //            var resultrow1 = Sse.Add(leftrow1, rightrow1);
+        //            var resultrow2 = Sse.Add(leftrow2, rightrow2);
+        //            var resultrow3 = Sse.Add(leftrow3, rightrow3);
 
-//            Unsafe.SkipInit(out result);
+        //            Unsafe.SkipInit(out result);
 
-//            fixed (double* r = &result.Row1.x)
-//            {
-//                Sse.Store(r + 0, resultrow0);
-//                Sse.Store(r + 4, resultrow1);
-//                Sse.Store(r + 8, resultrow2);
-//                Sse.Store(r + 12, resultrow3);
-//            }
-//        }
-//#endif
+        //            fixed (double* r = &result.Row1.x)
+        //            {
+        //                Sse.Store(r + 0, resultrow0);
+        //                Sse.Store(r + 4, resultrow1);
+        //                Sse.Store(r + 8, resultrow2);
+        //                Sse.Store(r + 12, resultrow3);
+        //            }
+        //        }
+        //#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Add(in double4x4 left, in double4x4 right, out double4x4 result)
@@ -1300,72 +1300,72 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double4x4 Subtract(in double4x4 left, in double4x4 right)
         {
-//#if NET5_0_OR_GREATER
-//            double4x4 result;
+            //#if NET5_0_OR_GREATER
+            //            double4x4 result;
 
-//            if (Sse.IsSupported)
-//            {
-//                SubtractSse(in left, in right, out result);
-//            }
-//            else
-//            {
-//                Subtract(in left, in right, out result);
-//            }
+            //            if (Sse.IsSupported)
+            //            {
+            //                SubtractSse(in left, in right, out result);
+            //            }
+            //            else
+            //            {
+            //                Subtract(in left, in right, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Subtract(in left, in right, out double4x4 result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        private static unsafe void SubtractSse(in double4x4 left, in double4x4 right, out double4x4 result)
-//        {
-//            Vector128<double> leftrow0;
-//            Vector128<double> leftrow1;
-//            Vector128<double> leftrow2;
-//            Vector128<double> leftrow3;
+        //#if NET5_0_OR_GREATER
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        private static unsafe void SubtractSse(in double4x4 left, in double4x4 right, out double4x4 result)
+        //        {
+        //            Vector128<double> leftrow0;
+        //            Vector128<double> leftrow1;
+        //            Vector128<double> leftrow2;
+        //            Vector128<double> leftrow3;
 
-//            fixed (double* m = &left.Row1.x)
-//            {
-//                leftrow0 = Sse.LoadVector128(m + 0);
-//                leftrow1 = Sse.LoadVector128(m + 4);
-//                leftrow2 = Sse.LoadVector128(m + 8);
-//                leftrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &left.Row1.x)
+        //            {
+        //                leftrow0 = Sse.LoadVector128(m + 0);
+        //                leftrow1 = Sse.LoadVector128(m + 4);
+        //                leftrow2 = Sse.LoadVector128(m + 8);
+        //                leftrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            Vector128<double> rightrow0;
-//            Vector128<double> rightrow1;
-//            Vector128<double> rightrow2;
-//            Vector128<double> rightrow3;
+        //            Vector128<double> rightrow0;
+        //            Vector128<double> rightrow1;
+        //            Vector128<double> rightrow2;
+        //            Vector128<double> rightrow3;
 
-//            fixed (double* m = &right.Row1.x)
-//            {
-//                rightrow0 = Sse.LoadVector128(m + 0);
-//                rightrow1 = Sse.LoadVector128(m + 4);
-//                rightrow2 = Sse.LoadVector128(m + 8);
-//                rightrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &right.Row1.x)
+        //            {
+        //                rightrow0 = Sse.LoadVector128(m + 0);
+        //                rightrow1 = Sse.LoadVector128(m + 4);
+        //                rightrow2 = Sse.LoadVector128(m + 8);
+        //                rightrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            var resultrow0 = Sse.Subtract(leftrow0, rightrow0);
-//            var resultrow1 = Sse.Subtract(leftrow1, rightrow1);
-//            var resultrow2 = Sse.Subtract(leftrow2, rightrow2);
-//            var resultrow3 = Sse.Subtract(leftrow3, rightrow3);
+        //            var resultrow0 = Sse.Subtract(leftrow0, rightrow0);
+        //            var resultrow1 = Sse.Subtract(leftrow1, rightrow1);
+        //            var resultrow2 = Sse.Subtract(leftrow2, rightrow2);
+        //            var resultrow3 = Sse.Subtract(leftrow3, rightrow3);
 
-//            Unsafe.SkipInit(out result);
+        //            Unsafe.SkipInit(out result);
 
-//            fixed (double* r = &result.Row1.x)
-//            {
-//                Sse.Store(r + 0, resultrow0);
-//                Sse.Store(r + 4, resultrow1);
-//                Sse.Store(r + 8, resultrow2);
-//                Sse.Store(r + 12, resultrow3);
-//            }
-//        }
-//#endif
+        //            fixed (double* r = &result.Row1.x)
+        //            {
+        //                Sse.Store(r + 0, resultrow0);
+        //                Sse.Store(r + 4, resultrow1);
+        //                Sse.Store(r + 8, resultrow2);
+        //                Sse.Store(r + 12, resultrow3);
+        //            }
+        //        }
+        //#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Subtract(in double4x4 left, in double4x4 right, out double4x4 result)
@@ -1389,87 +1389,87 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double4x4 Mult(in double4x4 left, in double4x4 right)
         {
-//#if NET5_0_OR_GREATER
-//            double4x4 result;
+            //#if NET5_0_OR_GREATER
+            //            double4x4 result;
 
-//            if (Sse.IsSupported)
-//            {
-//                MultSse(in left, in right, out result);
-//            }
-//            else
-//            {
-//                Mult(in left, in right, out result);
-//            }
+            //            if (Sse.IsSupported)
+            //            {
+            //                MultSse(in left, in right, out result);
+            //            }
+            //            else
+            //            {
+            //                Mult(in left, in right, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Mult(in left, in right, out double4x4 result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        private static unsafe void MultSse(in double4x4 left, in double4x4 right, out double4x4 result)
-//        {
-//            Vector128<double> leftrow0;
-//            Vector128<double> leftrow1;
-//            Vector128<double> leftrow2;
-//            Vector128<double> leftrow3;
+        //#if NET5_0_OR_GREATER
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        private static unsafe void MultSse(in double4x4 left, in double4x4 right, out double4x4 result)
+        //        {
+        //            Vector128<double> leftrow0;
+        //            Vector128<double> leftrow1;
+        //            Vector128<double> leftrow2;
+        //            Vector128<double> leftrow3;
 
-//            fixed (double* m = &left.Row1.x)
-//            {
-//                leftrow0 = Sse.LoadVector128(m + 0);
-//                leftrow1 = Sse.LoadVector128(m + 4);
-//                leftrow2 = Sse.LoadVector128(m + 8);
-//                leftrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &left.Row1.x)
+        //            {
+        //                leftrow0 = Sse.LoadVector128(m + 0);
+        //                leftrow1 = Sse.LoadVector128(m + 4);
+        //                leftrow2 = Sse.LoadVector128(m + 8);
+        //                leftrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            Vector128<double> rightrow0;
-//            Vector128<double> rightrow1;
-//            Vector128<double> rightrow2;
-//            Vector128<double> rightrow3;
+        //            Vector128<double> rightrow0;
+        //            Vector128<double> rightrow1;
+        //            Vector128<double> rightrow2;
+        //            Vector128<double> rightrow3;
 
-//            fixed (double* m = &right.Row1.x)
-//            {
-//                rightrow0 = Sse.LoadVector128(m + 0);
-//                rightrow1 = Sse.LoadVector128(m + 4);
-//                rightrow2 = Sse.LoadVector128(m + 8);
-//                rightrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &right.Row1.x)
+        //            {
+        //                rightrow0 = Sse.LoadVector128(m + 0);
+        //                rightrow1 = Sse.LoadVector128(m + 4);
+        //                rightrow2 = Sse.LoadVector128(m + 8);
+        //                rightrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            var resultrow0 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x00), rightrow0),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x55), rightrow1)),
-//                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xAA), rightrow2),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xFF), rightrow3)));
+        //            var resultrow0 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x00), rightrow0),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0x55), rightrow1)),
+        //                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xAA), rightrow2),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow0, leftrow0, 0xFF), rightrow3)));
 
-//            var resultrow1 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x00), rightrow0),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x55), rightrow1)),
-//                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xAA), rightrow2),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xFF), rightrow3)));
+        //            var resultrow1 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x00), rightrow0),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0x55), rightrow1)),
+        //                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xAA), rightrow2),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow1, leftrow1, 0xFF), rightrow3)));
 
-//            var resultrow2 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x00), rightrow0),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x55), rightrow1)),
-//                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xAA), rightrow2),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xFF), rightrow3)));
+        //            var resultrow2 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x00), rightrow0),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0x55), rightrow1)),
+        //                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xAA), rightrow2),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow2, leftrow2, 0xFF), rightrow3)));
 
-//            var resultrow3 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x00), rightrow0),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x55), rightrow1)),
-//                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xAA), rightrow2),
-//                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xFF), rightrow3)));
+        //            var resultrow3 = Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x00), rightrow0),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0x55), rightrow1)),
+        //                                     Sse.Add(Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xAA), rightrow2),
+        //                                             Sse.Multiply(Sse.Shuffle(leftrow3, leftrow3, 0xFF), rightrow3)));
 
-//            Unsafe.SkipInit(out result);
+        //            Unsafe.SkipInit(out result);
 
-//            fixed (double* r = &result.Row1.x)
-//            {
-//                Sse.Store(r + 0, resultrow0);
-//                Sse.Store(r + 4, resultrow1);
-//                Sse.Store(r + 8, resultrow2);
-//                Sse.Store(r + 12, resultrow3);
-//            }
-//        }
-//#endif
+        //            fixed (double* r = &result.Row1.x)
+        //            {
+        //                Sse.Store(r + 0, resultrow0);
+        //                Sse.Store(r + 4, resultrow1);
+        //                Sse.Store(r + 8, resultrow2);
+        //                Sse.Store(r + 12, resultrow3);
+        //            }
+        //        }
+        //#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Mult(in double4x4 left, in double4x4 right, out double4x4 result)
@@ -1560,167 +1560,167 @@ namespace Fusee.Math.Core
         {
             if (matrix == Identity || matrix == Zero) return matrix;
 
-//#if NET5_0_OR_GREATER
-//            double4x4 result;
+            //#if NET5_0_OR_GREATER
+            //            double4x4 result;
 
-//            if (Sse3.IsSupported)
-//            {
-//                InvertSse3(in matrix, out result);
-//            }
-//            else
-//            {
-//                Invert(in matrix, out result);
-//            }
+            //            if (Sse3.IsSupported)
+            //            {
+            //                InvertSse3(in matrix, out result);
+            //            }
+            //            else
+            //            {
+            //                Invert(in matrix, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Invert(in matrix, out double4x4 result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        private static unsafe void InvertSse3(in double4x4 matrix, out double4x4 result)
-//        {
-//            // Original derivation and implementation can be found here:
-//            // https://lxjk.github.io/2017/09/03/Fast-4x4-Matrix-Inverse-with-SSE-SIMD-Explained.html
-//            // found via OpenTK
+        //#if NET5_0_OR_GREATER
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        private static unsafe void InvertSse3(in double4x4 matrix, out double4x4 result)
+        //        {
+        //            // Original derivation and implementation can be found here:
+        //            // https://lxjk.github.io/2017/09/03/Fast-4x4-Matrix-Inverse-with-SSE-SIMD-Explained.html
+        //            // found via OpenTK
 
-//            Vector128<double> row0;
-//            Vector128<double> row1;
-//            Vector128<double> row2;
-//            Vector128<double> row3;
+        //            Vector128<double> row0;
+        //            Vector128<double> row1;
+        //            Vector128<double> row2;
+        //            Vector128<double> row3;
 
-//            fixed (double* m = &matrix.Row1.x)
-//            {
-//                row0 = Sse.LoadVector128(m);
-//                row1 = Sse.LoadVector128(m + 4);
-//                row2 = Sse.LoadVector128(m + 8);
-//                row3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &matrix.Row1.x)
+        //            {
+        //                row0 = Sse.LoadVector128(m);
+        //                row1 = Sse.LoadVector128(m + 4);
+        //                row2 = Sse.LoadVector128(m + 8);
+        //                row3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            var A = Sse.MoveLowToHigh(row0, row1);
-//            var B = Sse.MoveHighToLow(row1, row0);
-//            var C = Sse.MoveLowToHigh(row2, row3);
-//            var D = Sse.MoveHighToLow(row3, row2);
+        //            var A = Sse.MoveLowToHigh(row0, row1);
+        //            var B = Sse.MoveHighToLow(row1, row0);
+        //            var C = Sse.MoveLowToHigh(row2, row3);
+        //            var D = Sse.MoveHighToLow(row3, row2);
 
-//            const byte Shuffle_0202 = 0b1000_1000;
-//            const byte Shuffle_1313 = 0b1101_1101;
+        //            const byte Shuffle_0202 = 0b1000_1000;
+        //            const byte Shuffle_1313 = 0b1101_1101;
 
-//            var detSub = Sse.Subtract(
-//                Sse.Multiply(
-//                    Sse.Shuffle(row0, row2, Shuffle_0202),
-//                    Sse.Shuffle(row1, row3, Shuffle_1313)),
-//                Sse.Multiply(
-//                    Sse.Shuffle(row0, row2, Shuffle_1313),
-//                    Sse.Shuffle(row1, row3, Shuffle_0202)));
+        //            var detSub = Sse.Subtract(
+        //                Sse.Multiply(
+        //                    Sse.Shuffle(row0, row2, Shuffle_0202),
+        //                    Sse.Shuffle(row1, row3, Shuffle_1313)),
+        //                Sse.Multiply(
+        //                    Sse.Shuffle(row0, row2, Shuffle_1313),
+        //                    Sse.Shuffle(row1, row3, Shuffle_0202)));
 
-//            const byte Shuffle_0000 = 0b0000_0000;
-//            const byte Shuffle_1111 = 0b0101_0101;
-//            const byte Shuffle_2222 = 0b1010_1010;
-//            const byte Shuffle_3333 = 0b1111_1111;
+        //            const byte Shuffle_0000 = 0b0000_0000;
+        //            const byte Shuffle_1111 = 0b0101_0101;
+        //            const byte Shuffle_2222 = 0b1010_1010;
+        //            const byte Shuffle_3333 = 0b1111_1111;
 
-//            var detA = Sse2.Shuffle(detSub.AsInt32(), Shuffle_0000).AsSingle();
-//            var detB = Sse2.Shuffle(detSub.AsInt32(), Shuffle_1111).AsSingle();
-//            var detC = Sse2.Shuffle(detSub.AsInt32(), Shuffle_2222).AsSingle();
-//            var detD = Sse2.Shuffle(detSub.AsInt32(), Shuffle_3333).AsSingle();
+        //            var detA = Sse2.Shuffle(detSub.AsInt32(), Shuffle_0000).AsSingle();
+        //            var detB = Sse2.Shuffle(detSub.AsInt32(), Shuffle_1111).AsSingle();
+        //            var detC = Sse2.Shuffle(detSub.AsInt32(), Shuffle_2222).AsSingle();
+        //            var detD = Sse2.Shuffle(detSub.AsInt32(), Shuffle_3333).AsSingle();
 
-//            const byte Shuffle_3300 = 0b0000_1111;
-//            const byte Shuffle_1122 = 0b1010_0101;
-//            const byte Shuffle_2301 = 0b0100_1110;
+        //            const byte Shuffle_3300 = 0b0000_1111;
+        //            const byte Shuffle_1122 = 0b1010_0101;
+        //            const byte Shuffle_2301 = 0b0100_1110;
 
-//            var D_C = Sse.Subtract(
-//                Sse.Multiply(Sse2.Shuffle(D.AsInt32(), Shuffle_3300).AsSingle(), C),
-//                Sse.Multiply(
-//                    Sse2.Shuffle(D.AsInt32(), Shuffle_1122).AsSingle(),
-//                    Sse2.Shuffle(C.AsInt32(), Shuffle_2301).AsSingle()));
+        //            var D_C = Sse.Subtract(
+        //                Sse.Multiply(Sse2.Shuffle(D.AsInt32(), Shuffle_3300).AsSingle(), C),
+        //                Sse.Multiply(
+        //                    Sse2.Shuffle(D.AsInt32(), Shuffle_1122).AsSingle(),
+        //                    Sse2.Shuffle(C.AsInt32(), Shuffle_2301).AsSingle()));
 
-//            var A_B = Sse.Subtract(
-//                Sse.Multiply(Sse2.Shuffle(A.AsInt32(), Shuffle_3300).AsSingle(), B),
-//                Sse.Multiply(
-//                    Sse2.Shuffle(A.AsInt32(), Shuffle_1122).AsSingle(),
-//                    Sse2.Shuffle(B.AsInt32(), Shuffle_2301).AsSingle()));
+        //            var A_B = Sse.Subtract(
+        //                Sse.Multiply(Sse2.Shuffle(A.AsInt32(), Shuffle_3300).AsSingle(), B),
+        //                Sse.Multiply(
+        //                    Sse2.Shuffle(A.AsInt32(), Shuffle_1122).AsSingle(),
+        //                    Sse2.Shuffle(B.AsInt32(), Shuffle_2301).AsSingle()));
 
-//            const byte Shuffle_0303 = 0b1100_1100;
-//            const byte Shuffle_1032 = 0b1011_0001;
-//            const byte Shuffle_2121 = 0b0110_0110;
+        //            const byte Shuffle_0303 = 0b1100_1100;
+        //            const byte Shuffle_1032 = 0b1011_0001;
+        //            const byte Shuffle_2121 = 0b0110_0110;
 
-//            var X_ = Sse.Subtract(
-//                Sse.Multiply(detD, A),
-//                Sse.Add(
-//                    Sse.Multiply(B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0303).AsSingle()),
-//                    Sse.Multiply(
-//                        Sse2.Shuffle(B.AsInt32(), Shuffle_1032).AsSingle(),
-//                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
+        //            var X_ = Sse.Subtract(
+        //                Sse.Multiply(detD, A),
+        //                Sse.Add(
+        //                    Sse.Multiply(B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0303).AsSingle()),
+        //                    Sse.Multiply(
+        //                        Sse2.Shuffle(B.AsInt32(), Shuffle_1032).AsSingle(),
+        //                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
 
-//            var W_ = Sse.Subtract(
-//                Sse.Multiply(detA, D),
-//                Sse.Add(
-//                    Sse.Multiply(C, Sse2.Shuffle(A_B.AsInt32(), Shuffle_0303).AsSingle()),
-//                    Sse.Multiply(
-//                        Sse2.Shuffle(C.AsInt32(), Shuffle_1032).AsSingle(),
-//                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
+        //            var W_ = Sse.Subtract(
+        //                Sse.Multiply(detA, D),
+        //                Sse.Add(
+        //                    Sse.Multiply(C, Sse2.Shuffle(A_B.AsInt32(), Shuffle_0303).AsSingle()),
+        //                    Sse.Multiply(
+        //                        Sse2.Shuffle(C.AsInt32(), Shuffle_1032).AsSingle(),
+        //                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
 
-//            var detM = Sse.Multiply(detA, detD);
+        //            var detM = Sse.Multiply(detA, detD);
 
-//            const byte Shuffle_3030 = 0b0011_0011;
+        //            const byte Shuffle_3030 = 0b0011_0011;
 
-//            var Y_ = Sse.Subtract(
-//                Sse.Multiply(detB, C),
-//                Sse.Subtract(
-//                    Sse.Multiply(D, Sse2.Shuffle(A_B.AsInt32(), Shuffle_3030).AsSingle()),
-//                    Sse.Multiply(
-//                        Sse2.Shuffle(D.AsInt32(), Shuffle_1032).AsSingle(),
-//                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
+        //            var Y_ = Sse.Subtract(
+        //                Sse.Multiply(detB, C),
+        //                Sse.Subtract(
+        //                    Sse.Multiply(D, Sse2.Shuffle(A_B.AsInt32(), Shuffle_3030).AsSingle()),
+        //                    Sse.Multiply(
+        //                        Sse2.Shuffle(D.AsInt32(), Shuffle_1032).AsSingle(),
+        //                        Sse2.Shuffle(A_B.AsInt32(), Shuffle_2121).AsSingle())));
 
-//            var Z_ = Sse.Subtract(
-//                Sse.Multiply(detC, B),
-//                Sse.Subtract(
-//                    Sse.Multiply(A, Sse2.Shuffle(D_C.AsInt32(), Shuffle_3030).AsSingle()),
-//                    Sse.Multiply(
-//                        Sse2.Shuffle(A.AsInt32(), Shuffle_1032).AsSingle(),
-//                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
+        //            var Z_ = Sse.Subtract(
+        //                Sse.Multiply(detC, B),
+        //                Sse.Subtract(
+        //                    Sse.Multiply(A, Sse2.Shuffle(D_C.AsInt32(), Shuffle_3030).AsSingle()),
+        //                    Sse.Multiply(
+        //                        Sse2.Shuffle(A.AsInt32(), Shuffle_1032).AsSingle(),
+        //                        Sse2.Shuffle(D_C.AsInt32(), Shuffle_2121).AsSingle())));
 
-//            detM = Sse.Add(detM, Sse.Multiply(detB, detC));
+        //            detM = Sse.Add(detM, Sse.Multiply(detB, detC));
 
-//            const byte Shuffle_0213 = 0b1101_1000;
+        //            const byte Shuffle_0213 = 0b1101_1000;
 
-//            var tr = Sse.Multiply(A_B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0213).AsSingle());
-//            tr = Sse3.HorizontalAdd(tr, tr);
-//            tr = Sse3.HorizontalAdd(tr, tr);
+        //            var tr = Sse.Multiply(A_B, Sse2.Shuffle(D_C.AsInt32(), Shuffle_0213).AsSingle());
+        //            tr = Sse3.HorizontalAdd(tr, tr);
+        //            tr = Sse3.HorizontalAdd(tr, tr);
 
-//            detM = Sse.Subtract(detM, tr);
+        //            detM = Sse.Subtract(detM, tr);
 
-//            if (System.Math.Abs(detM.GetElement(0)) < double.Epsilon)
-//            {
-//                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
-//            }
+        //            if (System.Math.Abs(detM.GetElement(0)) < double.Epsilon)
+        //            {
+        //                throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+        //            }
 
-//            var adjSignMask = Vector128.Create(1.0f, -1.0f, -1.0f, 1.0f);
+        //            var adjSignMask = Vector128.Create(1.0f, -1.0f, -1.0f, 1.0f);
 
-//            var rDetM = Sse.Divide(adjSignMask, detM);
+        //            var rDetM = Sse.Divide(adjSignMask, detM);
 
-//            X_ = Sse.Multiply(X_, rDetM);
-//            Y_ = Sse.Multiply(Y_, rDetM);
-//            Z_ = Sse.Multiply(Z_, rDetM);
-//            W_ = Sse.Multiply(W_, rDetM);
+        //            X_ = Sse.Multiply(X_, rDetM);
+        //            Y_ = Sse.Multiply(Y_, rDetM);
+        //            Z_ = Sse.Multiply(Z_, rDetM);
+        //            W_ = Sse.Multiply(W_, rDetM);
 
-//            const byte Shuffle_3131 = 0b0111_0111;
-//            const byte Shuffle_2020 = 0b0010_0010;
+        //            const byte Shuffle_3131 = 0b0111_0111;
+        //            const byte Shuffle_2020 = 0b0010_0010;
 
-//            Unsafe.SkipInit(out result);
+        //            Unsafe.SkipInit(out result);
 
-//            fixed (double* r = &result.Row1.x)
-//            {
-//                Sse.Store(r + 0, Sse.Shuffle(X_, Y_, Shuffle_3131));
-//                Sse.Store(r + 4, Sse.Shuffle(X_, Y_, Shuffle_2020));
-//                Sse.Store(r + 8, Sse.Shuffle(Z_, W_, Shuffle_3131));
-//                Sse.Store(r + 12, Sse.Shuffle(Z_, W_, Shuffle_2020));
-//            }
-//        }
-//#endif
+        //            fixed (double* r = &result.Row1.x)
+        //            {
+        //                Sse.Store(r + 0, Sse.Shuffle(X_, Y_, Shuffle_3131));
+        //                Sse.Store(r + 4, Sse.Shuffle(X_, Y_, Shuffle_2020));
+        //                Sse.Store(r + 8, Sse.Shuffle(Z_, W_, Shuffle_3131));
+        //                Sse.Store(r + 12, Sse.Shuffle(Z_, W_, Shuffle_2020));
+        //            }
+        //        }
+        //#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Invert(in double4x4 matrix, out double4x4 result)
@@ -1804,59 +1804,59 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double4x4 Transpose(double4x4 matrix)
         {
-//#if NET5_0_OR_GREATER
-//            double4x4 result;
+            //#if NET5_0_OR_GREATER
+            //            double4x4 result;
 
-//            if (Sse.IsSupported)
-//            {
-//                TransposeSse(in matrix, out result);
-//            }
-//            else
-//            {
-//                Transpose(in matrix, out result);
-//            }
+            //            if (Sse.IsSupported)
+            //            {
+            //                TransposeSse(in matrix, out result);
+            //            }
+            //            else
+            //            {
+            //                Transpose(in matrix, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Transpose(in matrix, out double4x4 result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        private static unsafe void TransposeSse(in double4x4 matrix, out double4x4 result)
-//        {
-//            Vector128<double> row0;
-//            Vector128<double> row1;
-//            Vector128<double> row2;
-//            Vector128<double> row3;
+        //#if NET5_0_OR_GREATER
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        private static unsafe void TransposeSse(in double4x4 matrix, out double4x4 result)
+        //        {
+        //            Vector128<double> row0;
+        //            Vector128<double> row1;
+        //            Vector128<double> row2;
+        //            Vector128<double> row3;
 
-//            fixed (double* m = &matrix.Row1.x)
-//            {
-//                row0 = Sse.LoadVector128(m + 0);
-//                row1 = Sse.LoadVector128(m + 4);
-//                row2 = Sse.LoadVector128(m + 8);
-//                row3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &matrix.Row1.x)
+        //            {
+        //                row0 = Sse.LoadVector128(m + 0);
+        //                row1 = Sse.LoadVector128(m + 4);
+        //                row2 = Sse.LoadVector128(m + 8);
+        //                row3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            var l12 = Sse.UnpackLow(row0, row1);
-//            var l34 = Sse.UnpackLow(row2, row3);
-//            var h12 = Sse.UnpackHigh(row0, row1);
-//            var h34 = Sse.UnpackHigh(row2, row3);
+        //            var l12 = Sse.UnpackLow(row0, row1);
+        //            var l34 = Sse.UnpackLow(row2, row3);
+        //            var h12 = Sse.UnpackHigh(row0, row1);
+        //            var h34 = Sse.UnpackHigh(row2, row3);
 
-//            Unsafe.SkipInit(out result);
+        //            Unsafe.SkipInit(out result);
 
-//            fixed (double* r = &result.Row1.x)
-//            {
-//                Sse.Store(r + 0, Sse.MoveLowToHigh(l12, l34));
-//                Sse.Store(r + 4, Sse.MoveHighToLow(l34, l12));
-//                Sse.Store(r + 8, Sse.MoveLowToHigh(h12, h34));
-//                Sse.Store(r + 12,Sse.MoveHighToLow(h34, h12));
-//            }
-//        }
-//#endif
+        //            fixed (double* r = &result.Row1.x)
+        //            {
+        //                Sse.Store(r + 0, Sse.MoveLowToHigh(l12, l34));
+        //                Sse.Store(r + 4, Sse.MoveHighToLow(l34, l12));
+        //                Sse.Store(r + 8, Sse.MoveLowToHigh(h12, h34));
+        //                Sse.Store(r + 12,Sse.MoveHighToLow(h34, h12));
+        //            }
+        //        }
+        //#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Transpose(in double4x4 matrix, out double4x4 result)
@@ -1947,86 +1947,86 @@ namespace Fusee.Math.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double3 Transform(double4x4 matrix, double3 vector)
         {
-//#if NET5_0_OR_GREATER
-//            double3 result;
+            //#if NET5_0_OR_GREATER
+            //            double3 result;
 
-//            if (Sse.IsSupported)
-//            {
-//                TransformSse(in matrix, in vector, out result);
-//            }
-//            else
-//            {
-//                Transform(in matrix, in vector, out result);
-//            }
+            //            if (Sse.IsSupported)
+            //            {
+            //                TransformSse(in matrix, in vector, out result);
+            //            }
+            //            else
+            //            {
+            //                Transform(in matrix, in vector, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Transform(in matrix, in vector, out double3 result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-//        private static unsafe void TransformSse(in double4x4 matrix, in double3 vector, out double3 result)
-//        {
-//            Vector128<double> row0;
-//            Vector128<double> row1;
-//            Vector128<double> row2;
-//            Vector128<double> row3;
+        //#if NET5_0_OR_GREATER
+        //        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        //        private static unsafe void TransformSse(in double4x4 matrix, in double3 vector, out double3 result)
+        //        {
+        //            Vector128<double> row0;
+        //            Vector128<double> row1;
+        //            Vector128<double> row2;
+        //            Vector128<double> row3;
 
-//            fixed (double* m = &matrix.Row1.x)
-//            {
-//                row0 = Sse.LoadVector128(m + 0);
-//                row1 = Sse.LoadVector128(m + 4);
-//                row2 = Sse.LoadVector128(m + 8);
-//                row3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &matrix.Row1.x)
+        //            {
+        //                row0 = Sse.LoadVector128(m + 0);
+        //                row1 = Sse.LoadVector128(m + 4);
+        //                row2 = Sse.LoadVector128(m + 8);
+        //                row3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            var l12 = Sse.UnpackLow(row0, row1);
-//            var l34 = Sse.UnpackLow(row2, row3);
-//            var h12 = Sse.UnpackHigh(row0, row1);
-//            var h34 = Sse.UnpackHigh(row2, row3);
+        //            var l12 = Sse.UnpackLow(row0, row1);
+        //            var l34 = Sse.UnpackLow(row2, row3);
+        //            var h12 = Sse.UnpackHigh(row0, row1);
+        //            var h34 = Sse.UnpackHigh(row2, row3);
 
-//            var col0 = Sse.MoveLowToHigh(l12, l34);
-//            var col1 = Sse.MoveHighToLow(l34, l12);
-//            var col2 = Sse.MoveLowToHigh(h12, h34);
-//            var col3 = Sse.MoveHighToLow(h34, h12);
+        //            var col0 = Sse.MoveLowToHigh(l12, l34);
+        //            var col1 = Sse.MoveHighToLow(l34, l12);
+        //            var col2 = Sse.MoveLowToHigh(h12, h34);
+        //            var col3 = Sse.MoveHighToLow(h34, h12);
 
-//            Vector128<double> vec;
+        //            Vector128<double> vec;
 
-//            fixed (double* m = &vector.x)
-//            {
-//                vec = Sse.LoadVector128(m);
-//            }
+        //            fixed (double* m = &vector.x)
+        //            {
+        //                vec = Sse.LoadVector128(m);
+        //            }
 
-//            const byte Shuffle_0000 = 0x00;
-//            const byte Shuffle_1111 = 0x55;
-//            const byte Shuffle_2222 = 0xAA;
-//            const byte Shuffle_3333 = 0xFF;
+        //            const byte Shuffle_0000 = 0x00;
+        //            const byte Shuffle_1111 = 0x55;
+        //            const byte Shuffle_2222 = 0xAA;
+        //            const byte Shuffle_3333 = 0xFF;
 
-//            var vX = Sse.Shuffle(vec, vec, Shuffle_0000);
-//            var vY = Sse.Shuffle(vec, vec, Shuffle_1111);
-//            var vZ = Sse.Shuffle(vec, vec, Shuffle_2222);
+        //            var vX = Sse.Shuffle(vec, vec, Shuffle_0000);
+        //            var vY = Sse.Shuffle(vec, vec, Shuffle_1111);
+        //            var vZ = Sse.Shuffle(vec, vec, Shuffle_2222);
 
-//            var res = Sse.Divide(Sse.Add(Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(l12, l34), vX),
-//                                                 Sse.Multiply(Sse.MoveHighToLow(l34, l12), vY)),
-//                                         Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(h12, h34), vZ),
-//                                                 Sse.MoveHighToLow(h34, h12))),
-//                                 Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_0000), vX),
-//                                                 Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_1111), vY)),
-//                                         Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_2222), vZ),
-//                                                 Sse.Shuffle(row3, row3, Shuffle_3333))));
+        //            var res = Sse.Divide(Sse.Add(Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(l12, l34), vX),
+        //                                                 Sse.Multiply(Sse.MoveHighToLow(l34, l12), vY)),
+        //                                         Sse.Add(Sse.Multiply(Sse.MoveLowToHigh(h12, h34), vZ),
+        //                                                 Sse.MoveHighToLow(h34, h12))),
+        //                                 Sse.Add(Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_0000), vX),
+        //                                                 Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_1111), vY)),
+        //                                         Sse.Add(Sse.Multiply(Sse.Shuffle(row3, row3, Shuffle_2222), vZ),
+        //                                                 Sse.Shuffle(row3, row3, Shuffle_3333))));
 
-//            Unsafe.SkipInit(out result);
+        //            Unsafe.SkipInit(out result);
 
-//            fixed (double* r = &result.x)
-//            {
-//                Sse.Store(r + 0, res);
-//            }
-//        }
-//#endif
+        //            fixed (double* r = &result.x)
+        //            {
+        //                Sse.Store(r + 0, res);
+        //            }
+        //        }
+        //#endif
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static void Transform(in double4x4 matrix, in double3 vector, out double3 result)
@@ -2415,69 +2415,69 @@ namespace Fusee.Math.Core
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         public readonly bool Equals(double4x4 other)
         {
-//#if NET5_0_OR_GREATER
-//            bool result;
+            //#if NET5_0_OR_GREATER
+            //            bool result;
 
-//            if (Sse.IsSupported)
-//            {
-//                EqualsSse(in other, out result);
-//            }
-//            else
-//            {
-//                Equals(in other, out result);
-//            }
+            //            if (Sse.IsSupported)
+            //            {
+            //                EqualsSse(in other, out result);
+            //            }
+            //            else
+            //            {
+            //                Equals(in other, out result);
+            //            }
 
-//            return result;
-//#else
+            //            return result;
+            //#else
             Equals(in other, out bool result);
 
             return result;
-//#endif
+            //#endif
         }
 
-//#if NET5_0_OR_GREATER
-//        private readonly unsafe void EqualsSse(in double4x4 other, out bool result)
-//        {
+        //#if NET5_0_OR_GREATER
+        //        private readonly unsafe void EqualsSse(in double4x4 other, out bool result)
+        //        {
 
-//            Vector128<double> thisrow0;
-//            Vector128<double> thisrow1;
-//            Vector128<double> thisrow2;
-//            Vector128<double> thisrow3;
+        //            Vector128<double> thisrow0;
+        //            Vector128<double> thisrow1;
+        //            Vector128<double> thisrow2;
+        //            Vector128<double> thisrow3;
 
-//            fixed (double* m = &this.Row1.x)
-//            {
-//                thisrow0 = Sse.LoadVector128(m);
-//                thisrow1 = Sse.LoadVector128(m + 4);
-//                thisrow2 = Sse.LoadVector128(m + 8);
-//                thisrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &this.Row1.x)
+        //            {
+        //                thisrow0 = Sse.LoadVector128(m);
+        //                thisrow1 = Sse.LoadVector128(m + 4);
+        //                thisrow2 = Sse.LoadVector128(m + 8);
+        //                thisrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            Vector128<double> otherrow0;
-//            Vector128<double> otherrow1;
-//            Vector128<double> otherrow2;
-//            Vector128<double> otherrow3;
+        //            Vector128<double> otherrow0;
+        //            Vector128<double> otherrow1;
+        //            Vector128<double> otherrow2;
+        //            Vector128<double> otherrow3;
 
-//            fixed (double* m = &other.Row1.x)
-//            {
-//                otherrow0 = Sse.LoadVector128(m);
-//                otherrow1 = Sse.LoadVector128(m + 4);
-//                otherrow2 = Sse.LoadVector128(m + 8);
-//                otherrow3 = Sse.LoadVector128(m + 12);
-//            }
+        //            fixed (double* m = &other.Row1.x)
+        //            {
+        //                otherrow0 = Sse.LoadVector128(m);
+        //                otherrow1 = Sse.LoadVector128(m + 4);
+        //                otherrow2 = Sse.LoadVector128(m + 8);
+        //                otherrow3 = Sse.LoadVector128(m + 12);
+        //            }
 
-//            result = false;
+        //            result = false;
 
-//            var e = Vector128.Create(M.EpsilonDouble);
+        //            var e = Vector128.Create(M.EpsilonDouble);
 
-//            var r = Sse.And(Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow0, otherrow0), Sse.Min(thisrow0, otherrow0)), e),
-//                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow1, otherrow1), Sse.Min(thisrow1, otherrow1)), e)),
-//                            Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow2, otherrow2), Sse.Min(thisrow2, otherrow2)), e),
-//                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow3, otherrow3), Sse.Min(thisrow3, otherrow3)), e)));
+        //            var r = Sse.And(Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow0, otherrow0), Sse.Min(thisrow0, otherrow0)), e),
+        //                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow1, otherrow1), Sse.Min(thisrow1, otherrow1)), e)),
+        //                            Sse.And(Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow2, otherrow2), Sse.Min(thisrow2, otherrow2)), e),
+        //                                    Sse.CompareLessThan(Sse.Subtract(Sse.Max(thisrow3, otherrow3), Sse.Min(thisrow3, otherrow3)), e)));
 
-//            if (double.IsNaN(r.GetElement(0)) && double.IsNaN(r.GetElement(1)) && double.IsNaN(r.GetElement(2)) && double.IsNaN(r.GetElement(3)))
-//                result = true;
-//        }
-//#endif
+        //            if (double.IsNaN(r.GetElement(0)) && double.IsNaN(r.GetElement(1)) && double.IsNaN(r.GetElement(2)) && double.IsNaN(r.GetElement(3)))
+        //                result = true;
+        //        }
+        //#endif
 
         private readonly void Equals(in double4x4 other, out bool result)
         {
