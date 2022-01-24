@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core
         public string FileFolderPath { get; set; }
 
         /// <summary>
-        /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
+        /// Maximal number of points that are visible in one frame - trade off between performance and quality.
         /// </summary>
         public int PointThreshold { get; set; }
 
@@ -75,8 +75,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        void Update(float fov, float3 camPos);
+        void Update();
 
+        /// <summary>
+        ///All nodes that are visible in this frame.
+        /// </summary>
         List<string> VisibleNodes { get; }
     }
 
@@ -155,7 +158,7 @@ namespace Fusee.Engine.Core
             {
                 _minProjSizeModifier = value;
                 if (_octree.Root != null)
-                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)(Octree.Root)).ProjectedScreenSize * _minProjSizeModifier;
+                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -165,7 +168,7 @@ namespace Fusee.Engine.Core
         public string FileFolderPath { get; set; }
 
         /// <summary>
-        /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
+        /// Maximal number of points that are visible in one frame - trade off between performance and quality.
         /// </summary>
         public int PointThreshold { get; set; } = 2000000;
 
@@ -184,7 +187,9 @@ namespace Fusee.Engine.Core
         // Allows traversal in order of screen projected size.
         private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
 
-        //All visible nodes
+        /// <summary>
+        ///All nodes that are visible in this frame.
+        /// </summary>
         public List<string> VisibleNodes { get; private set; }
 
         //Nodes that are queued for loading in the background
@@ -216,10 +221,10 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
-        public void Update(float fov, float3 camPos)
+        public void Update()
         {
-            _camPosD = new double3(camPos.x, camPos.y, camPos.z);
-            _fov = fov;
+            _camPosD = new double3(CamPos.x, CamPos.y, CamPos.z);
+            _fov = Fov;
 
             WasSceneUpdated = false;
             SetMinScreenProjectedSize(_camPosD, _fov);
@@ -260,7 +265,6 @@ namespace Fusee.Engine.Core
             {
                 // choose the nodes with the biggest screen size overall to process next
                 var kvp = _visibleNodesOrderedByProjectionSize.Last();
-
                 var octant = kvp.Value;
 
                 if (!_loadingQueue.Contains(octant.Guid) && _loadingQueue.Count <= _maxNumberOfNodesToLoad)
@@ -272,24 +276,19 @@ namespace Fusee.Engine.Core
 
                     Task.Run(async () =>
                     {
-                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant.Guid, octant, FileFolderPath, PtAccessor));
+                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant.Guid, FileFolderPath, PtAccessor));
 
                         lock (_lockLoadingQueue)
                         {
                             _loadingQueue.Remove(octant.Guid);
                         }
-                        if (octant.NumberOfPointsInNode == 0)
-                            NumberOfVisiblePoints += 0; //TODO: Fix with real values
-                        else
-                            NumberOfVisiblePoints += octant.NumberOfPointsInNode;
                     });
-
-                    VisibleNodes.Add(octant.Guid);
-                    _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
-                    DetermineVisibilityForChildren(kvp.Value);
                 }
-                else
-                    return;
+
+                NumberOfVisiblePoints += octant.NumberOfPointsInNode;
+                VisibleNodes.Add(octant.Guid);
+                _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
+                DetermineVisibilityForChildren(kvp.Value);
             }
         }
 
@@ -315,6 +314,10 @@ namespace Fusee.Engine.Core
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
             if (!node.InsideOrIntersectingFrustum(RenderFrustum) || node.ProjectedScreenSize < _minScreenProjectedSize)
             {
+                lock (_lockLoadingQueue)
+                {
+                    _loadingQueue.Remove(node.Guid);
+                }
                 return;
             }
 
@@ -326,7 +329,7 @@ namespace Fusee.Engine.Core
         private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotree2Data.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor, meshArgs.Octant);
+            return await ReadPotree2Data.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
@@ -360,7 +363,8 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-
+                    PointCache.AddItemAsync -= OnLoadPoints;
+                    PointCache.Dispose();
                 }
                 _disposed = true;
             }

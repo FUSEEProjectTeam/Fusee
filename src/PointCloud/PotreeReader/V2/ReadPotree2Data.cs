@@ -1,13 +1,11 @@
-﻿using Fusee.Math.Core;
+using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
 using Fusee.PointCloud.PotreeReader.V2.Data;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fusee.PointCloud.PotreeReader.V2
@@ -25,7 +23,6 @@ namespace Fusee.PointCloud.PotreeReader.V2
         public static PtOctreeRead<TPoint> GetOctree<TPoint>(IPointAccessor ptAccessor, string fileFolderPath) where TPoint : new()
         {
             var metadataFilePath = Path.Combine(fileFolderPath, Constants.MetadataFileName);
-            var octreeFilePath = Path.Combine(fileFolderPath, Constants.OctreeFileName);
 
             Instance = new PotreeData();
             Instance.Metadata = JsonConvert.DeserializeObject<PotreeMetadata>(File.ReadAllText(metadataFilePath));
@@ -62,12 +59,14 @@ namespace Fusee.PointCloud.PotreeReader.V2
 
         private static void MapChildNodesRecursive<TPoint>(PtOctantRead<TPoint> octreeNode, PotreeNode potreeNode)
         {
+            octreeNode.NumberOfPointsInNode = (int)potreeNode.NumPoints;
+
             for (int i = 0; i < potreeNode.children.Length; i++)
             {
                 if (potreeNode.children[i] != null)
                 {
                     var octant = new PtOctantRead<TPoint>(potreeNode.children[i].Aabb.Center - Instance.Metadata.Offset, potreeNode.children[i].Aabb.Size.y, potreeNode.children[i].Name);
-                    
+
                     if (potreeNode.children[i].NodeType == NodeType.LEAF)
                     {
                         octant.IsLeaf = true;
@@ -212,13 +211,13 @@ namespace Fusee.PointCloud.PotreeReader.V2
             return Instance.Hierarchy.Nodes.Find(n => n.Name == id);
         }
 
-        public static async Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string guid, IPointAccessor pointAccessor, PtOctantRead<TPoint> octant) where TPoint : new()
+        public static async Task<TPoint[]> LoadPointsForNodeAsync<TPoint>(string guid, IPointAccessor pointAccessor) where TPoint : new()
         {
-            return await Task.Run(() => { return LoadNodeData<TPoint>(guid, pointAccessor, octant); });
+            return await Task.Run(() => { return LoadNodeData<TPoint>(guid, pointAccessor); });
         }
 
-        public static TPoint[] LoadNodeData<TPoint>(string id, IPointAccessor pointAccessor, PtOctantRead<TPoint> octant) where TPoint : new()
-        { 
+        public static TPoint[] LoadNodeData<TPoint>(string id, IPointAccessor pointAccessor) where TPoint : new()
+        {
             var node = FindNode(id);
 
             var octreeFilePath = Path.Combine(Instance.Metadata.FolderPath, Constants.OctreeFileName);
@@ -287,14 +286,12 @@ namespace Fusee.PointCloud.PotreeReader.V2
                 attributeOffset += metaitem.Size;
             }
 
-            octant.NumberOfPointsInNode = (int)node.NumPoints;
-
             node.IsLoaded = true;
 
             binaryReader.Close();
             binaryReader.Dispose();
 
             return points;
-        }
+        }        
     }
 }

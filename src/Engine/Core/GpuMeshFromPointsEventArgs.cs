@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The <see cref="RenderContext"/>, used to create the mesh data on the GPU.
         /// </summary>
-        public RenderContext RenderContext;
+        public CreateGpuMesh CreateGpuMesh;
 
         /// <summary>
         /// The number of point cloud points.
@@ -36,10 +36,10 @@ namespace Fusee.Engine.Core
         /// <param name="points">The array of point cloud points.</param>
         /// <param name="rc">The <see cref="RenderContext"/>, used to create the <see cref="GpuMesh"/>.</param>
         /// <param name="numberOfPoints">The number of point cloud points.</param>
-        public GpuMeshFromPointsEventArgs(TPoint[] points, RenderContext rc, int numberOfPoints)
+        public GpuMeshFromPointsEventArgs(TPoint[] points, CreateGpuMesh createGpuMesh, int numberOfPoints)
         {
             Points = points;
-            RenderContext = rc;
+            CreateGpuMesh = createGpuMesh;
             NumberOfPoints = numberOfPoints;
         }
     }

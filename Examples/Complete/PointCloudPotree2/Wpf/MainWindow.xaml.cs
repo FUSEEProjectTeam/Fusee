@@ -4,9 +4,9 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
-using Fusee.Examples.PointCloudOutOfCore.Core;
+using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.PotreeReader.V1;
+using Fusee.PointCloud.PotreeReader.V2;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -192,7 +192,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             if (dialogResult == System.Windows.Forms.DialogResult.OK)
             {
-                if (!ofd.SafeFileName.Contains("meta.json"))
+                if (!ofd.SafeFileName.Contains("metadata.json"))
                 {
                     MessageBox.Show("Invalid file selected", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
@@ -345,8 +345,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             AssetStorage.RegisterProvider(fap);
 
-            var ptType = ReadPotreeMetadata.GetPtTypeFromMetaJson(pathToFile);
-            app = new Core.PointCloudOutOfCore(ptType, PtRenderingParams.Instance.PathToOocFile);
+            app = new PointCloudPotree2.Core.PointCloudOutOfCore(ReadPotree2Metadata.GetPointType(pathToFile), pathToFile);
 
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;

@@ -240,7 +240,7 @@ namespace Fusee.Engine.Core
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
-                RenderFrustum.CalculateFrustumPlanes(_projection * View);
+                RenderFrustum.CalculateFrustumPlanes(_projection * _view);
             }
         }
 

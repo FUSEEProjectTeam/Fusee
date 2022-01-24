@@ -5,7 +5,6 @@ using Fusee.Engine.Core.Effects;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using System;
@@ -765,92 +764,23 @@ namespace Fusee.Engine.Core
             if (!pointCloud.Active) return;
             if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
                 return;
-            if (_rc.InvView == float4x4.Identity) return;
+            //if (_rc.InvView == float4x4.Identity) return;
 
-            pointCloud.Fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-            pointCloud.CamPos = _rc.InvView.Column4.xyz;
-            pointCloud.RenderFrustum = _rc.RenderFrustum;
-            pointCloud.ViewportHeight = _rc.ViewportHeight;
-
-            pointCloud.Update();
-
-            foreach (var guid in pointCloud.PointCloudLoader.VisibleNodes)
+            switch (pointCloud.PointCloudImp.FileType)
             {
-                if (guid != null)
-                {
-                    switch (pointCloud.Type)
-                    {
-                        default:
-                        case PointType.Undefined:
-                            throw new InvalidOperationException("Invalid or undefined Point Type!");
-                        case PointType.Pos64:
-                            {
-                                if (!((PointCloudLoader<Pos64>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64Col32IShort:
-                            {
-                                if (!((PointCloudLoader<Pos64Col32IShort>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64Col32IShort>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64IShort:
-                            {
-                                if (!((PointCloudLoader<Pos64IShort>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64IShort>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64Col32:
-                            {
-                                if (!((PointCloudLoader<Pos64Col32>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64Col32>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64Label8:
-                            {
-                                if (!((PointCloudLoader<Pos64Label8>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64Label8>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64Nor32Col32IShort:
-                            {
-                                if (!((PointCloudLoader<Pos64Nor32Col32IShort>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64Nor32Col32IShort>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64Nor32IShort:
-                            {
-                                if (!((PointCloudLoader<Pos64Nor32IShort>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64Nor32IShort>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Pos64Nor32Col32:
-                            {
-                                if (!((PointCloudLoader<Pos64Nor32Col32>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Pos64Nor32Col32>(points, _rc, points.Length));
-                                break;
-                            }
-                        case PointType.Position_double__Color_float__Label_byte:
-                            {
+                case PointCloudFileType.Las:
+                    throw new NotImplementedException();
+                case PointCloudFileType.Potree2:
+                    var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
+                    ((Potree2BaseCloud)pointCloud.PointCloudImp).Update(_rc.CreateGpuMesh, fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
+                    break;
+            }
 
-                                if (!((PointCloudLoader<Position_double__Color_float__Label_byte>)pointCloud.PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                                pointCloud.MeshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<Position_double__Color_float__Label_byte>(points, _rc, points.Length));
-                                break;
-                            }
-                    }
-
-
-                    if (pointCloud.MeshCache.TryGetValue(guid, out var meshes))
-                    {
-                        foreach (var mesh in meshes)
-                        {
-                            var renderStatesBefore = _rc.CurrentRenderState.Copy();
-                            _rc.Render(mesh, true);
-                            _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
-                        }
-                    }
-                }
+            foreach (var mesh in pointCloud.PointCloudImp.MeshesToRender)
+            {
+                var renderStatesBefore = _rc.CurrentRenderState.Copy();
+                _rc.Render(mesh, true);
+                _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
             }
         }
 

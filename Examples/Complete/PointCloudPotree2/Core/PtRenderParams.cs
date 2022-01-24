@@ -96,7 +96,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private float _projSizeMod = 0.1f;
+        private float _projSizeMod = 0.0001f;
         public float ProjectedSizeModifier
         {
             get { return _projSizeMod; }
@@ -107,7 +107,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             }
         }
 
-        private int _ptThreshold = 5000000;
+        private int _ptThreshold = 1000000;
 
         public int PointThreshold
         {
