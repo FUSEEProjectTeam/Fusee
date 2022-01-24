@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Fusee.Base.Core
 {
-    public class MemoryCache<TItem>
+    public class MemoryCache<TItem> : IDisposable
     {
         public int SlidingExpiration = 5;
         public int ExpirationScanFrequency = 6;
@@ -81,8 +81,8 @@ namespace Fusee.Base.Core
                     });
 
                     // Key not in cache, so get data.
-                    cacheEntry = await AddItemAsync?.Invoke(this, args);//createItem(node, points);
-                    _cache.Set(key, cacheEntry, cacheEntryOptions);                    
+                    cacheEntry = await AddItemAsync?.Invoke(this, args);
+                    _cache.Set(key, cacheEntry, cacheEntryOptions);
                 }
                 finally
                 {
@@ -90,5 +90,34 @@ namespace Fusee.Base.Core
                 }
             }
         }
+        
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+
+        private bool _disposed;
+        
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    // Dispose managed resources.
+                    _cache.Dispose();
+                    
+                }
+                _disposed = true;
+            }
+        }
+
+       
+        ~MemoryCache()
+        {
+            Dispose(disposing: false);
+        }
+
     }
 }

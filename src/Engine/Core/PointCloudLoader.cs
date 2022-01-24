@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core
         public string FileFolderPath { get; set; }
 
         /// <summary>
-        /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
+        /// Maximal number of points that are visible in one frame - trade off between performance and quality.
         /// </summary>
         public int PointThreshold { get; set; }
 
@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core
         public string FileFolderPath { get; set; }
 
         /// <summary>
-        /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
+        /// Maximal number of points that are visible in one frame - trade off between performance and quality.
         /// </summary>
         public int PointThreshold { get; set; } = 2000000;
 
@@ -265,7 +265,6 @@ namespace Fusee.Engine.Core
             {
                 // choose the nodes with the biggest screen size overall to process next
                 var kvp = _visibleNodesOrderedByProjectionSize.Last();
-
                 var octant = kvp.Value;
 
                 if (!_loadingQueue.Contains(octant.Guid) && _loadingQueue.Count <= _maxNumberOfNodesToLoad)
@@ -283,16 +282,13 @@ namespace Fusee.Engine.Core
                         {
                             _loadingQueue.Remove(octant.Guid);
                         }
-                        
                     });
-
-                    NumberOfVisiblePoints += octant.NumberOfPointsInNode;
-                    VisibleNodes.Add(octant.Guid);
-                    _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
-                    DetermineVisibilityForChildren(kvp.Value);
                 }
-                else
-                    return;
+
+                NumberOfVisiblePoints += octant.NumberOfPointsInNode;
+                VisibleNodes.Add(octant.Guid);
+                _visibleNodesOrderedByProjectionSize.Remove(kvp.Key);
+                DetermineVisibilityForChildren(kvp.Value);
             }
         }
 
@@ -316,8 +312,12 @@ namespace Fusee.Engine.Core
 
             //If node does not intersect the viewing frustum or is smaller than the minimal projected size:
             //Return -> will not be added to _visibleNodesOrderedByProjectionSize -> traversal of this branch stops.
-            if (!node.InsideOrIntersectingFrustum(RenderFrustum) || node.ProjectedScreenSize < _minScreenProjectedSize - M.EpsilonDouble)
+            if (!node.InsideOrIntersectingFrustum(RenderFrustum) || node.ProjectedScreenSize < _minScreenProjectedSize)
             {
+                lock (_lockLoadingQueue)
+                {
+                    _loadingQueue.Remove(node.Guid);
+                }
                 return;
             }
 
@@ -363,7 +363,8 @@ namespace Fusee.Engine.Core
             {
                 if (disposing)
                 {
-
+                    PointCache.AddItemAsync -= OnLoadPoints;
+                    PointCache.Dispose();
                 }
                 _disposed = true;
             }
