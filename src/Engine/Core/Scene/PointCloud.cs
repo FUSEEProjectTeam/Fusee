@@ -248,6 +248,7 @@ namespace Fusee.Engine.Core.Scene
 
         public override void Update(CreateGpuMesh createGpuMesh, float fov, int viewportHeight, FrustumF renderFrustum, float3 camPos)
         {
+            MeshesToRender.Clear();
             lock (_lockDisposeQueue)
             {
                 if (_disposeQueue.Count > 0)
@@ -270,16 +271,13 @@ namespace Fusee.Engine.Core.Scene
             PointCloudLoader.CamPos = camPos;
 
             PointCloudLoader.Update();
-
-            MeshesToRender.Clear();
             foreach (var guid in PointCloudLoader.VisibleNodes)
             {
                 if (guid != null)
                 {
                     if (!((PointCloudLoader<TPoint>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return;
-                    _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<TPoint>(points, createGpuMesh, points.Length));
+                    _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<TPoint>(points, createGpuMesh, points.Length), out var meshes);
 
-                    _meshCache.TryGetValue(guid, out var meshes);
                     foreach (var mesh in meshes)
                     {
                         // Add to Render List
@@ -508,6 +506,10 @@ namespace Fusee.Engine.Core.Scene
                     foreach (var meshes in _disposeQueue)
                     {
                         foreach (var mesh in meshes)
+                        {
+                            mesh.Dispose();
+                        }
+                        foreach (var mesh in MeshesToRender)
                         {
                             mesh.Dispose();
                         }

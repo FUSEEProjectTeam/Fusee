@@ -77,6 +77,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         void Update();
 
+        /// <summary>
+        ///All nodes that are visible in this frame.
+        /// </summary>
         List<string> VisibleNodes { get; }
     }
 
@@ -184,7 +187,9 @@ namespace Fusee.Engine.Core
         // Allows traversal in order of screen projected size.
         private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
 
-        //All visible nodes
+        /// <summary>
+        ///All nodes that are visible in this frame.
+        /// </summary>
         public List<string> VisibleNodes { get; private set; }
 
         //Nodes that are queued for loading in the background
@@ -279,7 +284,7 @@ namespace Fusee.Engine.Core
                             _loadingQueue.Remove(octant.Guid);
                         }
                         if (octant.NumberOfPointsInNode == 0)
-                            NumberOfVisiblePoints += 0; //TODO: Fix with real values
+                            NumberOfVisiblePoints += 0;
                         else
                             NumberOfVisiblePoints += octant.NumberOfPointsInNode;
                     });

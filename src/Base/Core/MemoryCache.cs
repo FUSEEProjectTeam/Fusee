@@ -38,12 +38,35 @@ namespace Fusee.Base.Core
             return false;
         }
 
-        public void AddOrUpdate(string key, EventArgs args)
+        public void AddOrUpdate(string key, EventArgs args, out TItem cacheEntry)
+        {           
+            if (!_cache.TryGetValue(key, out cacheEntry))
+            {
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetPriority(CacheItemPriority.High)
+                    // Keep in cache for this time, reset time if accessed.
+                    .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
+
+                cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
+                {
+                    _locks.Remove(subkey, out _);
+                    HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
+
+                });
+
+                // Key not in cache, so get data.
+                cacheEntry = AddItem.Invoke(this, args);
+                _cache.Set(key, cacheEntry, cacheEntryOptions);
+            }
+        }
+
+        public async Task AddOrUpdateAsync(string key, EventArgs args)
         {
             if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
             {
-
-                if (!_cache.TryGetValue(key, out cacheEntry))
+                SemaphoreSlim chacheLock = _locks.GetOrAdd(key, k => new SemaphoreSlim(1, 1));
+                await chacheLock.WaitAsync();
+                try
                 {
                     var cacheEntryOptions = new MemoryCacheEntryOptions()
                         .SetPriority(CacheItemPriority.High)
@@ -58,44 +81,8 @@ namespace Fusee.Base.Core
                     });
 
                     // Key not in cache, so get data.
-                    cacheEntry = AddItem.Invoke(this, args);
-                    _cache.Set(key, cacheEntry, cacheEntryOptions);
-                }
-
-            }
-        }
-
-        public async Task AddOrUpdateAsync(string key, EventArgs args)
-        {
-            if (!_cache.TryGetValue(key, out TItem cacheEntry))// Look for cache key.
-            {
-                SemaphoreSlim chacheLock = _locks.GetOrAdd(key, k => new SemaphoreSlim(1, 1));
-
-                await chacheLock.WaitAsync();
-                try
-                {
-                    if (!_cache.TryGetValue(key, out cacheEntry))
-                    {
-                        var cacheEntryOptions = new MemoryCacheEntryOptions()
-                            .SetPriority(CacheItemPriority.High)
-                            // Keep in cache for this time, reset time if accessed.
-                            .SetSlidingExpiration(TimeSpan.FromSeconds(SlidingExpiration));
-
-                        cacheEntryOptions.RegisterPostEvictionCallback((subkey, subValue, reason, state) =>
-                        {
-                            _locks.Remove(subkey, out _);
-                            HandleEvictedItem?.Invoke(subkey, subValue, reason, state);
-
-                        });
-
-                        // Key not in cache, so get data.
-                        cacheEntry = await AddItemAsync?.Invoke(this, args);//createItem(node, points);
-                        _cache.Set(key, cacheEntry, cacheEntryOptions);
-                    }
-                }
-                catch (Exception ex)
-                {
-
+                    cacheEntry = await AddItemAsync?.Invoke(this, args);//createItem(node, points);
+                    _cache.Set(key, cacheEntry, cacheEntryOptions);                    
                 }
                 finally
                 {
