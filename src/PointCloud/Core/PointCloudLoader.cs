@@ -52,7 +52,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// The octree structure of the point cloud.
         /// </summary>
-        public PtOctree Octree
+        public PointCloudOctree Octree
         {
             get;
             private set;
@@ -73,7 +73,7 @@ namespace Fusee.PointCloud.Core
             {
                 _minProjSizeModifier = value;
                 if (Octree.Root != null)
-                    _minScreenProjectedSize = ((PtOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
+                    _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -100,7 +100,7 @@ namespace Fusee.PointCloud.Core
         private double _minScreenProjectedSize;
 
         // Allows traversal in order of screen projected size.
-        private readonly SortedDictionary<double, PtOctant> _visibleNodesOrderedByProjectionSize;
+        private readonly SortedDictionary<double, PointCloudOctant> _visibleNodesOrderedByProjectionSize;
 
         /// <summary>
         ///All nodes that are visible in this frame.
@@ -134,7 +134,7 @@ namespace Fusee.PointCloud.Core
         {
             _watch = new Stopwatch();
             _outOfCoreReader = reader;
-            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PtOctant>(); // visible nodes ordered by screen-projected-size;            
+            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PointCloudOctant>(); // visible nodes ordered by screen-projected-size;            
             FileFolderPath = fileFolderPath;
             VisibleNodes = new(numberOfOctants);
             PointCache = new();
@@ -147,32 +147,32 @@ namespace Fusee.PointCloud.Core
                 default:
                 case PointType.Undefined:
                     throw new ArgumentException("Undefined point type is not valid in this context.");
-                case PointType.Pos64:
-                    PtAccessor = new Pos64Accessor();
+                case PointType.PosD3:
+                    PtAccessor = new PosD3Accessor();
                     break;
-                case PointType.Pos64Col32IShort:
-                    PtAccessor = new Pos64Col32IShortAccessor();
+                case PointType.PosD3ColF3InUs:
+                    PtAccessor = new PosD3ColF3InUsAccessor();
                     break;
-                case PointType.Pos64IShort:
-                    PtAccessor = new Pos64IShortAccessor();
+                case PointType.PosD3InUs:
+                    PtAccessor = new PosD3InUsAccessor();
                     break;
-                case PointType.Pos64Col32:
-                    PtAccessor = new Pos64Col32Accessor();
+                case PointType.PosD3ColF3:
+                    PtAccessor = new PosD3ColF3Accessor();
                     break;
-                case PointType.Pos64Label8:
-                    PtAccessor = new Pos64Label8Accessor();
+                case PointType.PosD3LblB:
+                    PtAccessor = new PosD3LblBAccessor();
                     break;
-                case PointType.Pos64Nor32Col32IShort:
-                    PtAccessor = new Pos64Nor32Col32IShortAccessor();
+                case PointType.PosD3NorF3ColF3InUs:
+                    PtAccessor = new PosD3NorF3ColF3InUsAccessor();
                     break;
-                case PointType.Pos64Nor32IShort:
-                    PtAccessor = new Pos64Nor32IShortAccessor();
+                case PointType.PosD3NorF3InUs:
+                    PtAccessor = new PosD3NorF3InUsAccessor();
                     break;
-                case PointType.Pos64Nor32Col32:
-                    PtAccessor = new Pos64Nor32Col32Accessor();
+                case PointType.PosD3NorF3ColF3:
+                    PtAccessor = new PosD3NorF3ColF3Accessor();
                     break;
-                case PointType.Position_double__Color_float__Label_byte:
-                    PtAccessor = new Position_double__Color_float__Label_byte___Accessor();
+                case PointType.PosD3ColF3LblB:
+                    PtAccessor = new PosD3ColF3LblBAccessor();
                     break;
             }
 
@@ -214,7 +214,7 @@ namespace Fusee.PointCloud.Core
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
 
-            DetermineVisibilityForNode((PtOctant)Octree.Root);
+            DetermineVisibilityForNode((PointCloudOctant)Octree.Root);
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -247,7 +247,7 @@ namespace Fusee.PointCloud.Core
             }
         }
 
-        private void DetermineVisibilityForChildren(PtOctant node)
+        private void DetermineVisibilityForChildren(PointCloudOctant node)
         {
             // add child nodes to the heap of ordered nodes
             foreach (var child in node.Children)
@@ -255,12 +255,12 @@ namespace Fusee.PointCloud.Core
                 if (child == null)
                     continue;
 
-                DetermineVisibilityForNode((PtOctant)child);
+                DetermineVisibilityForNode((PointCloudOctant)child);
             }
         }
 
         //Use Fusee.Struictures Octree - remove from Scene
-        private void DetermineVisibilityForNode(PtOctant node)
+        private void DetermineVisibilityForNode(PointCloudOctant node)
         {
             // gets pixel radius of the node
             node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, _fov);
@@ -289,7 +289,7 @@ namespace Fusee.PointCloud.Core
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            var root = (PtOctant)Octree.Root;
+            var root = (PointCloudOctant)Octree.Root;
             root.ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
             _minScreenProjectedSize = root.ProjectedScreenSize * _minProjSizeModifier;
         }

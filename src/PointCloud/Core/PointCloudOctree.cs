@@ -7,12 +7,12 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// Implementation of <see cref="OctreeD{P}"/> for rendering Point Clouds out of core.
     /// </summary>
-    public class PtOctree : OctreeD<IPointCloudPoint>
+    public class PointCloudOctree : OctreeD<IPointCloudPoint>
     {
         /// <summary>
         /// Constructor for creating an Octree that is suitable for creating files from it. 
         /// </summary>
-        public PtOctree(PtOctant root)
+        public PointCloudOctree(PointCloudOctant root)
         {
             Root = root;
         }

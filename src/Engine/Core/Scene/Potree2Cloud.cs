@@ -135,32 +135,32 @@ namespace Fusee.Engine.Core.Scene
                         default:
                         case PointType.Undefined:
                             throw new ArgumentException();
-                        case PointType.Pos64:
-                            meshes = TryGetMeshesFromCache<Pos64>(createGpuMesh, guid);
+                        case PointType.PosD3:
+                            meshes = TryGetMeshesFromCache<PosD3>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64Col32IShort:
-                            meshes = TryGetMeshesFromCache<Pos64Col32IShort>(createGpuMesh, guid);
+                        case PointType.PosD3ColF3InUs:
+                            meshes = TryGetMeshesFromCache<PosD3ColF3InUs>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64IShort:
-                            meshes = TryGetMeshesFromCache<Pos64IShort>(createGpuMesh, guid);
+                        case PointType.PosD3InUs:
+                            meshes = TryGetMeshesFromCache<PosD3InUs>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64Col32:
-                            meshes = TryGetMeshesFromCache<Pos64Col32>(createGpuMesh, guid);
+                        case PointType.PosD3ColF3:
+                            meshes = TryGetMeshesFromCache<PosD3ColF3>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64Label8:
-                            meshes = TryGetMeshesFromCache<Pos64Label8>(createGpuMesh, guid);
+                        case PointType.PosD3LblB:
+                            meshes = TryGetMeshesFromCache<PosD3LblB>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64Nor32Col32IShort:
-                            meshes = TryGetMeshesFromCache<Pos64Nor32Col32IShort>(createGpuMesh, guid);
+                        case PointType.PosD3NorF3ColF3InUs:
+                            meshes = TryGetMeshesFromCache<PosD3NorF3ColF3InUs>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64Nor32IShort:
-                            meshes = TryGetMeshesFromCache<Pos64Nor32IShort>(createGpuMesh, guid);
+                        case PointType.PosD3NorF3InUs:
+                            meshes = TryGetMeshesFromCache<PosD3NorF3InUs>(createGpuMesh, guid);
                             break;
-                        case PointType.Pos64Nor32Col32:
-                            meshes = TryGetMeshesFromCache<Pos64Nor32Col32>(createGpuMesh, guid);
+                        case PointType.PosD3NorF3ColF3:
+                            meshes = TryGetMeshesFromCache<PosD3NorF3ColF3>(createGpuMesh, guid);
                             break;
-                        case PointType.Position_double__Color_float__Label_byte:
-                            meshes = TryGetMeshesFromCache<Position_double__Color_float__Label_byte>(createGpuMesh, guid);
+                        case PointType.PosD3ColF3LblB:
+                            meshes = TryGetMeshesFromCache<PosD3ColF3LblB>(createGpuMesh, guid);
                             break;
                     }
 

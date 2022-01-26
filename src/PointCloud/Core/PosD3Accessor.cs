@@ -8,28 +8,28 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position information only.
     /// </summary>
-    public class Pos64Accessor : PointAccessor<Pos64>
+    public class PosD3Accessor : PointAccessor<PosD3>
     {
-        public Pos64Accessor()
+        public PosD3Accessor()
         {
-            PositionType = PointPositionType.Float3_64;
+            PositionType = PointPositionType.Double3;
         }
 
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
-        public override void SetPositionFloat3_64(ref Pos64 point, double3 val)
+        public override void SetPositionFloat3_64(ref PosD3 point, double3 val)
         {
             point.Position = val;
         }
 
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
-        public override ref double3 GetPositionFloat3_64(ref Pos64 point)
+        public override ref double3 GetPositionFloat3_64(ref PosD3 point)
         {
             return ref point.Position;
         }

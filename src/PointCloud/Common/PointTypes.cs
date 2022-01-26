@@ -6,13 +6,15 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Enum that contains all available point types.
     /// Abbreviations:
-    /// 32: float
-    /// 64: double
-    /// 8: ushort
+    /// F3: float
+    /// D3: double
+    /// Us: ushort
+    /// B: byte
     /// Pos: position
     /// Col: Color
-    /// I: Intensity
+    /// In: Intensity
     /// Nor: Normal
+    /// Lbl: Label / Classification
     /// </summary>
     public enum PointType
     {
@@ -21,39 +23,43 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// Position only (double)
         /// </summary>
-        Pos64,
+        PosD3,
         /// <summary>
         /// Position (double), Color (float), Intensity (short)
         /// </summary>
-        Pos64Col32IShort,
+        PosD3ColF3InUs,
         /// <summary>
-        /// Position (double), Intensity (short)
+        /// Position (double), Intensity (ushort)
         /// </summary>
-        Pos64IShort,
+        PosD3InUs,
         /// <summary>
         /// Position (double), Color (float)
         /// </summary>
-        Pos64Col32,
+        PosD3ColF3,
         /// <summary>
-        /// Position (double), Label (ushort)
+        /// Position (double), Label (byte)
         /// </summary>
-        Pos64Label8,
+        PosD3LblB,
         /// <summary>
-        /// Position (double), Normal (float), Color (float), Intensity (short)
+        /// Position (double), Normal (float), Color (float), Intensity (ushort)
         /// </summary>
-        Pos64Nor32Col32IShort,
+        PosD3NorF3ColF3InUs,
         /// <summary>
         /// Position (double), Normal (float), Intensity (short)
         /// </summary>
-        Pos64Nor32IShort,
+        PosD3NorF3InUs,
         /// <summary>
         /// Position (double), Normal (float), Color (float)
         /// </summary>
-        Pos64Nor32Col32,
+        PosD3NorF3ColF3,
         /// <summary>
         /// Position (double), Color (float), Classification (byte)
         /// </summary>
-        Position_double__Color_float__Label_byte
+        PosD3ColF3LblB,
+        /// <summary>
+        /// Position (double), Color (float), Classification (byte), Intensity (ushort)
+        /// </summary>
+        PosD3ColF3InUsLblB
     }
 
     public interface IPointCloudPoint { }
@@ -61,7 +67,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position double3.
     /// </summary>
-    public struct Pos64 : IPointCloudPoint
+    public struct PosD3 : IPointCloudPoint
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -72,7 +78,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, color, intensity.
     /// </summary>
-    public struct Pos64Col32IShort : IPointCloudPoint
+    public struct PosD3ColF3InUs : IPointCloudPoint
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -91,7 +97,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, intensity.
     /// </summary>
-    public struct Pos64IShort : IPointCloudPoint
+    public struct PosD3InUs : IPointCloudPoint
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -106,7 +112,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, color.
     /// </summary>
-    public struct Pos64Col32 : IPointCloudPoint
+    public struct PosD3ColF3 : IPointCloudPoint
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -121,7 +127,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position and label color.
     /// </summary>
-    public struct Pos64Label8 : IPointCloudPoint
+    public struct PosD3LblB : IPointCloudPoint
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -136,7 +142,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, normal, color, intensity.
     /// </summary>
-    public struct Pos64Nor32Col32IShort : IPointCloudPoint
+    public struct PosD3NorF3ColF3InUs : IPointCloudPoint
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -155,11 +161,13 @@ namespace Fusee.PointCloud.Common
         /// </summary>
         public ushort Intensity;
     }
+
+    //
 
     /// <summary>
     /// Point type: Position, normal, intensity.
     /// </summary>
-    public struct Pos64Nor32IShort : IPointCloudPoint
+    public struct PosD3NorF3InUs : IPointCloudPoint
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -176,9 +184,9 @@ namespace Fusee.PointCloud.Common
     }
 
     /// <summary>
-    /// Point type: Position, normal, color.
+    /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Normal"/>.
     /// </summary>
-    public struct Pos64Nor32Col32 : IPointCloudPoint
+    public struct PosD3NorF3ColF3 : IPointCloudPoint
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -194,10 +202,11 @@ namespace Fusee.PointCloud.Common
         public float3 Color;
     }
 
+
     /// <summary>
-    /// Point type: Position, color, classification
+    /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/>.
     /// </summary>
-    public struct Position_double__Color_float__Label_byte : IPointCloudPoint
+    public struct PosD3ColF3LblB : IPointCloudPoint
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -211,5 +220,28 @@ namespace Fusee.PointCloud.Common
         /// The point's classification.
         /// </summary>
         public byte Label;
+    }
+
+    /// <summary>
+    /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/> and <see cref="Intensity"/>.
+    /// </summary>
+    public struct PosD3ColF3InUsLblB : IPointCloudPoint
+    {
+        /// <summary>
+        /// The point's coordinate in 3D space.
+        /// </summary>
+        public double3 Position;
+        /// <summary>
+        /// The point's rgb color.
+        /// </summary>
+        public float3 Color;
+        /// <summary>
+        /// The point's classification.
+        /// </summary>
+        public byte Label;
+        /// <summary>
+        /// The point's intensity (gray scale).
+        /// </summary>
+        public ushort Intensity;
     }
 }

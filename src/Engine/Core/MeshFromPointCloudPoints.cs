@@ -18,41 +18,41 @@ namespace Fusee.Engine.Core
                 default:
                 case PointType.Undefined:
                     throw new ArgumentException();
-                case PointType.Pos64:
-                    return GetMeshPos64((Pos64Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64Col32IShort:
-                    return GetMeshPos64Col32IShort((Pos64Col32IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64IShort:
-                    return GetMeshPos64IShort((Pos64IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64Col32:
-                    return GetMeshPos64Col32((Pos64Col32Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64Label8:
-                    return GetMeshPos64Label8((Pos64Label8Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64Nor32Col32IShort:
-                    return GetMeshPos64Nor32Col32IShort((Pos64Nor32Col32IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64Nor32IShort:
-                    return GetMeshPos64Nor32IShort((Pos64Nor32IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Pos64Nor32Col32:
-                    return GetMeshPos64Nor32Col32((Pos64Nor32Col32Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
-                case PointType.Position_double__Color_float__Label_byte:
-                    return GetMesh___Position_double__Color_float__Label_byte((Position_double__Color_float__Label_byte___Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3:
+                    return GetMeshPosD3((PosD3Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3ColF3InUs:
+                    return GetMeshPosD3ColF3InUs((PosD3ColF3InUsAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3InUs:
+                    return GetMeshPosD3InUs((PosD3InUsAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3ColF3:
+                    return GetMeshPosD3ColF3((PosD3ColF3Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3LblB:
+                    return GetMeshPosD3LblBAccessor((PosD3LblBAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3NorF3ColF3InUs:
+                    return GetMeshPosD3NorF3ColF3InUs((PosD3NorF3ColF3InUsAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3NorF3InUs:
+                    return GetMeshPosD3NorF3InUs((PosD3NorF3InUsAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3NorF3ColF3:
+                    return GetMeshPosD3NorF3ColF3((PosD3NorF3ColF3Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.PosD3ColF3LblB:
+                    return GetMeshPosD3ColF3LblB((PosD3ColF3LblBAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
             }
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64"/>.
+        /// Returns meshes for point clouds of type <see cref="PosD3"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64(Pos64Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3(PosD3Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPoint = (Pos64)points[0];
+            var firstPoint = (PosD3)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref firstPoint);
 
             if (doExchangeYZ)
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64)points[i];
+                var typedPoint = (PosD3)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -82,19 +82,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32IShort"/>.
+        /// Returns meshes for point clouds of type <see cref="PosD3ColF3InUs"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Col32IShort(Pos64Col32IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3ColF3InUs(PosD3ColF3InUsAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPoint = (Pos64Col32IShort)points[0];
+            var firstPoint = (PosD3ColF3InUs)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref firstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -108,7 +108,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64Col32IShort)points[i];
+                var typedPoint = (PosD3ColF3InUs)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -131,19 +131,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64IShort"/>.
+        /// Returns meshes for point clouds of type <see cref="PosD3InUs"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64IShort(Pos64IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3InUs(PosD3InUsAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Pos64IShort)points[0];
+            var typedFirstPoint = (PosD3InUs)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -156,7 +156,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64IShort)points[i];
+                var typedPoint = (PosD3InUs)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -175,19 +175,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Label8"/>.
+        /// Returns meshes for point clouds of type <see cref="PointCloud.Common.PosD3LblB"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Label8(Pos64Label8Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3LblBAccessor(PointCloud.Core.PosD3LblBAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Pos64Label8)points[0];
+            var typedFirstPoint = (PointCloud.Common.PosD3LblB)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -200,7 +200,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64Label8)points[i];
+                var typedPoint = (PointCloud.Common.PosD3LblB)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -222,19 +222,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Label8"/>.
+        /// Returns meshes for point clouds of type <see cref="PointCloud.Common.PosD3LblB"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMesh___Position_double__Color_float__Label_byte(Position_double__Color_float__Label_byte___Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3ColF3LblB(PointCloud.Core.PosD3ColF3LblBAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Position_double__Color_float__Label_byte)points[0];
+            var typedFirstPoint = (PointCloud.Common.PosD3ColF3LblB)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -247,7 +247,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Position_double__Color_float__Label_byte)points[i];
+                var typedPoint = (PointCloud.Common.PosD3ColF3LblB)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -270,19 +270,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32IShort"/>.
+        /// Returns meshes for point clouds of type <see cref="PointCloud.Common.PosD3NorF3ColF3InUs"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32Col32IShort(Pos64Nor32Col32IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3NorF3ColF3InUs(PointCloud.Core.PosD3NorF3ColF3InUsAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Pos64Nor32Col32IShort)points[0];
+            var typedFirstPoint = (PointCloud.Common.PosD3NorF3ColF3InUs)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -297,7 +297,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64Nor32Col32IShort)points[i];
+                var typedPoint = (PointCloud.Common.PosD3NorF3ColF3InUs)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -321,19 +321,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Nor32IShort"/>.
+        /// Returns meshes for point clouds of type <see cref="PointCloud.Common.PosD3NorF3InUs"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32IShort(Pos64Nor32IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3NorF3InUs(PosD3NorF3InUsAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Pos64Nor32IShort)points[0];
+            var typedFirstPoint = (PointCloud.Common.PosD3NorF3InUs)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -347,7 +347,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64Nor32IShort)points[i];
+                var typedPoint = (PointCloud.Common.PosD3NorF3InUs)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -369,19 +369,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Nor32Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="PosD3NorF3ColF3"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32Col32(Pos64Nor32Col32Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3NorF3ColF3(PosD3NorF3ColF3Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Pos64Nor32Col32)points[0];
+            var typedFirstPoint = (PosD3NorF3ColF3)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -395,7 +395,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64Nor32Col32)points[i];
+                var typedPoint = (PosD3NorF3ColF3)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
@@ -417,19 +417,19 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="Pos64Col32"/>.
+        /// Returns meshes for point clouds of type <see cref="PosD3ColF3"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Col32(Pos64Col32Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3ColF3(PosD3ColF3Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var typedFirstPoint = (Pos64Col32)points[0];
+            var typedFirstPoint = (PosD3ColF3)points[0];
             var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
@@ -442,7 +442,7 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var typedPoint = (Pos64Col32)points[i];
+                var typedPoint = (PosD3ColF3)points[i];
                 var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);

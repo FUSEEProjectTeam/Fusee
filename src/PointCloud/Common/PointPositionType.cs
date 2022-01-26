@@ -12,10 +12,10 @@ namespace Fusee.PointCloud.Common
         /// <summary>
         /// A point cloud point has a position value of type <see cref="float3"/>.
         /// </summary>
-        Float3_32,
+        Float3,
         /// <summary>
         /// A point cloud point has a position value of type <see cref="double3"/>.
         /// </summary>
-        Float3_64
+        Double3
     }
 }

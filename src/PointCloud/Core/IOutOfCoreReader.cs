@@ -11,7 +11,7 @@ namespace Fusee.PointCloud.Core
     {
         public PointType GetPointType(string pathToNodeFileFolder = "");
 
-        public PtOctree GetOctree(string fileFolderPath);
+        public PointCloudOctree GetOctree(string fileFolderPath);
 
         public Task<IPointCloudPoint[]> LoadPointsForNodeAsync(string guid, IPointAccessor pointAccessor);
 

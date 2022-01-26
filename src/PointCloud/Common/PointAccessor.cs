@@ -39,32 +39,32 @@ namespace Fusee.PointCloud.Common
             // Pos64
             switch (PositionType)
             {
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.None && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64Col32IShort;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.None && ColorType == PointColorType.Float && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3ColF3InUs;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64IShort;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3InUs;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64Col32;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.Float && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3ColF3;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.UInt_8 && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64Label8;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.UInt_8 && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3LblB;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.Float3_32 && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64Nor32Col32IShort;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.Float3 && ColorType == PointColorType.Float && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3NorF3ColF3InUs;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.Float3_32 && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64Nor32IShort;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.Float3 && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3NorF3InUs;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.Float3_32 && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Pos64Nor32Col32;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.Float3 && ColorType == PointColorType.Float && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3NorF3ColF3;
                     break;
-                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.Float32 && LabelType == PointLabelType.UInt_8 && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
-                    _pointType = PointType.Position_double__Color_float__Label_byte;
+                case PointPositionType.Double3 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.Float && LabelType == PointLabelType.UInt_8 && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.PosD3ColF3LblB;
                     break;
                 default:
                     throw new Exception("Undefined Point Type!");
@@ -126,7 +126,7 @@ namespace Fusee.PointCloud.Common
 
         #region Get/Set Position
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_32"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetPositionFloat3_32(ref TPoint point)
@@ -134,7 +134,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat32");
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_32"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -143,7 +143,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat32");
         }
         /// <summary>
-        /// Returns the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
+        /// Returns the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetPositionFloat3_64(ref TPoint point)
@@ -151,7 +151,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat64");
         }
         /// <summary>
-        /// Sets the position of a point cloud point if <see cref="PointPositionType.Float3_64"/> is true.
+        /// Sets the position of a point cloud point if <see cref="PointPositionType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new position value.</param>
@@ -347,7 +347,7 @@ namespace Fusee.PointCloud.Common
         #region Getter
 
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetNormalFloat3_32(ref TPoint point)
@@ -356,7 +356,7 @@ namespace Fusee.PointCloud.Common
         }
 
         /// <summary>
-        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Float3_64"/> is true.
+        /// Returns the normal vector of a point cloud point if <see cref="PointNormalType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetNormalFloat3_64(ref TPoint point)
@@ -367,7 +367,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_32"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>
@@ -376,7 +376,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetNormalFloat3_32");
         }
         /// <summary>
-        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Float3_64"/> is true.
+        /// Sets the normal vector of a point cloud point if <see cref="PointNormalType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new normal vector.</param>
@@ -392,7 +392,7 @@ namespace Fusee.PointCloud.Common
 
         #region Getter
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_8"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.SByte"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref sbyte GetColorInt_8(ref TPoint point)
@@ -400,7 +400,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_8");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_16"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Short"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref short GetColorInt_16(ref TPoint point)
@@ -408,7 +408,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_16");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref int GetColorInt_32(ref TPoint point)
@@ -416,7 +416,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Int_64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Long"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref long GetColorInt_64(ref TPoint point)
@@ -424,7 +424,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_64");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_8"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Byte"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref byte GetColorUInt_8(ref TPoint point)
@@ -432,7 +432,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_8");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_16"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Ushort"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ushort GetColorUInt_16(ref TPoint point)
@@ -440,7 +440,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_16");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Uint"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref uint GetColorUInt_32(ref TPoint point)
@@ -448,7 +448,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.UInt_64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Ulong"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref ulong GetColorUInt_64(ref TPoint point)
@@ -456,7 +456,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_64");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float GetColorFloat32(ref TPoint point)
@@ -464,7 +464,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Double"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double GetColorFloat64(ref TPoint point)
@@ -472,7 +472,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat64");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref float3 GetColorFloat3_32(ref TPoint point)
@@ -480,7 +480,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat3_32");
         }
         /// <summary>
-        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Float3_64"/> is true.
+        /// Returns the normal color of a point cloud point if <see cref="PointColorType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         public virtual ref double3 GetColorFloat3_64(ref TPoint point)
@@ -491,7 +491,7 @@ namespace Fusee.PointCloud.Common
 
         #region Setter
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_8"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.SByte"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -500,7 +500,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_8");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_16"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Short"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -509,7 +509,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_16");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Int"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -518,7 +518,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Int_64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Long"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -527,7 +527,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorInt_64");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_8"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Byte"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -536,7 +536,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_8");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_16"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Ushort"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -545,7 +545,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_16");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Uint"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -554,7 +554,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.UInt_64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Ulong"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -563,7 +563,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorUInt_64");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Float32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -572,7 +572,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorFloat32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Float64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Double"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -581,7 +581,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorFloat64");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_32"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -590,7 +590,7 @@ namespace Fusee.PointCloud.Common
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetColorFloat3_32");
         }
         /// <summary>
-        /// Sets the color of a point cloud point if <see cref="PointColorType.Float3_64"/> is true.
+        /// Sets the color of a point cloud point if <see cref="PointColorType.Double3"/> is true.
         /// </summary>
         /// <param name="point">The point cloud point.</param>
         /// <param name="val">The new color.</param>
@@ -1327,7 +1327,7 @@ namespace Fusee.PointCloud.Common
         #region RawDataEncode
         private byte[] GetRawPosition(ref TPoint point)
         {
-            if (PositionType == PointPositionType.Float3_32)
+            if (PositionType == PointPositionType.Float3)
             {
 
                 var x = BitConverter.GetBytes(GetPositionFloat3_32(ref point).x);
@@ -1337,7 +1337,7 @@ namespace Fusee.PointCloud.Common
                 return x.Concat(y).Concat(z).ToArray();
 
             }
-            else if (PositionType == PointPositionType.Float3_64)
+            else if (PositionType == PointPositionType.Double3)
             {
 
                 var x = BitConverter.GetBytes(GetPositionFloat3_64(ref point).x);
@@ -1385,7 +1385,7 @@ namespace Fusee.PointCloud.Common
         private byte[] GetRawNormals(ref TPoint point)
         {
 
-            if (NormalType == PointNormalType.Float3_32)
+            if (NormalType == PointNormalType.Float3)
             {
                 var x = BitConverter.GetBytes(GetNormalFloat3_32(ref point).x);
                 var y = BitConverter.GetBytes(GetNormalFloat3_32(ref point).y);
@@ -1394,7 +1394,7 @@ namespace Fusee.PointCloud.Common
                 return x.Concat(y).Concat(z).ToArray();
 
             }
-            else if (NormalType == PointNormalType.Float3_64)
+            else if (NormalType == PointNormalType.Double3)
             {
                 var x = BitConverter.GetBytes(GetNormalFloat3_64(ref point).x);
                 var y = BitConverter.GetBytes(GetNormalFloat3_64(ref point).y);
@@ -1411,29 +1411,29 @@ namespace Fusee.PointCloud.Common
         {
             switch (ColorType)
             {
-                case PointColorType.Int_8:
+                case PointColorType.SByte:
                     return BitConverter.GetBytes(GetColorInt_8(ref point));
-                case PointColorType.Int_16:
+                case PointColorType.Short:
                     return BitConverter.GetBytes(GetColorInt_16(ref point));
-                case PointColorType.Int_32:
+                case PointColorType.Int:
                     return BitConverter.GetBytes(GetColorInt_32(ref point));
-                case PointColorType.Int_64:
+                case PointColorType.Long:
                     return BitConverter.GetBytes(GetColorInt_64(ref point));
-                case PointColorType.UInt_8:
+                case PointColorType.Byte:
                     return BitConverter.GetBytes(GetColorUInt_8(ref point));
-                case PointColorType.UInt_16:
+                case PointColorType.Ushort:
                     return BitConverter.GetBytes(GetColorUInt_16(ref point));
-                case PointColorType.UInt_32:
+                case PointColorType.Uint:
                     return BitConverter.GetBytes(GetColorUInt_32(ref point));
-                case PointColorType.UInt_64:
+                case PointColorType.Ulong:
                     return BitConverter.GetBytes(GetColorUInt_64(ref point));
-                case PointColorType.Float32:
+                case PointColorType.Float:
                     return BitConverter.GetBytes(GetColorFloat32(ref point));
-                case PointColorType.Float64:
+                case PointColorType.Double:
                     return BitConverter.GetBytes(GetColorFloat64(ref point));
             }
 
-            if (ColorType == PointColorType.Float3_32)
+            if (ColorType == PointColorType.Float3)
             {
 
                 var x = BitConverter.GetBytes(GetColorFloat3_32(ref point).x);
@@ -1443,7 +1443,7 @@ namespace Fusee.PointCloud.Common
                 return x.Concat(y).Concat(z).ToArray();
 
             }
-            if (ColorType == PointColorType.Float3_64)
+            if (ColorType == PointColorType.Double3)
             {
 
                 var x = BitConverter.GetBytes(GetColorFloat3_64(ref point).x);
@@ -1605,10 +1605,10 @@ namespace Fusee.PointCloud.Common
                 // position
                 switch (PositionType)
                 {
-                    case PointPositionType.Float3_32:
+                    case PointPositionType.Float3:
                         _offsets.PositionOffset = 3 * Marshal.SizeOf<float>();
                         break;
-                    case PointPositionType.Float3_64:
+                    case PointPositionType.Double3:
                         _offsets.PositionOffset = 3 * Marshal.SizeOf<double>();
                         break;
                 }
@@ -1651,10 +1651,10 @@ namespace Fusee.PointCloud.Common
                 // Normal
                 switch (NormalType)
                 {
-                    case PointNormalType.Float3_32:
+                    case PointNormalType.Float3:
                         _offsets.NormalsOffset = 3 * Marshal.SizeOf<float>();
                         break;
-                    case PointNormalType.Float3_64:
+                    case PointNormalType.Double3:
                         _offsets.NormalsOffset = 3 * Marshal.SizeOf<double>();
                         break;
                 }
@@ -1662,40 +1662,40 @@ namespace Fusee.PointCloud.Common
                 // Color
                 switch (ColorType)
                 {
-                    case PointColorType.Int_8:
+                    case PointColorType.SByte:
                         _offsets.RGBOffset = Marshal.SizeOf<sbyte>();
                         break;
-                    case PointColorType.Int_16:
+                    case PointColorType.Short:
                         _offsets.RGBOffset = Marshal.SizeOf<short>();
                         break;
-                    case PointColorType.Int_32:
+                    case PointColorType.Int:
                         _offsets.RGBOffset = Marshal.SizeOf<int>();
                         break;
-                    case PointColorType.Int_64:
+                    case PointColorType.Long:
                         _offsets.RGBOffset = Marshal.SizeOf<long>();
                         break;
-                    case PointColorType.UInt_8:
+                    case PointColorType.Byte:
                         _offsets.RGBOffset = Marshal.SizeOf<byte>();
                         break;
-                    case PointColorType.UInt_16:
+                    case PointColorType.Ushort:
                         _offsets.RGBOffset = Marshal.SizeOf<ushort>();
                         break;
-                    case PointColorType.UInt_32:
+                    case PointColorType.Uint:
                         _offsets.RGBOffset = Marshal.SizeOf<uint>();
                         break;
-                    case PointColorType.UInt_64:
+                    case PointColorType.Ulong:
                         _offsets.RGBOffset = Marshal.SizeOf<ulong>();
                         break;
-                    case PointColorType.Float32:
+                    case PointColorType.Float:
                         _offsets.RGBOffset = Marshal.SizeOf<float>();
                         break;
-                    case PointColorType.Float64:
+                    case PointColorType.Double:
                         _offsets.RGBOffset = Marshal.SizeOf<double>();
                         break;
-                    case PointColorType.Float3_32:
+                    case PointColorType.Float3:
                         _offsets.RGBOffset = 3 * Marshal.SizeOf<float>();
                         break;
-                    case PointColorType.Float3_64:
+                    case PointColorType.Double3:
                         _offsets.RGBOffset = 3 * Marshal.SizeOf<double>();
                         break;
                 }
@@ -1848,7 +1848,7 @@ namespace Fusee.PointCloud.Common
 
         private void SetRawPosition(ref TPoint pointIn, byte[] byteIn)
         {
-            if (PositionType == PointPositionType.Float3_32)
+            if (PositionType == PointPositionType.Float3)
             {
                 var offset = Marshal.SizeOf<float>();
                 var x = BitConverter.ToSingle(byteIn, 0);
@@ -1857,7 +1857,7 @@ namespace Fusee.PointCloud.Common
 
                 SetPositionFloat3_32(ref pointIn, new float3(x, y, z));
             }
-            else if (PositionType == PointPositionType.Float3_64)
+            else if (PositionType == PointPositionType.Double3)
             {
                 var offset = Marshal.SizeOf<double>();
                 var x = BitConverter.ToDouble(byteIn, 0);
@@ -1909,7 +1909,7 @@ namespace Fusee.PointCloud.Common
         {
             var offset = Offsets.PositionOffset + Offsets.IntensityOffset;
 
-            if (NormalType == PointNormalType.Float3_32)
+            if (NormalType == PointNormalType.Float3)
             {
 
                 var dataOffset = Marshal.SizeOf<float>();
@@ -1920,7 +1920,7 @@ namespace Fusee.PointCloud.Common
                 SetNormalFloat3_32(ref pointIn, new float3(x, y, z));
 
             }
-            if (NormalType == PointNormalType.Float3_64)
+            if (NormalType == PointNormalType.Double3)
             {
 
                 var dataOffset = Marshal.SizeOf<double>();
@@ -1940,37 +1940,37 @@ namespace Fusee.PointCloud.Common
 
             switch (ColorType)
             {
-                case PointColorType.Int_8:
+                case PointColorType.SByte:
                     SetColorInt_8(ref pointIn, (sbyte)byteIn[offset]);
                     break;
-                case PointColorType.Int_16:
+                case PointColorType.Short:
                     SetColorInt_16(ref pointIn, byteIn[offset]);
                     break;
-                case PointColorType.Int_32:
+                case PointColorType.Int:
                     SetColorInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
                     break;
-                case PointColorType.Int_64:
+                case PointColorType.Long:
                     SetColorInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
                     break;
-                case PointColorType.UInt_8:
+                case PointColorType.Byte:
                     SetColorUInt_8(ref pointIn, byteIn[offset + 1]);
                     break;
-                case PointColorType.UInt_16:
+                case PointColorType.Ushort:
                     SetColorUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
                     break;
-                case PointColorType.UInt_32:
+                case PointColorType.Uint:
                     SetColorUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
                     break;
-                case PointColorType.UInt_64:
+                case PointColorType.Ulong:
                     SetColorUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
                     break;
-                case PointColorType.Float32:
+                case PointColorType.Float:
                     SetColorFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
                     break;
-                case PointColorType.Float64:
+                case PointColorType.Double:
                     SetColorFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
                     break;
-                case PointColorType.Float3_32:
+                case PointColorType.Float3:
                     {
 
                         var dataOffset = Marshal.SizeOf<float>();
@@ -1984,7 +1984,7 @@ namespace Fusee.PointCloud.Common
                     }
                     break;
 
-                case PointColorType.Float3_64:
+                case PointColorType.Double3:
                     {
 
                         var dataOffset = Marshal.SizeOf<double>();

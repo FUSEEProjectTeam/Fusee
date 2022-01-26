@@ -7,7 +7,7 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// In addition to the information in  <see cref="OctantD{P}"/> this class provides methods and properties, that are used to render point clouds out of core.
     /// </summary>
-    public class PtOctant : OctantD<IPointCloudPoint>
+    public class PointCloudOctant : OctantD<IPointCloudPoint>
     {
         /// <summary>
         /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
@@ -20,13 +20,13 @@ namespace Fusee.PointCloud.Core
         public int NumberOfPointsInNode { get; set; }
 
         /// <summary>
-        /// Creates a new instance of type <see cref="PtOctant"/>.
+        /// Creates a new instance of type <see cref="PointCloudOctant"/>.
         /// </summary>
         /// <param name="center">The center of this octant.</param>
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="guid"></param>
         /// <param name="children">The octants child octants.</param>
-        public PtOctant(double3 center, double size, string guid, PtOctant[] children = null) : base(center, size, guid, children) { }
+        public PointCloudOctant(double3 center, double size, string guid, PointCloudOctant[] children = null) : base(center, size, guid, children) { }
 
         /// <summary>
         /// Calculates the size, projected into screen space.
@@ -53,7 +53,7 @@ namespace Fusee.PointCloud.Core
             var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
-            var child = new PtOctant(childCenter, childRes, Guid + posInParent)
+            var child = new PointCloudOctant(childCenter, childRes, Guid + posInParent)
             {
                 Resolution = Resolution / 2d
             };
