@@ -1,6 +1,6 @@
 ﻿using Fusee.PointCloud.Common;
 
-namespace Fusee.PointCloud.PointCloudFileReader.Las
+namespace Fusee.PointCloud.PointCloudFileReader.Las.Desktop
 {
     public struct LasPointFormat : IPointFormat
     {

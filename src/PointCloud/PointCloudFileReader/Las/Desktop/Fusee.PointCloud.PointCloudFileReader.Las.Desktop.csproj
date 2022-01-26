@@ -1,14 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0</TargetFrameworks>
+		<TargetFramework>net6.0</TargetFramework>
+		<DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
 		<DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
+		<ProjectReference Include="..\..\..\..\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+		<ProjectReference Include="..\..\..\Core\Fusee.PointCloud.Core.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -16,5 +18,7 @@
 		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.dll" Link="Natives\libLASlib.dll" PackagePath="runtimes/win/native" />
 		<EmbeddedResource Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.so" Link="Natives\libLASlib.so" PackagePath="runtimes/linux/native" />
 	</ItemGroup>
+
+	<Import Project="$(FuseeEngineRoot)\src\PointCloud\PointCloudFileReader\Las\Shared\Fusee.PointCloud.PointCloudFileReader.Las.Shared.projitems" Label="Shared" />
 
 </Project>
