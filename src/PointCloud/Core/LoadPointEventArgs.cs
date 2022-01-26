@@ -1,23 +1,19 @@
 using Fusee.Base.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
 using System;
 
-namespace Fusee.Engine.Core
+namespace Fusee.PointCloud.Core
 {
     /// <summary>
     /// Used in a <see cref="PointCloudLoader"/> for caching loaded points using the <see cref="MemoryCache{TItem}.AddItemAsync"/> event.
     /// </summary>
-    public class LoadPointEventArgs<TPoint> : EventArgs
+    public class LoadPointEventArgs : EventArgs
     {
         /// <summary>
         /// The path to the potree file
         /// </summary>
         public string PathToFile;
 
-        /// <summary>
-        /// The <see cref="PointAccessor{TPoint}"/>.
-        /// </summary>
         public IPointAccessor PtAccessor;
 
         public string Guid;

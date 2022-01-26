@@ -1,10 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.PointCloud.PotreeReader.V2.Data;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace Fusee.PointCloud.PotreeReader.V2
 {

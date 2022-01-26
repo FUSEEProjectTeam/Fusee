@@ -60,12 +60,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private SixDOFDevice _spaceMouse;
         private Engine.Core.Scene.PointCloud _pointCloud;
 
-        public PointCloudOutOfCore(PointType ptType, string pathToFile)
-        {
-            PtRenderingParams.Instance.PathToOocFile = pathToFile;
-            PtRenderingParams.Instance.PointType = ptType;
-        }
-
         public override void Init()
         {
             VSync = false;
@@ -106,10 +100,10 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 }
             };
 
-            _pointCloud = new Engine.Core.Scene.PointCloud(PtRenderingParams.Instance.PathToOocFile, PointCloudFileType.Potree2, PtRenderingParams.Instance.PointType);
+            _pointCloud = new Engine.Core.Scene.PointCloud(PtRenderingParams.Instance.PathToOocFile, PointCloudFileType.Potree2);
 
-            ((Potree2BaseCloud)_pointCloud.PointCloudImp).MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
-            ((Potree2BaseCloud)_pointCloud.PointCloudImp).PointThreshold = PtRenderingParams.Instance.PointThreshold;
+            ((Potree2Cloud)_pointCloud.PointCloudImp).MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
+            ((Potree2Cloud)_pointCloud.PointCloudImp).PointThreshold = PtRenderingParams.Instance.PointThreshold;
 
             var pointCloudNode = new SceneNode()
             {
@@ -128,7 +122,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 }
             };
 
-            _camTransform.Translation = _initCameraPos = _pointCloud.Center - new float3(0, 0, _pointCloud.Size * 2);
+            _camTransform.Translation = _initCameraPos = _pointCloud.Center - new float3(_pointCloud.Size.x, _pointCloud.Size.y, _pointCloud.Size.z * 2);
 
             _scene = new SceneContainer
             {
@@ -295,12 +289,12 @@ namespace Fusee.Examples.PointCloudPotree2.Core
 
         private void OnThresholdChanged(int newValue)
         {
-            ((Potree2BaseCloud)_pointCloud.PointCloudImp).PointThreshold = newValue;
+            ((Potree2Cloud)_pointCloud.PointCloudImp).PointThreshold = newValue;
         }
 
         private void OnProjectedSizeModifierChanged(float newValue)
         {
-            ((Potree2BaseCloud)_pointCloud.PointCloudImp).MinProjSizeModifier = newValue;
+            ((Potree2Cloud)_pointCloud.PointCloudImp).MinProjSizeModifier = newValue;
         }
 
         private bool SpaceMouseMoving(out float3 velPos, out float3 velRot)

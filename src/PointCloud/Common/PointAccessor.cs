@@ -37,96 +37,38 @@ namespace Fusee.PointCloud.Common
         private void GetPointType()
         {
             // Pos64
-            if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.None &&
-                NormalType == PointNormalType.None &&
-                ColorType == PointColorType.None &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64;
-
-            // Pos64Col32IShort
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.UInt_16 &&
-                NormalType == PointNormalType.None &&
-                ColorType == PointColorType.Float32 &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64Col32IShort;
-
-            // Pos64IShort
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.UInt_16 &&
-                NormalType == PointNormalType.None &&
-                ColorType == PointColorType.None &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64IShort;
-
-            // Pos64Col32
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.None &&
-                NormalType == PointNormalType.None &&
-                ColorType == PointColorType.Float32 &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64Col32;
-
-
-            // Pos64Label8
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.None &&
-                NormalType == PointNormalType.None &&
-                ColorType == PointColorType.None &&
-                LabelType == PointLabelType.UInt_8 &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64Label8;
-
-            // Pos64Nor32Col32IShort
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.UInt_16 &&
-                NormalType == PointNormalType.Float3_32 &&
-                ColorType == PointColorType.Float32 &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64Nor32Col32IShort;
-
-            // Pos64Nor32IShort
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.UInt_16 &&
-                NormalType == PointNormalType.Float3_32 &&
-                ColorType == PointColorType.None &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64Nor32IShort;
-
-            // Pos64Nor32Col32
-            else if (PositionType == PointPositionType.Float3_64 &&
-                IntensityType == PointIntensityType.None &&
-                NormalType == PointNormalType.Float3_32 &&
-                ColorType == PointColorType.Float32 &&
-                LabelType == PointLabelType.None &&
-                CurvatureType == PointCurvatureType.None &&
-                HitCountType == PointHitCountType.None &&
-                GpsTimeType == PointGpsTimeType.None)
-                _pointType = PointType.Pos64Nor32Col32;
-
-            else
-                throw new Exception("Undefined Point Type!");
+            switch (PositionType)
+            {
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.None && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64Col32IShort;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64IShort;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64Col32;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.None && LabelType == PointLabelType.UInt_8 && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64Label8;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.Float3_32 && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64Nor32Col32IShort;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.UInt_16 && NormalType == PointNormalType.Float3_32 && ColorType == PointColorType.None && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64Nor32IShort;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.Float3_32 && ColorType == PointColorType.Float32 && LabelType == PointLabelType.None && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Pos64Nor32Col32;
+                    break;
+                case PointPositionType.Float3_64 when IntensityType == PointIntensityType.None && NormalType == PointNormalType.None && ColorType == PointColorType.Float32 && LabelType == PointLabelType.UInt_8 && CurvatureType == PointCurvatureType.None && HitCountType == PointHitCountType.None && GpsTimeType == PointGpsTimeType.None:
+                    _pointType = PointType.Position_double__Color_float__Label_byte;
+                    break;
+                default:
+                    throw new Exception("Undefined Point Type!");
+            }
         }
 
         public PointPositionType PositionType { get; set; } = PointPositionType.Undefined;

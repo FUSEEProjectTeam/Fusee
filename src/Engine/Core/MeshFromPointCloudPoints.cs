@@ -2,6 +2,7 @@
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
 using Fusee.PointCloud.Core;
+using System;
 
 namespace Fusee.Engine.Core
 {
@@ -10,6 +11,34 @@ namespace Fusee.Engine.Core
     /// </summary>
     public static class MeshFromPointCloudPoints
     {
+        public static GpuMesh GetMesh(IPointAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        {
+            switch (ptAccessor.PointType)
+            {
+                default:
+                case PointType.Undefined:
+                    throw new ArgumentException();
+                case PointType.Pos64:
+                    return GetMeshPos64((Pos64Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64Col32IShort:
+                    return GetMeshPos64Col32IShort((Pos64Col32IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64IShort:
+                    return GetMeshPos64IShort((Pos64IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64Col32:
+                    return GetMeshPos64Col32((Pos64Col32Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64Label8:
+                    return GetMeshPos64Label8((Pos64Label8Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64Nor32Col32IShort:
+                    return GetMeshPos64Nor32Col32IShort((Pos64Nor32Col32IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64Nor32IShort:
+                    return GetMeshPos64Nor32IShort((Pos64Nor32IShortAccessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Pos64Nor32Col32:
+                    return GetMeshPos64Nor32Col32((Pos64Nor32Col32Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+                case PointType.Position_double__Color_float__Label_byte:
+                    return GetMesh___Position_double__Color_float__Label_byte((Position_double__Color_float__Label_byte___Accessor)ptAccessor, points, doExchangeYZ, translationVector, createMesh);
+            }
+        }
+
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="Pos64"/>.
         /// </summary>
@@ -18,12 +47,14 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64(Pos64Accessor ptAccessor, Pos64[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64(Pos64Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var firstPoint = (Pos64)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref firstPoint);
+
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -34,7 +65,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -49,7 +81,6 @@ namespace Fusee.Engine.Core
             return mesh;
         }
 
-
         /// <summary>
         /// Returns meshes for point clouds of type <see cref="Pos64Col32IShort"/>.
         /// </summary>
@@ -58,12 +89,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Col32IShort(Pos64Col32IShortAccessor ptAccessor, Pos64Col32IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64Col32IShort(Pos64Col32IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var firstPoint = (Pos64Col32IShort)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref firstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -76,7 +108,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64Col32IShort)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -86,9 +119,9 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
                 triangles[i] = (ushort)i;
 
-                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                var col = ptAccessor.GetColorFloat3_32(ref typedPoint);
                 colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
-                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
+                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref typedPoint) / 4096f * 256);
                 colors1[i] = ColorToUInt(intensity, intensity, intensity, 255);
 
             }
@@ -105,12 +138,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64IShort(Pos64IShortAccessor ptAccessor, Pos64IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64IShort(Pos64IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Pos64IShort)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -122,7 +156,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64IShort)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -131,7 +166,7 @@ namespace Fusee.Engine.Core
                 vertices[i] = posF;
                 boundingBox |= vertices[i];
                 triangles[i] = (ushort)i;
-                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
+                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref typedPoint) / 4096f * 256);
                 colors[i] = ColorToUInt(intensity, intensity, intensity, 255);
             }
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
@@ -147,12 +182,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Label8(Pos64Label8Accessor ptAccessor, Pos64Label8[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64Label8(Pos64Label8Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Pos64Label8)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -164,7 +200,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64Label8)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -174,7 +211,7 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
                 triangles[i] = (ushort)i;
 
-                var lbl = ptAccessor.GetLabelUInt_8(ref points[i]);
+                var lbl = ptAccessor.GetLabelUInt_8(ref typedPoint);
                 var colorScale = new float3[4] { new float3(0, 0, 1), new float3(0, 1, 0), new float3(1, 1, 0), new float3(1, 0, 0) };
                 colors[i] = ColorToUint(LabelToColor(colorScale, 32, lbl));
 
@@ -192,12 +229,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMesh___Position_double__Color_float__Label_byte(Position_double__Color_float__Label_byte___Accessor ptAccessor, Position_double__Color_float__Label_byte[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMesh___Position_double__Color_float__Label_byte(Position_double__Color_float__Label_byte___Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Position_double__Color_float__Label_byte)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -209,7 +247,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Position_double__Color_float__Label_byte)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -219,11 +258,11 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
 
                 triangles[i] = (ushort)i;
-                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                var col = ptAccessor.GetColorFloat3_32(ref typedPoint);
                 colors[i] = ColorToUInt((int)col.r, (int)col.g, (int)col.b, 255);
 
                 //TODO: add labels correctly
-                var label = ptAccessor.GetLabelUInt_8(ref points[i]);
+                var label = ptAccessor.GetLabelUInt_8(ref typedPoint);
             }
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);
             mesh.BoundingBox = boundingBox;
@@ -238,12 +277,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32Col32IShort(Pos64Nor32Col32IShortAccessor ptAccessor, Pos64Nor32Col32IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64Nor32Col32IShort(Pos64Nor32Col32IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Pos64Nor32Col32IShort)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -257,7 +297,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64Nor32Col32IShort)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -267,11 +308,11 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
                 triangles[i] = (ushort)i;
 
-                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                var col = ptAccessor.GetColorFloat3_32(ref typedPoint);
                 colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
-                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
+                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref typedPoint) / 4096f * 256);
                 colors1[i] = ColorToUInt(intensity, intensity, intensity, 255);
-                normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
+                normals[i] = ptAccessor.GetNormalFloat3_32(ref typedPoint);
 
             }
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, normals, colors, colors1);
@@ -287,12 +328,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32IShort(Pos64Nor32IShortAccessor ptAccessor, Pos64Nor32IShort[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64Nor32IShort(Pos64Nor32IShortAccessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Pos64Nor32IShort)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -305,7 +347,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64Nor32IShort)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -315,9 +358,9 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
                 triangles[i] = (ushort)i;
 
-                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref points[i]) / 4096f * 256);
+                var intensity = (int)(ptAccessor.GetIntensityUInt_16(ref typedPoint) / 4096f * 256);
                 colors[i] = ColorToUInt(intensity, intensity, intensity, 255);
-                normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
+                normals[i] = ptAccessor.GetNormalFloat3_32(ref typedPoint);
 
             }
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, normals, colors);
@@ -333,12 +376,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Nor32Col32(Pos64Nor32Col32Accessor ptAccessor, Pos64Nor32Col32[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64Nor32Col32(Pos64Nor32Col32Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Pos64Nor32Col32)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -351,7 +395,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64Nor32Col32)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -361,9 +406,9 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
                 triangles[i] = (ushort)i;
 
-                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                var col = ptAccessor.GetColorFloat3_32(ref typedPoint);
                 colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
-                normals[i] = ptAccessor.GetNormalFloat3_32(ref points[i]);
+                normals[i] = ptAccessor.GetNormalFloat3_32(ref typedPoint);
 
             }
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, normals, colors);
@@ -379,12 +424,13 @@ namespace Fusee.Engine.Core
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPos64Col32(Pos64Col32Accessor ptAccessor, Pos64Col32[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPos64Col32(Pos64Col32Accessor ptAccessor, IPointCloudPoint[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
 
-            var firstPos = ptAccessor.GetPositionFloat3_64(ref points[0]);
+            var typedFirstPoint = (Pos64Col32)points[0];
+            var firstPos = ptAccessor.GetPositionFloat3_64(ref typedFirstPoint);
             if (doExchangeYZ)
                 ExchangeYZ(ref firstPos);
 
@@ -396,7 +442,8 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pos = ptAccessor.GetPositionFloat3_64(ref points[i]);
+                var typedPoint = (Pos64Col32)points[i];
+                var pos = ptAccessor.GetPositionFloat3_64(ref typedPoint);
                 if (doExchangeYZ)
                     ExchangeYZ(ref pos);
 
@@ -406,7 +453,7 @@ namespace Fusee.Engine.Core
                 boundingBox |= vertices[i];
 
                 triangles[i] = (ushort)i;
-                var col = ptAccessor.GetColorFloat3_32(ref points[i]);
+                var col = ptAccessor.GetColorFloat3_32(ref typedPoint);
                 colors[i] = ColorToUInt((int)col.r / 256, (int)col.g / 256, (int)col.b / 256, 255);
             }
             var mesh = createMesh(PrimitiveType.Points, vertices, triangles, null, colors);

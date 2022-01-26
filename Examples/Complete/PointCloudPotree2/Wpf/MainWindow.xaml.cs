@@ -6,7 +6,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PointCloudPotree2.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.PotreeReader.V2;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -211,7 +210,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
                     GC.Collect();
                 }
 
-                CreateApp(PtRenderingParams.Instance.PathToOocFile);
+                CreateApp();
                 RunApp();
 
                 MinProjSize.Value = PtRenderingParams.Instance.ProjectedSizeModifier;
@@ -304,7 +303,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             InnerGrid.IsEnabled = true;
         }
 
-        private void CreateApp(string pathToFile)
+        private void CreateApp()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
@@ -345,7 +344,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             AssetStorage.RegisterProvider(fap);
 
-            app = new PointCloudPotree2.Core.PointCloudOutOfCore(ReadPotree2Metadata.GetPointType(pathToFile), pathToFile);
+            app = new PointCloudPotree2.Core.PointCloudOutOfCore();
 
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;

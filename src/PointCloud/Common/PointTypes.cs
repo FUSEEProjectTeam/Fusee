@@ -56,17 +56,6 @@ namespace Fusee.PointCloud.Common
         Position_double__Color_float__Label_byte
     }
 
-    /// <summary>
-    /// Point type: Position float3.
-    /// </summary>
-    public struct Pos32
-    {
-        /// <summary>
-        /// The points coordinate in 3D space.
-        /// </summary>
-        public float3 Position;
-    }
-
     public interface IPointCloudPoint { }
 
     /// <summary>

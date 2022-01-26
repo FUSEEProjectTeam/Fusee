@@ -1,102 +1,23 @@
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
-using Fusee.PointCloud.PotreeReader.V2;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Fusee.Engine.Core
+namespace Fusee.PointCloud.Core
 {
-    public interface IPointCloudLoader : IDisposable
-    {
-        /// <summary>
-        /// The number of points that are currently visible.
-        /// </summary>
-        int NumberOfVisiblePoints { get; }
-
-        /// <summary>
-        /// Changes the minimum size of octants. If an octant is smaller it won't be rendered.
-        /// </summary>
-        float MinProjSizeModifier { get; set; }
-
-        /// <summary>
-        /// The path to the folder that holds the file.
-        /// </summary>
-        public string FileFolderPath { get; set; }
-
-        /// <summary>
-        /// Maximal number of points that are visible in one frame - trade off between performance and quality.
-        /// </summary>
-        public int PointThreshold { get; set; }
-
-        /// <summary>
-        /// The amount of milliseconds needed to pass before rendering next frame
-        /// </summary>
-        public double UpdateRate { get; set; }
-
-        /// <summary>
-        /// If true, the visible octants will be rendered as WireframeCubes.
-        /// </summary>
-        bool ShowOctants { get; set; }
-
-        /// <summary>
-        /// Is set to true internally when all visible nodes are loaded.
-        /// </summary>
-        bool WasSceneUpdated { get; }
-
-        /// <summary>
-        /// Current Field of View - set by the SceneRenderer if a PointCloud Component is visited.
-        /// </summary>
-        float Fov { get; set; }
-
-        /// <summary>
-        /// Current camera position - set by the SceneRenderer if a PointCloud Component is visited.
-        /// </summary>
-        float3 CamPos { get; set; }
-
-        /// <summary>
-        /// Current height of the viewport - set by the SceneRenderer if a PointCloud Component is visited.
-        /// </summary>
-        int ViewportHeight { get; set; }
-
-        /// <summary>
-        /// Current camera frustum - set by the SceneRenderer if a PointCloud Component is visited.
-        /// </summary>
-        FrustumF RenderFrustum { get; set; }
-
-        /// <summary>
-        /// Provides access to properties of different point types.
-        /// </summary>
-        IPointAccessor PtAccessor { get; set; }
-
-        /// <summary>
-        /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
-        /// </summary>
-        void Update();
-
-        /// <summary>
-        ///All nodes that are visible in this frame.
-        /// </summary>
-        List<string> VisibleNodes { get; }
-    }
-
     /// <summary>
     /// Class that manages the out of core (on demand) loading of point clouds.
     /// </summary>
-    public class PointCloudLoader<TPoint> : IPointCloudLoader where TPoint : new()
+    public class PointCloudLoader : IDisposable
     {
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        public MemoryCache<TPoint[]> PointCache { get; private set; }
-
-        /// <summary>
-        /// If true, the visible octants will be rendered as WireframeCubes.
-        /// </summary>
-        public bool ShowOctants { get; set; }
+        public MemoryCache<IPointCloudPoint[]> PointCache { get; private set; }
 
         /// <summary>
         /// Is set to true internally when all visible nodes are loaded.
@@ -126,22 +47,16 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Provides access to properties of different point types.
         /// </summary>
-        public IPointAccessor PtAccessor { get; set; }
+        public IPointAccessor PtAccessor { get; }
 
         /// <summary>
         /// The octree structure of the point cloud.
         /// </summary>
-        public PtOctreeRead<TPoint> Octree
+        public PtOctree Octree
         {
-            get => _octree;
-            set
-            {
-                _loadingQueue.Clear();
-                _visibleNodesOrderedByProjectionSize.Clear();
-                _octree = value;
-            }
+            get;
+            private set;
         }
-        private PtOctreeRead<TPoint> _octree;
 
         /// <summary>
         /// The number of points that are currently visible.
@@ -157,15 +72,15 @@ namespace Fusee.Engine.Core
             set
             {
                 _minProjSizeModifier = value;
-                if (_octree.Root != null)
-                    _minScreenProjectedSize = ((PtOctantRead<TPoint>)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
+                if (Octree.Root != null)
+                    _minScreenProjectedSize = ((PtOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
         /// <summary>
         /// The path to the folder that holds the file.
         /// </summary>
-        public string FileFolderPath { get; set; }
+        public string FileFolderPath { get; private set; }
 
         /// <summary>
         /// Maximal number of points that are visible in one frame - trade off between performance and quality.
@@ -185,7 +100,7 @@ namespace Fusee.Engine.Core
         private double _minScreenProjectedSize;
 
         // Allows traversal in order of screen projected size.
-        private readonly SortedDictionary<double, PtOctantRead<TPoint>> _visibleNodesOrderedByProjectionSize;
+        private readonly SortedDictionary<double, PtOctant> _visibleNodesOrderedByProjectionSize;
 
         /// <summary>
         ///All nodes that are visible in this frame.
@@ -193,7 +108,7 @@ namespace Fusee.Engine.Core
         public List<string> VisibleNodes { get; private set; }
 
         //Nodes that are queued for loading in the background
-        private List<string> _loadingQueue;
+        private readonly List<string> _loadingQueue;
 
         private bool _disposed;
 
@@ -206,16 +121,62 @@ namespace Fusee.Engine.Core
 
         private static readonly object _lockLoadingQueue = new();
 
+        private IOutOfCoreReader _outOfCoreReader;
+
+        private Stopwatch _watch;
+
         /// <summary>
-        /// Creates a new instance of type <see cref="PointCloudLoader{TPoint}"/>.
+        /// Creates a new instance of type <see cref="PointCloudLoader"/>.
         /// </summary>
         /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
         /// <param name="numberOfOctants"></param>
-        public PointCloudLoader(string fileFolderPath, int numberOfOctants)
+        public PointCloudLoader(string fileFolderPath, int numberOfOctants, IOutOfCoreReader reader)
         {
-            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PtOctantRead<TPoint>>(); // visible nodes ordered by screen-projected-size;            
+            _watch = new Stopwatch();
+            _outOfCoreReader = reader;
+            _visibleNodesOrderedByProjectionSize = new SortedDictionary<double, PtOctant>(); // visible nodes ordered by screen-projected-size;            
             FileFolderPath = fileFolderPath;
-            InitCollections(numberOfOctants);
+            VisibleNodes = new(numberOfOctants);
+            PointCache = new();
+            PointCache.AddItemAsync += OnLoadPoints;
+            _loadingQueue = new(numberOfOctants);
+
+            var pointType = _outOfCoreReader.GetPointType(fileFolderPath);
+            switch (pointType)
+            {
+                default:
+                case PointType.Undefined:
+                    throw new ArgumentException("Undefined point type is not valid in this context.");
+                case PointType.Pos64:
+                    PtAccessor = new Pos64Accessor();
+                    break;
+                case PointType.Pos64Col32IShort:
+                    PtAccessor = new Pos64Col32IShortAccessor();
+                    break;
+                case PointType.Pos64IShort:
+                    PtAccessor = new Pos64IShortAccessor();
+                    break;
+                case PointType.Pos64Col32:
+                    PtAccessor = new Pos64Col32Accessor();
+                    break;
+                case PointType.Pos64Label8:
+                    PtAccessor = new Pos64Label8Accessor();
+                    break;
+                case PointType.Pos64Nor32Col32IShort:
+                    PtAccessor = new Pos64Nor32Col32IShortAccessor();
+                    break;
+                case PointType.Pos64Nor32IShort:
+                    PtAccessor = new Pos64Nor32IShortAccessor();
+                    break;
+                case PointType.Pos64Nor32Col32:
+                    PtAccessor = new Pos64Nor32Col32Accessor();
+                    break;
+                case PointType.Position_double__Color_float__Label_byte:
+                    PtAccessor = new Position_double__Color_float__Label_byte___Accessor();
+                    break;
+            }
+
+            Octree = _outOfCoreReader.GetOctree(FileFolderPath);
         }
 
         /// <summary>
@@ -223,6 +184,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void Update()
         {
+            var elapsed = _watch.ElapsedMilliseconds;
+            _watch.Restart();
             _camPosD = new double3(CamPos.x, CamPos.y, CamPos.z);
             _fov = Fov;
 
@@ -230,7 +193,7 @@ namespace Fusee.Engine.Core
             SetMinScreenProjectedSize(_camPosD, _fov);
 
             if (_deltaTimeSinceLastUpdate < UpdateRate)
-                _deltaTimeSinceLastUpdate += Time.RealDeltaTime * 1000;
+                _deltaTimeSinceLastUpdate += elapsed;
             else
             {
                 _deltaTimeSinceLastUpdate = 0;
@@ -239,14 +202,6 @@ namespace Fusee.Engine.Core
             }
 
             WasSceneUpdated = true;
-        }
-
-        private void InitCollections(int octantCnt)
-        {
-            VisibleNodes = new(octantCnt);
-            PointCache = new();
-            PointCache.AddItemAsync += OnLoadPoints;
-            _loadingQueue = new(octantCnt);
         }
 
         /// <summary>
@@ -259,7 +214,7 @@ namespace Fusee.Engine.Core
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
 
-            DetermineVisibilityForNode((PtOctantRead<TPoint>)_octree.Root);
+            DetermineVisibilityForNode((PtOctant)Octree.Root);
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -276,7 +231,7 @@ namespace Fusee.Engine.Core
 
                     Task.Run(async () =>
                     {
-                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs<TPoint>(octant.Guid, FileFolderPath, PtAccessor));
+                        await PointCache.AddOrUpdateAsync(octant.Guid, new LoadPointEventArgs(octant.Guid, FileFolderPath, PtAccessor));
 
                         lock (_lockLoadingQueue)
                         {
@@ -292,7 +247,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private void DetermineVisibilityForChildren(PtOctantRead<TPoint> node)
+        private void DetermineVisibilityForChildren(PtOctant node)
         {
             // add child nodes to the heap of ordered nodes
             foreach (var child in node.Children)
@@ -300,12 +255,12 @@ namespace Fusee.Engine.Core
                 if (child == null)
                     continue;
 
-                DetermineVisibilityForNode((PtOctantRead<TPoint>)child);
+                DetermineVisibilityForNode((PtOctant)child);
             }
         }
 
         //Use Fusee.Struictures Octree - remove from Scene
-        private void DetermineVisibilityForNode(PtOctantRead<TPoint> node)
+        private void DetermineVisibilityForNode(PtOctant node)
         {
             // gets pixel radius of the node
             node.ComputeScreenProjectedSize(_camPosD, ViewportHeight, _fov);
@@ -326,15 +281,15 @@ namespace Fusee.Engine.Core
             _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
         }
 
-        private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
+        private async Task<IPointCloudPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
-            var meshArgs = (LoadPointEventArgs<TPoint>)e;
-            return await ReadPotree2Data.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor);
+            var meshArgs = (LoadPointEventArgs)e;
+            return await _outOfCoreReader.LoadPointsForNodeAsync(meshArgs.Guid, meshArgs.PtAccessor);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            var root = (PtOctantRead<TPoint>)_octree.Root;
+            var root = (PtOctant)Octree.Root;
             root.ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
             _minScreenProjectedSize = root.ProjectedScreenSize * _minProjSizeModifier;
         }

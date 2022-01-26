@@ -7,6 +7,7 @@
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Structures\Fusee.Structures.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
+		<ProjectReference Include="..\..\Base\Core\Fusee.Base.Core.csproj" />
 	</ItemGroup>
 	
 </Project>

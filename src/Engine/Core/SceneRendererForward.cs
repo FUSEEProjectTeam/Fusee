@@ -772,7 +772,7 @@ namespace Fusee.Engine.Core
                     throw new NotImplementedException();
                 case PointCloudFileType.Potree2:
                     var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-                    ((Potree2BaseCloud)pointCloud.PointCloudImp).Update(_rc.CreateGpuMesh, fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
+                    ((Potree2Cloud)pointCloud.PointCloudImp).Update(_rc.CreateGpuMesh, fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
                     break;
             }
 

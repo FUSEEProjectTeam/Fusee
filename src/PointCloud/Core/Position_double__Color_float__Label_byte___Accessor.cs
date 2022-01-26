@@ -4,7 +4,7 @@ using Fusee.PointCloud.Common;
 namespace Fusee.PointCloud.Core
 {
     /// <summary>
-    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds wich position, color and classification values.
+    /// <see cref="PointAccessor{TPoint}"/> for Point Clouds which position, color and classification values.
     /// </summary>
     public class Position_double__Color_float__Label_byte___Accessor : PointAccessor<Position_double__Color_float__Label_byte>
     {

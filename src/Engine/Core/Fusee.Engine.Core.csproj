@@ -36,8 +36,8 @@
 			<PrivateAssets>analyzers</PrivateAssets>
 		</ProjectReference>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Common\Fusee.PointCloud.Common.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
-		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\PotreeReader\Fusee.PointCloud.PotreeReader.csproj" />
+		<ProjectReference Include="..\..\PointCloud\Core\Fusee.PointCloud.Core.csproj" />
+		<ProjectReference Include="..\..\PointCloud\PotreeReader\Fusee.PointCloud.PotreeReader.csproj" />
 	</ItemGroup>
 	
 </Project>

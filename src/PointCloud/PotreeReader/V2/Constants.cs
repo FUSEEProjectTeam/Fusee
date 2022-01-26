@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.PointCloud.PotreeReader.V2
+﻿namespace Fusee.PointCloud.PotreeReader.V2
 {
     internal static class Constants
     {

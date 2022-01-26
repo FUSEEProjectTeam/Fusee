@@ -1,13 +1,13 @@
 ﻿using Fusee.Math.Core;
+using Fusee.PointCloud.Common;
 using Fusee.Structures;
 
 namespace Fusee.PointCloud.Core
 {
     /// <summary>
-    /// Node/Bucket data structure that is used in a <see cref="PtOctreeRead{TPoint}"/>. Needed to save a point cloud into a file format that can be used for out of core rendering.
+    /// In addition to the information in  <see cref="OctantD{P}"/> this class provides methods and properties, that are used to render point clouds out of core.
     /// </summary>
-    /// <typeparam name="TPoint">The type pf the point cloud points.</typeparam>
-    public class PtOctantRead<TPoint> : OctantD<TPoint>
+    public class PtOctant : OctantD<IPointCloudPoint>
     {
         /// <summary>
         /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
@@ -20,23 +20,13 @@ namespace Fusee.PointCloud.Core
         public int NumberOfPointsInNode { get; set; }
 
         /// <summary>
-        /// Creates a new instance of type <see cref="PtOctantRead{TPoint}"/>.
+        /// Creates a new instance of type <see cref="PtOctant"/>.
         /// </summary>
         /// <param name="center">The center of this octant.</param>
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
+        /// <param name="guid"></param>
         /// <param name="children">The octants child octants.</param>
-        public PtOctantRead(double3 center, double size, string guid, PtOctantRead<TPoint>[] children = null) : base(center, size, guid, children)
-        {
-            //Center = center;
-            //Size = size;
-
-            //if (children == null)
-            //    Children = new PtOctantRead<TPoint>[8];
-            //else
-            //    Children = children;
-
-            //Payload = new List<TPoint>(NumberOfPointsInNode);
-        }
+        public PtOctant(double3 center, double size, string guid, PtOctant[] children = null) : base(center, size, guid, children) { }
 
         /// <summary>
         /// Calculates the size, projected into screen space.
@@ -58,12 +48,12 @@ namespace Fusee.PointCloud.Core
         /// </summary>
         /// <param name="posInParent">The new octants position in its parent.</param>
         /// <returns></returns>
-        public override IOctant<double3, double, TPoint> CreateChild(int posInParent)
+        public override IOctant<double3, double, IPointCloudPoint> CreateChild(int posInParent)
         {
             var childCenter = CalcChildCenterAtPos(posInParent);
 
             var childRes = Size / 2d;
-            var child = new PtOctantRead<TPoint>(childCenter, childRes, Guid + posInParent)
+            var child = new PtOctant(childCenter, childRes, Guid + posInParent)
             {
                 Resolution = Resolution / 2d
             };

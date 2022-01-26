@@ -181,14 +181,12 @@ namespace Fusee.Structures
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
         public bool InsideOrIntersectingFrustum(FrustumF frustum)
         {
-            if (frustum.Near.InsideOrIntersecting(new float3(Center), (float)Size) ||
-            frustum.Far.InsideOrIntersecting(new float3(Center), (float)Size) ||
-            frustum.Left.InsideOrIntersecting(new float3(Center), (float)Size) ||
-            frustum.Right.InsideOrIntersecting(new float3(Center), (float)Size) ||
-            frustum.Top.InsideOrIntersecting(new float3(Center), (float)Size) ||
-            frustum.Bottom.InsideOrIntersecting(new float3(Center), (float)Size))
-                return true;
-            return false;
+            return frustum.Near.InsideOrIntersecting(new float3(Center), (float)Size) &&
+                frustum.Far.InsideOrIntersecting(new float3(Center), (float)Size) &&
+                frustum.Left.InsideOrIntersecting(new float3(Center), (float)Size) &&
+                frustum.Right.InsideOrIntersecting(new float3(Center), (float)Size) &&
+                frustum.Top.InsideOrIntersecting(new float3(Center), (float)Size) &&
+                frustum.Bottom.InsideOrIntersecting(new float3(Center), (float)Size);
         }
 
         /// <summary>

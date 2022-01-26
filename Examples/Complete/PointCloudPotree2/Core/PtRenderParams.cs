@@ -24,8 +24,6 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         public ShaderEffect DepthPassEf;
         public PointCloudSurfaceEffect ColorPassEf;
 
-        public PointType PointType;
-
         private PointShape _shape = PointShape.Paraboloid;
         public PointShape Shape
         {
