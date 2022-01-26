@@ -6,5 +6,7 @@
     /// </summary>
     public interface IPointCloudMetaInfo
     {
+        long PointCount { get; set; }
+
     }
 }

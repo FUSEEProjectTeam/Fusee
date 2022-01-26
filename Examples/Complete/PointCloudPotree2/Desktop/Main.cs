@@ -58,9 +58,8 @@ namespace Fusee.Examples.PointCloudPotree2.Desktop
                 });
 
             AssetStorage.RegisterProvider(fap);
-
-            var ptType = ReadPotree2Metadata.GetPointType(PtRenderingParams.Instance.PathToOocFile);
-            var app = new Core.PointCloudOutOfCore(ptType, PtRenderingParams.Instance.PathToOocFile);
+            
+            var app = new PointCloudOutOfCore();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

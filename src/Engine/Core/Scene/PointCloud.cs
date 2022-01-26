@@ -49,7 +49,9 @@ namespace Fusee.Engine.Core.Scene
             switch (fileType)
             {
                 case PointCloudFileType.Las:
-                    throw new NotImplementedException();
+                    PointCloudImp = new LasCloud();
+                    //((LasCloud)PointCloudImp).CreateMeshes(new LassReader, RC.CreateGpuMesh)
+                    break;
                 case PointCloudFileType.Potree2:
                     PointCloudImp = new Potree2Cloud(fileFileFolderPath);
                     break;

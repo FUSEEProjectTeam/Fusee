@@ -277,8 +277,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.PotreeRead
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Las", "Las", "{E364F712-2400-4D9F-8F40-8B5870086262}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.PointCloudFileReader.Las", "src\PointCloud\PointCloudFileReader\Las\Fusee.PointCloud.PointCloudFileReader.Las.csproj", "{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PointCloudPotree2", "PointCloudPotree2", "{B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.Desktop", "Examples\Complete\PointCloudPotree2\Desktop\Fusee.Examples.PointCloudPotree2.Desktop.csproj", "{72974011-C264-4D3D-979A-A4E750C5787A}"
@@ -289,9 +287,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Deferred.Bla
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PointCloudPotree2.Wpf", "Examples\Complete\PointCloudPotree2\Wpf\Fusee.Examples.PointCloudPotree2.Wpf.csproj", "{35839EA8-889B-4C26-94CB-9DB309E9C9F3}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Desktop", "Desktop", "{FA703895-434C-4ECF-8E0D-3145280DA2C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{2D2D037A-C966-420C-BCFD-D4BF9EFEA528}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.PointCloud.PointCloudFileReader.Las.Shared", "src\PointCloud\PointCloudFileReader\Las\Shared\Fusee.PointCloud.PointCloudFileReader.Las.Shared.shproj", "{B0BFAD5B-F501-4433-954C-9D79DDA930B7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.PointCloudFileReader.Las.Desktop", "src\PointCloud\PointCloudFileReader\Las\Desktop\Fusee.PointCloud.PointCloudFileReader.Las.Desktop.csproj", "{75662BD5-5E11-4DAC-A591-3C3372EC838A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
+		src\PointCloud\PointCloudFileReader\Las\Shared\Fusee.PointCloud.PointCloudFileReader.Las.Shared.projitems*{75662bd5-5e11-4dac-a591-3c3372ec838a}*SharedItemsImports = 5
+		src\PointCloud\PointCloudFileReader\Las\Shared\Fusee.PointCloud.PointCloudFileReader.Las.Shared.projitems*{b0bfad5b-f501-4433-954c-9d79dda930b7}*SharedItemsImports = 13
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 5
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 5
 	EndGlobalSection
@@ -1608,24 +1616,6 @@ Global
 		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Android|Any CPU.Build.0 = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{72974011-C264-4D3D-979A-A4E750C5787A}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
@@ -1693,6 +1683,24 @@ Global
 		{35839EA8-889B-4C26-94CB-9DB309E9C9F3}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{35839EA8-889B-4C26-94CB-9DB309E9C9F3}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{35839EA8-889B-4C26-94CB-9DB309E9C9F3}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1816,12 +1824,15 @@ Global
 		{59693479-2561-45B0-BB9E-10337CA9DF5C} = {594F2025-8C23-40D2-8100-C9989CA16DC9}
 		{1D67CE33-B92E-4B4D-B7C1-DA2982ECDBF1} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 		{E364F712-2400-4D9F-8F40-8B5870086262} = {CAD62212-5A60-45A8-AEFB-2418EDDFCCCC}
-		{793FACD9-F9CF-4DBC-8322-EE0DEFA57BE3} = {E364F712-2400-4D9F-8F40-8B5870086262}
 		{B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
 		{72974011-C264-4D3D-979A-A4E750C5787A} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
 		{76FE409A-DCA8-4714-8E95-4FE189751EE7} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
 		{84C77C62-0721-4C6F-9789-88D5F9C98974} = {E7E4600F-D815-49F6-B79C-C456C87F01DC}
 		{35839EA8-889B-4C26-94CB-9DB309E9C9F3} = {B2C0746D-E5CC-45F1-BD88-3E0D5A2A7191}
+		{FA703895-434C-4ECF-8E0D-3145280DA2C6} = {E364F712-2400-4D9F-8F40-8B5870086262}
+		{2D2D037A-C966-420C-BCFD-D4BF9EFEA528} = {E364F712-2400-4D9F-8F40-8B5870086262}
+		{B0BFAD5B-F501-4433-954C-9D79DDA930B7} = {2D2D037A-C966-420C-BCFD-D4BF9EFEA528}
+		{75662BD5-5E11-4DAC-A591-3C3372EC838A} = {FA703895-434C-4ECF-8E0D-3145280DA2C6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

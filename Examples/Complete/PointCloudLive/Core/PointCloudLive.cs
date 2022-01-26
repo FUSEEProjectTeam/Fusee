@@ -45,11 +45,13 @@ namespace Fusee.Examples.PointCloudLive.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
             
             _node = new SceneNode();
-            _node.Components.AddRange(LasToMesh.GetMeshsFromLasFile(PointType.Pos64Col32, "D:\\LAS\\HolbeinPferd.las", out var aabbRes, RC.CreateGpuMesh, true));
+            var pointCloud = new Engine.Core.Scene.PointCloud("D:\\LAS\\HolbeinPferd.las", PointCloudFileType.Las);
+
+            _node.Components.Add(pointCloud);
 
             _mainCamTransform = new Transform()
             {
-                Translation = aabbRes.Center - new float3(0, 0, aabbRes.Size.z * 2)
+                Translation = pointCloud.Center - new float3(0, 0, pointCloud.Size.z * 2)
             };
 
             _mainCam = new Camera(ProjectionMethod.Perspective, 1f, 5000, M.PiOver4)

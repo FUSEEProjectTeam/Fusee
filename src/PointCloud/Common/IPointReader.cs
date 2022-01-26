@@ -1,9 +1,11 @@
-﻿namespace Fusee.PointCloud.Common
+﻿using System;
+
+namespace Fusee.PointCloud.Common
 {
     /// <summary>
     /// Implement this into any Point Cloud Reader.
     /// </summary>
-    public interface IPointReader
+    public interface IPointReader : IDisposable
     {
         /// <summary>
         /// This is the point description: Which type am I, which variables do I hold?
@@ -24,6 +26,15 @@
         /// <param name="point">The point we want to write to</param>
         /// <param name="pa">The accessor how to write to the point</param>
         /// <returns></returns>
-        bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa) where TPoint : new();
+        bool ReadNextPoint(ref IPointCloudPoint point, IPointAccessor pa);
+
+        /// <summary>
+        /// Reads the given amount of points from stream
+        /// </summary>
+        /// <typeparam name="TPoint"></typeparam>
+        /// <param name="n"></param>
+        /// <param name="pa"></param>
+        /// <returns></returns>
+        public IPointCloudPoint[] ReadNPoints(int n, IPointAccessor pa);
     }
 }
