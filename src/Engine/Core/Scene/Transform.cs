@@ -284,7 +284,7 @@ namespace Fusee.Engine.Core.Scene
                 if (RotationQuaternion != value)
                 {
                     _rotationQuat = value;
-                    _rotationMtx = value.ToRotMat();
+                    _rotationMtx = value.ToRotationMatrixFast();
 
                     _matrixDirty = true;
                     _rotationQuatDirty = false;

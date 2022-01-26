@@ -69,15 +69,23 @@ namespace Fusee.Tests.Math.Core
         #endregion
 
         #region Constructors
+        [Fact]
+        public void Constructor_FromFloat4x4()
+        {
+            var d = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            var actual = new double4x4(d);
+
+            Assert.Equal(new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), actual);
+        }
 
         [Fact]
-        public void Constructor_Fromdouble4()
+        public void Constructor_FromDouble4()
         {
             var actual = new double4x4(new double4(1, 1, 1, 1), new double4(1, 1, 1, 1), new double4(1, 1, 1, 1), new double4(1, 1, 1, 1));
 
             Assert.Equal(new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), actual);
         }
-
         #endregion
 
         #region Properties
@@ -173,6 +181,16 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
+        public void Transpose_Instance()
+        {
+            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.Transpose();
+
+            Assert.Equal(new double4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1), actual);
+        }
+
+        [Fact]
         public void ToArray_Instance()
         {
             var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
@@ -183,13 +201,21 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void Transpose_Instance()
+        public void Round_Instance()
         {
-            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+            var mat = new double4x4(1.23456789, 0, 0, 1.23456712,
+                                    0, 1.23456789, 0, 1.23456712,
+                                    0, 0, 1.23456789, 1.23456712,
+                                    0, 0, 0, 1.23456712);
 
-            var actual = mat.Transpose();
+            var expected = new double4x4(1.234568, 0, 0, 1.234567,
+                                        0, 1.234568, 0, 1.234567,
+                                        0, 0, 1.234568, 1.234567,
+                                        0, 0, 0, 1.234567);
 
-            Assert.Equal(new double4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1), actual);
+            var actual = mat.Round();
+
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -280,7 +306,7 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(ThisException))]
         public void Invalid_SetWithIdx_Exception(int idx, string expected)
         {
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var d4 = double4x4.Zero; d4[idx, idx] = 10; });
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var f4 = double4x4.Zero; f4[idx, idx] = 10; });
 
             Assert.Equal(expected, actual.ParamName);
         }
@@ -300,26 +326,11 @@ namespace Fusee.Tests.Math.Core
 
         [Theory]
         [MemberData(nameof(GetAxisAngle))]
-        public void CreateFromAxisAngle_MainAxes(double3 axis, float angle, double4x4 expected)
+        public void CreateFromAxisAngle_MainAxes(double3 axis, double angle, double4x4 expected)
         {
-            var actual = double4x4.CreateFromAxisAngle(axis, M.DegreesToRadians(angle));
+            var actual = double4x4.CreateFromAxisAngle(axis, M.DegreesToRadiansD(angle));
 
-            Assert.Equal(expected.M11, actual.M11, 7);
-            Assert.Equal(expected.M12, actual.M12, 7);
-            Assert.Equal(expected.M13, actual.M13, 7);
-            Assert.Equal(expected.M14, actual.M14, 7);
-            Assert.Equal(expected.M21, actual.M21, 7);
-            Assert.Equal(expected.M22, actual.M22, 7);
-            Assert.Equal(expected.M23, actual.M23, 7);
-            Assert.Equal(expected.M24, actual.M24, 7);
-            Assert.Equal(expected.M31, actual.M31, 7);
-            Assert.Equal(expected.M32, actual.M32, 7);
-            Assert.Equal(expected.M33, actual.M33, 7);
-            Assert.Equal(expected.M34, actual.M34, 7);
-            Assert.Equal(expected.M41, actual.M41, 7);
-            Assert.Equal(expected.M42, actual.M42, 7);
-            Assert.Equal(expected.M43, actual.M43, 7);
-            Assert.Equal(expected.M44, actual.M44, 7);
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -331,24 +342,9 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = new double4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
 
-            var actual = double4x4.CreateRotationX(M.DegreesToRadians(90));
+            var actual = double4x4.CreateRotationX(M.DegreesToRadiansD(90));
 
-            Assert.Equal(expected.M11, actual.M11, 7);
-            Assert.Equal(expected.M12, actual.M12, 7);
-            Assert.Equal(expected.M13, actual.M13, 7);
-            Assert.Equal(expected.M14, actual.M14, 7);
-            Assert.Equal(expected.M21, actual.M21, 7);
-            Assert.Equal(expected.M22, actual.M22, 7);
-            Assert.Equal(expected.M23, actual.M23, 7);
-            Assert.Equal(expected.M24, actual.M24, 7);
-            Assert.Equal(expected.M31, actual.M31, 7);
-            Assert.Equal(expected.M32, actual.M32, 7);
-            Assert.Equal(expected.M33, actual.M33, 7);
-            Assert.Equal(expected.M34, actual.M34, 7);
-            Assert.Equal(expected.M41, actual.M41, 7);
-            Assert.Equal(expected.M42, actual.M42, 7);
-            Assert.Equal(expected.M43, actual.M43, 7);
-            Assert.Equal(expected.M44, actual.M44, 7);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -356,24 +352,9 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = new double4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
 
-            var actual = double4x4.CreateRotationY(M.DegreesToRadians(90));
+            var actual = double4x4.CreateRotationY(M.DegreesToRadiansD(90));
 
-            Assert.Equal(expected.M11, actual.M11, 7);
-            Assert.Equal(expected.M12, actual.M12, 7);
-            Assert.Equal(expected.M13, actual.M13, 7);
-            Assert.Equal(expected.M14, actual.M14, 7);
-            Assert.Equal(expected.M21, actual.M21, 7);
-            Assert.Equal(expected.M22, actual.M22, 7);
-            Assert.Equal(expected.M23, actual.M23, 7);
-            Assert.Equal(expected.M24, actual.M24, 7);
-            Assert.Equal(expected.M31, actual.M31, 7);
-            Assert.Equal(expected.M32, actual.M32, 7);
-            Assert.Equal(expected.M33, actual.M33, 7);
-            Assert.Equal(expected.M34, actual.M34, 7);
-            Assert.Equal(expected.M41, actual.M41, 7);
-            Assert.Equal(expected.M42, actual.M42, 7);
-            Assert.Equal(expected.M43, actual.M43, 7);
-            Assert.Equal(expected.M44, actual.M44, 7);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
@@ -381,32 +362,16 @@ namespace Fusee.Tests.Math.Core
         {
             var expected = new double4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
 
-            var actual = double4x4.CreateRotationZ(M.DegreesToRadians(90));
+            var actual = double4x4.CreateRotationZ(M.DegreesToRadiansD(90));
 
-            Assert.Equal(expected.M11, actual.M11, 7);
-            Assert.Equal(expected.M12, actual.M12, 7);
-            Assert.Equal(expected.M13, actual.M13, 7);
-            Assert.Equal(expected.M14, actual.M14, 7);
-            Assert.Equal(expected.M21, actual.M21, 7);
-            Assert.Equal(expected.M22, actual.M22, 7);
-            Assert.Equal(expected.M23, actual.M23, 7);
-            Assert.Equal(expected.M24, actual.M24, 7);
-            Assert.Equal(expected.M31, actual.M31, 7);
-            Assert.Equal(expected.M32, actual.M32, 7);
-            Assert.Equal(expected.M33, actual.M33, 7);
-            Assert.Equal(expected.M34, actual.M34, 7);
-            Assert.Equal(expected.M41, actual.M41, 7);
-            Assert.Equal(expected.M42, actual.M42, 7);
-            Assert.Equal(expected.M43, actual.M43, 7);
-            Assert.Equal(expected.M44, actual.M44, 7);
+            Assert.Equal(expected, actual);
         }
-
         #endregion
 
         #region CreateTranslation
 
         [Fact]
-        public void CreateTranslation_Doubles()
+        public void CreateTranslation_Singles()
         {
             var expected = new double4x4(1, 0, 0, 4, 0, 1, 0, 3, 0, 0, 1, 2, 0, 0, 0, 1);
 
@@ -421,6 +386,57 @@ namespace Fusee.Tests.Math.Core
             var expected = new double4x4(1, 0, 0, 4, 0, 1, 0, 3, 0, 0, 1, 2, 0, 0, 0, 1);
 
             var actual = double4x4.CreateTranslation(new double3(4, 3, 2));
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Rotation matrix to euler representation
+
+        [Theory]
+        [MemberData(nameof(GetMatrixEuler))]
+        public void RotMatToEuler_MainAxes(double4x4 mat, double3 expected)
+        {
+            var actual = double4x4.RotMatToEuler(mat);
+
+            actual.x = M.RadiansToDegreesD(actual.x);
+            actual.y = M.RadiansToDegreesD(actual.y);
+            actual.z = M.RadiansToDegreesD(actual.z);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region CreateScale
+
+        [Fact]
+        public void CreateScale_Single()
+        {
+            var expected = new double4x4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1);
+
+            var actual = double4x4.CreateScale(2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateScale_ThreeSingles()
+        {
+            var expected = new double4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
+
+            var actual = double4x4.CreateScale(1, 2, 3);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateScale_Vector()
+        {
+            var expected = new double4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
+
+            var actual = double4x4.CreateScale(new double3(1, 2, 3));
 
             Assert.Equal(expected, actual);
         }
@@ -467,25 +483,15 @@ namespace Fusee.Tests.Math.Core
         public void CreatePerspectiveFieldOfView_Result()
         {
             var expected = new double4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, -4, 0, 0, 1, 0);
+            var actual = double4x4.CreatePerspectiveFieldOfView(M.DegreesToRadiansD(90), 1, 1, 2);
 
-            var actual = double4x4.CreatePerspectiveFieldOfView(M.DegreesToRadians(90), 1, 1, 2);
+            var resultAsArray = actual.ToArray();
+            var expectedAsArray = expected.ToArray();
 
-            Assert.Equal(expected.M11, actual.M11, 7);
-            Assert.Equal(expected.M12, actual.M12, 7);
-            Assert.Equal(expected.M13, actual.M13, 7);
-            Assert.Equal(expected.M14, actual.M14, 7);
-            Assert.Equal(expected.M21, actual.M21, 7);
-            Assert.Equal(expected.M22, actual.M22, 7);
-            Assert.Equal(expected.M23, actual.M23, 7);
-            Assert.Equal(expected.M24, actual.M24, 7);
-            Assert.Equal(expected.M31, actual.M31, 7);
-            Assert.Equal(expected.M32, actual.M32, 7);
-            Assert.Equal(expected.M33, actual.M33, 7);
-            Assert.Equal(expected.M34, actual.M34, 7);
-            Assert.Equal(expected.M41, actual.M41, 7);
-            Assert.Equal(expected.M42, actual.M42, 7);
-            Assert.Equal(expected.M43, actual.M43, 7);
-            Assert.Equal(expected.M44, actual.M44, 7);
+            for (int i = 0; i < resultAsArray.Length; i++)
+            {
+                Assert.Equal(expectedAsArray[i], resultAsArray[i], 14);
+            }
         }
 
         [Fact]
@@ -543,7 +549,7 @@ namespace Fusee.Tests.Math.Core
         #region Scale Functions
 
         [Fact]
-        public void Scale_Double()
+        public void Scale_Single()
         {
             var expected = new double4x4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1);
 
@@ -563,7 +569,7 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void Scale_ThreeDoubles()
+        public void Scale_ThreeSingles()
         {
             var expected = new double4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
 
@@ -603,7 +609,7 @@ namespace Fusee.Tests.Math.Core
         }
 
         [Fact]
-        public void LookAt_Double()
+        public void LookAt_Singles()
         {
             var expected = new double4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 1);
 
@@ -653,16 +659,6 @@ namespace Fusee.Tests.Math.Core
             var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.Invert();
-
-            Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
-        }
-
-        [Fact]
-        public void InvertAffine_Static()
-        {
-            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
-
-            var actual = mat.InvertAffine();
 
             Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
@@ -729,7 +725,18 @@ namespace Fusee.Tests.Math.Core
 
             var actual = double4x4.TransformPerspective(mat, vec);
 
-            Assert.Equal(new double3(0, 0, 0.5f), actual);
+            Assert.Equal(new double3(0, 0, 0.5), actual);
+        }
+
+        [Fact]
+        public void TransformPerspective_4D()
+        {
+            var mat = new double4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 2);
+            var vec = new double4(0, 1, 0, 1);
+
+            var actual = double4x4.TransformPerspective(mat, vec);
+
+            Assert.Equal(new double4(0, 0, 0.5, 1), actual);
         }
 
         #endregion
@@ -760,7 +767,13 @@ namespace Fusee.Tests.Math.Core
         {
             var result = double4x4.RotationDecomposition(mat);
 
-            Assert.Equal(expected, result);
+            var resultAsArray = result.ToArray();
+            var expectedAsArray = expected.ToArray();
+
+            for (int i = 0; i < resultAsArray.Length; i++)
+            {
+                Assert.Equal(expectedAsArray[i], resultAsArray[i], 14);
+            }
         }
 
         [Theory]
@@ -779,6 +792,28 @@ namespace Fusee.Tests.Math.Core
             var result = double4x4.GetScale(mat);
 
             Assert.Equal(expected, result);
+        }
+
+        #endregion
+
+        #region Round
+
+        [Fact]
+        public void Round_Static()
+        {
+            var mat = new double4x4(1.23456789, 0, 0, 1.23456712,
+                0, 1.23456789, 0, 1.23456712,
+                0, 0, 1.23456789, 1.23456712,
+                0, 0, 0, 1.23456712);
+
+            var expected = new double4x4(1.234568, 0, 0, 1.234567,
+                0, 1.234568, 0, 1.234567,
+                0, 0, 1.234568, 1.234567,
+                0, 0, 0, 1.234567);
+
+            var actual = mat.Round();
+
+            Assert.Equal(expected, actual);
         }
 
         #endregion
@@ -926,7 +961,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[] { double4x4.Identity, double4x4.Identity };
             yield return new object[] { new double4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), double4x4.Identity };
             yield return new object[] { new double4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), double4x4.Identity };
-            yield return new object[] { new double4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new double4x4(0.2672612419124244, 0.48507125007266594, 0.9045340337332909, 0, 0.5345224838248488, 0.7276068751089989, 0.30151134457776363, 0, 0.8017837257372732, 0.48507125007266594, 0.30151134457776363, 0, 0, 0, 0, 1) };
+            yield return new object[] { new double4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new double4x4(0.2672612419124244, 0.48507125007266594, 0.90453403373329089, 0, 0.53452248382484879, 0.72760687510899891, 0.30151134457776363, 0, 0.80178372573727319, 0.48507125007266594, 0.30151134457776363, 0, 0, 0, 0, 1) };
         }
         public static IEnumerable<object[]> GetTRSDecompositionScaleMtxs()
         {
@@ -1058,7 +1093,7 @@ namespace Fusee.Tests.Math.Core
         public void ToString_InvariantCulture()
         {
             string s = "(1.5, 0, 0, 0)\n(0, 1.5, 0, 0)\n(0, 0, 1.5, 0)\n(0, 0, 0, 1)";
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
         }
@@ -1067,7 +1102,7 @@ namespace Fusee.Tests.Math.Core
         public void ToString_CultureDE()
         {
             string s = "(1,5; 0; 0; 0)\n(0; 1,5; 0; 0)\n(0; 0; 1,5; 0)\n(0; 0; 0; 1)";
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
         }
@@ -1076,7 +1111,7 @@ namespace Fusee.Tests.Math.Core
         public void Parse_InvariantCulture()
         {
             string s = "(1.5, 0, 0, 0)\n(0, 1.5, 0, 0)\n(0, 0, 1.5, 0)\n(0, 0, 0, 1)";
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(f, double4x4.Parse(s, CultureInfo.InvariantCulture));
         }
@@ -1085,7 +1120,7 @@ namespace Fusee.Tests.Math.Core
         public void Parse_CultureDE()
         {
             string s = "(1,5; 0; 0; 0)\n(0; 1,5; 0; 0)\n(0; 0; 1,5; 0)\n(0; 0; 0; 1)";
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(f, double4x4.Parse(s, new CultureInfo("de-DE")));
         }
@@ -1093,7 +1128,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_NoCulture()
         {
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(f, double4x4.Parse(f.ToString()));
         }
@@ -1101,7 +1136,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_InvariantCulture()
         {
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(f, double4x4.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
         }
@@ -1109,7 +1144,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void Parse_ToString_CultureDE()
         {
-            double4x4 f = double4x4.Scale(1.5f);
+            double4x4 f = double4x4.Scale(1.5);
 
             Assert.Equal(f, double4x4.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
         }

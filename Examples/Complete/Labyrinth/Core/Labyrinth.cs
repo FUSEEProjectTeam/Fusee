@@ -504,7 +504,7 @@ namespace Fusee.Examples.Labyrinth.Core
                         headTranslation.z += _moveX * M.Cos(_angle);
                         _head.Translation = headTranslation;
 
-                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
+                        _body.Rotate(Quaternion.ToEuler(Quaternion.FromAxisAngle(new float3(-M.Cos(_angle), 0, M.Sin(_angle)), -_moveX)), 0);
                     }
 
                     // AD Axis
@@ -515,7 +515,7 @@ namespace Fusee.Examples.Labyrinth.Core
                         headTranslation.x += _moveZ * M.Cos(_angle);
                         headTranslation.z -= _moveZ * M.Sin(_angle);
                         _head.Translation = headTranslation;
-                        _body.Rotate(Quaternion.QuaternionToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
+                        _body.Rotate(Quaternion.ToEuler(Quaternion.FromAxisAngle(new float3(M.Sin(_angle), 0, M.Cos(_angle)), -_moveZ)), 0);
                     }
                 }
             }
