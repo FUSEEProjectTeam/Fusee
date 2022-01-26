@@ -11,26 +11,29 @@ namespace Fusee.Tests.Math.Core
         [MemberData(nameof(GetFrustumPlanes))]
         public void CalculateFrustumPlanes_IsFrustumPlanes(PlaneD actual, PlaneD expected)
         {
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.A, actual.A, 7);
+            Assert.Equal(expected.B, actual.B, 7);
+            Assert.Equal(expected.C, actual.C, 7);
+            Assert.Equal(expected.D, actual.D, 7);
         }
 
         [Fact]
         public void CalculateFrustumCorners_IsFrustumCorners()
         {
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
+            var projection = double4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
             var actualCorners = FrustumD.CalculateFrustumCorners(projection).ToList();
 
-            var expectedCorners = new List<float3>()
+            var expectedCorners = new List<double3>()
             {
-                new float3(-2, -2, 2),
-                new float3(2, -2, 2),
-                new float3(-2, 2, 2),
-                new float3(2, 2, 2),
+                new double3(-2, -2, 2),
+                new double3(2, -2, 2),
+                new double3(-2, 2, 2),
+                new double3(2, 2, 2),
 
-                new float3(-10, -10, 10),
-                new float3(10, -10, 10),
-                new float3(-10, 10, 10),
-                new float3(10, 10, 10),
+                new double3(-10, -10, 10),
+                new double3(10, -10, 10),
+                new double3(-10, 10, 10),
+                new double3(10, 10, 10),
             };
 
             Assert.Equal(actualCorners.Count, expectedCorners.Count);
@@ -45,18 +48,18 @@ namespace Fusee.Tests.Math.Core
 
         public static IEnumerable<object[]> GetFrustumPlanes()
         {
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
+            var projection = double4x4.CreatePerspectiveFieldOfView(M.PiOver2, 1, 2, 10);
             var frustum = new FrustumD();
             frustum.CalculateFrustumPlanes(projection);
 
-            var left = new PlaneD() { A = -0.5f, B = 0, C = -0.5f, D = 0 };
-            var right = new PlaneD() { A = 0.5f, B = 0, C = -0.5f, D = 0 };
+            var left = new PlaneD() { A = -0.5, B = 0, C = -0.5, D = 0 };
+            var right = new PlaneD() { A = 0.5, B = 0, C = -0.5, D = 0 };
 
             var near = new PlaneD() { A = 0, B = 0, C = -1, D = -2 };
             var far = new PlaneD() { A = 0, B = 0, C = 1, D = 10 };
 
-            var top = new PlaneD() { A = 0, B = 0.5f, C = -0.5f, D = 0 };
-            var bottom = new PlaneD() { A = 0, B = -0.5f, C = -0.5f, D = 0 };
+            var top = new PlaneD() { A = 0, B = 0.5, C = -0.5, D = 0 };
+            var bottom = new PlaneD() { A = 0, B = -0.5, C = -0.5, D = 0 };
 
             yield return new object[] { near.Normalize(), frustum.Near.Normalize() };
             yield return new object[] { far.Normalize(), frustum.Far.Normalize() };

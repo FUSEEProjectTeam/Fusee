@@ -460,7 +460,7 @@ namespace Fusee.Engine.Core.Scene
         /// <param name="space">Rotation in reference to model or world space.</param>
         public static void Rotate(this Transform tc, Quaternion quaternion, Space space = Space.Model)
         {
-            Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+            Rotate(tc, Quaternion.ToRotationMatrix(quaternion), space);
         }
 
         /// <summary>
