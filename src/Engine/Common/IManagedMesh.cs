@@ -2,7 +2,7 @@
 
 namespace Fusee.Engine.Common
 {
-    public interface IManagedMesh
+    public interface IManagedMesh : IDisposable
     {
         /// <summary>
         /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.

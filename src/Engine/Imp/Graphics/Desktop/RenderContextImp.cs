@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -1226,10 +1225,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void SetVertexArrayObject(IMeshImp mr)
         {
-            if (mr.VertexArrayObject == 0)
-                mr.VertexArrayObject = GL.GenVertexArray();
+            if (((MeshImp)mr).VertexArrayObject == 0)
+                ((MeshImp)mr).VertexArrayObject = GL.GenVertexArray();
 
-            GL.BindVertexArray(mr.VertexArrayObject);
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
         }
 
         /// <summary>
@@ -1247,13 +1246,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int vertsBytes = vertices.Length * 3 * sizeof(float);
-            if (mr.VertexBufferObject == 0)
+            if (((MeshImp)mr).VertexBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.VertexBufferObject = bufferObj;
+                ((MeshImp)mr).VertexBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.VertexBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), vertices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
@@ -1275,13 +1274,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int tangentBytes = tangents.Length * 4 * sizeof(float);
-            if (mr.TangentBufferObject == 0)
+            if (((MeshImp)mr).TangentBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.TangentBufferObject = bufferObj;
+                ((MeshImp)mr).TangentBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.TangentBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(tangentBytes), tangents, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != tangentBytes)
@@ -1303,13 +1302,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int bitangentBytes = bitangents.Length * 3 * sizeof(float);
-            if (mr.BitangentBufferObject == 0)
+            if (((MeshImp)mr).BitangentBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.BitangentBufferObject = bufferObj;
+                ((MeshImp)mr).BitangentBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.BitangentBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(bitangentBytes), bitangents, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != bitangentBytes)
@@ -1331,13 +1330,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int normsBytes = normals.Length * 3 * sizeof(float);
-            if (mr.NormalBufferObject == 0)
+            if (((MeshImp)mr).NormalBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.NormalBufferObject = bufferObj;
+                ((MeshImp)mr).NormalBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.NormalBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(normsBytes), normals, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != normsBytes)
@@ -1359,13 +1358,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int indicesBytes = boneIndices.Length * 4 * sizeof(float);
-            if (mr.BoneIndexBufferObject == 0)
+            if (((MeshImp)mr).BoneIndexBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.BoneIndexBufferObject = bufferObj;
+                ((MeshImp)mr).BoneIndexBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.BoneIndexBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(indicesBytes), boneIndices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != indicesBytes)
@@ -1387,13 +1386,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int weightsBytes = boneWeights.Length * 4 * sizeof(float);
-            if (mr.BoneWeightBufferObject == 0)
+            if (((MeshImp)mr).BoneWeightBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.BoneWeightBufferObject = bufferObj;
+                ((MeshImp)mr).BoneWeightBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.BoneWeightBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
@@ -1415,13 +1414,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int uvsBytes = uvs.Length * 2 * sizeof(float);
-            if (mr.UVBufferObject == 0)
+            if (((MeshImp)mr).UVBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.UVBufferObject = bufferObj;
+                ((MeshImp)mr).UVBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.UVBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
@@ -1443,13 +1442,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int colsBytes = colors.Length * sizeof(uint);
-            if (mr.ColorBufferObject == 0)
+            if (((MeshImp)mr).ColorBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.ColorBufferObject = bufferObj;
+                ((MeshImp)mr).ColorBufferObject = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.ColorBufferObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1471,13 +1470,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int colsBytes = colors.Length * sizeof(uint);
-            if (mr.ColorBufferObject1 == 0)
+            if (((MeshImp)mr).ColorBufferObject1 == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.ColorBufferObject1 = bufferObj;
+                ((MeshImp)mr).ColorBufferObject1 = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.ColorBufferObject1);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1499,13 +1498,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int colsBytes = colors.Length * sizeof(uint);
-            if (mr.ColorBufferObject2 == 0)
+            if (((MeshImp)mr).ColorBufferObject2 == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.ColorBufferObject2 = bufferObj;
+                ((MeshImp)mr).ColorBufferObject2 = bufferObj;
             }
 
-            GL.BindBuffer(BufferTarget.ArrayBuffer, mr.ColorBufferObject2);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
@@ -1525,16 +1524,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new ArgumentException("triangleIndices must not be null or empty");
             }
-            mr.NElements = triangleIndices.Length;
+            ((MeshImp)mr).NElements = triangleIndices.Length;
             int trisBytes = triangleIndices.Length * sizeof(short);
 
-            if (mr.ElementBufferObject == 0)
+            if (((MeshImp)mr).ElementBufferObject == 0)
             {
                 GL.GenBuffers(1, out int bufferObj);
-                mr.ElementBufferObject = bufferObj;
+                ((MeshImp)mr).ElementBufferObject = bufferObj;
             }
             // Upload the index buffer (elements inside the vertex buffer, not color indices as per the IndexPointer function!)
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, mr.ElementBufferObject);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
             GL.BufferData(BufferTarget.ElementArrayBuffer, (IntPtr)(trisBytes), triangleIndices, BufferUsageHint.StaticDraw);
             GL.GetBufferParameter(BufferTarget.ElementArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != trisBytes)
@@ -1547,9 +1546,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
-            GL.DeleteVertexArray(mr.VertexArrayObject);
-            GL.DeleteBuffer(mr.VertexBufferObject);
-            mr.InvalidateVertices();
+            GL.DeleteVertexArray(((MeshImp)mr).VertexArrayObject);
+            GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
+            ((MeshImp)mr).InvalidateVertices();
         }
 
         /// <summary>
@@ -1558,8 +1557,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.NormalBufferObject);
-            mr.InvalidateNormals();
+            GL.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
+            ((MeshImp)mr).InvalidateNormals();
         }
 
         /// <summary>
@@ -1568,8 +1567,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.ColorBufferObject);
-            mr.InvalidateColors();
+            GL.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
+            ((MeshImp)mr).InvalidateColors();
         }
 
         /// <summary>
@@ -1578,9 +1577,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors1(IMeshImp mr)
         {
-            int bufferObj = mr.ColorBufferObject1;
+            int bufferObj = ((MeshImp)mr).ColorBufferObject1;
             GL.DeleteBuffers(1, ref bufferObj);
-            mr.InvalidateColors1();
+            ((MeshImp)mr).InvalidateColors1();
         }
 
         /// <summary>
@@ -1589,9 +1588,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors2(IMeshImp mr)
         {
-            int bufferObj = mr.ColorBufferObject2;
+            int bufferObj = ((MeshImp)mr).ColorBufferObject2;
             GL.DeleteBuffers(1, ref bufferObj);
-            mr.InvalidateColors2();
+            ((MeshImp)mr).InvalidateColors2();
         }
 
         /// <summary>
@@ -1600,8 +1599,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.UVBufferObject);
-            mr.InvalidateUVs();
+            GL.DeleteBuffer(((MeshImp)mr).UVBufferObject);
+            ((MeshImp)mr).InvalidateUVs();
         }
 
         /// <summary>
@@ -1610,8 +1609,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.ElementBufferObject);
-            mr.InvalidateTriangles();
+            GL.DeleteBuffer(((MeshImp)mr).ElementBufferObject);
+            ((MeshImp)mr).InvalidateTriangles();
         }
 
         /// <summary>
@@ -1620,8 +1619,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.BoneWeightBufferObject);
-            mr.InvalidateBoneWeights();
+            GL.DeleteBuffer(((MeshImp)mr).BoneWeightBufferObject);
+            ((MeshImp)mr).InvalidateBoneWeights();
         }
 
         /// <summary>
@@ -1630,8 +1629,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.BoneIndexBufferObject);
-            mr.InvalidateBoneIndices();
+            GL.DeleteBuffer(((MeshImp)mr).BoneIndexBufferObject);
+            ((MeshImp)mr).InvalidateBoneIndices();
         }
 
         /// <summary>
@@ -1640,8 +1639,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTangents(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.TangentBufferObject);
-            mr.InvalidateTangents();
+            GL.DeleteBuffer(((MeshImp)mr).TangentBufferObject);
+            ((MeshImp)mr).InvalidateTangents();
         }
 
         /// <summary>
@@ -1650,8 +1649,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBiTangents(IMeshImp mr)
         {
-            GL.DeleteBuffer(mr.BitangentBufferObject);
-            mr.InvalidateBiTangents();
+            GL.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
+            ((MeshImp)mr).InvalidateBiTangents();
         }
 
         /// <summary>
@@ -1680,77 +1679,77 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
-            GL.BindVertexArray(mr.VertexArrayObject);
+            GL.BindVertexArray(((MeshImp)mr).VertexArrayObject);
 
-            if (mr.VertexBufferObject != 0)
+            if (((MeshImp)mr).VertexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.VertexAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.VertexBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.ColorBufferObject != 0)
+            if (((MeshImp)mr).ColorBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.ColorAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.ColorBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             }
-            if (mr.ColorBufferObject1 != 0)
+            if (((MeshImp)mr).ColorBufferObject1 != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.Color1AttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.ColorBufferObject1);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject1);
                 GL.VertexAttribPointer(AttributeLocations.Color1AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             }
-            if (mr.ColorBufferObject2 != 0)
+            if (((MeshImp)mr).ColorBufferObject2 != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.Color2AttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.ColorBufferObject2);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject2);
                 GL.VertexAttribPointer(AttributeLocations.Color2AttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0, IntPtr.Zero);
             }
-            if (mr.UVBufferObject != 0)
+            if (((MeshImp)mr).UVBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.UvAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.UVBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.NormalBufferObject != 0)
+            if (((MeshImp)mr).NormalBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.NormalAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.NormalBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.TangentBufferObject != 0)
+            if (((MeshImp)mr).TangentBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.TangentAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.TangentBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.TangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.BitangentBufferObject != 0)
+            if (((MeshImp)mr).BitangentBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.BitangentAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.BitangentBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.BoneIndexBufferObject != 0)
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.BoneIndexBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.BoneWeightBufferObject != 0)
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
-                GL.BindBuffer(BufferTarget.ArrayBuffer, mr.BoneWeightBufferObject);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
                 GL.VertexAttribPointer(AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-            if (mr.ElementBufferObject != 0)
+            if (((MeshImp)mr).ElementBufferObject != 0)
             {
-                GL.BindBuffer(BufferTarget.ElementArrayBuffer, mr.ElementBufferObject);
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
 
-                switch (mr.MeshType)
+                switch (((MeshImp)mr).MeshType)
                 {
                     case Common.PrimitiveType.Triangles:
                     default:
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.Points:
                         // enable gl_PointSize to set the point size
@@ -1761,7 +1760,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             //GL.Enable(EnableCap.PointSprite);
                             GL.Enable(EnableCap.VertexProgramPointSize);
                         }
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Points, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.Lines:
                         if (!_isLineSmoothEnabled)
@@ -1769,7 +1768,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Lines, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.LineLoop:
                         if (!_isLineSmoothEnabled)
@@ -1777,7 +1776,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineLoop, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.LineStrip:
                         if (!_isLineSmoothEnabled)
@@ -1785,34 +1784,34 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                             GL.Enable(EnableCap.LineSmooth);
                             _isLineSmoothEnabled = true;
                         }
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineStrip, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.Patches:
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Patches, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.QuadStrip:
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.QuadStrip, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.TriangleFan:
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleFan, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case Common.PrimitiveType.TriangleStrip:
-                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip, mr.NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(OpenTK.Graphics.OpenGL.PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                 }
             }
 
-            if (mr.VertexBufferObject != 0)
+            if (((MeshImp)mr).VertexBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.VertexAttribLocation);
-            if (mr.ColorBufferObject != 0)
+            if (((MeshImp)mr).ColorBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.ColorAttribLocation);
-            if (mr.NormalBufferObject != 0)
+            if (((MeshImp)mr).NormalBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.NormalAttribLocation);
-            if (mr.UVBufferObject != 0)
+            if (((MeshImp)mr).UVBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.UvAttribLocation);
-            if (mr.TangentBufferObject != 0)
+            if (((MeshImp)mr).TangentBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.TangentAttribLocation);
-            if (mr.BitangentBufferObject != 0)
+            if (((MeshImp)mr).BitangentBufferObject != 0)
                 GL.DisableVertexAttribArray(AttributeLocations.TangentAttribLocation);
 
             GL.BindVertexArray(0);

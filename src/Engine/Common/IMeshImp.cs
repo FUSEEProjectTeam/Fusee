@@ -20,20 +20,6 @@ namespace Fusee.Engine.Common
     [ProtoContract]
     public interface IMeshImp
     {
-        int VertexArrayObject { get; set; }
-        int VertexBufferObject { get; set; }
-        int NormalBufferObject { get; set; }
-        int ColorBufferObject { get; set; }
-        int ColorBufferObject1 { get; set; }
-        int ColorBufferObject2 { get; set; }
-        int UVBufferObject { get; set; }
-        int BoneIndexBufferObject { get; set; }
-        int BoneWeightBufferObject { get; set; }
-        int ElementBufferObject { get; set; }
-        int TangentBufferObject { get; set; }
-        int BitangentBufferObject { get; set; }
-        int NElements { get; set; }
-
         /// <summary>
         /// Implementation Task: Invalidates the VertexArrayObject of the mesh.
         /// </summary>

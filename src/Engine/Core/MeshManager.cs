@@ -115,44 +115,46 @@ namespace Fusee.Engine.Core
             float3[] normals = null, uint[] colors = null, uint[] colors1 = null, uint[] colors2 = null,
             float4[] tangents = null, float3[] bitangents = null, float4[] boneIndices = null, float4[] boneWeights = null)
         {
-            _renderContextImp.SetVertexArrayObject(mesh);
+            var meshImp = _renderContextImp.CreateMeshImp();
+            _renderContextImp.SetVertexArrayObject(meshImp);
 
             if (vertices != null)
-                _renderContextImp.SetVertices(mesh, vertices);
+                _renderContextImp.SetVertices(meshImp, vertices);
 
             if (uvs != null)
-                _renderContextImp.SetUVs(mesh, uvs);
+                _renderContextImp.SetUVs(meshImp, uvs);
 
             if (normals != null)
-                _renderContextImp.SetNormals(mesh, normals);
+                _renderContextImp.SetNormals(meshImp, normals);
 
             if (colors != null)
-                _renderContextImp.SetColors(mesh, colors);
+                _renderContextImp.SetColors(meshImp, colors);
 
             if (colors1 != null)
-                _renderContextImp.SetColors1(mesh, colors1);
+                _renderContextImp.SetColors1(meshImp, colors1);
 
             if (colors2 != null)
-                _renderContextImp.SetColors2(mesh, colors2);
+                _renderContextImp.SetColors2(meshImp, colors2);
 
             if (boneIndices != null)
-                _renderContextImp.SetBoneIndices(mesh, boneIndices);
+                _renderContextImp.SetBoneIndices(meshImp, boneIndices);
 
             if (boneWeights != null)
-                _renderContextImp.SetBoneWeights(mesh, boneWeights);
+                _renderContextImp.SetBoneWeights(meshImp, boneWeights);
 
             if (triangles != null)
-                _renderContextImp.SetTriangles(mesh, triangles);
+                _renderContextImp.SetTriangles(meshImp, triangles);
 
             if (tangents != null)
-                _renderContextImp.SetTangents(mesh, tangents);
+                _renderContextImp.SetTangents(meshImp, tangents);
 
             if (bitangents != null)
-                _renderContextImp.SetBiTangents(mesh, bitangents);
+                _renderContextImp.SetBiTangents(meshImp, bitangents);
 
             mesh.DisposeData += DisposeMesh;
+            meshImp.MeshType = mesh.MeshType;
 
-            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, mesh);
+            _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
         }
 
         // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
@@ -206,7 +208,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a new Instance of MeshManager. Th instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
+        /// Creates a new Instance of MeshManager. The instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
         /// </summary>
         /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See RegisterMesh.</param>
         public MeshManager(IRenderContextImp renderContextImp)
