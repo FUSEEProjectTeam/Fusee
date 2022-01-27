@@ -140,8 +140,8 @@ class FusSceneWriter:
                 keyFrame.FusAnimationKeyFloat2.Value.y = keyValue[1]
             elif(self.__typeId == FusSer.Float3):
                 keyFrame.FusAnimationKeyFloat3.Value.x = keyValue[0]
-                keyFrame.FusAnimationKeyFloat3.Value.y = keyValue[1]
-                keyFrame.FusAnimationKeyFloat3.Value.z = keyValue[2]
+                keyFrame.FusAnimationKeyFloat3.Value.y = keyValue[2]
+                keyFrame.FusAnimationKeyFloat3.Value.z = keyValue[1]
             elif(self.__typeId == FusSer.Float4):
                 keyFrame.FusAnimationKeyFloat4.Value.x = keyValue[0]
                 keyFrame.FusAnimationKeyFloat4.Value.y = keyValue[1]

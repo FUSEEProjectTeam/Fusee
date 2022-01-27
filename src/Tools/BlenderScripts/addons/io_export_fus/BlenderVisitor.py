@@ -55,7 +55,7 @@ class BlenderVisitor:
         self.DoRecalcOutside = True
         self.DoApplyModifiers = True
         self.DoBakeNLATracks = False
-
+        self.fps = bpy.context.scene.render.fps
         self.__matrixStack = [mathutils.Matrix.Identity(4)]
         self.__transformStack = [(mathutils.Vector((0, 0, 0)), mathutils.Quaternion(), mathutils.Vector((0, 0, 0)), 0.0)]
         self.__fusWriter = FusSceneWriter()
@@ -140,10 +140,9 @@ class BlenderVisitor:
             newFC = []
             newKP = []
 
-            self.__fusWriter.BeginAnimation()
-
             for strip in selected_strips:
-                for strips in strip.strips: 
+                for strips in strip.strips:
+                    self.__fusWriter.BeginAnimation()
                     action = strips.action
                     # Create placeholder to see which/if axis is missing
                     loc = [None] * 3
@@ -192,14 +191,16 @@ class BlenderVisitor:
                         self.__fusWriter.EndAnimationTrack()
                     if(len(rotE) > 0):
                         newKP = self.createKP(rotE, newKP, ob)
-                        self.__fusWriter.BeginAnimationTrack("Rotation", FusSer.Float3, FusSer.Lerp)    
+                        self.__fusWriter.BeginAnimationTrack("Rotation", FusSer.Float3, FusSer.Lerp) 
                         self.AddKeyframes(rotE)
-                        self.__fusWriter.EndAnimationTrack()                    
-                    if(len(scl) > 0):
-                        newKP = self.createKP(scl, newKP, ob)
-                        self.__fusWriter.BeginAnimationTrack("Scale", FusSer.Float3, FusSer.Lerp)    
-                        self.AddKeyframes(scl)
-                        self.__fusWriter.EndAnimationTrack()
+                        self.__fusWriter.EndAnimationTrack()  
+                    if(not self.DoApplyScale):
+                        if(len(scl) > 0):
+                            newKP = self.createKP(scl, newKP, ob)
+                            self.__fusWriter.BeginAnimationTrack("Scale", FusSer.Float3, FusSer.Lerp)   
+                            self.AddKeyframes(scl)
+                            self.__fusWriter.EndAnimationTrack()                 
+
 
                     self.DeleteCreatedKPFC(action, newKP, newFC)
                     self.__fusWriter.EndAnimation()
@@ -210,11 +211,19 @@ class BlenderVisitor:
 
     def AddKeyframes(self, _fcurve):
         # For the number of Keyframes go through the FCurves and create a tuple from them
-        for i in range(len(_fcurve[0].keyframe_points)):
-            keyframe = []
-            for fc in _fcurve:
-                keyframe.append(fc.keyframe_points[i].co[1])
-            self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0], keyframe)
+        if(_fcurve[0].data_path == "rotation_euler"):
+            for i in range(len(_fcurve[0].keyframe_points)):
+                keyframe = []
+                for fc in _fcurve:
+                    keyframe.append(-(fc.keyframe_points[i].co[1]))
+                self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0] / self.fps, keyframe)
+        else:
+            for i in range(len(_fcurve[0].keyframe_points)):
+                keyframe = []
+                for fc in _fcurve:
+                    keyframe.append(fc.keyframe_points[i].co[1])
+                self.__fusWriter.AddKeyframe(_fcurve[0].keyframe_points[i].co[0] / self.fps, keyframe)
+
 
     def DeleteCreatedKPFC(self, _action, _newKP, _newFC):
         # Variable for deletion

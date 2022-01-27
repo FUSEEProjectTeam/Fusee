@@ -1,17 +1,26 @@
 ﻿using Fusee.Math.Core;
+using ProtoBuf;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Core.Scene
+namespace Fusee.Serialization.V1
 {
     /// <summary>
     /// Base class to hold a single animation key. Derived types specify the type of the value
     /// controlled by the keys.
     /// </summary>
-    public class AnimationKeyBase
+    [ProtoContract]
+    [ProtoInclude(100, typeof(FusAnimationKeyDouble))]
+    [ProtoInclude(101, typeof(FusAnimationKeyInt))]
+    [ProtoInclude(102, typeof(FusAnimationKeyFloat))]
+    [ProtoInclude(103, typeof(FusAnimationKeyFloat2))]
+    [ProtoInclude(104, typeof(FusAnimationKeyFloat3))]
+    [ProtoInclude(105, typeof(FusAnimationKeyFloat4))]
+    public class FusAnimationKeyBase
     {
         /// <summary>
-        /// The position of the key on the time-line.
+        /// The position of the key on the timeline.
         /// </summary>
+        [ProtoMember(1)]
         public float Time;
     }
 
@@ -19,11 +28,13 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Animation key storing double values.
     /// </summary>
-    public class AnimationKeyDouble : AnimationKeyBase
+    [ProtoContract]
+    public class FusAnimationKeyDouble : FusAnimationKeyBase
     {
         /// <summary>
-        /// The key value effective at the <see cref="AnimationKeyBase.Time"/>.
+        /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
+        [ProtoMember(1)]
         public double Value;
     }
 
@@ -31,11 +42,13 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Animation key storing integer values.
     /// </summary>
-    public class AnimationKeyInt : AnimationKeyBase
+    [ProtoContract]
+    public class FusAnimationKeyInt : FusAnimationKeyBase
     {
         /// <summary>
-        /// The key value effective at the <see cref="AnimationKeyBase.Time"/>.
+        /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
+        [ProtoMember(1)]
         public int Value;
     }
 
@@ -43,11 +56,13 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Animation key storing float values.
     /// </summary>
-    public class AnimationKeyFloat : AnimationKeyBase
+    [ProtoContract]
+    public class FusAnimationKeyFloat : FusAnimationKeyBase
     {
         /// <summary>
-        /// The key value effective at the <see cref="AnimationKeyBase.Time"/>.
+        /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
+        [ProtoMember(1)]
         public float Value;
     }
 
@@ -55,11 +70,13 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Animation key storing float2 values.
     /// </summary>
-    public class AnimationKeyFloat2 : AnimationKeyBase
+    [ProtoContract]
+    public class FusAnimationKeyFloat2 : FusAnimationKeyBase
     {
         /// <summary>
-        /// The key value effective at the <see cref="AnimationKeyBase.Time"/>.
+        /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
+        [ProtoMember(1)]
         public float2 Value;
     }
 
@@ -67,11 +84,13 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Animation key storing float3 values.
     /// </summary>
-    public class AnimationKeyFloat3 : AnimationKeyBase
+    [ProtoContract]
+    public class FusAnimationKeyFloat3 : FusAnimationKeyBase
     {
         /// <summary>
-        /// The key value effective at the <see cref="AnimationKeyBase.Time"/>.
+        /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
+        [ProtoMember(1)]
         public float3 Value;
     }
 
@@ -79,11 +98,13 @@ namespace Fusee.Engine.Core.Scene
     /// <summary>
     /// Animation key storing float4 values.
     /// </summary>
-    public class AnimationKeyFloat4 : AnimationKeyBase
+    [ProtoContract]
+    public class FusAnimationKeyFloat4 : FusAnimationKeyBase
     {
         /// <summary>
-        /// The key value effective at the <see cref="AnimationKeyBase.Time"/>.
+        /// The key value effective at the <see cref="FusAnimationKeyBase.Time"/>.
         /// </summary>
+        [ProtoMember(1)]
         public float4 Value;
     }
 
@@ -124,33 +145,39 @@ namespace Fusee.Engine.Core.Scene
     }
 
     /// <summary>
-    /// Stores data about a single animation track (mainly a list of keyframes).
+    /// Stores data about a single animation track (mainly a list of keyframes)
     /// </summary>
-    public class AnimationTrack
+    [ProtoContract]
+    public class FusAnimationChannel
     {
         /// <summary>
-        /// The scene component to be controlled by this animation track.
+        /// The index to the scene component to be controlled by this animation track.
         /// </summary>
-        public SceneComponent SceneComponent;
+        [ProtoMember(1)]
+        public int SceneComponent;
 
         /// <summary>
         /// The name to the property/field to control. May be a dot-separated path to a sub-item (e.g. "Transform.Position.x").
         /// </summary>
+        [ProtoMember(2)]
         public string Property;
 
         /// <summary>
         /// The type of the key-values stored in this animation track.
         /// </summary>
+        [ProtoMember(3)]
         public TypeId TypeId;
 
         /// <summary>
         /// The lerp type to use for interpolation. 
         /// </summary>
+        [ProtoMember(5)]
         public LerpType LerpType = LerpType.Lerp;
 
         /// <summary>
         /// The list of key frames ordered by time.
         /// </summary>
-        public List<AnimationKeyBase> KeyFrames = new();
+        [ProtoMember(4)]
+        public List<FusAnimationKeyBase> KeyFrames = new();
     }
 }

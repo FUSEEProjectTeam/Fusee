@@ -160,35 +160,35 @@ namespace Fusee.Engine.Core
             foreach (var a in sc.Children.FindComponents(t => t.GetType() == typeof(Scene.Animation)))
             {
                 var ac = (Scene.Animation)a;
-                if (ac.AnimationTracks != null)
+                if (ac.AnimationChannel != null)
                 {
-                    foreach (var animTrackContainer in ac.AnimationTracks)
+                    foreach (var animChnannelContainer in ac.AnimationChannel)
                     {
                         // Type t = animTrackContainer.TypeId;
-                        switch (animTrackContainer.TypeId)
+                        switch (animChnannelContainer.TypeId)
                         {
                             // if (typeof(int).IsAssignableFrom(t))
                             case TypeId.Int:
                                 {
                                     var channel = new Channel<int>(Lerp.IntLerp);
-                                    foreach (AnimationKeyInt key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyInt key in animChnannelContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
                                     }
-                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                        animTrackContainer.Property);
+                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
+                                        animChnannelContainer.Property);
                                 }
                                 break;
                             //else if (typeof(float).IsAssignableFrom(t))
                             case TypeId.Float:
                                 {
                                     var channel = new Channel<float>(Lerp.FloatLerp);
-                                    foreach (AnimationKeyFloat key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat key in animChnannelContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
                                     }
-                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                        animTrackContainer.Property);
+                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
+                                        animChnannelContainer.Property);
                                 }
                                 break;
 
@@ -196,45 +196,45 @@ namespace Fusee.Engine.Core
                             case TypeId.Float2:
                                 {
                                     var channel = new Channel<float2>(Lerp.Float2Lerp);
-                                    foreach (AnimationKeyFloat2 key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat2 key in animChnannelContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
                                     }
-                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                        animTrackContainer.Property);
+                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
+                                        animChnannelContainer.Property);
                                 }
                                 break;
                             // else if (typeof(float3).IsAssignableFrom(t))
                             case TypeId.Float3:
                                 {
-                                    Channel<float3>.LerpFunc lerpFunc = animTrackContainer.LerpType switch
+                                    Channel<float3>.LerpFunc lerpFunc = animChnannelContainer.LerpType switch
                                     {
                                         LerpType.Lerp => Lerp.Float3Lerp,
                                         LerpType.Slerp => Lerp.Float3QuaternionSlerp,
                                         _ => throw new InvalidOperationException(
              "Unknown lerp type: animTrackContainer.LerpType: " +
-             (int)animTrackContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
-                                               // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+             (int)animChnannelContainer.LerpType),// C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                                  // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
                                     };
                                     var channel = new Channel<float3>(lerpFunc);
-                                    foreach (AnimationKeyFloat3 key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat3 key in animChnannelContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
                                     }
-                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                        animTrackContainer.Property);
+                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
+                                        animChnannelContainer.Property);
                                 }
                                 break;
                             // else if (typeof(float4).IsAssignableFrom(t))
                             case TypeId.Float4:
                                 {
                                     var channel = new Channel<float4>(Lerp.Float4Lerp);
-                                    foreach (AnimationKeyFloat4 key in animTrackContainer.KeyFrames)
+                                    foreach (AnimationKeyFloat4 key in animChnannelContainer.KeyFrames)
                                     {
                                         channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
                                     }
-                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                        animTrackContainer.Property);
+                                    _animation.AddAnimation(channel, animChnannelContainer.SceneComponent,
+                                        animChnannelContainer.Property);
                                 }
                                 break;
                                 //TODO : Add cases for each type

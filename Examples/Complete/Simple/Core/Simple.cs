@@ -43,7 +43,7 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("anim.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("anim.fus"); ;
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -55,9 +55,8 @@ namespace Fusee.Examples.Simple.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
+            _sceneRenderer.Animate();
             RC.Viewport(0, 0, Width, Height);
-
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {

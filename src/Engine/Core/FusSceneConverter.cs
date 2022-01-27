@@ -209,33 +209,33 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponent>();
             Animation anim = new Animation();
 
-            for (int i = 0; i < a.AnimationTracks.Count; i++)
+            for (int i = 0; i < a.AnimationChannel.Count; i++)
             {
-                anim.AnimationTracks.Add(new AnimationTrack());
+                anim.AnimationChannel.Add(new AnimationChannel());
                 //TODO: Allow other Componenttypes other than Transform to be animated 
-                anim.AnimationTracks[i].SceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationTracks[i].SceneComponent]);
-                anim.AnimationTracks[i].Property = a.AnimationTracks[i].Property;
-                anim.AnimationTracks[i].TypeId = (Scene.TypeId)a.AnimationTracks[i].TypeId;
-                anim.AnimationTracks[i].LerpType = (Scene.LerpType)a.AnimationTracks[i].LerpType;
-                for(int j = 0; j < a.AnimationTracks[i].KeyFrames.Count; j++)
+                anim.AnimationChannel[i].SceneComponent = LookupTransform((FusTransform)_fusScene.ComponentList[a.AnimationChannel[i].SceneComponent]);
+                anim.AnimationChannel[i].Property = a.AnimationChannel[i].Property;
+                anim.AnimationChannel[i].TypeId = (Scene.TypeId)a.AnimationChannel[i].TypeId;
+                anim.AnimationChannel[i].LerpType = (Scene.LerpType)a.AnimationChannel[i].LerpType;
+                for (int j = 0; j < a.AnimationChannel[i].KeyFrames.Count; j++)
                 {
-                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Double)
-                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyDouble { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyDouble)a.AnimationTracks[i].KeyFrames[j]).Value });
+                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Double)
+                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyDouble { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyDouble)a.AnimationChannel[i].KeyFrames[j]).Value });
 
-                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Int)
-                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyInt { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyInt)a.AnimationTracks[i].KeyFrames[j]).Value });
+                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Int)
+                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyInt { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyInt)a.AnimationChannel[i].KeyFrames[j]).Value });
 
-                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float)
-                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat)a.AnimationTracks[i].KeyFrames[j]).Value });
+                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float)
+                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat)a.AnimationChannel[i].KeyFrames[j]).Value });
 
-                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float2)
-                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat2 { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat2)a.AnimationTracks[i].KeyFrames[j]).Value });
+                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float2)
+                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat2 { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat2)a.AnimationChannel[i].KeyFrames[j]).Value });
 
-                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float3)
-                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat3 { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat3)a.AnimationTracks[i].KeyFrames[j]).Value });
+                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float3)
+                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat3 { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat3)a.AnimationChannel[i].KeyFrames[j]).Value });
 
-                    if (anim.AnimationTracks[i].TypeId == Scene.TypeId.Float4)
-                        anim.AnimationTracks[i].KeyFrames.Add(new AnimationKeyFloat4 { Time = a.AnimationTracks[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat4)a.AnimationTracks[i].KeyFrames[j]).Value });
+                    if (anim.AnimationChannel[i].TypeId == Scene.TypeId.Float4)
+                        anim.AnimationChannel[i].KeyFrames.Add(new AnimationKeyFloat4 { Time = a.AnimationChannel[i].KeyFrames[j].Time, Value = ((FusAnimationKeyFloat4)a.AnimationChannel[i].KeyFrames[j]).Value });
 
                 }
 
@@ -360,8 +360,8 @@ namespace Fusee.Engine.Core
                 Scale = t.Scale,
             };
             _componentMap[t] = nt;
-            return nt; 
-            
+            return nt;
+
         }
 
 
