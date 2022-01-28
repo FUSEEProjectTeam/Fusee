@@ -7,9 +7,9 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using Image = OpenTK.Windowing.Common.Input.Image;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
-using Image = OpenTK.Windowing.Common.Input.Image;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
