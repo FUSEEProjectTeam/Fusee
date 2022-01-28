@@ -1,5 +1,7 @@
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using OpenTK.Graphics.OpenGL;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using System;
@@ -7,6 +9,7 @@ using System.Diagnostics;
 using System.Drawing;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
+using Image = OpenTK.Windowing.Common.Input.Image;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -193,15 +196,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp() : this(false)
+        public RenderCanvasImp() : this(null, false)
         {
+
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
         /// <param name="isMultithreaded">If true OpenTk will call run() in a new Thread. The default value is false.</param>
-        public RenderCanvasImp(bool isMultithreaded = false)
+        /// <param name="icon">The window icon to use</param>
+        public RenderCanvasImp(ImageData icon = null, bool isMultithreaded = false)
         {
             //TODO: Select correct monitor
             Monitors.TryGetMonitorInfo(0, out MonitorInfo mon);
@@ -223,6 +228,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false, isMultithreaded);
             }
+
+            // convert icon to OpenTKImage
+            if (icon != null)
+                _gameWindow.Icon = new WindowIcon(new Image[] { new Image(icon.Width, icon.Height, icon.PixelData) });
 
             WindowHandle = new WindowHandle()
             {

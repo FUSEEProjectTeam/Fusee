@@ -57,7 +57,8 @@ namespace Fusee.Examples.RenderLayerEx.Desktop
             var app = new Core.RenderLayerExample();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
+            var icon = AssetStorage.Get<ImageData>("FuseeIconTop32.png");
+            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(icon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
