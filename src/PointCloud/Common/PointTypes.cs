@@ -62,12 +62,10 @@ namespace Fusee.PointCloud.Common
         PosD3ColF3InUsLblB
     }
 
-    public interface IPointCloudPoint { }
-
     /// <summary>
     /// Point type: Position double3.
     /// </summary>
-    public struct PosD3 : IPointCloudPoint
+    public struct PosD3
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -78,7 +76,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, color, intensity.
     /// </summary>
-    public struct PosD3ColF3InUs : IPointCloudPoint
+    public struct PosD3ColF3InUs
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -97,7 +95,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, intensity.
     /// </summary>
-    public struct PosD3InUs : IPointCloudPoint
+    public struct PosD3InUs
     {
         /// <summary>
         /// The points coordinate in 3D space.
@@ -112,7 +110,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, color.
     /// </summary>
-    public struct PosD3ColF3 : IPointCloudPoint
+    public struct PosD3ColF3
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -127,7 +125,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position and label color.
     /// </summary>
-    public struct PosD3LblB : IPointCloudPoint
+    public struct PosD3LblB
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -142,7 +140,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, normal, color, intensity.
     /// </summary>
-    public struct PosD3NorF3ColF3InUs : IPointCloudPoint
+    public struct PosD3NorF3ColF3InUs
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -167,7 +165,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: Position, normal, intensity.
     /// </summary>
-    public struct PosD3NorF3InUs : IPointCloudPoint
+    public struct PosD3NorF3InUs
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -186,7 +184,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Normal"/>.
     /// </summary>
-    public struct PosD3NorF3ColF3 : IPointCloudPoint
+    public struct PosD3NorF3ColF3
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -206,7 +204,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/>.
     /// </summary>
-    public struct PosD3ColF3LblB : IPointCloudPoint
+    public struct PosD3ColF3LblB
     {
         /// <summary>
         /// The point's coordinate in 3D space.
@@ -225,7 +223,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Point type: <see cref="Position"/>, <see cref="Color"/>, <see cref="Label"/> and <see cref="Intensity"/>.
     /// </summary>
-    public struct PosD3ColF3InUsLblB : IPointCloudPoint
+    public struct PosD3ColF3InUsLblB
     {
         /// <summary>
         /// The point's coordinate in 3D space.

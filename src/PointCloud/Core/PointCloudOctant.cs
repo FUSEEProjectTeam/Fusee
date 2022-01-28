@@ -1,13 +1,10 @@
 ﻿using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
 using Fusee.Structures;
 
 namespace Fusee.PointCloud.Core
 {
-    /// <summary>
-    /// In addition to the information in  <see cref="OctantD{P}"/> this class provides methods and properties, that are used to render point clouds out of core.
-    /// </summary>
-    public class PointCloudOctant : OctantD<IPointCloudPoint>
+
+    public class PointCloudOctant : IEmptyOctant<double3, double>
     {
         /// <summary>
         /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
@@ -20,13 +17,53 @@ namespace Fusee.PointCloud.Core
         public int NumberOfPointsInNode { get; set; }
 
         /// <summary>
+        /// The globally unique identifier for this octant.
+        /// </summary>
+        public string Guid { get; set; }
+
+        /// <summary>
+        /// Center of this Bucket in world space coordinates.
+        /// </summary>
+        public double3 Center { get; set; }
+
+        /// <summary>
+        /// Length, width and height of this Octant.
+        /// </summary>
+        public double Size { get; set; }
+
+        public IEmptyOctant<double3, double>[] Children { get; private set; }
+
+        public bool IsLeaf { get; set; }
+
+        public int PosInParent { get; private set; }
+
+        public int Level { get; private set; }
+
+        /// <summary>
         /// Creates a new instance of type <see cref="PointCloudOctant"/>.
         /// </summary>
         /// <param name="center">The center of this octant.</param>
         /// <param name="size">The size (in all three dimensions) of this octant.</param>
         /// <param name="guid"></param>
         /// <param name="children">The octants child octants.</param>
-        public PointCloudOctant(double3 center, double size, string guid, PointCloudOctant[] children = null) : base(center, size, guid, children) { }
+        public PointCloudOctant(double3 center, double size, string guid, PointCloudOctant[] children = null)
+        {
+            Center = center;
+            Size = size;
+
+            Guid = guid;
+
+            Level = Guid.Length;
+
+            int.TryParse(Guid[Level - 1].ToString(), out int posInParent);
+            PosInParent = posInParent;
+
+            if (children == null)
+                Children = new PointCloudOctant[8];
+            else
+                Children = children;
+
+        }
 
         /// <summary>
         /// Calculates the size, projected into screen space.
@@ -43,22 +80,25 @@ namespace Fusee.PointCloud.Core
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
 
-        /// <summary>
-        /// Creates a child at the given position. 
-        /// </summary>
-        /// <param name="posInParent">The new octants position in its parent.</param>
-        /// <returns></returns>
-        public override IOctant<double3, double, IPointCloudPoint> CreateChild(int posInParent)
+        public IEmptyOctant<double3, double> CreateChild(int atPosInParent)
         {
-            var childCenter = CalcChildCenterAtPos(posInParent);
+            throw new System.NotImplementedException();
+        }
 
-            var childRes = Size / 2d;
-            var child = new PointCloudOctant(childCenter, childRes, Guid + posInParent)
-            {
-                Resolution = Resolution / 2d
-            };
-
-            return child;
+        /// <summary>
+        /// Checks if this Octant lies within or intersects a Frustum.
+        /// Returns true if one of the Frustum planes is intersecting this octant.
+        /// </summary>
+        /// <param name="frustum">The frustum to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(FrustumF frustum)
+        {
+            return frustum.Near.InsideOrIntersecting(new float3(Center), (float)Size) &
+                frustum.Far.InsideOrIntersecting(new float3(Center), (float)Size) &
+                frustum.Left.InsideOrIntersecting(new float3(Center), (float)Size) &
+                frustum.Right.InsideOrIntersecting(new float3(Center), (float)Size) &
+                frustum.Top.InsideOrIntersecting(new float3(Center), (float)Size) &
+                frustum.Bottom.InsideOrIntersecting(new float3(Center), (float)Size);
         }
     }
 }

@@ -20,8 +20,10 @@ namespace Fusee.Engine.Core.Scene
             
         }
 
+        //ToDo: the las point reader is desktop-only
         public void CreateMeshes(IPointReader reader, CreateGpuMesh createGpuMesh)
         {
+            //TODO: implement "ToOctree" logic.
             MeshesToRender = GetMeshsFromLasFile(reader, createGpuMesh, out var box);
             Center = box.Center;
             Size = box.Size;
@@ -45,7 +47,7 @@ namespace Fusee.Engine.Core.Scene
             box = new();
 
             var ptAccessor = new PosD3ColF3InUsLblBAccessor();
-            IPointCloudPoint[] points = new IPointCloudPoint[maxVertCount];
+            PosD3ColF3InUsLblB[] points = new PosD3ColF3InUsLblB[maxVertCount];
             for (int i = 0; i < pointCnt; i += maxVertCount)
             {
                 int numberOfPointsInMesh;
@@ -55,9 +57,9 @@ namespace Fusee.Engine.Core.Scene
                     numberOfPointsInMesh = (int)(pointCnt - maxVertCount * meshCnt);
                 else
                     numberOfPointsInMesh = maxVertCount;
-                points = reader.ReadNPoints(numberOfPointsInMesh, ptAccessor);
+                points = reader.ReadNPoints<PosD3ColF3InUsLblB>(numberOfPointsInMesh, ptAccessor);
 
-                GpuMesh mesh = MeshFromPointCloudPoints.GetMesh(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh);
+                GpuMesh mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3InUsLblB(ptAccessor, points, doExchangeYZ, float3.Zero, createGpuMesh);
                 if (i == 0)
                     box = mesh.BoundingBox;
                 else
@@ -68,7 +70,6 @@ namespace Fusee.Engine.Core.Scene
             }
             reader.Dispose();
             return meshes;
-
         }
     }
 }

@@ -98,11 +98,11 @@ namespace Fusee.PointCloud.PointCloudFileReader.Las.Desktop
         /// <param name="pa"></param>
         /// <returns></returns>
         /// <exception cref="FileNotFoundException"></exception>
-        public IPointCloudPoint[] ReadNPoints(int n, IPointAccessor pa)
+        public TPoint[] ReadNPoints<TPoint>(int n, IPointAccessor pa) where TPoint : new()
         {
             if (_ptrToLASClass == IntPtr.Zero)
                 throw new FileNotFoundException("No file was specified yet. Call 'OpenFile' first");
-            var points = new IPointCloudPoint[n];
+            var points = new TPoint[n];
             for (var i = 0; i < points.Length; i++)
             {
                 if (!ReadNextPoint(ref points[i], pa)) break;
@@ -116,7 +116,7 @@ namespace Fusee.PointCloud.PointCloudFileReader.Las.Desktop
         /// <param name="point"></param>
         /// <param name="pa"></param>
         /// <returns></returns>
-        public bool ReadNextPoint(ref IPointCloudPoint point, IPointAccessor pa)
+        public bool ReadNextPoint<TPoint>(ref TPoint point, IPointAccessor pa) where TPoint : new()
         {
             if (point == null)
                 throw new ArgumentOutOfRangeException("No writable point found!");
@@ -131,26 +131,25 @@ namespace Fusee.PointCloud.PointCloudFileReader.Las.Desktop
             var currentFormat = (LasPointFormat)Format;
             var currentHeader = (LasMetaInfo)MetaInfo;
 
-            var typedAccessor = (PosD3ColF3InUsLblBAccessor)pa;
-            var typedPoint = (PosD3ColF3InUsLblB)point;
+            var typedAccessor = (PointAccessor<TPoint>)pa;
 
             if (typedAccessor.PositionType == PointPositionType.Double3)
-                typedAccessor.SetPositionFloat3_64(ref typedPoint, new double3(currentPoint.X * currentHeader.ScaleFactorX, currentPoint.Y * currentHeader.ScaleFactorY, currentPoint.Z * currentHeader.ScaleFactorZ));
+                typedAccessor.SetPositionFloat3_64(ref point, new double3(currentPoint.X * currentHeader.ScaleFactorX, currentPoint.Y * currentHeader.ScaleFactorY, currentPoint.Z * currentHeader.ScaleFactorZ));
 
             if (currentFormat.HasIntensity && typedAccessor.IntensityType == PointIntensityType.UInt_16)
-                typedAccessor.SetIntensityUInt_16(ref typedPoint, currentPoint.Intensity);
+                typedAccessor.SetIntensityUInt_16(ref point, currentPoint.Intensity);
 
             if (currentFormat.HasClassification && typedAccessor.LabelType == PointLabelType.UInt_8)
             {
                 //TODO: HACK!! label was somehow written to UserData and not to classification
                 if (currentPoint.Classification != 0)
-                    typedAccessor.SetLabelUInt_8(ref typedPoint, currentPoint.Classification);
+                    typedAccessor.SetLabelUInt_8(ref point, currentPoint.Classification);
                 else
-                    typedAccessor.SetLabelUInt_8(ref typedPoint, currentPoint.UserData);
+                    typedAccessor.SetLabelUInt_8(ref point, currentPoint.UserData);
             }
 
             if (currentFormat.HasColor && typedAccessor.ColorType == PointColorType.Float3)
-                typedAccessor.SetColorFloat3_32(ref typedPoint, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
+                typedAccessor.SetColorFloat3_32(ref point, new float3(currentPoint.R, currentPoint.G, currentPoint.B));
 
             return true;
         }

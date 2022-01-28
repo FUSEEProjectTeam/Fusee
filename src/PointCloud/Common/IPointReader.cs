@@ -26,7 +26,7 @@ namespace Fusee.PointCloud.Common
         /// <param name="point">The point we want to write to</param>
         /// <param name="pa">The accessor how to write to the point</param>
         /// <returns></returns>
-        bool ReadNextPoint(ref IPointCloudPoint point, IPointAccessor pa);
+        bool ReadNextPoint<TPoint>(ref TPoint point, IPointAccessor pa) where TPoint : new();
 
         /// <summary>
         /// Reads the given amount of points from stream
@@ -35,6 +35,6 @@ namespace Fusee.PointCloud.Common
         /// <param name="n"></param>
         /// <param name="pa"></param>
         /// <returns></returns>
-        public IPointCloudPoint[] ReadNPoints(int n, IPointAccessor pa);
+        public TPoint[] ReadNPoints<TPoint>(int n, IPointAccessor pa) where TPoint : new();
     }
 }

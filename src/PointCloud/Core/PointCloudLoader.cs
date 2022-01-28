@@ -12,12 +12,12 @@ namespace Fusee.PointCloud.Core
     /// <summary>
     /// Class that manages the out of core (on demand) loading of point clouds.
     /// </summary>
-    public class PointCloudLoader : IDisposable
+    public class PointCloudLoader<TPoint> : IPointCloudLoader where TPoint : new()
     {
         /// <summary>
         /// Caches loaded points.
         /// </summary>
-        public MemoryCache<IPointCloudPoint[]> PointCache { get; private set; }
+        public MemoryCache<TPoint[]> PointCache { get; private set; }
 
         /// <summary>
         /// Is set to true internally when all visible nodes are loaded.
@@ -52,7 +52,7 @@ namespace Fusee.PointCloud.Core
         /// <summary>
         /// The octree structure of the point cloud.
         /// </summary>
-        public PointCloudOctree Octree
+        public IPointCloudOctree Octree
         {
             get;
             private set;
@@ -72,8 +72,8 @@ namespace Fusee.PointCloud.Core
             set
             {
                 _minProjSizeModifier = value;
-                if (Octree.Root != null)
-                    _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
+                if (((PointCloudOctree)Octree).Root != null)
+                    _minScreenProjectedSize = ((PointCloudOctree)Octree).Root.ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -121,16 +121,16 @@ namespace Fusee.PointCloud.Core
 
         private static readonly object _lockLoadingQueue = new();
 
-        private IOutOfCoreReader _outOfCoreReader;
+        private IIntermediatePointFileReader _outOfCoreReader;
 
         private Stopwatch _watch;
 
         /// <summary>
-        /// Creates a new instance of type <see cref="PointCloudLoader"/>.
+        /// Creates a new instance of type <see cref="PointCloudLoader{TPoint}"/>.
         /// </summary>
         /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
         /// <param name="numberOfOctants"></param>
-        public PointCloudLoader(string fileFolderPath, int numberOfOctants, IOutOfCoreReader reader)
+        public PointCloudLoader(string fileFolderPath, int numberOfOctants, IIntermediatePointFileReader reader, PointType pointType)
         {
             _watch = new Stopwatch();
             _outOfCoreReader = reader;
@@ -141,7 +141,6 @@ namespace Fusee.PointCloud.Core
             PointCache.AddItemAsync += OnLoadPoints;
             _loadingQueue = new(numberOfOctants);
 
-            var pointType = _outOfCoreReader.GetPointType(fileFolderPath);
             switch (pointType)
             {
                 default:
@@ -214,7 +213,7 @@ namespace Fusee.PointCloud.Core
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
 
-            DetermineVisibilityForNode((PointCloudOctant)Octree.Root);
+            DetermineVisibilityForNode(((PointCloudOctree)Octree).Root);
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -281,17 +280,16 @@ namespace Fusee.PointCloud.Core
             _visibleNodesOrderedByProjectionSize.TryAdd(node.ProjectedScreenSize, node);
         }
 
-        private async Task<IPointCloudPoint[]> OnLoadPoints(object sender, EventArgs e)
+        private async Task<TPoint[]> OnLoadPoints(object sender, EventArgs e)
         {
             var meshArgs = (LoadPointEventArgs)e;
-            return await _outOfCoreReader.LoadPointsForNodeAsync(meshArgs.Guid, meshArgs.PtAccessor);
+            return await _outOfCoreReader.LoadPointsForNodeAsync<TPoint>(meshArgs.Guid, meshArgs.PtAccessor);
         }
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            var root = (PointCloudOctant)Octree.Root;
-            root.ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
-            _minScreenProjectedSize = root.ProjectedScreenSize * _minProjSizeModifier;
+            ((PointCloudOctree)Octree).Root.ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
+            _minScreenProjectedSize = ((PointCloudOctree)Octree).Root.ProjectedScreenSize * _minProjSizeModifier;
         }
 
         /// <summary>

@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core.Scene
 
         public PointCloudFileType FileType { get; } = PointCloudFileType.Potree2;
 
-        internal PointCloudLoader PointCloudLoader;
+        internal IPointCloudLoader PointCloudLoader;
 
         /// <summary>
         /// The number of points that are currently visible.
@@ -70,9 +70,9 @@ namespace Fusee.Engine.Core.Scene
         /// </summary>
         private MemoryCache<IEnumerable<GpuMesh>> _meshCache { get; set; }
 
-        public float3 Center => (float3)PointCloudLoader.Octree.Root.Center;
+        public float3 Center => (float3)((PointCloudOctree)PointCloudLoader.Octree).Root.Center;
 
-        public float3 Size => new((float)PointCloudLoader.Octree.Root.Size);
+        public float3 Size => new((float)((PointCloudOctree)PointCloudLoader.Octree).Root.Size);
 
         private readonly List<IEnumerable<GpuMesh>> _disposeQueue;
         private bool _disposed;
@@ -85,7 +85,45 @@ namespace Fusee.Engine.Core.Scene
         {
             var noOfOctants = (8 ^ 8) / 4;// Directory.GetFiles($"{fileFolderPath}\\Octants").Length;
 
-            PointCloudLoader = new PointCloudLoader(fileFolderPath, noOfOctants, new ReadPotree2Data());
+            var reader = new Potree2Reader();
+            var pointType = reader.GetPointType(fileFolderPath);
+
+            switch (pointType)
+            {
+                default:
+                case PointType.Undefined:
+                    throw new ArgumentException();
+                case PointType.PosD3:
+                    PointCloudLoader = new PointCloudLoader<PosD3>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3ColF3InUs:
+                    PointCloudLoader = new PointCloudLoader<PosD3ColF3InUs>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3InUs:
+                    PointCloudLoader = new PointCloudLoader<PosD3InUs>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3ColF3:
+                    PointCloudLoader = new PointCloudLoader<PosD3ColF3>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3LblB:
+                    PointCloudLoader = new PointCloudLoader<PosD3LblB>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3NorF3ColF3InUs:
+                    PointCloudLoader = new PointCloudLoader<PosD3NorF3ColF3InUs>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3NorF3InUs:
+                    PointCloudLoader = new PointCloudLoader<PosD3NorF3InUs>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3NorF3ColF3:
+                    PointCloudLoader = new PointCloudLoader<PosD3NorF3ColF3>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3ColF3LblB:
+                    PointCloudLoader = new PointCloudLoader<PosD3ColF3LblB>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+                case PointType.PosD3ColF3InUsLblB:
+                    PointCloudLoader = new PointCloudLoader<PosD3ColF3InUsLblB>(fileFolderPath, noOfOctants, reader, pointType);
+                    break;
+            }
 
             _meshCache = new();
             _meshCache.AddItem += OnCreateMesh;
@@ -175,8 +213,68 @@ namespace Fusee.Engine.Core.Scene
 
         private IEnumerable<GpuMesh> TryGetMeshesFromCache<TPoint>(CreateGpuMesh createGpuMesh, string guid)
         {
-            if (!PointCloudLoader.PointCache.TryGetValue(guid, out var points)) return null;
-            _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs(points, createGpuMesh, points.Length), out var meshes);
+            IEnumerable<GpuMesh> meshes;
+            switch (PointCloudLoader.PtAccessor.PointType)
+            {
+                default:
+                case PointType.Undefined:
+                    throw new ArgumentException();
+                case PointType.PosD3:
+                    {
+                        if (!((PointCloudLoader<PosD3>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3ColF3InUs:
+                    {
+                        if (!((PointCloudLoader<PosD3ColF3InUs>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3ColF3InUs>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3InUs:
+                    {
+                        if (!((PointCloudLoader<PosD3InUs>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3InUs>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3ColF3:
+                    {
+                        if (!((PointCloudLoader<PosD3ColF3>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3ColF3>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3LblB:
+                    {
+                        if (!((PointCloudLoader<PosD3LblB>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3LblB>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3NorF3ColF3InUs:
+                    {
+                        if (!((PointCloudLoader<PosD3NorF3ColF3InUs>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3NorF3ColF3InUs>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3NorF3InUs:
+                    {
+                        if (!((PointCloudLoader<PosD3NorF3InUs>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3NorF3InUs>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3NorF3ColF3:
+                    {
+                        if (!((PointCloudLoader<PosD3NorF3ColF3>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3NorF3ColF3>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+                case PointType.PosD3ColF3LblB:
+                    {
+                        if (!((PointCloudLoader<PosD3ColF3LblB>)PointCloudLoader).PointCache.TryGetValue(guid, out var points)) return null;
+                        _meshCache.AddOrUpdate(guid, new GpuMeshFromPointsEventArgs<PosD3ColF3LblB>(points, createGpuMesh, points.Length), out meshes);
+                        break;
+                    }
+            }
+
             return meshes;
         }
 
@@ -190,39 +288,327 @@ namespace Fusee.Engine.Core.Scene
 
         private IEnumerable<GpuMesh> OnCreateMesh(object sender, EventArgs e)
         {
-            var args = (GpuMeshFromPointsEventArgs)e;
-            var ptCnt = args.NumberOfPoints;
-            int maxVertCount = ushort.MaxValue - 1;
-            var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
-            List<GpuMesh> meshes = new(noOfMeshes);
-
-            int meshCnt = 0;
-
-            for (int i = 0; i < ptCnt; i += maxVertCount)
+            List<GpuMesh> meshes;
+            switch (PointCloudLoader.PtAccessor.PointType)
             {
-                int numberOfPointsInMesh;
-                if (noOfMeshes == 1)
-                    numberOfPointsInMesh = ptCnt;
-                else if (noOfMeshes == meshCnt + 1)
-                    numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
-                else
-                    numberOfPointsInMesh = maxVertCount;
+                default:
+                case PointType.Undefined:
+                    throw new ArgumentException();
+                case PointType.PosD3:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
 
-                IPointCloudPoint[] points;
-                var typedArgs = (GpuMeshFromPointsEventArgs)e;
-                if (ptCnt > maxVertCount)
-                {
-                    points = new IPointCloudPoint[numberOfPointsInMesh];
-                    Array.Copy(typedArgs.Points, i, points, 0, numberOfPointsInMesh);
-                }
-                else
-                {
-                    points = typedArgs.Points;
-                }
-                var mesh = MeshFromPointCloudPoints.GetMesh(PointCloudLoader.PtAccessor, points, true, float3.Zero, typedArgs.CreateGpuMesh);
+                            PosD3[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3((PosD3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
 
-                meshes.Add(mesh);
-                meshCnt++;
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3ColF3InUs:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3ColF3InUs>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3ColF3InUs[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3ColF3InUs[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3InUs((PosD3ColF3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3InUs:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3InUs>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3InUs[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3InUs[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3InUs((PosD3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3ColF3:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3ColF3>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3ColF3[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3ColF3[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3((PosD3ColF3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3LblB:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3ColF3>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3ColF3[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3ColF3[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3((PosD3ColF3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3NorF3ColF3InUs:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3NorF3ColF3InUs>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3NorF3ColF3InUs[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3NorF3ColF3InUs[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3ColF3InUs((PosD3NorF3ColF3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3NorF3InUs:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3NorF3InUs>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3NorF3InUs[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3NorF3InUs[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3InUs((PosD3NorF3InUsAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3NorF3ColF3:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3NorF3ColF3>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3NorF3ColF3[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3NorF3ColF3[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3NorF3ColF3((PosD3NorF3ColF3Accessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                        break;
+                    }
+                case PointType.PosD3ColF3LblB:
+                    {
+                        var args = (GpuMeshFromPointsEventArgs<PosD3ColF3LblB>)e;
+                        var ptCnt = args.NumberOfPoints;
+                        int maxVertCount = ushort.MaxValue - 1;
+                        var noOfMeshes = (int)System.Math.Ceiling((float)ptCnt / maxVertCount);
+                        meshes = new(noOfMeshes);
+                        int meshCnt = 0;
+                        for (int i = 0; i < ptCnt; i += maxVertCount)
+                        {
+                            int numberOfPointsInMesh;
+                            if (noOfMeshes == 1)
+                                numberOfPointsInMesh = ptCnt;
+                            else if (noOfMeshes == meshCnt + 1)
+                                numberOfPointsInMesh = (ptCnt - maxVertCount * meshCnt);
+                            else
+                                numberOfPointsInMesh = maxVertCount;
+
+                            PosD3ColF3LblB[] points;
+                            if (ptCnt > maxVertCount)
+                            {
+                                points = new PosD3ColF3LblB[numberOfPointsInMesh];
+                                Array.Copy(args.Points, i, points, 0, numberOfPointsInMesh);
+                            }
+                            else
+                            {
+                                points = args.Points;
+                            }
+                            var mesh = MeshFromPointCloudPoints.GetMeshPosD3ColF3LblB((PosD3ColF3LblBAccessor)PointCloudLoader.PtAccessor, points, true, float3.Zero, args.CreateGpuMesh);
+
+                            meshes.Add(mesh);
+                            meshCnt++;
+                        }
+                    }
+                    break;
             }
 
             return meshes;
