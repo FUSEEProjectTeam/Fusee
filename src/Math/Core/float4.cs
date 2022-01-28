@@ -226,7 +226,7 @@ namespace Fusee.Math.Core
         /// Gets the length (magnitude) of the vector.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public float Length => (float)System.Math.Sqrt(LengthSquared);
+        public float Length => MathF.Sqrt(LengthSquared);
 
         #endregion public float Length
 
@@ -236,7 +236,7 @@ namespace Fusee.Math.Core
         /// Gets the length in 1-norm.
         /// </summary>
         /// <see cref="LengthSquared"/>
-        public float Length1 => (float)System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w);
+        public float Length1 => (float)MathF.Abs(x) + MathF.Abs(y) + MathF.Abs(z) + MathF.Abs(w);
 
         #endregion public float Length1
 
@@ -639,10 +639,10 @@ namespace Fusee.Math.Core
         /// <returns>The rounded vector.</returns>
         public static float4 Round(float4 vec)
         {
-            return new float4((float)System.Math.Round(vec.x, 6),
-                              (float)System.Math.Round(vec.y, 6),
-                              (float)System.Math.Round(vec.z, 6),
-                              (float)System.Math.Round(vec.w, 6));
+            return new float4((float)MathF.Round(vec.x, 6),
+                              (float)MathF.Round(vec.y, 6),
+                              (float)MathF.Round(vec.z, 6),
+                              (float)MathF.Round(vec.w, 6));
         }
 
         #endregion Round
@@ -1036,10 +1036,10 @@ namespace Fusee.Math.Core
         public bool Equals(float4 other)
         {
             return
-                System.Math.Abs(x - other.x) < M.EpsilonFloat &&
-                System.Math.Abs(y - other.y) < M.EpsilonFloat &&
-                System.Math.Abs(z - other.z) < M.EpsilonFloat &&
-                System.Math.Abs(w - other.w) < M.EpsilonFloat;
+                MathF.Abs(x - other.x) < M.EpsilonFloat &&
+                MathF.Abs(y - other.y) < M.EpsilonFloat &&
+                MathF.Abs(z - other.z) < M.EpsilonFloat &&
+                MathF.Abs(w - other.w) < M.EpsilonFloat;
         }
 
         #endregion IEquatable<float4> Members

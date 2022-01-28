@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using System;
 using System.Collections.Generic;
 using Xunit;
 
@@ -129,7 +130,7 @@ namespace Fusee.Tests.Math.Core
             yield return new object[]
             {
                 new PlaneF{ A = 1, B = 1, C = 1, D = 1 },
-                new PlaneF(){A = (float)System.Math.Sqrt(1d / 3d), B=(float)System.Math.Sqrt(1d / 3d), C=(float)System.Math.Sqrt(1d / 3d), D=(float)System.Math.Sqrt(1d / 3d) }
+                new PlaneF(){A = MathF.Sqrt(1f / 3f), B=MathF.Sqrt(1f / 3f), C=MathF.Sqrt(1f / 3f), D=MathF.Sqrt(1f / 3f) }
             };
         }
     }
