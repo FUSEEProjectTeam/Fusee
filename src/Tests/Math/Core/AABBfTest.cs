@@ -55,7 +55,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void IntersectRay_Simple()
         {
-            Rayf ray = new(new float3(0, 0, 0), new float3(1, 0, 0));
+            RayF ray = new(new float3(0, 0, 0), new float3(1, 0, 0));
             AABBf box = new(new float3(2, -1, -1), new float3(4, 1, 1));
 
             Assert.True(box.IntersectRay(ray));
@@ -64,7 +64,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void IntersectRay_AlongEdge()
         {
-            Rayf ray = new(new float3(0, 0, 0), new float3(1, 0, 0));
+            RayF ray = new(new float3(0, 0, 0), new float3(1, 0, 0));
             AABBf box = new(new float3(2, 0, 0), new float3(4, 1, 1));
 
             Assert.True(box.IntersectRay(ray));
@@ -73,7 +73,7 @@ namespace Fusee.Tests.Math.Core
         [Fact]
         public void IntersectRay_Outside()
         {
-            Rayf ray = new(new float3(0, -1, -1), new float3(1, 0, 0));
+            RayF ray = new(new float3(0, -1, -1), new float3(1, 0, 0));
             AABBf box = new(new float3(2, 0, 0), new float3(4, 1, 1));
 
             Assert.False(box.IntersectRay(ray));

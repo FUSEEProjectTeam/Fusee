@@ -1,3 +1,4 @@
+using ProtoBuf;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -5,12 +6,13 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math.Core
 {
     /// <summary>
-    /// Represents a 2D vector using two double-precision floating-point numbers.
+    /// Represents a 2D vector using two double-precision.
     /// </summary>
     /// <remarks>
-    /// The double2 structure is suitable for interoperation with unmanaged code requiring two consecutive doubles.
+    /// The double2 structure is suitable for inter-operation with unmanaged code requiring two consecutive doubles.
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
+    [ProtoContract]
     public struct double2 : IEquatable<double2>
     {
         #region Fields
@@ -18,16 +20,28 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The x component of the double2.
         /// </summary>
+        [ProtoMember(1)]
         public double x;
 
         /// <summary>
         /// The y component of the double2.
         /// </summary>
+        [ProtoMember(2)]
         public double y;
 
         #endregion Fields
 
         #region Constructors
+
+        /// <summary>
+        /// Constructs a new double2.
+        /// </summary>
+        /// <param name="val">This value will be set for the x and y component.</param>
+        public double2(double val)
+        {
+            x = val;
+            y = val;
+        }
 
         /// <summary>
         /// Constructs a new double2.
@@ -92,8 +106,8 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length.
         /// </value>
-        /// <seealso cref="LengthSquared" />
-        public double Length => (double)System.Math.Sqrt(LengthSquared);
+        /// <see cref="LengthSquared" />
+        public double Length => System.Math.Sqrt(LengthSquared);
 
         #endregion public double Length
 
@@ -216,7 +230,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Add(double2 a, double2 b)
         {
-            return new double2(a.x + b.x, a.y + b.y);
+            var result = new double2(a.x + b.x, a.y + b.y);
+
+            return result;
         }
 
         #endregion Add
@@ -233,7 +249,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Subtract(double2 a, double2 b)
         {
-            return new double2(a.x - b.x, a.y - b.y);
+            var result = new double2(a.x - b.x, a.y - b.y);
+
+            return result;
         }
 
         #endregion Subtract
@@ -250,11 +268,12 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Multiply(double2 vector, double scale)
         {
-            return new double2(vector.x * scale, vector.y * scale);
+            var result = new double2(vector.x * scale, vector.y * scale);
+            return result;
         }
 
         /// <summary>
-        /// Multiplies a vector by the components of a vector (scale).
+        /// Multiplies a vector by the components a vector (scale).
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
@@ -263,7 +282,8 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Multiply(double2 vector, double2 scale)
         {
-            return new double2(vector.x * scale.x, vector.y * scale.y);
+            var result = new double2(vector.x * scale.x, vector.y * scale.y);
+            return result;
         }
 
         #endregion Multiply
@@ -280,7 +300,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Divide(double2 vector, double scale)
         {
-            return Multiply(vector, 1 / scale);
+            var result = new double2(vector.x / scale, vector.y / scale);
+
+            return result;
         }
 
         /// <summary>
@@ -293,7 +315,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Divide(double2 vector, double2 scale)
         {
-            return new double2(vector.x / scale.x, vector.y / scale.y);
+            var result = new double2(vector.x / scale.x, vector.y / scale.y);
+
+            return result;
         }
 
         #endregion Divide
@@ -401,7 +425,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Normalize(double2 vec)
         {
-            double scale = 1.0f / vec.Length;
+            double scale = 1.0 / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
             return vec;
@@ -445,6 +469,27 @@ namespace Fusee.Math.Core
 
         #endregion Dot
 
+        /// <summary>
+        /// Performs <see cref="M.Step(double, double)"/> for each component of the input vectors.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        public static double2 Step(double2 edge, double2 val)
+        {
+            return new double2(M.Step(edge.x, val.x), M.Step(edge.y, val.y));
+        }
+
+        /// <summary>
+        /// Returns a double2 where all components are raised to the specified power.
+        /// </summary>
+        /// <param name="val">The double3 to be raised to a power.</param>
+        /// <param name="exp">A double that specifies a power.</param>
+        /// <returns></returns>
+        public static double2 Pow(double2 val, double exp)
+        {
+            return new double2(System.Math.Pow(val.r, exp), System.Math.Pow(val.g, exp));
+        }
+
         #region Lerp
 
         /// <summary>
@@ -463,6 +508,20 @@ namespace Fusee.Math.Core
             return a;
         }
 
+        /// <summary>
+        /// Returns a new Vector that is the linear blend of the 2 given Vectors.
+        /// Each component of vector a is blended with its equivalent in vector b.
+        /// </summary>
+        /// <param name="a">First input vector</param>
+        /// <param name="b">Second input vector</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>       
+        public static double2 Lerp(double2 a, double2 b, double2 blend)
+        {
+            a.x = blend.x * (b.x - a.x) + a.x;
+            a.y = blend.y * (b.y - a.y) + a.y;
+            return a;
+        }
+
         #endregion Lerp
 
         #region Barycentric
@@ -476,7 +535,7 @@ namespace Fusee.Math.Core
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
         /// <returns>
-        /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
+        /// a when u=1,v=9, b when u=0,v=1, c when u=v=1, and a linear combination of a,b,c otherwise
         /// </returns>
         public static double2 Barycentric(double2 a, double2 b, double2 c, double u, double v)
         {
@@ -484,7 +543,59 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Determines whether the specified triangle is in clockwise winding order.
+        /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting barycentric u coordinate (weight for vertex a).</param>
+        /// <param name="v">The resulting barycentric v coordinate (weight for vertex b).</param>
+        public static void GetBarycentric(double2 a, double2 b, double2 c, double2 point, out double u, out double v)
+        {
+            double2 cb = b - c;
+            double2 cp = point - c;
+            double2 ca = a - c;
+            double denom = (cb.y * ca.x - cb.x * ca.y);
+            u = (cb.y * cp.x - cb.x * cp.y) / denom;
+            v = (ca.x * cp.y - ca.y * cp.x) / denom;
+        }
+
+        ///// <summary>
+        ///// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
+        ///// </summary>
+        ///// <param name="a">The first point of the triangle.</param>
+        ///// <param name="b">The second point of the triangle.</param>
+        ///// <param name="c">The third point of the triangle.</param>
+        ///// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        ///// <param name="u">The resulting u coordinate.</param>
+        ///// <param name="v">The resulting v coordinate.</param>
+        //public static void GetBarycentric(double2 a, double2 b, double2 c, double2 point, out double u, out double v)
+        //{
+        //    u = ((b.y - c.y) * (point.x - c.x) + (c.x - b.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+        //    v = ((c.y - a.y) * (point.x - c.x) + (a.x - c.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+        //}
+
+        /// <summary>
+        /// Checks if the give point is inside the given triangle (a, b, c). Returns the barycentric coordinates using <see cref="GetBarycentric"/>.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting barycentric u coordinate (weight for vertex a).</param>
+        /// <param name="v">The resulting barycentric v coordinate (weight for vertex b).</param>
+        /// <returns>true, if the point is inside the triangle a, b, c. Otherwise false.</returns>
+        public static bool PointInTriangle(double2 a, double2 b, double2 c, double2 point, out double u, out double v)
+        {
+            GetBarycentric(a, b, c, point, out u, out v);
+
+            //was previously  "u >= 0 && v >= 0 && u + v < 1;", which returned false for u=v=0 and u=1, v=0
+            return u >= 0 && v >= 0 && u + v <= 1;
+        }
+
+        /// <summary>
+        /// Checks if the three given 2D points form a clockwise (CW) triangle
         /// </summary>
         /// <param name="a">The first point of the triangle.</param>
         /// <param name="b">The second point of the triangle.</param>
@@ -499,28 +610,23 @@ namespace Fusee.Math.Core
             return z < 0;
         }
 
-        /// <summary>
-        /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
-        /// </summary>
-        /// <param name="a">The first point of the triangle.</param>
-        /// <param name="b">The second point of the triangle.</param>
-        /// <param name="c">The third point of the triangle.</param>
-        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
-        /// <param name="u">The resulting u coordinate.</param>
-        /// <param name="v">The resulting v coordinate.</param>
-        public static void GetBarycentric(double2 a, double2 b, double2 c, double2 point, out double u, out double v)
-        {
-            double2 cb = b - c;
-            double2 cp = point - c;
-            double2 ca = a - c;
-            double denom = (cb.y * ca.x - cb.x * ca.y);
-            u = (cb.y * cp.x - cb.x * cp.y) / denom;
-            v = (ca.x * cp.y - ca.y * cp.x) / denom;
-        }
-
         #endregion Barycentric
 
         #endregion Static
+
+        #region Swizzle
+
+        /// <summary>
+        /// Gets and sets an OpenTK.double2 with the x and y components of this instance.
+        /// </summary>
+        public double2 xy { get => new(x, y); set { x = value.x; y = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.double2 with the y and x components of this instance.
+        /// </summary>
+        public double2 yx { get => new(y, x); set { y = value.x; x = value.y; } }
+
+        #endregion Swizzle
 
         #region Operators
 
@@ -538,6 +644,21 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Adds a scalar to the specified instance.
+        /// </summary>
+        /// <param name="left">Left operand.</param>
+        /// <param name="scalar">The scalar.</param>
+        /// <returns>
+        /// Result of addition.
+        /// </returns>
+        public static double2 operator +(double2 left, double scalar)
+        {
+            left.x += scalar;
+            left.y += scalar;
+            return left;
+        }
+
+        /// <summary>
         /// Subtracts the specified instances.
         /// </summary>
         /// <param name="left">Left operand.</param>
@@ -548,6 +669,21 @@ namespace Fusee.Math.Core
         public static double2 operator -(double2 left, double2 right)
         {
             return Subtract(left, right);
+        }
+
+        /// <summary>
+        /// Subtracts a scalar from the specified instance.
+        /// </summary>
+        /// <param name="left">Left operand.</param>
+        /// <param name="scalar">The scalar.</param>
+        /// <returns>
+        /// Result of addition.
+        /// </returns>
+        public static double2 operator -(double2 left, double scalar)
+        {
+            left.x -= scalar;
+            left.y -= scalar;
+            return left;
         }
 
         /// <summary>
@@ -591,16 +727,16 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies a vector by the components of a vector (scale).
+        /// Multiplies two instances.
         /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
+        /// <param name="vec1">Left operand.</param>
+        /// <param name="vec2">Right operand.</param>
         /// <returns>
-        /// Result of the operation.
+        /// Result of multiplication.
         /// </returns>
-        public static double2 operator *(double2 vector, double2 scale)
+        public static double2 operator *(double2 vec1, double2 vec2)
         {
-            return Multiply(vector, scale);
+            return Multiply(vec1, vec2);
         }
 
         /// <summary>
@@ -649,7 +785,7 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current double3.
+        /// Returns a System.String that represents the current double2.
         /// </summary>
         /// <returns>
         /// A <see cref="string" /> that represents this instance.
@@ -660,7 +796,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns a System.String that represents the current double3.
+        /// Returns a System.String that represents the current double2.
         /// </summary>
         /// <param name="provider">Provides information about a specific culture.</param>
         /// <returns>
@@ -719,6 +855,37 @@ namespace Fusee.Math.Core
 
         #endregion Overrides
 
+        #region Color
+
+        /// <summary>
+        /// The red component (same as x)
+        /// </summary>
+        public double r
+        {
+            get => x;
+            set => x = value;
+        }
+
+        /// <summary>
+        /// The green component (same as y)
+        /// </summary>
+        public double g
+        {
+            get => y;
+            set => y = value;
+        }
+
+        /// <summary>
+        /// The rg component (same as xy)
+        /// </summary>
+        public double2 rg
+        {
+            get => xy;
+            set => xy = value;
+        }
+
+        #endregion Color
+
         #endregion Public Members
 
         #region IEquatable<double2> Members
@@ -733,8 +900,8 @@ namespace Fusee.Math.Core
         public bool Equals(double2 other)
         {
             return
-                x == other.x &&
-                y == other.y;
+                System.Math.Abs(x - other.x) < M.EpsilonDouble &&
+                System.Math.Abs(y - other.y) < M.EpsilonDouble;
         }
 
         #endregion IEquatable<double2> Members

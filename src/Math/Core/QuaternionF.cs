@@ -159,9 +159,17 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Converts the quaternion into a rotation matrix.
         /// </summary>
-        public float4x4 ToRotMat()
+        public float4x4 ToRotationMatrixFast()
         {
-            return ToRotMat(this);
+            return ToRotationMatrixFast(this);
+        }
+
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>
+        public float4x4 ToRotationMatrix()
+        {
+            return ToRotationMatrix(this);
         }
 
         #endregion ToAxisAngle
@@ -394,30 +402,6 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Constructs a rotation matrix from a given quaternion
-        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
-        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
-        /// </summary>
-        /// <param name="quat">Input quaternion</param>
-        /// <returns></returns>
-        public static float4x4 ToRotMat(Quaternion quat)
-        {
-            var m1 = new float4x4(
-            quat.w, quat.z, -quat.y, quat.x,
-            -quat.z, quat.w, quat.x, quat.y,
-            quat.y, -quat.x, quat.w, quat.z,
-            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
-
-            var m2 = new float4x4(
-            quat.w, quat.z, -quat.y, -quat.x,
-            -quat.z, quat.w, quat.x, -quat.y,
-            quat.y, -quat.x, quat.w, -quat.z,
-            quat.x, quat.y, quat.z, quat.w).Transpose();
-
-            return m1 * m2;
-        }
-
-        /// <summary>
         /// Angle axis representation of the given quaternion.
         /// </summary>
         /// <param name="quat">The quaternion to transform.</param>
@@ -536,7 +520,7 @@ namespace Fusee.Math.Core
         ///
         /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
         /// </remarks>
-        public static Quaternion EulerToQuaternion(float3 e, bool inDegrees = false)
+        public static Quaternion FromEuler(float3 e, bool inDegrees = false)
         {
             if (inDegrees)
             {
@@ -580,7 +564,7 @@ namespace Fusee.Math.Core
         ///
         /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclidean space website</a>.
         /// </remarks>
-        public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
+        public static float3 ToEuler(Quaternion q, bool inDegrees = false)
         {
             // Ref: 3D Math Primer for Graphics and Game Development SE, Page 290 - Listing 8.6, ISBN 978-1-56881-723-1
 
@@ -695,11 +679,35 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        ///     Constructs a rotation matrix from a given quaternion
+        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
+        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
+        /// </summary>
+        /// <param name="quat">Input quaternion</param>
+        /// <returns></returns>
+        public static float4x4 ToRotationMatrixFast(Quaternion quat)
+        {
+            var m1 = new float4x4(
+            quat.w, quat.z, -quat.y, quat.x,
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
+
+            var m2 = new float4x4(
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
+            quat.x, quat.y, quat.z, quat.w).Transpose();
+
+            return m1 * m2;
+        }
+
+        /// <summary>
         ///     Convert Quaternion to rotation matrix
         /// </summary>
         /// <param name="q">Quaternion to convert.</param>
         /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
-        public static float4x4 QuaternionToMatrix(Quaternion q)
+        public static float4x4 ToRotationMatrix(Quaternion q)
         {
             q = q.Normalize();
 

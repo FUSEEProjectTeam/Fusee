@@ -426,7 +426,7 @@ namespace Fusee.Math.Core
         /// <returns>The angle expressed in radians</returns>
         public static double DegreesToRadiansD(double degrees)
         {
-            const double degToRad = System.Math.PI / 180.0f;
+            const double degToRad = System.Math.PI / 180.0;
             return degrees * degToRad;
         }
 
@@ -437,7 +437,7 @@ namespace Fusee.Math.Core
         /// <returns>The angle expressed in degrees</returns>
         public static double RadiansToDegreesD(double radians)
         {
-            const double radToDeg = 180.0f / System.Math.PI;
+            const double radToDeg = 180.0 / System.Math.PI;
             return radians * radToDeg;
         }
 
@@ -549,134 +549,7 @@ namespace Fusee.Math.Core
             return (item1 - centroid1) * (item2 - centroid2) / numberOfPoints;
         }
 
-        #endregion Covariance
-
-        #region Eigen
-
-        /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision.
-        /// </summary>
-        /// <param name="covarianceMatrix"></param>
-        /// <returns></returns>
-        public static EigenF EigenFromCovarianceMat(float4x4 covarianceMatrix)
-        {
-            return Diagonalizer(covarianceMatrix);
-        }
-
-        /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision.
-        /// </summary>
-        /// <param name="covarianceMatrix"></param>
-        /// <returns></returns>
-        public static EigenD EigenFromCovarianceMat(double4x4 covarianceMatrix)
-        {
-            return Diagonalizer(covarianceMatrix);
-        }
-
-        /// <summary>
-        ///     Diagonalizes a given covariance matrix with single precision.
-        ///     Currently only for 3x3 matrices, therefore three values but for the sake of convenience you can (and have to) feed a 4x4 matrix into this method.
-        ///     <para>
-        ///         Credits to: https://github.com/melax/sandbox
-        ///         http://melax.github.io/diag.html
-        ///         A must be a symmetric matrix.
-        ///         returns quaternion q such that its corresponding matrix Q
-        ///         can be used to Diagonalize A
-        ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
-        ///     </para>
-        /// </summary>
-        /// <param name="A">The covariance matrix.</param>
-        /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
-        public static EigenF Diagonalizer(float4x4 A)
-        {
-            var row0 = new double4(A.Row1.x, A.Row1.y, A.Row1.z, A.Row1.w);
-            var row1 = new double4(A.Row2.x, A.Row2.y, A.Row2.z, A.Row2.w);
-            var row2 = new double4(A.Row3.x, A.Row3.y, A.Row3.z, A.Row3.w);
-            var row3 = new double4(A.Row4.x, A.Row4.y, A.Row4.z, A.Row4.w);
-
-            var res = Diagonalizer(new double4x4(row0, row1, row2, row3));
-
-            return new EigenF
-            {
-                Values = res.Values.Select(val => (float)val).ToArray(),
-                Vectors = res.Vectors.Select(vec => new float3((float)vec.x, (float)vec.y, (float)vec.z)).ToArray()
-            };
-        }
-
-        /// <summary>
-        ///     Diagonalizes a given covariance matrix with double precision.
-        ///
-        ///     <para>
-        ///         Credits to: https://github.com/melax/sandbox
-        ///         http://melax.github.io/diag.html
-        ///         A must be a symmetric matrix.
-        ///         returns quaternion q such that its corresponding matrix Q
-        ///         can be used to Diagonalize A
-        ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
-        ///     </para>
-        /// </summary>
-        /// <param name="A">The covariance matrix</param>
-        /// <returns></returns>
-        public static EigenD Diagonalizer(double4x4 A)
-        {
-            const int maxsteps = 512; // certainly wont need that many.
-
-            var q = new QuaternionD(0, 0, 0, 1);
-            var D = double4x4.Identity;
-            var Q = double4x4.Identity;
-            for (var i = 0; i < maxsteps; i++)
-            {
-                // Q = float4x4.CreateRotation(q); // v*Q == q*v*conj(q)
-                Q = q.ToRotMat(); // v*Q == q*v*conj(q)
-                D = Q.Transpose() * A * Q;  // A = Q^T*D*Q
-                var offDiagonal = new double3(D.M23, D.M13, D.M12); // elements not on the diagonal
-                var om = new double3(System.Math.Abs(offDiagonal.x), System.Math.Abs(offDiagonal.y), System.Math.Abs(offDiagonal.z)); // mag of each offdiag elem
-                var k = (om.x > om.y && om.x > om.z) ? 0 : (om.y > om.z) ? 1 : 2; // index of largest element of offdiag
-                var k1 = (k + 1) % 3;
-                var k2 = (k + 2) % 3;
-
-                if (offDiagonal[k].Equals(0.0f)) break;  // diagonal already
-
-                var theta = (D[k2, k2] - D[k1, k1]) / (2.0f * offDiagonal[k]);
-                var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
-                theta *= sgn; // make it positive
-                var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
-                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c
-
-                if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
-
-                var jr = new QuaternionD(0, 0, 0, 0) // jacobi rotation for this iteration.
-                {
-                    [k] = (sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
-                };
-
-                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)
-                jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
-                jr.w = System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
-                if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
-                q *= jr;
-                q.Normalize();
-            }
-
-            var vectorMat = Q;
-
-            return new EigenD
-            {
-                Values = new[]
-                {
-                    D.M11,
-                    D.M22,
-                    D.M33
-                },
-                Vectors = new double3[] { vectorMat.Row1.xyz, vectorMat.Row2.xyz, vectorMat.Row3.xyz }
-            };
-        }
-
-        #endregion Eigen
+        #endregion Covariance        
 
         #region MinAngle
 
@@ -877,6 +750,18 @@ namespace Fusee.Math.Core
         public static float Step(float edge, float val)
         {
             return val < edge ? 0.0f : 1.0f;
+        }
+
+        /// <summary>
+        /// Generates a step function by comparing "val" to "edge".
+        /// 0.0 is returned if "val" is smaller than "edge" and 1.0 is returned otherwise.
+        /// </summary>
+        /// <param name="edge">Specifies the location of the edge of the step function.</param>
+        /// <param name="val">Specifies the value to be used to generate the step function.</param>
+        /// <returns></returns>
+        public static double Step(double edge, double val)
+        {
+            return val < edge ? 0.0 : 1.0;
         }
 
         #endregion Public Members
