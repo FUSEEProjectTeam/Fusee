@@ -14,6 +14,15 @@ using Animation = Fusee.Xirkit.Animation;
 
 namespace Fusee.Engine.Core
 {
+    public interface IRendererModule : IVisitorModule
+    {
+        public RenderLayers RenderLayer { get; set; }
+
+        public void SetContext(RenderContext rc);
+
+        public void SetState(RendererState state);
+    }
+
     /// <summary>
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and s) in order
     /// to have each visited element contribute to the result rendered against a given render context.
@@ -34,7 +43,19 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The RenderLayer this renderer should render.
         /// </summary>
-        public RenderLayers RenderLayer { get; set; }
+        public RenderLayers RenderLayer
+        {
+            get => _renderLayer;
+            set 
+            {
+                _renderLayer = value;
+                foreach (var module in VisitorModules)
+                {
+                    ((IRendererModule)module).RenderLayer = _renderLayer;
+                }
+	        }
+        }
+        private RenderLayers _renderLayer;
 
         /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
@@ -142,7 +163,7 @@ namespace Fusee.Engine.Core
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
             IgnoreInactiveComponents = true;
-            _state = new RendererState();
+            _state = new RendererState();            
             InitAnimations(_sc);
         }
 
@@ -265,10 +286,23 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
-
+                foreach (var module in VisitorModules)
+                {
+                    ((IRendererModule)module).SetContext(_rc);
+                }
                 InitState();
             }
         }
+
+        private void SetStateAndRenderLayerInModules()
+        {
+            foreach (var module in VisitorModules)
+            {
+                ((IRendererModule) module).RenderLayer = _renderLayer;
+                ((IRendererModule) module).SetState(_state);
+            }
+        }
+
         #endregion
 
 
@@ -279,6 +313,7 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc)
         {
             SetContext(rc);
+            SetStateAndRenderLayerInModules();
 
             PrePassVisitor.PrePassTraverse(_sc);
 
@@ -753,37 +788,6 @@ namespace Fusee.Engine.Core
             mesh.BoneIndices = boneIndices;
             mesh.BoneWeights = boneWeights;
         }
-
-        /// <summary>
-        /// Determines visible points of a point cloud (using the components <see cref="PointCloudLoader{TPoint}"/>) and renders them.
-        /// </summary>
-        /// <param name="pointCloud">The point cloud component.</param>
-        [VisitMethod]
-        public void RenderPointCloud(Scene.PointCloud pointCloud)
-        {
-            if (!pointCloud.Active) return;
-            if (!RenderLayer.HasFlag(_state.RenderLayer.Layer) && !_state.RenderLayer.Layer.HasFlag(RenderLayer) || _state.RenderLayer.Layer.HasFlag(RenderLayers.None))
-                return;
-            //if (_rc.InvView == float4x4.Identity) return;
-
-            switch (pointCloud.PointCloudImp.FileType)
-            {
-                case PointCloudFileType.Las:
-                    throw new NotImplementedException();
-                case PointCloudFileType.Potree2:
-                    var fov = (float)_rc.ViewportWidth / _rc.ViewportHeight;
-                    ((Potree2Cloud)pointCloud.PointCloudImp).Update(_rc.CreateGpuMesh, fov, _rc.ViewportHeight, _rc.RenderFrustum, _rc.InvView.Column4.xyz);
-                    break;
-            }
-
-            foreach (var mesh in pointCloud.PointCloudImp.MeshesToRender)
-            {
-                var renderStatesBefore = _rc.CurrentRenderState.Copy();
-                _rc.Render(mesh, true);
-                _state.RenderUndoStates = renderStatesBefore.Merge(_rc.CurrentRenderState);
-            }
-        }
-
         #endregion
 
         #region HierarchyLevel

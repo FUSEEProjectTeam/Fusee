@@ -457,6 +457,7 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc, WritableTexture renderTex = null)
         {
             SetContext(rc);
+            SetStateAndRenderLayerInModules();
 
             PrePassVisitor.PrePassTraverse(_sc);
             AccumulateLight();
@@ -988,6 +989,15 @@ namespace Fusee.Engine.Core
 
                 InitRenderTextures();
                 InitState();
+            }
+        }
+
+        private void SetStateAndRenderLayerInModules()
+        {
+            foreach (var module in VisitorModules)
+            {
+                //((IRendererModule)module).RenderLayer = _renderLayer;
+                ((IRendererModule)module).SetState(_state);
             }
         }
 

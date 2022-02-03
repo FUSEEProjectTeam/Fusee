@@ -147,6 +147,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
             _sih = new SceneInteractionHandler(_gui);
 
             _sceneRenderer = new SceneRendererForward(_scene);
+            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
             _guiRenderer = new SceneRendererForward(_gui);
 
             IsInitialized = true;

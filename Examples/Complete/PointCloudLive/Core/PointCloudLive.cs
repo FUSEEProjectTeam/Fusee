@@ -93,8 +93,8 @@ namespace Fusee.Examples.PointCloudLive.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_pointCloud);
+            _sceneRenderer.VisitorModules.Add(new PointCloudRenderModule());
             _renderForward = _sceneRenderer.GetType() == typeof(SceneRendererForward);
-
             if (_renderForward)
             {
                 _depthTex = WritableTexture.CreateDepthTex(Width, Height, new ImagePixelFormat(ColorFormat.Depth24));
