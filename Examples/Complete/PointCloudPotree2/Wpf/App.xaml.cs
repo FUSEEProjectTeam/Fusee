@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Markup;
 
-namespace Fusee.Examples.PointCloudOutOfCore.Wpf
+namespace Fusee.Examples.PointCloudPotree2.Wpf
 {
     /// <summary>
     /// Interaction logic for App.xaml

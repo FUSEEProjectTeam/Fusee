@@ -1,7 +1,6 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PointCloudPotree2.Core;
@@ -18,14 +17,14 @@ using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 
-namespace Fusee.Examples.PointCloudOutOfCore.Wpf
+namespace Fusee.Examples.PointCloudPotree2.Wpf
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public IPointCloudOutOfCore app;
+        public Core.PointCloudOutOfCore app;
         private bool _areOctantsShown;
 
         //private bool _ptSizeDragStarted;
@@ -344,7 +343,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
 
             AssetStorage.RegisterProvider(fap);
 
-            app = new PointCloudPotree2.Core.PointCloudOutOfCore();
+            app = new Core.PointCloudOutOfCore();
 
             PtShape.SelectedValue = PtRenderingParams.Instance.Shape;
             PtSizeMode.SelectedValue = PtRenderingParams.Instance.PtMode;
@@ -372,6 +371,7 @@ namespace Fusee.Examples.PointCloudOutOfCore.Wpf
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
 
             app.InitApp();
+            PointCloudImplementor.CreateGpuMesh = app.RC.CreateGpuMesh;
         }
     }
 }

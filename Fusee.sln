@@ -293,7 +293,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Las.Deskto
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Potree", "src\PointCloud\Potree\Fusee.PointCloud.Potree.csproj", "{1B99F3FD-C685-4D72-8EBA-94A1214469B5}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Scene", "src\PointCloud\Imp\Fusee.PointCloud.Scene.csproj", "{F558FB66-9A5C-41E7-8767-782A5793A6EA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.PointCloud.Scene", "src\PointCloud\Scene\Fusee.PointCloud.Scene.csproj", "{1211C5CE-0658-414B-B674-17D89DB062C9}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1701,24 +1701,24 @@ Global
 		{1B99F3FD-C685-4D72-8EBA-94A1214469B5}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{1B99F3FD-C685-4D72-8EBA-94A1214469B5}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{1B99F3FD-C685-4D72-8EBA-94A1214469B5}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-Android|Any CPU.Build.0 = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug-Blazor|Any CPU.ActiveCfg = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug-Blazor|Any CPU.Build.0 = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-Blazor|Any CPU.ActiveCfg = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-Blazor|Any CPU.Build.0 = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{1211C5CE-0658-414B-B674-17D89DB062C9}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1850,7 +1850,7 @@ Global
 		{DCC7DA71-3E2E-476C-8391-1F9651637503} = {6F281DDE-0376-40C4-9693-51C7CD2F49D4}
 		{F28634E7-52B8-4935-B19E-CB8A6844E6F1} = {FA703895-434C-4ECF-8E0D-3145280DA2C6}
 		{1B99F3FD-C685-4D72-8EBA-94A1214469B5} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
-		{F558FB66-9A5C-41E7-8767-782A5793A6EA} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
+		{1211C5CE-0658-414B-B674-17D89DB062C9} = {549D61C5-EFE6-4C2B-AD19-BB84A36C5917}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

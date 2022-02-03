@@ -282,14 +282,14 @@ namespace Fusee.PointCloud.Core
         }
 
         /// <summary>
-        /// Returns meshes for point clouds of type <see cref="PointCloud.Common.PosD3NorF3ColF3InUs"/>.
+        /// Returns meshes for point clouds of type <see cref="PosD3NorF3ColF3InUs"/>.
         /// </summary>
         /// <param name="ptAccessor">The <see cref="PointAccessor{TPoint}"/></param>
         /// <param name="points">The lists of "raw" points.</param>
         /// <param name="doExchangeYZ">Determines if the y and z coordinates of the points need to be exchanged.</param>
         /// <param name="translationVector">Vector that will be subtracted from each point coordinate.</param>
         /// <param name="createMesh">Function for creating the <see cref="GpuMesh"/>.</param>
-        public static GpuMesh GetMeshPosD3NorF3ColF3InUs(PointCloud.Core.PosD3NorF3ColF3InUsAccessor ptAccessor, PosD3NorF3ColF3InUs[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
+        public static GpuMesh GetMeshPosD3NorF3ColF3InUs(PosD3NorF3ColF3InUsAccessor ptAccessor, PosD3NorF3ColF3InUs[] points, bool doExchangeYZ, float3 translationVector, CreateGpuMesh createMesh)
         {
             int numberOfPointsInMesh;
             numberOfPointsInMesh = points.Length;
