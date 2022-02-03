@@ -1,13 +1,9 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Examples.PointCloudPotree2.Core;
-using Fusee.PointCloud.Common;
-using Fusee.PointCloud.Core;
-using Fusee.PointCloud.PotreeReader.V2;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -58,7 +54,7 @@ namespace Fusee.Examples.PointCloudPotree2.Desktop
                 });
 
             AssetStorage.RegisterProvider(fap);
-            
+
             var app = new PointCloudOutOfCore();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
@@ -67,10 +63,8 @@ namespace Fusee.Examples.PointCloudPotree2.Desktop
             app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
-
-            //app.RenderModule.Add(new Fusee.PointCloud.Core.RenderModule());
-
             app.InitApp();
+            PointCloudImplementor.CreateGpuMesh = app.RC.CreateGpuMesh;
 
             // Start the app
             app.Run();

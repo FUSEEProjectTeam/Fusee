@@ -10,7 +10,8 @@
 	<ItemGroup>
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
 		<ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-		<ProjectReference Include="..\Core\Fusee.Examples.PointCloudLive.Core.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\PointCloud\Las\Desktop\Fusee.PointCloud.Las.Desktop.csproj" />
+		<ProjectReference Include="$(FuseeEngineRoot)\src\Core\Fusee.Examples.PointCloudLive.Core.csproj" />
 	</ItemGroup>
 
 </Project>

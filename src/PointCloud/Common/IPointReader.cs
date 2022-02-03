@@ -5,7 +5,7 @@ namespace Fusee.PointCloud.Common
     /// <summary>
     /// Implement this into any Point Cloud Reader.
     /// </summary>
-    public interface IPointReader : IDisposable
+    public interface IPointReader : Engine.Common.IPointReader, IDisposable
     {
         /// <summary>
         /// This is the point description: Which type am I, which variables do I hold?

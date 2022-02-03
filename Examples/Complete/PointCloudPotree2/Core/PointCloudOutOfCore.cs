@@ -5,7 +5,8 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Gui;
 using Fusee.Math.Core;
-using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Component.Imp.Potree;
+using Fusee.PointCloud.Core.Scene;
 using System;
 using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
@@ -58,7 +59,7 @@ namespace Fusee.Examples.PointCloudPotree2.Core
         private float3 _initCameraPos;
 
         private SixDOFDevice _spaceMouse;
-        private Engine.Core.Scene.PointCloud _pointCloud;
+        private PointCloud.Core.Scene.PointCloud _pointCloud;
 
         public override void Init()
         {
@@ -100,7 +101,10 @@ namespace Fusee.Examples.PointCloudPotree2.Core
                 }
             };
 
-            _pointCloud = new Engine.Core.Scene.PointCloud(PtRenderingParams.Instance.PathToOocFile, PointCloudFileType.Potree2);
+            _pointCloud = new PointCloud.Core.Scene.PointCloud
+            {
+                PointCloudImp = new Potree2Cloud(PtRenderingParams.Instance.PathToOocFile)
+            };
 
             ((Potree2Cloud)_pointCloud.PointCloudImp).MinProjSizeModifier = PtRenderingParams.Instance.ProjectedSizeModifier;
             ((Potree2Cloud)_pointCloud.PointCloudImp).PointThreshold = PtRenderingParams.Instance.PointThreshold;

@@ -73,7 +73,7 @@ namespace Fusee.PointCloud.Core
             {
                 _minProjSizeModifier = value;
                 if (((PointCloudOctree)Octree).Root != null)
-                    _minScreenProjectedSize = ((PointCloudOctree)Octree).Root.ProjectedScreenSize * _minProjSizeModifier;
+                    _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
             }
         }
 
@@ -213,7 +213,7 @@ namespace Fusee.PointCloud.Core
             _visibleNodesOrderedByProjectionSize.Clear();
             VisibleNodes.Clear();
 
-            DetermineVisibilityForNode(((PointCloudOctree)Octree).Root);
+            DetermineVisibilityForNode((PointCloudOctant)Octree.Root);
 
             while (_visibleNodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -288,8 +288,8 @@ namespace Fusee.PointCloud.Core
 
         private void SetMinScreenProjectedSize(double3 camPos, float fov)
         {
-            ((PointCloudOctree)Octree).Root.ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
-            _minScreenProjectedSize = ((PointCloudOctree)Octree).Root.ProjectedScreenSize * _minProjSizeModifier;
+            ((PointCloudOctant)Octree.Root).ComputeScreenProjectedSize(camPos, ViewportHeight, fov);
+            _minScreenProjectedSize = ((PointCloudOctant)Octree.Root).ProjectedScreenSize * _minProjSizeModifier;
         }
 
         /// <summary>

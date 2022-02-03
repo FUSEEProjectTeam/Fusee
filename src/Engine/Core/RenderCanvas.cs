@@ -16,6 +16,8 @@ namespace Fusee.Engine.Core
     {
         #region Implementor Fields
 
+        public PointCloudImplementor PointCloudImplementor { get; set; }
+
         /// <summary>
         ///     Gets and sets the canvas implementor.
         /// </summary>
@@ -58,7 +60,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with 3d contents.
         /// </value>
-        protected RenderContext RC { get; private set; }
+        public RenderContext RC { get; private set; }
 
         #endregion
 

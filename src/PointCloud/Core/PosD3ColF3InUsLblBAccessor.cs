@@ -11,7 +11,7 @@ namespace Fusee.PointCloud.Core
         public PosD3ColF3InUsLblBAccessor()
         {
             PositionType = PointPositionType.Double3;
-            ColorType = PointColorType.Float;
+            ColorType = PointColorType.Float3;
             LabelType = PointLabelType.UInt_8;
             IntensityType = PointIntensityType.UInt_16;
         }

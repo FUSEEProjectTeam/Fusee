@@ -115,7 +115,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="otherSet"></param>
         /// <returns></returns>
-        internal RenderStateSet Merge(RenderStateSet otherSet)
+        public RenderStateSet Merge(RenderStateSet otherSet)
         {
             if (this == otherSet) return new RenderStateSet();
             var newSet = new RenderStateSet();

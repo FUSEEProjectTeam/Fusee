@@ -7,6 +7,7 @@ using Fusee.Engine.Core.Scene;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.PointCloud.Common;
+using Fusee.PointCloud.Scene;
 using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -44,7 +45,7 @@ namespace Fusee.Examples.PointCloudLive.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             _node = new SceneNode();
-            var pointCloud = new Engine.Core.Scene.PointCloud("D:\\LAS\\HolbeinPferd.las", PointCloudFileType.Las);
+            var pointCloud = new PointCloud.Scene.PointCloud("D:\\LAS\\HolbeinPferd.las", PointCloudFileType.Las);
 
             _node.Components.Add(pointCloud);
 

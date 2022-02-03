@@ -1,10 +1,11 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Structures;
+using Fusee.PointCloud.Common;
 
 namespace Fusee.PointCloud.Core
 {
 
-    public class PointCloudOctant : IEmptyOctant<double3, double>
+    public class PointCloudOctant : IPointCloudOctant
     {
         /// <summary>
         /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
