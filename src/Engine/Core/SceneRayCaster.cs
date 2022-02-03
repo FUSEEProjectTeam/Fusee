@@ -191,7 +191,7 @@ namespace Fusee.Engine.Core
             if (cams.Count == 0)
             {
                 pickPosClip = (pickPos * new float2(2.0f / rc.ViewportWidth, -2.0f / rc.ViewportHeight)) + new float2(-1, 1);
-                Ray = new Rayf(pickPosClip, rc.View, rc.Projection);
+                Ray = new RayF(pickPosClip, rc.View, rc.Projection);
                 return Viserate();
             }
 
@@ -218,7 +218,7 @@ namespace Fusee.Engine.Core
 
             // Calculate pickPosClip
             pickPosClip = ((pickPos - new float2(pickCamRect.Left, pickCamRect.Top)) * new float2(2.0f / pickCamRect.Width, -2.0f / pickCamRect.Height)) + new float2(-1, 1);
-            Ray = new Rayf(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
+            Ray = new RayF(pickPosClip, float4x4.Invert(pickCam.Item1.GetTransform().Matrix), pickCam.Item2.Camera.GetProjectionMat(rc.ViewportWidth, rc.ViewportHeight, out _));
 
             return Viserate();
         }

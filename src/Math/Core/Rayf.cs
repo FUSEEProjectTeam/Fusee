@@ -38,7 +38,7 @@
         /// <param name="pickPosClip">A mouse position in Clip Space.</param>
         /// <param name="view">The View Matrix of the rendered scene.</param>
         /// <param name="projection">The Projection Matrix of the rendered scene.</param>
-        public Rayf(float2 pickPosClip, float4x4 view, float4x4 projection)
+        public RayF(float2 pickPosClip, float4x4 view, float4x4 projection)
         {
             Origin = float4x4.Invert(view).Translation();
 
