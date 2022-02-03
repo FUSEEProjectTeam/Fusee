@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Fusee.Math.Core
 {
     /// <summary>
-    /// Describes a frustum by using six <see cref="PlaneF"/>s. 
+    /// Describes a frustum by using six <see cref="PlaneD"/>s. 
     /// </summary>
     public class FrustumD
     {
@@ -46,7 +46,7 @@ namespace Fusee.Math.Core
         /// See: http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
         /// </summary>
         /// <param name="mat">The matrix from which to extract the planes.</param>
-        public void CalculateFrustumPlanes(float4x4 mat)
+        public void CalculateFrustumPlanes(double4x4 mat)
         {
             // left
             var left = new PlaneD()
@@ -135,23 +135,23 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="mat">The matrix from which to calculate the frustum corners.</param>
         /// <returns></returns>
-        public static IEnumerable<float3> CalculateFrustumCorners(float4x4 mat)
+        public static IEnumerable<double3> CalculateFrustumCorners(double4x4 mat)
         {
             //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
             //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
             //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
-            var invViewProjection = float4x4.Invert(mat);
+            var invViewProjection = double4x4.Invert(mat);
 
-            var frustumCorners = new float4[8];
+            var frustumCorners = new double4[8];
 
-            frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
-            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr
-            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl
-            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr
-            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl
-            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr
-            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl
-            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr
+            frustumCorners[0] = invViewProjection * new double4(-1, -1, -1, 1); //nbl
+            frustumCorners[1] = invViewProjection * new double4(1, -1, -1, 1); //nbr
+            frustumCorners[2] = invViewProjection * new double4(-1, 1, -1, 1); //ntl
+            frustumCorners[3] = invViewProjection * new double4(1, 1, -1, 1); //ntr
+            frustumCorners[4] = invViewProjection * new double4(-1, -1, 1, 1); //fbl
+            frustumCorners[5] = invViewProjection * new double4(1, -1, 1, 1); //fbr
+            frustumCorners[6] = invViewProjection * new double4(-1, 1, 1, 1); //ftl
+            frustumCorners[7] = invViewProjection * new double4(1, 1, 1, 1); //ftr
 
             for (int i = 0; i < frustumCorners.Length; i++)
             {

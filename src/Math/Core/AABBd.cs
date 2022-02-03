@@ -1,31 +1,32 @@
 using ProtoBuf;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
     /// <summary>
-    /// Represents an axis aligned bounding box.
+    ///     Represents an axis aligned bounding box.
     /// </summary>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct AABBd
     {
         /// <summary>
-        ///     The minimum values of the axis aligned bounding box in x, y and z direction
+        /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(1)] public double3 min;
 
         /// <summary>
-        ///     The maximum values of the axis aligned bounding box in x, y and z direction
+        /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(2)] public double3 max;
 
         /// <summary>
-        ///     Create a new axis aligned bounding box
+        /// Create a new axis aligned bounding box.
         /// </summary>
-        /// <param name="min_">the minimum x y and z values</param>
-        /// <param name="max_">the maximum x y and z values</param>
+        /// <param name="min_">the minimum x y and z values.</param>
+        /// <param name="max_">the maximum x y and z values.</param>
         public AABBd(double3 min_, double3 max_)
         {
             min = min_;
@@ -33,12 +34,24 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Create a new axis aligned bounding box.
+        /// </summary>
+        /// <param name="vertices">The list of vertices the bounding box is created for.</param>
+        public AABBd(IList<double3> vertices)
+        {
+            min = vertices[0];
+            max = vertices[0];
+            foreach (double3 p in vertices)
+                this |= p;
+        }
+
+        /// <summary>
         /// Applies a transformation on the bounding box. After the transformation another
         /// axis aligned bounding box results. This is done by transforming all eight
         /// vertices of the box and re-aligning to the axes afterwards.
         /// </summary>
-        /// <param name="m">The transformation matrix</param>
-        /// <param name="box">the box to transform</param>
+        /// <param name="m">The transformation matrix.</param>
+        /// <param name="box">the box to transform.</param>
         /// <returns>A new axis aligned bounding box.</returns>
         public static AABBd operator *(double4x4 m, AABBd box)
         {
@@ -75,49 +88,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Applies a transformation function on the bounding box. After the transformation another
-        /// axis aligned bounding box results. This is done by transforming all eight
-        /// vertices of the box with the given transformation function and re-aligning to the axes afterwards.
-        /// </summary>
-        /// <param name="func">The transformation function</param>
-        /// <param name="box">the box to transform</param>
-        /// <returns>A new axis aligned bounding box.</returns>
-        public static AABBd operator ^(Func<double3, double3> func, AABBd box)
-        {
-            double3[] cube =
-            {
-                new double3(box.min.x, box.min.y, box.min.z),
-                new double3(box.min.x, box.min.y, box.max.z),
-                new double3(box.min.x, box.max.y, box.min.z),
-                new double3(box.min.x, box.max.y, box.max.z),
-                new double3(box.max.x, box.min.y, box.min.z),
-                new double3(box.max.x, box.min.y, box.max.z),
-                new double3(box.max.x, box.max.y, box.min.z),
-                new double3(box.max.x, box.max.y, box.max.z)
-            };
-
-            for (int i = 0; i < 8; i++)
-            {
-                cube[i] = func(cube[i]);
-            }
-
-            AABBd ret;
-            ret.min = cube[0];
-            ret.max = cube[0];
-            for (int i = 1; i < 8; i++)
-            {
-                if (cube[i].x < ret.min.x) ret.min.x = cube[i].x;
-                if (cube[i].y < ret.min.y) ret.min.y = cube[i].y;
-                if (cube[i].z < ret.min.z) ret.min.z = cube[i].z;
-                if (cube[i].x > ret.max.x) ret.max.x = cube[i].x;
-                if (cube[i].y > ret.max.y) ret.max.y = cube[i].y;
-                if (cube[i].z > ret.max.z) ret.max.z = cube[i].z;
-            }
-            return ret;
-        }
-
-        /// <summary>
-        ///     Calculates the bounding box around two existing bounding boxes.
+        /// Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding box to build the union from</param>
@@ -135,7 +106,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// Calculates the bounding box around an existing bounding box and a single point.
         /// </summary>
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
@@ -153,10 +124,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around two existing bounding boxes.
+        /// Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding box to build the union from</param>
+        /// <param name="b">The other bounding box, to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBd operator |(AABBd a, AABBd b)
         {
@@ -164,7 +135,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// Calculates the bounding box around an existing bounding box and a single point.
         /// </summary>
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
@@ -172,7 +143,7 @@ namespace Fusee.Math.Core
         /// <example>
         ///   Use this operator e.g. to calculate the bounding box for a given list of points.
         ///   <code>
-        ///     AABB box = new AABB(pointList.First());
+        ///     AABB box = new AABB(pointList.First(), pointList.First());
         ///     foreach (double3 p in pointList)
         ///         box |= p;
         ///   </code>
@@ -185,7 +156,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public double3 Center => (max + min) * 0.5f;
+        public double3 Center => (max + min) * 0.5;
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
@@ -205,7 +176,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if point lies in this AABB
+        /// Check if point lies in this AABB
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -215,18 +186,27 @@ namespace Fusee.Math.Core
             (point.y >= min.y && point.y <= max.y) &&
             (point.z >= min.z && point.z <= max.z);
         }
+
         /// <summary>
         /// Checks if a viewing frustum lies within or intersects this AABB.      
         /// </summary>
-        /// <param name="frustumPlanes">The frustum planes to test against.</param>
+        /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(PlaneD[] frustumPlanes)
+        public bool InsideOrIntersectingFrustum(FrustumD frustum)
         {
-            foreach (var plane in frustumPlanes)
-            {
-                if (!plane.InsideOrIntersecting(this))
-                    return false;
-            }
+            if (!frustum.Near.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(this))
+                return false;
+
             return true;
         }
 
@@ -241,7 +221,38 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if two AABBs intersect each other
+        /// Checks if a given ray originates in, or intersects this AABB.
+        /// </summary>
+        /// <param name="ray">The ray to test against.</param>
+        /// <returns></returns>
+        public bool IntersectRay(RayD ray)
+        {
+            if (this.Intersects(ray.Origin))
+                return true;
+
+            double t1 = (min[0] - ray.Origin[0]) * ray.Inverse[0];
+            double t2 = (max[0] - ray.Origin[0]) * ray.Inverse[0];
+
+            double tmin = M.Min(t1, t2);
+            double tmax = M.Max(t1, t2);
+
+            for (int i = 1; i < 3; i++)
+            {
+                t1 = (min[i] - ray.Origin[i]) * ray.Inverse[i];
+                t2 = (max[i] - ray.Origin[i]) * ray.Inverse[i];
+
+                t1 = double.IsNaN(t1) ? 0.0f : t1;
+                t2 = double.IsNaN(t2) ? 0.0f : t2;
+
+                tmin = M.Max(tmin, M.Min(t1, t2));
+                tmax = M.Min(tmax, M.Max(t1, t2));
+            }
+
+            return tmax >= M.Max(tmin, 0.0);
+        }
+
+        /// <summary>
+        /// Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -252,7 +263,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if a point lies within a AABB
+        /// Check if a point lies within a AABB
         /// </summary>
         /// <param name="aabb"></param>
         /// <param name="point"></param>
@@ -265,7 +276,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Operator override for equality.
         /// </summary>
-        /// <param name="left">The plane.</param>
+        /// <param name="left">The AABBd.</param>
         /// <param name="right">The scalar value.</param>        
         public static bool operator ==(AABBd left, AABBd right)
         {
@@ -275,29 +286,29 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Operator override for inequality.
         /// </summary>
-        /// <param name="left">The plane.</param>
-        /// <param name="right">The scalar value.</param>        
+        /// <param name="left">The AABBd.</param>
+        /// <param name="right">The scalar value.</param>
         public static bool operator !=(AABBd left, AABBd right)
         {
             return !(left == right);
         }
 
         /// <summary>
-        /// Indicates whether this plane is equal to another object.
+        /// Indicates whether this AABBd is equal to another object.
         /// </summary>
         /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBd"/>.</param>
         /// <returns></returns>
         public override bool Equals(object? obj)
         {
-            if (obj?.GetType() != typeof(AABBd)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj?.GetType() != typeof(AABBd)) throw new ArgumentException($"{obj} is not of Type 'AABBd'.");
 
             var other = (AABBd)obj;
             return max.Equals(other.max) && min.Equals(other.min);
         }
 
         /// <summary>
-        /// Generates a hash code for this plane.
-        /// </summary>        
+        /// Generates a hash code for this AABBd.
+        /// </summary>
         public override int GetHashCode()
         {
             return HashCode.Combine(max, min);

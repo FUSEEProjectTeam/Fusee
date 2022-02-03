@@ -14,7 +14,7 @@ namespace Fusee.Engine.Core
     public class RayCastResult
     {
         /// <summary>
-        /// The scene node containter of the result.
+        /// The scene node container of the result.
         /// </summary>
         public SceneNode Node;
 
@@ -100,9 +100,9 @@ namespace Fusee.Engine.Core
     public class SceneRayCaster : Viserator<RayCastResult, SceneRayCaster.RayCasterState, SceneNode, SceneComponent>
     {
         /// <summary>
-        /// The <see cref="Rayf"/> to check intersections with.
+        /// The <see cref="RayF"/> to check intersections with.
         /// </summary>
-        public Rayf Ray { get; private set; }
+        public RayF Ray { get; private set; }
 
         /// <summary>
         /// The <see cref="Cull"/> mode to use by the SceneRayCaster
@@ -169,7 +169,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="ray">The ray to test.</param>
         /// <returns>A collection of <see cref="RayCastResult"/> that can be iterated over.</returns>
-        public IEnumerable<RayCastResult> RayCast(Rayf ray)
+        public IEnumerable<RayCastResult> RayCast(RayF ray)
         {
             Ray = ray;
             return Viserate();

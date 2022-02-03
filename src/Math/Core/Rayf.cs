@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Math.Core
+﻿namespace Fusee.Math.Core
 {
     /// <summary>
     /// Represents a ray with a given origin and direction.
     /// </summary>
-    public struct Rayf
+    public struct RayF
     {
         /// <summary>
         /// The point in world coordinates from which the ray originates.
@@ -29,7 +25,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="origin_">The origin of the ray in world coordinates.</param>
         /// <param name="direction_">The direction of the ray.</param>
-        public Rayf(float3 origin_, float3 direction_)
+        public RayF(float3 origin_, float3 direction_)
         {
             Origin = origin_;
             Direction = float3.Normalize(direction_);
